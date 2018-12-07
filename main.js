@@ -1,7 +1,7 @@
 // Main game init
 $(function() {
     //localStorage.clear();
-    var global_data = save.getItem('global') || false;
+    var global_data = save.getItem('evolved') || false;
     if (global_data) {
         // Load preexiting game data
         global = JSON.parse(global_data);
@@ -146,7 +146,7 @@ function mainLoop() {
         }
         
         // Save game state
-        save.setItem('global',JSON.stringify(global));
+        save.setItem('evolved',JSON.stringify(global));
     }, 1000);
 }
 
