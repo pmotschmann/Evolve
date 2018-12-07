@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Evolved</title>
+    <meta http-equiv="Content-type" content="text/html;charset=utf-8">
+    <link rel="icon" href="evolved.ico" type="images/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
+    <link rel="stylesheet/less" type="text/css" href="evolved.less">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/buefy@0.7.1/dist/buefy.min.js"></script>
+    <script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
+    <script src="lib/less.min.js"></script>
+    <script src="lib/lz-string.min.js"></script>
+    <script src="vars.js"></script>
+    <script src="races.js"></script>
+    <script src="traits.js"></script>
+    <script src="resources.js"></script>
+    <script src="actions.js"></script>
+    <script src="main.js"></script>
+</head>
+<body>
+    <div id="main" class="main container">
+        <div class="columns is-gapless">
+        
+            <div class="column is-one-quarter">
+                <div id="race" class="race">
+                    <b-tooltip :label="desc()" position="is-right" type="is-dark" size="is-large" multilined animated>{{ name() }}</b-tooltip>
+                </div>
+                <div id="resources" class="resources"></div>
+            </div>
+            <div class="column is-three-quarters">
+                <div id="tabs" class="content">
+                    <b-tabs v-model="civTabs">
+                        <b-tab-item id="evolution" label="Evolve"></b-tab-item>
+                        <b-tab-item id="city" label="Village" v:hidden></b-tab-item>
+                        <b-tab-item id="tech" label="Research"></b-tab-item>
+                    </b-tabs>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>

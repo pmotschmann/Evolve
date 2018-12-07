@@ -1,0 +1,47 @@
+.main {
+    margin-top: 1rem;
+    
+    .race {
+        margin-top: .75rem;
+    }
+
+    .resources {
+        margin-top: 1rem;
+        .resource {
+            display: flex;
+            :first-child {
+                width: 40%;
+            }
+            :nth-child(2) {
+                text-align: right;
+                width: 40%;
+                display: block;
+            }
+        }
+    }
+    
+    .content {
+        .tab-content {
+            padding: 0 1rem 1rem;
+        }
+        .tab-item {
+            padding: 0 0 3rem 1rem;
+        }
+        a.button {
+            width: 10rem;
+            margin: 1rem 1rem 0 0;
+        }
+    }
+    
+    > div.popper {
+        margin-top: .125rem;
+        text-align: center;
+        padding: 1rem;
+        max-width: 18rem;
+        border-radius: .25rem;
+        > div:nth-child(2),
+        > div:nth-child(3) {
+            border-top: solid 1px black;
+        }
+    }
+}
