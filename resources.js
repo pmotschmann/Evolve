@@ -28,6 +28,8 @@ function loadResource(name,max,value) {
         };
     }
     
+    global['resource'][name]['time'] = Date.now();
+    
     if (global['resource'][name]['max'] > 0){
         var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-info">{{ name }}</span><span class="count">{{ amount }} / {{ max }}</span><span class="diff">({{ diff }} /s)</span></div>');
         $('#resources').append(res_container);
@@ -41,7 +43,9 @@ function loadResource(name,max,value) {
         data: global['resource'][name],
         watch: {
             amount: function(val){
-                this.diff = val - this.last;
+                var time = (Date.now() - this.time) / 1000;
+                this.time = Date.now();
+                this.diff = Math.round((val - this.last) / time);
                 this.last = val;
             }
         }
