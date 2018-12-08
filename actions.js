@@ -58,10 +58,10 @@ const actions = {
             },
             desc: 'Evolve Organelles',
             cost: { 
-                RNA: function(){ return (global.race['organelles'].count * 10) + 30; },
+                RNA: function(){ return (global.race['organelles'].count * 8) + 12; },
                 DNA: function(){ return (global.race['organelles'].count * 4) + 4; },
             },
-            effect: 'Increases RNA generation rate',
+            effect: 'Automatically generate RNA',
             action: function (){
                 if (checkCosts(actions.evolution.organelles.cost)){
                     global['resource']['RNA'].amount -= actions.evolution.organelles.cost['RNA']();
@@ -86,7 +86,7 @@ const actions = {
             desc: 'Evolve Nucleus',
             cost: { 
                 RNA: function(){ return (global.race['nucleus'].count * 45) + 75; },
-                DNA: function(){ return (global.race['nucleus'].count * 30) + 50; },
+                DNA: function(){ return (global.race['nucleus'].count * 18) + 30; },
             },
             effect: 'Automatically consume RNA to create DNA',
             action: function (){
@@ -140,8 +140,8 @@ const actions = {
             },
             desc: 'Evolve Mitochondria',
             cost: { 
-                RNA: function(){ return (global.race['mitochondria'].count * 70) + 150; },
-                DNA: function(){ return (global.race['mitochondria'].count * 65) + 120; },
+                RNA: function(){ return (global.race['mitochondria'].count * 50) + 150; },
+                DNA: function(){ return (global.race['mitochondria'].count * 35) + 120; },
             },
             effect: 'Increases DNA capacity by 25 and RNA capacity by 50',
             action: function (){
@@ -646,6 +646,10 @@ const actions = {
                     Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
                         global.race[trait] = genus_traits[races[global.race.species].type][trait];
                     });
+                    
+                    main_tabs.data.civTabs = 1;
+                    main_tabs.data.showEvolve = false;
+                    main_tabs.data.showCity = true;
                 }
             }
         }

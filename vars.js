@@ -2,16 +2,17 @@ var save = window.localStorage;
 var intervals = {};
 var global = {
     seed: 1,
-    resource: {}
-};
-
-const main_tabs = {
-    data() {
-        return {
-            civTabs: 0
+    resource: {},
+    main_tabs: {
+        data: {
+            civTabs: 0,
+            showEvolve: true,
+            showCity: false,
+            showResearch: false
         }
     }
-}
+};
+
 var vues = {};
 
 Math.rand = function(min, max) {

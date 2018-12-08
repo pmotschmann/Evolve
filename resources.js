@@ -1,8 +1,8 @@
 // Sets up resource definitions
 function defineResources() {
     if (global.race.species === 'protoplasm'){
-        loadResource('DNA',100,0);
         loadResource('RNA',100,0);
+        loadResource('DNA',100,0);
     }
     else {
         loadResource(races[global.race.species].name,0,0);
@@ -22,12 +22,14 @@ function loadResource(name,max,value) {
             display: false,
             value: value,
             amount: 0,
+            last: 0,
+            diff: 0,
             max: max
         };
     }
     
     if (global['resource'][name]['max'] > 0){
-        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-info">{{ name }}</span><span class="count">{{ amount }} / {{ max }}</span></div>');
+        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-info">{{ name }}</span><span class="count">{{ amount }} / {{ max }}</span><span class="diff">({{ diff }} /s)</span></div>');
         $('#resources').append(res_container);
     }
     else {
@@ -36,7 +38,13 @@ function loadResource(name,max,value) {
     }
     
     vues['res_'+name] = new Vue({
-        data: global['resource'][name]
+        data: global['resource'][name],
+        watch: {
+            amount: function(val){
+                this.diff = val - this.last;
+                this.last = val;
+            }
+        }
     });
     vues['res_'+name].$mount('#res-' + name);
 }

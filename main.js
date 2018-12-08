@@ -11,7 +11,7 @@ $(function() {
         newGame();
     }
     
-    vues['vue_tabs'] = new Vue(main_tabs);
+    vues['vue_tabs'] = new Vue(global.main_tabs);
     vues['vue_tabs'].$mount('#tabs');
     
     // Load Resources
@@ -101,17 +101,12 @@ function mainLoop() {
                 global['resource']['DNA'].amount = count;
                 global['resource']['RNA'].amount -= increment * 2;
             }
-            if (global['resource']['RNA'].amount < global['resource']['RNA'].max){
-                if (global.race['organelles']){
-                    var count = global['resource']['RNA'].amount + global.race['organelles'].count + 1;
-                    if (count > global['resource']['RNA'].max){ count = global['resource']['RNA'].max; }
-                    global['resource']['RNA'].amount = count;
-                }
-                else {
-                    global['resource']['RNA'].amount++;
-                }
+            if (global.race['organelles'] && global['resource']['RNA'].amount < global['resource']['RNA'].max){
+                var count = global['resource']['RNA'].amount + global.race['organelles'].count;
+                if (count > global['resource']['RNA'].max){ count = global['resource']['RNA'].max; }
+                global['resource']['RNA'].amount = count;
             }
-            if (global.race['membrane'] && global.race['membrane'].count >= 1 && !global.race['dna']){
+            if (global['resource']['RNA'].amount >= 2 && !global.race['dna']){
                 global.race['dna'] = 1;
                 addAction('evolution','dna');
                 global.resource.DNA.display = true;
@@ -120,11 +115,11 @@ function mainLoop() {
                 global.race['membrane'] = { count: 0 };
                 addAction('evolution','membrane');
             }
-            if (global['resource']['DNA'].amount >= 5 && !global.race['organelles']){
+            if (global['resource']['DNA'].amount >= 4 && !global.race['organelles']){
                 global.race['organelles'] = { count: 0 };
                 addAction('evolution','organelles');
             }
-            if (global.race['organelles'] && global.race['organelles'].count >= 1 && !global.race['nucleus']){
+            if (global.race['organelles'] && global.race['organelles'].count >= 2 && !global.race['nucleus']){
                 global.race['nucleus'] = { count: 0 };
                 addAction('evolution','nucleus');
             }

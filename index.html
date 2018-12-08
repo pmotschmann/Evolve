@@ -33,9 +33,9 @@
             <div class="column is-three-quarters">
                 <div id="tabs" class="content">
                     <b-tabs v-model="civTabs">
-                        <b-tab-item id="evolution" label="Evolve"></b-tab-item>
-                        <b-tab-item id="city" label="Village" v:hidden></b-tab-item>
-                        <b-tab-item id="tech" label="Research"></b-tab-item>
+                        <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
+                        <b-tab-item id="city" :visible="showCity" label="Village"></b-tab-item>
+                        <b-tab-item id="tech" :visible="showResearch" label="Research"></b-tab-item>
                     </b-tabs>
                 </div>
             </div>
