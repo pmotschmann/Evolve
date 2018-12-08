@@ -32,7 +32,7 @@ const actions = {
                 return label;
             },
             desc: 'Evolve Membranes',
-            cost: { RNA: function(){ return (global.race['membrane'].count * 2) + 10; } },
+            cost: { RNA: function(){ return (global.race['membrane'].count * 2) + 2; } },
             effect: 'Increases RNA capacity by 5',
             action: function (){
                 if (checkCosts(actions.evolution.membrane.cost)){
@@ -58,8 +58,8 @@ const actions = {
             },
             desc: 'Evolve Organelles',
             cost: { 
-                RNA: function(){ return (global.race['organelles'].count * 10) + 50; },
-                DNA: function(){ return (global.race['organelles'].count * 5) + 5; },
+                RNA: function(){ return (global.race['organelles'].count * 10) + 30; },
+                DNA: function(){ return (global.race['organelles'].count * 4) + 4; },
             },
             effect: 'Increases RNA generation rate',
             action: function (){
@@ -85,8 +85,8 @@ const actions = {
             },
             desc: 'Evolve Nucleus',
             cost: { 
-                RNA: function(){ return (global.race['nucleus'].count * 75) + 75; },
-                DNA: function(){ return (global.race['nucleus'].count * 50) + 50; },
+                RNA: function(){ return (global.race['nucleus'].count * 45) + 75; },
+                DNA: function(){ return (global.race['nucleus'].count * 30) + 50; },
             },
             effect: 'Automatically consume RNA to create DNA',
             action: function (){
@@ -112,8 +112,8 @@ const actions = {
             },
             desc: 'Evolve Eukaryotic Cell',
             cost: { 
-                RNA: function(){ return (global.race['eukaryotic_cell'].count * 25) + 25; },
-                DNA: function(){ return (global.race['eukaryotic_cell'].count * 15) + 50; },
+                RNA: function(){ return (global.race['eukaryotic_cell'].count * 20) + 20; },
+                DNA: function(){ return (global.race['eukaryotic_cell'].count * 12) + 40; },
             },
             effect: 'Increases DNA capacity by 10',
             action: function (){
@@ -140,8 +140,8 @@ const actions = {
             },
             desc: 'Evolve Mitochondria',
             cost: { 
-                RNA: function(){ return (global.race['mitochondria'].count * 70) + 200; },
-                DNA: function(){ return (global.race['mitochondria'].count * 65) + 150; },
+                RNA: function(){ return (global.race['mitochondria'].count * 70) + 150; },
+                DNA: function(){ return (global.race['mitochondria'].count * 65) + 120; },
             },
             effect: 'Increases DNA capacity by 25 and RNA capacity by 50',
             action: function (){
@@ -163,15 +163,13 @@ const actions = {
             title: 'Sexual Reproduction',
             desc: 'Evolve Sexual Reproduction',
             cost: { 
-                DNA: function(){ return 250; },
+                DNA: function(){ return 225; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.sexual_reproduction.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.sexual_reproduction.cost['DNA']();
                     global.race['sexual_reproduction'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.sexual_reproduction.id).remove();
                     $('#pop'+actions.evolution.sexual_reproduction.id).remove();
                     
@@ -196,15 +194,13 @@ const actions = {
             title: 'Phagocytosis',
             desc: 'Evolve Phagocytosis',
             cost: { 
-                DNA: function(){ return 300; },
+                DNA: function(){ return 250; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.phagocytosis.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.phagocytosis.cost['DNA']();
                     global.race['phagocytosis'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.phagocytosis.id).remove();
                     $('#pop'+actions.evolution.phagocytosis.id).remove();
                     global.race['multicellular'] = { count: 0 };
@@ -217,15 +213,13 @@ const actions = {
             title: 'Chloroplasts',
             desc: 'Evolve Chloroplasts',
             cost: { 
-                DNA: function(){ return 300; },
+                DNA: function(){ return 250; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.chloroplasts.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.chloroplasts.cost['DNA']();
                     global.race['chloroplasts'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.chloroplasts.id).remove();
                     $('#pop'+actions.evolution.chloroplasts.id).remove();
                     global.race['multicellular'] = { count: 0 };
@@ -238,7 +232,7 @@ const actions = {
             title: 'Chitin',
             desc: 'Evolve Chitin',
             cost: { 
-                DNA: function(){ return 300; },
+                DNA: function(){ return 250; },
             },
             effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
             action: function (){
@@ -259,15 +253,13 @@ const actions = {
             title: 'Multicellular',
             desc: 'Evolve Multicellular',
             cost: { 
-                DNA: function(){ return 330; },
+                DNA: function(){ return 275; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.multicellular.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.multicellular.cost['DNA']();
                     global.race['multicellular'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.multicellular.id).remove();
                     $('#pop'+actions.evolution.multicellular.id).remove();
                     
@@ -291,15 +283,13 @@ const actions = {
             title: 'Spores',
             desc: 'Evolve Spores',
             cost: { 
-                DNA: function(){ return 360; },
+                DNA: function(){ return 300; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.spores.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.spores.cost['DNA']();
                     global.race['spores'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.spores.id).remove();
                     $('#pop'+actions.evolution.spores.id).remove();
                     global.race['bryophyte'] = { count: 0 };
@@ -312,15 +302,13 @@ const actions = {
             title: 'Poikilohydric',
             desc: 'Evolve Poikilohydric',
             cost: { 
-                DNA: function(){ return 360; },
+                DNA: function(){ return 300; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.poikilohydric.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.poikilohydric.cost['DNA']();
                     global.race['poikilohydric'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.poikilohydric.id).remove();
                     $('#pop'+actions.evolution.poikilohydric.id).remove();
                     global.race['bryophyte'] = { count: 0 };
@@ -333,15 +321,13 @@ const actions = {
             title: 'Bilateral Symmetry',
             desc: 'Evolve Bilateral Symmetry',
             cost: { 
-                DNA: function(){ return 360; },
+                DNA: function(){ return 300; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.bilateral_symmetry.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.bilateral_symmetry.cost['DNA']();
                     global.race['bilateral_symmetry'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.bilateral_symmetry.id).remove();
                     $('#pop'+actions.evolution.bilateral_symmetry.id).remove();
                     
@@ -362,15 +348,13 @@ const actions = {
             title: 'Bryophyte',
             desc: 'Evolve Bryophyte',
             cost: { 
-                DNA: function(){ return 400; },
+                DNA: function(){ return 330; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.bryophyte.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.bryophyte.cost['DNA']();
                     global.race['bryophyte'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.bryophyte.id).remove();
                     $('#pop'+actions.evolution.bryophyte.id).remove();
                     
@@ -397,15 +381,13 @@ const actions = {
             title: 'Protostomes',
             desc: 'Evolve Protostomes',
             cost: { 
-                DNA: function(){ return 400; },
+                DNA: function(){ return 330; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.protostomes.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.protostomes.cost['DNA']();
                     global.race['protostomes'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.protostomes.id).remove();
                     $('#pop'+actions.evolution.protostomes.id).remove();
                     global.race['athropods'] = { count: 0 };
@@ -418,15 +400,13 @@ const actions = {
             title: 'Deuterostome',
             desc: 'Evolve Deuterostome',
             cost: { 
-                DNA: function(){ return 400; },
+                DNA: function(){ return 330; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.deuterostome.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.deuterostome.cost['DNA']();
                     global.race['deuterostome'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.deuterostome.id).remove();
                     $('#pop'+actions.evolution.deuterostome.id).remove();
                     
@@ -447,15 +427,13 @@ const actions = {
             title: 'Vascular',
             desc: 'Evolve Vascular',
             cost: { 
-                DNA: function(){ return 450; },
+                DNA: function(){ return 360; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.vascular.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.vascular.cost['DNA']();
                     global.race['vascular'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.vascular.id).remove();
                     $('#pop'+actions.evolution.vascular.id).remove();
                     global.race['sentience'] = { count: 0 };
@@ -468,15 +446,13 @@ const actions = {
             title: 'Homoiohydric',
             desc: 'Evolve Homoiohydric',
             cost: { 
-                DNA: function(){ return 450; },
+                DNA: function(){ return 360; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.homoiohydric.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.homoiohydric.cost['DNA']();
                     global.race['homoiohydric'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.homoiohydric.id).remove();
                     $('#pop'+actions.evolution.homoiohydric.id).remove();
                     global.race['sentience'] = { count: 0 };
@@ -489,15 +465,13 @@ const actions = {
             title: 'Athropods',
             desc: 'Evolve Athropods',
             cost: { 
-                DNA: function(){ return 450; },
+                DNA: function(){ return 360; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.athropods.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.athropods.cost['DNA']();
                     global.race['athropods'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.athropods.id).remove();
                     $('#pop'+actions.evolution.athropods.id).remove();
                     global.race['sentience'] = { count: 0 };
@@ -510,15 +484,13 @@ const actions = {
             title: 'Mammals',
             desc: 'Evolve Mammals',
             cost: { 
-                DNA: function(){ return 450; },
+                DNA: function(){ return 360; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.mammals.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.mammals.cost['DNA']();
                     global.race['mammals'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.mammals.id).remove();
                     $('#pop'+actions.evolution.mammals.id).remove();
                     global.race['sentience'] = { count: 0 };
@@ -531,15 +503,13 @@ const actions = {
             title: 'Eggshell',
             desc: 'Evolve Eggshell',
             cost: { 
-                DNA: function(){ return 450; },
+                DNA: function(){ return 360; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (checkCosts(actions.evolution.eggshell.cost)){
                     global['resource']['DNA'].amount -= actions.evolution.eggshell.cost['DNA']();
                     global.race['eggshell'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
                     $('#'+actions.evolution.eggshell.id).remove();
                     $('#pop'+actions.evolution.eggshell.id).remove();
                     global.race['sentience'] = { count: 0 };
@@ -552,7 +522,7 @@ const actions = {
             title: 'Sentience',
             desc: 'Evolve Sentience',
             cost: { 
-                DNA: function(){ return 500; },
+                DNA: function(){ return 400; },
             },
             effect: 'Evolve into a species which has achieved sentience',
             action: function (){
