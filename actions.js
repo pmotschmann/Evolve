@@ -35,15 +35,10 @@ const actions = {
             cost: { RNA: function(){ return (global.race['membrane'].count * 2) + 2; } },
             effect: 'Increases RNA capacity by 5',
             action: function (){
-                if (checkCosts(actions.evolution.membrane.cost)){
-                    var rna_cost = actions.evolution.membrane.cost['RNA']();
-                    global['resource']['RNA'].amount -= rna_cost;
+                if (payCosts(actions.evolution.membrane.cost)){
                     global['resource']['RNA'].max += 5;
                     global.race['membrane'].count++;
-                    var id = actions.evolution.membrane.id;
-                    $('#pop'+id).empty();
-                    actionDesc($('#pop'+id),'evolution','membrane');
-                    $('#'+id).html(actions.evolution.membrane.title());
+                    updateTitle('evolution','membrane');
                 }
             }
         },
@@ -63,14 +58,9 @@ const actions = {
             },
             effect: 'Automatically generate RNA',
             action: function (){
-                if (checkCosts(actions.evolution.organelles.cost)){
-                    global['resource']['RNA'].amount -= actions.evolution.organelles.cost['RNA']();
-                    global['resource']['DNA'].amount -= actions.evolution.organelles.cost['DNA']();
+                if (payCosts(actions.evolution.organelles.cost)){
                     global.race['organelles'].count++;
-                    var id = actions.evolution.organelles.id;
-                    $('#pop'+id).empty();
-                    actionDesc($('#pop'+id),'evolution','organelles');
-                    $('#'+id).html(actions.evolution.organelles.title());
+                    updateTitle('evolution','organelles');
                 }
             }
         },
@@ -90,14 +80,9 @@ const actions = {
             },
             effect: 'Automatically consume RNA to create DNA',
             action: function (){
-                if (checkCosts(actions.evolution.nucleus.cost)){
-                    global['resource']['RNA'].amount -= actions.evolution.nucleus.cost['RNA']();
-                    global['resource']['DNA'].amount -= actions.evolution.nucleus.cost['DNA']();
+                if (payCosts(actions.evolution.nucleus.cost)){
                     global.race['nucleus'].count++;
-                    var id = actions.evolution.nucleus.id;
-                    $('#pop'+id).empty();
-                    actionDesc($('#pop'+id),'evolution','nucleus');
-                    $('#'+id).html(actions.evolution.nucleus.title());
+                    updateTitle('evolution','nucleus');
                 }
             }
         },
@@ -117,15 +102,10 @@ const actions = {
             },
             effect: 'Increases DNA capacity by 10',
             action: function (){
-                if (checkCosts(actions.evolution.eukaryotic_cell.cost)){
-                    global['resource']['RNA'].amount -= actions.evolution.eukaryotic_cell.cost['RNA']();
-                    global['resource']['DNA'].amount -= actions.evolution.eukaryotic_cell.cost['DNA']();
+                if (payCosts(actions.evolution.eukaryotic_cell.cost)){
                     global.race['eukaryotic_cell'].count++;
                     global['resource']['DNA'].max += 10;
-                    var id = actions.evolution.eukaryotic_cell.id;
-                    $('#pop'+id).empty();
-                    actionDesc($('#pop'+id),'evolution','eukaryotic_cell');
-                    $('#'+id).html(actions.evolution.eukaryotic_cell.title());
+                    updateTitle('evolution','eukaryotic_cell');
                 }
             }
         },
@@ -145,16 +125,11 @@ const actions = {
             },
             effect: 'Increases DNA capacity by 25 and RNA capacity by 50',
             action: function (){
-                if (checkCosts(actions.evolution.mitochondria.cost)){
-                    global['resource']['RNA'].amount -= actions.evolution.mitochondria.cost['RNA']();
-                    global['resource']['DNA'].amount -= actions.evolution.mitochondria.cost['DNA']();
+                if (payCosts(actions.evolution.mitochondria.cost)){
                     global.race['mitochondria'].count++;
                     global['resource']['DNA'].max += 25;
                     global['resource']['RNA'].max += 50;
-                    var id = actions.evolution.mitochondria.id;
-                    $('#pop'+id).empty();
-                    actionDesc($('#pop'+id),'evolution','mitochondria');
-                    $('#'+id).html(actions.evolution.mitochondria.title());
+                    updateTitle('evolution','mitochondria');
                 }
             }
         },
@@ -167,8 +142,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.sexual_reproduction.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.sexual_reproduction.cost['DNA']();
+                if (payCosts(actions.evolution.sexual_reproduction.cost)){
                     global.race['sexual_reproduction'].count++;
                     $('#'+actions.evolution.sexual_reproduction.id).remove();
                     $('#pop'+actions.evolution.sexual_reproduction.id).remove();
@@ -198,8 +172,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.phagocytosis.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.phagocytosis.cost['DNA']();
+                if (payCosts(actions.evolution.phagocytosis.cost)){
                     global.race['phagocytosis'].count++;
                     $('#'+actions.evolution.phagocytosis.id).remove();
                     $('#pop'+actions.evolution.phagocytosis.id).remove();
@@ -217,8 +190,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.chloroplasts.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.chloroplasts.cost['DNA']();
+                if (payCosts(actions.evolution.chloroplasts.cost)){
                     global.race['chloroplasts'].count++;
                     $('#'+actions.evolution.chloroplasts.id).remove();
                     $('#pop'+actions.evolution.chloroplasts.id).remove();
@@ -236,8 +208,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
             action: function (){
-                if (checkCosts(actions.evolution.chitin.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.chitin.cost['DNA']();
+                if (payCosts(actions.evolution.chitin.cost)){
                     global.race['chitin'].count++;
                     global['resource']['DNA'].max += 25;
                     global['resource']['RNA'].max += 25;
@@ -257,8 +228,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.multicellular.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.multicellular.cost['DNA']();
+                if (payCosts(actions.evolution.multicellular.cost)){
                     global.race['multicellular'].count++;
                     $('#'+actions.evolution.multicellular.id).remove();
                     $('#pop'+actions.evolution.multicellular.id).remove();
@@ -287,8 +257,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.spores.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.spores.cost['DNA']();
+                if (payCosts(actions.evolution.spores.cost)){
                     global.race['spores'].count++;
                     $('#'+actions.evolution.spores.id).remove();
                     $('#pop'+actions.evolution.spores.id).remove();
@@ -306,8 +275,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.poikilohydric.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.poikilohydric.cost['DNA']();
+                if (payCosts(actions.evolution.poikilohydric.cost)){
                     global.race['poikilohydric'].count++;
                     $('#'+actions.evolution.poikilohydric.id).remove();
                     $('#pop'+actions.evolution.poikilohydric.id).remove();
@@ -325,8 +293,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.bilateral_symmetry.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.bilateral_symmetry.cost['DNA']();
+                if (payCosts(actions.evolution.bilateral_symmetry.cost)){
                     global.race['bilateral_symmetry'].count++;
                     $('#'+actions.evolution.bilateral_symmetry.id).remove();
                     $('#pop'+actions.evolution.bilateral_symmetry.id).remove();
@@ -352,8 +319,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.bryophyte.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.bryophyte.cost['DNA']();
+                if (payCosts(actions.evolution.bryophyte.cost)){
                     global.race['bryophyte'].count++;
                     $('#'+actions.evolution.bryophyte.id).remove();
                     $('#pop'+actions.evolution.bryophyte.id).remove();
@@ -385,8 +351,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.protostomes.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.protostomes.cost['DNA']();
+                if (payCosts(actions.evolution.protostomes.cost)){
                     global.race['protostomes'].count++;
                     $('#'+actions.evolution.protostomes.id).remove();
                     $('#pop'+actions.evolution.protostomes.id).remove();
@@ -404,8 +369,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.deuterostome.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.deuterostome.cost['DNA']();
+                if (payCosts(actions.evolution.deuterostome.cost)){
                     global.race['deuterostome'].count++;
                     $('#'+actions.evolution.deuterostome.id).remove();
                     $('#pop'+actions.evolution.deuterostome.id).remove();
@@ -431,8 +395,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.vascular.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.vascular.cost['DNA']();
+                if (payCosts(actions.evolution.vascular.cost)){
                     global.race['vascular'].count++;
                     $('#'+actions.evolution.vascular.id).remove();
                     $('#pop'+actions.evolution.vascular.id).remove();
@@ -450,8 +413,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.homoiohydric.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.homoiohydric.cost['DNA']();
+                if (payCosts(actions.evolution.homoiohydric.cost)){
                     global.race['homoiohydric'].count++;
                     $('#'+actions.evolution.homoiohydric.id).remove();
                     $('#pop'+actions.evolution.homoiohydric.id).remove();
@@ -469,8 +431,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.athropods.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.athropods.cost['DNA']();
+                if (payCosts(actions.evolution.athropods.cost)){
                     global.race['athropods'].count++;
                     $('#'+actions.evolution.athropods.id).remove();
                     $('#pop'+actions.evolution.athropods.id).remove();
@@ -488,8 +449,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.mammals.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.mammals.cost['DNA']();
+                if (payCosts(actions.evolution.mammals.cost)){
                     global.race['mammals'].count++;
                     $('#'+actions.evolution.mammals.id).remove();
                     $('#pop'+actions.evolution.mammals.id).remove();
@@ -507,8 +467,7 @@ const actions = {
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
-                if (checkCosts(actions.evolution.eggshell.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.eggshell.cost['DNA']();
+                if (payCosts(actions.evolution.eggshell.cost)){
                     global.race['eggshell'].count++;
                     $('#'+actions.evolution.eggshell.id).remove();
                     $('#pop'+actions.evolution.eggshell.id).remove();
@@ -526,8 +485,7 @@ const actions = {
             },
             effect: 'Evolve into a species which has achieved sentience',
             action: function (){
-                if (checkCosts(actions.evolution.sentience.cost)){
-                    global['resource']['DNA'].amount -= actions.evolution.sentience.cost['DNA']();
+                if (payCosts(actions.evolution.sentience.cost)){
                     global.race['sentience'].count++;
                     $('#'+actions.evolution.sentience.id).remove();
                     $('#pop'+actions.evolution.sentience.id).remove();
@@ -647,9 +605,9 @@ const actions = {
                         global.race[trait] = genus_traits[races[global.race.species].type][trait];
                     });
                     
-                    main_tabs.data.civTabs = 1;
-                    main_tabs.data.showEvolve = false;
-                    main_tabs.data.showCity = true;
+                    global.main_tabs.data.civTabs = 1;
+                    global.main_tabs.data.showEvolve = false;
+                    global.main_tabs.data.showCity = true;
                 }
             }
         }
@@ -658,7 +616,7 @@ const actions = {
         food: {
             id: 'city-food',
             title: 'Gather Food',
-            desc: 'Harvest and preserve food from the land.',
+            desc: 'Harvest and preserve food.',
             action: function (){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     global['resource']['Food'].amount++;
@@ -678,17 +636,57 @@ const actions = {
         stone: {
             id: 'city-stone',
             title: 'Gather Stone',
-            desc: 'Harvest lumber from the forest',
+            desc: 'Gather stone from a query',
             action: function (){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     global['resource']['Stone'].amount++;
+                }
+            }
+        },
+        basic_housing: {
+            id: 'city-house',
+            title: function (){
+                var label = 'Cabin';
+                if (global.city['basic_housing'] && global.city['basic_housing'].count > 0){
+                    label += ' ('+global.city.basic_housing.count+')';
+                }
+                return label;
+            },
+            desc: 'Construct ',
+            cost: { 
+                Stone: function(){ return costMultiplier(global.city['basic_housing'].count, 10, 1.35); },
+                Lumber: function(){ return costMultiplier(global.city['basic_housing'].count, 10, 1.35); } 
+            },
+            effect: 'Increases RNA capacity by 5',
+            action: function (){
+                if (payCosts(actions.city.basic_housing.cost)){
+                    global['resource'][races[global.race.species].name].max += 1;
+                    global.city['basic_housing'].count++;
+                    updateTitle('city','basic_housing');
                 }
             }
         }
     }
 };
 
-function checkCosts(costs) {
+function updateTitle(category,action){
+    var id = actions[category][action].id;
+    $('#pop'+id).empty();
+    actionDesc($('#pop'+id),category,action);
+    $('#'+id).html(actions[category][action].title());
+}
+
+function payCosts(costs){
+    if (checkCosts(costs)){
+        Object.keys(costs).forEach(function (res) {
+            global['resource'][res].amount -= costs[res]();
+        });
+        return true;
+    }
+    return false;
+}
+
+function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res) {
         var testCost = Number(costs[res]()) || 0;
@@ -698,4 +696,8 @@ function checkCosts(costs) {
         }
     });
     return test;
+}
+
+function costMultiplier(count,base,mutiplier){
+    return Math.round((count * mutiplier + 1) * base);
 }

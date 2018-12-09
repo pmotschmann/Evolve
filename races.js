@@ -121,7 +121,7 @@ const races = {
     },
     scorpid: {
         name: 'Scorpid',
-        desc: 'Scorpid are a bipedal species with large claws hands and barbed tails. They are tough figters naturally equiped for close combat.',
+        desc: 'Scorpid are a bipedal species with large claw hands and barbed tails. They are tough figters naturally equiped for close combat.',
         type: 'insectoid'
     },
     antid: {

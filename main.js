@@ -140,6 +140,11 @@ function mainLoop() {
             // Rest of game
         }
         
+        Object.keys(global.resource).forEach(function (res) {
+            global['resource'][res].diff = Math.round(global['resource'][res].amount - global['resource'][res].last);
+            global['resource'][res].last = global['resource'][res].amount;
+        });
+        
         // Save game state
         save.setItem('evolved',JSON.stringify(global));
     }, 1000);
@@ -173,7 +178,8 @@ function addAction(action,type){
 }
 
 function actionDesc(parent,action,type){
-    parent.append($('<div>'+actions[action][type].desc+'</div>'));
+    var desc = typeof actions[action][type].desc === 'string' ? actions[action][type].desc : actions[action][type].desc();
+    parent.append($('<div>'+desc+'</div>'));
     if (actions[action][type].cost){ 
         var cost = $('<div></div>');
         Object.keys(actions[action][type].cost).forEach(function (res) {
@@ -182,7 +188,8 @@ function actionDesc(parent,action,type){
         parent.append(cost);
     }
     if (actions[action][type].effect){ 
-        parent.append($('<div>'+actions[action][type].effect+'</div>')); 
+        var effect = typeof actions[action][type].effect === 'string' ? actions[action][type].effect : actions[action][type].effect();
+        parent.append($('<div>'+effect+'</div>')); 
     }
 }
 

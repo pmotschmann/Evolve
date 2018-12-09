@@ -10,9 +10,11 @@ var global = {
             showCity: false,
             showResearch: false
         }
+    },
+    stats: {
+        start: Date.now()
     }
 };
-
 var vues = {};
 
 Math.rand = function(min, max) {
