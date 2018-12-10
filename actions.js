@@ -24,13 +24,7 @@ const actions = {
         },
         membrane: {
             id: 'evo-membrane',
-            title: function (){ 
-                var label = 'Membrane';
-                if (global.race['membrane'] && global.race['membrane'].count > 0){
-                    label += ' ('+global.race.membrane.count+')';
-                }
-                return label;
-            },
+            title: function (){ return setTitle('Membrane','race','membrane'); },
             desc: 'Evolve Membranes',
             cost: { RNA: function(){ return (global.race['membrane'].count * 2) + 2; } },
             effect: 'Increases RNA capacity by 5',
@@ -38,19 +32,13 @@ const actions = {
                 if (payCosts(actions.evolution.membrane.cost)){
                     global['resource']['RNA'].max += 5;
                     global.race['membrane'].count++;
-                    updateTitle('evolution','membrane');
+                    updateDesc('evolution','membrane');
                 }
             }
         },
         organelles: {
             id: 'evo-organelles',
-            title: function (){ 
-                var label = 'Organelles';
-                if (global.race['organelles'] && global.race['organelles'].count > 0){
-                    label += ' ('+global.race.organelles.count+')';
-                }
-                return label;
-            },
+            title: function (){ return setTitle('Organelles','race','organelles'); },
             desc: 'Evolve Organelles',
             cost: { 
                 RNA: function(){ return (global.race['organelles'].count * 8) + 12; },
@@ -60,19 +48,13 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.organelles.cost)){
                     global.race['organelles'].count++;
-                    updateTitle('evolution','organelles');
+                    updateDesc('evolution','organelles');
                 }
             }
         },
         nucleus: {
             id: 'evo-nucleus',
-            title: function (){ 
-                var label = 'Nucleus';
-                if (global.race['nucleus'] && global.race['nucleus'].count > 0){
-                    label += ' ('+global.race.nucleus.count+')';
-                }
-                return label;
-            },
+            title: function (){ return setTitle('Nucleus','race','nucleus'); },
             desc: 'Evolve Nucleus',
             cost: { 
                 RNA: function(){ return (global.race['nucleus'].count * 45) + 75; },
@@ -82,19 +64,13 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.nucleus.cost)){
                     global.race['nucleus'].count++;
-                    updateTitle('evolution','nucleus');
+                    updateDesc('evolution','nucleus');
                 }
             }
         },
         eukaryotic_cell: {
             id: 'evo-eukaryotic_cell',
-            title: function (){ 
-                var label = 'Eukaryotic Cell';
-                if (global.race['eukaryotic_cell'] && global.race['eukaryotic_cell'].count > 0){
-                    label += ' ('+global.race.eukaryotic_cell.count+')';
-                }
-                return label;
-            },
+            title: function (){ return setTitle('Eukaryotic Cell','race','eukaryotic_cell'); },
             desc: 'Evolve Eukaryotic Cell',
             cost: { 
                 RNA: function(){ return (global.race['eukaryotic_cell'].count * 20) + 20; },
@@ -105,19 +81,13 @@ const actions = {
                 if (payCosts(actions.evolution.eukaryotic_cell.cost)){
                     global.race['eukaryotic_cell'].count++;
                     global['resource']['DNA'].max += 10;
-                    updateTitle('evolution','eukaryotic_cell');
+                    updateDesc('evolution','eukaryotic_cell');
                 }
             }
         },
         mitochondria: {
             id: 'evo-mitochondria',
-            title: function (){ 
-                var label = 'Mitochondria';
-                if (global.race['mitochondria'] && global.race['mitochondria'].count > 0){
-                    label += ' ('+global.race.mitochondria.count+')';
-                }
-                return label;
-            },
+            title: function (){ return setTitle('Mitochondria','race','mitochondria'); },
             desc: 'Evolve Mitochondria',
             cost: { 
                 RNA: function(){ return (global.race['mitochondria'].count * 50) + 150; },
@@ -129,7 +99,7 @@ const actions = {
                     global.race['mitochondria'].count++;
                     global['resource']['DNA'].max += 25;
                     global['resource']['RNA'].max += 50;
-                    updateTitle('evolution','mitochondria');
+                    updateDesc('evolution','mitochondria');
                 }
             }
         },
@@ -144,8 +114,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.sexual_reproduction.cost)){
                     global.race['sexual_reproduction'].count++;
-                    $('#'+actions.evolution.sexual_reproduction.id).remove();
-                    $('#pop'+actions.evolution.sexual_reproduction.id).remove();
+                    removeAction(actions.evolution.sexual_reproduction.id);
                     
                     var path = Math.floor(Math.seededRandom(0,100));
                     if (path < 84){
@@ -174,8 +143,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.phagocytosis.cost)){
                     global.race['phagocytosis'].count++;
-                    $('#'+actions.evolution.phagocytosis.id).remove();
-                    $('#pop'+actions.evolution.phagocytosis.id).remove();
+                    removeAction(actions.evolution.phagocytosis.id);
                     global.race['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
@@ -192,8 +160,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.chloroplasts.cost)){
                     global.race['chloroplasts'].count++;
-                    $('#'+actions.evolution.chloroplasts.id).remove();
-                    $('#pop'+actions.evolution.chloroplasts.id).remove();
+                    removeAction(actions.evolution.chloroplasts.id);
                     global.race['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
@@ -206,14 +173,11 @@ const actions = {
             cost: { 
                 DNA: function(){ return 250; },
             },
-            effect: 'Unlocks the next step in evolution. Max RNA & DNA + 25',
+            effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.chitin.cost)){
                     global.race['chitin'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 25;
-                    $('#'+actions.evolution.chitin.id).remove();
-                    $('#pop'+actions.evolution.chitin.id).remove();
+                    removeAction(actions.evolution.chitin.id);
                     global.race['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
@@ -230,8 +194,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.multicellular.cost)){
                     global.race['multicellular'].count++;
-                    $('#'+actions.evolution.multicellular.id).remove();
-                    $('#pop'+actions.evolution.multicellular.id).remove();
+                    removeAction(actions.evolution.multicellular.id);
                     
                     if (global.race['phagocytosis']){
                         global.race['bilateral_symmetry'] = { count: 0 };
@@ -259,8 +222,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.spores.cost)){
                     global.race['spores'].count++;
-                    $('#'+actions.evolution.spores.id).remove();
-                    $('#pop'+actions.evolution.spores.id).remove();
+                    removeAction(actions.evolution.spores.id);
                     global.race['bryophyte'] = { count: 0 };
                     addAction('evolution','bryophyte');
                 }
@@ -277,8 +239,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.poikilohydric.cost)){
                     global.race['poikilohydric'].count++;
-                    $('#'+actions.evolution.poikilohydric.id).remove();
-                    $('#pop'+actions.evolution.poikilohydric.id).remove();
+                    removeAction(actions.evolution.poikilohydric.id);
                     global.race['bryophyte'] = { count: 0 };
                     addAction('evolution','bryophyte');
                 }
@@ -295,8 +256,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.bilateral_symmetry.cost)){
                     global.race['bilateral_symmetry'].count++;
-                    $('#'+actions.evolution.bilateral_symmetry.id).remove();
-                    $('#pop'+actions.evolution.bilateral_symmetry.id).remove();
+                    removeAction(actions.evolution.bilateral_symmetry.id);
                     
                     var path = Math.floor(Math.seededRandom(0,100));
                     if (path < 14){
@@ -321,8 +281,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.bryophyte.cost)){
                     global.race['bryophyte'].count++;
-                    $('#'+actions.evolution.bryophyte.id).remove();
-                    $('#pop'+actions.evolution.bryophyte.id).remove();
+                    removeAction(actions.evolution.bryophyte.id);
                     
                     if (global.race['spores']){
                         global.race['vascular'] = { count: 0 };
@@ -353,8 +312,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.protostomes.cost)){
                     global.race['protostomes'].count++;
-                    $('#'+actions.evolution.protostomes.id).remove();
-                    $('#pop'+actions.evolution.protostomes.id).remove();
+                    removeAction(actions.evolution.protostomes.id);
                     global.race['athropods'] = { count: 0 };
                     addAction('evolution','athropods');
                 }
@@ -371,8 +329,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.deuterostome.cost)){
                     global.race['deuterostome'].count++;
-                    $('#'+actions.evolution.deuterostome.id).remove();
-                    $('#pop'+actions.evolution.deuterostome.id).remove();
+                    removeAction(actions.evolution.deuterostome.id);
                     
                     var path = Math.floor(Math.seededRandom(0,100));
                     if (path < 67){
@@ -397,8 +354,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.vascular.cost)){
                     global.race['vascular'].count++;
-                    $('#'+actions.evolution.vascular.id).remove();
-                    $('#pop'+actions.evolution.vascular.id).remove();
+                    removeAction(actions.evolution.vascular.id);
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
@@ -415,8 +371,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.homoiohydric.cost)){
                     global.race['homoiohydric'].count++;
-                    $('#'+actions.evolution.homoiohydric.id).remove();
-                    $('#pop'+actions.evolution.homoiohydric.id).remove();
+                    removeAction(actions.evolution.homoiohydric.id);
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
@@ -433,8 +388,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.athropods.cost)){
                     global.race['athropods'].count++;
-                    $('#'+actions.evolution.athropods.id).remove();
-                    $('#pop'+actions.evolution.athropods.id).remove();
+                    removeAction(actions.evolution.athropods.id);
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
@@ -451,8 +405,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.mammals.cost)){
                     global.race['mammals'].count++;
-                    $('#'+actions.evolution.mammals.id).remove();
-                    $('#pop'+actions.evolution.mammals.id).remove();
+                    removeAction(actions.evolution.mammals.id);
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
@@ -469,8 +422,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.eggshell.cost)){
                     global.race['eggshell'].count++;
-                    $('#'+actions.evolution.eggshell.id).remove();
-                    $('#pop'+actions.evolution.eggshell.id).remove();
+                    removeAction(actions.evolution.eggshell.id);
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
@@ -487,8 +439,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.sentience.cost)){
                     global.race['sentience'].count++;
-                    $('#'+actions.evolution.sentience.id).remove();
-                    $('#pop'+actions.evolution.sentience.id).remove();
+                    removeAction(actions.evolution.sentience.id);
                     
                     // Trigger Next Phase of game
                     var path = Math.floor(Math.seededRandom(0,100));
@@ -608,6 +559,8 @@ const actions = {
                     global.main_tabs.data.civTabs = 1;
                     global.main_tabs.data.showEvolve = false;
                     global.main_tabs.data.showCity = true;
+                    global.tech['agriculture'] = 1;
+                    global.tech['housing'] = 1;
                 }
             }
         }
@@ -645,31 +598,219 @@ const actions = {
         },
         basic_housing: {
             id: 'city-house',
-            title: function (){
-                var label = 'Cabin';
-                if (global.city['basic_housing'] && global.city['basic_housing'].count > 0){
-                    label += ' ('+global.city.basic_housing.count+')';
-                }
-                return label;
-            },
-            desc: 'Construct ',
+            title: function (){ return setTitle('Cabin','city','basic_housing'); },
+            desc: 'Construct a cabin',
             cost: { 
-                Stone: function(){ return costMultiplier(global.city['basic_housing'].count, 10, 1.35); },
-                Lumber: function(){ return costMultiplier(global.city['basic_housing'].count, 10, 1.35); } 
+                Money: function(){ if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ return costMultiplier('basic_housing', 25, 1.15);} else { return 0; } },
+                Stone: function(){ return costMultiplier('basic_housing', 8, 1.35); },
+                Lumber: function(){ return costMultiplier('basic_housing', 12, 1.35); } 
             },
-            effect: 'Increases RNA capacity by 5',
+            effect: 'Constructs housing for one citizen',
             action: function (){
                 if (payCosts(actions.city.basic_housing.cost)){
+                    global['resource'][races[global.race.species].name].display = true;
                     global['resource'][races[global.race.species].name].max += 1;
                     global.city['basic_housing'].count++;
-                    updateTitle('city','basic_housing');
+                    updateDesc('city','basic_housing');
+                }
+            }
+        },
+        farm: {
+            id: 'city-farm',
+            title: function (){ return setTitle('Farm','city','farm'); },
+            desc: 'Build a farm',
+            cost: { 
+                Money: function(){ if (global.city['farm'] && global.city['farm'].count >= 2){ return costMultiplier('farm', 50, 1.15);} else { return 0; } },
+                Stone: function(){ return costMultiplier('farm', 10, 1.35); },
+                Lumber: function(){ return costMultiplier('farm', 20, 1.35); } 
+            },
+            effect: 'Generates food for citizens',
+            action: function (){
+                if (payCosts(actions.city.farm.cost)){
+                    global.city['farm'].count++;
+                    updateDesc('city','farm');
+                }
+            }
+        },
+        mill: {
+            id: 'city-mill',
+            title: function (){ return setTitle('Mill','city','mill'); },
+            desc: 'Build a Mill',
+            cost: { 
+                Money: function(){ return costMultiplier('mill', 50, 1.2); },
+                Stone: function(){ return costMultiplier('mill', 50, 1.35); },
+                Lumber: function(){ return costMultiplier('mill', 75, 1.35); } 
+            },
+            effect: 'Increases efficency of farms by 10%',
+            action: function (){
+                if (payCosts(actions.city.mill.cost)){
+                    global.city['mill'].count++;
+                    updateDesc('city','mill');
+                }
+            }
+        },
+        rock_quarry: {
+            id: 'city-rock_quarry',
+            title: function (){ return setTitle('Rock Quarry','city','rock_quarry'); },
+            desc: 'Build a Stone Quarry',
+            cost: { 
+                Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); },
+                Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); } 
+            },
+            effect: 'Increases production of stone',
+            action: function (){
+                if (payCosts(actions.city.rock_quarry.cost)){
+                    global.city['rock_quarry'].count++;
+                    updateDesc('city','rock_quarry');
+                }
+            }
+        },
+        temple: {
+            id: 'city-temple',
+            title: function (){ return setTitle('Temple','city','temple'); },
+            desc: 'Build a Temple',
+            cost: { 
+                Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); },
+                Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); } 
+            },
+            effect: 'Increases production of stone',
+            action: function (){
+                if (payCosts(actions.city.rock_quarry.cost)){
+                    global.city['rock_quarry'].count++;
+                    updateDesc('city','rock_quarry');
+                }
+            }
+        },
+        bank: {
+            id: 'city-bank',
+            title: function (){ return setTitle('Temple','city','temple'); },
+            desc: 'Build a Bank',
+            cost: { 
+                Money: function(){ return costMultiplier('bank', 250, 1.5); },
+                Stone: function(){ return costMultiplier('bank', 100, 1.45); },
+                Lumber: function(){ return costMultiplier('bank', 75, 1.30); } 
+            },
+            effect: 'Increases money capacity by $1000',
+            action: function (){
+                if (payCosts(actions.city.rock_quarry.cost)){
+                    global['resource']['Money'].max += 1000;
+                    global.city['rock_quarry'].count++;
+                    updateDesc('city','bank');
+                }
+            }
+        }
+    },
+    tech: {
+        currency: {
+            id: 'tech-currency',
+            title: 'Currency',
+            desc: 'Invent the concept of currency',
+            cost: { 
+                Lumber: function(){ return 25; } 
+            },
+            effect: 'Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.',
+            action: function (){
+                if (payCosts(actions.tech.currency.cost)){
+                    global.tech['currency'] = 1;
+                    global.resource.Money.display = true;
+                    removeAction(actions.tech.currency.id);
+                    addAction('tech','banking');
+                }
+            }
+        },
+        banking: {
+            id: 'tech-banking',
+            title: 'Banking',
+            desc: 'Invent Banking',
+            cost: { 
+                Money: function(){ return 500; } 
+            },
+            effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money',
+            action: function (){
+                if (payCosts(actions.tech.banking.cost)){
+                    global.tech['currency'] = 2;
+                    global.resource.Money.display = true;
+                    removeAction(actions.tech.banking.id);
+                }
+            }
+        },
+        science: {
+            id: 'tech-science',
+            title: 'Scientific Method',
+            desc: 'Begin a journey of testing and discovery',
+            cost: { 
+                Money: function(){ return 100; }
+            },
+            effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
+            action: function (){
+                if (payCosts(actions.tech.science.cost)){
+                    global.tech['science'] = 1;
+                    removeAction(actions.tech.science.id);
                 }
             }
         }
     }
 };
 
-function updateTitle(category,action){
+function addAction(action,type){
+    var id = actions[action][type].id;
+    var element = $('<a id="'+id+'" class="button is-dark" v-on:click="action">{{ title }}</a>');
+    $('#'+action).append(element);
+    vues[id] = new Vue({
+        data: {
+            title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title()
+        },
+        methods: {
+            action: function(){ actions[action][type].action() }
+        },
+    });
+    vues[id].$mount('#'+id);
+    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark"></div>');
+    popper.hide();
+    actionDesc(popper,action,type);
+    $('#main').append(popper);
+    $('#'+id).on('mouseover',function(){
+            popper.show();
+            new Popper($('#'+id),popper);
+        });
+    $('#'+id).on('mouseout',function(){
+            popper.hide();
+        });
+}
+
+function actionDesc(parent,action,type){
+    var desc = typeof actions[action][type].desc === 'string' ? actions[action][type].desc : actions[action][type].desc();
+    parent.append($('<div>'+desc+'</div>'));
+    if (actions[action][type].cost){ 
+        var cost = $('<div></div>');
+        Object.keys(actions[action][type].cost).forEach(function (res) {
+            if (actions[action][type].cost[res]() > 0){
+                var label = res === 'Money' ? '$' : res;
+                cost.append($('<div>'+label+': '+actions[action][type].cost[res]()+'</div>'));
+            }
+        });
+        parent.append(cost);
+    }
+    if (actions[action][type].effect){ 
+        var effect = typeof actions[action][type].effect === 'string' ? actions[action][type].effect : actions[action][type].effect();
+        parent.append($('<div>'+effect+'</div>')); 
+    }
+}
+
+function removeAction(id){
+    $('#'+id).remove();
+    $('#pop'+id).remove();
+}
+
+function setTitle(title,category,action){
+    var label = title;
+    if (global[category][action] && global[category][action].count > 0){
+        title += ' ('+global[category][action].count+')';
+    }
+    return title;
+}
+
+function updateDesc(category,action){
     var id = actions[category][action].id;
     $('#pop'+id).empty();
     actionDesc($('#pop'+id),category,action);
@@ -698,6 +839,7 @@ function checkCosts(costs){
     return test;
 }
 
-function costMultiplier(count,base,mutiplier){
+function costMultiplier(structure,base,mutiplier){
+    var count = global.city[structure] ? global.city[structure].count : 0;
     return Math.round((count * mutiplier + 1) * base);
 }

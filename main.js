@@ -72,7 +72,7 @@ $(function() {
         }
     }
     else {
-        var city_actions = ['food','lumber','stone'];
+        var city_actions = ['food','lumber','stone','farm','mill','basic_housing','rock_quarry'];
         for (var i = 0; i < city_actions.length; i++) {
             if (global.city[city_actions[i]]){
                 addAction('city',city_actions[i]);
@@ -90,6 +90,8 @@ function mainLoop() {
         
         if (global.race.species === 'protoplasm'){
             // Early Evolution Game
+            
+            // Gain RNA & DNA
             if (global.race['nucleus'] && global['resource']['DNA'].amount < global['resource']['DNA'].max){
                 var increment = global.race['nucleus'].count;
                 while (global['resource']['RNA'].amount < increment * 2){
@@ -106,38 +108,61 @@ function mainLoop() {
                 if (count > global['resource']['RNA'].max){ count = global['resource']['RNA'].max; }
                 global['resource']['RNA'].amount = count;
             }
+            // Detect new unlocks
             if (global['resource']['RNA'].amount >= 2 && !global.race['dna']){
                 global.race['dna'] = 1;
                 addAction('evolution','dna');
                 global.resource.DNA.display = true;
             }
-            if (global['resource']['RNA'].amount >= 10 && !global.race['membrane']){
+            else if (global['resource']['RNA'].amount >= 10 && !global.race['membrane']){
                 global.race['membrane'] = { count: 0 };
                 addAction('evolution','membrane');
             }
-            if (global['resource']['DNA'].amount >= 4 && !global.race['organelles']){
+            else if (global['resource']['DNA'].amount >= 4 && !global.race['organelles']){
                 global.race['organelles'] = { count: 0 };
                 addAction('evolution','organelles');
             }
-            if (global.race['organelles'] && global.race['organelles'].count >= 2 && !global.race['nucleus']){
+            else if (global.race['organelles'] && global.race['organelles'].count >= 2 && !global.race['nucleus']){
                 global.race['nucleus'] = { count: 0 };
                 addAction('evolution','nucleus');
             }
-            if (global.race['nucleus'] && global.race['nucleus'].count >= 1 && !global.race['eukaryotic_cell']){
+            else if (global.race['nucleus'] && global.race['nucleus'].count >= 1 && !global.race['eukaryotic_cell']){
                 global.race['eukaryotic_cell'] = { count: 0 };
                 addAction('evolution','eukaryotic_cell');
             }
-            if (global.race['eukaryotic_cell'] && global.race['eukaryotic_cell'].count >= 1 && !global.race['mitochondria']){
+            else if (global.race['eukaryotic_cell'] && global.race['eukaryotic_cell'].count >= 1 && !global.race['mitochondria']){
                 global.race['mitochondria'] = { count: 0 };
                 addAction('evolution','mitochondria');
             }
-            if (global.race['mitochondria'] && global.race['mitochondria'].count >= 1 && !global.race['sexual_reproduction']){
+            else if (global.race['mitochondria'] && global.race['mitochondria'].count >= 1 && !global.race['sexual_reproduction']){
                 global.race['sexual_reproduction'] = { count: 0 };
                 addAction('evolution','sexual_reproduction');
             }
         }
         else {
             // Rest of game
+            
+            // Citizen Growth
+            if (global['resource']['Food'].amount > 10 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
+                if(Math.rand(0,2 * global['resource'][races[global.race.species].name].amount) == 0){
+                    global['resource'][races[global.race.species].name].amount++;
+                }
+            }
+            // Detect new unlocks
+            if (global.tech['agriculture'] >= 1 && !global.city['farm'] && checkCosts(actions.city.farm.cost)){
+                global.city['farm'] = { count: 0 };
+                addAction('city','farm');
+            }
+            else if (global.tech['housing'] >= 1 && !global.city['basic_housing'] && checkCosts(actions.city.basic_housing.cost)){
+                global.city['basic_housing'] = { count: 0 };
+                addAction('city','basic_housing');
+            }
+            else if (!global.main_tabs.data.showResearch && global['resource'][races[global.race.species].name].amount > 0){
+                global.main_tabs.data.showResearch = true;
+                global.main_tabs.data.showCivic = true;
+                addAction('tech','science');
+                addAction('tech','currency');
+            }
         }
         
         Object.keys(global.resource).forEach(function (res) {
@@ -150,51 +175,15 @@ function mainLoop() {
     }, 1000);
 }
 
-function addAction(action,type){
-    
-    var id = actions[action][type].id;
-    var element = $('<a id="'+id+'" class="button is-dark" v-on:click="action">{{ title }}</a>');
-    $('#'+action).append(element);
-    vues[id] = new Vue({
-        data: {
-            title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title()
-        },
-        methods: {
-            action: function(){ actions[action][type].action() }
-        },
-    });
-    vues[id].$mount('#'+id);
-    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark"></div>');
-    popper.hide();
-    actionDesc(popper,action,type);
-    $('#main').append(popper);
-    $('#'+id).on('mouseover',function(){
-            popper.show();
-            new Popper($('#'+id),popper);
-        });
-    $('#'+id).on('mouseout',function(){
-            popper.hide();
-        });
-}
-
-function actionDesc(parent,action,type){
-    var desc = typeof actions[action][type].desc === 'string' ? actions[action][type].desc : actions[action][type].desc();
-    parent.append($('<div>'+desc+'</div>'));
-    if (actions[action][type].cost){ 
-        var cost = $('<div></div>');
-        Object.keys(actions[action][type].cost).forEach(function (res) {
-            cost.append($('<div>'+res+': '+actions[action][type].cost[res]()+'</div>'));
-        });
-        parent.append(cost);
-    }
-    if (actions[action][type].effect){ 
-        var effect = typeof actions[action][type].effect === 'string' ? actions[action][type].effect : actions[action][type].effect();
-        parent.append($('<div>'+effect+'</div>')); 
-    }
-}
-
 function newGame(){
-    global['race'] = { species : 'protoplasm' };
+    global['race'] = { species : 'protoplasm', gods: 'none' };
     Math.seed = Math.rand(0,1000);
     global.seed = Math.seed;
+}
+
+function cheat(){
+    global.resource.DNA.max = 10000;
+    global.resource.RNA.max = 10000;
+    global.resource.DNA.amount = 10000;
+    global.resource.RNA.amount = 10000;
 }

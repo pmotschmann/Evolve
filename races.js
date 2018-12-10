@@ -7,17 +7,17 @@ const races = {
     human: {
         name: 'Human',
         desc: "Humans are versatile creatures who are adept at bending the enviroment around them to suit their needs. They are a ambitious race who seek to expand their knowledge of the universe around them and build great empires.",
-        type: 'humaniod'
+        type: 'humanoid'
     },
     elven: {
         name: 'Elf',
         desc: 'Elves are typically tall and slender creatures with pointy ears, they tend to be reclusive but sharp of wit. Elves live long lives and often devote themsevles to study seeking answers to the deep fundamental questsion of the universe.',
-        type: 'humaniod'
+        type: 'humanoid'
     },
     orc: {
         name: 'Orc',
         desc: "Orcs tend to be large and muscular creatures who are slow of wit but contain immense brute stength. They typically try to solve problems with violance first, then seek a more rational solution only when that doesn't work.",
-        type: 'humaniod'
+        type: 'humanoid'
     },
     cath: {
         name: 'Cath',

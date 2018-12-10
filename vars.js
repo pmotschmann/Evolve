@@ -3,12 +3,14 @@ var intervals = {};
 var global = {
     seed: 1,
     resource: {},
+    tech: {},
     main_tabs: {
         data: {
             civTabs: 0,
             showEvolve: true,
             showCity: false,
-            showResearch: false
+            showResearch: false,
+            showCivic: false
         }
     },
     stats: {
