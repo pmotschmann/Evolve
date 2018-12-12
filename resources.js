@@ -7,10 +7,15 @@ function defineResources() {
     else {
         loadResource('Money',1000,1,'success');
         loadResource(races[global.race.species].name,0,0);
+        loadResource('Knowledge',100,0);
         loadResource('Food',250,1);
         loadResource('Lumber',250,1);
         loadResource('Stone',250,1);
     }
+}
+// Sets up jobs in civics tab
+function defineJobs(){
+    loadJob('farmer');
 }
 
 // Load resource function
@@ -43,4 +48,15 @@ function loadResource(name,max,value,color) {
         data: global['resource'][name]
     });
     vues['res_'+name].$mount('#res-' + name);
+}
+
+function loadJob(job){
+    if (!global['civic'][job]){
+        global['civic'][job] = {
+            job: job,
+            display: false,
+            workers: 0,
+            max: 0
+        };
+    }
 }

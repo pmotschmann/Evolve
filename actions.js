@@ -539,6 +539,7 @@ const actions = {
                     }
                     
                     defineResources();
+                    global.resource.Knowledge.display = true;
                     global.resource.Food.display = true;
                     global.resource.Lumber.display = true;
                     global.resource.Stone.display = true;
@@ -555,12 +556,20 @@ const actions = {
                     Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
                         global.race[trait] = genus_traits[races[global.race.species].type][trait];
                     });
+                    Object.keys(races[global.race.species].traits).forEach(function (trait) {
+                        global.race[trait] = races[global.race.species].traits[trait];
+                    });
                     
                     global.main_tabs.data.civTabs = 1;
                     global.main_tabs.data.showEvolve = false;
                     global.main_tabs.data.showCity = true;
                     global.tech['agriculture'] = 1;
                     global.tech['housing'] = 1;
+                    
+                    if (global.race['slow'] || global.race['hyper']){
+                        save.setItem('evolved',JSON.stringify(global));
+                        window.location.reload();
+                    }
                 }
             }
         }
@@ -572,7 +581,7 @@ const actions = {
             desc: 'Harvest and preserve food.',
             action: function (){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    global['resource']['Food'].amount++;
+                    global['resource']['Food'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
                 }
             }
         },
@@ -582,7 +591,7 @@ const actions = {
             desc: 'Harvest lumber from the forest',
             action: function (){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    global['resource']['Lumber'].amount++;
+                    global['resource']['Lumber'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
                 }
             }
         },
@@ -592,7 +601,7 @@ const actions = {
             desc: 'Gather stone from a query',
             action: function (){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    global['resource']['Stone'].amount++;
+                    global['resource']['Stone'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
                 }
             }
         },
@@ -620,11 +629,11 @@ const actions = {
             title: function (){ return setTitle('Farm','city','farm'); },
             desc: 'Build a farm',
             cost: { 
-                Money: function(){ if (global.city['farm'] && global.city['farm'].count >= 2){ return costMultiplier('farm', 50, 1.15);} else { return 0; } },
+                Money: function(){ if (global.city['farm'] && global.city['farm'].count >= 2){ return costMultiplier('farm', 50, 1.30);} else { return 0; } },
                 Stone: function(){ return costMultiplier('farm', 10, 1.35); },
                 Lumber: function(){ return costMultiplier('farm', 20, 1.35); } 
             },
-            effect: 'Generates food for citizens',
+            effect: 'Generates +1 food for citizens',
             action: function (){
                 if (payCosts(actions.city.farm.cost)){
                     global.city['farm'].count++;
@@ -641,7 +650,7 @@ const actions = {
                 Stone: function(){ return costMultiplier('mill', 50, 1.35); },
                 Lumber: function(){ return costMultiplier('mill', 75, 1.35); } 
             },
-            effect: 'Increases efficency of farms by 10%',
+            effect: 'Increases the efficency of farmers by 10%',
             action: function (){
                 if (payCosts(actions.city.mill.cost)){
                     global.city['mill'].count++;
@@ -694,7 +703,7 @@ const actions = {
             action: function (){
                 if (payCosts(actions.city.rock_quarry.cost)){
                     global['resource']['Money'].max += 1000;
-                    global.city['rock_quarry'].count++;
+                    global.city['bank'].count++;
                     updateDesc('city','bank');
                 }
             }
@@ -706,7 +715,8 @@ const actions = {
             title: 'Currency',
             desc: 'Invent the concept of currency',
             cost: { 
-                Lumber: function(){ return 25; } 
+                Knowledge: function(){ return 50; },
+                Lumber: function(){ return 10; } 
             },
             effect: 'Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.',
             action: function (){
@@ -714,7 +724,7 @@ const actions = {
                     global.tech['currency'] = 1;
                     global.resource.Money.display = true;
                     removeAction(actions.tech.currency.id);
-                    addAction('tech','banking');
+                    registerTech('banking');
                 }
             }
         },
@@ -723,14 +733,15 @@ const actions = {
             title: 'Banking',
             desc: 'Invent Banking',
             cost: { 
-                Money: function(){ return 500; } 
+                Money: function(){ return 500; },
+                Knowledge: function(){ return 100; }
             },
             effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money',
             action: function (){
                 if (payCosts(actions.tech.banking.cost)){
-                    global.tech['currency'] = 2;
-                    global.resource.Money.display = true;
+                    global.tech['banking'] = 1;
                     removeAction(actions.tech.banking.id);
+                    addAction('city','bank');
                 }
             }
         },
@@ -739,7 +750,8 @@ const actions = {
             title: 'Scientific Method',
             desc: 'Begin a journey of testing and discovery',
             cost: { 
-                Money: function(){ return 100; }
+                Money: function(){ return 100; },
+                Knowledge: function(){ return 100; }
             },
             effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
             action: function (){
@@ -785,8 +797,8 @@ function actionDesc(parent,action,type){
         var cost = $('<div></div>');
         Object.keys(actions[action][type].cost).forEach(function (res) {
             if (actions[action][type].cost[res]() > 0){
-                var label = res === 'Money' ? '$' : res;
-                cost.append($('<div>'+label+': '+actions[action][type].cost[res]()+'</div>'));
+                var label = res === 'Money' ? '$' : res+': ';
+                cost.append($('<div>'+label+actions[action][type].cost[res]()+'</div>'));
             }
         });
         parent.append(cost);
@@ -840,6 +852,7 @@ function checkCosts(costs){
 }
 
 function costMultiplier(structure,base,mutiplier){
+    if (global.race['small']){ mutiplier -= 0.01; }
     var count = global.city[structure] ? global.city[structure].count : 0;
-    return Math.round((count * mutiplier + 1) * base);
+    return Math.round((mutiplier ** count) * base);
 }

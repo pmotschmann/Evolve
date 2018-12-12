@@ -4,6 +4,7 @@ var global = {
     seed: 1,
     resource: {},
     tech: {},
+    civic: {},
     main_tabs: {
         data: {
             civTabs: 0,

@@ -16,6 +16,7 @@ $(function() {
     
     // Load Resources
     defineResources();
+    defineJobs();
     
     vues['race'] = new Vue({
         data: global.race,
@@ -78,6 +79,11 @@ $(function() {
                 addAction('city',city_actions[i]);
             }
         }
+        Object.keys(actions.tech).forEach(function (tech) {
+            if (global.tech[tech] && global.tech[tech] === 0){
+                addAction('tech',tech);
+            }
+        });
     }
     
     // Start game loop
@@ -86,6 +92,7 @@ $(function() {
 
 // Main game loop
 function mainLoop() {
+    var timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
     intervals['main'] = setInterval(function() {
         
         if (global.race.species === 'protoplasm'){
@@ -142,12 +149,45 @@ function mainLoop() {
         else {
             // Rest of game
             
+            // Consumption
+            var fed = true;
+            if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
+                var farms = 0;
+                if (global.city['farm']){
+                    farms = global.city['farm'].count;
+                }
+                var count = global.resource.Food.amount + farms - (global.resource[races[global.race.species].name].amount * (global.race['hungry'] ? 2 : 1));
+                if (count > global.resource.Food.max){ 
+                    count = global.resource.Food.max;
+                }
+                else if (count < 0){
+                    fed = false;
+                    count = 0;
+                }
+                global.resource.Food.amount = count;
+            }
+            
             // Citizen Growth
-            if (global['resource']['Food'].amount > 10 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
+            if (fed && global['resource']['Food'].amount > 10 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
                 if(Math.rand(0,2 * global['resource'][races[global.race.species].name].amount) == 0){
                     global['resource'][races[global.race.species].name].amount++;
                 }
             }
+            
+            // Income
+            if (fed && global.tech['currency'] >= 1){
+                var count = global.resource.Money.amount + global.resource[races[global.race.species].name].amount;
+                if (count > global.resource.Money.max){ count = global.resource.Money.max; }
+                global.resource.Money.amount = count;
+            }
+            
+            // Knowledge
+            if (fed){
+                var count = global.resource.Knowledge.amount + 1;
+                if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
+                global.resource.Knowledge.amount = count;
+            }
+            
             // Detect new unlocks
             if (global.tech['agriculture'] >= 1 && !global.city['farm'] && checkCosts(actions.city.farm.cost)){
                 global.city['farm'] = { count: 0 };
@@ -160,8 +200,8 @@ function mainLoop() {
             else if (!global.main_tabs.data.showResearch && global['resource'][races[global.race.species].name].amount > 0){
                 global.main_tabs.data.showResearch = true;
                 global.main_tabs.data.showCivic = true;
-                addAction('tech','science');
-                addAction('tech','currency');
+                registerTech('science');
+                registerTech('currency');
             }
         }
         
@@ -172,7 +212,12 @@ function mainLoop() {
         
         // Save game state
         save.setItem('evolved',JSON.stringify(global));
-    }, 1000);
+    }, timer);
+}
+
+function registerTech(tech){
+    global.tech[tech] = 0;
+    addAction('tech',tech);
 }
 
 function newGame(){
@@ -186,4 +231,11 @@ function cheat(){
     global.resource.RNA.max = 10000;
     global.resource.DNA.amount = 10000;
     global.resource.RNA.amount = 10000;
+}
+
+// executes a hard reset
+function reset(){
+    localStorage.removeItem('evolved');
+    global = null;
+    window.location.reload();
 }
