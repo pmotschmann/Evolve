@@ -75,6 +75,9 @@ $(function() {
     else {
         var city_actions = ['food','lumber','stone','farm','mill','basic_housing','rock_quarry'];
         for (var i = 0; i < city_actions.length; i++) {
+            if (global.race['tree_hugger'] && city_actions[i] === 'lumber'){
+                continue;
+            }
             if (global.city[city_actions[i]]){
                 addAction('city',city_actions[i]);
             }
@@ -156,7 +159,7 @@ function mainLoop() {
                 if (global.city['farm']){
                     farms = global.city['farm'].count;
                 }
-                var count = global.resource.Food.amount + farms - (global.resource[races[global.race.species].name].amount * (global.race['hungry'] ? 2 : 1));
+                var count = global.resource.Food.amount + farms - (global.resource[races[global.race.species].name].amount * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1));
                 if (count > global.resource.Food.max){ 
                     count = global.resource.Food.max;
                 }
@@ -176,7 +179,8 @@ function mainLoop() {
             
             // Income
             if (fed && global.tech['currency'] >= 1){
-                var count = global.resource.Money.amount + global.resource[races[global.race.species].name].amount;
+                var income = global.resource[races[global.race.species].name].amount * ( global.race['greedy'] ? 0.5 : 1 );
+                var count = global.resource.Money.amount + income;
                 if (count > global.resource.Money.max){ count = global.resource.Money.max; }
                 global.resource.Money.amount = count;
             }

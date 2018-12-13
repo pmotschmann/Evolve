@@ -104,7 +104,8 @@ const races = {
         desc: 'Trolls are large humanoid creatures who are knwon for their regenerative powers. They are a hardy race highly resistent to disease and injury.',
         type: 'giant',
         traits: {
-            regenerative: 1
+            regenerative: 1,
+            gluttony: 1
         } 
     },
     tortollan: {
@@ -112,7 +113,7 @@ const races = {
         desc: 'Tortollans are a reptillan species with shells on their backs, they are slow moving and good at hiding.',
         type: 'reptillian',
         traits: { 
-            slow: 1, // Long seconds
+            slow: 1,
             armored: 1
         }
     },
@@ -126,7 +127,7 @@ const races = {
     },
     sethrak: {
         name: 'Sethrak',
-        desc: 'Sethrak are a species who evolved from snakes. They have evoled to become bipedal creatures but otherwise maintain a strong resemblance to their snake ancestors.',
+        desc: 'Sethrak are a species who evolved from snakes. They have evolved to become bipedal creatures but otherwise maintain a strong resemblance to their snake ancestors.',
         type: 'reptillian',
         traits: {
             venomous: 1,
@@ -162,7 +163,8 @@ const races = {
         desc: 'Ents are basically sentient trees who can uproot themselvs and move around. They are large and slow moving, but fearsome and can get most of their nutrients from the sun.',
         type: 'plant',
         traits: {
-            
+            tree_hugger: 1,
+            pyrophobia: 1
         } 
     },
     cacti: {
@@ -170,7 +172,7 @@ const races = {
         desc: 'Cacti are small sentient plant creatures convered in spines. They are suprisingly fast moving, but easily startled.',
         type: 'plant',
         traits: {
-            hyper: 1, // Fast seconds
+            hyper: 1,
             skittish: 1
         }
     },
@@ -227,12 +229,12 @@ const genus_traits = {
         cautious: 1
     },
     small: {
-        small: 1, // Reduces cost crrep multipliers by 0.01
-        weak: 1 // 
+        small: 1,
+        weak: 1
     },
     giant: {
-        hungry: 1, // Eats double food
-        strong: 1 // Doubles manual resource gain
+        large: 1,
+        strong: 1
     },
     reptillian: {
         cold_blooded: 1,

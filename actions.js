@@ -117,6 +117,7 @@ const actions = {
                     removeAction(actions.evolution.sexual_reproduction.id);
                     
                     var path = Math.floor(Math.seededRandom(0,100));
+                    path = 90;
                     if (path < 84){
                         global.race['phagocytosis'] = { count: 0 };
                         addAction('evolution','phagocytosis');
@@ -538,27 +539,29 @@ const actions = {
                         }
                     }
                     
-                    defineResources();
-                    global.resource.Knowledge.display = true;
-                    global.resource.Food.display = true;
-                    global.resource.Lumber.display = true;
-                    global.resource.Stone.display = true;
-                    
-                    global['city'] = { food: 1, lumber: 1, stone: 1 };
-                    
-                    var city_actions = ['food','lumber','stone'];
-                    for (var i = 0; i < city_actions.length; i++) {
-                        if (global.city[city_actions[i]]){
-                            addAction('city',city_actions[i]);
-                        }
-                    }
-                    
                     Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
                         global.race[trait] = genus_traits[races[global.race.species].type][trait];
                     });
                     Object.keys(races[global.race.species].traits).forEach(function (trait) {
                         global.race[trait] = races[global.race.species].traits[trait];
                     });
+                    
+                    defineResources();
+                    global.resource.Knowledge.display = true;
+                    global.resource.Food.display = true;
+                    if (!global.race['tree_hugger']){
+                        global.resource.Lumber.display = true;
+                    }
+                    global.resource.Stone.display = true;
+                    
+                    global['city'] = { food: 1, lumber: 1, stone: 1 };
+                    
+                    var city_actions = global.race['tree_hugger'] ? ['food','stone'] : ['food','lumber','stone'];
+                    for (var i = 0; i < city_actions.length; i++) {
+                        if (global.city[city_actions[i]]){
+                            addAction('city',city_actions[i]);
+                        }
+                    }
                     
                     global.main_tabs.data.civTabs = 1;
                     global.main_tabs.data.showEvolve = false;
@@ -795,10 +798,11 @@ function actionDesc(parent,action,type){
     parent.append($('<div>'+desc+'</div>'));
     if (actions[action][type].cost){ 
         var cost = $('<div></div>');
-        Object.keys(actions[action][type].cost).forEach(function (res) {
-            if (actions[action][type].cost[res]() > 0){
+        costs = adjustCosts(actions[action][type].cost);
+        Object.keys(costs).forEach(function (res) {
+            if (costs[res]() > 0){
                 var label = res === 'Money' ? '$' : res+': ';
-                cost.append($('<div>'+label+actions[action][type].cost[res]()+'</div>'));
+                cost.append($('<div>'+label+costs[res]()+'</div>'));
             }
         });
         parent.append(cost);
@@ -829,7 +833,19 @@ function updateDesc(category,action){
     $('#'+id).html(actions[category][action].title());
 }
 
+function adjustCosts(costs){
+    if (global.race['tree_hugger'] && costs['Lumber']){
+        delete costs['Lumber'];
+        Object.keys(costs).forEach(function (res) {
+            var newcost = Math.round(costs[res]() * 1.2);
+            costs[res] = function(){ return newcost; }
+        });
+    }
+    return costs;
+}
+
 function payCosts(costs){
+    costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res) {
             global['resource'][res].amount -= costs[res]();
@@ -840,6 +856,7 @@ function payCosts(costs){
 }
 
 function checkCosts(costs){
+    costs = adjustCosts(costs);
     var test = true;
     Object.keys(costs).forEach(function (res) {
         var testCost = Number(costs[res]()) || 0;
@@ -853,6 +870,7 @@ function checkCosts(costs){
 
 function costMultiplier(structure,base,mutiplier){
     if (global.race['small']){ mutiplier -= 0.01; }
+    else if (global.race['large']){ mutiplier += 0.01; }
     var count = global.city[structure] ? global.city[structure].count : 0;
     return Math.round((mutiplier ** count) * base);
 }
