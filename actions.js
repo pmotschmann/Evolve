@@ -117,7 +117,6 @@ const actions = {
                     removeAction(actions.evolution.sexual_reproduction.id);
                     
                     var path = Math.floor(Math.seededRandom(0,100));
-                    path = 90;
                     if (path < 84){
                         global.race['phagocytosis'] = { count: 0 };
                         addAction('evolution','phagocytosis');
