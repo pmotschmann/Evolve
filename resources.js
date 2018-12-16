@@ -50,7 +50,8 @@ function loadResource(name,max,value,color) {
     vues['res_'+name].$mount('#res-' + name);
 }
 
-function loadJob(job){
+function loadJob(job, color){
+    color = color || 'info';
     if (!global['civic'][job]){
         global['civic'][job] = {
             job: job,
@@ -59,4 +60,30 @@ function loadJob(job){
             max: 0
         };
     }
+    
+    var civ_container = $('<div id="civ-' + job + '" class="job" v-show="display"><span class="has-text-' + color + '">{{ job }}</span><span class="count">{{ workers }} / {{ max }}</span></div>');
+    $('#civic').append(civ_container);
+    
+    var add = $('<span class="sub">-</span>');
+    var sub = $('<span class="add">+</span>');
+    
+    civ_container.append(add);
+    civ_container.append(sub);
+    
+    vues['civ_'+job] = new Vue({
+        data: global['civic'][job]
+    });
+    vues['civ_'+job].$mount('#civ-' + job);
+    
+    add.on('click', function(){
+        if (global['civic'][job].workers < global['civic'][job].max){
+            global['civic'][job].workers++;
+        }
+    });
+    
+    sub.on('click', function(){
+        if (global['civic'][job].workers > 0){
+            global['civic'][job].workers--;
+        }
+    });
 }

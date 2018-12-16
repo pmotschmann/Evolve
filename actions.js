@@ -581,6 +581,7 @@ const actions = {
             id: 'city-food',
             title: 'Gather Food',
             desc: 'Harvest and preserve food.',
+            reqs: {},
             action: function (){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     global['resource']['Food'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
@@ -591,6 +592,7 @@ const actions = {
             id: 'city-lumber',
             title: 'Gather Lumber',
             desc: 'Harvest lumber from the forest',
+            reqs: {},
             action: function (){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     global['resource']['Lumber'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
@@ -601,6 +603,7 @@ const actions = {
             id: 'city-stone',
             title: 'Gather Stone',
             desc: 'Gather stone from a query',
+            reqs: {},
             action: function (){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     global['resource']['Stone'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
@@ -611,6 +614,7 @@ const actions = {
             id: 'city-house',
             title: function (){ return setTitle('Cabin','city','basic_housing'); },
             desc: 'Construct a cabin',
+            reqs: {},
             cost: { 
                 Money: function(){ if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ return costMultiplier('basic_housing', 25, 1.15);} else { return 0; } },
                 Stone: function(){ return costMultiplier('basic_housing', 8, 1.35); },
@@ -630,6 +634,7 @@ const actions = {
             id: 'city-farm',
             title: function (){ return setTitle('Farm','city','farm'); },
             desc: 'Build a farm',
+            reqs: {},
             cost: { 
                 Money: function(){ if (global.city['farm'] && global.city['farm'].count >= 2){ return costMultiplier('farm', 50, 1.30);} else { return 0; } },
                 Stone: function(){ return costMultiplier('farm', 10, 1.35); },
@@ -640,6 +645,8 @@ const actions = {
                 if (payCosts(actions.city.farm.cost)){
                     global.city['farm'].count++;
                     updateDesc('city','farm');
+                    global.civic.farmer.display = true;
+                    global.civic.farmer.max++;
                 }
             }
         },
@@ -647,6 +654,7 @@ const actions = {
             id: 'city-mill',
             title: function (){ return setTitle('Mill','city','mill'); },
             desc: 'Build a Mill',
+            reqs: {},
             cost: { 
                 Money: function(){ return costMultiplier('mill', 50, 1.2); },
                 Stone: function(){ return costMultiplier('mill', 50, 1.35); },
@@ -664,6 +672,7 @@ const actions = {
             id: 'city-rock_quarry',
             title: function (){ return setTitle('Rock Quarry','city','rock_quarry'); },
             desc: 'Build a Stone Quarry',
+            reqs: {},
             cost: { 
                 Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); },
                 Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); } 
@@ -680,6 +689,7 @@ const actions = {
             id: 'city-temple',
             title: function (){ return setTitle('Temple','city','temple'); },
             desc: 'Build a Temple',
+            reqs: {},
             cost: { 
                 Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); },
                 Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); } 
@@ -696,6 +706,7 @@ const actions = {
             id: 'city-bank',
             title: function (){ return setTitle('Temple','city','temple'); },
             desc: 'Build a Bank',
+            reqs: {},
             cost: { 
                 Money: function(){ return costMultiplier('bank', 250, 1.5); },
                 Stone: function(){ return costMultiplier('bank', 100, 1.45); },
@@ -716,6 +727,8 @@ const actions = {
             id: 'tech-currency',
             title: 'Currency',
             desc: 'Invent the concept of currency',
+            reqs: {},
+            grant: 1,
             cost: { 
                 Knowledge: function(){ return 50; },
                 Lumber: function(){ return 10; } 
@@ -723,9 +736,8 @@ const actions = {
             effect: 'Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.',
             action: function (){
                 if (payCosts(actions.tech.currency.cost)){
-                    global.tech['currency'] = 1;
+                    gainTech('currency');
                     global.resource.Money.display = true;
-                    removeAction(actions.tech.currency.id);
                     registerTech('banking');
                 }
             }
@@ -734,6 +746,8 @@ const actions = {
             id: 'tech-banking',
             title: 'Banking',
             desc: 'Invent Banking',
+            reqs: { currency: 1 },
+            grant: 1,
             cost: { 
                 Money: function(){ return 500; },
                 Knowledge: function(){ return 100; }
@@ -741,8 +755,7 @@ const actions = {
             effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money',
             action: function (){
                 if (payCosts(actions.tech.banking.cost)){
-                    global.tech['banking'] = 1;
-                    removeAction(actions.tech.banking.id);
+                    gainTech('banking');
                     addAction('city','bank');
                 }
             }
@@ -751,6 +764,8 @@ const actions = {
             id: 'tech-science',
             title: 'Scientific Method',
             desc: 'Begin a journey of testing and discovery',
+            reqs: {},
+            grant: 1,
             cost: { 
                 Money: function(){ return 100; },
                 Knowledge: function(){ return 100; }
@@ -758,13 +773,35 @@ const actions = {
             effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
             action: function (){
                 if (payCosts(actions.tech.science.cost)){
-                    global.tech['science'] = 1;
-                    removeAction(actions.tech.science.id);
+                    gainTech('science');
                 }
             }
         }
     }
 };
+
+function checkTechRequirements(tech){
+    var isMet = true;
+    Object.keys(actions.tech[tech].reqs).forEach(function (req) {
+        if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
+            isMet = false;
+        }
+    });
+    if (isMet && (!global.tech[tech] || global.tech[tech] < actions.tech[tech].grant)){
+        return true;
+    }
+    return false;
+}
+
+function registerTech(tech){
+    global.tech[tech] = 0;
+    addAction('tech',tech);
+}
+
+function gainTech(tech){
+    global.tech[tech] = actions.tech[tech].grant;
+    removeAction(actions.tech[tech].id);
+}
 
 function addAction(action,type){
     var id = actions[action][type].id;

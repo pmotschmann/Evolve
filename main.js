@@ -83,7 +83,7 @@ $(function() {
             }
         }
         Object.keys(actions.tech).forEach(function (tech) {
-            if (global.tech[tech] && global.tech[tech] === 0){
+            if (checkTechRequirements(tech)){
                 addAction('tech',tech);
             }
         });
@@ -217,11 +217,6 @@ function mainLoop() {
         // Save game state
         save.setItem('evolved',JSON.stringify(global));
     }, timer);
-}
-
-function registerTech(tech){
-    global.tech[tech] = 0;
-    addAction('tech',tech);
 }
 
 function newGame(){
