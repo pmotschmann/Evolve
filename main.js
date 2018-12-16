@@ -73,15 +73,11 @@ $(function() {
         }
     }
     else {
-        var city_actions = ['food','lumber','stone','farm','mill','basic_housing','rock_quarry'];
-        for (var i = 0; i < city_actions.length; i++) {
-            if (global.race['tree_hugger'] && city_actions[i] === 'lumber'){
-                continue;
+        Object.keys(actions.city).forEach(function (city) {
+            if (checkCityRequirements(city)){
+                addAction('city',city);
             }
-            if (global.city[city_actions[i]]){
-                addAction('city',city_actions[i]);
-            }
-        }
+        });
         Object.keys(actions.tech).forEach(function (tech) {
             if (checkTechRequirements(tech)){
                 addAction('tech',tech);
@@ -95,8 +91,9 @@ $(function() {
 
 // Main game loop
 function mainLoop() {
-    var timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
-    intervals['main'] = setInterval(function() {
+    var fed = true;
+    var main_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
+    intervals['main_loop'] = setInterval(function() {
         
         if (global.race.species === 'protoplasm'){
             // Early Evolution Game
@@ -152,15 +149,21 @@ function mainLoop() {
         else {
             // Rest of game
             
-            // Consumption
-            var fed = true;
-            if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
-                var farms = 0;
-                if (global.city['farm']){
-                    farms = global.city['farm'].count;
+            // Detect labor anomalies
+            var total = 0;
+            Object.keys(job_desc).forEach(function (job) {
+                total += global.civic[job].workers;
+                if (total > global.resource[races[global.race.species].name].amount){
+                    global.civic[job].workers -= total - global.resource[races[global.race.species].name].amount;
                 }
-                var count = global.resource.Food.amount + farms - (global.resource[races[global.race.species].name].amount * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1));
+                global.civic.free = global.resource[races[global.race.species].name].amount - total;
+            });
+            
+            // Consumption
+            if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
+                var count = global.resource.Food.amount + (global.civic.farmer.workers * global.civic.farmer.impact) - (global.resource[races[global.race.species].name].amount * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1));
                 if (count > global.resource.Food.max){ 
+                    fed = true;
                     count = global.resource.Food.max;
                 }
                 else if (count < 0){
@@ -175,14 +178,6 @@ function mainLoop() {
                 if(Math.rand(0,2 * global['resource'][races[global.race.species].name].amount) == 0){
                     global['resource'][races[global.race.species].name].amount++;
                 }
-            }
-            
-            // Income
-            if (fed && global.tech['currency'] >= 1){
-                var income = global.resource[races[global.race.species].name].amount * ( global.race['greedy'] ? 0.5 : 1 );
-                var count = global.resource.Money.amount + income;
-                if (count > global.resource.Money.max){ count = global.resource.Money.max; }
-                global.resource.Money.amount = count;
             }
             
             // Knowledge
@@ -210,13 +205,57 @@ function mainLoop() {
         }
         
         Object.keys(global.resource).forEach(function (res) {
-            global['resource'][res].diff = Math.round(global['resource'][res].amount - global['resource'][res].last);
-            global['resource'][res].last = global['resource'][res].amount;
+            if (global['resource'][res].rate === 1){
+                global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (main_timer / 1000));
+                global['resource'][res].last = global['resource'][res].amount;
+            }
+        });
+    }, main_timer);
+    
+    /* Mid loop is not currently used
+    var mid_timer = global.race['slow'] ? 2200 : (global.race['hyper'] ? 1900 : 2000);
+    intervals['mid_loop'] = setInterval(function() {
+        if (global.race.species !== 'protoplasm'){
+            Object.keys(global.resource).forEach(function (res) {
+                if (global['resource'][res].rate === 2){
+                    global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (mid_timer / 1000));
+                    global['resource'][res].last = global['resource'][res].amount;
+                }
+            });
+        }
+    }, mid_timer);
+    */
+    
+    var long_timer = global.race['slow'] ? 5500 : (global.race['hyper'] ? 4750 : 5000);
+    intervals['long_loop'] = setInterval(function() {
+        if (global.race.species !== 'protoplasm'){
+            // Tax Income
+            if (global.tech['currency'] >= 1){
+                var income = global.resource[races[global.race.species].name].amount * ( global.race['greedy'] ? 1 : 2 );
+                if (fed){
+                    if (actions.tech['banking'] && actions.tech['banking'] >= 2){
+                        income *= 1 + (global.civic.banker.workers * global.civic.banker.impact);
+                    }
+                }
+                else {
+                    income = income / 2;
+                }
+                var count = global.resource.Money.amount + Math.round(income);
+                if (count > global.resource.Money.max){ count = global.resource.Money.max; }
+                global.resource.Money.amount = count;
+            }
+        }
+        
+        Object.keys(global.resource).forEach(function (res) {
+            if (global['resource'][res].rate === 3){
+                global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (long_timer / 1000));
+                global['resource'][res].last = global['resource'][res].amount;
+            }
         });
         
         // Save game state
         save.setItem('evolved',JSON.stringify(global));
-    }, timer);
+    }, long_timer);
 }
 
 function newGame(){

@@ -214,7 +214,7 @@ const traits = {
         ranks: 0,
         type: 'major',
     },
-    tree_hugger: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
+    kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
         desc: 'Your race is adverse to cutting down trees for lumber, all lumber costs are removed but other costs are increased by 20%',
         ranks: 0,
         type: 'major',

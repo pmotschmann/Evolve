@@ -163,7 +163,7 @@ const races = {
         desc: 'Ents are basically sentient trees who can uproot themselvs and move around. They are large and slow moving, but fearsome and can get most of their nutrients from the sun.',
         type: 'plant',
         traits: {
-            tree_hugger: 1,
+            kindling_kindred: 1,
             pyrophobia: 1
         } 
     },

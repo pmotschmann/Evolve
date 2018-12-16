@@ -1,27 +1,31 @@
 // Sets up resource definitions
 function defineResources() {
     if (global.race.species === 'protoplasm'){
-        loadResource('RNA',100,0);
-        loadResource('DNA',100,0);
+        loadResource('RNA',100,0,1);
+        loadResource('DNA',100,0,1);
     }
     else {
-        loadResource('Money',1000,1,'success');
-        loadResource(races[global.race.species].name,0,0);
-        loadResource('Knowledge',100,0);
-        loadResource('Food',250,1);
-        loadResource('Lumber',250,1);
-        loadResource('Stone',250,1);
+        loadResource('Money',1000,1,3,'success');
+        loadResource(races[global.race.species].name,0,0,1);
+        loadResource('Knowledge',100,0,1);
+        loadResource('Food',250,1,1);
+        loadResource('Lumber',250,1,1);
+        loadResource('Stone',250,1,1);
     }
 }
 // Sets up jobs in civics tab
 function defineJobs(){
-    loadJob('farmer');
+    loadJob('farmer','Farmer',3);
+    loadJob('lumberjack','Lumberjack',1);
+    loadJob('quarry_worker','Quarry Worker',1);
+    loadJob('professor','Professor',0.5);
+    loadJob('banker','Banker',0.1);
 }
 
 // Load resource function
 // This function defines each resource, loads saved values from localStorage
 // And it creates Vue binds for various resource values
-function loadResource(name,max,value,color) {
+function loadResource(name,max,value,rate,color) {
     color = color || 'info';
     if (!global['resource'][name]){
         global['resource'][name] = {
@@ -31,59 +35,112 @@ function loadResource(name,max,value,color) {
             amount: 0,
             last: 0,
             diff: 0,
-            max: max
+            max: max,
+            rate: rate
         };
     }
     
     if (global['resource'][name]['max'] > 0){
-        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount }} / {{ max }}</span><span class="diff">({{ diff }} /s)</span></div>');
+        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span><span class="diff">({{ diff | size }} /s)</span></div>');
         $('#resources').append(res_container);
     }
     else {
-        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount }}</span><span class="diff">({{ diff }} /s)</span></div>');
+        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }}</span><span class="diff">({{ diff | size }} /s)</span></div>');
         $('#resources').append(res_container);
     }
     
     vues['res_'+name] = new Vue({
-        data: global['resource'][name]
+        data: global['resource'][name],
+        filters: {
+            size: function (value){
+                if (value <= 9999){
+                    return +value.toFixed(1);
+                }
+                else if (value <= 1000000){
+                    return +(value / 1000).toFixed(1) + 'K';
+                }
+                else if (value <= 1000000000){
+                    return +(value / 1000000).toFixed(1) + 'M';
+                }
+                else if (value <= 1000000000000){
+                    return +(value / 1000000000).toFixed(1) + 'G';
+                }
+                else if (value <= 1000000000000000){
+                    return +(value / 1000000000000).toFixed(1) + 'T';
+                }
+                else if (value <= 1000000000000000000){
+                    return +(value / 1000000000000000).toFixed(1) + 'P';
+                }
+                else if (value <= 1000000000000000000000){
+                    return +(value / 1000000000000000000).toFixed(1) + 'E';
+                }
+                else if (value <= 1000000000000000000000000){
+                    return +(value / 1000000000000000000000).toFixed(1) + 'Z';
+                }
+                else {
+                    return +(value / 1000000000000000000000000).toFixed(1) + 'Y';
+                }
+            }
+        }
     });
     vues['res_'+name].$mount('#res-' + name);
 }
 
-function loadJob(job, color){
+function loadJob(job, name, impact, color){
     color = color || 'info';
     if (!global['civic'][job]){
         global['civic'][job] = {
             job: job,
+            name: name,
             display: false,
             workers: 0,
-            max: 0
+            max: 0,
+            impact: impact
         };
     }
     
-    var civ_container = $('<div id="civ-' + job + '" class="job" v-show="display"><span class="has-text-' + color + '">{{ job }}</span><span class="count">{{ workers }} / {{ max }}</span></div>');
+    var id = 'civ-' + job;
+    
+    var civ_container = $('<div id="' + id + '" v-show="display" class="job"></div>');
+    var controls = $('<div class="controls"></div>');
+    var job_label = $('<div class="job_label"><span class="has-text-' + color + '">{{ name }}</span><span class="count">{{ workers }} / {{ max }}</span></div>');
+    civ_container.append(job_label);
+    civ_container.append(controls);
     $('#civic').append(civ_container);
     
-    var add = $('<span class="sub">-</span>');
-    var sub = $('<span class="add">+</span>');
+    var sub = $('<span class="sub" @click="sub">&laquo;</span>');
+    var add = $('<span class="add" @click="add">&raquo;</span>');
     
-    civ_container.append(add);
-    civ_container.append(sub);
+    controls.append(sub);
+    controls.append(add);
     
     vues['civ_'+job] = new Vue({
-        data: global['civic'][job]
-    });
-    vues['civ_'+job].$mount('#civ-' + job);
-    
-    add.on('click', function(){
-        if (global['civic'][job].workers < global['civic'][job].max){
-            global['civic'][job].workers++;
+        data: global.civic[job],
+        methods: {
+            add(){
+                if (global.civic[job].workers < global['civic'][job].max && global.civic.free > 0){
+                    global.civic[job].workers++;
+                    global.civic.free--;
+                }
+            },
+            sub(){
+                if (global.civic[job].workers > 0){
+                    global.civic[job].workers--;
+                    global.civic.free++;
+                }
+            }
         }
     });
+    vues['civ_'+job].$mount('#'+id);
     
-    sub.on('click', function(){
-        if (global['civic'][job].workers > 0){
-            global['civic'][job].workers--;
-        }
-    });
+    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark">'+ job_desc.farmer() +'</div>');
+    popper.hide();
+    $('#main').append(popper);
+    $('#'+id+' .job_label').on('mouseover',function(){
+            popper.show();
+            new Popper($('#'+id+' .job_label'),popper);
+        });
+    $('#'+id+' .job_label').on('mouseout',function(){
+            popper.hide();
+        });
 }

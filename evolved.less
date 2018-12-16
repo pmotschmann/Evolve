@@ -50,15 +50,47 @@
     
     .job {
         margin-left: 1rem;
+        display: flex;
         
-        .add,
-        .sub {
+        .controls {
+            margin-bottom: 1px;
+        }
+        
+        .job_label {
+            cursor: default;
+            :first-child {
+                margin-right: .5rem;
+            }
+        }
+        
+        .add {
             display: inline-block;
-            margin: 0 .25rem;
-            padding: 0 .375rem;
-            border-radius: .125rem;
+            margin-right: .25rem;
+            padding: 0 .375rem .25rem;
+            border-radius: 0 .375rem .375rem 0;
             border: #ccc solid 1px;
+            line-height: .75rem;
             cursor: pointer;
+            -moz-user-select: none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .sub {
+            outline: none;
+            display: inline-block;
+            margin-left: .25rem;
+            padding: 0 .375rem .25rem;
+            border-radius: .375rem 0 0 .375rem;
+            border: #ccc solid 1px;
+            line-height: .75rem;
+            cursor: pointer;
+            -moz-user-select: none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
     }
 }
