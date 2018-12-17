@@ -160,10 +160,10 @@ function mainLoop() {
             });
             
             // Consumption
+            fed = true;
             if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
                 var count = global.resource.Food.amount + (global.civic.farmer.workers * global.civic.farmer.impact) - (global.resource[races[global.race.species].name].amount * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1));
                 if (count > global.resource.Food.max){ 
-                    fed = true;
                     count = global.resource.Food.max;
                 }
                 else if (count < 0){
@@ -180,30 +180,31 @@ function mainLoop() {
                 }
             }
             
-            // Knowledge
+            // Resource Income
             if (fed){
+                // Knowledge
                 var count = global.resource.Knowledge.amount + 1;
                 if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
                 global.resource.Knowledge.amount = count;
+                
+                // Stone
+                count = global.resource.Stone.amount + global.civic.quarry_worker.workers;
+                if (count > global.resource.Stone.max){ count = global.resource.Stone.max; }
+                global.resource.Stone.amount = count;
+                
+                // Lumber
+                count = global.resource.Lumber.amount + global.civic.lumberjack.workers;
+                if (count > global.resource.Lumber.max){ count = global.resource.Lumber.max; }
+                global.resource.Lumber.amount = count;
             }
             
             // Detect new unlocks
-            if (global.tech['agriculture'] >= 1 && !global.city['farm'] && checkCosts(actions.city.farm.cost)){
-                global.city['farm'] = { count: 0 };
-                addAction('city','farm');
-            }
-            else if (global.tech['housing'] >= 1 && !global.city['basic_housing'] && checkCosts(actions.city.basic_housing.cost)){
-                global.city['basic_housing'] = { count: 0 };
-                addAction('city','basic_housing');
-            }
-            else if (!global.main_tabs.data.showResearch && global['resource'][races[global.race.species].name].amount > 0){
+            if (!global.main_tabs.data.showResearch && global.resource.Knowledge.amount >= 10){
                 global.main_tabs.data.showResearch = true;
-                global.main_tabs.data.showCivic = true;
-                registerTech('science');
-                registerTech('currency');
             }
         }
         
+        // main resource delta tracking
         Object.keys(global.resource).forEach(function (res) {
             if (global['resource'][res].rate === 1){
                 global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (main_timer / 1000));
@@ -212,10 +213,34 @@ function mainLoop() {
         });
     }, main_timer);
     
-    /* Mid loop is not currently used
     var mid_timer = global.race['slow'] ? 2200 : (global.race['hyper'] ? 1900 : 2000);
     intervals['mid_loop'] = setInterval(function() {
         if (global.race.species !== 'protoplasm'){
+            
+            // Resource caps
+            var Money = 1000;
+            var Knowledge = 100;
+            var Food = 250;
+            var Lumber = 250;
+            var Stone = 250;
+            if (global.city['shed']){
+                Lumber += (global.city['shed'].count * 250);
+                Stone += (global.city['shed'].count * 250);
+            }
+            if (global.city['university']){
+                Knowledge += (global.city['university'].count * 500);
+            }
+            if (global.city['bank']){
+                Money += (global.city['bank'].count * 1000);
+            }
+            
+            global.resource.Money.max = Money;
+            global.resource.Knowledge.max = Knowledge;
+            global.resource.Lumber.max = Lumber;
+            global.resource.Stone.max = Stone;
+            global.resource.Food.max = Food;
+            
+            // medium resource delta tracking
             Object.keys(global.resource).forEach(function (res) {
                 if (global['resource'][res].rate === 2){
                     global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (mid_timer / 1000));
@@ -224,14 +249,13 @@ function mainLoop() {
             });
         }
     }, mid_timer);
-    */
     
     var long_timer = global.race['slow'] ? 5500 : (global.race['hyper'] ? 4750 : 5000);
     intervals['long_loop'] = setInterval(function() {
         if (global.race.species !== 'protoplasm'){
             // Tax Income
             if (global.tech['currency'] >= 1){
-                var income = global.resource[races[global.race.species].name].amount * ( global.race['greedy'] ? 1 : 2 );
+                var income = (global.resource[races[global.race.species].name].amount - global.civic.free) * ( global.race['greedy'] ? 1 : 2 );
                 if (fed){
                     if (actions.tech['banking'] && actions.tech['banking'] >= 2){
                         income *= 1 + (global.civic.banker.workers * global.civic.banker.impact);
@@ -246,6 +270,7 @@ function mainLoop() {
             }
         }
         
+        // slow resource delta tracking
         Object.keys(global.resource).forEach(function (res) {
             if (global['resource'][res].rate === 3){
                 global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (long_timer / 1000));

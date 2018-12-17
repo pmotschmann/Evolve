@@ -21,7 +21,7 @@
     <script src="main.js"></script>
 </head>
 <body>
-    <div id="main" class="main container">
+    <div id="main" class="main">
         <div class="columns is-gapless">
         
             <div class="column is-one-quarter">
@@ -32,7 +32,7 @@
             </div>
             <div class="column is-three-quarters">
                 <div id="tabs" class="content">
-                    <b-tabs v-model="civTabs">
+                    <b-tabs v-model="civTabs" animated="false">
                         <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
                         <b-tab-item id="city" :visible="showCity" label="Village"></b-tab-item>
                         <b-tab-item id="civic" :visible="showCivic" label="Civics"></b-tab-item>

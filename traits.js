@@ -9,7 +9,7 @@ const traits = {
         ranks: 0,
         type: 'genus',
     },
-    small: { // Reduces cost crrep multipliers by 0.01
+    small: { // Reduces cost crrep multipliers by 0.02
         desc: 'Your race is small and thus requires less materials to build things',
         ranks: 0,
         type: 'genus',
@@ -19,7 +19,7 @@ const traits = {
         ranks: 0,
         type: 'genus',
     },
-    large: { // Increases cost creep mutipliers by 0.01
+    large: { // Increases cost creep mutipliers by 0.02
         desc: 'Your race is large and thus requires extra materials to build things',
         ranks: 0,
         type: 'genus',
@@ -139,7 +139,7 @@ const traits = {
         ranks: 0,
         type: 'major',
     },
-    greedy: { // Halves income from taxes
+    greedy: { // Lowers income from taxes
         desc: 'Your race is greedy and will not willingly part with money, reduces income from taxes',
         ranks: 0,
         type: 'major',

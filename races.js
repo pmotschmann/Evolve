@@ -178,7 +178,7 @@ const races = {
     },
     sporgar: {
         name: 'Sporgar',
-        desc: 'Sporgar are bizarre species that eolved from mold. They like to settle in damp humid places.',
+        desc: 'Sporgar are bizarre species that evolved from mold. They like to settle in damp humid places.',
         type: 'fungi',
         traits: {
             mushy: 1,

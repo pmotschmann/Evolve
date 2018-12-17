@@ -15,6 +15,7 @@ function defineResources() {
 }
 // Sets up jobs in civics tab
 function defineJobs(){
+    loadUnemployed();
     loadJob('farmer','Farmer',3);
     loadJob('lumberjack','Lumberjack',1);
     loadJob('quarry_worker','Quarry Worker',1);
@@ -86,6 +87,32 @@ function loadResource(name,max,value,rate,color) {
     vues['res_'+name].$mount('#res-' + name);
 }
 
+function loadUnemployed(){
+    var color = 'warning';
+    
+    var id = 'civ-free';
+    var civ_container = $('<div id="' + id + '" class="job"></div>');
+    var job_label = $('<div class="job_label"><span class="has-text-' + color + '">Unemployed</span><span class="count">{{ free }}</span></div>');
+    civ_container.append(job_label);
+    $('#civic').append(civ_container);
+    
+    vues['civ_free'] = new Vue({
+        data: global.civic,
+    });
+    vues['civ_free'].$mount('#'+id);
+    
+    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark">The number of unemployed citizens. Unempluyed citizens do not pay taxes.</div>');
+    popper.hide();
+    $('#main').append(popper);
+    $('#'+id+' .job_label').on('mouseover',function(){
+            popper.show();
+            new Popper($('#'+id+' .job_label'),popper);
+        });
+    $('#'+id+' .job_label').on('mouseout',function(){
+            popper.hide();
+        });
+}
+
 function loadJob(job, name, impact, color){
     color = color || 'info';
     if (!global['civic'][job]){
@@ -133,7 +160,7 @@ function loadJob(job, name, impact, color){
     });
     vues['civ_'+job].$mount('#'+id);
     
-    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark">'+ job_desc.farmer() +'</div>');
+    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark">'+ job_desc[job]() +'</div>');
     popper.hide();
     $('#main').append(popper);
     $('#'+id+' .job_label').on('mouseover',function(){

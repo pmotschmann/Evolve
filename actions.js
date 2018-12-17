@@ -566,7 +566,11 @@ const actions = {
                     global.main_tabs.data.showEvolve = false;
                     global.main_tabs.data.showCity = true;
                     
-                    if (global.gods !== 'none'){
+                    registerTech('agriculture');
+                    registerTech('housing');
+                    registerTech('storage');
+                    
+                    if (global.race.gods !== 'none'){
                         global.tech['religion'] = 1;
                     }
                     
@@ -629,7 +633,7 @@ const actions = {
                     global['resource'][races[global.race.species].name].max += 1;
                     global.city['basic_housing'].count++;
                     updateDesc('city','basic_housing');
-                    global.tech['progression'] = 1;
+                    global.main_tabs.data.showCivic = true;
                 }
             }
         },
@@ -665,7 +669,7 @@ const actions = {
             },
             effect: 'A small storage facility which increases your storage capacity of various resources',
             action: function (){
-                if (payCosts(actions.city.university.cost)){
+                if (payCosts(actions.city.shed.cost)){
                     global['resource']['Lumber'].max += 250;
                     global['resource']['Stone'].max += 250;
                     global.city['shed'].count++;
@@ -706,7 +710,7 @@ const actions = {
                     global.city['rock_quarry'].count++;
                     updateDesc('city','rock_quarry');
                     global.civic.quarry_worker.display = true;
-                    global.civic.quarry_worker.max = global.city['rock_quarry'].count * 2;
+                    global.civic.quarry_worker.max = global.city.rock_quarry.count * 2;
                 }
             }
         },
@@ -741,8 +745,9 @@ const actions = {
             action: function (){
                 if (payCosts(actions.city.bank.cost)){
                     global['resource']['Money'].max += 1000;
-                    global.city['bank'].count++;
+                    global.city.bank.count++;
                     updateDesc('city','bank');
+                    global.civic.banker.max = global.city.bank.count * 2;;
                 }
             }
         },
@@ -760,10 +765,10 @@ const actions = {
             action: function (){
                 if (payCosts(actions.city.university.cost)){
                     global['resource']['Knowledge'].max += 500;
-                    global.city['university'].count++;
+                    global.city.university.count++;
                     updateDesc('city','university');
                     global.civic.professor.display = true;
-                    global.civic.professor.max = global.city['university'].count * 2;
+                    global.civic.professor.max = global.city.university.count * 2;
                 }
             }
         }
@@ -774,7 +779,7 @@ const actions = {
             title: 'Housing',
             desc: 'Discover Housing',
             reqs: {},
-            grant: 1,
+            grant: ['housing',1],
             cost: { 
                 Knowledge: function(){ return 10; }
             },
@@ -782,6 +787,8 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
                     gainTech('housing');
+                    global.city['basic_housing'] = { count: 0 };
+                    addAction('city','basic_housing');
                 }
             }
         },
@@ -790,7 +797,7 @@ const actions = {
             title: 'Agriculture',
             desc: 'Discover the basics of agriculture',
             reqs: {},
-            grant: 1,
+            grant: ['agriculture',1],
             cost: { 
                 Knowledge: function(){ return 10; }
             },
@@ -798,6 +805,29 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
                     gainTech('agriculture');
+                    global.city['farm'] = { count: 0 };
+                    addAction('city','farm');
+                    registerTech('currency');
+                    registerTech('science');
+                    registerTech('mining');
+                }
+            }
+        },
+        mining: {
+            id: 'tech-mining',
+            title: 'Mining',
+            desc: 'Learn the basics of mining',
+            reqs: {},
+            grant: ['mining',1],
+            cost: { 
+                Knowledge: function(){ return 50; }
+            },
+            effect: 'Learn how to dig up stone slabs from a quarry',
+            action: function (){
+                if (payCosts(actions.tech.agriculture.cost)){
+                    gainTech('mining');
+                    global.city['rock_quarry'] = { count: 0 };
+                    addAction('city','rock_quarry');
                 }
             }
         },
@@ -806,7 +836,7 @@ const actions = {
             title: 'Basic Storage',
             desc: 'Design a structure to house resources',
             reqs: {},
-            grant: 1,
+            grant: ['storage',1],
             cost: { 
                 Knowledge: function(){ return 20; }
             },
@@ -814,6 +844,9 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.storage.cost)){
                     gainTech('storage');
+                    global.city['shed'] = { count: 0 };
+                    addAction('city','shed');
+                    registerTech('stone_axe')
                 }
             }
         },
@@ -822,7 +855,7 @@ const actions = {
             title: 'Currency',
             desc: 'Invent the concept of currency',
             reqs: { agriculture: 1 },
-            grant: 1,
+            grant: ['currency',1],
             cost: { 
                 Knowledge: function(){ return 50; },
                 Lumber: function(){ return 10; } 
@@ -841,16 +874,17 @@ const actions = {
             title: 'Banking',
             desc: 'Invent Banking',
             reqs: { currency: 1 },
-            grant: 1,
+            grant: ['banking',1],
             cost: { 
-                Money: function(){ return 500; },
                 Knowledge: function(){ return 100; }
             },
             effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money',
             action: function (){
                 if (payCosts(actions.tech.banking.cost)){
                     gainTech('banking');
+                    global.city['bank'] = { count: 0 };
                     addAction('city','bank');
+                    registerTech('investing');
                 }
             }
         },
@@ -859,7 +893,7 @@ const actions = {
             title: 'Investing',
             desc: 'Invent Investing',
             reqs: { banking: 1 },
-            grant: 2,
+            grant: ['banking',2],
             cost: { 
                 Money: function(){ return 2500; },
                 Knowledge: function(){ return 1000; }
@@ -867,7 +901,7 @@ const actions = {
             effect: 'Discover the principles of investing, unlocks the banker job.',
             action: function (){
                 if (payCosts(actions.tech.banking.cost)){
-                    gainTech('banking','investing');
+                    gainTech('investing');
                     global.civic.banker.display = true;
                 }
             }
@@ -877,15 +911,36 @@ const actions = {
             title: 'Scientific Method',
             desc: 'Begin a journey of testing and discovery',
             reqs: { agriculture: 1 },
-            grant: 1,
+            grant: ['science',1],
             cost: { 
-                Money: function(){ return 100; },
                 Knowledge: function(){ return 100; }
             },
             effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
             action: function (){
                 if (payCosts(actions.tech.science.cost)){
                     gainTech('science');
+                    global.city['university'] = { count: 0 };
+                    addAction('city','university');
+                }
+            }
+        },
+        stone_axe: {
+            id: 'tech-stone_axe',
+            title: 'Primitive Axes',
+            desc: 'Creates a primitive axe made from stone lashed to a stick',
+            reqs: { storage: 1 },
+            grant: ['axe',1],
+            cost: { 
+                Knowledge: function(){ return 50; },
+                Lumber: function(){ return 20; },
+                Stone: function(){ return 20; }
+            },
+            effect: 'Creates a primitive axe made from stone lashed to a stick.',
+            action: function (){
+                if (payCosts(actions.tech.stone_axe.cost)){
+                    gainTech('stone_axe');
+                    global.civic.lumberjack.display = true;
+                    global.civic.lumberjack.max = 10;
                 }
             }
         }
@@ -912,21 +967,24 @@ function checkTechRequirements(tech){
             isMet = false;
         }
     });
-    if (isMet && (!global.tech[tech] || global.tech[tech] < actions.tech[tech].grant)){
+    if (isMet && (!global.tech[actions.tech[tech].grant[0]] || global.tech[actions.tech[tech].grant[0]] < actions.tech[tech].grant[1])){
         return true;
     }
     return false;
 }
 
-function registerTech(tech){
-    global.tech[tech] = 0;
-    addAction('tech',tech);
+function registerTech(action){
+    var tech = actions.tech[action].grant[0];
+    if (!global.tech[tech]){
+        global.tech[tech] = 0;
+    }
+    addAction('tech',action);
 }
 
-function gainTech(tech,remove){
-    if (!remove){ remove = tech; }
-    global.tech[tech] = actions.tech[tech].grant;
-    removeAction(actions.tech[remove].id);
+function gainTech(action){
+    var tech = actions.tech[action].grant[0];
+    global.tech[tech] = actions.tech[action].grant[1];
+    removeAction(actions.tech[action].id);
 }
 
 function addAction(action,type){
@@ -1031,8 +1089,8 @@ function checkCosts(costs){
 }
 
 function costMultiplier(structure,base,mutiplier){
-    if (global.race['small']){ mutiplier -= 0.01; }
-    else if (global.race['large']){ mutiplier += 0.01; }
+    if (global.race['small']){ mutiplier -= 0.02; }
+    else if (global.race['large']){ mutiplier += 0.02; }
     var count = global.city[structure] ? global.city[structure].count : 0;
     return Math.round((mutiplier ** count) * base);
 }
