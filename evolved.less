@@ -58,8 +58,16 @@
         
         .job_label {
             cursor: default;
+            span {
+                display: inline-block;
+            }
             :first-child {
                 margin-right: .5rem;
+                width: 10rem;
+            }
+            :nth-child(2) {
+                min-width: 4rem;
+                text-align: center;
             }
         }
         

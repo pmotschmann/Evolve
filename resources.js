@@ -6,8 +6,8 @@ function defineResources() {
     }
     else {
         loadResource('Money',1000,1,3,'success');
-        loadResource(races[global.race.species].name,0,0,1);
-        loadResource('Knowledge',100,0,1);
+        loadResource(races[global.race.species].name,0,0,1,'warning');
+        loadResource('Knowledge',100,0,1,'warning');
         loadResource('Food',250,1,1);
         loadResource('Lumber',250,1,1);
         loadResource('Stone',250,1,1);
@@ -101,7 +101,7 @@ function loadUnemployed(){
     });
     vues['civ_free'].$mount('#'+id);
     
-    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark">The number of unemployed citizens. Unempluyed citizens do not pay taxes.</div>');
+    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark">The number of unemployed citizens. Unemployed citizens do not pay taxes.</div>');
     popper.hide();
     $('#main').append(popper);
     $('#'+id+' .job_label').on('mouseover',function(){

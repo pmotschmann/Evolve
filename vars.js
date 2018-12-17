@@ -12,6 +12,9 @@ var global = {
             showCity: false,
             showResearch: false,
             showCivic: false,
+            showMarket: false,
+            showGenetics: false,
+            showSpace: false,
             animated: true,
             disableReset: false
         }
@@ -27,7 +30,7 @@ const job_desc = {
         return 'Farmers create food to feed your population. Each farmer generates '+global.civic.farmer.impact+' food per tick';
     },
     lumberjack: function(){
-        return 'Lumberjack harvet lumber from the forests. Each lumberjack generates '+global.civic.lumberjack.impact+' lumber per tick';
+        return 'Lumberjacks harvet lumber from the forests. Each lumberjack generates '+global.civic.lumberjack.impact+' lumber per tick';
     },
     quarry_worker: function(){
         return 'Quarry Workers mine stone from rock quarries. Each quarry worker generates '+global.civic.quarry_worker.impact+' stone per tick';

@@ -183,7 +183,7 @@ function mainLoop() {
             // Resource Income
             if (fed){
                 // Knowledge
-                var count = global.resource.Knowledge.amount + 1;
+                var count = global.resource.Knowledge.amount + (global.civic.professor.workers * 0.5) + 1;
                 if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
                 global.resource.Knowledge.amount = count;
                 

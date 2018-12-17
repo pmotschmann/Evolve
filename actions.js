@@ -623,8 +623,8 @@ const actions = {
             reqs: { housing: 1 },
             cost: { 
                 Money: function(){ if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ return costMultiplier('basic_housing', 25, 1.15);} else { return 0; } },
-                Stone: function(){ return costMultiplier('basic_housing', 8, 1.35); },
-                Lumber: function(){ return costMultiplier('basic_housing', 12, 1.35); } 
+                Lumber: function(){ return costMultiplier('basic_housing', 12, 1.35); },
+                Stone: function(){ return costMultiplier('basic_housing', 8, 1.35); }
             },
             effect: 'Constructs housing for one citizen',
             action: function (){
@@ -644,8 +644,8 @@ const actions = {
             reqs: { agriculture: 1 },
             cost: { 
                 Money: function(){ if (global.city['farm'] && global.city['farm'].count >= 2){ return costMultiplier('farm', 50, 1.30);} else { return 0; } },
-                Stone: function(){ return costMultiplier('farm', 10, 1.35); },
-                Lumber: function(){ return costMultiplier('farm', 20, 1.35); } 
+                Lumber: function(){ return costMultiplier('farm', 20, 1.35); },
+                Stone: function(){ return costMultiplier('farm', 10, 1.35); }
             },
             effect: 'Increases farmer capacity by one',
             action: function (){
@@ -664,8 +664,8 @@ const actions = {
             reqs: { storage: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('shed', 75, 1.2); },
-                Stone: function(){ return costMultiplier('shed', 40, 1.35); },
-                Lumber: function(){ return costMultiplier('shed', 60, 1.35); } 
+                Lumber: function(){ return costMultiplier('shed', 60, 1.35); },
+                Stone: function(){ return costMultiplier('shed', 40, 1.35); }
             },
             effect: 'A small storage facility which increases your storage capacity of various resources',
             action: function (){
@@ -684,8 +684,8 @@ const actions = {
             reqs: { agriculture: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('mill', 50, 1.2); },
-                Stone: function(){ return costMultiplier('mill', 50, 1.35); },
-                Lumber: function(){ return costMultiplier('mill', 75, 1.35); } 
+                Lumber: function(){ return costMultiplier('mill', 75, 1.35); },
+                Stone: function(){ return costMultiplier('mill', 50, 1.35); }
             },
             effect: 'Increases the efficency of farmers by 10%',
             action: function (){
@@ -701,8 +701,8 @@ const actions = {
             desc: 'Build a Stone Quarry',
             reqs: { mining: 1 },
             cost: { 
-                Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); },
-                Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); } 
+                Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); },
+                Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); }
             },
             effect: 'Increases production of stone',
             action: function (){
@@ -720,8 +720,8 @@ const actions = {
             desc: 'Build a Temple',
             reqs: { religion: 1 },
             cost: { 
-                Stone: function(){ return costMultiplier('temple', 10, 1.35); },
-                Lumber: function(){ return costMultiplier('temple', 50, 1.35); } 
+                Lumber: function(){ return costMultiplier('temple', 50, 1.35); },
+                Stone: function(){ return costMultiplier('temple', 10, 1.35); }
             },
             effect: 'Construct a temple devoted to your race\'s deities',
             action: function (){
@@ -738,8 +738,8 @@ const actions = {
             reqs: { banking: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('bank', 250, 1.5); },
-                Stone: function(){ return costMultiplier('bank', 100, 1.45); },
-                Lumber: function(){ return costMultiplier('bank', 75, 1.30); } 
+                Lumber: function(){ return costMultiplier('bank', 75, 1.30); },
+                Stone: function(){ return costMultiplier('bank', 100, 1.45); }
             },
             effect: 'Increases money capacity by $1000',
             action: function (){
@@ -747,7 +747,7 @@ const actions = {
                     global['resource']['Money'].max += 1000;
                     global.city.bank.count++;
                     updateDesc('city','bank');
-                    global.civic.banker.max = global.city.bank.count * 2;;
+                    global.civic.banker.max = global.city.bank.count;
                 }
             }
         },
@@ -758,8 +758,8 @@ const actions = {
             reqs: { science: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('university', 1000, 1.5); },
-                Stone: function(){ return costMultiplier('university', 750, 1.35); },
-                Lumber: function(){ return costMultiplier('university', 500, 1.35); } 
+                Lumber: function(){ return costMultiplier('university', 500, 1.35); },
+                Stone: function(){ return costMultiplier('university', 750, 1.35); }
             },
             effect: 'Contributes to the advancement of science',
             action: function (){
@@ -927,7 +927,7 @@ const actions = {
         stone_axe: {
             id: 'tech-stone_axe',
             title: 'Primitive Axes',
-            desc: 'Creates a primitive axe made from stone lashed to a stick',
+            desc: 'Create the first axe',
             reqs: { storage: 1 },
             grant: ['axe',1],
             cost: { 
