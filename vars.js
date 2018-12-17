@@ -11,7 +11,9 @@ var global = {
             showEvolve: true,
             showCity: false,
             showResearch: false,
-            showCivic: false
+            showCivic: false,
+            animated: true,
+            disableReset: false
         }
     },
     stats: {

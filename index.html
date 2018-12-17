@@ -32,12 +32,29 @@
             </div>
             <div class="column is-three-quarters">
                 <div id="tabs" class="content">
-                    <b-tabs v-model="civTabs" animated="false">
+                    <b-tabs v-model="civTabs" :animated="animated">
                         <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
                         <b-tab-item id="city" :visible="showCity" label="Village"></b-tab-item>
                         <b-tab-item id="civic" :visible="showCivic" label="Civics"></b-tab-item>
                         <b-tab-item id="tech" :visible="showResearch" label="Research"></b-tab-item>
-                        <b-tab-item id="settings" label="Settings"></b-tab-item>
+                        <b-tab-item id="settings" label="Settings">
+                            <b-switch v-model="animated">Tab Animations</b-switch>
+                            <div class="reset">
+                                <b-collapse :open="false">
+                                    <b-switch v-model="disableReset" slot="trigger">Enable Reset Button</b-switch>
+                                    <div class="notification">
+                                        <div class="content">
+                                            <h4 class="has-text-danger">
+                                                Warning: This completely resets all your progress and can not be undone
+                                            </h4>
+                                            <p>
+                                                <button class="button" :disabled="!disableReset" @click="reset()">Reset Game</button>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </b-collapse>
+                            </div>
+                        </b-tab-item>
                     </b-tabs>
                 </div>
             </div>
