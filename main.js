@@ -257,7 +257,7 @@ function mainLoop() {
             if (global.tech['currency'] >= 1){
                 var income = (global.resource[races[global.race.species].name].amount - global.civic.free) * ( global.race['greedy'] ? 1 : 2 );
                 if (fed){
-                    if (actions.tech['banking'] && actions.tech['banking'] >= 2){
+                    if (global.tech['banking'] && global.tech['banking'] >= 2){
                         income *= 1 + (global.civic.banker.workers * global.civic.banker.impact);
                     }
                 }

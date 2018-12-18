@@ -900,7 +900,7 @@ const actions = {
             },
             effect: 'Discover the principles of investing, unlocks the banker job.',
             action: function (){
-                if (payCosts(actions.tech.banking.cost)){
+                if (payCosts(actions.tech.investing.cost)){
                     gainTech('investing');
                     global.civic.banker.display = true;
                 }

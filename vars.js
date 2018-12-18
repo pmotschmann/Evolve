@@ -40,7 +40,7 @@ const job_desc = {
         return 'Bankers manage your banks increasing tax revenue. Each banker increases tax income by '+interest+'% per tax cycle';
     },
     professor: function(){
-        return 'Professors help educate your citizen and contribute to knowledge gain. Each professor generates '+global.civic.professor.impact+' knowledge per tick';
+        return 'Professors help educate your citizens and contribute to knowledge gain. Each professor generates '+global.civic.professor.impact+' knowledge per tick';
     }
 }
 
