@@ -9,7 +9,7 @@ const traits = {
         ranks: 0,
         type: 'genus',
     },
-    small: { // Reduces cost crrep multipliers by 0.02
+    small: { // Reduces cost crrep multipliers by 0.01
         desc: 'Your race is small and thus requires less materials to build things',
         ranks: 0,
         type: 'genus',
@@ -19,7 +19,7 @@ const traits = {
         ranks: 0,
         type: 'genus',
     },
-    large: { // Increases cost creep mutipliers by 0.02
+    large: { // Increases cost creep mutipliers by 0.01
         desc: 'Your race is large and thus requires extra materials to build things',
         ranks: 0,
         type: 'genus',

@@ -608,7 +608,7 @@ const actions = {
         stone: {
             id: 'city-stone',
             title: 'Gather Stone',
-            desc: 'Gather stone from a query',
+            desc: 'Gather stone from a quarry',
             reqs: {},
             action: function (){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
@@ -622,9 +622,9 @@ const actions = {
             desc: 'Construct a cabin',
             reqs: { housing: 1 },
             cost: { 
-                Money: function(){ if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ return costMultiplier('basic_housing', 25, 1.15);} else { return 0; } },
-                Lumber: function(){ return costMultiplier('basic_housing', 12, 1.35); },
-                Stone: function(){ return costMultiplier('basic_housing', 8, 1.35); }
+                Money: function(){ if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ return costMultiplier('basic_housing', 20, 1.15);} else { return 0; } },
+                Lumber: function(){ return costMultiplier('basic_housing', 12, 1.30); },
+                Stone: function(){ return costMultiplier('basic_housing', 8, 1.30); }
             },
             effect: 'Constructs housing for one citizen',
             action: function (){
@@ -672,6 +672,9 @@ const actions = {
                 if (payCosts(actions.city.shed.cost)){
                     global['resource']['Lumber'].max += 250;
                     global['resource']['Stone'].max += 250;
+                    global['resource']['Copper'].max += 100;
+                    global['resource']['Iron'].max += 100;
+                    global['resource']['Concrete'].max += 100;
                     global.city['shed'].count++;
                     updateDesc('city','shed');
                 }
@@ -680,11 +683,11 @@ const actions = {
         mill: {
             id: 'city-mill',
             title: function (){ return setTitle('Mill','city','mill'); },
-            desc: 'Build a Mill',
+            desc: 'Build a mill',
             reqs: { agriculture: 2 },
             cost: { 
-                Money: function(){ return costMultiplier('mill', 50, 1.2); },
-                Lumber: function(){ return costMultiplier('mill', 75, 1.35); },
+                Money: function(){ return costMultiplier('mill', 500, 1.2); },
+                Lumber: function(){ return costMultiplier('mill', 250, 1.35); },
                 Stone: function(){ return costMultiplier('mill', 50, 1.35); }
             },
             effect: 'Increases the efficency of farmers by 10%',
@@ -698,13 +701,14 @@ const actions = {
         rock_quarry: {
             id: 'city-rock_quarry',
             title: function (){ return setTitle('Rock Quarry','city','rock_quarry'); },
-            desc: 'Build a Stone Quarry',
+            desc: 'Build a stone quarry',
             reqs: { mining: 1 },
             cost: { 
+                Money: function(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.75);} else { return 0; } },
                 Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); },
                 Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); }
             },
-            effect: 'Increases production of stone',
+            effect: 'Allows workers to quarry for stone',
             action: function (){
                 if (payCosts(actions.city.rock_quarry.cost)){
                     global.city['rock_quarry'].count++;
@@ -714,10 +718,30 @@ const actions = {
                 }
             }
         },
+        mine: {
+            id: 'city-mine',
+            title: function (){ return setTitle('Mine','city','mine'); },
+            desc: 'Build a mine',
+            reqs: { mining: 2 },
+            cost: { 
+                Money: function(){ return costMultiplier('mine', 60, 1.6); },
+                Lumber: function(){ return costMultiplier('mine', 175, 1.35); }
+            },
+            effect: 'Builds a mine shaft allowing miners to mine minerals from the ground.',
+            action: function (){
+                if (payCosts(actions.city.mine.cost)){
+                    global.city['mine'].count++;
+                    updateDesc('city','mine');
+                    global.resource.Copper.display = true;
+                    global.civic.miner.display = true;
+                    global.civic.miner.max = global.city.mine.count * 2;
+                }
+            }
+        },
         temple: {
             id: 'city-temple',
             title: function (){ return setTitle('Temple','city','temple'); },
-            desc: 'Build a Temple',
+            desc: 'Build a temple',
             reqs: { religion: 1 },
             cost: { 
                 Lumber: function(){ return costMultiplier('temple', 50, 1.35); },
@@ -734,7 +758,7 @@ const actions = {
         bank: {
             id: 'city-bank',
             title: function (){ return setTitle('Bank','city','bank'); },
-            desc: 'Build a Bank',
+            desc: 'Build a bank',
             reqs: { banking: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('bank', 250, 1.5); },
@@ -824,10 +848,49 @@ const actions = {
             },
             effect: 'Learn how to dig up stone slabs from a quarry',
             action: function (){
-                if (payCosts(actions.tech.agriculture.cost)){
+                if (payCosts(actions.tech.mining.cost)){
                     gainTech('mining');
                     global.city['rock_quarry'] = { count: 0 };
                     addAction('city','rock_quarry');
+                }
+            }
+        },
+        metal_working: {
+            id: 'tech-metal_working',
+            title: 'Metal Working',
+            desc: 'Learn the basics of smelting and metalworking',
+            reqs: { mining: 1 },
+            grant: ['mining',2],
+            cost: { 
+                Knowledge: function(){ return 500; }
+            },
+            effect: 'Learn how to mine and refine copper into a pure form',
+            action: function (){
+                if (payCosts(actions.tech.metal_working.cost)){
+                    gainTech('metal_working');
+                    global.city['mine'] = { count: 0 };
+                    addAction('city','mine');
+                    registerTech('iron_mining');
+                    if (global.tech['axe'] === 1){
+                        registerTech('copper_axes');
+                    }
+                }
+            }
+        },
+        iron_mining: {
+            id: 'tech-iron_mining',
+            title: 'Iron Mining',
+            desc: 'Learn how to mine iron',
+            reqs: { mining: 2 },
+            grant: ['mining',3],
+            cost: { 
+                Knowledge: function(){ return 5000; }
+            },
+            effect: 'Learn how to extract iron ore from mines',
+            action: function (){
+                if (payCosts(actions.tech.iron_mining.cost)){
+                    gainTech('iron_mining');
+                    global.resource.Iron.display = true;
                 }
             }
         },
@@ -941,6 +1004,26 @@ const actions = {
                     gainTech('stone_axe');
                     global.civic.lumberjack.display = true;
                     global.civic.lumberjack.max = 10;
+                    if (global.tech['mining'] >= 2){
+                        registerTech('copper_axes');
+                    }
+                }
+            }
+        },
+        copper_axes: {
+            id: 'tech-copper_axes',
+            title: 'Copper Axe',
+            desc: 'Create tools made from copper',
+            reqs: { axe: 1, mining: 2 },
+            grant: ['axe',2],
+            cost: { 
+                Knowledge: function(){ return 750; },
+                Copper: function(){ return 25; }
+            },
+            effect: 'Upgrade axe technology to metal axes made from copper',
+            action: function (){
+                if (payCosts(actions.tech.copper_axes.cost)){
+                    gainTech('copper_axes');
                 }
             }
         }
@@ -988,6 +1071,9 @@ function gainTech(action){
 }
 
 function addAction(action,type){
+    if (global.race['kindling_kindred'] && action === 'tech' && type === 'stone_axe'){
+        return;
+    }
     var id = actions[action][type].id;
     var element = $('<a id="'+id+'" class="button is-dark" v-on:click="action">{{ title }}</a>');
     $('#'+action).append(element);
@@ -1089,8 +1175,8 @@ function checkCosts(costs){
 }
 
 function costMultiplier(structure,base,mutiplier){
-    if (global.race['small']){ mutiplier -= 0.02; }
-    else if (global.race['large']){ mutiplier += 0.02; }
+    if (global.race['small']){ mutiplier -= 0.01; }
+    else if (global.race['large']){ mutiplier += 0.01; }
     var count = global.city[structure] ? global.city[structure].count : 0;
     return Math.round((mutiplier ** count) * base);
 }

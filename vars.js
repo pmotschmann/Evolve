@@ -35,6 +35,9 @@ const job_desc = {
     quarry_worker: function(){
         return 'Quarry Workers mine stone from rock quarries. Each quarry worker generates '+global.civic.quarry_worker.impact+' stone per tick';
     },
+    miner: function(){
+        return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner can generate a variable amount of minerals of various types';
+    },
     banker: function(){
         var interest = global.civic.banker.impact * 100;
         return 'Bankers manage your banks increasing tax revenue. Each banker increases tax income by '+interest+'% per tax cycle';

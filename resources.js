@@ -11,6 +11,9 @@ function defineResources() {
         loadResource('Food',250,1,1);
         loadResource('Lumber',250,1,1);
         loadResource('Stone',250,1,1);
+        loadResource('Copper',100,1,3);
+        loadResource('Iron',100,1,4);
+        loadResource('Concrete',100,1,2);
     }
 }
 // Sets up jobs in civics tab
@@ -19,6 +22,7 @@ function defineJobs(){
     loadJob('farmer','Farmer',3);
     loadJob('lumberjack','Lumberjack',1);
     loadJob('quarry_worker','Quarry Worker',1);
+    loadJob('miner','Miner',1);
     loadJob('professor','Professor',0.5);
     loadJob('banker','Banker',0.1);
 }
@@ -55,7 +59,7 @@ function loadResource(name,max,value,rate,color) {
         filters: {
             size: function (value){
                 if (value <= 9999){
-                    return +value.toFixed(1);
+                    return +value.toFixed(0);
                 }
                 else if (value <= 1000000){
                     return +(value / 1000).toFixed(1) + 'K';

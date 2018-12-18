@@ -187,15 +187,31 @@ function mainLoop() {
                 if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
                 global.resource.Knowledge.amount = count;
                 
+                // Lumber
+                var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
+                count = global.resource.Lumber.amount + (global.civic.lumberjack.workers * lum_multiplier);
+                if (count > global.resource.Lumber.max){ count = global.resource.Lumber.max; }
+                global.resource.Lumber.amount = count;
+                
                 // Stone
-                count = global.resource.Stone.amount + global.civic.quarry_worker.workers;
+                var stone_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.25 : 0) + 1;
+                count = global.resource.Stone.amount + (global.civic.quarry_worker.workers * stone_multiplier);
                 if (count > global.resource.Stone.max){ count = global.resource.Stone.max; }
                 global.resource.Stone.amount = count;
                 
-                // Lumber
-                count = global.resource.Lumber.amount + global.civic.lumberjack.workers;
-                if (count > global.resource.Lumber.max){ count = global.resource.Lumber.max; }
-                global.resource.Lumber.amount = count;
+                // Copper
+                var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.1 : 0) + 1;
+                count = global.resource.Copper.amount + ((global.civic.miner.workers / 2) * copper_multiplier);
+                if (count > global.resource.Copper.max){ count = global.resource.Copper.max; }
+                global.resource.Copper.amount = count;
+                
+                // Iron
+                if (global.resource.Iron.display){
+                    var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.1 : 0) + 1;
+                    count = global.resource.Iron.amount + ((global.civic.miner.workers / 3) * iron_multiplier);
+                    if (count > global.resource.Iron.max){ count = global.resource.Iron.max; }
+                    global.resource.Iron.amount = count;
+                }
             }
             
             // Detect new unlocks
@@ -218,27 +234,33 @@ function mainLoop() {
         if (global.race.species !== 'protoplasm'){
             
             // Resource caps
-            var Money = 1000;
-            var Knowledge = 100;
-            var Food = 250;
-            var Lumber = 250;
-            var Stone = 250;
+            var caps = {
+                Money: 1000,
+                Knowledge: 100,
+                Food: 250,
+                Lumber: 250,
+                Stone: 250,
+                Copper: 100,
+                Iron: 100,
+                Concrete: 100
+            };
             if (global.city['shed']){
-                Lumber += (global.city['shed'].count * 250);
-                Stone += (global.city['shed'].count * 250);
+                caps['Lumber'] += (global.city['shed'].count * 250);
+                caps['Stone'] += (global.city['shed'].count * 250);
+                caps['Copper'] += (global.city['shed'].count * 100);
+                caps['Iron'] += (global.city['shed'].count * 100);
+                caps['Concrete'] += (global.city['shed'].count * 100);
             }
             if (global.city['university']){
-                Knowledge += (global.city['university'].count * 500);
+                caps['Knowledge'] += (global.city['university'].count * 500);
             }
             if (global.city['bank']){
-                Money += (global.city['bank'].count * 1000);
+                caps['Money'] += (global.city['bank'].count * 1000);
             }
             
-            global.resource.Money.max = Money;
-            global.resource.Knowledge.max = Knowledge;
-            global.resource.Lumber.max = Lumber;
-            global.resource.Stone.max = Stone;
-            global.resource.Food.max = Food;
+            Object.keys(caps).forEach(function (res) {
+                global.resource[res].max = caps[res];
+            });
             
             // medium resource delta tracking
             Object.keys(global.resource).forEach(function (res) {
