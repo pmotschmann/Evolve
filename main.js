@@ -311,6 +311,19 @@ function mainLoop() {
     }, long_timer);
 }
 
+function exportGame(){
+    $('#importExport').val(LZString.compressToBase64(JSON.stringify(global)));
+}
+
+function importGame(){
+    console.log('importing');
+    if ($('#importExport').val().length > 0){
+        global = JSON.parse(LZString.decompressFromBase64($('#importExport').val()));
+        save.setItem('evolved',LZString.compress(JSON.stringify(global)));
+        window.location.reload();
+    }
+}
+
 function newGame(){
     global['race'] = { species : 'protoplasm', gods: 'none' };
     Math.seed = Math.rand(0,1000);

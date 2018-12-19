@@ -42,6 +42,13 @@
                         <b-tab-item id="tech" :visible="showSpace" label="Space"></b-tab-item>
                         <b-tab-item id="settings" label="Settings">
                             <b-switch v-model="animated">Tab Animations</b-switch>
+                            <div class="importExport">
+                                <b-field label="Import/Export Save">
+                                    <b-input id="importExport" type="textarea"></b-input>
+                                </b-field>
+                                <button class="button" onclick="importGame()">Import Game</button>
+                                <button class="button" onclick="exportGame()">Export Game</button>
+                            </div>
                             <div class="reset">
                                 <b-collapse :open="false">
                                     <b-switch v-model="disableReset" slot="trigger">Enable Reset Button</b-switch>
