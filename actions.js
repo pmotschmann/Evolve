@@ -575,7 +575,7 @@ const actions = {
                     }
                     
                     if (global.race['slow'] || global.race['hyper']){
-                        save.setItem('evolved',JSON.stringify(global));
+                        save.setItem('evolved',LZString.compress(JSON.stringify(global)));
                         window.location.reload();
                     }
                 }

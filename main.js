@@ -4,7 +4,7 @@ $(function() {
     var global_data = save.getItem('evolved') || false;
     if (global_data) {
         // Load preexiting game data
-        global = JSON.parse(global_data);
+        global = JSON.parse(LZString.decompress(global_data));
         Math.seed = global.seed;
     }
     else {
@@ -92,6 +92,7 @@ $(function() {
 // Main game loop
 function mainLoop() {
     var fed = true;
+    var tax_multiplier = 1;
     var main_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
     intervals['main_loop'] = setInterval(function() {
         
@@ -183,24 +184,28 @@ function mainLoop() {
             // Resource Income
             if (fed){
                 // Knowledge
-                var count = global.resource.Knowledge.amount + (global.civic.professor.workers * 0.5) + 1;
+                var know_multiplier = 0.5 * tax_multiplier;
+                var count = global.resource.Knowledge.amount + (global.civic.professor.workers * know_multiplier) + 1;
                 if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
                 global.resource.Knowledge.amount = count;
                 
                 // Lumber
                 var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
+                lum_multiplier *= tax_multiplier;
                 count = global.resource.Lumber.amount + (global.civic.lumberjack.workers * lum_multiplier);
                 if (count > global.resource.Lumber.max){ count = global.resource.Lumber.max; }
                 global.resource.Lumber.amount = count;
                 
                 // Stone
                 var stone_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.25 : 0) + 1;
+                stone_multiplier *= tax_multiplier;
                 count = global.resource.Stone.amount + (global.civic.quarry_worker.workers * stone_multiplier);
                 if (count > global.resource.Stone.max){ count = global.resource.Stone.max; }
                 global.resource.Stone.amount = count;
                 
                 // Copper
                 var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.1 : 0) + 1;
+                copper_multiplier *= tax_multiplier;
                 count = global.resource.Copper.amount + ((global.civic.miner.workers / 2) * copper_multiplier);
                 if (count > global.resource.Copper.max){ count = global.resource.Copper.max; }
                 global.resource.Copper.amount = count;
@@ -208,6 +213,7 @@ function mainLoop() {
                 // Iron
                 if (global.resource.Iron.display){
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.1 : 0) + 1;
+                    iron_multiplier *= tax_multiplier;
                     count = global.resource.Iron.amount + ((global.civic.miner.workers / 3) * iron_multiplier);
                     if (count > global.resource.Iron.max){ count = global.resource.Iron.max; }
                     global.resource.Iron.amount = count;
@@ -301,7 +307,7 @@ function mainLoop() {
         });
         
         // Save game state
-        save.setItem('evolved',JSON.stringify(global));
+        save.setItem('evolved',LZString.compress(JSON.stringify(global)));
     }, long_timer);
 }
 
