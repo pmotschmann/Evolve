@@ -206,7 +206,7 @@ function mainLoop() {
                 // Copper
                 var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.1 : 0) + 1;
                 copper_multiplier *= tax_multiplier;
-                count = global.resource.Copper.amount + ((global.civic.miner.workers / 2) * copper_multiplier);
+                count = global.resource.Copper.amount + ((global.civic.miner.workers / 5) * copper_multiplier);
                 if (count > global.resource.Copper.max){ count = global.resource.Copper.max; }
                 global.resource.Copper.amount = count;
                 
@@ -229,7 +229,7 @@ function mainLoop() {
         // main resource delta tracking
         Object.keys(global.resource).forEach(function (res) {
             if (global['resource'][res].rate === 1){
-                global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (main_timer / 1000));
+                global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (main_timer / 1000)).toFixed(2);
                 global['resource'][res].last = global['resource'][res].amount;
             }
         });
@@ -271,7 +271,7 @@ function mainLoop() {
             // medium resource delta tracking
             Object.keys(global.resource).forEach(function (res) {
                 if (global['resource'][res].rate === 2){
-                    global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (mid_timer / 1000));
+                    global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (mid_timer / 1000)).toFixed(2);
                     global['resource'][res].last = global['resource'][res].amount;
                 }
             });
@@ -301,7 +301,7 @@ function mainLoop() {
         // slow resource delta tracking
         Object.keys(global.resource).forEach(function (res) {
             if (global['resource'][res].rate === 3){
-                global['resource'][res].diff = Math.round((global['resource'][res].amount - global['resource'][res].last) / (long_timer / 1000));
+                global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (long_timer / 1000)).toFixed(2);
                 global['resource'][res].last = global['resource'][res].amount;
             }
         });
@@ -316,7 +316,6 @@ function exportGame(){
 }
 
 function importGame(){
-    console.log('importing');
     if ($('#importExport').val().length > 0){
         global = JSON.parse(LZString.decompressFromBase64($('#importExport').val()));
         save.setItem('evolved',LZString.compress(JSON.stringify(global)));

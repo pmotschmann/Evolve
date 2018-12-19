@@ -46,11 +46,11 @@ function loadResource(name,max,value,rate,color) {
     }
     
     if (global['resource'][name]['max'] > 0){
-        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span><span class="diff">({{ diff | size }} /s)</span></div>');
+        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span><span class="diff">({{ diff | diffSize }} /s)</span></div>');
         $('#resources').append(res_container);
     }
     else {
-        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }}</span><span class="diff">({{ diff | size }} /s)</span></div>');
+        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }}</span><span class="diff">({{ diff | diffSize }} /s)</span></div>');
         $('#resources').append(res_container);
     }
     
@@ -58,33 +58,10 @@ function loadResource(name,max,value,rate,color) {
         data: global['resource'][name],
         filters: {
             size: function (value){
-                if (value <= 9999){
-                    return +value.toFixed(0);
-                }
-                else if (value <= 1000000){
-                    return +(value / 1000).toFixed(1) + 'K';
-                }
-                else if (value <= 1000000000){
-                    return +(value / 1000000).toFixed(1) + 'M';
-                }
-                else if (value <= 1000000000000){
-                    return +(value / 1000000000).toFixed(1) + 'G';
-                }
-                else if (value <= 1000000000000000){
-                    return +(value / 1000000000000).toFixed(1) + 'T';
-                }
-                else if (value <= 1000000000000000000){
-                    return +(value / 1000000000000000).toFixed(1) + 'P';
-                }
-                else if (value <= 1000000000000000000000){
-                    return +(value / 1000000000000000000).toFixed(1) + 'E';
-                }
-                else if (value <= 1000000000000000000000000){
-                    return +(value / 1000000000000000000000).toFixed(1) + 'Z';
-                }
-                else {
-                    return +(value / 1000000000000000000000000).toFixed(1) + 'Y';
-                }
+                return sizeApproximation(value,0);
+            },
+            diffSize: function (value){
+                return sizeApproximation(value,2);
             }
         }
     });
@@ -174,4 +151,34 @@ function loadJob(job, name, impact, color){
     $('#'+id+' .job_label').on('mouseout',function(){
             popper.hide();
         });
+}
+
+function sizeApproximation(value,precision){
+    if (value <= 9999){
+        return +value.toFixed(precision);
+    }
+    else if (value <= 1000000){
+        return +(value / 1000).toFixed(1) + 'K';
+    }
+    else if (value <= 1000000000){
+        return +(value / 1000000).toFixed(1) + 'M';
+    }
+    else if (value <= 1000000000000){
+        return +(value / 1000000000).toFixed(1) + 'G';
+    }
+    else if (value <= 1000000000000000){
+        return +(value / 1000000000000).toFixed(1) + 'T';
+    }
+    else if (value <= 1000000000000000000){
+        return +(value / 1000000000000000).toFixed(1) + 'P';
+    }
+    else if (value <= 1000000000000000000000){
+        return +(value / 1000000000000000000).toFixed(1) + 'E';
+    }
+    else if (value <= 1000000000000000000000000){
+        return +(value / 1000000000000000000000).toFixed(1) + 'Z';
+    }
+    else {
+        return +(value / 1000000000000000000000000).toFixed(1) + 'Y';
+    }
 }
