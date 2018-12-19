@@ -5,15 +5,19 @@ function defineResources() {
         loadResource('DNA',100,0,1);
     }
     else {
-        loadResource('Money',1000,1,3,'success');
-        loadResource(races[global.race.species].name,0,0,1,'warning');
-        loadResource('Knowledge',100,0,1,'warning');
-        loadResource('Food',250,1,1);
-        loadResource('Lumber',250,1,1);
-        loadResource('Stone',250,1,1);
-        loadResource('Copper',100,1,3);
-        loadResource('Iron',100,1,4);
-        loadResource('Concrete',100,1,2);
+        loadResource('Money',1000,3,'success');
+        loadResource(races[global.race.species].name,0,1,'warning');
+        loadResource('Knowledge',100,1,'warning');
+        loadResource('Food',250,1);
+        loadResource('Lumber',250,1);
+        loadResource('Stone',250,1);
+        loadResource('Copper',100,1);
+        loadResource('Iron',100,1);
+        loadResource('Concrete',100,1);
+        //loadResource('Steel',50,1);
+        //loadResource('Titanium',50,1);
+        //loadResource('Iridium',50,1);
+        //loadResource('Deuterium',20,1);
     }
 }
 // Sets up jobs in civics tab
@@ -30,13 +34,13 @@ function defineJobs(){
 // Load resource function
 // This function defines each resource, loads saved values from localStorage
 // And it creates Vue binds for various resource values
-function loadResource(name,max,value,rate,color) {
+function loadResource(name,max,rate,color) {
     color = color || 'info';
     if (!global['resource'][name]){
         global['resource'][name] = {
             name: name === 'Money' ? '$' : name,
             display: false,
-            value: value,
+            value: resource_values[name],
             amount: 0,
             last: 0,
             diff: 0,

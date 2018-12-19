@@ -25,6 +25,19 @@ var global = {
 };
 var vues = {};
 
+const resource_values = {
+    Food: 1,
+    Lumber: 1,
+    Stone: 1,
+    Copper: 5,
+    Iron: 8,
+    Concrete: 3,
+    Steel: 20,
+    Titanium: 30,
+    Iridium: 40,
+    Deuterium: 100
+};
+
 const job_desc = {
     farmer: function(){
         return 'Farmers create food to feed your population. Each farmer generates '+global.civic.farmer.impact+' food per tick';
