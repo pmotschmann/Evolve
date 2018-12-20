@@ -22,7 +22,7 @@ var global = {
     stats: {
         start: Date.now()
     },
-    event: 999
+    event: 200
 };
 var vues = {};
 
