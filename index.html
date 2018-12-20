@@ -18,6 +18,7 @@
     <script src="traits.js"></script>
     <script src="resources.js"></script>
     <script src="actions.js"></script>
+    <script src="events.js"></script>
     <script src="main.js"></script>
 </head>
 <body>
@@ -28,6 +29,9 @@
                 <div id="race" class="race">
                     <b-tooltip :label="desc()" position="is-right" type="is-dark" size="is-large" multilined animated>{{ name() }}</b-tooltip>
                 </div>
+                <b-collapse :open="true">
+                    <div id="msgQueue" class="msgQueue has-text-info"></div>
+                </b-collapse>
                 <div id="resources" class="resources"></div>
             </div>
             <div class="column is-three-quarters">

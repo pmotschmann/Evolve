@@ -4,7 +4,7 @@ $(function() {
     var global_data = save.getItem('evolved') || false;
     if (global_data) {
         // Load preexiting game data
-        global = JSON.parse(LZString.decompress(global_data));
+        global = JSON.parse(LZString.decompressFromUTF16(global_data));
         Math.seed = global.seed;
     }
     else {
@@ -95,7 +95,7 @@ function mainLoop() {
     var tax_multiplier = 1;
     var main_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
     intervals['main_loop'] = setInterval(function() {
-        
+            
         if (global.race.species === 'protoplasm'){
             // Early Evolution Game
             
@@ -280,6 +280,7 @@ function mainLoop() {
     
     var long_timer = global.race['slow'] ? 5500 : (global.race['hyper'] ? 4750 : 5000);
     intervals['long_loop'] = setInterval(function() {
+            
         if (global.race.species !== 'protoplasm'){
             // Tax Income
             if (global.tech['currency'] >= 1){
@@ -298,6 +299,47 @@ function mainLoop() {
             }
         }
         
+        // Event triggered
+        if (Math.rand(0,global.event) === 0){
+            var event_pool = [];
+            Object.keys(events).forEach(function (event) {
+                var isOk = true;
+                Object.keys(events[event].reqs).forEach(function (req) {
+                    switch(req){
+                        case 'race':
+                            if (events[event].reqs[req] !== global.race.species){
+                                isOk = false;
+                            }
+                            break;
+                        case 'resource':
+                            if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
+                                isOk = false;
+                            }
+                            break;
+                        case 'tech':
+                            if (!global.tech[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        default:
+                            isOk = false;
+                            break;
+                    }
+                });
+                if (isOk){
+                    event_pool.push(event);
+                }
+            });
+            if (event_pool.length > 0){
+                var msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
+                messageQueue(msg);
+            }
+            global.event = 999;
+        }
+        else {
+            global.event--;
+        }
+        
         // slow resource delta tracking
         Object.keys(global.resource).forEach(function (res) {
             if (global['resource'][res].rate === 3){
@@ -307,8 +349,13 @@ function mainLoop() {
         });
         
         // Save game state
-        save.setItem('evolved',LZString.compress(JSON.stringify(global)));
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     }, long_timer);
+}
+
+function messageQueue(msg){
+    var new_message = $('<p class="has-text-warning">'+msg+'</p>');
+    $('#msgQueue').prepend(new_message);
 }
 
 function exportGame(){
@@ -318,14 +365,14 @@ function exportGame(){
 function importGame(){
     if ($('#importExport').val().length > 0){
         global = JSON.parse(LZString.decompressFromBase64($('#importExport').val()));
-        save.setItem('evolved',LZString.compress(JSON.stringify(global)));
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         window.location.reload();
     }
 }
 
 function newGame(){
     global['race'] = { species : 'protoplasm', gods: 'none' };
-    Math.seed = Math.rand(0,1000);
+    Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
 }
 

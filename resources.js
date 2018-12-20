@@ -1,8 +1,8 @@
 // Sets up resource definitions
 function defineResources() {
     if (global.race.species === 'protoplasm'){
-        loadResource('RNA',100,0,1);
-        loadResource('DNA',100,0,1);
+        loadResource('RNA',100,1);
+        loadResource('DNA',100,1);
     }
     else {
         loadResource('Money',1000,3,'success');
