@@ -8,6 +8,7 @@ const actions = {
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
                     global['resource']['RNA'].amount++;
                 }
+                return false;
             }
         },
         dna: {
@@ -20,6 +21,7 @@ const actions = {
                     global['resource']['DNA'].amount++;
                     global['resource']['RNA'].amount -= 2;
                 }
+                return false;
             }
         },
         membrane: {
@@ -33,7 +35,9 @@ const actions = {
                     global['resource']['RNA'].max += 5;
                     global.race['membrane'].count++;
                     updateDesc('evolution','membrane');
+                    return true;
                 }
+                return false;
             }
         },
         organelles: {
@@ -48,8 +52,9 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.organelles.cost)){
                     global.race['organelles'].count++;
-                    updateDesc('evolution','organelles');
+                    return true;
                 }
+                return false;
             }
         },
         nucleus: {
@@ -64,8 +69,9 @@ const actions = {
             action: function (){
                 if (payCosts(actions.evolution.nucleus.cost)){
                     global.race['nucleus'].count++;
-                    updateDesc('evolution','nucleus');
+                    return true;
                 }
+                return false;
             }
         },
         eukaryotic_cell: {
@@ -81,8 +87,9 @@ const actions = {
                 if (payCosts(actions.evolution.eukaryotic_cell.cost)){
                     global.race['eukaryotic_cell'].count++;
                     global['resource']['DNA'].max += 10;
-                    updateDesc('evolution','eukaryotic_cell');
+                    return true;
                 }
+                return false;
             }
         },
         mitochondria: {
@@ -99,8 +106,9 @@ const actions = {
                     global.race['mitochondria'].count++;
                     global['resource']['DNA'].max += 25;
                     global['resource']['RNA'].max += 50;
-                    updateDesc('evolution','mitochondria');
+                    return true;
                 }
+                return false;
             }
         },
         sexual_reproduction: {
@@ -130,6 +138,7 @@ const actions = {
                         addAction('evolution','chitin');
                     }
                 }
+                return false;
             }
         },
         phagocytosis: {
@@ -147,6 +156,7 @@ const actions = {
                     global.race['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
+                return false;
             }
         },
         chloroplasts: {
@@ -164,6 +174,7 @@ const actions = {
                     global.race['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
+                return false;
             }
         },
         chitin: {
@@ -181,6 +192,7 @@ const actions = {
                     global.race['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
+                return false;
             }
         },
         multicellular: {
@@ -209,6 +221,7 @@ const actions = {
                         addAction('evolution','spores');
                     }
                 }
+                return false;
             }
         },
         spores: {
@@ -226,6 +239,7 @@ const actions = {
                     global.race['bryophyte'] = { count: 0 };
                     addAction('evolution','bryophyte');
                 }
+                return false;
             }
         },
         poikilohydric: {
@@ -243,6 +257,7 @@ const actions = {
                     global.race['bryophyte'] = { count: 0 };
                     addAction('evolution','bryophyte');
                 }
+                return false;
             }
         },
         bilateral_symmetry: {
@@ -268,6 +283,7 @@ const actions = {
                         addAction('evolution','deuterostome');
                     }
                 }
+                return false;
             }
         },
         bryophyte: {
@@ -299,6 +315,7 @@ const actions = {
                         }
                     }
                 }
+                return false;
             }
         },
         protostomes: {
@@ -316,6 +333,7 @@ const actions = {
                     global.race['athropods'] = { count: 0 };
                     addAction('evolution','athropods');
                 }
+                return false;
             }
         },
         deuterostome: {
@@ -341,6 +359,7 @@ const actions = {
                         addAction('evolution','eggshell');
                     }
                 }
+                return false;
             }
         },
         vascular: {
@@ -358,6 +377,7 @@ const actions = {
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
+                return false;
             }
         },
         homoiohydric: {
@@ -375,6 +395,7 @@ const actions = {
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
+                return false;
             }
         },
         athropods: {
@@ -392,6 +413,7 @@ const actions = {
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
+                return false;
             }
         },
         mammals: {
@@ -409,6 +431,7 @@ const actions = {
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
+                return false;
             }
         },
         eggshell: {
@@ -426,6 +449,7 @@ const actions = {
                     global.race['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
+                return false;
             }
         },
         sentience: {
@@ -579,6 +603,7 @@ const actions = {
                         window.location.reload();
                     }
                 }
+                return false;
             }
         }
     },
@@ -592,6 +617,7 @@ const actions = {
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     global['resource']['Food'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
                 }
+                return false;
             }
         },
         lumber: {
@@ -603,6 +629,7 @@ const actions = {
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     global['resource']['Lumber'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
                 }
+                return false;
             }
         },
         stone: {
@@ -614,6 +641,7 @@ const actions = {
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     global['resource']['Stone'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
                 }
+                return false;
             }
         },
         basic_housing: {
@@ -623,8 +651,8 @@ const actions = {
             reqs: { housing: 1 },
             cost: { 
                 Money: function(){ if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ return costMultiplier('basic_housing', 20, 1.15);} else { return 0; } },
-                Lumber: function(){ return costMultiplier('basic_housing', 12, 1.30); },
-                Stone: function(){ return costMultiplier('basic_housing', 8, 1.30); }
+                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.28); },
+                Stone: function(){ return costMultiplier('basic_housing', 8, 1.28); }
             },
             effect: 'Constructs housing for one citizen',
             action: function (){
@@ -632,9 +660,10 @@ const actions = {
                     global['resource'][races[global.race.species].name].display = true;
                     global['resource'][races[global.race.species].name].max += 1;
                     global.city['basic_housing'].count++;
-                    updateDesc('city','basic_housing');
                     global.main_tabs.data.showCivic = true;
+                    return true;
                 }
+                return false;
             }
         },
         farm: {
@@ -651,10 +680,11 @@ const actions = {
             action: function (){
                 if (payCosts(actions.city.farm.cost)){
                     global.city['farm'].count++;
-                    updateDesc('city','farm');
                     global.civic.farmer.display = true;
                     global.civic.farmer.max++;
+                    return true;
                 }
+                return false;
             }
         },
         shed: {
@@ -676,8 +706,9 @@ const actions = {
                     global['resource']['Iron'].max += 100;
                     global['resource']['Concrete'].max += 100;
                     global.city['shed'].count++;
-                    updateDesc('city','shed');
+                    return true;
                 }
+                return false;
             }
         },
         mill: {
@@ -694,8 +725,9 @@ const actions = {
             action: function (){
                 if (payCosts(actions.city.mill.cost)){
                     global.city['mill'].count++;
-                    updateDesc('city','mill');
+                    return true;
                 }
+                return false;
             }
         },
         rock_quarry: {
@@ -712,10 +744,11 @@ const actions = {
             action: function (){
                 if (payCosts(actions.city.rock_quarry.cost)){
                     global.city['rock_quarry'].count++;
-                    updateDesc('city','rock_quarry');
                     global.civic.quarry_worker.display = true;
                     global.civic.quarry_worker.max = global.city.rock_quarry.count * 2;
+                    return true;
                 }
+                return false;
             }
         },
         mine: {
@@ -731,11 +764,12 @@ const actions = {
             action: function (){
                 if (payCosts(actions.city.mine.cost)){
                     global.city['mine'].count++;
-                    updateDesc('city','mine');
                     global.resource.Copper.display = true;
                     global.civic.miner.display = true;
                     global.civic.miner.max = global.city.mine.count * 2;
+                    return true;
                 }
+                return false;
             }
         },
         temple: {
@@ -751,8 +785,9 @@ const actions = {
             action: function (){
                 if (payCosts(actions.city.temple.cost)){
                     global.city['temple'].count++;
-                    updateDesc('city','temple');
+                    return true;
                 }
+                return false;
             }
         },
         bank: {
@@ -770,9 +805,10 @@ const actions = {
                 if (payCosts(actions.city.bank.cost)){
                     global['resource']['Money'].max += 1000;
                     global.city.bank.count++;
-                    updateDesc('city','bank');
                     global.civic.banker.max = global.city.bank.count;
+                    return true;
                 }
+                return false;
             }
         },
         university: {
@@ -790,10 +826,11 @@ const actions = {
                 if (payCosts(actions.city.university.cost)){
                     global['resource']['Knowledge'].max += 500;
                     global.city.university.count++;
-                    updateDesc('city','university');
                     global.civic.professor.display = true;
                     global.civic.professor.max = global.city.university.count * 2;
+                    return true;
                 }
+                return false;
             }
         }
     },
@@ -810,10 +847,11 @@ const actions = {
             effect: 'Learn to construct basic housing for your citizens',
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
-                    gainTech('housing');
                     global.city['basic_housing'] = { count: 0 };
                     addAction('city','basic_housing');
+                    return true;
                 }
+                return false;
             }
         },
         agriculture: {
@@ -828,13 +866,14 @@ const actions = {
             effect: 'Learn to plant crops and harvest them for food',
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
-                    gainTech('agriculture');
                     global.city['farm'] = { count: 0 };
                     addAction('city','farm');
                     registerTech('currency');
                     registerTech('science');
                     registerTech('mining');
+                    return true;
                 }
+                return false;
             }
         },
         mining: {
@@ -849,10 +888,11 @@ const actions = {
             effect: 'Learn how to dig up stone slabs from a quarry',
             action: function (){
                 if (payCosts(actions.tech.mining.cost)){
-                    gainTech('mining');
                     global.city['rock_quarry'] = { count: 0 };
                     addAction('city','rock_quarry');
+                    return true;
                 }
+                return false;
             }
         },
         metal_working: {
@@ -867,14 +907,15 @@ const actions = {
             effect: 'Learn how to mine and refine copper into a pure form',
             action: function (){
                 if (payCosts(actions.tech.metal_working.cost)){
-                    gainTech('metal_working');
                     global.city['mine'] = { count: 0 };
                     addAction('city','mine');
                     registerTech('iron_mining');
                     if (global.tech['axe'] === 1){
                         registerTech('copper_axes');
                     }
+                    return true;
                 }
+                return false;
             }
         },
         iron_mining: {
@@ -889,9 +930,10 @@ const actions = {
             effect: 'Learn how to extract iron ore from mines',
             action: function (){
                 if (payCosts(actions.tech.iron_mining.cost)){
-                    gainTech('iron_mining');
                     global.resource.Iron.display = true;
+                    return true;
                 }
+                return false;
             }
         },
         storage: {
@@ -906,11 +948,12 @@ const actions = {
             effect: 'Designs a small storage shed.',
             action: function (){
                 if (payCosts(actions.tech.storage.cost)){
-                    gainTech('storage');
                     global.city['shed'] = { count: 0 };
                     addAction('city','shed');
-                    registerTech('stone_axe')
+                    registerTech('stone_axe');
+                    return true;
                 }
+                return false;
             }
         },
         currency: {
@@ -926,10 +969,11 @@ const actions = {
             effect: 'Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.',
             action: function (){
                 if (payCosts(actions.tech.currency.cost)){
-                    gainTech('currency');
                     global.resource.Money.display = true;
                     registerTech('banking');
+                    return true;
                 }
+                return false;
             }
         },
         banking: {
@@ -944,11 +988,12 @@ const actions = {
             effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money',
             action: function (){
                 if (payCosts(actions.tech.banking.cost)){
-                    gainTech('banking');
                     global.city['bank'] = { count: 0 };
                     addAction('city','bank');
                     registerTech('investing');
+                    return true;
                 }
+                return false;
             }
         },
         investing: {
@@ -964,9 +1009,10 @@ const actions = {
             effect: 'Discover the principles of investing, unlocks the banker job.',
             action: function (){
                 if (payCosts(actions.tech.investing.cost)){
-                    gainTech('investing');
                     global.civic.banker.display = true;
+                    return true;
                 }
+                return false;
             }
         },
         science: {
@@ -981,10 +1027,11 @@ const actions = {
             effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
             action: function (){
                 if (payCosts(actions.tech.science.cost)){
-                    gainTech('science');
                     global.city['university'] = { count: 0 };
                     addAction('city','university');
+                    return true;
                 }
+                return false;
             }
         },
         stone_axe: {
@@ -1001,13 +1048,14 @@ const actions = {
             effect: 'Creates a primitive axe made from stone lashed to a stick.',
             action: function (){
                 if (payCosts(actions.tech.stone_axe.cost)){
-                    gainTech('stone_axe');
                     global.civic.lumberjack.display = true;
                     global.civic.lumberjack.max = 10;
                     if (global.tech['mining'] >= 2){
                         registerTech('copper_axes');
                     }
+                    return true;
                 }
+                return false;
             }
         },
         copper_axes: {
@@ -1023,8 +1071,9 @@ const actions = {
             effect: 'Upgrade axe technology to metal axes made from copper',
             action: function (){
                 if (payCosts(actions.tech.copper_axes.cost)){
-                    gainTech('copper_axes');
+                    return true;
                 }
+                return false;
             }
         }
     }
@@ -1082,7 +1131,16 @@ function addAction(action,type){
             title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title()
         },
         methods: {
-            action: function(){ actions[action][type].action() }
+            action: function(){ 
+                if (actions[action][type].action()){
+                    if (action === 'tech'){
+                        gainTech(type);
+                    }
+                    else {
+                        updateDesc(action,type);
+                    }
+                }
+            }
         },
     });
     vues[id].$mount('#'+id);

@@ -229,8 +229,7 @@ function mainLoop() {
         // main resource delta tracking
         Object.keys(global.resource).forEach(function (res) {
             if (global['resource'][res].rate === 1){
-                global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (main_timer / 1000)).toFixed(2);
-                global['resource'][res].last = global['resource'][res].amount;
+                diffCalc(res,main_timer);
             }
         });
     }, main_timer);
@@ -271,8 +270,7 @@ function mainLoop() {
             // medium resource delta tracking
             Object.keys(global.resource).forEach(function (res) {
                 if (global['resource'][res].rate === 2){
-                    global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (mid_timer / 1000)).toFixed(2);
-                    global['resource'][res].last = global['resource'][res].amount;
+                    diffCalc(res,mid_timer);
                 }
             });
         }
@@ -343,14 +341,26 @@ function mainLoop() {
         // slow resource delta tracking
         Object.keys(global.resource).forEach(function (res) {
             if (global['resource'][res].rate === 3){
-                global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (long_timer / 1000)).toFixed(2);
-                global['resource'][res].last = global['resource'][res].amount;
+                diffCalc(res,long_timer);
             }
         });
         
         // Save game state
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     }, long_timer);
+}
+
+function diffCalc(res,period){
+    if (global['resource'][res].amount !== global['resource'][res].max && global['resource'][res].amount !== 0){
+        global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (period / 1000)).toFixed(2);
+        global['resource'][res].last = global['resource'][res].amount;
+    }
+    if (global['resource'][res].diff < 0 && !$('#res-'+res+' .diff').hasClass('has-text-danger')){
+        $('#res-'+res+' .diff').addClass('has-text-danger');
+    }
+    else if (global['resource'][res].diff >= 0 && $('#res-'+res+' .diff').hasClass('has-text-danger')){
+        $('#res-'+res+' .diff').removeClass('has-text-danger');
+    }
 }
 
 function messageQueue(msg){
