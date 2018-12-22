@@ -848,7 +848,6 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
                     global.city['basic_housing'] = { count: 0 };
-                    addAction('city','basic_housing');
                     return true;
                 }
                 return false;
@@ -867,10 +866,6 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
                     global.city['farm'] = { count: 0 };
-                    addAction('city','farm');
-                    registerTech('currency');
-                    registerTech('science');
-                    registerTech('mining');
                     return true;
                 }
                 return false;
@@ -889,7 +884,6 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.mining.cost)){
                     global.city['rock_quarry'] = { count: 0 };
-                    addAction('city','rock_quarry');
                     return true;
                 }
                 return false;
@@ -908,11 +902,6 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.metal_working.cost)){
                     global.city['mine'] = { count: 0 };
-                    addAction('city','mine');
-                    registerTech('iron_mining');
-                    if (global.tech['axe'] === 1){
-                        registerTech('copper_axes');
-                    }
                     return true;
                 }
                 return false;
@@ -949,8 +938,6 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.storage.cost)){
                     global.city['shed'] = { count: 0 };
-                    addAction('city','shed');
-                    registerTech('stone_axe');
                     return true;
                 }
                 return false;
@@ -970,7 +957,6 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.currency.cost)){
                     global.resource.Money.display = true;
-                    registerTech('banking');
                     return true;
                 }
                 return false;
@@ -989,8 +975,6 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.banking.cost)){
                     global.city['bank'] = { count: 0 };
-                    addAction('city','bank');
-                    registerTech('investing');
                     return true;
                 }
                 return false;
@@ -1028,7 +1012,6 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.science.cost)){
                     global.city['university'] = { count: 0 };
-                    addAction('city','university');
                     return true;
                 }
                 return false;
@@ -1050,9 +1033,6 @@ const actions = {
                 if (payCosts(actions.tech.stone_axe.cost)){
                     global.civic.lumberjack.display = true;
                     global.civic.lumberjack.max = 10;
-                    if (global.tech['mining'] >= 2){
-                        registerTech('copper_axes');
-                    }
                     return true;
                 }
                 return false;
@@ -1116,7 +1096,19 @@ function registerTech(action){
 function gainTech(action){
     var tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
-    removeAction(actions.tech[action].id);
+    
+    Object.keys(actions.city).forEach(function (city) {
+        removeAction(actions.city[city].id);
+        if (checkCityRequirements(city)){
+            addAction('city',city);
+        }
+    });
+    Object.keys(actions.tech).forEach(function (tech) {
+        removeAction(actions.tech[tech].id);
+        if (checkTechRequirements(tech)){
+            addAction('tech',tech);
+        }
+    });
 }
 
 function addAction(action,type){
