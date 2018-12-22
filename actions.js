@@ -1088,9 +1088,9 @@ function addAction(action,type){
     vues[id].$mount('#'+id);
     var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark"></div>');
     popper.hide();
-    actionDesc(popper,action,type);
     $('#main').append(popper);
     $('#'+id).on('mouseover',function(){
+            actionDesc(popper,action,type);
             popper.show();
             new Popper($('#'+id),popper);
         });
@@ -1100,15 +1100,18 @@ function addAction(action,type){
 }
 
 function actionDesc(parent,action,type){
+    parent.empty();
     var desc = typeof actions[action][type].desc === 'string' ? actions[action][type].desc : actions[action][type].desc();
     parent.append($('<div>'+desc+'</div>'));
     if (actions[action][type].cost){ 
         var cost = $('<div></div>');
         costs = adjustCosts(actions[action][type].cost);
         Object.keys(costs).forEach(function (res) {
-            if (costs[res]() > 0){
+            var res_cost = costs[res]();
+            if (res_cost > 0){
                 var label = res === 'Money' ? '$' : res+': ';
-                cost.append($('<div>'+label+costs[res]()+'</div>'));
+                var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
+                cost.append($('<div class="'+color+'">'+label+res_cost+'</div>'));
             }
         });
         parent.append(cost);
@@ -1134,7 +1137,6 @@ function setTitle(title,category,action){
 
 function updateDesc(category,action){
     var id = actions[category][action].id;
-    $('#pop'+id).empty();
     actionDesc($('#pop'+id),category,action);
     $('#'+id).html(actions[category][action].title());
 }
