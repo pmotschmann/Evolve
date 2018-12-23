@@ -599,7 +599,7 @@ const actions = {
                     }
                     
                     if (global.race['slow'] || global.race['hyper']){
-                        save.setItem('evolved',LZString.compress(JSON.stringify(global)));
+                        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
                         window.location.reload();
                     }
                 }
@@ -1155,7 +1155,7 @@ function actionDesc(parent,action,type){
     parent.append($('<div>'+desc+'</div>'));
     if (actions[action][type].cost){ 
         var cost = $('<div></div>');
-        costs = adjustCosts(actions[action][type].cost);
+        var costs = adjustCosts(actions[action][type].cost);
         Object.keys(costs).forEach(function (res) {
             var res_cost = costs[res]();
             if (res_cost > 0){
@@ -1193,11 +1193,14 @@ function updateDesc(category,action){
 
 function adjustCosts(costs){
     if (global.race['kindling_kindred'] && costs['Lumber']){
-        delete costs['Lumber'];
-        Object.keys(costs).forEach(function (res) {
-            var newcost = Math.round(costs[res]() * 1.2);
-            costs[res] = function(){ return newcost; }
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res !== 'Lumber'){
+                //var newcost = Math.round(costs[res]() * 1.2);
+                newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
+            }
         });
+        return newCosts;
     }
     return costs;
 }
@@ -1205,7 +1208,7 @@ function adjustCosts(costs){
 function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
-        Object.keys(costs).forEach(function (res) {
+        Object.keys(costs).forEach(function (res){
             global['resource'][res].amount -= costs[res]();
         });
         return true;
@@ -1216,7 +1219,7 @@ function payCosts(costs){
 function checkCosts(costs){
     costs = adjustCosts(costs);
     var test = true;
-    Object.keys(costs).forEach(function (res) {
+    Object.keys(costs).forEach(function (res){
         var testCost = Number(costs[res]()) || 0;
         if (testCost > Number(global['resource'][res].amount)) {
             test = false;
