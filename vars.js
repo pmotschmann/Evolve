@@ -32,7 +32,7 @@ const resource_values = {
     Stone: 1,
     Copper: 5,
     Iron: 8,
-    Concrete: 3,
+    Cement: 3,
     Steel: 20,
     Titanium: 30,
     Iridium: 40,
@@ -41,23 +41,26 @@ const resource_values = {
 
 const job_desc = {
     farmer: function(){
-        return 'Farmers create food to feed your population. Each farmer generates '+global.civic.farmer.impact+' food per tick';
+        return 'Farmers create food to feed your population. Each farmer generates '+global.civic.farmer.impact+' food per tick.';
     },
     lumberjack: function(){
-        return 'Lumberjacks harvet lumber from the forests. Each lumberjack generates '+global.civic.lumberjack.impact+' lumber per tick';
+        return 'Lumberjacks harvet lumber from the forests. Each lumberjack generates '+global.civic.lumberjack.impact+' lumber per tick.';
     },
     quarry_worker: function(){
-        return 'Quarry Workers mine stone from rock quarries. Each quarry worker generates '+global.civic.quarry_worker.impact+' stone per tick';
+        return 'Quarry Workers mine stone from rock quarries. Each quarry worker generates '+global.civic.quarry_worker.impact+' stone per tick.';
     },
     miner: function(){
-        return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner can generate a variable amount of minerals of various types';
+        return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner can generate a variable amount of minerals of various types.';
+    },
+    cement_worker: function(){
+        return 'Cement plant workers turn stone into cement, each worker produces '+global.civic.cement_worker.impact+' cement and consumes 3 stone per tick.';
     },
     banker: function(){
         var interest = global.civic.banker.impact * 100;
-        return 'Bankers manage your banks increasing tax revenue. Each banker increases tax income by '+interest+'% per tax cycle';
+        return 'Bankers manage your banks increasing tax revenue. Each banker increases tax income by '+interest+'% per tax cycle.';
     },
     professor: function(){
-        return 'Professors help educate your citizens and contribute to knowledge gain. Each professor generates '+global.civic.professor.impact+' knowledge per tick';
+        return 'Professors help educate your citizens and contribute to knowledge gain. Each professor generates '+global.civic.professor.impact+' knowledge per tick.';
     }
 }
 

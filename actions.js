@@ -650,9 +650,31 @@ const actions = {
             desc: 'Construct a cabin',
             reqs: { housing: 1 },
             cost: { 
-                Money: function(){ if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ return costMultiplier('basic_housing', 20, 1.15);} else { return 0; } },
+                Money: function(){ 
+                    if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ 
+                        return costMultiplier('basic_housing', 20, 1.15);
+                    } 
+                    else { 
+                        return 0; 
+                    } 
+                },
                 Lumber: function(){ return costMultiplier('basic_housing', 10, 1.28); },
-                Stone: function(){ return costMultiplier('basic_housing', 8, 1.28); }
+                Stone: function(){ 
+                    if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
+                        return costMultiplier('basic_housing', 7, 1.28);
+                    } 
+                    else { 
+                        return costMultiplier('basic_housing', 8, 1.28); 
+                    }
+                },
+                Cement: function(){ 
+                    if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
+                        return costMultiplier('basic_housing', 2, 1.2);
+                    } 
+                    else { 
+                        return 0; 
+                    } 
+                }
             },
             effect: 'Constructs housing for one citizen',
             action: function (){
@@ -704,7 +726,7 @@ const actions = {
                     global['resource']['Stone'].max += 250;
                     global['resource']['Copper'].max += 100;
                     global['resource']['Iron'].max += 100;
-                    global['resource']['Concrete'].max += 100;
+                    global['resource']['Cement'].max += 100;
                     global.city['shed'].count++;
                     return true;
                 }
@@ -800,7 +822,7 @@ const actions = {
                 Lumber: function(){ return costMultiplier('bank', 75, 1.30); },
                 Stone: function(){ return costMultiplier('bank', 100, 1.45); }
             },
-            effect: 'Increases money capacity by $1000',
+            effect: function (){ return global.tech['banking'] >= 3 ? 'Increases money capacity by $2500' : 'Increases money capacity by $1000'; },
             action: function (){
                 if (payCosts(actions.city.bank.cost)){
                     global['resource']['Money'].max += 1000;
@@ -828,6 +850,28 @@ const actions = {
                     global.city.university.count++;
                     global.civic.professor.display = true;
                     global.civic.professor.max = global.city.university.count * 2;
+                    return true;
+                }
+                return false;
+            }
+        },
+        cement_plant: {
+            id: 'city-cement_plant',
+            title: function (){ return setTitle('Cement Factory','city','cement_plant'); },
+            desc: 'Construct a Cement Factory',
+            reqs: { cement: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('cement_plant', 3000, 1.5); },
+                Lumber: function(){ return costMultiplier('cement_plant', 1800, 1.35); },
+                Stone: function(){ return costMultiplier('cement_plant', 2000, 1.3); }
+            },
+            effect: 'Cement plants turn stone into cement, each plant can support 3 workers.',
+            action: function (){
+                if (payCosts(actions.city.cement_plant.cost)){
+                    global.resource.Cement.display = true;
+                    global.city.cement_plant.count++;
+                    global.civic.cement_worker.display = true;
+                    global.civic.cement_worker.max = global.city.cement_plant.count * 3;
                     return true;
                 }
                 return false;
@@ -999,6 +1043,25 @@ const actions = {
                 return false;
             }
         },
+        vault: {
+            id: 'tech-vault',
+            title: 'Bank Vault',
+            desc: 'Concrete Vaults',
+            reqs: { banking: 2, cement: 1 },
+            grant: ['banking',3],
+            cost: { 
+                Money: function(){ return 2000; },
+                Knowledge: function(){ return 5000; },
+                Cement: function(){ return 500; }
+            },
+            effect: 'Upgrade your banks with vaults made out of concrete, increases $ storage capacity.',
+            action: function (){
+                if (payCosts(actions.tech.vault.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         science: {
             id: 'tech-science',
             title: 'Scientific Method',
@@ -1012,6 +1075,24 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.science.cost)){
                     global.city['university'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        cement: {
+            id: 'tech-mining',
+            title: 'Cement',
+            desc: 'Learn how to turn stone into cement',
+            reqs: {},
+            grant: ['cement',1],
+            cost: { 
+                Knowledge: function(){ return 1000; }
+            },
+            effect: 'Learn how to make cement from stone.',
+            action: function (){
+                if (payCosts(actions.tech.cement.cost)){
+                    global.city['cement_plant'] = { count: 0 };
                     return true;
                 }
                 return false;

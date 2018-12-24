@@ -184,7 +184,7 @@ function mainLoop() {
             // Resource Income
             if (fed){
                 // Knowledge
-                var know_multiplier = 0.5 * tax_multiplier;
+                var know_multiplier = global.civic.professor.impact * tax_multiplier;
                 var count = global.resource.Knowledge.amount + (global.civic.professor.workers * know_multiplier) + 1;
                 if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
                 global.resource.Knowledge.amount = count;
@@ -192,14 +192,14 @@ function mainLoop() {
                 // Lumber
                 var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
                 lum_multiplier *= tax_multiplier;
-                count = global.resource.Lumber.amount + (global.civic.lumberjack.workers * lum_multiplier);
+                count = global.resource.Lumber.amount + (global.civic.lumberjack.workers * global.civic.lumberjack.impact * lum_multiplier);
                 if (count > global.resource.Lumber.max){ count = global.resource.Lumber.max; }
                 global.resource.Lumber.amount = count;
                 
                 // Stone
                 var stone_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.25 : 0) + 1;
                 stone_multiplier *= tax_multiplier;
-                count = global.resource.Stone.amount + (global.civic.quarry_worker.workers * stone_multiplier);
+                count = global.resource.Stone.amount + (global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier);
                 if (count > global.resource.Stone.max){ count = global.resource.Stone.max; }
                 global.resource.Stone.amount = count;
                 
@@ -214,9 +214,26 @@ function mainLoop() {
                 if (global.resource.Iron.display){
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? (global.tech['pickaxe'] - 1) * 0.1 : 0) + 1;
                     iron_multiplier *= tax_multiplier;
-                    count = global.resource.Iron.amount + ((global.civic.miner.workers / 3) * iron_multiplier);
+                    count = global.resource.Iron.amount + ((global.civic.miner.workers * 3) * iron_multiplier);
                     if (count > global.resource.Iron.max){ count = global.resource.Iron.max; }
                     global.resource.Iron.amount = count;
+                }
+                
+                // Cement
+                if (global.resource.Cement.display && global.resource.Cement.amount < global.resource.Cement.max){
+                    console.log('cement');
+                    var consume = global.civic.cement_worker.workers * 3;
+                    var workDone = global.civic.cement_worker.workers;
+                    while (consume > global.resource.Stone.amount && consume > 0){
+                        consume -= 3;
+                        workDone--;
+                    }
+                    global.resource.Stone.amount -= consume;
+                    var cement_multiplier = 1;
+                    cement_multiplier *= tax_multiplier;
+                    count = global.resource.Cement.amount + ((workDone * global.civic.cement_worker.impact) * cement_multiplier);
+                    if (count > global.resource.Cement.max){ count = global.resource.Cement.max; }
+                    global.resource.Cement.amount = count;
                 }
             }
             
@@ -247,20 +264,20 @@ function mainLoop() {
                 Stone: 250,
                 Copper: 100,
                 Iron: 100,
-                Concrete: 100
+                Cement: 100
             };
             if (global.city['shed']){
                 caps['Lumber'] += (global.city['shed'].count * 250);
                 caps['Stone'] += (global.city['shed'].count * 250);
                 caps['Copper'] += (global.city['shed'].count * 100);
                 caps['Iron'] += (global.city['shed'].count * 100);
-                caps['Concrete'] += (global.city['shed'].count * 100);
+                caps['Cement'] += (global.city['shed'].count * 100);
             }
             if (global.city['university']){
                 caps['Knowledge'] += (global.city['university'].count * 500);
             }
             if (global.city['bank']){
-                caps['Money'] += (global.city['bank'].count * 1000);
+                caps['Money'] += (global.city['bank'].count * (global.tech['banking'] >= 3 ? 2500 : 1000));
             }
             
             Object.keys(caps).forEach(function (res) {

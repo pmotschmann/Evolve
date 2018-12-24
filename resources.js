@@ -13,7 +13,7 @@ function defineResources() {
         loadResource('Stone',250,1);
         loadResource('Copper',100,1);
         loadResource('Iron',100,1);
-        loadResource('Concrete',100,1);
+        loadResource('Cement',100,1);
         //loadResource('Steel',50,1);
         //loadResource('Titanium',50,1);
         //loadResource('Iridium',50,1);
@@ -27,6 +27,7 @@ function defineJobs(){
     loadJob('lumberjack','Lumberjack',1);
     loadJob('quarry_worker','Quarry Worker',1);
     loadJob('miner','Miner',1);
+    loadJob('cement_worker','Cement Plant Worker',0.25);
     loadJob('professor','Professor',0.5);
     loadJob('banker','Banker',0.1);
 }
