@@ -26,7 +26,7 @@ const actions = {
         },
         membrane: {
             id: 'evo-membrane',
-            title: function (){ return setTitle('Membrane','race','membrane'); },
+            title: 'Membrane',
             desc: 'Evolve Membranes',
             cost: { RNA: function(){ return (global.race['membrane'].count * 2) + 2; } },
             effect: 'Increases RNA capacity by 5',
@@ -34,7 +34,6 @@ const actions = {
                 if (payCosts(actions.evolution.membrane.cost)){
                     global['resource']['RNA'].max += 5;
                     global.race['membrane'].count++;
-                    updateDesc('evolution','membrane');
                     return true;
                 }
                 return false;
@@ -42,7 +41,7 @@ const actions = {
         },
         organelles: {
             id: 'evo-organelles',
-            title: function (){ return setTitle('Organelles','race','organelles'); },
+            title: 'Organelles',
             desc: 'Evolve Organelles',
             cost: { 
                 RNA: function(){ return (global.race['organelles'].count * 8) + 12; },
@@ -59,7 +58,7 @@ const actions = {
         },
         nucleus: {
             id: 'evo-nucleus',
-            title: function (){ return setTitle('Nucleus','race','nucleus'); },
+            title: 'Nucleus',
             desc: 'Evolve Nucleus',
             cost: { 
                 RNA: function(){ return (global.race['nucleus'].count * 45) + 75; },
@@ -76,7 +75,7 @@ const actions = {
         },
         eukaryotic_cell: {
             id: 'evo-eukaryotic_cell',
-            title: function (){ return setTitle('Eukaryotic Cell','race','eukaryotic_cell'); },
+            title: 'Eukaryotic Cell',
             desc: 'Evolve Eukaryotic Cell',
             cost: { 
                 RNA: function(){ return (global.race['eukaryotic_cell'].count * 20) + 20; },
@@ -94,7 +93,7 @@ const actions = {
         },
         mitochondria: {
             id: 'evo-mitochondria',
-            title: function (){ return setTitle('Mitochondria','race','mitochondria'); },
+            title: 'Mitochondria',
             desc: 'Evolve Mitochondria',
             cost: { 
                 RNA: function(){ return (global.race['mitochondria'].count * 50) + 150; },
@@ -646,7 +645,7 @@ const actions = {
         },
         basic_housing: {
             id: 'city-house',
-            title: function (){ return setTitle('Cabin','city','basic_housing'); },
+            title: 'Cabin',
             desc: 'Construct a cabin',
             reqs: { housing: 1 },
             cost: { 
@@ -688,9 +687,51 @@ const actions = {
                 return false;
             }
         },
+        cottage: {
+            id: 'city-cottage',
+            title: 'Cottage',
+            desc: 'Construct a cottage',
+            reqs: { housing: 2 },
+            cost: { 
+                Money: function(){ return costMultiplier('cottage', 900, 1.15); },
+                Lumber: function(){ return costMultiplier('cottage', 220, 1.3); },
+                Iron: function(){ return costMultiplier('cottage', 105, 1.3); },
+                Cement: function(){ return costMultiplier('cottage', 135, 1.3); }
+            },
+            effect: 'Constructs housing for 2 citizens',
+            action: function (){
+                if (payCosts(actions.city.cottage.cost)){
+                    global['resource'][races[global.race.species].name].max += 2;
+                    global.city['cottage'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
+        apartments: {
+            id: 'city-apartments',
+            title: 'Apartmnet',
+            desc: 'Construct an apartmnet building',
+            reqs: { housing: 3 },
+            cost: { 
+                Money: function(){ return costMultiplier('apartments', 250, 1.15); },
+                Lumber: function(){ return costMultiplier('apartments', 100, 1.3); },
+                Iron: function(){ return costMultiplier('apartments', 30, 1.3); },
+                Cement: function(){ return costMultiplier('apartments', 50, 1.3); }
+            },
+            effect: 'Constructs housing for 5 citizens',
+            action: function (){
+                if (payCosts(actions.city.apartments.cost)){
+                    global['resource'][races[global.race.species].name].max += 5;
+                    global.city['apartments'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
         farm: {
             id: 'city-farm',
-            title: function (){ return setTitle('Farm','city','farm'); },
+            title: 'Farm',
             desc: 'Build a farm',
             reqs: { agriculture: 1 },
             cost: { 
@@ -709,9 +750,48 @@ const actions = {
                 return false;
             }
         },
+        silo: {
+            id: 'city-silo',
+            title: 'Grain Silo',
+            desc: 'Build a grain silo',
+            reqs: { agriculture: 2 },
+            cost: { 
+                Money: function(){ return costMultiplier('silo', 500, 1.30); },
+                Lumber: function(){ return costMultiplier('silo', 150, 1.35); },
+                Cement: function(){ return costMultiplier('silo', 50, 1.35); }
+            },
+            effect: 'Increases food storage capacity by 250',
+            action: function (){
+                if (payCosts(actions.city.silo.cost)){
+                    global.city['silo'].count++;
+                    global['resource']['Food'].max += 250;
+                    return true;
+                }
+                return false;
+            }
+        },
+        mill: {
+            id: 'city-mill',
+            title: 'Mill',
+            desc: 'Build a mill',
+            reqs: { agriculture: 3 },
+            cost: { 
+                Money: function(){ return costMultiplier('mill', 500, 1.2); },
+                Lumber: function(){ return costMultiplier('mill', 250, 1.35); },
+                Stone: function(){ return costMultiplier('mill', 50, 1.35); }
+            },
+            effect: 'Increases the efficency of farmers by 10%',
+            action: function (){
+                if (payCosts(actions.city.mill.cost)){
+                    global.city['mill'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
         shed: {
             id: 'city-shed',
-            title: function (){ return setTitle('Shed','city','shed'); },
+            title: 'Shed',
             desc: 'Construct a shed',
             reqs: { storage: 1 },
             cost: { 
@@ -733,28 +813,9 @@ const actions = {
                 return false;
             }
         },
-        mill: {
-            id: 'city-mill',
-            title: function (){ return setTitle('Mill','city','mill'); },
-            desc: 'Build a mill',
-            reqs: { agriculture: 2 },
-            cost: { 
-                Money: function(){ return costMultiplier('mill', 500, 1.2); },
-                Lumber: function(){ return costMultiplier('mill', 250, 1.35); },
-                Stone: function(){ return costMultiplier('mill', 50, 1.35); }
-            },
-            effect: 'Increases the efficency of farmers by 10%',
-            action: function (){
-                if (payCosts(actions.city.mill.cost)){
-                    global.city['mill'].count++;
-                    return true;
-                }
-                return false;
-            }
-        },
         rock_quarry: {
             id: 'city-rock_quarry',
-            title: function (){ return setTitle('Rock Quarry','city','rock_quarry'); },
+            title: 'Rock Quarry',
             desc: 'Build a stone quarry',
             reqs: { mining: 1 },
             cost: { 
@@ -775,7 +836,7 @@ const actions = {
         },
         mine: {
             id: 'city-mine',
-            title: function (){ return setTitle('Mine','city','mine'); },
+            title: 'Mine',
             desc: 'Build a mine',
             reqs: { mining: 2 },
             cost: { 
@@ -796,7 +857,7 @@ const actions = {
         },
         temple: {
             id: 'city-temple',
-            title: function (){ return setTitle('Temple','city','temple'); },
+            title: 'Temple',
             desc: 'Build a temple',
             reqs: { religion: 1 },
             cost: { 
@@ -814,7 +875,7 @@ const actions = {
         },
         bank: {
             id: 'city-bank',
-            title: function (){ return setTitle('Bank','city','bank'); },
+            title: 'Bank',
             desc: 'Build a bank',
             reqs: { banking: 1 },
             cost: { 
@@ -835,7 +896,7 @@ const actions = {
         },
         university: {
             id: 'city-university',
-            title: function (){ return setTitle('University','city','university'); },
+            title: 'University',
             desc: 'Construct a university',
             reqs: { science: 1 },
             cost: { 
@@ -849,7 +910,27 @@ const actions = {
                     global['resource']['Knowledge'].max += 500;
                     global.city.university.count++;
                     global.civic.professor.display = true;
-                    global.civic.professor.max = global.city.university.count * 2;
+                    global.civic.professor.max = global.city.university.count;
+                    return true;
+                }
+                return false;
+            }
+        },
+        library: {
+            id: 'city-library',
+            title: 'Library',
+            desc: 'Construct a library',
+            reqs: { science: 2 },
+            cost: { 
+                Money: function(){ return costMultiplier('library', 45, 1.2); },
+                Lumber: function(){ return costMultiplier('library', 35, 1.20); },
+                Cement: function(){ return costMultiplier('library', 20, 1.20); }
+            },
+            effect: 'Increases knowledge capacity by 125',
+            action: function (){
+                if (payCosts(actions.city.library.cost)){
+                    global['resource']['Knowledge'].max += 125;
+                    global.city.library.count++;
                     return true;
                 }
                 return false;
@@ -857,7 +938,7 @@ const actions = {
         },
         cement_plant: {
             id: 'city-cement_plant',
-            title: function (){ return setTitle('Cement Factory','city','cement_plant'); },
+            title: 'Cement Factory',
             desc: 'Construct a Cement Factory',
             reqs: { cement: 1 },
             cost: { 
@@ -890,8 +971,26 @@ const actions = {
             },
             effect: 'Learn to construct basic housing for your citizens',
             action: function (){
-                if (payCosts(actions.tech.agriculture.cost)){
+                if (payCosts(actions.tech.housing.cost)){
                     global.city['basic_housing'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        cottage: {
+            id: 'tech-housing',
+            title: 'Cottages',
+            desc: 'Design a newer housing unit',
+            reqs: { housing: 1, cement: 1, mining: 3 },
+            grant: ['housing',2],
+            cost: { 
+                Knowledge: function(){ return 4000; }
+            },
+            effect: 'Learn to construct more comfortable housing for couples',
+            action: function (){
+                if (payCosts(actions.tech.cottage.cost)){
+                    global.city['cottage'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -910,6 +1009,41 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
                     global.city['farm'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        aphrodisiac: {
+            id: 'tech-aphrodisiac',
+            title: 'Aphrodisiac',
+            desc: 'Study population grown and how to enhance it',
+            reqs: { housing: 2 },
+            grant: ['reproduction',1],
+            cost: { 
+                Knowledge: function(){ return 5000; }
+            },
+            effect: 'Develop a substance that aids with population growth.',
+            action: function (){
+                if (payCosts(actions.tech.aphrodisiac.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        silo: {
+            id: 'tech-silo',
+            title: 'Grain Silo',
+            desc: 'Devise a structure to house grain',
+            reqs: { agriculture: 1, storage: 1, cement: 1 },
+            grant: ['agriculture',2],
+            cost: { 
+                Knowledge: function(){ return 1250; }
+            },
+            effect: 'Creates plans for a storage medium for food.',
+            action: function (){
+                if (payCosts(actions.tech.agriculture.cost)){
+                    global.city['silo'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -958,7 +1092,7 @@ const actions = {
             reqs: { mining: 2 },
             grant: ['mining',3],
             cost: { 
-                Knowledge: function(){ return 5000; }
+                Knowledge: function(){ return 3000; }
             },
             effect: 'Learn how to extract iron ore from mines',
             action: function (){
@@ -1052,7 +1186,8 @@ const actions = {
             cost: { 
                 Money: function(){ return 2000; },
                 Knowledge: function(){ return 5000; },
-                Cement: function(){ return 500; }
+                Iron: function(){ return 500; },
+                Cement: function(){ return 750; }
             },
             effect: 'Upgrade your banks with vaults made out of concrete, increases $ storage capacity.',
             action: function (){
@@ -1075,6 +1210,24 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.science.cost)){
                     global.city['university'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        library: {
+            id: 'tech-library',
+            title: 'Dewey Decimal System',
+            desc: 'Oraganize and store all the knowledge of your race',
+            reqs: { science: 1, cement: 1 },
+            grant: ['science',2],
+            cost: { 
+                Knowledge: function(){ return 800; }
+            },
+            effect: 'Create a system for organizing and storing knowledge in large storage buildings designed specifically for books.',
+            action: function (){
+                if (payCosts(actions.tech.library.cost)){
+                    global.city['library'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -1109,7 +1262,7 @@ const actions = {
                 Lumber: function(){ return 20; },
                 Stone: function(){ return 20; }
             },
-            effect: 'Creates a primitive axe made from stone lashed to a stick.',
+            effect: 'Creates a primitive axe made from stone lashed to a stick. Enables lumber harvesting.',
             action: function (){
                 if (payCosts(actions.tech.stone_axe.cost)){
                     global.civic.lumberjack.display = true;
@@ -1122,16 +1275,106 @@ const actions = {
         copper_axes: {
             id: 'tech-copper_axes',
             title: 'Copper Axe',
-            desc: 'Create tools made from copper',
+            desc: 'Create an axe made from copper',
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
             cost: { 
                 Knowledge: function(){ return 750; },
                 Copper: function(){ return 25; }
             },
-            effect: 'Upgrade axe technology to metal axes made from copper',
+            effect: 'Upgrade axe technology to metal axes made from copper. Improves lumber harvesting.',
             action: function (){
                 if (payCosts(actions.tech.copper_axes.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        iron_axes: {
+            id: 'tech-iron_axes',
+            title: 'Iron Axe',
+            desc: 'Create a sturdy axe made from iron',
+            reqs: { axe: 2, mining: 3 },
+            grant: ['axe',3],
+            cost: { 
+                Knowledge: function(){ return 3500; },
+                Iron: function(){ return 250; }
+            },
+            effect: 'Upgrade axe technology to metal axes made from iron. Improves lumber harvesting.',
+            action: function (){
+                if (payCosts(actions.tech.iron_axes.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        copper_pickaxe: {
+            id: 'tech-copper_pickaxe',
+            title: 'Copper Pickaxe',
+            desc: 'Create a pickaxe made from copper',
+            reqs: { mining: 2 },
+            grant: ['pickaxe',1],
+            cost: { 
+                Knowledge: function(){ return 750; },
+                Copper: function(){ return 25; }
+            },
+            effect: 'Upgrades pickaxe technology to metal pickaxes made from copper. Improves mining activities.',
+            action: function (){
+                if (payCosts(actions.tech.copper_pickaxe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        iron_pickaxe: {
+            id: 'tech-iron_pickaxe',
+            title: 'Iron Pickaxe',
+            desc: 'Create a pickaxe made from iron',
+            reqs: { pickaxe: 1, mining: 3 },
+            grant: ['pickaxe',2],
+            cost: { 
+                Knowledge: function(){ return 3500; },
+                Iron: function(){ return 250; }
+            },
+            effect: 'Upgrades pickaxe technology to metal pickaxes made from iron. Improves mining activities.',
+            action: function (){
+                if (payCosts(actions.tech.iron_pickaxe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        copper_hoe: {
+            id: 'tech-copper_hoe',
+            title: 'Copper Hoes',
+            desc: 'Create farming tools made from copper',
+            reqs: { mining: 2 },
+            grant: ['hoe',1],
+            cost: { 
+                Knowledge: function(){ return 800; },
+                Copper: function(){ return 50; }
+            },
+            effect: 'Create tools made from copper that aid farming. Improves farm efficiency.',
+            action: function (){
+                if (payCosts(actions.tech.copper_hoe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        iron_hoe: {
+            id: 'tech-iron_hoe',
+            title: 'Iron Hoes',
+            desc: 'Create farming tools made from copper',
+            reqs: { hoe: 1, mining: 3 },
+            grant: ['hoe',2],
+            cost: { 
+                Knowledge: function(){ return 4000; },
+                Iron: function(){ return 500; }
+            },
+            effect: 'Create tools made from iron that aid farming. Improves farm efficiency.',
+            action: function (){
+                if (payCosts(actions.tech.iron_hoe.cost)){
                     return true;
                 }
                 return false;
@@ -1198,10 +1441,17 @@ function addAction(action,type){
     }
     var id = actions[action][type].id;
     var element = $('<a id="'+id+'" class="button is-dark" v-on:click="action">{{ title }}</a>');
+    if (global[action][type] && global[action][type].count >= 0){
+        element.append($('<span class="count">{{ count }}</span>'));
+    }
     $('#'+action).append(element);
+    if (global[action][type] && global[action][type].count === 0){
+        $('#'+id+' .count').css('display','none');
+    }
     vues[id] = new Vue({
         data: {
-            title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title()
+            title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title(),
+            count: global[action][type] ? global[action][type].count : 0
         },
         methods: {
             action: function(){ 
@@ -1258,18 +1508,13 @@ function removeAction(id){
     $('#pop'+id).remove();
 }
 
-function setTitle(title,category,action){
-    var label = title;
-    if (global[category][action] && global[category][action].count > 0){
-        title += ' ('+global[category][action].count+')';
-    }
-    return title;
-}
-
 function updateDesc(category,action){
     var id = actions[category][action].id;
+    $('#'+id+' .count').html(global[category][action].count);
+    if (global[category][action] && global[category][action].count > 0){
+        $('#'+id+' .count').css('display','inline-block');
+    }
     actionDesc($('#pop'+id),category,action);
-    $('#'+id).html(actions[category][action].title());
 }
 
 function adjustCosts(costs){
@@ -1277,7 +1522,6 @@ function adjustCosts(costs){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber'){
-                //var newcost = Math.round(costs[res]() * 1.2);
                 newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
             }
         });

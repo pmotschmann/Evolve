@@ -41,19 +41,27 @@ const resource_values = {
 
 const job_desc = {
     farmer: function(){
-        return 'Farmers create food to feed your population. Each farmer generates '+global.civic.farmer.impact+' food per tick.';
+        var multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
+        var gain = +(global.civic.farmer.impact * multiplier).toFixed(1);
+        return 'Farmers create food to feed your population. Each farmer generates '+gain+' food per tick.';
     },
     lumberjack: function(){
-        return 'Lumberjacks harvet lumber from the forests. Each lumberjack generates '+global.civic.lumberjack.impact+' lumber per tick.';
+        var multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
+        var gain = +(global.civic.lumberjack.impact * multiplier).toFixed(1);
+        return 'Lumberjacks harvet lumber from the forests. Each lumberjack generates '+gain+' lumber per tick.';
     },
     quarry_worker: function(){
-        return 'Quarry Workers mine stone from rock quarries. Each quarry worker generates '+global.civic.quarry_worker.impact+' stone per tick.';
+        var multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.25 : 0) + 1;
+        var gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
+        return 'Quarry Workers mine stone from rock quarries. Each quarry worker generates '+gain+' stone per tick.';
     },
     miner: function(){
         return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner can generate a variable amount of minerals of various types.';
     },
     cement_worker: function(){
-        return 'Cement plant workers turn stone into cement, each worker produces '+global.civic.cement_worker.impact+' cement and consumes 3 stone per tick.';
+        var cement_multiplier = 1;
+        gain = global.civic.cement_worker.impact * cement_multiplier;
+        return 'Cement plant workers turn stone into cement, each worker produces '+gain+' cement and consumes 3 stone per tick.';
     },
     banker: function(){
         var interest = global.civic.banker.impact * 100;

@@ -39,8 +39,27 @@
             padding: 0 0 3rem 1rem;
         }
         a.button {
-            width: 10rem;
+            width: 11rem;
             margin: 1rem 1rem 0 0;
+            
+            span.count {
+                position: absolute;
+                top: -.125rem;
+                right: -.125rem;
+                display: inline-block;
+                height: 1.125rem;
+                line-height: 1rem;
+                padding: 0 .25rem;
+                border-top: .0625rem solid #282f2f;
+                border-right: .0625rem solid #282f2f;
+                border-radius: 0 7px 0 7px;
+                overflow: hidden;
+                background: #1f2424;
+            }
+        }
+        a.button:hover > span {
+            border-top: .0625rem solid #3a4344;
+            border-right: .0625rem solid #3a4344;
         }
     }
     

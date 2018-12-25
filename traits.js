@@ -59,8 +59,8 @@ const traits = {
         ranks: 0,
         type: 'genus',
     },
-    photosynth: {
-        desc: '',
+    photosynth: { // Halves food requirements
+        desc: "Your race produces part of it's food requirements through photosynthesis with the sun",
         ranks: 0,
         type: 'genus',
     },
