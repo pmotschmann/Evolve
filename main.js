@@ -183,7 +183,7 @@ function mainLoop() {
             // Citizen Growth
             if (fed && global['resource']['Food'].amount > 10 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
                 var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
-                if(Math.rand(lowerBound,2 * global['resource'][races[global.race.species].name].amount) == 0){
+                if(Math.rand(0,2 * global['resource'][races[global.race.species].name].amount) <= lowerBound){
                     global['resource'][races[global.race.species].name].amount++;
                 }
             }
