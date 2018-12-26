@@ -287,10 +287,10 @@ function mainLoop() {
                 lCaps['farmer'] += global.city['farm'].count;
             }
             if (global.city['rock_quarry']){
-                lCaps['quarry_worker'] += global.city['rock_quarry'].count * 2;
+                lCaps['quarry_worker'] += global.city['rock_quarry'].count;
             }
             if (global.city['mine']){
-                lCaps['miner'] += global.city['mine'].count * 2;
+                lCaps['miner'] += global.city['mine'].count;
             }
             if (global.city['bank']){
                 lCaps['banker'] += global.city['bank'].count;
@@ -308,11 +308,12 @@ function mainLoop() {
                 caps[races[global.race.species].name] += global.city['apartments'].count * 5;
             }
             if (global.city['shed']){
-                caps['Lumber'] += (global.city['shed'].count * 250);
-                caps['Stone'] += (global.city['shed'].count * 250);
-                caps['Copper'] += (global.city['shed'].count * 100);
-                caps['Iron'] += (global.city['shed'].count * 100);
-                caps['Cement'] += (global.city['shed'].count * 100);
+                var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
+                caps['Lumber'] += (global.city['shed'].count * (250 * multiplier));
+                caps['Stone'] += (global.city['shed'].count * (250 * multiplier));
+                caps['Copper'] += (global.city['shed'].count * (100 * multiplier));
+                caps['Iron'] += (global.city['shed'].count * (100 * multiplier));
+                caps['Cement'] += (global.city['shed'].count * (100 * multiplier));
             }
             if (global.city['silo']){
                 caps['Food'] += (global.city['silo'].count * 250);

@@ -797,16 +797,40 @@ const actions = {
             cost: { 
                 Money: function(){ return costMultiplier('shed', 75, 1.2); },
                 Lumber: function(){ return costMultiplier('shed', 60, 1.35); },
-                Stone: function(){ return costMultiplier('shed', 40, 1.35); }
+                Stone: function(){
+                    if (global.tech['storage'] && global.tech['storage'] === 1){ 
+                        return costMultiplier('shed', 40, 1.35);
+                    }
+                    else { 
+                        return 0; 
+                    }
+                },
+                Iron: function(){
+                    if (global.tech['storage'] && global.tech['storage'] >= 2){
+                        return costMultiplier('shed', 22, 1.3);
+                    }
+                    else {
+                        return 0; 
+                    }
+                },
+                Cement: function(){ 
+                    if (global.tech['storage'] && global.tech['storage'] >= 2){
+                        return costMultiplier('shed', 18, 1.3);
+                    }
+                    else {
+                        return 0; 
+                    }
+                }
             },
             effect: 'A small storage facility which increases your storage capacity of various resources',
             action: function (){
                 if (payCosts(actions.city.shed.cost)){
-                    global['resource']['Lumber'].max += 250;
-                    global['resource']['Stone'].max += 250;
-                    global['resource']['Copper'].max += 100;
-                    global['resource']['Iron'].max += 100;
-                    global['resource']['Cement'].max += 100;
+                    var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
+                    global['resource']['Lumber'].max += (250 * multiplier);
+                    global['resource']['Stone'].max += (250 * multiplier);
+                    global['resource']['Copper'].max += (100 * multiplier);
+                    global['resource']['Iron'].max += (100 * multiplier);
+                    global['resource']['Cement'].max += (100 * multiplier);
                     global.city['shed'].count++;
                     return true;
                 }
@@ -828,7 +852,7 @@ const actions = {
                 if (payCosts(actions.city.rock_quarry.cost)){
                     global.city['rock_quarry'].count++;
                     global.civic.quarry_worker.display = true;
-                    global.civic.quarry_worker.max = global.city.rock_quarry.count * 2;
+                    global.civic.quarry_worker.max = global.city.rock_quarry.count;
                     return true;
                 }
                 return false;
@@ -849,7 +873,7 @@ const actions = {
                     global.city['mine'].count++;
                     global.resource.Copper.display = true;
                     global.civic.miner.display = true;
-                    global.civic.miner.max = global.city.mine.count * 2;
+                    global.civic.miner.max = global.city.mine.count;
                     return true;
                 }
                 return false;
@@ -1116,6 +1140,26 @@ const actions = {
             action: function (){
                 if (payCosts(actions.tech.storage.cost)){
                     global.city['shed'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        reinforced_shed: {
+            id: 'tech-reinforced_shed',
+            title: 'Reinforced Sheds',
+            desc: 'Upgrade your sheds',
+            reqs: { storage: 1, cement: 1 },
+            grant: ['storage',2],
+            cost: {
+                Money: function(){ return 3750; },
+                Knowledge: function(){ return 2500; },
+                Iron: function(){ return 750; },
+                Cement: function(){ return 500; }
+            },
+            effect: 'Reinforce your sheds with newer materials to increase storage capacity.',
+            action: function (){
+                if (payCosts(actions.tech.cement.cost)){
                     return true;
                 }
                 return false;
