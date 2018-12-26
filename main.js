@@ -40,26 +40,26 @@ $(function() {
                 addAction('evolution',evolve_actions[i]);
             }
         }
-        if (global.race['sexual_reproduction'] && !global.race['phagocytosis'] && !global.race['chloroplasts'] && !global.race['chitin']){
+        if (global.evolution['sexual_reproduction'] && !global.evolution['phagocytosis'] && !global.evolution['chloroplasts'] && !global.evolution['chitin']){
             addAction('evolution','sexual_reproduction');
         }
-        else if (global.race['phagocytosis'] && global.race['phagocytosis'].count == 0){
+        else if (global.evolution['phagocytosis'] && global.evolution['phagocytosis'].count == 0){
             addAction('evolution','phagocytosis');
         }
-        else if (global.race['chloroplasts'] && global.race['chloroplasts'].count == 0){
+        else if (global.evolution['chloroplasts'] && global.evolution['chloroplasts'].count == 0){
             addAction('evolution','chloroplasts');
         }
-        else if (global.race['chitin'] && global.race['chitin'].count == 0){
+        else if (global.evolution['chitin'] && global.evolution['chitin'].count == 0){
             addAction('evolution','chitin');
         }
-        else if ((global.race['phagocytosis'] || global.race['chloroplasts'] || global.race['chitin']) && !global.race['multicellular']){
-            if (global.race['phagocytosis']){
+        else if ((global.evolution['phagocytosis'] || global.evolution['chloroplasts'] || global.evolution['chitin']) && !global.evolution['multicellular']){
+            if (global.evolution['phagocytosis']){
                 addAction('evolution','phagocytosis');
             }
-            else if (global.race['chloroplasts']){
+            else if (global.evolution['chloroplasts']){
                 addAction('evolution','chloroplasts');
             }
-            else if (global.race['chitin']){
+            else if (global.evolution['chitin']){
                 addAction('evolution','chitin');
             }
         }
@@ -100,8 +100,8 @@ function mainLoop() {
             // Early Evolution Game
             
             // Gain RNA & DNA
-            if (global.race['nucleus'] && global['resource']['DNA'].amount < global['resource']['DNA'].max){
-                var increment = global.race['nucleus'].count;
+            if (global.evolution['nucleus'] && global['resource']['DNA'].amount < global['resource']['DNA'].max){
+                var increment = global.evolution['nucleus'].count;
                 while (global['resource']['RNA'].amount < increment * 2){
                     increment--;
                     if (increment <= 0){ break; }
@@ -111,39 +111,39 @@ function mainLoop() {
                 global['resource']['DNA'].amount = count;
                 global['resource']['RNA'].amount -= increment * 2;
             }
-            if (global.race['organelles'] && global['resource']['RNA'].amount < global['resource']['RNA'].max){
-                var count = global['resource']['RNA'].amount + global.race['organelles'].count;
+            if (global.evolution['organelles'] && global['resource']['RNA'].amount < global['resource']['RNA'].max){
+                var count = global['resource']['RNA'].amount + global.evolution['organelles'].count;
                 if (count > global['resource']['RNA'].max){ count = global['resource']['RNA'].max; }
                 global['resource']['RNA'].amount = count;
             }
             // Detect new unlocks
-            if (global['resource']['RNA'].amount >= 2 && !global.race['dna']){
-                global.race['dna'] = 1;
+            if (global['resource']['RNA'].amount >= 2 && !global.evolution['dna']){
+                global.evolution['dna'] = 1;
                 addAction('evolution','dna');
                 global.resource.DNA.display = true;
             }
-            else if (global['resource']['RNA'].amount >= 10 && !global.race['membrane']){
-                global.race['membrane'] = { count: 0 };
+            else if (global['resource']['RNA'].amount >= 10 && !global.evolution['membrane']){
+                global.evolution['membrane'] = { count: 0 };
                 addAction('evolution','membrane');
             }
-            else if (global['resource']['DNA'].amount >= 4 && !global.race['organelles']){
-                global.race['organelles'] = { count: 0 };
+            else if (global['resource']['DNA'].amount >= 4 && !global.evolution['organelles']){
+                global.evolution['organelles'] = { count: 0 };
                 addAction('evolution','organelles');
             }
-            else if (global.race['organelles'] && global.race['organelles'].count >= 2 && !global.race['nucleus']){
-                global.race['nucleus'] = { count: 0 };
+            else if (global.evolution['organelles'] && global.evolution['organelles'].count >= 2 && !global.evolution['nucleus']){
+                global.evolution['nucleus'] = { count: 0 };
                 addAction('evolution','nucleus');
             }
-            else if (global.race['nucleus'] && global.race['nucleus'].count >= 1 && !global.race['eukaryotic_cell']){
-                global.race['eukaryotic_cell'] = { count: 0 };
+            else if (global.evolution['nucleus'] && global.evolution['nucleus'].count >= 1 && !global.evolution['eukaryotic_cell']){
+                global.evolution['eukaryotic_cell'] = { count: 0 };
                 addAction('evolution','eukaryotic_cell');
             }
-            else if (global.race['eukaryotic_cell'] && global.race['eukaryotic_cell'].count >= 1 && !global.race['mitochondria']){
-                global.race['mitochondria'] = { count: 0 };
+            else if (global.evolution['eukaryotic_cell'] && global.evolution['eukaryotic_cell'].count >= 1 && !global.evolution['mitochondria']){
+                global.evolution['mitochondria'] = { count: 0 };
                 addAction('evolution','mitochondria');
             }
-            else if (global.race['mitochondria'] && global.race['mitochondria'].count >= 1 && !global.race['sexual_reproduction']){
-                global.race['sexual_reproduction'] = { count: 0 };
+            else if (global.evolution['mitochondria'] && global.evolution['mitochondria'].count >= 1 && !global.evolution['sexual_reproduction']){
+                global.evolution['sexual_reproduction'] = { count: 0 };
                 addAction('evolution','sexual_reproduction');
             }
         }
@@ -287,7 +287,7 @@ function mainLoop() {
                 lCaps['farmer'] += global.city['farm'].count;
             }
             if (global.city['rock_quarry']){
-                lCaps['quarry_worker'] += global.city['rock_quarry'].count * 2;
+                lCaps['quarry_worker'] += global.city['rock_quarry'].count;
             }
             if (global.city['mine']){
                 lCaps['miner'] += global.city['mine'].count * 2;
@@ -318,8 +318,11 @@ function mainLoop() {
                 caps['Food'] += (global.city['silo'].count * 250);
             }
             if (global.city['university']){
-                caps['Knowledge'] += (global.city['university'].count * 500) + (global.city['library'].count * 125);
+                caps['Knowledge'] += (global.city['university'].count * 500);
                 lCaps['professor'] += global.city['university'].count;
+            }
+            if (global.city['library']){
+                caps['Knowledge'] += (global.city['library'].count * 125);
             }
             if (global.city['bank']){
                 caps['Money'] += (global.city['bank'].count * (global.tech['banking'] >= 3 ? 2500 : 1000));

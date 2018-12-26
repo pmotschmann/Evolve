@@ -28,12 +28,12 @@ const actions = {
             id: 'evo-membrane',
             title: 'Membrane',
             desc: 'Evolve Membranes',
-            cost: { RNA: function(){ return (global.race['membrane'].count * 2) + 2; } },
+            cost: { RNA: function(){ return (global.evolution['membrane'].count * 2) + 2; } },
             effect: 'Increases RNA capacity by 5',
             action: function (){
                 if (payCosts(actions.evolution.membrane.cost)){
                     global['resource']['RNA'].max += 5;
-                    global.race['membrane'].count++;
+                    global.evolution['membrane'].count++;
                     return true;
                 }
                 return false;
@@ -44,13 +44,13 @@ const actions = {
             title: 'Organelles',
             desc: 'Evolve Organelles',
             cost: { 
-                RNA: function(){ return (global.race['organelles'].count * 8) + 12; },
-                DNA: function(){ return (global.race['organelles'].count * 4) + 4; },
+                RNA: function(){ return (global.evolution['organelles'].count * 8) + 12; },
+                DNA: function(){ return (global.evolution['organelles'].count * 4) + 4; },
             },
             effect: 'Automatically generate RNA',
             action: function (){
                 if (payCosts(actions.evolution.organelles.cost)){
-                    global.race['organelles'].count++;
+                    global.evolution['organelles'].count++;
                     return true;
                 }
                 return false;
@@ -61,13 +61,13 @@ const actions = {
             title: 'Nucleus',
             desc: 'Evolve Nucleus',
             cost: { 
-                RNA: function(){ return (global.race['nucleus'].count * 45) + 75; },
-                DNA: function(){ return (global.race['nucleus'].count * 18) + 30; },
+                RNA: function(){ return (global.evolution['nucleus'].count * 45) + 75; },
+                DNA: function(){ return (global.evolution['nucleus'].count * 18) + 30; },
             },
             effect: 'Automatically consume RNA to create DNA',
             action: function (){
                 if (payCosts(actions.evolution.nucleus.cost)){
-                    global.race['nucleus'].count++;
+                    global.evolution['nucleus'].count++;
                     return true;
                 }
                 return false;
@@ -78,13 +78,13 @@ const actions = {
             title: 'Eukaryotic Cell',
             desc: 'Evolve Eukaryotic Cell',
             cost: { 
-                RNA: function(){ return (global.race['eukaryotic_cell'].count * 20) + 20; },
-                DNA: function(){ return (global.race['eukaryotic_cell'].count * 12) + 40; },
+                RNA: function(){ return (global.evolution['eukaryotic_cell'].count * 20) + 20; },
+                DNA: function(){ return (global.evolution['eukaryotic_cell'].count * 12) + 40; },
             },
             effect: 'Increases DNA capacity by 10',
             action: function (){
                 if (payCosts(actions.evolution.eukaryotic_cell.cost)){
-                    global.race['eukaryotic_cell'].count++;
+                    global.evolution['eukaryotic_cell'].count++;
                     global['resource']['DNA'].max += 10;
                     return true;
                 }
@@ -96,13 +96,13 @@ const actions = {
             title: 'Mitochondria',
             desc: 'Evolve Mitochondria',
             cost: { 
-                RNA: function(){ return (global.race['mitochondria'].count * 50) + 150; },
-                DNA: function(){ return (global.race['mitochondria'].count * 35) + 120; },
+                RNA: function(){ return (global.evolution['mitochondria'].count * 50) + 150; },
+                DNA: function(){ return (global.evolution['mitochondria'].count * 35) + 120; },
             },
             effect: 'Increases DNA capacity by 25 and RNA capacity by 50',
             action: function (){
                 if (payCosts(actions.evolution.mitochondria.cost)){
-                    global.race['mitochondria'].count++;
+                    global.evolution['mitochondria'].count++;
                     global['resource']['DNA'].max += 25;
                     global['resource']['RNA'].max += 50;
                     return true;
@@ -120,20 +120,20 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.sexual_reproduction.cost)){
-                    global.race['sexual_reproduction'].count++;
+                    global.evolution['sexual_reproduction'].count++;
                     removeAction(actions.evolution.sexual_reproduction.id);
                     
                     var path = Math.floor(Math.seededRandom(0,100));
                     if (path < 84){
-                        global.race['phagocytosis'] = { count: 0 };
+                        global.evolution['phagocytosis'] = { count: 0 };
                         addAction('evolution','phagocytosis');
                     }
                     else if (path < 92){
-                        global.race['chloroplasts'] = { count: 0 };
+                        global.evolution['chloroplasts'] = { count: 0 };
                         addAction('evolution','chloroplasts');
                     }
                     else {
-                        global.race['chitin'] = { count: 0 };
+                        global.evolution['chitin'] = { count: 0 };
                         addAction('evolution','chitin');
                     }
                 }
@@ -150,9 +150,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.phagocytosis.cost)){
-                    global.race['phagocytosis'].count++;
+                    global.evolution['phagocytosis'].count++;
                     removeAction(actions.evolution.phagocytosis.id);
-                    global.race['multicellular'] = { count: 0 };
+                    global.evolution['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
                 return false;
@@ -168,9 +168,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.chloroplasts.cost)){
-                    global.race['chloroplasts'].count++;
+                    global.evolution['chloroplasts'].count++;
                     removeAction(actions.evolution.chloroplasts.id);
-                    global.race['multicellular'] = { count: 0 };
+                    global.evolution['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
                 return false;
@@ -186,9 +186,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.chitin.cost)){
-                    global.race['chitin'].count++;
+                    global.evolution['chitin'].count++;
                     removeAction(actions.evolution.chitin.id);
-                    global.race['multicellular'] = { count: 0 };
+                    global.evolution['multicellular'] = { count: 0 };
                     addAction('evolution','multicellular');
                 }
                 return false;
@@ -204,19 +204,19 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.multicellular.cost)){
-                    global.race['multicellular'].count++;
+                    global.evolution['multicellular'].count++;
                     removeAction(actions.evolution.multicellular.id);
                     
-                    if (global.race['phagocytosis']){
-                        global.race['bilateral_symmetry'] = { count: 0 };
+                    if (global.evolution['phagocytosis']){
+                        global.evolution['bilateral_symmetry'] = { count: 0 };
                         addAction('evolution','bilateral_symmetry');
                     }
-                    else if (global.race['chloroplasts']){
-                        global.race['poikilohydric'] = { count: 0 };
+                    else if (global.evolution['chloroplasts']){
+                        global.evolution['poikilohydric'] = { count: 0 };
                         addAction('evolution','poikilohydric');
                     }
-                    else if (global.race['chitin']) {
-                        global.race['spores'] = { count: 0 };
+                    else if (global.evolution['chitin']) {
+                        global.evolution['spores'] = { count: 0 };
                         addAction('evolution','spores');
                     }
                 }
@@ -233,9 +233,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.spores.cost)){
-                    global.race['spores'].count++;
+                    global.evolution['spores'].count++;
                     removeAction(actions.evolution.spores.id);
-                    global.race['bryophyte'] = { count: 0 };
+                    global.evolution['bryophyte'] = { count: 0 };
                     addAction('evolution','bryophyte');
                 }
                 return false;
@@ -251,9 +251,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.poikilohydric.cost)){
-                    global.race['poikilohydric'].count++;
+                    global.evolution['poikilohydric'].count++;
                     removeAction(actions.evolution.poikilohydric.id);
-                    global.race['bryophyte'] = { count: 0 };
+                    global.evolution['bryophyte'] = { count: 0 };
                     addAction('evolution','bryophyte');
                 }
                 return false;
@@ -269,16 +269,16 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.bilateral_symmetry.cost)){
-                    global.race['bilateral_symmetry'].count++;
+                    global.evolution['bilateral_symmetry'].count++;
                     removeAction(actions.evolution.bilateral_symmetry.id);
                     
                     var path = Math.floor(Math.seededRandom(0,100));
                     if (path < 14){
-                        global.race['protostomes'] = { count: 0 };
+                        global.evolution['protostomes'] = { count: 0 };
                         addAction('evolution','protostomes');
                     }
                     else {
-                        global.race['deuterostome'] = { count: 0 };
+                        global.evolution['deuterostome'] = { count: 0 };
                         addAction('evolution','deuterostome');
                     }
                 }
@@ -295,21 +295,21 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.bryophyte.cost)){
-                    global.race['bryophyte'].count++;
+                    global.evolution['bryophyte'].count++;
                     removeAction(actions.evolution.bryophyte.id);
                     
-                    if (global.race['spores']){
-                        global.race['vascular'] = { count: 0 };
+                    if (global.evolution['spores']){
+                        global.evolution['vascular'] = { count: 0 };
                         addAction('evolution','vascular');
                     }
                     else {
                         var path = Math.floor(Math.seededRandom(0,100));
                         if (path < 50){
-                            global.race['vascular'] = { count: 0 };
+                            global.evolution['vascular'] = { count: 0 };
                             addAction('evolution','vascular');
                         }
                         else {
-                            global.race['homoiohydric'] = { count: 0 };
+                            global.evolution['homoiohydric'] = { count: 0 };
                             addAction('evolution','homoiohydric');
                         }
                     }
@@ -327,9 +327,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.protostomes.cost)){
-                    global.race['protostomes'].count++;
+                    global.evolution['protostomes'].count++;
                     removeAction(actions.evolution.protostomes.id);
-                    global.race['athropods'] = { count: 0 };
+                    global.evolution['athropods'] = { count: 0 };
                     addAction('evolution','athropods');
                 }
                 return false;
@@ -345,16 +345,16 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.deuterostome.cost)){
-                    global.race['deuterostome'].count++;
+                    global.evolution['deuterostome'].count++;
                     removeAction(actions.evolution.deuterostome.id);
                     
                     var path = Math.floor(Math.seededRandom(0,100));
                     if (path < 67){
-                        global.race['mammals'] = { count: 0 };
+                        global.evolution['mammals'] = { count: 0 };
                         addAction('evolution','mammals');
                     }
                     else {
-                        global.race['eggshell'] = { count: 0 };
+                        global.evolution['eggshell'] = { count: 0 };
                         addAction('evolution','eggshell');
                     }
                 }
@@ -371,9 +371,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.vascular.cost)){
-                    global.race['vascular'].count++;
+                    global.evolution['vascular'].count++;
                     removeAction(actions.evolution.vascular.id);
-                    global.race['sentience'] = { count: 0 };
+                    global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
                 return false;
@@ -389,9 +389,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.homoiohydric.cost)){
-                    global.race['homoiohydric'].count++;
+                    global.evolution['homoiohydric'].count++;
                     removeAction(actions.evolution.homoiohydric.id);
-                    global.race['sentience'] = { count: 0 };
+                    global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
                 return false;
@@ -407,9 +407,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.athropods.cost)){
-                    global.race['athropods'].count++;
+                    global.evolution['athropods'].count++;
                     removeAction(actions.evolution.athropods.id);
-                    global.race['sentience'] = { count: 0 };
+                    global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
                 return false;
@@ -425,9 +425,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.mammals.cost)){
-                    global.race['mammals'].count++;
+                    global.evolution['mammals'].count++;
                     removeAction(actions.evolution.mammals.id);
-                    global.race['sentience'] = { count: 0 };
+                    global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
                 return false;
@@ -443,9 +443,9 @@ const actions = {
             effect: 'Unlocks the next step in evolution',
             action: function (){
                 if (payCosts(actions.evolution.eggshell.cost)){
-                    global.race['eggshell'].count++;
+                    global.evolution['eggshell'].count++;
                     removeAction(actions.evolution.eggshell.id);
-                    global.race['sentience'] = { count: 0 };
+                    global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
                 }
                 return false;
@@ -461,12 +461,12 @@ const actions = {
             effect: 'Evolve into a species which has achieved sentience',
             action: function (){
                 if (payCosts(actions.evolution.sentience.cost)){
-                    global.race['sentience'].count++;
+                    global.evolution['sentience'].count++;
                     removeAction(actions.evolution.sentience.id);
                     
                     // Trigger Next Phase of game
                     var path = Math.floor(Math.seededRandom(0,100));
-                    if (global.race['mammals']){
+                    if (global.evolution['mammals']){
                         if (path < 8){
                             global.race.species = 'cath';
                         }
@@ -504,7 +504,7 @@ const actions = {
                             global.race.species = 'human';
                         }
                     }
-                    else if (global.race['eggshell']){
+                    else if (global.evolution['eggshell']){
                         if (path < 17){
                             global.race.species = 'tortollan';
                         }
@@ -524,7 +524,7 @@ const actions = {
                             global.race.species = 'dracnid';
                         }
                     }
-                    else if (global.race['chitin']){
+                    else if (global.evolution['chitin']){
                         if (path < 50){
                             global.race.species = 'sporgar';
                         }
@@ -532,7 +532,7 @@ const actions = {
                             global.race.species = 'shroomi';
                         }
                     }
-                    else if (global.race['athropods']){
+                    else if (global.evolution['athropods']){
                         if (path < 33){
                             global.race.species = 'mantis';
                         }
@@ -543,10 +543,10 @@ const actions = {
                             global.race.species = 'antid';
                         }
                     }
-                    else if (global.race['chloroplasts'] && global.race['vascular']){
+                    else if (global.evolution['chloroplasts'] && global.evolution['vascular']){
                         global.race.species = 'entish';
                     }
-                    else if (global.race['chloroplasts'] && global.race['homoiohydric']){
+                    else if (global.evolution['chloroplasts'] && global.evolution['homoiohydric']){
                         global.race.species = 'cacti';
                     }
                     
@@ -828,7 +828,7 @@ const actions = {
                 if (payCosts(actions.city.rock_quarry.cost)){
                     global.city['rock_quarry'].count++;
                     global.civic.quarry_worker.display = true;
-                    global.civic.quarry_worker.max = global.city.rock_quarry.count * 2;
+                    global.civic.quarry_worker.max = global.city.rock_quarry.count;
                     return true;
                 }
                 return false;
@@ -979,7 +979,7 @@ const actions = {
             }
         },
         cottage: {
-            id: 'tech-housing',
+            id: 'tech-cottage',
             title: 'Cottages',
             desc: 'Design a newer housing unit',
             reqs: { housing: 1, cement: 1, mining: 3 },
@@ -1234,7 +1234,7 @@ const actions = {
             }
         },
         cement: {
-            id: 'tech-mining',
+            id: 'tech-cement',
             title: 'Cement',
             desc: 'Learn how to turn stone into cement',
             reqs: {},
@@ -1441,17 +1441,17 @@ function addAction(action,type){
     }
     var id = actions[action][type].id;
     var element = $('<a id="'+id+'" class="button is-dark" v-on:click="action">{{ title }}</a>');
-    if (global[action][type] && global[action][type].count >= 0){
+    if (action !== 'tech' && global[action][type] && global[action][type].count >= 0){
         element.append($('<span class="count">{{ count }}</span>'));
     }
     $('#'+action).append(element);
-    if (global[action][type] && global[action][type].count === 0){
+    if (action !== 'tech' && global[action][type] && global[action][type].count === 0){
         $('#'+id+' .count').css('display','none');
     }
     vues[id] = new Vue({
         data: {
             title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title(),
-            count: global[action][type] ? global[action][type].count : 0
+            count: action !== 'tech' && global[action][type] ? global[action][type].count : 0
         },
         methods: {
             action: function(){ 
@@ -1510,9 +1510,11 @@ function removeAction(id){
 
 function updateDesc(category,action){
     var id = actions[category][action].id;
-    $('#'+id+' .count').html(global[category][action].count);
-    if (global[category][action] && global[category][action].count > 0){
-        $('#'+id+' .count').css('display','inline-block');
+    if (category !== 'tech'){
+        $('#'+id+' .count').html(global[category][action].count);
+        if (global[category][action] && global[category][action].count > 0){
+            $('#'+id+' .count').css('display','inline-block');
+        }
     }
     actionDesc($('#pop'+id),category,action);
 }
