@@ -3,7 +3,9 @@ var intervals = {};
 var global = {
     seed: 1,
     resource: {},
+    evolution: {},
     tech: {},
+    city: {},
     civic: { free: 0 },
     main_tabs: {
         data: {
