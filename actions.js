@@ -830,12 +830,34 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.city.shed.cost)){
                     var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
-                    global['resource']['Lumber'].max += (250 * multiplier);
-                    global['resource']['Stone'].max += (250 * multiplier);
+                    global['resource']['Lumber'].max += (200 * multiplier);
+                    global['resource']['Stone'].max += (200 * multiplier);
                     global['resource']['Copper'].max += (100 * multiplier);
                     global['resource']['Iron'].max += (100 * multiplier);
                     global['resource']['Cement'].max += (100 * multiplier);
                     global.city['shed'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
+        lumber_yard: {
+            id: 'city-lumber_yard',
+            title: 'Lumber Yard',
+            desc: 'Build a lumber yard',
+            reqs: { axe: 1 },
+            cost: { 
+                Money: function(){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', 5, 1.85);} else { return 0; } },
+                Lumber: function(){ return costMultiplier('lumber_yard', 6, 1.9); },
+                Stone: function(){ return costMultiplier('lumber_yard', 2, 1.95); }
+            },
+            effect: 'Each lumber yard allows 2 workers to be assigned as lumber jacks and stores some lumber.',
+            action: function (){
+                if (payCosts(actions.city.lumber_yard.cost)){
+                    global.city['lumber_yard'].count++;
+                    global.civic.lumberjack.display = true;
+                    global.civic.lumberjack.max = global.city.lumber_yard.count * 2;
+                    global['resource']['Lumber'].max += 100;
                     return true;
                 }
                 return false;
@@ -857,6 +879,7 @@ export const actions = {
                     global.city['rock_quarry'].count++;
                     global.civic.quarry_worker.display = true;
                     global.civic.quarry_worker.max = global.city.rock_quarry.count;
+                    global['resource']['Stone'].max += 100;
                     return true;
                 }
                 return false;
@@ -1314,7 +1337,7 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.stone_axe.cost)){
                     global.civic.lumberjack.display = true;
-                    global.civic.lumberjack.max = 10;
+                    global.city['lumber_yard'] = { count: 0 };
                     return true;
                 }
                 return false;

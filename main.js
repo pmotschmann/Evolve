@@ -39,8 +39,6 @@ const job_desc = {
     }
 }
 
-
-
 if (runNew){
     newGame();
 }
@@ -299,8 +297,8 @@ function mainLoop() {
                 Money: 1000,
                 Knowledge: 100,
                 Food: 250,
-                Lumber: 250,
-                Stone: 250,
+                Lumber: 200,
+                Stone: 200,
                 Copper: 100,
                 Iron: 100,
                 Cement: 100
@@ -308,7 +306,7 @@ function mainLoop() {
             // labor caps
             var lCaps = {
                 farmer: 0,
-                lumberjack: 10,
+                lumberjack: 0,
                 quarry_worker: 0,
                 miner: 0,
                 cement_worker: 0,
@@ -321,6 +319,11 @@ function mainLoop() {
             }
             if (global.city['rock_quarry']){
                 lCaps['quarry_worker'] += global.city['rock_quarry'].count;
+                caps['Stone'] += (global.city['rock_quarry'].count * 100);
+            }
+            if (global.city['lumber_yard']){
+                lCaps['lumberjack'] += global.city['lumber_yard'].count * 2;
+                caps['Lumber'] += (global.city['lumber_yard'].count * 100);
             }
             if (global.city['mine']){
                 lCaps['miner'] += global.city['mine'].count;
@@ -342,8 +345,8 @@ function mainLoop() {
             }
             if (global.city['shed']){
                 var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
-                caps['Lumber'] += (global.city['shed'].count * (250 * multiplier));
-                caps['Stone'] += (global.city['shed'].count * (250 * multiplier));
+                caps['Lumber'] += (global.city['shed'].count * (200 * multiplier));
+                caps['Stone'] += (global.city['shed'].count * (200 * multiplier));
                 caps['Copper'] += (global.city['shed'].count * (100 * multiplier));
                 caps['Iron'] += (global.city['shed'].count * (100 * multiplier));
                 caps['Cement'] += (global.city['shed'].count * (100 * multiplier));
@@ -459,7 +462,6 @@ function mainLoop() {
     }, long_timer);
 }
 
-
 // Sets up jobs in civics tab
 function defineJobs(){
     loadUnemployed();
@@ -556,8 +558,6 @@ function loadJob(job, name, impact, color){
             popper.hide();
         });
 }
-
-
 
 function diffCalc(res,period){
     if (global['resource'][res].amount !== global['resource'][res].max && global['resource'][res].amount !== 0){
