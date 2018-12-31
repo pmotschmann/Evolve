@@ -2,16 +2,16 @@ import { global, vues } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
-    Food: 1,
-    Lumber: 1,
-    Stone: 1,
-    Copper: 5,
-    Iron: 8,
-    Cement: 3,
-    Steel: 20,
-    Titanium: 30,
-    Iridium: 40,
-    Deuterium: 100
+    Food: 5,
+    Lumber: 5,
+    Stone: 5,
+    Copper: 25,
+    Iron: 40,
+    Cement: 15,
+    //Steel: 100,
+    //Titanium: 150,
+    //Iridium: 200,
+    //Deuterium: 500
 };
 
 // Sets up resource definitions
@@ -21,6 +21,7 @@ export function defineResources() {
         loadResource('DNA',100,1);
     }
     else {
+        initMarket();
         loadResource('Money',1000,3,'success');
         loadResource(races[global.race.species].name,0,1,'warning');
         loadResource('Knowledge',100,1,'warning');
@@ -76,6 +77,68 @@ function loadResource(name,max,rate,color) {
         }
     });
     vues['res_'+name].$mount('#res-' + name);
+    
+    if (name !== races[global.race.species].name && name !== 'Money' && name !== 'Knowledge'){
+        var market_item = $('<div id="market-' + name + '" class="market-item" v-show="display"></div>');
+        $('#market').append(market_item);
+        
+        market_item.append($('<span class="res has-text-' + color + '">{{ name }}</span>'));
+        
+        market_item.append($('<span class="buy"><span class="has-text-success">BUY</span></span>'));
+        market_item.append($('<span class="order" @click="purchase(\''+name+'\')">${{ value | buy }}</span>'));
+        
+        market_item.append($('<span class="sell"><span class="has-text-danger">SELL</span></span>'));
+        market_item.append($('<span class="order" @click="sell(\''+name+'\')">${{ value | sell }}</span>'));
+        
+        vues['market_'+name] = new Vue({
+            data: global['resource'][name],
+            methods: {
+                purchase(res){
+                    var qty = Number(vues['market_qty'].qty);
+                    var price = Math.round(global.resource[res].value * qty);
+                    if (global.resource.Money.amount >= price){
+                        global.resource[res].amount += qty;
+                        global.resource.Money.amount -= price;
+                    }
+                },
+                sell(res){
+                    var qty = Number(vues['market_qty'].qty);
+                    if (global.resource[res].amount >= qty){
+                        var price = Math.round(global.resource[res].value * qty / 5);
+                        global.resource[res].amount -= qty;
+                        global.resource.Money.amount += price;
+                    }
+                }
+            },
+            filters: {
+                buy: function (value){
+                    return sizeApproximation(value * vues['market_qty'].qty,0);
+                },
+                sell: function (value){
+                    return sizeApproximation(value * vues['market_qty'].qty / 5,0);
+                },
+            }
+        });
+        vues['market_'+name].$mount('#market-' + name);
+    }
+}
+
+function initMarket(){
+    var market = $('<div id="market-qty" class="market-header"></div>');
+    $('#market').append(market);
+    
+    market.append($('<b-radio v-model="qty" native-value="10">10x</b-radio>'));
+    market.append($('<b-radio v-model="qty" native-value="25">25x</b-radio>'));
+    market.append($('<b-radio v-model="qty" native-value="100">100x</b-radio>'));
+    market.append($('<b-radio v-model="qty" native-value="250">250x</b-radio>'));
+    market.append($('<b-radio v-model="qty" native-value="1000">1000x</b-radio>'));
+    market.append($('<b-radio v-model="qty" native-value="2500">2500x</b-radio>'));
+    market.append($('<b-radio v-model="qty" native-value="10000">10000x</b-radio>'));
+    
+    vues['market_qty'] = new Vue({
+        data: { qty: '10' }
+    });
+    vues['market_qty'].$mount('#market-qty');
 }
 
 function sizeApproximation(value,precision){

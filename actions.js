@@ -1211,6 +1211,24 @@ export const actions = {
                 return false;
             }
         },
+        market: {
+            id: 'tech-market',
+            title: 'Marketplace',
+            desc: 'Open a commodities market',
+            reqs: { banking: 1, currency: 1 },
+            grant: ['currency',2],
+            cost: { 
+                Knowledge: function(){ return 2000; }
+            },
+            effect: 'Opens a commodities market where you can buy and sell resources.',
+            action: function (){
+                if (payCosts(actions.tech.market.cost)){
+                    global.main_tabs.data.showMarket = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         banking: {
             id: 'tech-banking',
             title: 'Banking',

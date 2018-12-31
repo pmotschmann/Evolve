@@ -7,6 +7,7 @@ export var global = {
     city: {},
     civic: { free: 0 },
     race: {},
+    genes: {},
     main_tabs: {
         data: {
             civTabs: 0,
@@ -72,3 +73,5 @@ window.reset = function reset(){
     global = null;
     window.location.reload();
 }
+
+window.global = global;
