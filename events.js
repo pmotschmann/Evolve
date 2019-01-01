@@ -51,18 +51,30 @@ export const events = {
             return 'A fire has broken out destroying '+loss+' lumber.';
         }
     },
-    tax_revolt: {
+    tax_revolt1: {
+        reqs: { 
+            tax_rate: 4
+        },
+        effect: function(){
+            return tax_revolt(5);
+        }
+    },
+    tax_revolt2: {
         reqs: { 
             tax_rate: 5
         },
         effect: function(){
-            Object.keys(global.resource).forEach(function (res) {
-                let loss = Math.rand(1,Math.round(global.resource[res].amount / 4));
-                let remain = global.resource[res].amount - loss;
-                if (remain < 0){ remain = 0; }
-                global.resource[res].amount = remain;
-            });
-            return 'Riots have broken out due to the excessively high taxes, widespread damage has resulted in the loss of some resources.';
+            return tax_revolt(3);
         }
     }
 };
+
+function tax_revolt(divisor){
+    Object.keys(global.resource).forEach(function (res) {
+        let loss = Math.rand(1,Math.round(global.resource[res].amount / divisor));
+        let remain = global.resource[res].amount - loss;
+        if (remain < 0){ remain = 0; }
+        global.resource[res].amount = remain;
+    });
+    return 'Riots have broken out due to the excessively high taxes, widespread damage has resulted in the loss of some resources.';
+}
