@@ -780,11 +780,12 @@ export const actions = {
             desc: 'Build a mill',
             reqs: { agriculture: 3 },
             cost: { 
-                Money: function(){ return costMultiplier('mill', 500, 1.2); },
-                Lumber: function(){ return costMultiplier('mill', 250, 1.35); },
-                Stone: function(){ return costMultiplier('mill', 50, 1.35); }
+                Money: function(){ return costMultiplier('mill', 1000, 1.3); },
+                Lumber: function(){ return costMultiplier('mill', 600, 1.32); },
+                Iron: function(){ return costMultiplier('mill', 150, 1.32); },
+                Cement: function(){ return costMultiplier('mill', 125, 1.32); },
             },
-            effect: 'Increases the efficency of farmers by 10%',
+            effect: 'Increases farmer efficency by 3%',
             action: function (){
                 if (payCosts(actions.city.mill.cost)){
                     global.city['mill'].count++;
@@ -832,9 +833,9 @@ export const actions = {
                     var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
                     global['resource']['Lumber'].max += (200 * multiplier);
                     global['resource']['Stone'].max += (200 * multiplier);
-                    global['resource']['Copper'].max += (100 * multiplier);
+                    global['resource']['Copper'].max += (75 * multiplier);
                     global['resource']['Iron'].max += (100 * multiplier);
-                    global['resource']['Cement'].max += (100 * multiplier);
+                    global['resource']['Cement'].max += (80 * multiplier);
                     global.city['shed'].count++;
                     return true;
                 }
@@ -955,7 +956,7 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('university', 500, 1.35); },
                 Stone: function(){ return costMultiplier('university', 750, 1.35); }
             },
-            effect: 'Contributes to the advancement of science',
+            effect: 'Contributes to the advancement of science. Each university can support one professor and increases knowledge cap by 500.',
             action: function (){
                 if (payCosts(actions.city.university.cost)){
                     global['resource']['Knowledge'].max += 500;
@@ -1100,6 +1101,24 @@ export const actions = {
                 return false;
             }
         },
+        mill: {
+            id: 'tech-mill',
+            title: 'Grain Mill',
+            desc: 'Develope mills to increase food production',
+            reqs: { agriculture: 2, mining: 3 },
+            grant: ['agriculture',3],
+            cost: { 
+                Knowledge: function(){ return 6000; }
+            },
+            effect: 'Creates plans for a grain mill, grain mills boost farm effectiveness.',
+            action: function (){
+                if (payCosts(actions.tech.mill.cost)){
+                    global.city['mill'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         mining: {
             id: 'tech-mining',
             title: 'Mining',
@@ -1225,6 +1244,64 @@ export const actions = {
                 if (payCosts(actions.tech.market.cost)){
                     global.main_tabs.data.showMarket = true;
                     return true;
+                }
+                return false;
+            }
+        },
+        tax_rates: {
+            id: 'tech-tax_rates',
+            title: 'Tax Rates',
+            desc: 'Enables tax rates',
+            reqs: { banking: 2, currency: 2 },
+            grant: ['currency',3],
+            cost: { 
+                Knowledge: function(){ return 3750; }
+            },
+            effect: 'Allows government to adjust the tax rate.',
+            action: function (){
+                if (payCosts(actions.tech.tax_rates.cost)){
+                    global.civic['taxes'].display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        large_trades: {
+            id: 'tech-large_trades',
+            title: 'Large Volume Trading',
+            desc: 'Upgrades marketplace for large orders',
+            reqs: { currency: 3 },
+            grant: ['currency',4],
+            cost: { 
+                Knowledge: function(){ return 7500; }
+            },
+            effect: 'Upgrades the commodities market to allow for buying and selling at higher volumes.',
+            action: function (){
+                if (payCosts(actions.tech.large_trades.cost)){
+                    var tech = actions.tech.large_trades.grant[0];
+                    global.tech[tech] = actions.tech.large_trades.grant[1];
+                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    window.location.reload();;
+                }
+                return false;
+            }
+        },
+        massive_trades: {
+            id: 'tech-massive_trades',
+            title: 'Massive Volume Trading',
+            desc: 'Upgrades marketplace for massive orders',
+            reqs: { currency: 5 },
+            grant: ['currency',6],
+            cost: { 
+                Knowledge: function(){ return 1000000; }
+            },
+            effect: 'Upgrades the commodities market to allow for buying and selling at very high volumes.',
+            action: function (){
+                if (payCosts(actions.tech.massive_trades.cost)){
+                    var tech = actions.tech.massive_trades.grant[0];
+                    global.tech[tech] = actions.tech.massive_trades.grant[1];
+                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    window.location.reload();;
                 }
                 return false;
             }

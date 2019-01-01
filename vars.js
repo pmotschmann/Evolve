@@ -73,5 +73,3 @@ window.reset = function reset(){
     global = null;
     window.location.reload();
 }
-
-window.global = global;

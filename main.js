@@ -2,6 +2,7 @@ import { global, vues, save, runNew } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
+import { defineGovernment } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction } from './actions.js';
 import { events } from './events.js';
 
@@ -17,6 +18,7 @@ vues['vue_tabs'].$mount('#tabs');
 // Load Resources
 defineResources();
 defineJobs();
+defineGovernment();
 
 vues['race'] = new Vue({
     data: global.race,
@@ -167,6 +169,9 @@ function mainLoop() {
                     consume /= 2;
                 }
                 var food_multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
+                if (global.city['mill']){
+                    food_multiplier *= 1 + (global.city['mill'].count * 0.03);
+                }
                 food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
                 var count = global.resource.Food.amount + (global.civic.farmer.workers * global.civic.farmer.impact * food_multiplier) - consume;
                 if (count > global.resource.Food.max){ 
@@ -228,7 +233,7 @@ function mainLoop() {
                 // Copper
                 var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                 copper_multiplier *= tax_multiplier;
-                count = global.resource.Copper.amount + ((global.civic.miner.workers / 5) * copper_multiplier);
+                count = global.resource.Copper.amount + ((global.civic.miner.workers / 7) * copper_multiplier);
                 if (count > global.resource.Copper.max){ count = global.resource.Copper.max; }
                 global.resource.Copper.amount = count;
                 
@@ -236,7 +241,7 @@ function mainLoop() {
                 if (global.resource.Iron.display){
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     iron_multiplier *= tax_multiplier;
-                    count = global.resource.Iron.amount + ((global.civic.miner.workers / 3) * iron_multiplier);
+                    count = global.resource.Iron.amount + ((global.civic.miner.workers / 4) * iron_multiplier);
                     if (count > global.resource.Iron.max){ count = global.resource.Iron.max; }
                     global.resource.Iron.amount = count;
                 }
@@ -315,9 +320,9 @@ function mainLoop() {
                 var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
                 caps['Lumber'] += (global.city['shed'].count * (200 * multiplier));
                 caps['Stone'] += (global.city['shed'].count * (200 * multiplier));
-                caps['Copper'] += (global.city['shed'].count * (100 * multiplier));
+                caps['Copper'] += (global.city['shed'].count * (75 * multiplier));
                 caps['Iron'] += (global.city['shed'].count * (100 * multiplier));
-                caps['Cement'] += (global.city['shed'].count * (100 * multiplier));
+                caps['Cement'] += (global.city['shed'].count * (80 * multiplier));
             }
             if (global.city['silo']){
                 caps['Food'] += (global.city['silo'].count * 250);
@@ -363,6 +368,34 @@ function mainLoop() {
             // Tax Income
             if (global.tech['currency'] >= 1){
                 var income = (global.resource[races[global.race.species].name].amount - global.civic.free) * ( global.race['greedy'] ? 1 : 2 );
+                var tax_rate;
+                switch(Number(global.civic.taxes.tax_rate)){
+                    case 0:
+                        tax_rate = 0;
+                        tax_multiplier = 1.4;
+                        break;
+                    case 1:
+                        tax_rate = 0.5;
+                        tax_multiplier = 1.2;
+                        break;
+                    case 3:
+                        tax_rate = 1.25;
+                        tax_multiplier = 0.75;
+                        break;
+                    case 4:
+                        tax_rate = 1.5;
+                        tax_multiplier = 0.5;
+                        break;
+                    case 5:
+                        tax_rate = 1.75;
+                        tax_multiplier = 0.25;
+                        break;
+                    default:
+                        tax_rate = 1;
+                        tax_multiplier = 1;
+                        break;
+                }
+                
                 if (fed){
                     if (global.tech['banking'] && global.tech['banking'] >= 2){
                         income *= 1 + (global.civic.banker.workers * global.civic.banker.impact);
@@ -371,6 +404,8 @@ function mainLoop() {
                 else {
                     income = income / 2;
                 }
+                
+                income *= tax_rate;
                 var count = global.resource.Money.amount + Math.round(income);
                 if (count > global.resource.Money.max){ count = global.resource.Money.max; }
                 global.resource.Money.amount = count;

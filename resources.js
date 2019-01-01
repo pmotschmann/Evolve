@@ -99,14 +99,22 @@ function loadResource(name,max,rate,color) {
                     if (global.resource.Money.amount >= price){
                         global.resource[res].amount += qty;
                         global.resource.Money.amount -= price;
+                        
+                        global.resource[res].value += Number((qty / Math.rand(1000,10000)).toFixed(2));
                     }
                 },
                 sell(res){
                     var qty = Number(vues['market_qty'].qty);
                     if (global.resource[res].amount >= qty){
-                        var price = Math.round(global.resource[res].value * qty / 5);
+                        let divide = global.race['merchant'] ? 5 : 4;
+                        let price = Math.round(global.resource[res].value * qty / divide);
                         global.resource[res].amount -= qty;
                         global.resource.Money.amount += price;
+                        
+                        global.resource[res].value -= Number((qty / Math.rand(1000,10000)).toFixed(2));
+                        if (global.resource[res].value < Number(resource_values[res] / 2)){
+                            global.resource[res].value = Number(resource_values[res] / 2);
+                        }
                     }
                 }
             },
@@ -115,7 +123,8 @@ function loadResource(name,max,rate,color) {
                     return sizeApproximation(value * vues['market_qty'].qty,0);
                 },
                 sell: function (value){
-                    return sizeApproximation(value * vues['market_qty'].qty / 5,0);
+                    let divide = global.race['merchant'] ? 5 : 4;
+                    return sizeApproximation(value * vues['market_qty'].qty / divide,0);
                 },
             }
         });
@@ -130,10 +139,15 @@ function initMarket(){
     market.append($('<b-radio v-model="qty" native-value="10">10x</b-radio>'));
     market.append($('<b-radio v-model="qty" native-value="25">25x</b-radio>'));
     market.append($('<b-radio v-model="qty" native-value="100">100x</b-radio>'));
-    market.append($('<b-radio v-model="qty" native-value="250">250x</b-radio>'));
-    market.append($('<b-radio v-model="qty" native-value="1000">1000x</b-radio>'));
-    market.append($('<b-radio v-model="qty" native-value="2500">2500x</b-radio>'));
-    market.append($('<b-radio v-model="qty" native-value="10000">10000x</b-radio>'));
+    if (global.tech['currency'] >= 4){
+        market.append($('<b-radio v-model="qty" native-value="250">250x</b-radio>'));
+        market.append($('<b-radio v-model="qty" native-value="1000">1000x</b-radio>'));
+        market.append($('<b-radio v-model="qty" native-value="2500">2500x</b-radio>'));
+    }
+    if (global.tech['currency'] >= 6){
+        market.append($('<b-radio v-model="qty" native-value="10000">10000x</b-radio>'));
+        market.append($('<b-radio v-model="qty" native-value="25000">25000x</b-radio>'));
+    }
     
     vues['market_qty'] = new Vue({
         data: { qty: '10' }

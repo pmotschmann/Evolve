@@ -1,6 +1,14 @@
 .main {
     margin: 1rem 1rem 0;
     
+    span {
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
     .race {
         margin-top: 1.75rem;
         > span {
@@ -102,7 +110,27 @@
                 text-align: center;
             }
         }
+    }
+    
+    .taxRate {
+        :first-child {
+            cursor: default;
+        }
         
+        .current {
+            width: 5rem;
+            border-top: #ccc solid 1px;
+            border-bottom: #ccc solid 1px;
+            text-align: center;
+            display: inline-block;
+            font-size: .875rem;
+            line-height: 1rem;
+            cursor: default;
+        }
+    }
+    
+    .taxRate,
+    .job {
         .add {
             display: inline-block;
             margin-right: .25rem;
@@ -111,11 +139,6 @@
             border: #ccc solid 1px;
             line-height: .75rem;
             cursor: pointer;
-            -moz-user-select: none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
         }
         .sub {
             outline: none;
@@ -126,11 +149,6 @@
             border: #ccc solid 1px;
             line-height: .75rem;
             cursor: pointer;
-            -moz-user-select: none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
         }
     }
     

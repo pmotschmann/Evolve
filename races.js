@@ -285,7 +285,7 @@ export const traits = {
         type: 'genus',
     },
     strong: { // Increased manual resource gain
-        desc: 'Your race is has great strength and can harvest the basics in greater quantity',
+        desc: 'Your race has great strength and can harvest the basics in greater quantity',
         ranks: 1,
         type: 'genus',
     },
@@ -320,7 +320,7 @@ export const traits = {
         type: 'genus',
     },
     photosynth: { // Halves food requirements
-        desc: "Your race produces part of it's food requirements through photosynthesis with the sun",
+        desc: 'Your race produces part of its food requirements through photosynthesis with the sun',
         ranks: 0,
         type: 'genus',
     },
@@ -404,8 +404,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    merchant: {
-        desc: '',
+    merchant: { // Better commodity selling prices
+        desc: 'Your race has an innate gift for haggling.',
         ranks: 0,
         type: 'major',
     },

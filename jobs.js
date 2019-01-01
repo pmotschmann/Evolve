@@ -35,6 +35,7 @@ export const job_desc = {
 
 // Sets up jobs in civics tab
 export function defineJobs(){
+    $('#civic').append($('<div id="jobs" class="column"></div>'));
     loadUnemployed();
     loadJob('farmer','Farmer',3);
     loadJob('lumberjack','Lumberjack',1);
@@ -52,7 +53,7 @@ function loadUnemployed(){
     var civ_container = $('<div id="' + id + '" class="job"></div>');
     var job_label = $('<div class="job_label"><span class="has-text-' + color + '">Unemployed</span><span class="count">{{ free }}</span></div>');
     civ_container.append(job_label);
-    $('#civic').append(civ_container);
+    $('#jobs').append(civ_container);
     
     vues['civ_free'] = new Vue({
         data: global.civic,
@@ -91,7 +92,7 @@ function loadJob(job, name, impact, color){
     var job_label = $('<div class="job_label"><span class="has-text-' + color + '">{{ name }}</span><span class="count">{{ workers }} / {{ max }}</span></div>');
     civ_container.append(job_label);
     civ_container.append(controls);
-    $('#civic').append(civ_container);
+    $('#jobs').append(civ_container);
     
     var sub = $('<span class="sub" @click="sub">&laquo;</span>');
     var add = $('<span class="add" @click="add">&raquo;</span>');
