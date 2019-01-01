@@ -17,31 +17,31 @@ export const resource_values = {
 // Sets up resource definitions
 export function defineResources() {
     if (global.race.species === 'protoplasm'){
-        loadResource('RNA',100,1);
-        loadResource('DNA',100,1);
+        loadResource('RNA',100,1,false);
+        loadResource('DNA',100,1,false);
     }
     else {
         initMarket();
-        loadResource('Money',1000,3,'success');
-        loadResource(races[global.race.species].name,0,1,'warning');
-        loadResource('Knowledge',100,1,'warning');
-        loadResource('Food',250,1);
-        loadResource('Lumber',250,1);
-        loadResource('Stone',250,1);
-        loadResource('Copper',100,1);
-        loadResource('Iron',100,1);
-        loadResource('Cement',100,1);
-        //loadResource('Steel',50,1);
-        //loadResource('Titanium',50,1);
-        //loadResource('Iridium',50,1);
-        //loadResource('Deuterium',20,1);
+        loadResource('Money',1000,3,false,'success');
+        loadResource(races[global.race.species].name,0,1,false,'warning');
+        loadResource('Knowledge',100,1,false,'warning');
+        loadResource('Food',250,1,true);
+        loadResource('Lumber',250,1,true);
+        loadResource('Stone',250,1,true);
+        loadResource('Copper',100,1,true);
+        loadResource('Iron',100,1,true);
+        loadResource('Cement',100,1,true);
+        //loadResource('Steel',50,1,true);
+        //loadResource('Titanium',50,1,true);
+        //loadResource('Iridium',50,1,true);
+        //loadResource('Deuterium',20,1,true);
     }
 }
 
 // Load resource function
 // This function defines each resource, loads saved values from localStorage
 // And it creates Vue binds for various resource values
-function loadResource(name,max,rate,color) {
+function loadResource(name,max,rate,tradable,color) {
     color = color || 'info';
     if (!global['resource'][name]){
         global['resource'][name] = {
@@ -78,7 +78,7 @@ function loadResource(name,max,rate,color) {
     });
     vues['res_'+name].$mount('#res-' + name);
     
-    if (name !== races[global.race.species].name && name !== 'Money' && name !== 'Knowledge'){
+    if (tradable){
         var market_item = $('<div id="market-' + name + '" class="market-item" v-show="display"></div>');
         $('#market').append(market_item);
         

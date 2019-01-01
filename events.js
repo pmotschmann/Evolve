@@ -32,7 +32,7 @@ export const events = {
             resource: 'Knowledge'
         },
         effect: function(){
-            var gain = Math.rand(10,100);
+            var gain = Math.rand(10,100) * (global.civic.professor.workers + 1);
             var res = global.resource.Knowledge.amount + gain;
             if (res > global.resource.Knowledge.max){ res = global.resource.Knowledge.max; }
             global.resource.Knowledge.amount = res;
@@ -49,6 +49,20 @@ export const events = {
             if (res < 0){ res = 0; }
             global.resource.Lumber.amount = res;
             return 'A fire has broken out destroying '+loss+' lumber.';
+        }
+    },
+    tax_revolt: {
+        reqs: { 
+            tax_rate: 5
+        },
+        effect: function(){
+            Object.keys(global.resource).forEach(function (res) {
+                let loss = Math.rand(1,Math.round(global.resource[res].amount / 4));
+                let remain = global.resource[res].amount - loss;
+                if (remain < 0){ remain = 0; }
+                global.resource[res].amount = remain;
+            });
+            return 'Riots have broken out due to the excessively high taxes, widespread damage has resulted in the loss of some resources.';
         }
     }
 };

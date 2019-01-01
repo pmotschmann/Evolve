@@ -450,6 +450,11 @@ function mainLoop() {
                                 isOk = false;
                             }
                             break;
+                        case 'tax_rate':
+                            if (global.civics.taxes.tax_rate !== [events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
                         default:
                             isOk = false;
                             break;
