@@ -165,6 +165,9 @@ function mainLoop() {
             fed = true;
             if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
                 var consume = global.resource[races[global.race.species].name].amount * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1);
+                if (global.race['high_metabolism']){
+                    consume *= 1.1;
+                }
                 if (global.race['photosynth']){
                     consume /= 2;
                 }
@@ -187,6 +190,10 @@ function mainLoop() {
             // Citizen Growth
             if (fed && global['resource']['Food'].amount > 10 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
                 var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
+                if (global.race['fast_growth']){
+                    lowerBound *= 2;
+                    lowerBound += 2;
+                }
                 if(Math.rand(0,2 * global['resource'][races[global.race.species].name].amount) <= lowerBound){
                     global['resource'][races[global.race.species].name].amount++;
                 }
@@ -195,7 +202,7 @@ function mainLoop() {
             // Resource Income
             if (fed){
                 // Knowledge
-                var know_multiplier = global.civic.professor.impact * tax_multiplier;
+                var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
                 var count = global.resource.Knowledge.amount + (global.civic.professor.workers * know_multiplier) + 1;
                 if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
                 global.resource.Knowledge.amount = count;
@@ -332,7 +339,7 @@ function mainLoop() {
                 lCaps['professor'] += global.city['university'].count;
             }
             if (global.city['library']){
-                caps['Knowledge'] += (global.city['library'].count * 125);
+                caps['Knowledge'] += (global.city['library'].count * (global.race['nearsighted'] ? 110 : 125));
             }
             if (global.city['bank']){
                 caps['Money'] += (global.city['bank'].count * (global.tech['banking'] >= 3 ? 2500 : 1000));
@@ -451,7 +458,7 @@ function mainLoop() {
                             }
                             break;
                         case 'tax_rate':
-                            if (global.civics.taxes.tax_rate !== [events[event].reqs[req]]){
+                            if (global.civic.taxes.tax_rate !== [events[event].reqs[req]]){
                                 isOk = false;
                             }
                             break;

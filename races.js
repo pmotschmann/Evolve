@@ -250,7 +250,7 @@ export const genus_traits = {
     },
     plant: {
         photosynth: 1,
-        fibrous: 1
+        asymmetrical: 1
     },
     fungi: {
         spores: 1,
@@ -309,13 +309,13 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    fast_growth: {
-        desc: '',
+    fast_growth: { // Greatly increases odds of population growth each cycle
+        desc: 'Your species gestates quickly, population thus raises faster then other species.',
         ranks: 0,
         type: 'genus',
     },
-    high_metabolism: {
-        desc: '',
+    high_metabolism: { // Food requirements increased by 10%
+        desc: 'Your species metabolises food quickly, as a result you need more of it.',
         ranks: 0,
         type: 'genus',
     },
@@ -324,8 +324,8 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    fibrous: {
-        desc: '',
+    asymmetrical: { // Trade prices are slightly worse then normal
+        desc: 'Your species is asymmetrical. This gives you a more monstrous appearance making trade more difficult.',
         ranks: 0,
         type: 'genus',
     },
@@ -339,8 +339,8 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    studious: {
-        desc: '',
+    studious: { // Professors generate an extra 0.25 Knowledge per tick
+        desc: 'Your race is more focused when studying then average. Knowledge is gained faster as a result.',
         ranks: 0,
         type: 'major',
     },
@@ -409,8 +409,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    smart: {
-        desc: '',
+    smart: { // Knowledge costs reduced by 10%
+        desc: 'Your race more easily understands new concepts.',
         ranks: 0,
         type: 'major',
     },
@@ -419,8 +419,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    dumb: {
-        desc: '',
+    dumb: { // Knowledge costs increased by 5%
+        desc: 'Your race does not easily understand new concepts.',
         ranks: 0,
         type: 'major',
     },
@@ -429,8 +429,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    nearsighted: {
-        desc: '',
+    nearsighted: { // Libraries are less effective
+        desc: 'Your species is nearsighted and requires bigger font sizes to read.',
         ranks: 0,
         type: 'major',
     },

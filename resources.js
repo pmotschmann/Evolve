@@ -106,7 +106,7 @@ function loadResource(name,max,rate,tradable,color) {
                 sell(res){
                     var qty = Number(vues['market_qty'].qty);
                     if (global.resource[res].amount >= qty){
-                        let divide = global.race['merchant'] ? 5 : 4;
+                        let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
                         let price = Math.round(global.resource[res].value * qty / divide);
                         global.resource[res].amount -= qty;
                         global.resource.Money.amount += price;
@@ -123,7 +123,7 @@ function loadResource(name,max,rate,tradable,color) {
                     return sizeApproximation(value * vues['market_qty'].qty,0);
                 },
                 sell: function (value){
-                    let divide = global.race['merchant'] ? 5 : 4;
+                    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
                     return sizeApproximation(value * vues['market_qty'].qty / divide,0);
                 },
             }

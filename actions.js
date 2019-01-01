@@ -978,10 +978,13 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('library', 35, 1.20); },
                 Cement: function(){ return costMultiplier('library', 20, 1.20); }
             },
-            effect: 'Increases knowledge capacity by 125',
+            effect: function (){ 
+                let gain = global.race['nearsighted'] ? '110' : '125';
+                return 'Increases the maximum amount of knowledge you can store by '+gain; 
+            },
             action: function (){
                 if (payCosts(actions.city.library.cost)){
-                    global['resource']['Knowledge'].max += 125;
+                    global['resource']['Knowledge'].max += global.race['nearsighted'] ? 110 : 125;
                     global.city.library.count++;
                     return true;
                 }
@@ -1694,6 +1697,18 @@ function adjustCosts(costs){
             }
         });
         return newCosts;
+    }
+    else if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Knowledge'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * (global.race['smart'] ? 0.9 : 1.05)); }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](); }
+            }
+        });
+        return newCosts
     }
     return costs;
 }
