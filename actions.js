@@ -661,18 +661,18 @@ export const actions = {
                         return 0; 
                     } 
                 },
-                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.28); },
+                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.24); },
                 Stone: function(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
-                        return costMultiplier('basic_housing', 7, 1.28);
+                        return costMultiplier('basic_housing', 7, 1.24);
                     } 
                     else { 
-                        return costMultiplier('basic_housing', 8, 1.28); 
+                        return costMultiplier('basic_housing', 8, 1.24); 
                     }
                 },
                 Cement: function(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
-                        return costMultiplier('basic_housing', 2, 1.2);
+                        return costMultiplier('basic_housing', 2, 1.18);
                     } 
                     else { 
                         return 0; 
@@ -698,9 +698,10 @@ export const actions = {
             reqs: { housing: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('cottage', 900, 1.15); },
-                Lumber: function(){ return costMultiplier('cottage', 220, 1.3); },
-                Iron: function(){ return costMultiplier('cottage', 105, 1.3); },
-                Cement: function(){ return costMultiplier('cottage', 135, 1.3); }
+                Lumber: function(){ return costMultiplier('cottage', 220, 1.25); },
+                Iron: function(){ return costMultiplier('cottage', 105, 1.25); },
+                Copper: function(){ return costMultiplier('cottage', 20, 1.25); },
+                Cement: function(){ return costMultiplier('cottage', 135, 1.25); }
             },
             effect: 'Constructs housing for 2 citizens',
             action: function (){
@@ -801,7 +802,7 @@ export const actions = {
             reqs: { storage: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('shed', 75, 1.2); },
-                Lumber: function(){ return costMultiplier('shed', 60, 1.35); },
+                Lumber: function(){ return costMultiplier('shed', 60, 1.34); },
                 Stone: function(){
                     if (global.tech['storage'] && global.tech['storage'] === 1){ 
                         return costMultiplier('shed', 40, 1.35);
@@ -836,6 +837,7 @@ export const actions = {
                     global['resource']['Copper'].max += (75 * multiplier);
                     global['resource']['Iron'].max += (100 * multiplier);
                     global['resource']['Cement'].max += (80 * multiplier);
+                    global['resource']['Coal'].max += (50 * multiplier);
                     global.city['shed'].count++;
                     return true;
                 }
@@ -907,6 +909,28 @@ export const actions = {
                 return false;
             }
         },
+        coal_mine: {
+            id: 'city-coal_mine',
+            title: 'Coal Mine',
+            desc: 'Build a Coal mine',
+            reqs: { mining: 4 },
+            cost: { 
+                Money: function(){ return costMultiplier('mine', 480, 1.4); },
+                Lumber: function(){ return costMultiplier('mine', 250, 1.35); },
+                Iron: function(){ return costMultiplier('mine', 180, 1.35); }
+            },
+            effect: 'Creates a mine shaft in a coal rich area allowing a coal miner to product coal.',
+            action: function (){
+                if (payCosts(actions.city.coal_mine.cost)){
+                    global.city['coal_mine'].count++;
+                    global.resource.Coal.display = true;
+                    global.civic.coal_miner.display = true;
+                    global.civic.coal_miner.max = global.city.coal_mine.count;
+                    return true;
+                }
+                return false;
+            }
+        },
         temple: {
             id: 'city-temple',
             title: 'Temple',
@@ -952,7 +976,7 @@ export const actions = {
             desc: 'Construct a university',
             reqs: { science: 1 },
             cost: { 
-                Money: function(){ return costMultiplier('university', 1000, 1.5); },
+                Money: function(){ return costMultiplier('university', 900, 1.5); },
                 Lumber: function(){ return costMultiplier('university', 500, 1.35); },
                 Stone: function(){ return costMultiplier('university', 750, 1.35); }
             },
@@ -1171,6 +1195,25 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.iron_mining.cost)){
                     global.resource.Iron.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        coal_mining: {
+            id: 'tech-coal_mining',
+            title: 'Coal Mining',
+            desc: 'Discover Coal',
+            reqs: { mining: 3 },
+            grant: ['mining',4],
+            cost: { 
+                Knowledge: function(){ return 4800; }
+            },
+            effect: 'Learn about how coal can be used to as a resource.',
+            action: function (){
+                if (payCosts(actions.tech.coal_mining.cost)){
+                    global.city['coal_mine'] = { count: 0 };
+                    global.resource.Coal.display = true;
                     return true;
                 }
                 return false;

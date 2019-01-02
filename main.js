@@ -238,11 +238,13 @@ function mainLoop() {
                 global.resource.Stone.amount = count;
                 
                 // Copper
-                var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
-                copper_multiplier *= tax_multiplier;
-                count = global.resource.Copper.amount + ((global.civic.miner.workers / 7) * copper_multiplier);
-                if (count > global.resource.Copper.max){ count = global.resource.Copper.max; }
-                global.resource.Copper.amount = count;
+                if (global.resource.Copper.display){
+                    var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+                    copper_multiplier *= tax_multiplier;
+                    count = global.resource.Copper.amount + ((global.civic.miner.workers / 7) * copper_multiplier);
+                    if (count > global.resource.Copper.max){ count = global.resource.Copper.max; }
+                    global.resource.Copper.amount = count;
+                }
                 
                 // Iron
                 if (global.resource.Iron.display){
@@ -251,6 +253,15 @@ function mainLoop() {
                     count = global.resource.Iron.amount + ((global.civic.miner.workers / 4) * iron_multiplier);
                     if (count > global.resource.Iron.max){ count = global.resource.Iron.max; }
                     global.resource.Iron.amount = count;
+                }
+                
+                // Coal
+                if (global.resource.Coal.display){
+                    var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+                    coal_multiplier *= tax_multiplier;
+                    count = global.resource.Coal.amount + (global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier);
+                    if (count > global.resource.Coal.max){ count = global.resource.Coal.max; }
+                    global.resource.Coal.amount = count;
                 }
             }
             
@@ -281,7 +292,8 @@ function mainLoop() {
                 Stone: 200,
                 Copper: 100,
                 Iron: 100,
-                Cement: 100
+                Cement: 100,
+                Coal: 50
             };
             // labor caps
             var lCaps = {
@@ -330,6 +342,7 @@ function mainLoop() {
                 caps['Copper'] += (global.city['shed'].count * (75 * multiplier));
                 caps['Iron'] += (global.city['shed'].count * (100 * multiplier));
                 caps['Cement'] += (global.city['shed'].count * (80 * multiplier));
+                caps['Coal'] += (global.city['shed'].count * (50 * multiplier));
             }
             if (global.city['silo']){
                 caps['Food'] += (global.city['silo'].count * 250);

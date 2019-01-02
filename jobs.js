@@ -19,6 +19,9 @@ export const job_desc = {
     miner: function(){
         return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner can generate a variable amount of minerals of various types.';
     },
+    coal_miner: function(){
+        return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal from deep in the ground.';
+    },
     cement_worker: function(){
         let cement_multiplier = 1;
         let gain = global.civic.cement_worker.impact * cement_multiplier;
@@ -42,6 +45,7 @@ export function defineJobs(){
     loadJob('lumberjack','Lumberjack',1);
     loadJob('quarry_worker','Quarry Worker',1);
     loadJob('miner','Miner',1);
+    loadJob('coal_miner','Coal Miner',0.2);
     loadJob('cement_worker','Cement Plant Worker',0.25);
     loadJob('professor','Professor',0.5);
     loadJob('banker','Banker',0.1);
