@@ -8,8 +8,8 @@ export const resource_values = {
     Copper: 25,
     Iron: 40,
     Cement: 15,
-    Coal: 20
-    //Steel: 100,
+    Coal: 20,
+    Steel: 100
     //Titanium: 150,
     //Iridium: 200,
     //Deuterium: 500
@@ -58,12 +58,12 @@ function loadResource(name,max,rate,tradable,color) {
         };
     }
     
-    if (global['resource'][name]['max'] > 0){
-        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span><span class="diff">{{ diff | diffSize }} /s</span></div>');
+    if (name === races[global.race.species].name){
+        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>');
         $('#resources').append(res_container);
     }
     else {
-        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }}</span><span class="diff">{{ diff | diffSize }} /s</span></div>');
+        var res_container = $('<div id="res-' + name + '" class="resource" v-show="display"><span class="res has-text-' + color + '">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span><span class="diff">{{ diff | diffSize }} /s</span></div>');
         $('#resources').append(res_container);
     }
     

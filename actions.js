@@ -1,6 +1,7 @@
 import { global, vues, save } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources } from './resources.js';
+import { loadJobs } from './jobs.js';
 
 export const actions = {
     evolution: {
@@ -802,7 +803,7 @@ export const actions = {
             reqs: { storage: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('shed', 75, 1.2); },
-                Lumber: function(){ return costMultiplier('shed', 60, 1.34); },
+                Lumber: function(){ return costMultiplier('shed', 60, 1.3); },
                 Stone: function(){
                     if (global.tech['storage'] && global.tech['storage'] === 1){ 
                         return costMultiplier('shed', 40, 1.35);
@@ -861,6 +862,29 @@ export const actions = {
                     global.civic.lumberjack.display = true;
                     global.civic.lumberjack.max = global.city.lumber_yard.count * 2;
                     global['resource']['Lumber'].max += 100;
+                    return true;
+                }
+                return false;
+            }
+        },
+        sawmill: {
+            id: 'city-sawmill',
+            title: 'Sawmill',
+            desc: 'Build a sawmill',
+            reqs: { saw: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('sawmill', 3000, 1.25); },
+                Lumber: function(){ return costMultiplier('sawmill', 800, 1.25); },
+                Iron: function(){ return costMultiplier('sawmill', 400, 1.25); },
+                Cement: function(){ return costMultiplier('sawmill', 420, 1.25); }
+            },
+            effect: 'Each sawmill increases the amount of lumber harvested per lumberjack by 5%',
+            action: function (){
+                if (payCosts(actions.city.sawmill.cost)){
+                    global.city['sawmill'].count++;
+                    global.civic.lumberjack.impact = (global.city['sawmill'].count * 0.05) + 1;
+                    global['resource']['Lumber'].max += 200;
+                    loadJobs();
                     return true;
                 }
                 return false;
@@ -1497,6 +1521,25 @@ export const actions = {
             effect: 'Upgrade axe technology to metal axes made from copper. Improves lumber harvesting.',
             action: function (){
                 if (payCosts(actions.tech.copper_axes.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        iron_saw: {
+            id: 'tech-iron_saw',
+            title: 'Sawmills',
+            desc: 'Create plans for a sawmill',
+            reqs: { axe: 1, mining: 3 },
+            grant: ['saw',1],
+            cost: { 
+                Knowledge: function(){ return 3750; },
+                Iron: function(){ return 400; }
+            },
+            effect: 'Sawmills increase the lumber yeild of your lumberjacks.',
+            action: function (){
+                if (payCosts(actions.tech.iron_saw.cost)){
+                    global.city['sawmill'] = { count: 0 };
                     return true;
                 }
                 return false;

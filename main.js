@@ -317,6 +317,9 @@ function mainLoop() {
                 lCaps['lumberjack'] += global.city['lumber_yard'].count * 2;
                 caps['Lumber'] += (global.city['lumber_yard'].count * 100);
             }
+            if (global.city['sawmill']){
+                caps['Lumber'] += (global.city['sawmill'].count * 200);
+            }
             if (global.city['mine']){
                 lCaps['miner'] += global.city['mine'].count;
             }

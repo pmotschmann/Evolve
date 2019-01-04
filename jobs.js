@@ -40,6 +40,11 @@ export const job_desc = {
 // Sets up jobs in civics tab
 export function defineJobs(){
     $('#civic').append($('<div id="jobs" class="column"></div>'));
+    loadJobs();
+}
+
+export function loadJobs(){
+    $('#jobs').empty();
     loadUnemployed();
     loadJob('farmer','Farmer',3);
     loadJob('lumberjack','Lumberjack',1);
