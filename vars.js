@@ -62,6 +62,59 @@ export function messageQueue(msg,color){
     $('#msgQueue').prepend(new_message);
 }
 
+// Detect if shift is pressed down
+export var shiftIsPressed = false;
+$(document).keydown(function(event){
+    if(event.which=="16"){
+        shiftIsPressed = true;
+    }
+});
+$(document).keyup(function(event){
+    if(event.which=="16"){
+        shiftIsPressed = false;
+    }
+});
+
+// Detect if control is pressed down
+export var cntrlIsPressed = false;
+$(document).keydown(function(event){
+    if(event.which=="17"){
+        cntrlIsPressed = true;
+    }
+});
+$(document).keyup(function(event){
+    if(event.which=="17"){
+        cntrlIsPressed = false;
+    }
+});
+
+// Detect if alt is pressed down
+export var altIsPressed = false;
+$(document).keydown(function(event){
+    if(event.which=="18"){
+        altIsPressed = true;
+    }
+});
+$(document).keyup(function(event){
+    if(event.which=="18"){
+        altIsPressed = false;
+    }
+});
+
+export function keyMultiplier(){
+    let number = 1;
+    if (cntrlIsPressed){
+        number *= 10;
+    }
+    if (shiftIsPressed){
+        number *= 100;
+    }
+    if (altIsPressed){
+        number *= 1000;
+    }
+    return number;
+}
+
 window.exportGame = function exportGame(){
     $('#importExport').val(LZString.compressToBase64(JSON.stringify(global)));
 }

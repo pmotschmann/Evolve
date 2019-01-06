@@ -1,4 +1,4 @@
-import { global, vues } from './vars.js';
+import { global, vues, keyMultiplier } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -192,25 +192,28 @@ function drawModal(name,color){
                 return 'Assign crate to this resource (+25 cap)';
             },
             buildCrate: function(res){
-                if (global.resource.Lumber.amount >= 250 && global.resource.Crates.amount < global.resource.Crates.max){
-                    global.resource.Lumber.amount -= 250;
-                    global.resource.Crates.amount++;
+                let keyMutipler = keyMultiplier();
+                if (global.resource.Lumber.amount >= (250 * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
+                    global.resource.Lumber.amount -= (250 * keyMutipler);
+                    global.resource.Crates.amount += keyMutipler;
                 }
             },
             removeCrate: function(res){
-                if (global.resource[res].crates > 0){
-                    global.resource.Crates.amount++;
-                    global.resource.Crates.max++;
-                    global.resource[res].crates--;
-                    global.resource[res].max -= 25;
+                let keyMutipler = keyMultiplier();
+                if (global.resource[res].crates >= keyMutipler){
+                    global.resource.Crates.amount += keyMutipler;
+                    global.resource.Crates.max += keyMutipler;
+                    global.resource[res].crates -= keyMutipler;
+                    global.resource[res].max -= (25 * keyMutipler);
                 }
             },
             addCrate: function(res){
-                if (global.resource.Crates.amount > 0){
-                    global.resource.Crates.amount--;
-                    global.resource.Crates.max--;
-                    global.resource[res].crates++;
-                    global.resource[res].max += 25;
+                let keyMutipler = keyMultiplier();
+                if (global.resource.Crates.amount >= keyMutipler){
+                    global.resource.Crates.amount -= keyMutipler;
+                    global.resource.Crates.max -= keyMutipler;
+                    global.resource[res].crates += keyMutipler;
+                    global.resource[res].max += (25 * keyMutipler);
                 }
             }
         }
