@@ -1,4 +1,4 @@
-import { global, vues, save } from './vars.js';
+import { global, vues, save, messageQueue } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources } from './resources.js';
 import { loadJobs } from './jobs.js';
@@ -845,6 +845,30 @@ export const actions = {
                 return false;
             }
         },
+        storage_yard: {
+            id: 'city-storage_yard',
+            title: 'Freight Yard',
+            desc: 'Build a Freight Yard',
+            reqs: { container: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('storage_yard', 5, 1.85); },
+                Iron: function(){ return costMultiplier('storage_yard', 4, 1.8); },
+                Cement: function(){ return costMultiplier('storage_yard', 6, 1.9); }
+            },
+            effect: 'Freight yards are open paved areas with rails used for storing cargo. Each yard increases your container capacity.',
+            action: function (){
+                if (payCosts(actions.city.storage_yard.cost)){
+                    if (global.resource.Crates.display === false){
+                        messageQueue('You have unlocked a new method of resource management, click the + symbol next to a resource to manage it.','success');
+                    }
+                    global.city['storage_yard'].count++;
+                    global.resource.Crates.display = true;
+                    global.resource.Crates.max += 50;
+                    return true;
+                }
+                return false;
+            }
+        },
         lumber_yard: {
             id: 'city-lumber_yard',
             title: 'Lumber Yard',
@@ -1000,9 +1024,9 @@ export const actions = {
             desc: 'Construct a university',
             reqs: { science: 1 },
             cost: { 
-                Money: function(){ return costMultiplier('university', 900, 1.5); },
-                Lumber: function(){ return costMultiplier('university', 500, 1.35); },
-                Stone: function(){ return costMultiplier('university', 750, 1.35); }
+                Money: function(){ return costMultiplier('university', 900, 1.5) - 500; },
+                Lumber: function(){ return costMultiplier('university', 500, 1.35) - 100; },
+                Stone: function(){ return costMultiplier('university', 750, 1.35) - 150; }
             },
             effect: 'Contributes to the advancement of science. Each university can support one professor and increases knowledge cap by 500.',
             action: function (){
@@ -1028,12 +1052,15 @@ export const actions = {
             },
             effect: function (){ 
                 let gain = global.race['nearsighted'] ? '110' : '125';
-                return 'Increases the maximum amount of knowledge you can store by '+gain; 
+                return `Increases the maximum amount of knowledge you can store by ${gain}`; 
             },
             action: function (){
                 if (payCosts(actions.city.library.cost)){
                     global['resource']['Knowledge'].max += global.race['nearsighted'] ? 110 : 125;
                     global.city.library.count++;
+                    if (global.tech['science'] && global.tech['science'] >= 3){
+                        global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
+                    }
                     return true;
                 }
                 return false;
@@ -1281,6 +1308,41 @@ export const actions = {
                 return false;
             }
         },
+        containerization: {
+            id: 'tech-containerization',
+            title: 'Containerization',
+            desc: 'Research scalable new storage solutions',
+            reqs: { cement: 1 },
+            grant: ['container',1],
+            cost: { 
+                Knowledge: function(){ return 3000; }
+            },
+            effect: 'Designs a scalable storage solution for all your storage needs.',
+            action: function (){
+                if (payCosts(actions.tech.containerization.cost)){
+                    global.city['storage_yard'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        steel_containers: {
+            id: 'tech-steel_containers',
+            title: 'Steel Containers',
+            desc: 'Design better steel containers',
+            reqs: { steel: 1, container: 1 },
+            grant: ['container',2],
+            cost: { 
+                Knowledge: function(){ return 10000; }
+            },
+            effect: 'Replace cheap wooden crates with more durable steel containers.',
+            action: function (){
+                if (payCosts(actions.tech.steel_containers.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: 'Currency',
@@ -1288,7 +1350,7 @@ export const actions = {
             reqs: { agriculture: 1 },
             grant: ['currency',1],
             cost: { 
-                Knowledge: function(){ return 50; },
+                Knowledge: function(){ return 25; },
                 Lumber: function(){ return 10; } 
             },
             effect: 'Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.',
@@ -1440,7 +1502,7 @@ export const actions = {
             reqs: { agriculture: 1 },
             grant: ['science',1],
             cost: { 
-                Knowledge: function(){ return 100; }
+                Knowledge: function(){ return 75; }
             },
             effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
             action: function (){
@@ -1464,6 +1526,23 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.library.cost)){
                     global.city['library'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        thesis: {
+            id: 'tech-thesis',
+            title: 'Thesis Papers',
+            desc: 'Professors will require their students to write thesis papers',
+            reqs: { science: 2 },
+            grant: ['science',3],
+            cost: { 
+                Knowledge: function(){ return 2000; }
+            },
+            effect: 'Libraries will have a minor effect on professor effectiveness.',
+            action: function (){
+                if (payCosts(actions.tech.library.cost)){
                     return true;
                 }
                 return false;

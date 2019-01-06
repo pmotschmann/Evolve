@@ -11,7 +11,7 @@ export const events = {
             var res = global.resource.DNA.amount + gain;
             if (res > global.resource.DNA.max){ res = global.resource.DNA.max; }
             global.resource.DNA.amount = res;
-            return 'Some DNA molecules have replicated, you gain '+gain+' DNA.';
+            return `Some DNA molecules have replicated, you gain ${gain} DNA.`;
         }
     },
     rna_meteor: {
@@ -24,7 +24,7 @@ export const events = {
             var res = global.resource.RNA.amount + gain;
             if (res > global.resource.RNA.max){ res = global.resource.RNA.max; }
             global.resource.RNA.amount = res;
-            return 'A meteor has impacted the planet bringing new genetic material with it, gained '+gain+' RNA.';
+            return `A meteor has impacted the planet bringing new genetic material with it, gained ${gain} RNA.`;
         }
     },
     inspiration: {
@@ -36,7 +36,7 @@ export const events = {
             var res = global.resource.Knowledge.amount + gain;
             if (res > global.resource.Knowledge.max){ res = global.resource.Knowledge.max; }
             global.resource.Knowledge.amount = res;
-            return 'Your scientists have become inspired, gain '+gain+' Knowledge.';
+            return `Your scientists have become inspired, gain ${gain} Knowledge.`;
         }
     },
     fire: {
@@ -48,7 +48,7 @@ export const events = {
             var res = global.resource.Lumber.amount - loss;
             if (res < 0){ res = 0; }
             global.resource.Lumber.amount = res;
-            return 'A fire has broken out destroying '+loss+' lumber.';
+            return `A fire has broken out destroying ${loss} lumber.`;
         }
     },
     tax_revolt1: {

@@ -13,6 +13,7 @@ export var global = {
             civTabs: 0,
             showEvolve: true,
             showCity: false,
+            showIndustry: false,
             showResearch: false,
             showCivic: false,
             showMarket: false,
@@ -53,6 +54,12 @@ if (global_data) {
 }
 else {
     runNew = true;
+}
+
+export function messageQueue(msg,color){
+    color = color || 'warning';
+    var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
+    $('#msgQueue').prepend(new_message);
 }
 
 window.exportGame = function exportGame(){

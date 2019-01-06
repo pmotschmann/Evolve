@@ -1,4 +1,4 @@
-import { global, vues, save, runNew } from './vars.js';
+import { global, vues, save, runNew, messageQueue } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
@@ -164,7 +164,7 @@ function mainLoop() {
             // Consumption
             fed = true;
             if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
-                var consume = global.resource[races[global.race.species].name].amount * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1);
+                var consume = (global.resource[races[global.race.species].name].amount - (global.civic.free * 0.5)) * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1);
                 if (global.race['high_metabolism']){
                     consume *= 1.1;
                 }
@@ -288,6 +288,7 @@ function mainLoop() {
                 Money: 1000,
                 Knowledge: 100,
                 Food: 250,
+                Crates: 0,
                 Lumber: 200,
                 Stone: 200,
                 Copper: 100,
@@ -308,6 +309,12 @@ function mainLoop() {
             caps[races[global.race.species].name] = 0;
             if (global.city['farm']){
                 lCaps['farmer'] += global.city['farm'].count;
+            }
+            if (global.city['storage_yard']){
+                caps['Crates'] += (global.city['storage_yard'].count * 50);
+                Object.keys(caps).forEach(function (res){
+                    caps['Crates'] -= global.resource[res].crates;
+                });
             }
             if (global.city['rock_quarry']){
                 lCaps['quarry_worker'] += global.city['rock_quarry'].count;
@@ -356,12 +363,16 @@ function mainLoop() {
             }
             if (global.city['library']){
                 caps['Knowledge'] += (global.city['library'].count * (global.race['nearsighted'] ? 110 : 125));
+                if (global.tech['science'] && global.tech['science'] >= 3){
+                    global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
+                }
             }
             if (global.city['bank']){
                 caps['Money'] += (global.city['bank'].count * (global.tech['banking'] >= 3 ? 2500 : 1000));
             }
             
             Object.keys(caps).forEach(function (res){
+                caps[res] += global.resource[res].crates * 25;
                 global.resource[res].max = caps[res];
                 if (global.resource[res].amount > global.resource[res].max){
                     global.resource[res].amount = global.resource[res].max;
@@ -520,11 +531,6 @@ function diffCalc(res,period){
     else if (global['resource'][res].diff >= 0 && $('#res-'+res+' .diff').hasClass('has-text-danger')){
         $('#res-'+res+' .diff').removeClass('has-text-danger');
     }
-}
-
-function messageQueue(msg){
-    var new_message = $('<p class="has-text-warning">'+msg+'</p>');
-    $('#msgQueue').prepend(new_message);
 }
 
 function newGame(){
