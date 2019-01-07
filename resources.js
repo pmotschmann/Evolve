@@ -224,9 +224,9 @@ function drawModal(name,color){
     
     crates.append($('<div class="crateHead"><span>Crates Owned: {{ crates.amount }}/{{ crates.max }}</span><span>Crates Assigned: {{ res.crates }}</span></div>'));
     
-    let buildCrate = $(`<b-tooltip :label="buildLabel()" position="is-top" type="is-dark" animated><button class="button" @click="buildCrate('${name}')">Construct Crate</button></b-tooltip>`);
-    let removeCrate = $(`<b-tooltip :label="removeLabel()" position="is-top" type="is-dark" animated><button class="button" @click="removeCrate('${name}')">Unassign Crate</button></b-tooltip>`);
-    let addCrate = $(`<b-tooltip :label="addLabel()" position="is-top" type="is-dark" animated><button class="button" @click="addCrate('${name}')">Assign Crate</button></b-tooltip>`);
+    let buildCrate = $(`<b-tooltip :label="buildLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="buildCrate('${name}')">Construct Crate</button></b-tooltip>`);
+    let removeCrate = $(`<b-tooltip :label="removeLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="removeCrate('${name}')">Unassign Crate</button></b-tooltip>`);
+    let addCrate = $(`<b-tooltip :label="addLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="addCrate('${name}')">Assign Crate</button></b-tooltip>`);
     
     crates.append(buildCrate);
     crates.append(removeCrate);
