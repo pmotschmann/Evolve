@@ -1,4 +1,4 @@
-import { global, vues, save, messageQueue } from './vars.js';
+import { global, vues, save, messageQueue, keyMultiplier } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources } from './resources.js';
 import { loadJobs } from './jobs.js';
@@ -1788,13 +1788,19 @@ export function addAction(action,type){
             count: action !== 'tech' && global[action][type] ? global[action][type].count : 0
         },
         methods: {
-            action: function(){ 
-                if (actions[action][type].action()){
-                    if (action === 'tech'){
-                        gainTech(type);
+            action: function(){
+                var keyMult = (action === 'tech' ? 1 : keyMultiplier());
+                for (var i=0; i<keyMult; i++){
+                    if (actions[action][type].action()){
+                        if (action === 'tech'){
+                            gainTech(type);
+                        }
+                        else {
+                            updateDesc(action,type);
+                        }
                     }
                     else {
-                        updateDesc(action,type);
+                        break;
                     }
                 }
             }

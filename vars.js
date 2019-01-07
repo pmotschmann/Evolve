@@ -107,10 +107,10 @@ export function keyMultiplier(){
         number *= 10;
     }
     if (shiftIsPressed){
-        number *= 100;
+        number *= 25;
     }
     if (altIsPressed){
-        number *= 1000;
+        number *= 100;
     }
     return number;
 }
