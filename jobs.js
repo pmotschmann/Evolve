@@ -13,6 +13,9 @@ export const job_desc = {
     },
     quarry_worker: function(){
         let multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.25 : 0) + 1;
+        if (global.tech['explosives'] && global.tech['explosives'] >= 2){
+            multiplier *= 1.25;
+        }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
         return 'Quarry Workers mine stone from rock quarries. Each quarry worker generates '+gain+' stone per tick.';
     },
@@ -40,11 +43,6 @@ export const job_desc = {
 // Sets up jobs in civics tab
 export function defineJobs(){
     $('#civic').append($('<div id="jobs" class="column"></div>'));
-    loadJobs();
-}
-
-export function loadJobs(){
-    $('#jobs').empty();
     loadUnemployed();
     loadJob('farmer','Farmer',3);
     loadJob('lumberjack','Lumberjack',1);
@@ -60,24 +58,24 @@ function loadUnemployed(){
     var color = 'warning';
     
     var id = 'civ-free';
-    var civ_container = $('<div id="' + id + '" class="job"></div>');
-    var job_label = $('<div class="job_label"><span class="has-text-' + color + '">Unemployed</span><span class="count">{{ free }}</span></div>');
+    var civ_container = $(`<div id="${id}" class="job"></div>`);
+    var job_label = $(`<div class="job_label"><span class="has-text-${color}">Unemployed</span><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
     vues['civ_free'] = new Vue({
         data: global.civic,
     });
-    vues['civ_free'].$mount('#'+id);
+    vues['civ_free'].$mount(`#${id}`);
     
-    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark">The number of unemployed citizens. Unemployed citizens do not pay taxes however they also consume half rations.</div>');
+    var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">The number of unemployed citizens. Unemployed citizens do not pay taxes however they also consume half rations.</div>`);
     popper.hide();
     $('#main').append(popper);
-    $('#'+id+' .job_label').on('mouseover',function(){
+    $(`#${id} .job_label`).on('mouseover',function(){
             popper.show();
-            new Popper($('#'+id+' .job_label'),popper);
+            new Popper($(`#${id} .job_label`),popper);
         });
-    $('#'+id+' .job_label').on('mouseout',function(){
+    $(`#${id} .job_label`).on('mouseout',function(){
             popper.hide();
         });
 }
@@ -129,14 +127,15 @@ function loadJob(job, name, impact, color){
     });
     vues['civ_'+job].$mount('#'+id);
     
-    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark">'+ job_desc[job]() +'</div>');
+    var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
     popper.hide();
     $('#main').append(popper);
-    $('#'+id+' .job_label').on('mouseover',function(){
+    $(`#${id} .job_label`).on('mouseover',function(){
+            popper.html(job_desc[job]());
             popper.show();
-            new Popper($('#'+id+' .job_label'),popper);
+            new Popper($(`#${id} .job_label`),popper);
         });
-    $('#'+id+' .job_label').on('mouseout',function(){
+    $(`#${id} .job_label`).on('mouseout',function(){
             popper.hide();
         });
 }

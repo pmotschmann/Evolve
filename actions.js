@@ -1,7 +1,6 @@
 import { global, vues, save, messageQueue, keyMultiplier } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources } from './resources.js';
-import { loadJobs } from './jobs.js';
 
 export const actions = {
     evolution: {
@@ -908,7 +907,6 @@ export const actions = {
                     global.city['sawmill'].count++;
                     global.civic.lumberjack.impact = (global.city['sawmill'].count * 0.05) + 1;
                     global['resource']['Lumber'].max += 200;
-                    loadJobs();
                     return true;
                 }
                 return false;
@@ -1709,6 +1707,42 @@ export const actions = {
             effect: 'Create tools made from iron that aid farming. Improves farm efficiency.',
             action: function (){
                 if (payCosts(actions.tech.iron_hoe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        black_powder: {
+            id: 'tech-black_powder',
+            title: 'Black Powder',
+            desc: 'Discover black powder',
+            reqs: { mining: 4 },
+            grant: ['explosives',1],
+            cost: { 
+                Knowledge: function(){ return 5000; },
+                Coal: function(){ return 500; }
+            },
+            effect: 'Usher in a new era of things that go boom. Surely nothing bad can happen thanks to this discovery.',
+            action: function (){
+                if (payCosts(actions.tech.black_powder.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        dynamite: {
+            id: 'tech-dynamite',
+            title: 'Dynamite',
+            desc: 'Discover black powder',
+            reqs: { explosives: 1 },
+            grant: ['explosives',2],
+            cost: { 
+                Knowledge: function(){ return 5200; },
+                Coal: function(){ return 750; }
+            },
+            effect: 'Dynamite can be used to increase the efficiency of rock mining, no one would ever misuse this invention for nefarious purposes.',
+            action: function (){
+                if (payCosts(actions.tech.dynamite.cost)){
                     return true;
                 }
                 return false;

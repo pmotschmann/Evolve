@@ -232,6 +232,9 @@ function mainLoop() {
                 
                 // Stone
                 var stone_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.25 : 0) + 1;
+                if (global.tech['explosives'] && global.tech['explosives'] >= 2){
+                    stone_multiplier *= 1.25;
+                }
                 stone_multiplier *= tax_multiplier;
                 count = global.resource.Stone.amount + (global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier);
                 if (count > global.resource.Stone.max){ count = global.resource.Stone.max; }
