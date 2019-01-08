@@ -373,6 +373,9 @@ function mainLoop() {
             if (global.city['bank']){
                 caps['Money'] += (global.city['bank'].count * (global.tech['banking'] >= 3 ? 2500 : 1000));
             }
+            if (global.tech['banking'] >= 4){
+                caps['Money'] += 250 * global.resource[races[global.race.species].name].amount;
+            }
             
             Object.keys(caps).forEach(function (res){
                 caps[res] += global.resource[res].crates * 25;

@@ -1481,13 +1481,31 @@ export const actions = {
             grant: ['banking',3],
             cost: { 
                 Money: function(){ return 2000; },
-                Knowledge: function(){ return 5000; },
+                Knowledge: function(){ return 4000; },
                 Iron: function(){ return 500; },
                 Cement: function(){ return 750; }
             },
             effect: 'Upgrade your banks with vaults made out of concrete, increases $ storage capacity.',
             action: function (){
                 if (payCosts(actions.tech.vault.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        bonds: {
+            id: 'tech-bonds',
+            title: 'Savings Bonds',
+            desc: 'Savings Bonds',
+            reqs: { banking: 3 },
+            grant: ['banking',4],
+            cost: { 
+                Money: function(){ return 20000; },
+                Knowledge: function(){ return 5500; }
+            },
+            effect: 'Raise new capital by creating a series of savings bonds. With savings bonds each citizen will increase your money cap by $250.',
+            action: function (){
+                if (payCosts(actions.tech.bonds.cost)){
                     return true;
                 }
                 return false;
