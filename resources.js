@@ -183,7 +183,12 @@ function drawModal(name,color){
         },
         methods: {
             buildLabel: function(){
-                return 'Construct a crate, cost 250 Lumber';
+                if (global.race['kindling_kindred']){
+                    return 'Construct a crate, cost 250 Stone';
+                }
+                else {
+                    return 'Construct a crate, cost 250 Lumber';
+                }
             },
             removeLabel: function(){
                 return 'Remove crate from this resrouce (-25 cap)';
@@ -193,8 +198,9 @@ function drawModal(name,color){
             },
             buildCrate: function(res){
                 let keyMutipler = keyMultiplier();
-                if (global.resource.Lumber.amount >= (250 * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
-                    global.resource.Lumber.amount -= (250 * keyMutipler);
+                let material = global.race['kindling_kindred'] ? 'Stone' : 'Lumber';
+                if (global.resource[material].amount >= (250 * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
+                    global.resource[material].amount -= (250 * keyMutipler);
                     global.resource.Crates.amount += keyMutipler;
                 }
             },
