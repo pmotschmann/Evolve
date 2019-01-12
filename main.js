@@ -223,6 +223,63 @@ function mainLoop() {
                     global.resource.Cement.amount = count;
                 }
                 
+                // Smelters
+                let iron_smelter = 0;
+                if (global.city['smelter'] && global.city['smelter'].count > 0){
+                    let consume_wood = global.city['smelter'].Wood * 3;
+                    let consume_coal = global.city['smelter'].Coal * 0.25;
+                    iron_smelter = global.city['smelter'].Iron;
+                    let steel_smelter = global.city['smelter'].Steel;
+                    while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal ){
+                        if (steel_smelter > 0){
+                            steel_smelter--;
+                        }
+                        else {
+                            iron_smelter--;
+                        }
+                    }
+                    while (consume_wood > global.resource.Lumber.amount && consume_wood > 0){
+                        consume_wood -= 3;
+                        if (steel_smelter > 0){
+                            steel_smelter--;
+                        }
+                        else {
+                            iron_smelter--;
+                        }
+                    }
+                    while (consume_coal > global.resource.Lumber.amount && consume_coal > 0){
+                        consume_coal -= 0.25;
+                        if (steel_smelter > 0){
+                            steel_smelter--;
+                        }
+                        else {
+                            iron_smelter--;
+                        }
+                    }
+
+                    global.resource.Lumber.amount -= consume_wood;
+                    global.resource.Coal.amount -= consume_coal;
+
+                    //Steel Production
+                    
+
+                    if (global.resource.Steel.display && global.resource.Steel.amount < global.resource.Steel.max){
+                        var iron_consume = steel_smelter * 2;
+                        var coal_consume = steel_smelter * 0.25;
+                        while (iron_consume > global.resource.Iron.amount && iron_consume > 0 && coal_consume > global.resource.Coal.amount && coal_consume > 0){
+                            iron_consume -= 2;
+                            coal_consume -= 0.25;
+                        }
+                        global.resource.Iron.amount -= iron_consume;
+                        global.resource.Coal.amount -= coal_consume;
+
+                        var steel_multiplier = tax_multiplier;
+                        count = global.resource.Steel.amount + (steel_smelter * steel_multiplier);
+                        if (count > global.resource.Steel.max){ count = global.resource.Steel.max; }
+                        global.resource.Steel.amount = count;
+                    }
+                }                
+
                 // Lumber
                 var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
                 lum_multiplier *= tax_multiplier;
@@ -253,6 +310,7 @@ function mainLoop() {
                 if (global.resource.Iron.display){
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     iron_multiplier *= tax_multiplier;
+                    iron_multiplier *= (1 + (iron_smelter * 0.05));
                     count = global.resource.Iron.amount + ((global.civic.miner.workers / 4) * iron_multiplier);
                     if (count > global.resource.Iron.max){ count = global.resource.Iron.max; }
                     global.resource.Iron.amount = count;
@@ -292,12 +350,14 @@ function mainLoop() {
                 Knowledge: 100,
                 Food: 250,
                 Crates: 0,
+                Containers: 0,
                 Lumber: 200,
                 Stone: 200,
                 Copper: 100,
                 Iron: 100,
                 Cement: 100,
-                Coal: 50
+                Coal: 50,
+                Steel: 50
             };
             // labor caps
             var lCaps = {
@@ -319,6 +379,12 @@ function mainLoop() {
                     caps['Crates'] -= global.resource[res].crates;
                 });
             }
+            if (global.city['warehouse']){
+                caps['Containers'] += (global.city['warehouse'].count * 50);
+                Object.keys(caps).forEach(function (res){
+                    caps['Containers'] -= global.resource[res].containers;
+                });
+            }
             if (global.city['rock_quarry']){
                 lCaps['quarry_worker'] += global.city['rock_quarry'].count;
                 caps['Stone'] += (global.city['rock_quarry'].count * 100);
@@ -329,6 +395,8 @@ function mainLoop() {
             }
             if (global.city['sawmill']){
                 caps['Lumber'] += (global.city['sawmill'].count * 200);
+                let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
+                global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
             }
             if (global.city['mine']){
                 lCaps['miner'] += global.city['mine'].count;
@@ -361,7 +429,11 @@ function mainLoop() {
                 caps['Food'] += (global.city['silo'].count * 250);
             }
             if (global.city['university']){
-                caps['Knowledge'] += (global.city['university'].count * 500);
+                let multiplier = 1;
+                if (global.tech['science'] >= 4){
+                    multiplier += global.city['library'].count * 0.02;
+                }
+                caps['Knowledge'] += (global.city['university'].count * 500 * multiplier);
                 lCaps['professor'] += global.city['university'].count;
             }
             if (global.city['library']){
@@ -371,14 +443,24 @@ function mainLoop() {
                 }
             }
             if (global.city['bank']){
-                caps['Money'] += (global.city['bank'].count * (global.tech['banking'] >= 3 ? 2500 : 1000));
+                let vault = 1000;
+                if (global.tech['banking'] >= 5){
+                    vault = 5000;
+                }
+                else if (global.tech['banking'] >= 3){
+                    vault = 2500;
+                }
+                caps['Money'] += (global.city['bank'].count * vault);
             }
             if (global.tech['banking'] >= 4){
                 caps['Money'] += 250 * global.resource[races[global.race.species].name].amount;
             }
             
+            let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 30 : 25;
+            let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 2 ? 75 : 50;
             Object.keys(caps).forEach(function (res){
-                caps[res] += global.resource[res].crates * 25;
+                caps[res] += global.resource[res].crates * create_value;
+                caps[res] += global.resource[res].containers * container_value;
                 global.resource[res].max = caps[res];
                 if (global.resource[res].amount > global.resource[res].max){
                     global.resource[res].amount = global.resource[res].max;
@@ -531,11 +613,11 @@ function diffCalc(res,period){
         global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (period / 1000)).toFixed(2);
         global['resource'][res].last = global['resource'][res].amount;
     }
-    if (global['resource'][res].diff < 0 && !$('#res-'+res+' .diff').hasClass('has-text-danger')){
-        $('#res-'+res+' .diff').addClass('has-text-danger');
+    if (global['resource'][res].diff < 0 && !$(`#res-${res} .diff`).hasClass('has-text-danger')){
+        $(`#res-${res} .diff`).addClass('has-text-danger');
     }
-    else if (global['resource'][res].diff >= 0 && $('#res-'+res+' .diff').hasClass('has-text-danger')){
-        $('#res-'+res+' .diff').removeClass('has-text-danger');
+    else if (global['resource'][res].diff >= 0 && $(`#res-${res} .diff`).hasClass('has-text-danger')){
+        $(`#res-${res} .diff`).removeClass('has-text-danger');
     }
 }
 

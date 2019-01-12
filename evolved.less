@@ -1,13 +1,43 @@
+span {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.add {
+    display: inline-block;
+    margin-right: .25rem;
+    padding: 0 .375rem .25rem;
+    border-radius: 0 .375rem .375rem 0;
+    border: #ccc solid .0625rem;
+    line-height: .75rem;
+    cursor: pointer;
+}
+.sub {
+    outline: none;
+    display: inline-block;
+    margin-left: .25rem;
+    padding: 0 .375rem .25rem;
+    border-radius: .375rem 0 0 .375rem;
+    border: #ccc solid .0625rem;
+    line-height: .75rem;
+    cursor: pointer;
+}
+.current {
+    width: 5rem;
+    border-top: #ccc solid .0625rem;
+    border-bottom: #ccc solid .0625rem;
+    text-align: center;
+    display: inline-block;
+    font-size: .875rem;
+    line-height: 1rem;
+    cursor: default;
+}
+
 .main {
     margin: 1rem 1rem 0;
-    
-    span {
-        -moz-user-select: none;
-        -khtml-user-select: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
     
     .race {
         margin-top: 1.75rem;
@@ -58,25 +88,57 @@
         .tab-item {
             padding: 0 0 3rem 1rem;
         }
-        a.button {
-            width: 11rem;
-            margin: 1rem 1rem 0 0;
-            
-            span.count {
+        .action {
+            display: inline-block;
+            position: relative;
+
+            a.button {
+                width: 11rem;
+                margin: 1rem 1rem 0 0;
+                
+                span.count {
+                    position: absolute;
+                    top: -.125rem;
+                    right: -.125rem;
+                    display: inline-block;
+                    height: 1.125rem;
+                    line-height: 1rem;
+                    padding: 0 .25rem;
+                    border-top: .0625rem solid #282f2f;
+                    border-right: .0625rem solid #282f2f;
+                    border-radius: 0 .4375rem 0 .4375rem;
+                    overflow: hidden;
+                    background: #1f2424;
+                }
+            }
+
+            div.special {
                 position: absolute;
-                top: -.125rem;
-                right: -.125rem;
-                display: inline-block;
+                top: 1rem;
+                left: 0;
+                cursor: pointer;
+                display: block;
                 height: 1.125rem;
-                line-height: 1rem;
+                line-height: 1.0625rem;
                 padding: 0 .25rem;
-                border-top: .0625rem solid #282f2f;
-                border-right: .0625rem solid #282f2f;
-                border-radius: 0 7px 0 7px;
+                border: .0625rem solid #282f2f;
+                border-radius: .4375rem 0 .4375rem 0;
                 overflow: hidden;
                 background: #1f2424;
+
+                .gear {
+                    fill: #3a4344;
+                }
+            }
+
+            div.special:hover {
+                border: .0625rem solid #3a4344;
+                .gear {
+                    fill: #4a5354;
+                }
             }
         }
+        
         a.button:hover > span {
             border-top: .0625rem solid #3a4344;
             border-right: .0625rem solid #3a4344;
@@ -123,42 +185,8 @@
         :first-child {
             cursor: default;
         }
+    }
         
-        .current {
-            width: 5rem;
-            border-top: #ccc solid 1px;
-            border-bottom: #ccc solid 1px;
-            text-align: center;
-            display: inline-block;
-            font-size: .875rem;
-            line-height: 1rem;
-            cursor: default;
-        }
-    }
-    
-    .taxRate,
-    .job {
-        .add {
-            display: inline-block;
-            margin-right: .25rem;
-            padding: 0 .375rem .25rem;
-            border-radius: 0 .375rem .375rem 0;
-            border: #ccc solid 1px;
-            line-height: .75rem;
-            cursor: pointer;
-        }
-        .sub {
-            outline: none;
-            display: inline-block;
-            margin-left: .25rem;
-            padding: 0 .375rem .25rem;
-            border-radius: .375rem 0 0 .375rem;
-            border: #ccc solid 1px;
-            line-height: .75rem;
-            cursor: pointer;
-        }
-    }
-    
     .market-header {
         padding-bottom: .5rem;
         border-bottom: #ccc solid 1px;
@@ -246,6 +274,21 @@
                 margin-left: 1rem;
             }
         }
+        button {
+            font-size: .875rem;
+            margin: 0 .25rem;
+            height: 1.8rem;
+        }
+    }
+    .divide {
+        margin-top: .5rem;
+        padding-top: .5rem;
+        border-top: #ccc solid .0625rem;
+    }
+    .smelting {
+        margin: .5rem 0 .75rem;
+        border-top: #ccc solid .0625rem;
+        padding-top: .5rem;
         button {
             font-size: .875rem;
             margin: 0 .25rem;

@@ -8,7 +8,10 @@ export const races = {
         name: 'Human',
         desc: "Humans are versatile creatures who are adept at bending the enviroment around them to suit their needs. They are a ambitious race who seek to expand their knowledge of the universe around them and build great empires.",
         type: 'humanoid',
-        traits: {}
+        traits: {
+            adaptable: 1,
+            xenophobic: 1
+        }
     },
     elven: {
         name: 'Elf',

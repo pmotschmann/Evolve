@@ -27,6 +27,7 @@ export function defineResources() {
         loadResource(races[global.race.species].name,0,1,false,false,'warning');
         loadResource('Knowledge',100,1,false,false,'warning');
         loadResource('Crates',0,0,false,false,'warning');
+        loadResource('Containers',0,0,false,false,'warning');
         loadResource('Food',250,1,true,true);
         loadResource('Lumber',250,1,true,true);
         loadResource('Stone',250,1,true,true);
@@ -62,6 +63,9 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     global['resource'][name]['stackable'] = stackable;
     if (!global['resource'][name]['crates']){
         global['resource'][name]['crates'] = 0;
+    }
+    if (!global['resource'][name]['containers']){
+        global['resource'][name]['containers'] = 0;
     }
     
     var res_container = $(`<div id="res-${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
@@ -182,7 +186,7 @@ function drawModal(name,color){
             res: global['resource'][name],
         },
         methods: {
-            buildLabel: function(){
+            buildCrateLabel: function(){
                 if (global.race['kindling_kindred']){
                     return 'Construct a crate, cost 250 Stone';
                 }
@@ -190,11 +194,13 @@ function drawModal(name,color){
                     return 'Construct a crate, cost 250 Lumber';
                 }
             },
-            removeLabel: function(){
-                return 'Remove crate from this resrouce (-25 cap)';
+            removeCrateLabel: function(){
+                let cap = global.tech.container >= 2 ? 30 : 25;
+                return `Remove crate from this resrouce (-${cap} cap)`;
             },
-            addLabel: function(){
-                return 'Assign crate to this resource (+25 cap)';
+            addCrateLabel: function(){
+                let cap = global.tech.container >= 2 ? 30 : 25;
+                return `Assign crate to this resource (+${cap} cap)`;
             },
             buildCrate: function(res){
                 let keyMutipler = keyMultiplier();
@@ -206,20 +212,22 @@ function drawModal(name,color){
             },
             removeCrate: function(res){
                 let keyMutipler = keyMultiplier();
+                let cap = global.tech.container >= 2 ? 30 : 25;
                 if (global.resource[res].crates >= keyMutipler){
                     global.resource.Crates.amount += keyMutipler;
                     global.resource.Crates.max += keyMutipler;
                     global.resource[res].crates -= keyMutipler;
-                    global.resource[res].max -= (25 * keyMutipler);
+                    global.resource[res].max -= (cap * keyMutipler);
                 }
             },
             addCrate: function(res){
                 let keyMutipler = keyMultiplier();
+                let cap = global.tech.container >= 2 ? 30 : 25;
                 if (global.resource.Crates.amount >= keyMutipler){
                     global.resource.Crates.amount -= keyMutipler;
                     global.resource.Crates.max -= keyMutipler;
                     global.resource[res].crates += keyMutipler;
-                    global.resource[res].max += (25 * keyMutipler);
+                    global.resource[res].max += (cap * keyMutipler);
                 }
             }
         }
@@ -230,9 +238,9 @@ function drawModal(name,color){
     
     crates.append($('<div class="crateHead"><span>Crates Owned: {{ crates.amount }}/{{ crates.max }}</span><span>Crates Assigned: {{ res.crates }}</span></div>'));
     
-    let buildCrate = $(`<b-tooltip :label="buildLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="buildCrate('${name}')">Construct Crate</button></b-tooltip>`);
-    let removeCrate = $(`<b-tooltip :label="removeLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="removeCrate('${name}')">Unassign Crate</button></b-tooltip>`);
-    let addCrate = $(`<b-tooltip :label="addLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="addCrate('${name}')">Assign Crate</button></b-tooltip>`);
+    let buildCrate = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="buildCrate('${name}')">Construct Crate</button></b-tooltip>`);
+    let removeCrate = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="removeCrate('${name}')">Unassign Crate</button></b-tooltip>`);
+    let addCrate = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="addCrate('${name}')">Assign Crate</button></b-tooltip>`);
     
     crates.append(buildCrate);
     crates.append(removeCrate);
@@ -240,6 +248,70 @@ function drawModal(name,color){
     
     vues['modalCrates'].$mount('#modalCrates');
     
+    if (global.city['warehouse'] && global.city['warehouse'].count > 0){
+        vues['modalContainer'] = new Vue({
+            data: { 
+                containers: global['resource']['Containers'],
+                res: global['resource'][name],
+            },
+            methods: {
+                buildContainerLabel: function(){
+                    return 'Construct a container, cost 100 Steel';
+                },
+                removeContainerLabel: function(){
+                    let cap = global.tech.steel_container >= 2 ? 75 : 50;
+                    return `Remove container from this resrouce (-${cap} cap)`;
+                },
+                addContainerLabel: function(){
+                    let cap = global.tech.steel_container >= 2 ? 75 : 50;
+                    return `Assign container to this resource (+${cap} cap)`;
+                },
+                buildContainer: function(res){
+                    let keyMutipler = keyMultiplier();
+                    if (global.resource['Steel'].amount >= (100 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
+                        global.resource['Steel'].amount -= (100 * keyMutipler);
+                        global.resource.Containers.amount += keyMutipler;
+                    }
+                },
+                removeContainer: function(res){
+                    let keyMutipler = keyMultiplier();
+                    let cap = global.tech.steel_container >= 2 ? 75 : 50;
+                    if (global.resource[res].containers >= keyMutipler){
+                        global.resource.Containers.amount += keyMutipler;
+                        global.resource.Containers.max += keyMutipler;
+                        global.resource[res].containers -= keyMutipler;
+                        global.resource[res].max -= (cap * keyMutipler);
+                    }
+                },
+                addContainer: function(res){
+                    let keyMutipler = keyMultiplier();
+                    let cap = global.tech.steel_container >= 2 ? 75 : 50;
+                    if (global.resource.Containers.amount >= keyMutipler){
+                        global.resource.Containers.amount -= keyMutipler;
+                        global.resource.Containers.max -= keyMutipler;
+                        global.resource[res].containers += keyMutipler;
+                        global.resource[res].max += (cap * keyMutipler);
+                    }
+                }
+            }
+        });
+        
+        let containers = $('<div id="modalContainers" class="crates divide"></div>');
+        body.append(containers);
+        
+        containers.append($('<div class="crateHead"><span>Containers Owned: {{ containers.amount }}/{{ containers.max }}</span><span>Containers Assigned: {{ res.containers }}</span></div>'));
+        
+        let buildContainer = $(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="buildContainer('${name}')">Construct Container</button></b-tooltip>`);
+        let removeContainer = $(`<b-tooltip :label="removeContainerLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="removeContainer('${name}')">Unassign Container</button></b-tooltip>`);
+        let addContainer = $(`<b-tooltip :label="addContainerLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="addContainer('${name}')">Assign Container</button></b-tooltip>`);
+        
+        containers.append(buildContainer);
+        containers.append(removeContainer);
+        containers.append(addContainer);
+        
+        vues['modalContainer'].$mount('#modalContainers');
+    }
+
     vues['modal_res_'+name] = new Vue({
         data: global['resource'][name], 
         filters: {

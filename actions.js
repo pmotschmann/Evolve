@@ -661,13 +661,13 @@ export const actions = {
                         return 0; 
                     } 
                 },
-                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.24); },
+                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.22); },
                 Stone: function(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
-                        return costMultiplier('basic_housing', 7, 1.24);
+                        return costMultiplier('basic_housing', 7, 1.22);
                     } 
                     else { 
-                        return costMultiplier('basic_housing', 8, 1.24); 
+                        return costMultiplier('basic_housing', 8, 1.22); 
                     }
                 },
                 Cement: function(){ 
@@ -854,7 +854,7 @@ export const actions = {
                 Iron: function(){ return costMultiplier('storage_yard', 4, 1.8); },
                 Cement: function(){ return costMultiplier('storage_yard', 6, 1.9); }
             },
-            effect: 'Freight yards are open paved areas with rails used for storing cargo. Each yard increases your container capacity.',
+            effect: 'Freight yards are open paved areas with rails used for storing cargo. Each yard increases your crate capacity.',
             action: function (){
                 if (payCosts(actions.city.storage_yard.cost)){
                     if (global.resource.Crates.display === false){
@@ -863,6 +863,30 @@ export const actions = {
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
                     global.resource.Crates.max += 50;
+                    return true;
+                }
+                return false;
+            }
+        },
+        warehouse: {
+            id: 'city-warehouse',
+            title: 'Warehouse',
+            desc: 'Build a Warehouse',
+            reqs: { steel_container: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('warehouse', 400, 1.25); },
+                Cement: function(){ return costMultiplier('warehouse', 75, 1.25); },
+                Steel: function(){ return costMultiplier('warehouse', 100, 1.25); }
+            },
+            effect: 'Warehouses are large storage facilities. Each warehouse is capable of storing 50 containters.',
+            action: function (){
+                if (payCosts(actions.city.warehouse.cost)){
+                    if (global.resource.Containers.display === false){
+                        messageQueue('You can now construct containers, click the + symbol next to a resource to manage containers.','success');
+                    }
+                    global.city['warehouse'].count++;
+                    global.resource.Containers.display = true;
+                    global.resource.Containers.max += 50;
                     return true;
                 }
                 return false;
@@ -901,11 +925,15 @@ export const actions = {
                 Iron: function(){ return costMultiplier('sawmill', 400, 1.25); },
                 Cement: function(){ return costMultiplier('sawmill', 420, 1.25); }
             },
-            effect: 'Each sawmill increases the amount of lumber harvested per lumberjack by 5%',
+            effect: function(){
+                let impact = global.tech['saw'] >= 2 ? 8 : 5;
+                return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%`; 
+            },
             action: function (){
                 if (payCosts(actions.city.sawmill.cost)){
                     global.city['sawmill'].count++;
-                    global.civic.lumberjack.impact = (global.city['sawmill'].count * 0.05) + 1;
+                    let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
+                    global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
                     global['resource']['Lumber'].max += 200;
                     return true;
                 }
@@ -929,6 +957,57 @@ export const actions = {
                     global.civic.quarry_worker.display = true;
                     global.civic.quarry_worker.max = global.city.rock_quarry.count;
                     global['resource']['Stone'].max += 100;
+                    return true;
+                }
+                return false;
+            }
+        },
+        cement_plant: {
+            id: 'city-cement_plant',
+            title: 'Cement Factory',
+            desc: 'Construct a Cement Factory',
+            reqs: { cement: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('cement_plant', 3000, 1.5); },
+                Lumber: function(){ return costMultiplier('cement_plant', 1800, 1.35); },
+                Stone: function(){ return costMultiplier('cement_plant', 2000, 1.3); }
+            },
+            effect: 'Cement plants turn stone into cement, each plant can support 3 workers.',
+            action: function (){
+                if (payCosts(actions.city.cement_plant.cost)){
+                    global.resource.Cement.display = true;
+                    global.city.cement_plant.count++;
+                    global.civic.cement_worker.display = true;
+                    global.civic.cement_worker.max = global.city.cement_plant.count * 3;
+                    return true;
+                }
+                return false;
+            }
+        },
+        smelter: {
+            id: 'city-smelter',
+            title: 'Smelter',
+            desc: 'Build a smelter',
+            reqs: { smelting: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('smelter', 1000, 1.3); },
+                Iron: function(){ return costMultiplier('smelter', 500, 1.32); }
+            },
+            effect: function(){ 
+                var iron_yield = 10;
+                if (global.resource.Steel.display){
+                    return `Smelters can either increase Iron yield by ${iron_yield}% per smelter or produce Steel by consuming Iron and Coal. Smelters require fuel to opperate.`;
+                }
+                else {
+                    return `Smelters increase Iron yield by ${iron_yield}% per smelter but require fuel to opperate.`;
+                }
+            },
+            special: true,
+            action: function (){
+                if (payCosts(actions.city.smelter.cost)){
+                    global.city['smelter'].count++;
+                    global.city['smelter'].Wood++;
+                    global.city['smelter'].Iron++;
                     return true;
                 }
                 return false;
@@ -1005,7 +1084,16 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('bank', 75, 1.30); },
                 Stone: function(){ return costMultiplier('bank', 100, 1.45); }
             },
-            effect: function (){ return global.tech['banking'] >= 3 ? 'Increases money capacity by $2500' : 'Increases money capacity by $1000'; },
+            effect: function (){ 
+                let vault = 1000;
+                if (global.tech['banking'] >= 5){
+                    vault = 5000;
+                }
+                else if (global.tech['banking'] >= 3){
+                    vault = 2500;
+                }
+                return `Increases money capacity by \$${vault}`; 
+            },
             action: function (){
                 if (payCosts(actions.city.bank.cost)){
                     global['resource']['Money'].max += 1000;
@@ -1026,7 +1114,13 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('university', 500, 1.35) - 100; },
                 Stone: function(){ return costMultiplier('university', 750, 1.35) - 150; }
             },
-            effect: 'Contributes to the advancement of science. Each university can support one professor and increases knowledge cap by 500.',
+            effect: function (){
+                let gain = 500;
+                if (global.tech['science'] >= 4){
+                    gain *= 1 + (global.city['library'].count * 0.02);
+                }
+                return `Contributes to the advancement of science. Each university can support one professor and increases knowledge cap by ${gain}.`;
+            },
             action: function (){
                 if (payCosts(actions.city.university.cost)){
                     global['resource']['Knowledge'].max += 500;
@@ -1063,28 +1157,6 @@ export const actions = {
                 }
                 return false;
             }
-        },
-        cement_plant: {
-            id: 'city-cement_plant',
-            title: 'Cement Factory',
-            desc: 'Construct a Cement Factory',
-            reqs: { cement: 1 },
-            cost: { 
-                Money: function(){ return costMultiplier('cement_plant', 3000, 1.5); },
-                Lumber: function(){ return costMultiplier('cement_plant', 1800, 1.35); },
-                Stone: function(){ return costMultiplier('cement_plant', 2000, 1.3); }
-            },
-            effect: 'Cement plants turn stone into cement, each plant can support 3 workers.',
-            action: function (){
-                if (payCosts(actions.city.cement_plant.cost)){
-                    global.resource.Cement.display = true;
-                    global.city.cement_plant.count++;
-                    global.civic.cement_worker.display = true;
-                    global.civic.cement_worker.max = global.city.cement_plant.count * 3;
-                    return true;
-                }
-                return false;
-            }
         }
     },
     tech: {
@@ -1097,7 +1169,7 @@ export const actions = {
             cost: { 
                 Knowledge: function(){ return 10; }
             },
-            effect: 'Learn to construct basic housing for your citizens',
+            effect: 'Learn to construct basic housing for your citizens.',
             action: function (){
                 if (payCosts(actions.tech.housing.cost)){
                     global.city['basic_housing'] = { count: 0 };
@@ -1115,10 +1187,28 @@ export const actions = {
             cost: { 
                 Knowledge: function(){ return 4000; }
             },
-            effect: 'Learn to construct more comfortable housing for couples',
+            effect: 'Learn to construct more comfortable housing for couples.',
             action: function (){
                 if (payCosts(actions.tech.cottage.cost)){
                     global.city['cottage'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        steel_beams: {
+            id: 'tech-steel_beams',
+            title: 'Steel Beams',
+            desc: 'Reduce cost of housing',
+            reqs: { housing: 2, smelting: 2 },
+            grant: ['housing_reduction',1],
+            cost: { 
+                Knowledge: function(){ return 12500; },
+                Steel: function(){ return 2500; }
+            },
+            effect: 'Reduce material costs of Cabins and Cottages by introducing strong steel beams.',
+            action: function (){
+                if (payCosts(actions.tech.steel_beams.cost)){
                     return true;
                 }
                 return false;
@@ -1133,7 +1223,7 @@ export const actions = {
             cost: { 
                 Knowledge: function(){ return 10; }
             },
-            effect: 'Learn to plant crops and harvest them for food',
+            effect: 'Learn to plant crops and harvest them for food.',
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
                     global.city['farm'] = { count: 0 };
@@ -1204,10 +1294,53 @@ export const actions = {
             cost: { 
                 Knowledge: function(){ return 50; }
             },
-            effect: 'Learn how to dig up stone slabs from a quarry',
+            effect: 'Learn how to dig up stone slabs from a quarry.',
             action: function (){
                 if (payCosts(actions.tech.mining.cost)){
                     global.city['rock_quarry'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        smelting: {
+            id: 'tech-smelting',
+            title: 'Smelting',
+            desc: 'Design smelting facilities to refine ore',
+            reqs: { mining: 3 },
+            grant: ['smelting',1],
+            cost: { 
+                Knowledge: function(){ return 4500; }
+            },
+            effect: 'Learn advanced techniques for smelting ore that will increase yield.',
+            action: function (){
+                if (payCosts(actions.tech.smelting.cost)){
+                    global.city['smelter'] = { 
+                        count: 0,
+                        Wood: 0,
+                        Coal: 0,
+                        Oil: 0,
+                        Iron: 0,
+                        Steel: 0
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        steel: {
+            id: 'tech-steel',
+            title: 'Crucible Steel',
+            desc: 'Learn to smelt steel',
+            reqs: { smelting: 1 },
+            grant: ['smelting',2],
+            cost: { 
+                Knowledge: function(){ return 5500; }
+            },
+            effect: 'Upgrade your smelters so they can produce steel.',
+            action: function (){
+                if (payCosts(actions.tech.steel.cost)){
+                    global.resource.Steel.display = true;
                     return true;
                 }
                 return false;
@@ -1222,7 +1355,7 @@ export const actions = {
             cost: { 
                 Knowledge: function(){ return 500; }
             },
-            effect: 'Learn how to mine and refine copper into a pure form',
+            effect: 'Learn how to mine and refine copper into a pure form.',
             action: function (){
                 if (payCosts(actions.tech.metal_working.cost)){
                     global.city['mine'] = { count: 0 };
@@ -1240,7 +1373,7 @@ export const actions = {
             cost: { 
                 Knowledge: function(){ return 3000; }
             },
-            effect: 'Learn how to extract iron ore from mines',
+            effect: 'Learn how to extract iron ore from mines.',
             action: function (){
                 if (payCosts(actions.tech.iron_mining.cost)){
                     global.resource.Iron.display = true;
@@ -1324,18 +1457,38 @@ export const actions = {
                 return false;
             }
         },
+        reinforced_crates: {
+            id: 'tech-reinforced_crates',
+            title: 'Reinforced Crates',
+            desc: 'Reinforced Crates',
+            reqs: { container: 1, smelting: 2 },
+            grant: ['container',2],
+            cost: { 
+                Knowledge: function(){ return 7500; },
+                Steel: function(){ return 250; }
+            },
+            effect: 'Upgrade wooden crates by reinforcing them with steel.',
+            action: function (){
+                if (payCosts(actions.tech.reinforced_crates.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         steel_containers: {
             id: 'tech-steel_containers',
             title: 'Steel Containers',
             desc: 'Design better steel containers',
-            reqs: { steel: 1, container: 1 },
-            grant: ['container',2],
+            reqs: { smelting: 2, container: 1 },
+            grant: ['steel_container',1],
             cost: { 
-                Knowledge: function(){ return 10000; }
+                Knowledge: function(){ return 10000; },
+                Steel: function(){ return 500; }
             },
             effect: 'Replace cheap wooden crates with more durable steel containers.',
             action: function (){
                 if (payCosts(actions.tech.steel_containers.cost)){
+                    global.city['warehouse'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -1493,6 +1646,25 @@ export const actions = {
                 return false;
             }
         },
+        steel_vault: {
+            id: 'tech-steel_vault',
+            title: 'Steel Vault',
+            desc: 'Steel Vaults',
+            reqs: { banking: 4, smelting: 2 },
+            grant: ['banking',5],
+            cost: { 
+                Money: function(){ return 30000; },
+                Knowledge: function(){ return 7500; },
+                Steel: function(){ return 3000; }
+            },
+            effect: 'Reinforce your bank vaults with heavy steel doors and walls, increases $ storage capacity.',
+            action: function (){
+                if (payCosts(actions.tech.steel_vault.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         bonds: {
             id: 'tech-bonds',
             title: 'Savings Bonds',
@@ -1559,6 +1731,23 @@ export const actions = {
             effect: 'Libraries will have a minor effect on professor effectiveness.',
             action: function (){
                 if (payCosts(actions.tech.library.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        research_grant: {
+            id: 'tech-research_grant',
+            title: 'Research Grants',
+            desc: 'Research Grants',
+            reqs: { science: 3 },
+            grant: ['science',4],
+            cost: { 
+                Knowledge: function(){ return 3600; }
+            },
+            effect: 'Libraries will boost the effect of universities by 2% per library',
+            action: function (){
+                if (payCosts(actions.tech.research_grant.cost)){
                     return true;
                 }
                 return false;
@@ -1640,6 +1829,24 @@ export const actions = {
                 return false;
             }
         },
+        steel_saw: {
+            id: 'tech-steel_saw',
+            title: 'Steel Saws',
+            desc: 'Steel Sawmill blades',
+            reqs: { smelting: 2, saw: 1 },
+            grant: ['saw',2],
+            cost: { 
+                Knowledge: function(){ return 12000; },
+                Steel: function(){ return 400; }
+            },
+            effect: 'Upgrade sawmills with steel blades.',
+            action: function (){
+                if (payCosts(actions.tech.steel_saw.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         iron_axes: {
             id: 'tech-iron_axes',
             title: 'Iron Axe',
@@ -1653,6 +1860,24 @@ export const actions = {
             effect: 'Upgrade axe technology to metal axes made from iron. Improves lumber harvesting.',
             action: function (){
                 if (payCosts(actions.tech.iron_axes.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        steel_axes: {
+            id: 'tech-steel_axes',
+            title: 'Steel Axe',
+            desc: 'Create a superior axe made from steel',
+            reqs: { axe: 3, smelting: 2 },
+            grant: ['axe',4],
+            cost: { 
+                Knowledge: function(){ return 10000; },
+                Steel: function(){ return 250; }
+            },
+            effect: 'Upgrade axe technology to durable axes made from steel. Improves lumber harvesting.',
+            action: function (){
+                if (payCosts(actions.tech.steel_axes.cost)){
                     return true;
                 }
                 return false;
@@ -1694,6 +1919,24 @@ export const actions = {
                 return false;
             }
         },
+        steel_pickaxe: {
+            id: 'tech-steel_pickaxe',
+            title: 'Steel Pickaxe',
+            desc: 'Create a pickaxe made from steel',
+            reqs: { pickaxe: 2, smelting: 2},
+            grant: ['pickaxe',3],
+            cost: { 
+                Knowledge: function(){ return 10000; },
+                Steel: function(){ return 250; }
+            },
+            effect: 'Upgrades pickaxe technology to steel pickaxes. Improves mining activities.',
+            action: function (){
+                if (payCosts(actions.tech.steel_pickaxe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         copper_hoe: {
             id: 'tech-copper_hoe',
             title: 'Copper Hoes',
@@ -1715,7 +1958,7 @@ export const actions = {
         iron_hoe: {
             id: 'tech-iron_hoe',
             title: 'Iron Hoes',
-            desc: 'Create farming tools made from copper',
+            desc: 'Create farming tools made from iron',
             reqs: { hoe: 1, mining: 3 },
             grant: ['hoe',2],
             cost: { 
@@ -1725,6 +1968,24 @@ export const actions = {
             effect: 'Create tools made from iron that aid farming. Improves farm efficiency.',
             action: function (){
                 if (payCosts(actions.tech.iron_hoe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        steel_hoe: {
+            id: 'tech-steel_hoe',
+            title: 'Steel Hoes',
+            desc: 'Create better farming tools made from steel',
+            reqs: { hoe: 2, smelting: 2 },
+            grant: ['hoe',3],
+            cost: { 
+                Knowledge: function(){ return 14000; },
+                Steel: function(){ return 500; }
+            },
+            effect: 'Create tools made from steel that aid farming. Improves farm efficiency.',
+            action: function (){
+                if (payCosts(actions.tech.steel_hoe.cost)){
                     return true;
                 }
                 return false;
@@ -1761,6 +2022,24 @@ export const actions = {
             effect: 'Dynamite can be used to increase the efficiency of rock mining, no one would ever misuse this invention for nefarious purposes.',
             action: function (){
                 if (payCosts(actions.tech.dynamite.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        rebar: {
+            id: 'tech-rebar',
+            title: 'Rebar',
+            desc: 'Steel Rebar',
+            reqs: { smelting: 2, cement: 1 },
+            grant: ['cement',2],
+            cost: { 
+                Knowledge: function(){ return 7500; },
+                Steel: function(){ return 750; }
+            },
+            effect: 'Adding rebar to concrete will makes it much stronger and reduce cement costs.',
+            action: function (){
+                if (payCosts(actions.tech.rebar.cost)){
                     return true;
                 }
                 return false;
@@ -1826,14 +2105,35 @@ export function addAction(action,type){
         return;
     }
     var id = actions[action][type].id;
-    var element = $('<a id="'+id+'" class="button is-dark" v-on:click="action">{{ title }}</a>');
+    var parent = $(`<div id="${id}" class="action"></div>`);
+    var element = $('<a class="button is-dark" v-on:click="action">{{ title }}</a>');
+    parent.append(element);
+
+    if (actions[action][type]['special']){
+        var special = $(`<div class="special" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
+            <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
+                c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
+                L362.75,199.5l18.667,25.666c-4.083,7.584-7.583,15.75-9.917,24.5l-31.5,4.667v51.333l31.5,5.25
+                c2.333,8.75,5.833,16.334,9.917,23.917l-18.667,26.25l36.167,36.167l26.25-18.667c7.583,4.083,15.75,7.583,24.5,9.917l5.25,30.916
+                h51.333l5.25-31.5c8.167-2.333,16.333-5.833,23.917-9.916l26.25,18.666l36.166-36.166l-18.666-26.25
+                c4.083-7.584,7.583-15.167,9.916-23.917L620,305.666z M480,333.666c-29.75,0-53.667-23.916-53.667-53.666s24.5-53.667,53.667-53.667
+                S533.667,250.25,533.667,280S509.75,333.666,480,333.666z"/>
+            </svg></div>`);
+        parent.append(special);
+    }
     if (action !== 'tech' && global[action][type] && global[action][type].count >= 0){
         element.append($('<span class="count">{{ count }}</span>'));
     }
-    $('#'+action).append(element);
+    $('#'+action).append(parent);
     if (action !== 'tech' && global[action][type] && global[action][type].count === 0){
-        $('#'+id+' .count').css('display','none');
+        $(`#${id} .count`).css('display','none');
+        $(`#${id} .special`).css('display','none');
     }
+
+    var modal = {
+        template: '<div id="modalBox" class="modalBox"></div>'
+    };
+
     vues[id] = new Vue({
         data: {
             title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title(),
@@ -1855,11 +2155,24 @@ export function addAction(action,type){
                         break;
                     }
                 }
-            }
+            },
+            trigModal: function(){
+                this.$modal.open({
+                    parent: this,
+                    component: modal
+                });
+                
+                var checkExist = setInterval(function() {
+                   if ($('#modalBox').length > 0) {
+                      clearInterval(checkExist);
+                      drawModal(action,type);
+                   }
+                }, 50);
+            },
         },
     });
     vues[id].$mount('#'+id);
-    var popper = $('<div id="pop'+id+'" class="popper has-background-light has-text-dark"></div>');
+    var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
     popper.hide();
     $('#main').append(popper);
     $('#'+id).on('mouseover',function(){
@@ -1884,14 +2197,14 @@ function actionDesc(parent,action,type){
             if (res_cost > 0){
                 var label = res === 'Money' ? '$' : res+': ';
                 var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
-                cost.append($('<div class="'+color+'">'+label+res_cost+'</div>'));
+                cost.append($(`<div class="${color}">${label}${res_cost}</div>`));
             }
         });
         parent.append(cost);
     }
     if (actions[action][type].effect){ 
         var effect = typeof actions[action][type].effect === 'string' ? actions[action][type].effect : actions[action][type].effect();
-        parent.append($('<div>'+effect+'</div>')); 
+        parent.append($(`<div>${effect}</div>`)); 
     }
 }
 
@@ -1903,9 +2216,10 @@ function removeAction(id){
 function updateDesc(category,action){
     var id = actions[category][action].id;
     if (category !== 'tech'){
-        $('#'+id+' .count').html(global[category][action].count);
+        $(`#${id} .count`).html(global[category][action].count);
         if (global[category][action] && global[category][action].count > 0){
-            $('#'+id+' .count').css('display','inline-block');
+            $(`#${id} .count`).css('display','inline-block');
+            $(`#${id} .special`).css('display','block');
         }
     }
     actionDesc($('#pop'+id),category,action);
@@ -1919,7 +2233,7 @@ function adjustCosts(costs){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
             }
         });
-        return newCosts;
+        return rebarAdjust(newCosts);
     }
     else if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
         var newCosts = {};
@@ -1931,7 +2245,23 @@ function adjustCosts(costs){
                 newCosts[res] = function(){ return costs[res](); }
             }
         });
-        return newCosts
+        return rebarAdjust(newCosts);
+    }
+    return rebarAdjust(costs);
+}
+
+function rebarAdjust(costs){
+    if (costs['Cement'] && global.tech['cement'] && global.tech['cement'] >= 2){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Cement'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.9) || 0; }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res]()); }
+            }
+        });
+        return newCosts;
     }
     return costs;
 }
@@ -1963,6 +2293,142 @@ function checkCosts(costs){
 function costMultiplier(structure,base,mutiplier){
     if (global.race['small']){ mutiplier -= 0.01; }
     else if (global.race['large']){ mutiplier += 0.01; }
+    if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
+        mutiplier -= 0.02;
+    }
     var count = global.city[structure] ? global.city[structure].count : 0;
     return Math.round((mutiplier ** count) * base);
+}
+
+function drawModal(action,type){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${actions[action][type].title}</p>`));
+    
+    var body = $('<div id="specialModal" class="modalBody"></div>');
+    $('#modalBox').append(body);
+
+    switch(type){
+        case 'smelter':
+            smelterModal(body);
+            break;
+    }
+}
+
+function smelterModal(modal){
+
+    let fuel = $('<div><span class="has-text-warning">Fueled:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>');
+    modal.append(fuel);
+
+    let fuelTypes = $('<div></div>');
+    modal.append(fuelTypes);
+
+    let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" type="is-dark" animated><span class="current">Wood {{ Wood }}</span></b-tooltip>`);
+    let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
+    let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
+    fuelTypes.append(subWood);
+    fuelTypes.append(wood);
+    fuelTypes.append(addWood);
+
+    if (global.resource.Coal.display){
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" type="is-dark" animated><span class="current">Coal {{ Coal }}</span></b-tooltip>`);
+        let subCoal = $('<span class="sub" @click="subCoal">&laquo;</span>');
+        let addCoal = $('<span class="add" @click="addCoal">&raquo;</span>');
+        fuelTypes.append(subCoal);
+        fuelTypes.append(coal);
+        fuelTypes.append(addCoal);
+    }
+
+    if (global.resource.Steel.display){
+        let smelt = $('<div class="smelting"></div>');
+        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" type="is-dark" animated multilined><button class="button" @click="ironSmelting()">Iron Smelting: {{ Iron }}</button></b-tooltip>`);
+        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" type="is-dark" animated multilined><button class="button" @click="steelSmelting()">Steel Smelting: {{ Steel }}</button></b-tooltip>`);
+        modal.append(smelt);
+        smelt.append(ironSmelt);
+        smelt.append(steelSmelt);
+    }
+
+    vues['specialModal'] = new Vue({
+        data: global.city['smelter'],
+        methods: {
+            subWood: function(){
+                if (global.city.smelter.Wood > 0){
+                    global.city.smelter.Wood--;
+                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                        if (global.city.smelter.Steel > 0){
+                            global.city.smelter.Steel--;
+                        }
+                        else {
+                            global.city.smelter.Iron--;
+                        }
+                    }
+                }
+            },
+            addWood: function(){
+                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                    global.city.smelter.Wood++;
+                }
+            },
+            subCoal: function(){
+                if (global.city.smelter.Coal > 0){
+                    global.city.smelter.Coal--;
+                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                        if (global.city.smelter.Steel > 0){
+                            global.city.smelter.Steel--;
+                        }
+                        else {
+                            global.city.smelter.Iron--;
+                        }
+                    }
+                }
+            },
+            addCoal: function(){
+                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                    global.city.smelter.Coal++;
+                }
+            },
+            ironLabel: function(){
+                let boost = 10;
+                return `Smelt Iron, boosts Iron production by ${boost}%`;
+            },
+            steelLabel: function(){
+                return `Smelt Steel, consumes 0.5 Coal and 2 Iron per tick but produces 1 Steel`;
+            },
+            ironSmelting: function(){
+                let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+                if (global.city.smelter.Iron + global.city.smelter.Steel < count){
+                    global.city.smelter.Iron++;
+                }
+                else if (global.city.smelter.Iron < count && global.city.smelter.Steel > 0){
+                    global.city.smelter.Iron++;
+                    global.city.smelter.Steel--;
+                }
+            },
+            steelSmelting: function(){
+                let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+                if (global.city.smelter.Iron + global.city.smelter.Steel < count){
+                    global.city.smelter.Steel++;
+                }
+                else if (global.city.smelter.Steel < count && global.city.smelter.Iron > 0){
+                    global.city.smelter.Steel++;
+                    global.city.smelter.Iron--;
+                }
+            },
+            buildLabel: function(type){
+                switch(type){
+                    case 'wood':
+                        return 'Consume 3 Lumber/s to fuel a smelter';
+                        break;
+                    case 'coal':
+                        return 'Consume 0.25 Coal/s to fuel a smelter';
+                        break;
+                }
+            }
+        },
+        filters: {
+            on: function(count){
+                return global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+            }
+        }
+    });
+
+    vues['specialModal'].$mount('#specialModal');
 }
