@@ -32,11 +32,15 @@ export const job_desc = {
     },
     banker: function(){
         let interest = global.civic.banker.impact * 100;
-        return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by %{interest}% per tax cycle.`;
+        return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by ${interest}% per tax cycle.`;
     },
     professor: function(){
-        let impact = global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
+        let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
         return `Professors help educate your citizens and contribute to knowledge gain. Each professor generates ${impact} knowledge per tick.`;
+    },
+    scientist: function(){
+        let impact = global.civic.scientist.impact;
+        return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per tick.`;
     }
 }
 
@@ -51,6 +55,7 @@ export function defineJobs(){
     loadJob('coal_miner','Coal Miner',0.2);
     loadJob('cement_worker','Cement Plant Worker',0.25);
     loadJob('professor','Professor',0.5);
+    loadJob('scientist','Scientist',1);
     loadJob('banker','Banker',0.1);
 }
 

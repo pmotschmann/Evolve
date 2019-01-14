@@ -1,4 +1,5 @@
-span {
+span,
+div {
     -moz-user-select: none;
     -khtml-user-select: none;
     -webkit-user-select: none;
@@ -38,11 +39,22 @@ span {
 
 .main {
     margin: 1rem 1rem 0;
-    
     .race {
+        position: relative;
         margin-top: 1.75rem;
+        width: 100%;
         > span {
             cursor: default;
+        }
+        .power {
+            position: absolute;
+            display: inline-flex;
+            right: 0;
+            margin-right: .5rem;
+
+            .meter {
+                margin-left: .25rem;
+            }
         }
     }
 
@@ -93,7 +105,7 @@ span {
             position: relative;
 
             a.button {
-                width: 11rem;
+                width: 12rem;
                 margin: 1rem 1rem 0 0;
                 
                 span.count {
@@ -112,23 +124,48 @@ span {
                 }
             }
 
-            div.special {
+            div.special,
+            div.on,
+            div.off {
                 position: absolute;
-                top: 1rem;
-                left: 0;
                 cursor: pointer;
                 display: block;
                 height: 1.125rem;
                 line-height: 1.0625rem;
                 padding: 0 .25rem;
                 border: .0625rem solid #282f2f;
-                border-radius: .4375rem 0 .4375rem 0;
                 overflow: hidden;
-                background: #1f2424;
+            }
 
+            div.special {
+                top: 1rem;
+                left: 0;
+                border-radius: .4375rem 0 .4375rem 0;
+                background: #1f2424;
                 .gear {
                     fill: #3a4344;
                 }
+            }
+
+            div.on {
+                bottom: 0;
+                right: 1rem;
+                border-radius: .4375rem 0 .4375rem 0;
+                background: #1f2424;
+                color: #00af0f;
+            }
+
+            div.off {
+                bottom: 0;
+                left: 0;
+                border-radius: 0 .4375rem 0 .4375rem;
+                background: #1f2424;
+                color: #c20000;
+            }
+
+            div.on:hover,
+            div.off:hover {
+                border: .0625rem solid #3a4344;
             }
 
             div.special:hover {
@@ -293,6 +330,33 @@ span {
             font-size: .875rem;
             margin: 0 .25rem;
             height: 1.8rem;
+        }
+    }
+}
+
+.promoBar {
+    display: inline-flex;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    width: 100%;
+    background-color: #3a4344;
+    position: absolute;
+    bottom:0;
+
+    .left {
+        display: inline-block;
+        width: 15rem;
+        margin-left: .25rem;
+    }
+    .right {
+        position: absolute;
+        display: inline-block;
+        text-align: right;
+        margin-right: 1rem;
+        right: 0;
+        
+        span {
+            margin: 0 .5rem;
         }
     }
 }

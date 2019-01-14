@@ -21,7 +21,10 @@ defineJobs();
 defineGovernment();
 
 vues['race'] = new Vue({
-    data: global.race,
+    data: {
+        race: global.race,
+        city: global.city
+    },
     methods: {
         name: function(){
             return races[global.race.species].name;
@@ -38,7 +41,7 @@ if (global.race.species === 'protoplasm'){
     addAction('evolution','rna');
     var evolve_actions = ['dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
     for (var i = 0; i < evolve_actions.length; i++) {
-        if (global.race[evolve_actions[i]]){
+        if (global.evolution[evolve_actions[i]]){
             addAction('evolution',evolve_actions[i]);
         }
     }
@@ -150,7 +153,8 @@ function mainLoop() {
         }
         else {
             // Rest of game
-            
+            let power_grid = 0;
+
             // Detect labor anomalies
             var total = 0;
             Object.keys(job_desc).forEach(function (job) {
@@ -198,12 +202,24 @@ function mainLoop() {
                     global['resource'][races[global.race.species].name].amount++;
                 }
             }
+
+            if (global.city['coal_power']){
+                let power = global.city.coal_power.on * actions.city.coal_power.powered;
+                let consume = global.city.coal_power.on * 0.3;
+                while (consume > global.resource.Coal.amount && consume > 0){
+                    power += actions.city.coal_power.powered;
+                    consume -= 0.3;
+                }
+                power_grid -= power;
+                global.resource.Coal.amount -= consume;
+            }
             
             // Resource Income
             if (fed){
                 // Knowledge
                 var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
                 var count = global.resource.Knowledge.amount + (global.civic.professor.workers * know_multiplier) + 1;
+                count += global.civic.scientist.workers * tax_multiplier;
                 if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
                 global.resource.Knowledge.amount = count;
                 
@@ -257,12 +273,12 @@ function mainLoop() {
                         }
                     }
 
+                    iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
+
                     global.resource.Lumber.amount -= consume_wood;
                     global.resource.Coal.amount -= consume_coal;
 
                     //Steel Production
-                    
-
                     if (global.resource.Steel.display && global.resource.Steel.amount < global.resource.Steel.max){
                         var iron_consume = steel_smelter * 2;
                         var coal_consume = steel_smelter * 0.25;
@@ -273,7 +289,8 @@ function mainLoop() {
                         global.resource.Iron.amount -= iron_consume;
                         global.resource.Coal.amount -= coal_consume;
 
-                        var steel_multiplier = tax_multiplier;
+                        var steel_multiplier = global.tech['smelting'] >= 3 ? 1.2 : 1;
+                        steel_multiplier *= tax_multiplier;
                         count = global.resource.Steel.amount + (steel_smelter * steel_multiplier);
                         if (count > global.resource.Steel.max){ count = global.resource.Steel.max; }
                         global.resource.Steel.amount = count;
@@ -283,6 +300,14 @@ function mainLoop() {
                 // Lumber
                 var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
                 lum_multiplier *= tax_multiplier;
+                if (global.city.powered && global.city.sawmill){
+                    let sawmills = global.city.sawmill.on;
+                    while (sawmills > power_grid && sawmills > 0){
+                        sawmills--;
+                    }
+                    power_grid -= global.city.sawmill.on;
+                    lum_multiplier *= 1 + (sawmills * 0.1);
+                }
                 count = global.resource.Lumber.amount + (global.civic.lumberjack.workers * global.civic.lumberjack.impact * lum_multiplier);
                 if (count > global.resource.Lumber.max){ count = global.resource.Lumber.max; }
                 global.resource.Lumber.amount = count;
@@ -310,7 +335,7 @@ function mainLoop() {
                 if (global.resource.Iron.display){
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     iron_multiplier *= tax_multiplier;
-                    iron_multiplier *= (1 + (iron_smelter * 0.05));
+                    iron_multiplier *= (1 + (iron_smelter * 0.1));
                     count = global.resource.Iron.amount + ((global.civic.miner.workers / 4) * iron_multiplier);
                     if (count > global.resource.Iron.max){ count = global.resource.Iron.max; }
                     global.resource.Iron.amount = count;
@@ -329,6 +354,17 @@ function mainLoop() {
             // Detect new unlocks
             if (!global.main_tabs.data.showResearch && global.resource.Knowledge.amount >= 10){
                 global.main_tabs.data.showResearch = true;
+            }
+
+            global.city.power = power_grid;
+            if (global.city.power < 0){
+                $('#powerMeter').css('color','#cc0000');
+            }
+            else if (global.city.power > 0){
+                $('#powerMeter').css('color','#00af0f');
+            }
+            else {
+                $('#powerMeter').css('color','#c0ce00');
             }
         }
         
@@ -367,7 +403,8 @@ function mainLoop() {
                 miner: 0,
                 cement_worker: 0,
                 banker: 0,
-                professor: 0
+                professor: 0,
+                scientist: 0
             };
             caps[races[global.race.species].name] = 0;
             if (global.city['farm']){
@@ -441,6 +478,10 @@ function mainLoop() {
                 if (global.tech['science'] && global.tech['science'] >= 3){
                     global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
                 }
+            }
+            if (global.city['wardenclyffe']){
+                caps['Knowledge'] += (global.city['wardenclyffe'].count * 1000);
+                lCaps['scientist'] += global.city['wardenclyffe'].count;
             }
             if (global.city['bank']){
                 let vault = 1000;

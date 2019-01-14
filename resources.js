@@ -77,7 +77,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
         res_container.append($('<span></span>'));
     }
     
-    if (name !== races[global.race.species].name && name !== 'Crates'){
+    if (name !== races[global.race.species].name && name !== 'Crates' && name !== 'Containers'){
         res_container.append($('<span class="diff">{{ diff | diffSize }} /s</span></div>'));
     }
     

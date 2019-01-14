@@ -29,6 +29,7 @@
             <div class="column is-one-quarter">
                 <div id="race" class="race">
                     <b-tooltip :label="desc()" position="is-right" type="is-dark" size="is-large" multilined animated>{{ name() }}</b-tooltip>
+                    <span class="power has-text-warning" v-if="city.powered"><span>kW</span> <span id="powerMeter" class="meter">{{ city.power }}</span></span>
                 </div>
                 <b-collapse :open="true">
                     <div id="msgQueue" class="msgQueue has-text-info"></div>
@@ -77,5 +78,6 @@
             
         </div>
     </div>
+    <div class="promoBar"><span class="left"><span class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</span></span><span class="right"><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a><span>|</span><a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a></span></div>
 </body>
 </html>

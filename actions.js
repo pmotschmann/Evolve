@@ -927,14 +927,23 @@ export const actions = {
             },
             effect: function(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
-                return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%`; 
+                if (global.city.powered){
+                    return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill consumes 1kW but produces 10% more lumber.`; 
+                }
+                else {
+                    return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%`;
+                }
             },
+            powered: 1,
             action: function (){
                 if (payCosts(actions.city.sawmill.cost)){
                     global.city['sawmill'].count++;
                     let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
                     global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
                     global['resource']['Lumber'].max += 200;
+                    if (global.city.powered){
+                        global.city['sawmill'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -946,7 +955,7 @@ export const actions = {
             desc: 'Build a stone quarry',
             reqs: { mining: 1 },
             cost: { 
-                Money: function(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.75);} else { return 0; } },
+                Money: function(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.55);} else { return 0; } },
                 Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); },
                 Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); }
             },
@@ -994,7 +1003,7 @@ export const actions = {
                 Iron: function(){ return costMultiplier('smelter', 500, 1.32); }
             },
             effect: function(){ 
-                var iron_yield = 10;
+                var iron_yield = global.tech['smelting'] >= 3 ? 12 : 10;
                 if (global.resource.Steel.display){
                     return `Smelters can either increase Iron yield by ${iron_yield}% per smelter or produce Steel by consuming Iron and Coal. Smelters require fuel to opperate.`;
                 }
@@ -1040,9 +1049,9 @@ export const actions = {
             desc: 'Build a Coal mine',
             reqs: { mining: 4 },
             cost: { 
-                Money: function(){ return costMultiplier('mine', 480, 1.4); },
-                Lumber: function(){ return costMultiplier('mine', 250, 1.35); },
-                Iron: function(){ return costMultiplier('mine', 180, 1.35); }
+                Money: function(){ return costMultiplier('coal_mine', 480, 1.4); },
+                Lumber: function(){ return costMultiplier('coal_mine', 250, 1.35); },
+                Iron: function(){ return costMultiplier('coal_mine', 180, 1.35); }
             },
             effect: 'Creates a mine shaft in a coal rich area allowing a coal miner to product coal.',
             action: function (){
@@ -1065,7 +1074,10 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('temple', 50, 1.35); },
                 Stone: function(){ return costMultiplier('temple', 10, 1.35); }
             },
-            effect: 'Construct a temple devoted to your race\'s deities',
+            effect: function(){
+                let entity = races[global.race.gods].entity;
+                return `Construct a temple devoted to your race's deities. Your race believes it was created by a species of ${entity}.`;
+            },
             action: function (){
                 if (payCosts(actions.city.temple.cost)){
                     global.city['temple'].count++;
@@ -1109,7 +1121,7 @@ export const actions = {
             title: 'University',
             desc: 'Construct a university',
             reqs: { science: 1 },
-            cost: { 
+            cost: {
                 Money: function(){ return costMultiplier('university', 900, 1.5) - 500; },
                 Lumber: function(){ return costMultiplier('university', 500, 1.35) - 100; },
                 Stone: function(){ return costMultiplier('university', 750, 1.35) - 150; }
@@ -1118,6 +1130,7 @@ export const actions = {
                 let gain = 500;
                 if (global.tech['science'] >= 4){
                     gain *= 1 + (global.city['library'].count * 0.02);
+                    gain = gain.toFixed(0);
                 }
                 return `Contributes to the advancement of science. Each university can support one professor and increases knowledge cap by ${gain}.`;
             },
@@ -1137,12 +1150,12 @@ export const actions = {
             title: 'Library',
             desc: 'Construct a library',
             reqs: { science: 2 },
-            cost: { 
+            cost: {
                 Money: function(){ return costMultiplier('library', 45, 1.2); },
                 Lumber: function(){ return costMultiplier('library', 35, 1.20); },
                 Cement: function(){ return costMultiplier('library', 20, 1.20); }
             },
-            effect: function (){ 
+            effect: function (){
                 let gain = global.race['nearsighted'] ? '110' : '125';
                 return `Increases the maximum amount of knowledge you can store by ${gain}`; 
             },
@@ -1153,6 +1166,59 @@ export const actions = {
                     if (global.tech['science'] && global.tech['science'] >= 3){
                         global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        wardenclyffe: {
+            id: 'city-wardenclyffe',
+            title: 'Wardenclyffe',
+            desc: 'Construct a Wardenclyffe Tower',
+            reqs: { high_tech: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('wardenclyffe', 5000, 1.2); },
+                Knowledge: function(){ return costMultiplier('wardenclyffe', 1000, 1.2); },
+                Copper: function(){ return costMultiplier('wardenclyffe', 500, 1.2); },
+                Cement: function(){ return costMultiplier('wardenclyffe', 350, 1.2); },
+                Steel: function(){ return costMultiplier('wardenclyffe', 900, 1.2); }
+            },
+            effect: function (){
+                let gain = 1000;
+                return `Increases the maximum amount of knowledge you can store by ${gain}`; 
+            },
+            action: function (){
+                if (payCosts(actions.city.wardenclyffe.cost)){
+                    global['resource']['Knowledge'].max += 1000;
+                    global.city.wardenclyffe.count++;
+                    global.civic.scientist.display = true;
+                    global.civic.scientist.max = global.city.wardenclyffe.count;
+                    return true;
+                }
+                return false;
+            }
+        },
+        coal_power: {
+            id: 'city-coal_power',
+            title: 'Coal Powerplant',
+            desc: 'Construct a Coal Powerplant',
+            reqs: { high_tech: 2 },
+            cost: { 
+                Money: function(){ return costMultiplier('coal_power', 10000, 1.2); },
+                Copper: function(){ return costMultiplier('coal_power', 1800, 1.2) - 1000; },
+                Cement: function(){ return costMultiplier('coal_power', 600, 1.2); },
+                Steel: function(){ return costMultiplier('coal_power', 2000, 1.2) - 1000; }
+            },
+            effect: function (){
+                let consume = 0.3;
+                return `A powerplant that runs on coal, generates 5 kW per plant. Consumes ${consume} coal per plant.`; 
+            },
+            powered: -5,
+            action: function (){
+                if (payCosts(actions.city.coal_power.cost)){
+                    global['resource']['Knowledge'].max += 1000;
+                    global.city.coal_power.count++;
+                    global.city.power += 5;
                     return true;
                 }
                 return false;
@@ -1341,6 +1407,24 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        blast_furnace: {
+            id: 'tech-blast_furnace',
+            title: 'Blast Furnace',
+            desc: 'Upgrade your smelters',
+            reqs: { smelting: 2 },
+            grant: ['smelting',3],
+            cost: { 
+                Knowledge: function(){ return 15000; },
+                Coal: function(){ return 2000; }
+            },
+            effect: 'Increases output of smelters by 20%',
+            action: function (){
+                if (payCosts(actions.tech.blast_furnace.cost)){
                     return true;
                 }
                 return false;
@@ -1725,7 +1809,7 @@ export const actions = {
             desc: 'Professors will require their students to write thesis papers',
             reqs: { science: 2 },
             grant: ['science',3],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 2000; }
             },
             effect: 'Libraries will have a minor effect on professor effectiveness.',
@@ -1742,12 +1826,53 @@ export const actions = {
             desc: 'Research Grants',
             reqs: { science: 3 },
             grant: ['science',4],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 3600; }
             },
             effect: 'Libraries will boost the effect of universities by 2% per library',
             action: function (){
                 if (payCosts(actions.tech.research_grant.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mad_science: {
+            id: 'tech-mad_science',
+            title: 'Mad Science',
+            desc: 'Mad Science',
+            reqs: { science: 2, smelting: 2 },
+            grant: ['high_tech',1],
+            cost: {
+                Money: function(){ return 10000; },
+                Knowledge: function(){ return 7500; },
+                Steel: function(){ return 1000; }
+            },
+            effect: 'The greatest leaps in science are often made by "misunderstood" individuals.',
+            action: function (){
+                if (payCosts(actions.tech.mad_science.cost)){
+                    global.city['wardenclyffe'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        electricity: {
+            id: 'tech-electricity',
+            title: 'Electricity',
+            desc: 'Electricity',
+            reqs: { high_tech: 1 },
+            grant: ['high_tech',2],
+            cost: {
+                Knowledge: function(){ return 15000; },
+                Copper: function(){ return 1000; }
+            },
+            effect: 'Discover electricity, no kites required.',
+            action: function (){
+                if (payCosts(actions.tech.electricity.cost)){
+                    global.city['power'] = 0;
+                    global.city['powered'] = true;
+                    global.city['coal_power'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -1759,7 +1884,7 @@ export const actions = {
             desc: 'Learn how to turn stone into cement',
             reqs: {},
             grant: ['cement',1],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 1000; }
             },
             effect: 'Learn how to make cement from stone.',
@@ -1777,7 +1902,7 @@ export const actions = {
             desc: 'Create the first axe',
             reqs: { storage: 1 },
             grant: ['axe',1],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 50; },
                 Lumber: function(){ return 20; },
                 Stone: function(){ return 20; }
@@ -1798,7 +1923,7 @@ export const actions = {
             desc: 'Create an axe made from copper',
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 750; },
                 Copper: function(){ return 25; }
             },
@@ -2121,8 +2246,17 @@ export function addAction(action,type){
             </svg></div>`);
         parent.append(special);
     }
+    if (actions[action][type]['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2){
+        if (global[action][type]['on'] === null){
+            global[action][type]['on'] = 0;
+        }
+        var powerOn = $('<div class="on" @click="power_on" title="ON">{{ act.on }}</div>');
+        var powerOff = $('<div class="off" @click="power_off" title="OFF">{{ act.on | off }}</div>');
+        parent.append(powerOn);
+        parent.append(powerOff);
+    }
     if (action !== 'tech' && global[action][type] && global[action][type].count >= 0){
-        element.append($('<span class="count">{{ count }}</span>'));
+        element.append($('<span class="count">{{ act.count }}</span>'));
     }
     $('#'+action).append(parent);
     if (action !== 'tech' && global[action][type] && global[action][type].count === 0){
@@ -2137,7 +2271,7 @@ export function addAction(action,type){
     vues[id] = new Vue({
         data: {
             title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title(),
-            count: action !== 'tech' && global[action][type] ? global[action][type].count : 0
+            act: global[action][type]
         },
         methods: {
             action: function(){
@@ -2169,7 +2303,22 @@ export function addAction(action,type){
                    }
                 }, 50);
             },
+            power_on: function(){
+                if (global[action][type].on < global[action][type].count){
+                    global[action][type].on++;
+                }
+            },
+            power_off: function(){
+                if (global[action][type].on > 0){
+                    global[action][type].on--;
+                }
+            },
         },
+        filters: {
+            off: function(value){
+                return global[action][type].count - value;
+            }
+        }
     });
     vues[id].$mount('#'+id);
     var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
@@ -2314,7 +2463,6 @@ function drawModal(action,type){
 }
 
 function smelterModal(modal){
-
     let fuel = $('<div><span class="has-text-warning">Fueled:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>');
     modal.append(fuel);
 
@@ -2386,11 +2534,12 @@ function smelterModal(modal){
                 }
             },
             ironLabel: function(){
-                let boost = 10;
+                let boost = global.tech['smelting'] >= 3 ? 12 : 10;
                 return `Smelt Iron, boosts Iron production by ${boost}%`;
             },
             steelLabel: function(){
-                return `Smelt Steel, consumes 0.5 Coal and 2 Iron per tick but produces 1 Steel`;
+                let boost = global.tech['smelting'] >= 3 ? 1.2 : 1;
+                return `Smelt Steel, consumes 0.5 Coal and 2 Iron per tick but produces ${boost} Steel`;
             },
             ironSmelting: function(){
                 let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
