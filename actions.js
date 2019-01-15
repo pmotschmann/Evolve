@@ -713,22 +713,24 @@ export const actions = {
                 return false;
             }
         },
-        apartments: {
-            id: 'city-apartments',
-            title: 'Apartmnet',
+        apartment: {
+            id: 'city-apartment',
+            title: 'Apartment',
             desc: 'Construct an apartmnet building',
             reqs: { housing: 3 },
             cost: { 
-                Money: function(){ return costMultiplier('apartments', 250, 1.15); },
-                Lumber: function(){ return costMultiplier('apartments', 100, 1.3); },
-                Iron: function(){ return costMultiplier('apartments', 30, 1.3); },
-                Cement: function(){ return costMultiplier('apartments', 50, 1.3); }
+                Money: function(){ return costMultiplier('apartment', 1750, 1.25) - 500; },
+                Copper: function(){ return costMultiplier('apartment', 650, 1.30) - 500; },
+                Cement: function(){ return costMultiplier('apartment', 700, 1.30) - 500; },
+                Steel: function(){ return costMultiplier('apartment', 800, 1.30) - 500; }
             },
-            effect: 'Constructs housing for 5 citizens',
+            effect: 'Constructs housing for 5 citizens. Each apartment building uses 1kW.',
+            powered: 1,
             action: function (){
-                if (payCosts(actions.city.apartments.cost)){
+                if (payCosts(actions.city.apartment.cost)){
                     global['resource'][races[global.race.species].name].max += 5;
-                    global.city['apartments'].count++;
+                    global.city['apartment'].count++;
+                    global.city['apartment'].on++;
                     return true;
                 }
                 return false;
@@ -1257,6 +1259,24 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.cottage.cost)){
                     global.city['cottage'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        apartment: {
+            id: 'tech-apartment',
+            title: 'Apartments',
+            desc: 'Apartments',
+            reqs: { housing: 2, high_tech: 2 },
+            grant: ['housing',3],
+            cost: { 
+                Knowledge: function(){ return 17500; }
+            },
+            effect: 'Design high occupancy housing complexes.',
+            action: function (){
+                if (payCosts(actions.tech.apartment.cost)){
+                    global.city['apartment'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -2247,7 +2267,7 @@ export function addAction(action,type){
         parent.append(special);
     }
     if (actions[action][type]['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2){
-        if (global[action][type]['on'] === null){
+        if (!global[action][type]['on']){
             global[action][type]['on'] = 0;
         }
         var powerOn = $('<div class="on" @click="power_on" title="ON">{{ act.on }}</div>');
@@ -2262,6 +2282,8 @@ export function addAction(action,type){
     if (action !== 'tech' && global[action][type] && global[action][type].count === 0){
         $(`#${id} .count`).css('display','none');
         $(`#${id} .special`).css('display','none');
+        $(`#${id} .on`).css('display','none');
+        $(`#${id} .off`).css('display','none');
     }
 
     var modal = {
@@ -2369,6 +2391,8 @@ function updateDesc(category,action){
         if (global[category][action] && global[category][action].count > 0){
             $(`#${id} .count`).css('display','inline-block');
             $(`#${id} .special`).css('display','block');
+            $(`#${id} .on`).css('display','block');
+            $(`#${id} .off`).css('display','block');
         }
     }
     actionDesc($('#pop'+id),category,action);

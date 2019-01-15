@@ -155,6 +155,26 @@ function mainLoop() {
             // Rest of game
             let power_grid = 0;
 
+            if (global.city['coal_power']){
+                let power = global.city.coal_power.on * actions.city.coal_power.powered;
+                let consume = global.city.coal_power.on * 0.3;
+                while (consume > global.resource.Coal.amount && consume > 0){
+                    power += actions.city.coal_power.powered;
+                    consume -= 0.3;
+                }
+                power_grid -= power;
+                global.resource.Coal.amount -= consume;
+            }
+
+            if (global.city['apartment']){
+                let power = global.city.apartment.on * actions.city.apartment.powered;
+                while (power > power_grid && power > 0){
+                    power -= actions.city.apartment.powered;
+                    global.city.apartment.on--;
+                }
+                power_grid -= power;
+            }
+
             // Detect labor anomalies
             var total = 0;
             Object.keys(job_desc).forEach(function (job) {
@@ -192,26 +212,15 @@ function mainLoop() {
             }
             
             // Citizen Growth
-            if (fed && global['resource']['Food'].amount > 10 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
+            if (fed && global['resource']['Food'].amount > 0 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
                 var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
                 if (global.race['fast_growth']){
                     lowerBound *= 2;
                     lowerBound += 2;
                 }
-                if(Math.rand(0,2 * global['resource'][races[global.race.species].name].amount) <= lowerBound){
+                if(Math.rand(0, global['resource'][races[global.race.species].name].amount) <= lowerBound){
                     global['resource'][races[global.race.species].name].amount++;
                 }
-            }
-
-            if (global.city['coal_power']){
-                let power = global.city.coal_power.on * actions.city.coal_power.powered;
-                let consume = global.city.coal_power.on * 0.3;
-                while (consume > global.resource.Coal.amount && consume > 0){
-                    power += actions.city.coal_power.powered;
-                    consume -= 0.3;
-                }
-                power_grid -= power;
-                global.resource.Coal.amount -= consume;
             }
             
             // Resource Income
@@ -450,8 +459,8 @@ function mainLoop() {
             if (global.city['cottage']){
                 caps[races[global.race.species].name] += global.city['cottage'].count * 2;
             }
-            if (global.city['apartments']){
-                caps[races[global.race.species].name] += global.city['apartments'].count * 5;
+            if (global.city['apartment']){
+                caps[races[global.race.species].name] += global.city['apartment'].on * 5;
             }
             if (global.city['shed']){
                 var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
@@ -497,6 +506,11 @@ function mainLoop() {
                 caps['Money'] += 250 * global.resource[races[global.race.species].name].amount;
             }
             
+            let pop_loss = global.resource[races[global.race.species].name].amount - caps[races[global.race.species].name];
+            if (pop_loss > 0){
+                messageQueue(`${pop_loss} citizens have abandoned your settlement due to homelessness.`,'danger');
+            } 
+
             let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 30 : 25;
             let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 2 ? 75 : 50;
             Object.keys(caps).forEach(function (res){
