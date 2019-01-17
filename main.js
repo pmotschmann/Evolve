@@ -2,7 +2,7 @@ import { global, vues, save, runNew, messageQueue } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
-import { defineGovernment } from './civics.js';
+import { defineGovernment, defineGarrison } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction } from './actions.js';
 import { events } from './events.js';
 
@@ -17,8 +17,11 @@ vues['vue_tabs'].$mount('#tabs');
 
 // Load Resources
 defineResources();
+$('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
 defineJobs();
+$('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent"></div>'));
 defineGovernment();
+defineGarrison();
 
 vues['race'] = new Vue({
     data: {
@@ -503,7 +506,7 @@ function mainLoop() {
                 caps['Money'] += (global.city['bank'].count * vault);
             }
             if (global.tech['banking'] >= 4){
-                caps['Money'] += 250 * global.resource[races[global.race.species].name].amount;
+                caps['Money'] += (global.tech['banking'] >= 6 ? 600 : 250) * global.resource[races[global.race.species].name].amount;
             }
             
             let pop_loss = global.resource[races[global.race.species].name].amount - caps[races[global.race.species].name];

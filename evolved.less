@@ -39,6 +39,13 @@ div {
 
 .main {
     margin: 1rem 1rem 0;
+
+    > .columns {
+        > :first-child {
+            min-width: 18rem;
+        }
+    }
+
     .race {
         position: relative;
         margin-top: 1.75rem;
@@ -77,7 +84,7 @@ div {
             }
             :nth-child(2) {
                 text-align: right;
-                width: 38%;
+                width: 40%;
             }
             :nth-child(3) {
                 text-align: center;
@@ -88,7 +95,7 @@ div {
             }
             :nth-child(4) {
                 text-align: right;
-                width: 28%;
+                width: 26%;
             }
         }
     }
@@ -190,13 +197,14 @@ div {
         border-radius: .25rem;
         > div:nth-child(2),
         > div:nth-child(3) {
-            border-top: solid 1px black;
+            border-top: solid .0625rem black;
         }
     }
     
     .job {
         margin-left: 1rem;
         display: flex;
+        min-width: 18rem;
         
         .controls {
             margin-bottom: 1px;
@@ -218,9 +226,32 @@ div {
         }
     }
     
-    .taxRate {
-        :first-child {
-            cursor: default;
+    .government {
+        max-height: 3rem;
+
+        .header {
+            border-bottom: .0625rem solid #ccc;
+            margin-bottom: .5rem;
+        }
+
+        .taxRate {
+            height: 1.25rem;
+            display: flex;
+            :first-child {
+                cursor: default;
+                display: inline-block;
+                line-height: 1.25rem;
+            }
+        }
+    }
+
+    .garrison {
+        .header {
+            border-bottom: .0625rem solid #ccc;
+            margin-bottom: .5rem;
+        }
+        button {
+            height: 2rem;
         }
     }
         
@@ -340,7 +371,7 @@ div {
     line-height: 1.2rem;
     width: 100%;
     background-color: #3a4344;
-    position: absolute;
+    position: fixed;
     bottom:0;
 
     .left {

@@ -2,10 +2,19 @@ import { global, vues } from './vars.js';
 
 // Sets up govenment in civics tab
 export function defineGovernment(){
-    var govern = $('<div id="government" class="column"></div>');
-    $('#civic').append(govern);
+    var govern = $('<div id="government" class="government tile is-child"></div>');
+    govern.append($('<div class="header has-text-warning">Government</div>'));
+    $('#r_civics').append(govern);
     
     taxRates(govern);
+}
+
+// Sets up garrison in civics tab
+export function defineGarrison(){
+    var garrison = $('<div id="garrison" v-show="display" class="garrison tile is-child"></div>');
+    $('#r_civics').append(garrison);
+    
+    buildGarrison(garrison);
 }
 
 function taxRates(govern){
@@ -92,4 +101,29 @@ function taxRates(govern){
     $('#taxRateLabel').on('mouseout',function(){
             popper.hide();
         });
+}
+
+function buildGarrison(garrison){
+    garrison.append($('<div class="header has-text-warning">Garrison</div>'));
+
+    garrison.append($('<button class="button" @click="train">Train Solider</button>'));
+
+    if (!global.civic['garrison']){
+        global.civic['garrison'] = {
+            display: false,
+            soliders: 0
+        };
+    }
+
+    vues['civ_garrison'] = new Vue({
+        data: global.civic['garrison'],
+        methods: {
+            train: function(){
+                console.log('training');
+            }
+        }
+    });
+    vues['civ_garrison'].$mount('#garrison');
+
+    garrison
 }

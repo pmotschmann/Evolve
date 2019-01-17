@@ -1220,6 +1220,7 @@ export const actions = {
                 if (payCosts(actions.city.coal_power.cost)){
                     global['resource']['Knowledge'].max += 1000;
                     global.city.coal_power.count++;
+                    global.city.coal_power.on++;
                     global.city.power += 5;
                     return true;
                 }
@@ -1736,7 +1737,7 @@ export const actions = {
             desc: 'Concrete Vaults',
             reqs: { banking: 2, cement: 1 },
             grant: ['banking',3],
-            cost: { 
+            cost: {
                 Money: function(){ return 2000; },
                 Knowledge: function(){ return 4000; },
                 Iron: function(){ return 500; },
@@ -1756,7 +1757,7 @@ export const actions = {
             desc: 'Steel Vaults',
             reqs: { banking: 4, smelting: 2 },
             grant: ['banking',5],
-            cost: { 
+            cost: {
                 Money: function(){ return 30000; },
                 Knowledge: function(){ return 7500; },
                 Steel: function(){ return 3000; }
@@ -1775,7 +1776,7 @@ export const actions = {
             desc: 'Savings Bonds',
             reqs: { banking: 3 },
             grant: ['banking',4],
-            cost: { 
+            cost: {
                 Money: function(){ return 20000; },
                 Knowledge: function(){ return 5500; }
             },
@@ -1787,13 +1788,31 @@ export const actions = {
                 return false;
             }
         },
+        eebonds: {
+            id: 'tech-eebonds',
+            title: 'Series EE Bonds',
+            desc: 'Series EE Bonds',
+            reqs: { banking: 5, high_tech: 1 },
+            grant: ['banking',6],
+            cost: {
+                Money: function(){ return 75000; },
+                Knowledge: function(){ return 20000; }
+            },
+            effect: 'Create new series EE savings bonds which mature at a much higher value. Each citizen will increase your money cap by $600.',
+            action: function (){
+                if (payCosts(actions.tech.eebonds.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         science: {
             id: 'tech-science',
             title: 'Scientific Method',
             desc: 'Begin a journey of testing and discovery',
             reqs: { agriculture: 1 },
             grant: ['science',1],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 75; }
             },
             effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
@@ -1811,7 +1830,7 @@ export const actions = {
             desc: 'Oraganize and store all the knowledge of your race',
             reqs: { science: 1, cement: 1 },
             grant: ['science',2],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 800; }
             },
             effect: 'Create a system for organizing and storing knowledge in large storage buildings designed specifically for books.',
@@ -1961,7 +1980,7 @@ export const actions = {
             desc: 'Create plans for a sawmill',
             reqs: { axe: 1, mining: 3 },
             grant: ['saw',1],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 3750; },
                 Iron: function(){ return 400; }
             },
@@ -1980,7 +1999,7 @@ export const actions = {
             desc: 'Steel Sawmill blades',
             reqs: { smelting: 2, saw: 1 },
             grant: ['saw',2],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 12000; },
                 Steel: function(){ return 400; }
             },
@@ -1998,7 +2017,7 @@ export const actions = {
             desc: 'Create a sturdy axe made from iron',
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 3500; },
                 Iron: function(){ return 250; }
             },
@@ -2016,7 +2035,7 @@ export const actions = {
             desc: 'Create a superior axe made from steel',
             reqs: { axe: 3, smelting: 2 },
             grant: ['axe',4],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 10000; },
                 Steel: function(){ return 250; }
             },
@@ -2034,7 +2053,7 @@ export const actions = {
             desc: 'Create a pickaxe made from copper',
             reqs: { mining: 2 },
             grant: ['pickaxe',1],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 750; },
                 Copper: function(){ return 25; }
             },
@@ -2052,7 +2071,7 @@ export const actions = {
             desc: 'Create a pickaxe made from iron',
             reqs: { pickaxe: 1, mining: 3 },
             grant: ['pickaxe',2],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 3500; },
                 Iron: function(){ return 250; }
             },
@@ -2070,7 +2089,7 @@ export const actions = {
             desc: 'Create a pickaxe made from steel',
             reqs: { pickaxe: 2, smelting: 2},
             grant: ['pickaxe',3],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 10000; },
                 Steel: function(){ return 250; }
             },
@@ -2088,7 +2107,7 @@ export const actions = {
             desc: 'Create farming tools made from copper',
             reqs: { mining: 2 },
             grant: ['hoe',1],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 800; },
                 Copper: function(){ return 50; }
             },
@@ -2106,7 +2125,7 @@ export const actions = {
             desc: 'Create farming tools made from iron',
             reqs: { hoe: 1, mining: 3 },
             grant: ['hoe',2],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 4000; },
                 Iron: function(){ return 500; }
             },
@@ -2124,7 +2143,7 @@ export const actions = {
             desc: 'Create better farming tools made from steel',
             reqs: { hoe: 2, smelting: 2 },
             grant: ['hoe',3],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 14000; },
                 Steel: function(){ return 500; }
             },
@@ -2136,13 +2155,50 @@ export const actions = {
                 return false;
             }
         },
+        garrison: {
+            id: 'tech-garrison',
+            title: 'Garrison',
+            desc: 'Found the military',
+            reqs: { science: 1, housing: 1, unavailable_tech: 1 },
+            grant: ['military',1],
+            cost: {
+                Knowledge: function(){ return 80; }
+            },
+            effect: 'Establish a military to keep your people safe from external threats, or to conquer your enemies with.',
+            action: function (){
+                if (payCosts(actions.tech.garrison.cost)){
+                    global.civic['garrison'].display = true;
+                    global.city['garrison'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        bows: {
+            id: 'tech-bows',
+            title: 'Bows',
+            desc: 'Discover Ranged Weaponary',
+            reqs: { military: 1 },
+            grant: ['military',2],
+            cost: {
+                Knowledge: function(){ return 250; },
+                Lumber: function(){ return 250; }
+            },
+            effect: 'Create the bow, and outfit your army with ranged weapons. Sure to give you dominance over the primates.',
+            action: function (){
+                if (payCosts(actions.tech.bows.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         black_powder: {
             id: 'tech-black_powder',
             title: 'Black Powder',
             desc: 'Discover black powder',
             reqs: { mining: 4 },
             grant: ['explosives',1],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 5000; },
                 Coal: function(){ return 500; }
             },
@@ -2160,7 +2216,7 @@ export const actions = {
             desc: 'Discover black powder',
             reqs: { explosives: 1 },
             grant: ['explosives',2],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 5200; },
                 Coal: function(){ return 750; }
             },
@@ -2178,7 +2234,7 @@ export const actions = {
             desc: 'Steel Rebar',
             reqs: { smelting: 2, cement: 1 },
             grant: ['cement',2],
-            cost: { 
+            cost: {
                 Knowledge: function(){ return 7500; },
                 Steel: function(){ return 750; }
             },
