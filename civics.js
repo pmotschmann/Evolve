@@ -3,8 +3,13 @@ import { global, vues } from './vars.js';
 // Sets up govenment in civics tab
 export function defineGovernment(){
     var govern = $('<div id="government" class="government tile is-child"></div>');
-    govern.append($('<div class="header has-text-warning">Government</div>'));
+    govern.append($('<div class="header has-text-warning" v-show="display">Government</div>'));
     $('#r_civics').append(govern);
+    
+    vues['gov_header'] = new Vue({
+        data: global.civic['taxes']
+    });
+    vues['gov_header'].$mount('#government .header');
     
     taxRates(govern);
 }

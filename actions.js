@@ -1,4 +1,4 @@
-import { global, vues, save, messageQueue, keyMultiplier } from './vars.js';
+import { global, vues, save, messageQueue, keyMultiplier, modRes } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources } from './resources.js';
 
@@ -10,7 +10,7 @@ export const actions = {
             desc: 'Creates new RNA',
             action: function (){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
-                    global['resource']['RNA'].amount++;
+                    modRes('RNA',1);
                 }
                 return false;
             }
@@ -22,8 +22,8 @@ export const actions = {
             cost: { RNA: function(){ return 2; } },
             action: function (){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
-                    global['resource']['DNA'].amount++;
-                    global['resource']['RNA'].amount -= 2;
+                    modRes('RNA',-2);
+                    modRes('DNA',1);
                 }
                 return false;
             }
@@ -618,7 +618,7 @@ export const actions = {
             reqs: {},
             action: function (){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    global['resource']['Food'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
+                    modRes('Food',global.race['strong'] ? global.race['strong'] + 1 : 1);
                 }
                 return false;
             }
@@ -630,7 +630,7 @@ export const actions = {
             reqs: {},
             action: function (){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    global['resource']['Lumber'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
+                    modRes('Lumber',global.race['strong'] ? global.race['strong'] + 1 : 1);
                 }
                 return false;
             }
@@ -642,7 +642,7 @@ export const actions = {
             reqs: {},
             action: function (){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    global['resource']['Stone'].amount += global.race['strong'] ? global.race['strong'] + 1 : 1;
+                    modRes('Stone',global.race['strong'] ? global.race['strong'] + 1 : 1);
                 }
                 return false;
             }

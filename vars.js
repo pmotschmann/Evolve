@@ -62,6 +62,21 @@ export function messageQueue(msg,color){
     $('#msgQueue').prepend(new_message);
 }
 
+export function modRes(res,val){
+    let count = global.resource[res].amount + val;
+    let depleted = false;
+    if (count > global.resource[res].max){
+        count = global.resource[res].max;
+    }
+    else if (count < 0){
+        count = 0;
+        depleted = true;
+    }
+    global.resource[res].amount = count;
+    global.resource[res].delta += val;
+    return depleted;
+}
+
 // Detect if shift is pressed down
 export var shiftIsPressed = false;
 $(document).keydown(function(event){

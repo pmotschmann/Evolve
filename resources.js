@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier } from './vars.js';
+import { global, vues, keyMultiplier, modRes } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -9,10 +9,13 @@ export const resource_values = {
     Iron: 40,
     Cement: 15,
     Coal: 20,
+    //Oil: 75,
     Steel: 100
     //Titanium: 150,
     //Iridium: 200,
-    //Deuterium: 500
+    //Deuterium: 450,
+    //Helium-3: 600,
+    //Neutronium: 1000
 };
 
 // Sets up resource definitions
@@ -35,10 +38,13 @@ export function defineResources() {
         loadResource('Iron',100,1,true,true);
         loadResource('Cement',100,1,true,true);
         loadResource('Coal',50,1,true,true);
+        //loadResource('Oil',0,1,true,false);
         loadResource('Steel',50,1,true,true);
         //loadResource('Titanium',50,1,true,true);
         //loadResource('Iridium',50,1,true,true);
-        //loadResource('Deuterium',20,1,true,true);
+        //loadResource('Deuterium',0,1,true,false);
+        //loadResource('Helium-3',0,1,true,false);
+        //loadResource('Neutronium',0,1,true,true);
     }
 }
 
@@ -54,8 +60,8 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             value: resource_values[name],
             amount: 0,
             crates: 0,
-            last: 0,
             diff: 0,
+            delta: 0,
             max: max,
             rate: rate
         };
@@ -66,6 +72,9 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     }
     if (!global['resource'][name]['containers']){
         global['resource'][name]['containers'] = 0;
+    }
+    if (!global['resource'][name]['delta']){
+        global['resource'][name]['delta'] = 0;
     }
     
     var res_container = $(`<div id="res-${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
@@ -206,7 +215,8 @@ function drawModal(name,color){
                 let keyMutipler = keyMultiplier();
                 let material = global.race['kindling_kindred'] ? 'Stone' : 'Lumber';
                 if (global.resource[material].amount >= (250 * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
-                    global.resource[material].amount -= (250 * keyMutipler);
+                    modRes(material,-(250 * keyMutipler));
+                    //global.resource[material].amount -= (250 * keyMutipler);
                     global.resource.Crates.amount += keyMutipler;
                 }
             },
@@ -269,7 +279,8 @@ function drawModal(name,color){
                 buildContainer: function(res){
                     let keyMutipler = keyMultiplier();
                     if (global.resource['Steel'].amount >= (100 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
-                        global.resource['Steel'].amount -= (100 * keyMutipler);
+                        modRes('Steel',-(100 * keyMutipler));
+                        //global.resource['Steel'].amount -= (100 * keyMutipler);
                         global.resource.Containers.amount += keyMutipler;
                     }
                 },

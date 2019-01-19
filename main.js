@@ -1,4 +1,4 @@
-import { global, vues, save, runNew, messageQueue } from './vars.js';
+import { global, vues, save, runNew, messageQueue, modRes } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
@@ -113,15 +113,11 @@ function mainLoop() {
                     increment--;
                     if (increment <= 0){ break; }
                 }
-                var count = global['resource']['DNA'].amount + increment;
-                if (count > global['resource']['DNA'].max){ count = global['resource']['DNA'].max; }
-                global['resource']['DNA'].amount = count;
-                global['resource']['RNA'].amount -= increment * 2;
+                modRes('DNA',increment);
+                modRes('RNA',-(increment * 2));
             }
-            if (global.evolution['organelles'] && global['resource']['RNA'].amount < global['resource']['RNA'].max){
-                var count = global['resource']['RNA'].amount + global.evolution['organelles'].count;
-                if (count > global['resource']['RNA'].max){ count = global['resource']['RNA'].max; }
-                global['resource']['RNA'].amount = count;
+            if (global.evolution['organelles']){
+                modRes('RNA',global.evolution['organelles'].count);
             }
             // Detect new unlocks
             if (global['resource']['RNA'].amount >= 2 && !global.evolution['dna']){
@@ -166,7 +162,7 @@ function mainLoop() {
                     consume -= 0.3;
                 }
                 power_grid -= power;
-                global.resource.Coal.amount -= consume;
+                modRes('Coal',-(consume));
             }
 
             if (global.city['apartment']){
@@ -203,15 +199,11 @@ function mainLoop() {
                     food_multiplier *= 1 + (global.city['mill'].count * 0.03);
                 }
                 food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
-                var count = global.resource.Food.amount + (global.civic.farmer.workers * global.civic.farmer.impact * food_multiplier) - consume;
-                if (count > global.resource.Food.max){ 
-                    count = global.resource.Food.max;
-                }
-                else if (count < 0){
+                var delta = (global.civic.farmer.workers * global.civic.farmer.impact * food_multiplier) - consume;
+                
+                if (modRes('Food',delta)){
                     fed = false;
-                    count = 0;
                 }
-                global.resource.Food.amount = count;
             }
             
             // Citizen Growth
@@ -230,10 +222,9 @@ function mainLoop() {
             if (fed){
                 // Knowledge
                 var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
-                var count = global.resource.Knowledge.amount + (global.civic.professor.workers * know_multiplier) + 1;
-                count += global.civic.scientist.workers * tax_multiplier;
-                if (count > global.resource.Knowledge.max){ count = global.resource.Knowledge.max; }
-                global.resource.Knowledge.amount = count;
+                var delta = (global.civic.professor.workers * know_multiplier) + 1;
+                delta += global.civic.scientist.workers * tax_multiplier;
+                modRes('Knowledge',delta);
                 
                 // Cement
                 if (global.resource.Cement.display && global.resource.Cement.amount < global.resource.Cement.max){
@@ -244,11 +235,12 @@ function mainLoop() {
                         workDone--;
                     }
                     global.resource.Stone.amount -= consume;
+                    modRes('Stone',-(consume));
+                    
                     var cement_multiplier = 1;
                     cement_multiplier *= tax_multiplier;
-                    count = global.resource.Cement.amount + ((workDone * global.civic.cement_worker.impact) * cement_multiplier);
-                    if (count > global.resource.Cement.max){ count = global.resource.Cement.max; }
-                    global.resource.Cement.amount = count;
+                    delta = (workDone * global.civic.cement_worker.impact) * cement_multiplier;
+                    modRes('Cement',delta);
                 }
                 
                 // Smelters
@@ -287,8 +279,8 @@ function mainLoop() {
 
                     iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
 
-                    global.resource.Lumber.amount -= consume_wood;
-                    global.resource.Coal.amount -= consume_coal;
+                    modRes('Lumber',-(consume_wood));
+                    modRes('Coal',-(consume_coal));
 
                     //Steel Production
                     if (global.resource.Steel.display && global.resource.Steel.amount < global.resource.Steel.max){
@@ -298,14 +290,13 @@ function mainLoop() {
                             iron_consume -= 2;
                             coal_consume -= 0.25;
                         }
-                        global.resource.Iron.amount -= iron_consume;
-                        global.resource.Coal.amount -= coal_consume;
+                        modRes('Iron',-(iron_consume));
+                        modRes('Coal',-(coal_consume));
 
                         var steel_multiplier = global.tech['smelting'] >= 3 ? 1.2 : 1;
                         steel_multiplier *= tax_multiplier;
-                        count = global.resource.Steel.amount + (steel_smelter * steel_multiplier);
-                        if (count > global.resource.Steel.max){ count = global.resource.Steel.max; }
-                        global.resource.Steel.amount = count;
+                        delta = steel_smelter * steel_multiplier;
+                        modRes('Steel',delta);
                     }
                 }                
 
@@ -320,9 +311,8 @@ function mainLoop() {
                     power_grid -= global.city.sawmill.on;
                     lum_multiplier *= 1 + (sawmills * 0.1);
                 }
-                count = global.resource.Lumber.amount + (global.civic.lumberjack.workers * global.civic.lumberjack.impact * lum_multiplier);
-                if (count > global.resource.Lumber.max){ count = global.resource.Lumber.max; }
-                global.resource.Lumber.amount = count;
+                delta = global.civic.lumberjack.workers * global.civic.lumberjack.impact * lum_multiplier;
+                modRes('Lumber',delta);
                 
                 // Stone
                 var stone_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.25 : 0) + 1;
@@ -330,17 +320,15 @@ function mainLoop() {
                     stone_multiplier *= 1.25;
                 }
                 stone_multiplier *= tax_multiplier;
-                count = global.resource.Stone.amount + (global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier);
-                if (count > global.resource.Stone.max){ count = global.resource.Stone.max; }
-                global.resource.Stone.amount = count;
+                delta = global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier;
+                modRes('Stone',delta);
                 
                 // Copper
                 if (global.resource.Copper.display){
                     var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     copper_multiplier *= tax_multiplier;
-                    count = global.resource.Copper.amount + ((global.civic.miner.workers / 7) * copper_multiplier);
-                    if (count > global.resource.Copper.max){ count = global.resource.Copper.max; }
-                    global.resource.Copper.amount = count;
+                    delta = (global.civic.miner.workers / 7) * copper_multiplier;
+                    modRes('Copper',delta);
                 }
                 
                 // Iron
@@ -348,18 +336,16 @@ function mainLoop() {
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     iron_multiplier *= tax_multiplier;
                     iron_multiplier *= (1 + (iron_smelter * 0.1));
-                    count = global.resource.Iron.amount + ((global.civic.miner.workers / 4) * iron_multiplier);
-                    if (count > global.resource.Iron.max){ count = global.resource.Iron.max; }
-                    global.resource.Iron.amount = count;
+                    delta = (global.civic.miner.workers / 4) * iron_multiplier;
+                    modRes('Iron',delta);
                 }
                 
                 // Coal
                 if (global.resource.Coal.display){
                     var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     coal_multiplier *= tax_multiplier;
-                    count = global.resource.Coal.amount + (global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier);
-                    if (count > global.resource.Coal.max){ count = global.resource.Coal.max; }
-                    global.resource.Coal.amount = count;
+                    delta = global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier;
+                    modRes('Coal',delta);
                 }
             }
             
@@ -368,6 +354,7 @@ function mainLoop() {
                 global.main_tabs.data.showResearch = true;
             }
 
+            // Power grid state
             global.city.power = power_grid;
             if (global.city.power < 0){
                 $('#powerMeter').css('color','#cc0000');
@@ -586,9 +573,8 @@ function mainLoop() {
                 }
                 
                 income *= tax_rate;
-                var count = global.resource.Money.amount + Math.round(income);
-                if (count > global.resource.Money.max){ count = global.resource.Money.max; }
-                global.resource.Money.amount = count;
+                
+                modRes('Money',Math.round(income));
             }
             
             // Market price fluctuation
@@ -667,14 +653,12 @@ function mainLoop() {
 }
 
 function diffCalc(res,period){
-    if (global['resource'][res].amount !== global['resource'][res].max && global['resource'][res].amount !== 0){
-        global['resource'][res].diff = +((global['resource'][res].amount - global['resource'][res].last) / (period / 1000)).toFixed(2);
-        global['resource'][res].last = global['resource'][res].amount;
-    }
-    if (global['resource'][res].diff < 0 && !$(`#res-${res} .diff`).hasClass('has-text-danger')){
+    global.resource[res].diff = +(global.resource[res].delta / (period / 1000)).toFixed(2);
+    global.resource[res].delta = 0;
+    if (global.resource[res].diff < 0 && !$(`#res-${res} .diff`).hasClass('has-text-danger')){
         $(`#res-${res} .diff`).addClass('has-text-danger');
     }
-    else if (global['resource'][res].diff >= 0 && $(`#res-${res} .diff`).hasClass('has-text-danger')){
+    else if (global.resource[res].diff >= 0 && $(`#res-${res} .diff`).hasClass('has-text-danger')){
         $(`#res-${res} .diff`).removeClass('has-text-danger');
     }
 }
