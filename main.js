@@ -234,7 +234,6 @@ function mainLoop() {
                         consume -= 3;
                         workDone--;
                     }
-                    global.resource.Stone.amount -= consume;
                     modRes('Stone',-(consume));
                     
                     var cement_multiplier = 1;
