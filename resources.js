@@ -216,7 +216,6 @@ function drawModal(name,color){
                 let material = global.race['kindling_kindred'] ? 'Stone' : 'Lumber';
                 if (global.resource[material].amount >= (250 * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
                     modRes(material,-(250 * keyMutipler));
-                    //global.resource[material].amount -= (250 * keyMutipler);
                     global.resource.Crates.amount += keyMutipler;
                 }
             },
@@ -280,7 +279,6 @@ function drawModal(name,color){
                     let keyMutipler = keyMultiplier();
                     if (global.resource['Steel'].amount >= (100 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
                         modRes('Steel',-(100 * keyMutipler));
-                        //global.resource['Steel'].amount -= (100 * keyMutipler);
                         global.resource.Containers.amount += keyMutipler;
                     }
                 },

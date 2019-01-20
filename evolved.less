@@ -125,7 +125,7 @@ div {
                     padding: 0 .25rem;
                     border-top: .0625rem solid #282f2f;
                     border-right: .0625rem solid #282f2f;
-                    border-radius: 0 .4375rem 0 .4375rem;
+                    border-radius: 0 .25rem 0 .4375rem;
                     overflow: hidden;
                     background: #1f2424;
                 }
@@ -157,7 +157,7 @@ div {
             div.on {
                 bottom: 0;
                 right: 1rem;
-                border-radius: .4375rem 0 .4375rem 0;
+                border-radius: .4375rem 0 .25rem 0;
                 background: #1f2424;
                 color: #00af0f;
             }
@@ -165,7 +165,7 @@ div {
             div.off {
                 bottom: 0;
                 left: 0;
-                border-radius: 0 .4375rem 0 .4375rem;
+                border-radius: 0 .4375rem 0 .25rem;
                 background: #1f2424;
                 color: #c20000;
             }
@@ -250,8 +250,23 @@ div {
             border-bottom: .0625rem solid #ccc;
             margin-bottom: .5rem;
         }
+        .barracks {
+            margin-bottom: .5rem;
+        }
         button {
             height: 2rem;
+        }
+        button.first {
+            margin-right: .5rem;
+        }
+        .tactics {
+            margin: .5rem 0;
+            height: 1.25rem;
+            display: flex;
+            :first-child {
+                display: inline-block;
+                line-height: 1.25rem;
+            }
         }
     }
         

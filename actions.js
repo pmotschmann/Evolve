@@ -647,6 +647,26 @@ export const actions = {
                 return false;
             }
         },
+        garrison: {
+            id: 'city-garrison',
+            title: 'Barracks',
+            desc: 'Construct a Barracks',
+            reqs: { military: 1, housing: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('garrison', 250, 1.6); },
+                Lumber: function(){ return costMultiplier('garrison', 260, 1.6); },
+                Stone: function(){ return costMultiplier('garrison', 180, 1.6); }
+            },
+            effect: 'Constructs a barracks increasing solider capacity by 2',
+            action: function (){
+                if (payCosts(actions.city.garrison.cost)){
+                    global.civic['garrison'].max += 2;
+                    global.city['garrison'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
         basic_housing: {
             id: 'city-house',
             title: 'Cabin',
@@ -856,7 +876,10 @@ export const actions = {
                 Iron: function(){ return costMultiplier('storage_yard', 4, 1.8); },
                 Cement: function(){ return costMultiplier('storage_yard', 6, 1.9); }
             },
-            effect: 'Freight yards are open paved areas with rails used for storing cargo. Each yard increases your crate capacity.',
+            effect: function(){
+                let cap = global.tech.container >= 3 ? 100 : 50;
+                return `Freight yards are open paved areas with rails used for storing cargo. Each yard increases your crate capacity by ${cap}.`; 
+            },
             action: function (){
                 if (payCosts(actions.city.storage_yard.cost)){
                     if (global.resource.Crates.display === false){
@@ -864,7 +887,7 @@ export const actions = {
                     }
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
-                    global.resource.Crates.max += 50;
+                    global.resource.Crates.max += global.tech.container >= 3 ? 100 : 50;
                     return true;
                 }
                 return false;
@@ -880,7 +903,7 @@ export const actions = {
                 Cement: function(){ return costMultiplier('warehouse', 75, 1.25); },
                 Steel: function(){ return costMultiplier('warehouse', 100, 1.25); }
             },
-            effect: 'Warehouses are large storage facilities. Each warehouse is capable of storing 50 containters.',
+            effect: 'Warehouses are large storage facilities. Each warehouse is capable of storing 50 containers.',
             action: function (){
                 if (payCosts(actions.city.warehouse.cost)){
                     if (global.resource.Containers.display === false){
@@ -957,7 +980,7 @@ export const actions = {
             desc: 'Build a stone quarry',
             reqs: { mining: 1 },
             cost: { 
-                Money: function(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.55);} else { return 0; } },
+                Money: function(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.45);} else { return 0; } },
                 Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); },
                 Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); }
             },
@@ -1105,6 +1128,9 @@ export const actions = {
                 }
                 else if (global.tech['banking'] >= 3){
                     vault = 2500;
+                }
+                if (global.tech['banking'] >= 7){
+                    vault *= 1 + (global.civic.banker.workers * 0.05);
                 }
                 return `Increases money capacity by \$${vault}`; 
             },
@@ -1422,7 +1448,8 @@ export const actions = {
             reqs: { smelting: 1 },
             grant: ['smelting',2],
             cost: { 
-                Knowledge: function(){ return 5500; }
+                Knowledge: function(){ return 5500; },
+                Steel: function(){ return 50; }
             },
             effect: 'Upgrade your smelters so they can produce steel.',
             action: function (){
@@ -1575,6 +1602,25 @@ export const actions = {
             effect: 'Upgrade wooden crates by reinforcing them with steel.',
             action: function (){
                 if (payCosts(actions.tech.reinforced_crates.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        cranes: {
+            id: 'tech-cranes',
+            title: 'Cranes',
+            desc: 'Freight Cranes',
+            reqs: { container: 2, high_tech: 2 },
+            grant: ['container',3],
+            cost: { 
+                Knowledge: function(){ return 20000; },
+                Copper: function(){ return 1000; },
+                Steel: function(){ return 2500; }
+            },
+            effect: 'Upgrade your freight yards with cranes, doubling the ammount of crates that can be stored in each yard.',
+            action: function (){
+                if (payCosts(actions.tech.cranes.cost)){
                     return true;
                 }
                 return false;
@@ -1801,6 +1847,24 @@ export const actions = {
             effect: 'Create new series EE savings bonds which mature at a much higher value. Each citizen will increase your money cap by $600.',
             action: function (){
                 if (payCosts(actions.tech.eebonds.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        swiss_banking: {
+            id: 'tech-swiss_banking',
+            title: 'Swiss Banking',
+            desc: 'Swiss Banking',
+            reqs: { banking: 6 },
+            grant: ['banking',7],
+            cost: {
+                Money: function(){ return 125000; },
+                Knowledge: function(){ return 50000; }
+            },
+            effect: 'With new training your bankers will learn how to creatively store money. Increases bank vault capacity by 5% per banker.',
+            action: function (){
+                if (payCosts(actions.tech.swiss_banking.cost)){
                     return true;
                 }
                 return false;
@@ -2101,6 +2165,24 @@ export const actions = {
                 return false;
             }
         },
+        jackhammer: {
+            id: 'tech-jackhammer',
+            title: 'Jackhammer',
+            desc: 'Invent the Jackhammer',
+            reqs: { pickaxe: 3, high_tech: 2},
+            grant: ['pickaxe',4],
+            cost: {
+                Knowledge: function(){ return 25000; },
+                Copper: function(){ return 5000; }
+            },
+            effect: 'Replace old mining pick technology with jackhammers. Improves mining activities.',
+            action: function (){
+                if (payCosts(actions.tech.jackhammer.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         copper_hoe: {
             id: 'tech-copper_hoe',
             title: 'Copper Hoes',
@@ -2184,9 +2266,63 @@ export const actions = {
                 Knowledge: function(){ return 250; },
                 Lumber: function(){ return 250; }
             },
-            effect: 'Create the bow, and outfit your army with ranged weapons. Sure to give you dominance over the primates.',
+            effect: 'Create the bow and outfit your army with ranged weapons. Sure to give you dominance over the primates.',
             action: function (){
                 if (payCosts(actions.tech.bows.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        flintlock_rifle: {
+            id: 'tech-flintlock_rifle',
+            title: 'Flintlock Rifle',
+            desc: 'Flintlock Rifles',
+            reqs: { military: 2, explosives: 1 },
+            grant: ['military',3],
+            cost: {
+                Knowledge: function(){ return 6000; },
+                Coal: function(){ return 750; }
+            },
+            effect: 'Outfit your army with firearms, must deadlier then primative bows and arrows.',
+            action: function (){
+                if (payCosts(actions.tech.flintlock_rifle.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        armor: {
+            id: 'tech-armor',
+            title: 'Leather Armor',
+            desc: 'Create Leather Armor',
+            reqs: { military: 1 },
+            grant: ['armor',1],
+            cost: {
+                Money: function(){ return 250; },
+                Knowledge: function(){ return 250; }
+            },
+            effect: 'Basic armor made from leather, will reduce the number of casulaties you take during military actions.',
+            action: function (){
+                if (payCosts(actions.tech.armor.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        plate_armor: {
+            id: 'tech-plate_armor',
+            title: 'Plate Armor',
+            desc: 'Create Plate Armor',
+            reqs: { armor: 1, mining: 3 },
+            grant: ['armor',2],
+            cost: {
+                Knowledge: function(){ return 3750; },
+                Iron: function(){ return 600; },
+            },
+            effect: 'Armor reinforced with iron plates, heavy but offers better protection for your soliders.',
+            action: function (){
+                if (payCosts(actions.tech.plate_armor.cost)){
                     return true;
                 }
                 return false;
@@ -2231,16 +2367,34 @@ export const actions = {
         rebar: {
             id: 'tech-rebar',
             title: 'Rebar',
-            desc: 'Steel Rebar',
-            reqs: { smelting: 2, cement: 1 },
+            desc: 'Rebar',
+            reqs: { mining: 3, cement: 1 },
             grant: ['cement',2],
             cost: {
-                Knowledge: function(){ return 7500; },
-                Steel: function(){ return 750; }
+                Knowledge: function(){ return 3500; },
+                Iron: function(){ return 750; }
             },
             effect: 'Adding rebar to concrete will makes it much stronger and reduce cement costs.',
             action: function (){
                 if (payCosts(actions.tech.rebar.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        steel_rebar: {
+            id: 'tech-rebar',
+            title: 'Steel Rebar',
+            desc: 'Steel Rebar',
+            reqs: { smelting: 2, cement: 2 },
+            grant: ['cement',3],
+            cost: {
+                Knowledge: function(){ return 7500; },
+                Steel: function(){ return 750; }
+            },
+            effect: 'Use stronger steel as rebar, further reducing cement costs.',
+            action: function (){
+                if (payCosts(actions.tech.steel_rebar.cost)){
                     return true;
                 }
                 return false;
@@ -2481,10 +2635,11 @@ function adjustCosts(costs){
 
 function rebarAdjust(costs){
     if (costs['Cement'] && global.tech['cement'] && global.tech['cement'] >= 2){
+        let discount = global.tech['cement'] >= 3 ? 0.8 : 0.9;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Cement'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 0.9) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res]() * discount) || 0; }
             }
             else {
                 newCosts[res] = function(){ return Math.round(costs[res]()); }
@@ -2565,7 +2720,7 @@ function smelterModal(modal){
         fuelTypes.append(addCoal);
     }
 
-    if (global.resource.Steel.display){
+    if (global.resource.Steel.display && global.tech.smelting >= 2){
         let smelt = $('<div class="smelting"></div>');
         let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" type="is-dark" animated multilined><button class="button" @click="ironSmelting()">Iron Smelting: {{ Iron }}</button></b-tooltip>`);
         let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" type="is-dark" animated multilined><button class="button" @click="steelSmelting()">Steel Smelting: {{ Steel }}</button></b-tooltip>`);

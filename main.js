@@ -187,7 +187,7 @@ function mainLoop() {
             // Consumption
             fed = true;
             if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
-                var consume = (global.resource[races[global.race.species].name].amount - (global.civic.free * 0.5)) * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1);
+                var consume = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.civic.free * 0.5)) * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1);
                 if (global.race['high_metabolism']){
                     consume *= 1.1;
                 }
@@ -402,14 +402,16 @@ function mainLoop() {
                 cement_worker: 0,
                 banker: 0,
                 professor: 0,
-                scientist: 0
+                scientist: 0,
+                garrison: 0
             };
             caps[races[global.race.species].name] = 0;
             if (global.city['farm']){
                 lCaps['farmer'] += global.city['farm'].count;
             }
             if (global.city['storage_yard']){
-                caps['Crates'] += (global.city['storage_yard'].count * 50);
+                let size = global.tech.container >= 3 ? 100 : 50;
+                caps['Crates'] += (global.city['storage_yard'].count * size);
                 Object.keys(caps).forEach(function (res){
                     caps['Crates'] -= global.resource[res].crates;
                 });
@@ -441,6 +443,9 @@ function mainLoop() {
             }
             if (global.city['cement_plant']){
                 lCaps['cement_worker'] += global.city['cement_plant'].count * 3;
+            }
+            if (global.city['garrison']){
+                lCaps['garrison'] += global.city['garrison'].count * 2;
             }
             if (global.city['basic_housing']){
                 caps[races[global.race.species].name] += global.city['basic_housing'].count;
@@ -489,15 +494,23 @@ function mainLoop() {
                 else if (global.tech['banking'] >= 3){
                     vault = 2500;
                 }
+                if (global.tech['banking'] >= 7){
+                    vault *= 1 + (global.civic.banker.workers * 0.05);
+                }
                 caps['Money'] += (global.city['bank'].count * vault);
             }
             if (global.tech['banking'] >= 4){
-                caps['Money'] += (global.tech['banking'] >= 6 ? 600 : 250) * global.resource[races[global.race.species].name].amount;
+                caps['Money'] += (global.tech['banking'] >= 6 ? 600 : 250) * (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers);
             }
             
             let pop_loss = global.resource[races[global.race.species].name].amount - caps[races[global.race.species].name];
             if (pop_loss > 0){
-                messageQueue(`${pop_loss} citizens have abandoned your settlement due to homelessness.`,'danger');
+                if (pop_loss === 1){
+                    messageQueue(`${pop_loss} citizen has abandoned your settlement due to homelessness.`,'danger');
+                }
+                else {
+                    messageQueue(`${pop_loss} citizens have abandoned your settlement due to homelessness.`,'danger');
+                }
             } 
 
             let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 30 : 25;
@@ -533,7 +546,7 @@ function mainLoop() {
         if (global.race.species !== 'protoplasm'){
             // Tax Income
             if (global.tech['currency'] >= 1){
-                var income = (global.resource[races[global.race.species].name].amount - global.civic.free) * ( global.race['greedy'] ? 1 : 2 );
+                var income = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - global.civic.free) * ( global.race['greedy'] ? 1 : 2 );
                 var tax_rate;
                 switch(Number(global.civic.taxes.tax_rate)){
                     case 0:
@@ -579,13 +592,17 @@ function mainLoop() {
             // Market price fluctuation
             if (global.tech['currency'] && global.tech['currency'] >= 2){
                 Object.keys(resource_values).forEach(function (res) {
+                    let r_val = resource_values[res];
+                    if (res === 'Copper' && global.tech['high_tech'] && global.tech['high_tech'] >= 2){
+                        r_val *= 2;
+                    }
                     if (global.resource[res].display && Math.rand(0,10) === 0){
-                        let max = resource_values[res] * 2;
-                        let min = resource_values[res] / 2;
+                        let max = r_val * 2;
+                        let min = r_val / 2;
                         let variance = (Math.rand(0,200) - 100) / 100;
                         let new_value = global.resource[res].value + variance;
                         if (new_value < min || new_value > max){
-                            new_value = resource_values[res];
+                            new_value = r_val;
                         }
                         global.resource[res].value = new_value;
                     }

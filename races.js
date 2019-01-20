@@ -407,8 +407,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    beast_of_burdon: {
-        desc: '',
+    beast_of_burdon: { // Gains more loot during raids
+        desc: 'Your race is able to carry away more loot when winning a military conflict.',
         ranks: 0,
         type: 'major',
     },
@@ -442,8 +442,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    puny: {
-        desc: '',
+    puny: { // Lowers minium bound for army score roll
+        desc: 'Your race is less effictive in combat.',
         ranks: 0,
         type: 'major',
     },
@@ -477,8 +477,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    armored: {
-        desc: '',
+    armored: { // Less soliders die in combat
+        desc: 'Your race is naturally armored and thus less likely to be fatally wounded in battle.',
         ranks: 0,
         type: 'major',
     },
@@ -537,8 +537,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    fraile: {
-        desc: '',
+    fraile: { // More soliders die in combat
+        desc: 'Your race is fraile and is more likely to die in combat.',
         ranks: 0,
         type: 'major',
     },
@@ -547,8 +547,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    claws: {
-        desc: '',
+    claws: { // Raises maximum bound for army score roll
+        desc: 'Your race is more effective in comabt.',
         ranks: 0,
         type: 'major',
     },
