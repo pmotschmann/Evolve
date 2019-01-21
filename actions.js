@@ -670,7 +670,7 @@ export const actions = {
         basic_housing: {
             id: 'city-house',
             title: 'Cabin',
-            desc: 'Construct a cabin',
+            desc: 'Construct a Cabin',
             reqs: { housing: 1 },
             cost: { 
                 Money: function(){ 
@@ -714,7 +714,7 @@ export const actions = {
         cottage: {
             id: 'city-cottage',
             title: 'Cottage',
-            desc: 'Construct a cottage',
+            desc: 'Construct a Cottage',
             reqs: { housing: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('cottage', 900, 1.15); },
@@ -736,7 +736,7 @@ export const actions = {
         apartment: {
             id: 'city-apartment',
             title: 'Apartment',
-            desc: 'Construct an apartmnet building',
+            desc: 'Construct an Apartment Building',
             reqs: { housing: 3 },
             cost: { 
                 Money: function(){ return costMultiplier('apartment', 1750, 1.25) - 500; },
@@ -759,7 +759,7 @@ export const actions = {
         farm: {
             id: 'city-farm',
             title: 'Farm',
-            desc: 'Build a farm',
+            desc: 'Build a Farm',
             reqs: { agriculture: 1 },
             cost: { 
                 Money: function(){ if (global.city['farm'] && global.city['farm'].count >= 2){ return costMultiplier('farm', 50, 1.30);} else { return 0; } },
@@ -780,7 +780,7 @@ export const actions = {
         silo: {
             id: 'city-silo',
             title: 'Grain Silo',
-            desc: 'Build a grain silo',
+            desc: 'Build a Grain Silo',
             reqs: { agriculture: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('silo', 500, 1.30); },
@@ -800,7 +800,7 @@ export const actions = {
         mill: {
             id: 'city-mill',
             title: 'Mill',
-            desc: 'Build a mill',
+            desc: 'Build a Mill',
             reqs: { agriculture: 3 },
             cost: { 
                 Money: function(){ return costMultiplier('mill', 1000, 1.3); },
@@ -819,8 +819,11 @@ export const actions = {
         },
         shed: {
             id: 'city-shed',
-            title: 'Shed',
-            desc: 'Construct a shed',
+            title: function(){ return global.tech['storage'] <= 2 ? 'Shed' : 'Barn'; },
+            desc: function(){
+                let build = global.tech['storage'] <= 2 ? 'Shed' : 'Barn';
+                return `Construct a ${build}`; 
+            },
             reqs: { storage: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('shed', 75, 1.2); },
@@ -850,10 +853,20 @@ export const actions = {
                     }
                 }
             },
-            effect: 'A small storage facility which increases your storage capacity of various resources',
+            effect: function(){
+                let storage = global.tech['storage'] >= 3 ? 'storage' : 'small storage';
+                return `A ${storage} facility which increases your storage capacity of various resources`;
+            },
             action: function (){
                 if (payCosts(actions.city.shed.cost)){
-                    var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
+                    var multiplier = (global.tech['storage'] - 1) * 1.5;
+                    if (global.tech['storage'] >= 3){
+                        multiplier *= 1.5;
+                        caps['Steel'] += (global.city['shed'].count * (25 * multiplier));
+                    }
+                    if (global.race['pack_rat']){
+                        multiplier *= 1.05;
+                    }
                     global['resource']['Lumber'].max += (200 * multiplier);
                     global['resource']['Stone'].max += (200 * multiplier);
                     global['resource']['Copper'].max += (75 * multiplier);
@@ -920,7 +933,7 @@ export const actions = {
         lumber_yard: {
             id: 'city-lumber_yard',
             title: 'Lumber Yard',
-            desc: 'Build a lumber yard',
+            desc: 'Build a Lumber Yard',
             reqs: { axe: 1 },
             cost: { 
                 Money: function(){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', 5, 1.85);} else { return 0; } },
@@ -942,7 +955,7 @@ export const actions = {
         sawmill: {
             id: 'city-sawmill',
             title: 'Sawmill',
-            desc: 'Build a sawmill',
+            desc: 'Build a Sawmill',
             reqs: { saw: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('sawmill', 3000, 1.25); },
@@ -953,7 +966,7 @@ export const actions = {
             effect: function(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 if (global.city.powered){
-                    return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill consumes 1kW but produces 10% more lumber.`; 
+                    return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill consumes 1kW but produces 5% more lumber.`; 
                 }
                 else {
                     return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%`;
@@ -977,7 +990,7 @@ export const actions = {
         rock_quarry: {
             id: 'city-rock_quarry',
             title: 'Rock Quarry',
-            desc: 'Build a stone quarry',
+            desc: 'Build a Stone Quarry',
             reqs: { mining: 1 },
             cost: { 
                 Money: function(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.45);} else { return 0; } },
@@ -1021,7 +1034,7 @@ export const actions = {
         smelter: {
             id: 'city-smelter',
             title: 'Smelter',
-            desc: 'Build a smelter',
+            desc: 'Build a Smelter',
             reqs: { smelting: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('smelter', 1000, 1.3); },
@@ -1050,7 +1063,7 @@ export const actions = {
         mine: {
             id: 'city-mine',
             title: 'Mine',
-            desc: 'Build a mine',
+            desc: 'Build a Mine',
             reqs: { mining: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('mine', 60, 1.6); },
@@ -1093,7 +1106,7 @@ export const actions = {
         temple: {
             id: 'city-temple',
             title: 'Temple',
-            desc: 'Build a temple',
+            desc: 'Build a Temple',
             reqs: { religion: 1 },
             cost: { 
                 Lumber: function(){ return costMultiplier('temple', 50, 1.35); },
@@ -1114,7 +1127,7 @@ export const actions = {
         bank: {
             id: 'city-bank',
             title: 'Bank',
-            desc: 'Build a bank',
+            desc: 'Build a Bank',
             reqs: { banking: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('bank', 250, 1.5); },
@@ -1128,6 +1141,12 @@ export const actions = {
                 }
                 else if (global.tech['banking'] >= 3){
                     vault = 2500;
+                }
+                if (global.race['paranoid']){
+                    vault *= 0.9;
+                }
+                else if (global.race['hoarder']){
+                    vault *= 1.1;
                 }
                 if (global.tech['banking'] >= 7){
                     vault *= 1 + (global.civic.banker.workers * 0.05);
@@ -1147,7 +1166,7 @@ export const actions = {
         university: {
             id: 'city-university',
             title: 'University',
-            desc: 'Construct a university',
+            desc: 'Construct a University',
             reqs: { science: 1 },
             cost: {
                 Money: function(){ return costMultiplier('university', 900, 1.5) - 500; },
@@ -1176,7 +1195,7 @@ export const actions = {
         library: {
             id: 'city-library',
             title: 'Library',
-            desc: 'Construct a library',
+            desc: 'Construct a Library',
             reqs: { science: 2 },
             cost: {
                 Money: function(){ return costMultiplier('library', 45, 1.2); },
@@ -1373,7 +1392,7 @@ export const actions = {
             },
             effect: 'Creates plans for a storage medium for food.',
             action: function (){
-                if (payCosts(actions.tech.agriculture.cost)){
+                if (payCosts(actions.tech.silo.cost)){
                     global.city['silo'] = { count: 0 };
                     return true;
                 }
@@ -1565,7 +1584,25 @@ export const actions = {
             },
             effect: 'Reinforce your sheds with newer materials to increase storage capacity.',
             action: function (){
-                if (payCosts(actions.tech.cement.cost)){
+                if (payCosts(actions.tech.reinforced_shed.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        barns: {
+            id: 'tech-barns',
+            title: 'Barns',
+            desc: 'Replace sheds with barns',
+            reqs: { storage: 2, smelting: 2 },
+            grant: ['storage',3],
+            cost: {
+                Knowledge: function(){ return 17500; },
+                Steel: function(){ return 5000; }
+            },
+            effect: 'Replace smaller storage sheds with larger storage barns, a 100% increase in storage capactiy.',
+            action: function (){
+                if (payCosts(actions.tech.barns.cost)){
                     return true;
                 }
                 return false;

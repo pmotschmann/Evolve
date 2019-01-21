@@ -68,11 +68,11 @@ export const races = {
     },
     kobold: {
         name: 'Kobold',
-        desc: 'Kobolds are small humanoid creatures who are known for their infatuation with candles. They are adapt at making the most of the natural resources of their enviroment.',
+        desc: 'Kobolds are small humanoid creatures who are known for their infatuation with candles. They are adapt at hoarding as much stuff as possible.',
         type: 'small red skinned humanoids',
         entity: 'small ',
         traits: {
-            resourceful: 1,
+            pack_rat: 1,
             paranoid: 1
         }
     },
@@ -160,7 +160,7 @@ export const races = {
         type: 'avian',
         entity: 'bird people',
         traits: {
-            
+            resourceful: 1,
         } 
     },
     pterodacti: {
@@ -178,6 +178,7 @@ export const races = {
         type: 'avian',
         entity: 'scaly winged creatures',
         traits: {
+            hoarder: 1,
             solitary: 1
         } 
     },
@@ -419,13 +420,13 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    resourceful: {
-        desc: '',
+    pack_rat: { // Storage space is increased
+        desc: 'Your species is adept at packing the most stuff into any storage space.',
         ranks: 0,
         type: 'major',
     },
-    paranoid: {
-        desc: '',
+    paranoid: { // Bank capacity reduced by 10%
+        desc: `Your race is paranoid and doesn't trust banks.`,
         ranks: 0,
         type: 'major',
     },
@@ -499,13 +500,23 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
+    resourceful: {
+        desc: '',
+        ranks: 0,
+        type: 'major',
+    },
+    hoarder: { // Banks can store 10% more money
+        desc: 'Your race loves to hoard money.',
+        ranks: 0,
+        type: 'major',
+    },
     solitary: {
         desc: '',
         ranks: 0,
         type: 'major',
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
-        desc: 'Your race is adverse to cutting down trees for lumber, all lumber costs are removed but other costs are increased by 20%.',
+        desc: 'Your race is adverse to cutting down trees for lumber, all lumber costs are removed but other costs are increased.',
         ranks: 0,
         type: 'major',
     },

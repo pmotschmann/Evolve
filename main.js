@@ -316,7 +316,7 @@ function mainLoop() {
                         sawmills--;
                     }
                     power_grid -= global.city.sawmill.on;
-                    lum_multiplier *= 1 + (sawmills * 0.1);
+                    lum_multiplier *= 1 + (sawmills * 0.05);
                 }
                 lum_multiplier *= hivemind(global.civic.lumberjack.workers);
                 delta = global.civic.lumberjack.workers * global.civic.lumberjack.impact * lum_multiplier;
@@ -479,7 +479,14 @@ function mainLoop() {
                 caps[races[global.race.species].name] += global.city['apartment'].on * 5;
             }
             if (global.city['shed']){
-                var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
+                var multiplier = (global.tech['storage'] - 1) * 1.5;
+                if (global.tech['storage'] >= 3){
+                    multiplier *= 1.5;
+                    caps['Steel'] += (global.city['shed'].count * (25 * multiplier));
+                }
+                if (global.race['pack_rat']){
+                    multiplier *= 1.05;
+                }
                 caps['Lumber'] += (global.city['shed'].count * (200 * multiplier));
                 caps['Stone'] += (global.city['shed'].count * (200 * multiplier));
                 caps['Copper'] += (global.city['shed'].count * (75 * multiplier));
@@ -516,6 +523,12 @@ function mainLoop() {
                 else if (global.tech['banking'] >= 3){
                     vault = 2500;
                 }
+                if (global.race['paranoid']){
+                    vault *= 0.9;
+                }
+                else if (global.race['hoarder']){
+                    vault *= 1.1;
+                }
                 if (global.tech['banking'] >= 7){
                     vault *= 1 + (global.civic.banker.workers * 0.05);
                 }
@@ -537,6 +550,10 @@ function mainLoop() {
 
             let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 30 : 25;
             let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 2 ? 75 : 50;
+            if (global.race['pack_rat']){
+                create_value += global.tech.container >= 2 ? 2 : 1;
+                container_value += global.tech.steel_container >= 2 ? 3 : 2;
+            }
             Object.keys(caps).forEach(function (res){
                 caps[res] += global.resource[res].crates * create_value;
                 caps[res] += global.resource[res].containers * container_value;
