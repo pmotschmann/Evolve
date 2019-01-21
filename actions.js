@@ -564,7 +564,7 @@ export const actions = {
                             $('#pop'+actions.evolution[evolve_actions[i]].id).remove();
                         }
                     }
-                    
+
                     Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
                         global.race[trait] = genus_traits[races[global.race.species].type][trait];
                     });
@@ -2284,7 +2284,7 @@ export const actions = {
                 Knowledge: function(){ return 6000; },
                 Coal: function(){ return 750; }
             },
-            effect: 'Outfit your army with firearms, must deadlier then primative bows and arrows.',
+            effect: 'Outfit your army with firearms, much deadlier then primative bows and arrows.',
             action: function (){
                 if (payCosts(actions.tech.flintlock_rifle.cost)){
                     return true;

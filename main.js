@@ -1,5 +1,5 @@
 import { global, vues, save, runNew, messageQueue, modRes } from './vars.js';
-import { races, genus_traits, traits } from './races.js';
+import { races, hivemind } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison } from './civics.js';
@@ -199,13 +199,19 @@ function mainLoop() {
                     food_multiplier *= 1 + (global.city['mill'].count * 0.03);
                 }
                 food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
+                food_multiplier *= hivemind(global.civic.farmer.workers);
                 var delta = (global.civic.farmer.workers * global.civic.farmer.impact * food_multiplier) - consume;
-                
+
                 if (modRes('Food',delta)){
                     fed = false;
                 }
             }
             
+            if (global.race['lazy'] && Math.rand(0, 25) <= 1){
+                // Cats are lazy and periodically go into food comas.
+                fed = false;
+            }
+
             // Citizen Growth
             if (fed && global['resource']['Food'].amount > 0 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
                 var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
@@ -222,8 +228,9 @@ function mainLoop() {
             if (fed){
                 // Knowledge
                 var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
+                know_multiplier *= hivemind(global.civic.professor.workers);
                 var delta = (global.civic.professor.workers * know_multiplier) + 1;
-                delta += global.civic.scientist.workers * tax_multiplier;
+                delta += global.civic.scientist.workers * hivemind(global.civic.scientist.workers) * tax_multiplier;
                 modRes('Knowledge',delta);
                 
                 // Cement
@@ -238,6 +245,7 @@ function mainLoop() {
                     
                     var cement_multiplier = 1;
                     cement_multiplier *= tax_multiplier;
+                    cement_multiplier *= hivemind(global.civic.cement_worker.workers);
                     delta = (workDone * global.civic.cement_worker.impact) * cement_multiplier;
                     modRes('Cement',delta);
                 }
@@ -310,6 +318,7 @@ function mainLoop() {
                     power_grid -= global.city.sawmill.on;
                     lum_multiplier *= 1 + (sawmills * 0.1);
                 }
+                lum_multiplier *= hivemind(global.civic.lumberjack.workers);
                 delta = global.civic.lumberjack.workers * global.civic.lumberjack.impact * lum_multiplier;
                 modRes('Lumber',delta);
                 
@@ -319,6 +328,7 @@ function mainLoop() {
                     stone_multiplier *= 1.25;
                 }
                 stone_multiplier *= tax_multiplier;
+                stone_multiplier *= hivemind(global.civic.quarry_worker.workers);
                 delta = global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier;
                 modRes('Stone',delta);
                 
@@ -326,6 +336,10 @@ function mainLoop() {
                 if (global.resource.Copper.display){
                     var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     copper_multiplier *= tax_multiplier;
+                    copper_multiplier *= hivemind(global.civic.miner.workers);
+                    if (global.race['tough']){
+                        copper_multiplier *= 1.1;
+                    }
                     delta = (global.civic.miner.workers / 7) * copper_multiplier;
                     modRes('Copper',delta);
                 }
@@ -335,6 +349,10 @@ function mainLoop() {
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     iron_multiplier *= tax_multiplier;
                     iron_multiplier *= (1 + (iron_smelter * 0.1));
+                    iron_multiplier *= hivemind(global.civic.miner.workers);
+                    if (global.race['tough']){
+                        iron_multiplier *= 1.1;
+                    }
                     delta = (global.civic.miner.workers / 4) * iron_multiplier;
                     modRes('Iron',delta);
                 }
@@ -343,6 +361,10 @@ function mainLoop() {
                 if (global.resource.Coal.display){
                     var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     coal_multiplier *= tax_multiplier;
+                    coal_multiplier *= hivemind(global.civic.coal_miner.workers);
+                    if (global.race['tough']){
+                        coal_multiplier *= 1.1;
+                    }
                     delta = global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier;
                     modRes('Coal',delta);
                 }

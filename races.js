@@ -1,3 +1,5 @@
+import { global } from './vars.js';
+
 export const races = {
     protoplasm: {
         name: 'Protoplasm',
@@ -297,8 +299,8 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    small: { // Reduces cost crrep multipliers by 0.01
-        desc: 'Your race is small and thus requires less materials to build things',
+    small: { // Reduces cost creep multipliers by 0.01
+        desc: 'Your race is small and thus requires less materials to build things.',
         ranks: 0,
         type: 'genus',
     },
@@ -308,12 +310,12 @@ export const traits = {
         type: 'genus',
     },
     large: { // Increases cost creep mutipliers by 0.01
-        desc: 'Your race is large and thus requires extra materials to build things',
+        desc: 'Your race is large and thus requires extra materials to build things.',
         ranks: 0,
         type: 'genus',
     },
     strong: { // Increased manual resource gain
-        desc: 'Your race has great strength and can harvest the basics in greater quantity',
+        desc: 'Your race has great strength and can harvest the basics in greater quantity.',
         ranks: 1,
         type: 'genus',
     },
@@ -387,8 +389,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    lazy: {
-        desc: '',
+    lazy: { // All production random stops periodically
+        desc: 'Your race loves nothing more then a lazy afternoon. Productivity is often lost as a result.',
         ranks: 0,
         type: 'major',
     },
@@ -428,7 +430,7 @@ export const traits = {
         type: 'major',
     },
     greedy: { // Lowers income from taxes
-        desc: 'Your race is greedy and will not willingly part with money, reduces income from taxes',
+        desc: 'Your race is greedy and will not willingly part with money, reduces income from taxes.',
         ranks: 0,
         type: 'major',
     },
@@ -443,7 +445,7 @@ export const traits = {
         type: 'major',
     },
     puny: { // Lowers minium bound for army score roll
-        desc: 'Your race is less effictive in combat.',
+        desc: 'Your race is less effective in combat.',
         ranks: 0,
         type: 'major',
     },
@@ -452,8 +454,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    tough: {
-        desc: '',
+    tough: { // Mining output increased by 10%
+        desc: 'Your race is tough and can withstand the most grueling jobs without sucumbing to weakness.',
         ranks: 0,
         type: 'major',
     },
@@ -468,12 +470,12 @@ export const traits = {
         type: 'major',
     },
     gluttony: { // Eats 25% more food per rank
-        desc: 'Your species is always hungry and eats extra food',
+        desc: 'Your species is always hungry and eats extra food.',
         ranks: 1,
         type: 'major',
     },
     slow: { // The game moves at a 10% slower pace
-        desc: 'Your species is slow moving and rarely in a hurry to get anything done',
+        desc: 'Your species is slow moving and rarely in a hurry to get anything done.',
         ranks: 0,
         type: 'major',
     },
@@ -503,7 +505,7 @@ export const traits = {
         type: 'major',
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
-        desc: 'Your race is adverse to cutting down trees for lumber, all lumber costs are removed but other costs are increased by 20%',
+        desc: 'Your race is adverse to cutting down trees for lumber, all lumber costs are removed but other costs are increased by 20%.',
         ranks: 0,
         type: 'major',
     },
@@ -513,7 +515,7 @@ export const traits = {
         type: 'major',
     },
     hyper: { // The game moves at a 5% faster pace
-        desc: 'Your race can never sit still and is always doing something',
+        desc: 'Your race can never sit still and is always doing something.',
         ranks: 0,
         type: 'major',
     },
@@ -552,9 +554,23 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    hivemind: {
-        desc: '',
+    hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
+        desc: 'Your citizens are highly ineffectual when working as individuals but gain potency as they work in bigger groups.',
         ranks: 0,
         type: 'major',
     }
 };
+
+export function hivemind(workers){
+    if (global.race['hivemind']){
+        if (workers <= 10){
+            return (workers * 0.05) + 0.5;
+        }
+        else {
+            return 1 + (1 - (0.95 ** (workers - 10)));
+        }
+    }
+    else {
+        return 1;
+    }
+}
