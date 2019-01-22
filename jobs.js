@@ -54,7 +54,7 @@ export const job_desc = {
 export function defineJobs(){
     $('#civics').append($('<div class="tile is-parent"><div id="jobs" class="tile is-child"></div></div>'));
     loadUnemployed();
-    loadJob('farmer','Farmer',3);
+    loadJob('farmer','Farmer',2);
     loadJob('lumberjack','Lumberjack',1);
     loadJob('quarry_worker','Quarry Worker',1);
     loadJob('miner','Miner',1);

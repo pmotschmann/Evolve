@@ -862,7 +862,7 @@ export const actions = {
                     var multiplier = (global.tech['storage'] - 1) * 1.5;
                     if (global.tech['storage'] >= 3){
                         multiplier *= 1.5;
-                        caps['Steel'] += (global.city['shed'].count * (25 * multiplier));
+                        global['resource']['Steel'].max += (global.city['shed'].count * (25 * multiplier));
                     }
                     if (global.race['pack_rat']){
                         multiplier *= 1.05;
@@ -1346,6 +1346,23 @@ export const actions = {
                 return false;
             }
         },
+        aphrodisiac: {
+            id: 'tech-aphrodisiac',
+            title: 'Aphrodisiac',
+            desc: 'Study population grown and how to enhance it',
+            reqs: { housing: 2 },
+            grant: ['reproduction',1],
+            cost: { 
+                Knowledge: function(){ return 5000; }
+            },
+            effect: 'Develop a substance that aids with population growth.',
+            action: function (){
+                if (payCosts(actions.tech.aphrodisiac.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         agriculture: {
             id: 'tech-agriculture',
             title: 'Agriculture',
@@ -1364,18 +1381,19 @@ export const actions = {
                 return false;
             }
         },
-        aphrodisiac: {
-            id: 'tech-aphrodisiac',
-            title: 'Aphrodisiac',
-            desc: 'Study population grown and how to enhance it',
-            reqs: { housing: 2 },
-            grant: ['reproduction',1],
+        irrigation: {
+            id: 'tech-irrigation',
+            title: 'Irrigation',
+            desc: 'Discover the benefits of irrigation',
+            reqs: { agriculture: 1 },
+            grant: ['agriculture',2],
             cost: { 
-                Knowledge: function(){ return 5000; }
+                Knowledge: function(){ return 75; }
             },
-            effect: 'Develop a substance that aids with population growth.',
+            effect: 'Increase farm efficency by 50% with irrigation.',
             action: function (){
-                if (payCosts(actions.tech.aphrodisiac.cost)){
+                if (payCosts(actions.tech.irrigation.cost)){
+                    global.civic.farmer.impact = 3;
                     return true;
                 }
                 return false;
@@ -1385,8 +1403,8 @@ export const actions = {
             id: 'tech-silo',
             title: 'Grain Silo',
             desc: 'Devise a structure to house grain',
-            reqs: { agriculture: 1, storage: 1, cement: 1 },
-            grant: ['agriculture',2],
+            reqs: { agriculture: 2, storage: 1, cement: 1 },
+            grant: ['agriculture',3],
             cost: { 
                 Knowledge: function(){ return 1250; }
             },
@@ -1403,8 +1421,8 @@ export const actions = {
             id: 'tech-mill',
             title: 'Grain Mill',
             desc: 'Develope mills to increase food production',
-            reqs: { agriculture: 2, mining: 3 },
-            grant: ['agriculture',3],
+            reqs: { agriculture: 3, mining: 3 },
+            grant: ['agriculture',4],
             cost: { 
                 Knowledge: function(){ return 6000; }
             },

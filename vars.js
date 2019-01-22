@@ -24,7 +24,9 @@ export var global = {
         }
     },
     stats: {
-        start: Date.now()
+        start: Date.now(),
+        days: 0,
+        tdays: 0
     },
     event: 200
 };
@@ -54,6 +56,15 @@ if (global_data) {
 }
 else {
     runNew = true;
+}
+
+if (!global.city['calendar']){
+    global.city['calendar'] = {
+        day: 0,
+        year: 0,
+        weather: 2,
+        temp: 1
+    };
 }
 
 export function messageQueue(msg,color){

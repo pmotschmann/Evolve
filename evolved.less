@@ -49,19 +49,38 @@ div {
     .race {
         position: relative;
         margin-top: 1.75rem;
+        margin-bottom: 0 !important;
         width: 100%;
         > span {
             cursor: default;
         }
-        .power {
-            position: absolute;
-            display: inline-flex;
-            right: 0;
-            margin-right: .5rem;
-
-            .meter {
+        .calendar {
+            text-align: center;
+            .day {
+                margin-right: .25rem;
                 margin-left: .25rem;
             }
+        }
+        .power {
+            text-align: right;
+        }
+        .temp {
+            margin-left: 0.125rem;
+        }
+        .fa-temperature-low {
+            color: rgb(0, 214, 178);
+        }
+        .fa-temperature-high {
+            color: rgb(240, 2, 2);
+        }
+        .fa-sun {
+            color: rgb(208, 255, 0);
+        }
+        .fa-cloud-sun {
+            color: rgb(158, 163, 135);
+        }
+        .fa-cloud-rain {
+            color: rgb(0, 214, 178);
         }
     }
 

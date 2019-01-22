@@ -29,11 +29,36 @@ vues['race'] = new Vue({
         city: global.city
     },
     methods: {
-        name: function(){
+        name(){
             return races[global.race.species].name;
         },
-        desc: function(){
+        desc(){
             return races[global.race.species].desc;
+        },
+        weather(){
+            switch(global.city.calendar.weather){
+                case 0:
+                    if (global.city.calendar.temp === 0){
+                        return 'Snow'; //, snow has an adversely negative effect on food production.';
+                    }
+                    else {
+                        return 'Rain';
+                    }
+                case 1:
+                    return 'Cloudy';
+                case 2:
+                    return 'Sunny';
+            }
+        },
+        temp(){
+            switch(global.city.calendar.temp){
+                case 0:
+                    return 'Cold';// weather, cold weather may reduce food output.';
+                case 1:
+                    return 'Moderate temperature';
+                case 2:
+                    return 'Hot';// weather, hot weather may reduce worker productivity.';
+            }
         }
     }
 });
@@ -647,8 +672,71 @@ function mainLoop() {
                     }
                 });
             }
+
+            // Time
+            global.city.calendar.day++;
+            global.stats.days++;
+            if (global.city.calendar.day > 365){
+                global.city.calendar.day = 1;
+                global.city.calendar.year++;
+            }
+            // Weather
+            if (Math.rand(0,5) === 0){
+                let temp = Math.rand(0,3);
+                let sky = Math.rand(0,5);
+                if (sky === 0){
+                    global.city.calendar.weather = 0;
+                }
+                else if (sky >= 1 && sky <= 2){
+                    global.city.calendar.weather = 1;
+                }
+                else {
+                    global.city.calendar.weather = 2;
+                }
+                if (temp === 0){
+                    let new_temp = global.city.calendar.temp - 1;
+                    if (new_temp < 0){
+                        new_temp = 0;
+                    }
+                    global.city.calendar.temp = new_temp;
+                }
+                else if (temp === 2){
+                    let new_temp = global.city.calendar.temp + 1;
+                    if (new_temp > 2){
+                        new_temp = 2;
+                    }
+                    global.city.calendar.temp = new_temp;
+                }
+            }
+            $('#weather').removeClass('fa-sun');
+            $('#weather').removeClass('fa-cloud-sun');
+            $('#weather').removeClass('fa-cloud-rain');
+            $('#weather').removeClass('fa-snowflake');
+            $('#temp').removeClass('fa-temperature-low');
+            $('#temp').removeClass('fa-temperature-high');
+
+            if (global.city.calendar.temp === 0){
+                $('#temp').addClass('fa-temperature-low');
+            }
+            else if (global.city.calendar.temp === 2){
+                $('#temp').addClass('fa-temperature-high');
+            }
+            if (global.city.calendar.weather === 0){
+                if (global.city.calendar.temp === 0){
+                    $('#weather').addClass('fa-snowflake');
+                }
+                else {
+                    $('#weather').addClass('fa-cloud-rain');
+                }
+            }
+            else if (global.city.calendar.weather === 1){
+                $('#weather').addClass('fa-cloud-sun');
+            }
+            else if (global.city.calendar.weather === 2){
+                $('#weather').addClass('fa-sun');
+            }
         }
-        
+
         // Event triggered
         if (Math.rand(0,global.event) === 0){
             var event_pool = [];

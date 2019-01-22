@@ -365,11 +365,6 @@ function drawModal(name,color){
     }
 }
 
-function initResControls(){
-    var controls = $(`<div id="res-controller" class="resource" v-show="display"><span class="res has-text-${color}">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
-    $('#resources').append(res_container);
-}
-
 function initMarket(){
     var market = $('<div id="market-qty" class="market-header"></div>');
     $('#market').append(market);
