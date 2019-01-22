@@ -580,7 +580,17 @@ export const actions = {
                     }
                     global.resource.Stone.display = true;
                     
-                    global['city'] = { food: 1, lumber: 1, stone: 1 };
+                    global['city'] = { 
+                        food: 1, 
+                        lumber: 1, 
+                        stone: 1,
+                        calendar: {
+                            day: 0,
+                            year: 0,
+                            weather: 2,
+                            temp: 1
+                        }
+                    };
                     
                     var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
                     for (var i = 0; i < city_actions.length; i++) {
@@ -600,7 +610,7 @@ export const actions = {
                     if (global.race.gods !== 'none'){
                         global.tech['religion'] = 1;
                     }
-                    
+
                     if (global.race['slow'] || global.race['hyper']){
                         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
                         window.location.reload();
@@ -859,7 +869,7 @@ export const actions = {
             },
             action: function (){
                 if (payCosts(actions.city.shed.cost)){
-                    var multiplier = (global.tech['storage'] - 1) * 1.5;
+                    var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
                     if (global.tech['storage'] >= 3){
                         multiplier *= 1.5;
                         global['resource']['Steel'].max += (global.city['shed'].count * (25 * multiplier));

@@ -320,8 +320,8 @@ export const traits = {
         ranks: 1,
         type: 'genus',
     },
-    cold_blooded: {
-        desc: '',
+    cold_blooded: { // Weather affects productivity
+        desc: 'Your species is sensitive to the outside temperature.',
         ranks: 0,
         type: 'genus',
     },
@@ -541,7 +541,7 @@ export const traits = {
         type: 'major',
     },
     hydrophilic: {
-        desc: '',
+        desc: 'Your species does not like rain.',
         ranks: 0,
         type: 'major',
     },
@@ -572,16 +572,34 @@ export const traits = {
     }
 };
 
-export function hivemind(workers){
+export function racialTrait(workers,army){
+    army = army || false;
+    let modifier = 1; 
     if (global.race['hivemind']){
         if (workers <= 10){
-            return (workers * 0.05) + 0.5;
+            modifier *= (workers * 0.05) + 0.5;
         }
         else {
-            return 1 + (1 - (0.95 ** (workers - 10)));
+            modifier *= 1 + (1 - (0.95 ** (workers - 10)));
         }
     }
-    else {
-        return 1;
+    if(global.race['cold_blooded'] && !army){
+        switch(global.city.calendar.temp){
+            case 0:
+                if (global.city.calendar.weather === 0){
+                    modifier *= 0.6;
+                }
+                else {
+                    modifier *= 0.8;
+                }
+                break;
+            case 2:
+                modifier *= 1.1;
+                break;
+            default:
+                modifier *= 1;
+                break;
+        }
     }
+    return modifier;
 }
