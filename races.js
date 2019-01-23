@@ -305,8 +305,8 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    weak: {
-        desc: '',
+    weak: { // Lumberjacks, miners, and quarry workers are 10% less effective
+        desc: 'Your race is ineffective at tough manual labor tasks.',
         ranks: 0,
         type: 'genus',
     },
@@ -390,7 +390,7 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    lazy: { // All production random stops periodically
+    lazy: { // All production randomly stops periodically
         desc: 'Your race loves nothing more then a lazy afternoon. Productivity is often lost as a result.',
         ranks: 0,
         type: 'major',
@@ -510,8 +510,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    solitary: {
-        desc: '',
+    solitary: { // Cabins are cheaper however cottages cost more
+        desc: 'Your race perfers to live alone rather then with others.',
         ranks: 0,
         type: 'major',
     },
@@ -540,7 +540,7 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    hydrophilic: {
+    hydrophilic: { // none factory jobs are reduced by 25% when raining
         desc: 'Your species does not like rain.',
         ranks: 0,
         type: 'major',
@@ -572,8 +572,10 @@ export const traits = {
     }
 };
 
-export function racialTrait(workers,army){
-    army = army || false;
+/*
+types: farmer, miner, lumberjack, science, factory, army
+*/
+export function racialTrait(workers,type){
     let modifier = 1; 
     if (global.race['hivemind']){
         if (workers <= 10){
@@ -583,15 +585,10 @@ export function racialTrait(workers,army){
             modifier *= 1 + (1 - (0.95 ** (workers - 10)));
         }
     }
-    if(global.race['cold_blooded'] && !army){
+    if(global.race['cold_blooded'] && type !== 'army' && type !== 'factory' && type !== 'science'){
         switch(global.city.calendar.temp){
             case 0:
-                if (global.city.calendar.weather === 0){
-                    modifier *= 0.6;
-                }
-                else {
-                    modifier *= 0.8;
-                }
+                modifier *= 0.8;
                 break;
             case 2:
                 modifier *= 1.1;
@@ -600,6 +597,23 @@ export function racialTrait(workers,army){
                 modifier *= 1;
                 break;
         }
+        switch(global.city.calendar.weather){
+            case 0:
+                modifier *= 0.8;
+                break;
+            case 2:
+                modifier *= 1.1;
+                break;
+            default:
+                modifier *= 1;
+                break;
+        }
+    }
+    if (global.race['weak'] && (type === 'miner' || type === 'lumberjack')){
+        modifier *= 0.9;
+    }
+    if (global.race['hydrophilic'] && global.city.calendar.weather === 0 && global.city.calendar.temp > 0 && type !== 'factory'){
+        modifier *= 0.75;
     }
     return modifier;
 }

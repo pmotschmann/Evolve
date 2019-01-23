@@ -223,11 +223,22 @@ function mainLoop() {
                     consume /= 2;
                 }
                 var food_multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
+                if (global.city.calendar.temp === 0){
+                    if (global.city.calendar.weather === 0){
+                        food_multiplier *= 0.7;
+                    }
+                    else {
+                        food_multiplier *= 0.85;
+                    }
+                }
+                if (global.city.calendar.weather === 2){
+                    food_multiplier *= 1.1;
+                }
                 if (global.city['mill']){
                     food_multiplier *= 1 + (global.city['mill'].count * 0.03);
                 }
                 food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
-                food_multiplier *= racialTrait(global.civic.farmer.workers);
+                food_multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
                 var delta = (global.civic.farmer.workers * global.civic.farmer.impact * food_multiplier) - consume;
 
                 if (modRes('Food',delta)){
@@ -256,9 +267,9 @@ function mainLoop() {
             if (fed){
                 // Knowledge
                 var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
-                know_multiplier *= racialTrait(global.civic.professor.workers);
+                know_multiplier *= racialTrait(global.civic.professor.workers,'science');
                 var delta = (global.civic.professor.workers * know_multiplier) + 1;
-                delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers) * tax_multiplier;
+                delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier;
                 modRes('Knowledge',delta);
                 
                 // Cement
@@ -273,7 +284,7 @@ function mainLoop() {
                     
                     var cement_multiplier = 1;
                     cement_multiplier *= tax_multiplier;
-                    cement_multiplier *= racialTrait(global.civic.cement_worker.workers);
+                    cement_multiplier *= racialTrait(global.civic.cement_worker.workers,'factory');
                     delta = (workDone * global.civic.cement_worker.impact) * cement_multiplier;
                     modRes('Cement',delta);
                 }
@@ -346,7 +357,7 @@ function mainLoop() {
                     power_grid -= global.city.sawmill.on;
                     lum_multiplier *= 1 + (sawmills * 0.05);
                 }
-                lum_multiplier *= racialTrait(global.civic.lumberjack.workers);
+                lum_multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
                 delta = global.civic.lumberjack.workers * global.civic.lumberjack.impact * lum_multiplier;
                 modRes('Lumber',delta);
                 
@@ -356,7 +367,7 @@ function mainLoop() {
                     stone_multiplier *= 1.25;
                 }
                 stone_multiplier *= tax_multiplier;
-                stone_multiplier *= racialTrait(global.civic.quarry_worker.workers);
+                stone_multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
                 delta = global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier;
                 modRes('Stone',delta);
                 
@@ -364,7 +375,7 @@ function mainLoop() {
                 if (global.resource.Copper.display){
                     var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     copper_multiplier *= tax_multiplier;
-                    copper_multiplier *= racialTrait(global.civic.miner.workers);
+                    copper_multiplier *= racialTrait(global.civic.miner.workers,'miner');
                     if (global.race['tough']){
                         copper_multiplier *= 1.1;
                     }
@@ -377,7 +388,7 @@ function mainLoop() {
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     iron_multiplier *= tax_multiplier;
                     iron_multiplier *= (1 + (iron_smelter * 0.1));
-                    iron_multiplier *= racialTrait(global.civic.miner.workers);
+                    iron_multiplier *= racialTrait(global.civic.miner.workers,'miner');
                     if (global.race['tough']){
                         iron_multiplier *= 1.1;
                     }
@@ -389,7 +400,7 @@ function mainLoop() {
                 if (global.resource.Coal.display){
                     var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                     coal_multiplier *= tax_multiplier;
-                    coal_multiplier *= racialTrait(global.civic.coal_miner.workers);
+                    coal_multiplier *= racialTrait(global.civic.coal_miner.workers,'miner');
                     if (global.race['tough']){
                         coal_multiplier *= 1.1;
                     }

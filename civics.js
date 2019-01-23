@@ -169,7 +169,7 @@ function buildGarrison(garrison){
                 let lowLuck = global.race['puny'] ? 3 : 5;
 
                 let luck = Math.floor(Math.seededRandom(lowLuck,highLuck)) / 10;
-                let army = global.civic.garrison.workers * global.tech.military * luck * racialTrait(global.civic.garrison.workers,true);;
+                let army = global.civic.garrison.workers * global.tech.military * luck * racialTrait(global.civic.garrison.workers,'army');;
                 let enemy = 0;
 
                 switch(global.civic.garrison.tactic){
@@ -492,7 +492,7 @@ function buildGarrison(garrison){
                 else if (global.race['claws']){
                     army = Math.floor(army * 1.2);
                 }
-                return army * racialTrait(val,true);
+                return army * racialTrait(val,'army');
             }
         }
     });

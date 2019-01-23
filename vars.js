@@ -50,7 +50,7 @@ Math.seededRandom = function(min, max) {
 
 var global_data = save.getItem('evolved') || false;
 if (global_data) {
-    // Load preexiting game data
+    // Load pre-existing game data
     global = JSON.parse(LZString.decompressFromUTF16(global_data));
     Math.seed = global.seed;
 }

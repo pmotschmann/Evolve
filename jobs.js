@@ -4,19 +4,19 @@ import { racialTrait } from './races.js';
 export const job_desc = {
     farmer: function(){
         let multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
-        multiplier *= racialTrait(global.civic.farmer.workers);
+        multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
         let gain = +(global.civic.farmer.impact * multiplier).toFixed(1);
         return `Farmers create food to feed your population. Each farmer generates ${gain} food per tick.`;
     },
     lumberjack: function(){
         let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
-        multiplier *= racialTrait(global.civic.lumberjack.workers);
+        multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
         let gain = +(global.civic.lumberjack.impact * multiplier).toFixed(1);
         return `Lumberjacks harvet lumber from the forests. Each lumberjack generates ${gain} lumber per tick.`;
     },
     quarry_worker: function(){
         let multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.25 : 0) + 1;
-        multiplier *= racialTrait(global.civic.quarry_worker.workers);
+        multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
             multiplier *= 1.25;
         }
@@ -30,7 +30,7 @@ export const job_desc = {
         return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal from deep in the ground.';
     },
     cement_worker: function(){
-        let cement_multiplier = 1;
+        let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * cement_multiplier;
         return `Cement plant workers turn stone into cement, each worker produces ${gain} cement and consumes 3 stone per tick.`;
     },
@@ -40,12 +40,12 @@ export const job_desc = {
     },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
-        impact *= racialTrait(global.civic.professor.workers);
+        impact *= racialTrait(global.civic.professor.workers,'science');
         return `Professors help educate your citizens and contribute to knowledge gain. Each professor generates ${impact} knowledge per tick.`;
     },
     scientist: function(){
         let impact = global.civic.scientist.impact;
-        impact *= racialTrait(global.civic.scientist.workers);
+        impact *= racialTrait(global.civic.scientist.workers,'science');
         return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per tick.`;
     }
 }

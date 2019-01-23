@@ -794,7 +794,7 @@ export const actions = {
             reqs: { agriculture: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('silo', 500, 1.30); },
-                Lumber: function(){ return costMultiplier('silo', 150, 1.35); },
+                Lumber: function(){ return costMultiplier('silo', 100, 1.35) + 50; },
                 Cement: function(){ return costMultiplier('silo', 50, 1.35); }
             },
             effect: 'Increases food storage capacity by 250',
@@ -2744,6 +2744,15 @@ function costMultiplier(structure,base,mutiplier){
     else if (global.race['large']){ mutiplier += 0.01; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
         mutiplier -= 0.02;
+    }
+    if (global.race['solitary'] && structure === 'basic_housing'){
+        mutiplier -= 0.02;
+    }
+    if (global.race['solitary'] && structure === 'cottage'){
+        mutiplier += 0.02;
+    }
+    if (mutiplier < 0.01){
+        mutiplier = 0.01;
     }
     var count = global.city[structure] ? global.city[structure].count : 0;
     return Math.round((mutiplier ** count) * base);
