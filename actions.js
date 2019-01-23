@@ -585,7 +585,7 @@ export const actions = {
                         lumber: 1, 
                         stone: 1,
                         calendar: {
-                            day: 0,
+                            day: 1,
                             year: 0,
                             weather: 2,
                             temp: 1
@@ -791,7 +791,7 @@ export const actions = {
             id: 'city-silo',
             title: 'Grain Silo',
             desc: 'Build a Grain Silo',
-            reqs: { agriculture: 2 },
+            reqs: { agriculture: 3 },
             cost: { 
                 Money: function(){ return costMultiplier('silo', 500, 1.30); },
                 Lumber: function(){ return costMultiplier('silo', 100, 1.35) + 50; },
@@ -811,7 +811,7 @@ export const actions = {
             id: 'city-mill',
             title: 'Mill',
             desc: 'Build a Mill',
-            reqs: { agriculture: 3 },
+            reqs: { agriculture: 4 },
             cost: { 
                 Money: function(){ return costMultiplier('mill', 1000, 1.3); },
                 Lumber: function(){ return costMultiplier('mill', 600, 1.32); },
@@ -2306,7 +2306,7 @@ export const actions = {
             id: 'tech-garrison',
             title: 'Garrison',
             desc: 'Found the military',
-            reqs: { science: 1, housing: 1, unavailable_tech: 1 },
+            reqs: { science: 1, housing: 1 },
             grant: ['military',1],
             cost: {
                 Knowledge: function(){ return 80; }

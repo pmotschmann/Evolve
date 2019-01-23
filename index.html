@@ -30,13 +30,13 @@
             <div class="column is-one-quarter">
                 <div id="race" class="race columns is-mobile is-gapless">
                     <div class="column is-one-quarter"><b-tooltip :label="desc()" position="is-right" type="is-dark" size="is-large" multilined animated>{{ name() }}</b-tooltip></div>
-                    <div class="column is-half calendar"><span v-if="city.calendar.day">
+                    <div class="column is-half calendar"><span v-show="city.calendar.day">
                         <span class="year">Year <span class="has-text-warning">{{ city.calendar.year }}</span></span> 
                         <span class="day">Day <span class="has-text-warning">{{ city.calendar.day }}</span></span>
                         <b-tooltip :label="weather()" position="is-bottom" type="is-dark" size="is-small" multilined animated><i id="weather" class="fas"></i></b-tooltip>
                         <b-tooltip :label="temp()" position="is-bottom" type="is-dark" size="is-small" multilined animated><i id="temp" class="temp fas"></i></b-tooltip>
                     </span></div>
-                    <div class="column is-one-quarter power"><span class="has-text-warning" v-if="city.powered"><span>kW</span> <span id="powerMeter" class="meter">{{ city.power }}</span></span></div>
+                    <div class="column is-one-quarter power"><span class="has-text-warning" v-show="city.powered"><span>kW</span> <span id="powerMeter" class="meter">{{ city.power }}</span></span></div>
                 </div>
                 <b-collapse :open="true">
                     <div id="msgQueue" class="msgQueue has-text-info"></div>

@@ -810,7 +810,8 @@ function mainLoop() {
 }
 
 function diffCalc(res,period){
-    global.resource[res].diff = +(global.resource[res].delta / (period / 1000)).toFixed(2);
+    let sec = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
+    global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;
     if (global.resource[res].diff < 0 && !$(`#res-${res} .diff`).hasClass('has-text-danger')){
         $(`#res-${res} .diff`).addClass('has-text-danger');
