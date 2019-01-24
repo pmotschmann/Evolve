@@ -1359,7 +1359,7 @@ export const actions = {
         aphrodisiac: {
             id: 'tech-aphrodisiac',
             title: 'Aphrodisiac',
-            desc: 'Study population grown and how to enhance it',
+            desc: 'Study population growth and how to enhance it',
             reqs: { housing: 2 },
             grant: ['reproduction',1],
             cost: { 
@@ -2439,7 +2439,7 @@ export const actions = {
                 Knowledge: function(){ return 3500; },
                 Iron: function(){ return 750; }
             },
-            effect: 'Adding rebar to concrete will makes it much stronger and reduce cement costs.',
+            effect: 'Adding rebar to concrete will make it much stronger and reduce cement costs.',
             action: function (){
                 if (payCosts(actions.tech.rebar.cost)){
                     return true;
@@ -2822,6 +2822,7 @@ function smelterModal(modal){
             addWood: function(){
                 if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
                     global.city.smelter.Wood++;
+                    global.city.smelter.Iron++;
                 }
             },
             subCoal: function(){
@@ -2840,6 +2841,7 @@ function smelterModal(modal){
             addCoal: function(){
                 if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
                     global.city.smelter.Coal++;
+                    global.city.smelter.Iron++;
                 }
             },
             ironLabel: function(){

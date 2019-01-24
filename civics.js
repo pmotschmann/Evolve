@@ -161,7 +161,7 @@ function buildGarrison(garrison){
             },
             campaign(){
                 if (global.civic.garrison.workers === 0){
-                    messageQueue('Can not start a campaign without and soliders.','warning');
+                    messageQueue('Can not start a campaign without any soliders.','warning');
                     return;
                 }
 

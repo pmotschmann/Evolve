@@ -123,7 +123,7 @@ export const races = {
         traits: {
             regenerative: 1,
             gluttony: 1
-        } 
+        }
     },
     tortollan: {
         name: 'Tortollan',
@@ -151,7 +151,7 @@ export const races = {
         entity: 'snake creatures',
         traits: {
             venomous: 1,
-            forked_tounge: 1
+            forked_tongue: 1
         }
     },
     arrakoa: {
@@ -505,7 +505,7 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    forked_tounge: {
+    forked_tongue: {
         desc: '',
         ranks: 0,
         type: 'major',
