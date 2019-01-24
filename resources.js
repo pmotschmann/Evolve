@@ -146,8 +146,9 @@ function marketItem(vue,mount,market_item,name,color){
         data: global['resource'][name],
         methods: {
             purchase(res){
-                var qty = Number(vues['market_qty'].qty);
-                var price = Math.round(global.resource[res].value * qty);
+                let qty = Number(vues['market_qty'].qty);
+                let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+                var price = Math.round(value * qty);
                 if (global.resource.Money.amount >= price){
                     global.resource[res].amount += qty;
                     global.resource.Money.amount -= price;
@@ -172,6 +173,9 @@ function marketItem(vue,mount,market_item,name,color){
         },
         filters: {
             buy: function (value){
+                if (global.race['arrogant']){
+                    value = Math.round(value * 1.1);
+                }
                 return sizeApproximation(value * vues['market_qty'].qty,0);
             },
             sell: function (value){

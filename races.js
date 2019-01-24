@@ -325,8 +325,8 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    scales: {
-        desc: '',
+    scales: { // Minor decrease of soliders killed in combat
+        desc: 'Your species is protected by scales which act as a kind of natural armor.',
         ranks: 0,
         type: 'genus',
     },
@@ -355,7 +355,7 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    asymmetrical: { // Trade prices are slightly worse then normal
+    asymmetrical: { // Trade selling prices are slightly worse then normal
         desc: 'Your species is asymmetrical. This gives you a more monstrous appearance making trade more difficult.',
         ranks: 0,
         type: 'genus',
@@ -370,13 +370,23 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
+    adaptable: {
+        desc: '',
+        ranks: 0,
+        type: 'major',
+    },
+    xenophobic: {
+        desc: '',
+        ranks: 0,
+        type: 'major',
+    },
     studious: { // Professors generate an extra 0.25 Knowledge per tick
         desc: 'Your race is more focused when studying then average. Knowledge is gained faster as a result.',
         ranks: 0,
         type: 'major',
     },
-    arrogant: {
-        desc: '',
+    arrogant: { // Market prices are higher
+        desc: 'The inherent arrogance of your species often leads to you overpaying in negotiations.',
         ranks: 0,
         type: 'major',
     },

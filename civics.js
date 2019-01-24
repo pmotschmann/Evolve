@@ -197,9 +197,12 @@ function buildGarrison(garrison){
                     }
                     let death = Math.floor(Math.seededRandom(0,deathCap));
                     if (global.race['armored']){
+                        death = Math.floor(death * 0.75);
+                    }
+                    if (global.race['scales']){
                         death -= 2;
                     }
-                    else if (global.race['fraile']){
+                    if (global.race['fraile']){
                         death++;
                     }
                     if (global.tech['armor']){
@@ -418,9 +421,12 @@ function buildGarrison(garrison){
                     }
                     let death = Math.floor(Math.seededRandom(1,deathCap));
                     if (global.race['armored']){
+                        death = Math.floor(death * 0.75);
+                    }
+                    if (global.race['scales']){
                         death--;
                     }
-                    else if (global.race['fraile']){
+                    if (global.race['fraile']){
                         death += global.civic.garrison.tactic + 1;
                     }
                     if (global.tech['armor']){
