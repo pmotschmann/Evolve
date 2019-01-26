@@ -54,33 +54,8 @@ div {
         > span {
             cursor: default;
         }
-        .calendar {
-            text-align: center;
-            .day {
-                margin-right: .25rem;
-                margin-left: .25rem;
-            }
-        }
         .power {
             text-align: right;
-        }
-        .temp {
-            margin-left: 0.125rem;
-        }
-        .fa-temperature-low {
-            color: rgb(0, 214, 178);
-        }
-        .fa-temperature-high {
-            color: rgb(240, 2, 2);
-        }
-        .fa-sun {
-            color: rgb(208, 255, 0);
-        }
-        .fa-cloud-sun {
-            color: rgb(158, 163, 135);
-        }
-        .fa-cloud-rain {
-            color: rgb(0, 214, 178);
         }
     }
 
@@ -214,6 +189,7 @@ div {
         padding: 1rem;
         max-width: 18rem;
         border-radius: .25rem;
+        line-height: 1.3125rem;
         > div:nth-child(2),
         > div:nth-child(3) {
             border-top: solid .0625rem black;
@@ -413,8 +389,25 @@ div {
 .topBar {
     top:0;
     .calendar {
-        display: none;
         margin: 0 auto;
+        .temp {
+            margin-left: 0.125rem;
+        }
+        .fa-temperature-low {
+            color: rgb(0, 214, 178);
+        }
+        .fa-temperature-high {
+            color: rgb(240, 2, 2);
+        }
+        .fa-sun {
+            color: rgb(208, 255, 0);
+        }
+        .fa-cloud {
+            color: rgb(158, 163, 135);
+        }
+        .fa-cloud-rain {
+            color: rgb(0, 214, 178);
+        }
     }
 }
 

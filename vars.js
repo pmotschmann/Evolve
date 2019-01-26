@@ -67,6 +67,11 @@ if (!global.city['calendar']){
     };
 }
 
+if (!global.city['powered']){
+    global.city['powered'] = false;
+    global.city['power'] = 0;
+}
+
 export function messageQueue(msg,color){
     color = color || 'warning';
     var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');

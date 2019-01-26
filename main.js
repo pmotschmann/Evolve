@@ -68,9 +68,6 @@ vues['topBar'] = new Vue({
                 case 2:
                     return 'Hot';// weather, hot weather may reduce worker productivity.';
             }
-        },
-        cal(){
-            return city['calendar'] && city.calendar.display ? true : false;
         }
     }
 });
@@ -128,10 +125,6 @@ else {
             addAction('tech',tech);
         }
     });
-}
-
-if (global.city.calendar.day > 0){
-    $('.topBar .calendar').css('display','inline-block');
 }
 
 // Start game loop
@@ -206,13 +199,16 @@ function mainLoop() {
                 modRes('Coal',-(consume));
             }
 
-            if (global.city['apartment']){
-                let power = global.city.apartment.on * actions.city.apartment.powered;
-                while (power > power_grid && power > 0){
-                    power -= actions.city.apartment.powered;
-                    global.city.apartment.on--;
+            var p_structs = ['apartment','wardenclyffe'];
+            for (var i = 0; i < p_structs.length; i++) {
+                if (global.city[p_structs[i]]){
+                    let power = global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
+                    while (power > power_grid && power > 0){
+                        power -= actions.city[p_structs[i]].powered;
+                        global.city[p_structs[i]].on--;
+                    }
+                    power_grid -= power;
                 }
-                power_grid -= power;
             }
 
             // Detect labor anomalies
@@ -282,7 +278,11 @@ function mainLoop() {
                 var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
                 know_multiplier *= racialTrait(global.civic.professor.workers,'science');
                 var delta = (global.civic.professor.workers * know_multiplier) + 1;
-                delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier;
+                let adjunct = 1;
+                if (global.tech['science'] >= 5 && global.city['wardenclyffe']){
+                    adjunct = 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
+                }
+                delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * adjunct;
                 modRes('Knowledge',delta);
                 
                 // Cement
@@ -566,6 +566,7 @@ function mainLoop() {
             if (global.city['wardenclyffe']){
                 caps['Knowledge'] += (global.city['wardenclyffe'].count * 1000);
                 lCaps['scientist'] += global.city['wardenclyffe'].count;
+                caps['Knowledge'] += (global.city['wardenclyffe'].on * 1000);
             }
             if (global.city['bank']){
                 let vault = 1000;
@@ -736,7 +737,7 @@ function mainLoop() {
                 }
             }
             $('#weather').removeClass('fa-sun');
-            $('#weather').removeClass('fa-cloud-sun');
+            $('#weather').removeClass('fa-cloud');
             $('#weather').removeClass('fa-cloud-rain');
             $('#weather').removeClass('fa-snowflake');
             $('#temp').removeClass('fa-temperature-low');
@@ -757,7 +758,7 @@ function mainLoop() {
                 }
             }
             else if (global.city.calendar.weather === 1){
-                $('#weather').addClass('fa-cloud-sun');
+                $('#weather').addClass('fa-cloud');
             }
             else if (global.city.calendar.weather === 2){
                 $('#weather').addClass('fa-sun');

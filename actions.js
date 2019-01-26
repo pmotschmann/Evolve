@@ -604,8 +604,6 @@ export const actions = {
                         global.tech['religion'] = 1;
                     }
 
-                    $('.topBar .calendar').css('display','inline-block');
-
                     if (global.race['slow'] || global.race['hyper']){
                         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
                         window.location.reload();
@@ -971,7 +969,7 @@ export const actions = {
             effect: function(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 if (global.city.powered){
-                    return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill consumes 1kW but produces 5% more lumber.`; 
+                    return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill uses 1kW but produces 5% more lumber.`; 
                 }
                 else {
                     return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%`;
@@ -985,7 +983,7 @@ export const actions = {
                     global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
                     global['resource']['Lumber'].max += 200;
                     if (global.city.powered){
-                        global.city['sawmill'].on++;
+                        global.city.sawmill.on++;
                     }
                     return true;
                 }
@@ -1237,14 +1235,24 @@ export const actions = {
             },
             effect: function (){
                 let gain = 1000;
-                return `Increases the maximum amount of knowledge you can store by ${gain}`; 
+                if (global.city.powered){
+                    let pgain = gain * 2;
+                    return `Increases the maximum amount of knowledge you can store by ${gain}. Each powered tower uses 2Kw but doubles it's effectiveness to ${pgain}.`;
+                }
+                else {
+                    return `Increases the maximum amount of knowledge you can store by ${gain}.`;
+                }
             },
+            powered: 2,
             action: function (){
                 if (payCosts(actions.city.wardenclyffe.cost)){
                     global['resource']['Knowledge'].max += 1000;
                     global.city.wardenclyffe.count++;
                     global.civic.scientist.display = true;
                     global.civic.scientist.max = global.city.wardenclyffe.count;
+                    if (global.city.powered){
+                        global.city.wardenclyffe.on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1327,7 +1335,10 @@ export const actions = {
             effect: 'Design high occupancy housing complexes.',
             action: function (){
                 if (payCosts(actions.tech.apartment.cost)){
-                    global.city['apartment'] = { count: 0 };
+                    global.city['apartment'] = { 
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -2000,6 +2011,23 @@ export const actions = {
                 return false;
             }
         },
+        adjunct_professor: {
+            id: 'tech-adjunct_professor',
+            title: 'Adjunct Professors',
+            desc: 'Adjunct Professors',
+            reqs: { science: 4, high_tech: 2 },
+            grant: ['science',5],
+            cost: {
+                Knowledge: function(){ return 40000; }
+            },
+            effect: 'Professors will boost the effectiveness of scientists by 1% per powered wardenclyffe tower.',
+            action: function (){
+                if (payCosts(actions.tech.adjunct_professor.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: 'Mad Science',
@@ -2014,7 +2042,10 @@ export const actions = {
             effect: 'The greatest leaps in science are often made by "misunderstood" individuals.',
             action: function (){
                 if (payCosts(actions.tech.mad_science.cost)){
-                    global.city['wardenclyffe'] = { count: 0 };
+                    global.city['wardenclyffe'] = { 
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -2111,7 +2142,10 @@ export const actions = {
             effect: 'Sawmills increase the lumber yeild of your lumberjacks.',
             action: function (){
                 if (payCosts(actions.tech.iron_saw.cost)){
-                    global.city['sawmill'] = { count: 0 };
+                    global.city['sawmill'] = { 
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;

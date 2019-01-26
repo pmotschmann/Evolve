@@ -25,7 +25,7 @@
 </head>
 <body>
     <div id="topBar" class="topBar">
-        <span class="calendar">
+        <span class="calendar" v-show="city.calendar.day">
             <span class="year">Year <span class="has-text-warning">{{ city.calendar.year }}</span></span> 
             <span class="day">Day <span class="has-text-warning">{{ city.calendar.day }}</span></span>
             <b-tooltip :label="weather()" position="is-bottom" type="is-dark" size="is-small" multilined animated><i id="weather" class="fas"></i></b-tooltip>

@@ -46,6 +46,10 @@ export const job_desc = {
     scientist: function(){
         let impact = global.civic.scientist.impact;
         impact *= racialTrait(global.civic.scientist.workers,'science');
+        if (global.tech['science'] >= 5 && global.city['wardenclyffe']){
+            impact *= 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
+        }
+        impact = +impact.toFixed(2);
         return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per tick.`;
     }
 }
