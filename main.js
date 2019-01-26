@@ -34,7 +34,16 @@ vues['race'] = new Vue({
         },
         desc(){
             return races[global.race.species].desc;
-        },
+        }
+    }
+});
+vues['race'].$mount('#race');
+
+vues['topBar'] = new Vue({
+    data: {
+        city: global.city
+    },
+    methods: {
         weather(){
             switch(global.city.calendar.weather){
                 case 0:
@@ -65,7 +74,7 @@ vues['race'] = new Vue({
         }
     }
 });
-vues['race'].$mount('#race');
+vues['topBar'].$mount('#topBar');
 
 if (global.race.species === 'protoplasm'){
     global.resource.RNA.display = true;
@@ -119,6 +128,10 @@ else {
             addAction('tech',tech);
         }
     });
+}
+
+if (global.city.calendar.day > 0){
+    $('.topBar .calendar').css('display','inline-block');
 }
 
 // Start game loop

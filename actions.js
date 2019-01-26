@@ -580,17 +580,10 @@ export const actions = {
                     }
                     global.resource.Stone.display = true;
                     
-                    global['city'] = { 
-                        food: 1, 
-                        lumber: 1, 
-                        stone: 1,
-                        calendar: {
-                            day: 1,
-                            year: 0,
-                            weather: 2,
-                            temp: 1
-                        }
-                    };
+                    global.city['food'] = 1;
+                    global.city['lumber'] = 1;
+                    global.city['stone'] = 1;
+                    global.city.calendar.day = 1;
                     
                     var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
                     for (var i = 0; i < city_actions.length; i++) {
@@ -610,6 +603,8 @@ export const actions = {
                     if (global.race.gods !== 'none'){
                         global.tech['religion'] = 1;
                     }
+
+                    $('.topBar .calendar').css('display','inline-block');
 
                     if (global.race['slow'] || global.race['hyper']){
                         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

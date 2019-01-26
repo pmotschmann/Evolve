@@ -400,6 +400,7 @@ div {
     }
 }
 
+.topBar,
 .promoBar {
     display: inline-flex;
     height: 1.2rem;
@@ -407,6 +408,17 @@ div {
     width: 100%;
     background-color: #3a4344;
     position: fixed;
+}
+
+.topBar {
+    top:0;
+    .calendar {
+        display: none;
+        margin: 0 auto;
+    }
+}
+
+.promoBar {
     bottom:0;
 
     .left {
