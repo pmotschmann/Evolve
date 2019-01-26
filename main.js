@@ -229,7 +229,17 @@ function mainLoop() {
                     consume *= 1.1;
                 }
                 if (global.race['photosynth']){
-                    consume /= 2;
+                    switch(global.city.calendar.weather){
+                        case 0:
+                            consume *= global.city.calendar.temp === 0 ? 1 : 0.9;
+                            break;
+                        case 1:
+                            consume *= 0.8;
+                            break;
+                        case 2:
+                            consume *= 0.6;
+                            break;
+                    }
                 }
                 var food_multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
                 if (global.city.calendar.temp === 0){

@@ -375,7 +375,7 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    photosynth: { // Halves food requirements
+    photosynth: { // Reduces food requirements dependant on sunshine.
         desc: 'Your race produces part of its food requirements through photosynthesis with the sun',
         ranks: 0,
         type: 'genus',
