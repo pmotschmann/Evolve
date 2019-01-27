@@ -1504,7 +1504,7 @@ export const actions = {
                 Knowledge: function(){ return 5500; },
                 Steel: function(){ return 50; }
             },
-            effect: 'Upgrade your smelters so they can produce steel.',
+            effect: 'Upgrade your smelters so they can produce steel. (hint, go pillage something)',
             action: function (){
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
@@ -2113,15 +2113,15 @@ export const actions = {
         },
         copper_axes: {
             id: 'tech-copper_axes',
-            title: 'Copper Axe',
-            desc: 'Create an axe made from copper',
+            title: 'Brass Axe',
+            desc: 'Create an axe made from brass',
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
             cost: {
-                Knowledge: function(){ return 750; },
+                Knowledge: function(){ return 600; },
                 Copper: function(){ return 25; }
             },
-            effect: 'Upgrade axe technology to metal axes made from copper. Improves lumber harvesting.',
+            effect: 'Upgrade axe technology to metal axes made from brass. Improves lumber harvesting.',
             action: function (){
                 if (payCosts(actions.tech.copper_axes.cost)){
                     return true;
@@ -2176,7 +2176,7 @@ export const actions = {
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
             cost: {
-                Knowledge: function(){ return 3500; },
+                Knowledge: function(){ return 3000; },
                 Iron: function(){ return 250; }
             },
             effect: 'Upgrade axe technology to metal axes made from iron. Improves lumber harvesting.',
@@ -2205,17 +2205,71 @@ export const actions = {
                 return false;
             }
         },
+        copper_sledgehammer: {
+            id: 'tech-copper_sledgehammer',
+            title: 'Brass Sledgehammer',
+            desc: 'Create a sledgehammer with a brass head',
+            reqs: { mining: 2 },
+            grant: ['hammer',1],
+            cost: {
+                Knowledge: function(){ return 600; },
+                Copper: function(){ return 25; }
+            },
+            effect: 'Create sledgehammers made from brass. Improves rock quarrying.',
+            action: function (){
+                if (payCosts(actions.tech.copper_sledgehammer.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        iron_sledgehammer: {
+            id: 'tech-iron_sledgehammer',
+            title: 'Iron Sledgehammer',
+            desc: 'Create a sledgehammer with an iron head',
+            reqs: { hammer: 1, mining: 3 },
+            grant: ['hammer',2],
+            cost: {
+                Knowledge: function(){ return 3000; },
+                Iron: function(){ return 250; }
+            },
+            effect: 'Upgrade to more durable sledgehammers made from iron. Improves rock quarrying.',
+            action: function (){
+                if (payCosts(actions.tech.iron_sledgehammer.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        steel_sledgehammer: {
+            id: 'tech-steel_sledgehammer',
+            title: 'Steel Sledgehammer',
+            desc: 'Create a sledgehammer with a steel head',
+            reqs: { hammer: 2, smelting: 2 },
+            grant: ['hammer',3],
+            cost: {
+                Knowledge: function(){ return 8000; },
+                Steel: function(){ return 250; }
+            },
+            effect: 'Upgrade to stronger sledgehammers made from steel. Improves rock quarrying.',
+            action: function (){
+                if (payCosts(actions.tech.steel_sledgehammer.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         copper_pickaxe: {
             id: 'tech-copper_pickaxe',
-            title: 'Copper Pickaxe',
-            desc: 'Create a pickaxe made from copper',
+            title: 'Brass Pickaxe',
+            desc: 'Create a pickaxe made from brass',
             reqs: { mining: 2 },
             grant: ['pickaxe',1],
             cost: {
                 Knowledge: function(){ return 750; },
                 Copper: function(){ return 25; }
             },
-            effect: 'Upgrades pickaxe technology to metal pickaxes made from copper. Improves mining activities.',
+            effect: 'Create metal pickaxes made with brass heads. Improves mining activities.',
             action: function (){
                 if (payCosts(actions.tech.copper_pickaxe.cost)){
                     return true;

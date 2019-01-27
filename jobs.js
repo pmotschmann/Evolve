@@ -15,10 +15,10 @@ export const job_desc = {
         return `Lumberjacks harvet lumber from the forests. Each lumberjack generates ${gain} lumber per tick.`;
     },
     quarry_worker: function(){
-        let multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.25 : 0) + 1;
+        let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.3 : 0) + 1;
         multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-            multiplier *= 1.25;
+            multiplier *= 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
         return `Quarry Workers mine stone from rock quarries. Each quarry worker generates ${gain} stone per tick.`;

@@ -385,9 +385,9 @@ function mainLoop() {
                 modRes('Lumber',delta);
                 
                 // Stone
-                var stone_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.25 : 0) + 1;
+                var stone_multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.3 : 0) + 1;
                 if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-                    stone_multiplier *= 1.25;
+                    stone_multiplier *= 1.5;
                 }
                 stone_multiplier *= tax_multiplier;
                 stone_multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
