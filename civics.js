@@ -111,10 +111,11 @@ function taxRates(govern){
 function buildGarrison(garrison){
     garrison.append($('<div class="header has-text-warning">Garrison</div>'));
 
-    garrison.append($('<div class="barracks"><span>Soliders</span> <span>{{ workers }} / {{ max }}</span> - <span>Rating {{ workers | rating }}</span></div>'));
+    garrison.append($('<div class="barracks"><span>soldiers</span> <span>{{ workers }} / {{ max }}</span> - <span>Rating {{ workers | rating }}</span></div>'));
+    garrison.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" type="is-dark" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
-    garrison.append($('<b-tooltip :label="trainLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button first" @click="train">Train Solider</button></b-tooltip>'));
-    garrison.append($('<b-tooltip :label="retireLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button" @click="retire">Retire Solider</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="trainLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="retireLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button" @click="retire">Retire soldier</button></b-tooltip>'));
 
     var tactics = $('<div id="tactics" v-show="display" class="tactics"><span>Campaign</span></div>');
     garrison.append(tactics);
@@ -135,6 +136,7 @@ function buildGarrison(garrison){
             progress: 0,
             tactic: 0,
             workers: 0,
+            wounded: 0,
             raid: 0,
             max: 0
         };
@@ -161,7 +163,7 @@ function buildGarrison(garrison){
             },
             campaign(){
                 if (global.civic.garrison.workers === 0){
-                    messageQueue('Can not start a campaign without any soliders.','warning');
+                    messageQueue('Can not start a campaign without any soldiers.','warning');
                     return;
                 }
 
@@ -169,7 +171,7 @@ function buildGarrison(garrison){
                 let lowLuck = global.race['puny'] ? 3 : 5;
 
                 let luck = Math.floor(Math.seededRandom(lowLuck,highLuck)) / 10;
-                let army = global.civic.garrison.workers * global.tech.military * luck * racialTrait(global.civic.garrison.workers,'army');;
+                let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military * luck * racialTrait(global.civic.garrison.workers,'army');;
                 let enemy = 0;
 
                 switch(global.civic.garrison.tactic){
@@ -192,6 +194,7 @@ function buildGarrison(garrison){
 
                 if (army > enemy){
                     let deathCap = Math.floor(global.civic.garrison.workers / (5 - global.civic.garrison.tactic));
+                    deathCap += global.civic.garrison.wounded;
                     if (deathCap < 0){
                         deathCap = 0;
                     }
@@ -215,6 +218,13 @@ function buildGarrison(garrison){
                         death = global.civic.garrison.workers;
                     }
                     global.civic.garrison.workers -= death;
+                    if (death > global.civic.garrison.wounded){
+                        global.civic.garrison.wounded = 0;
+                    }
+                    else {
+                        global.civic.garrison.wounded -= death;
+                    }
+                    global.civic.garrison.wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
 
                     let money = 0;
                     let food = 0;
@@ -245,7 +255,7 @@ function buildGarrison(garrison){
                             if (Math.floor(Math.seededRandom(0,10) <= 1)){
                                 cement = Math.floor(Math.seededRandom(25,100));
                             }
-                            if (Math.floor(Math.seededRandom(0,20) === 0)){
+                            if (Math.floor(Math.seededRandom(0,10) === 0)){
                                 steel = Math.floor(Math.seededRandom(10,25));
                             }
                             break;
@@ -413,6 +423,7 @@ function buildGarrison(garrison){
                 }
                 else {
                     let deathCap = global.civic.garrison.workers;
+                    deathCap += global.civic.garrison.wounded;
                     if (global.civic.garrison.tactic === 0){
                         deathCap = Math.floor(deathCap / 2);
                     }
@@ -438,8 +449,15 @@ function buildGarrison(garrison){
                     if (death > global.civic.garrison.workers){
                         death = global.civic.garrison.workers;
                     }
-                    
                     global.civic.garrison.workers -= death;
+                    if (death > global.civic.garrison.wounded){
+                        global.civic.garrison.wounded = 0;
+                    }
+                    else {
+                        global.civic.garrison.wounded -= death;
+                    }
+                    global.civic.garrison.wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+
                     messageQueue(`Your army was defeated. ${death} soldiers died in the conflict.`,'danger');
                 }
             },
@@ -462,7 +480,10 @@ function buildGarrison(garrison){
                 return `Train a Soldier, costs \$${cost} and requires a recruit (unemployed citizen)`;
             },
             retireLabel(){
-                return `Return a solider to civilian life, note if there is not any open housing they will leave your settlement.`;
+                return `Return a soldier to civilian life, note if there is not any open housing they will leave your settlement.`;
+            },
+            woundedDesc(){
+                return `Wounded soldiers are both less effective in combat and more likely to die. Wounded soldiers will heal over time.`;
             },
             next(){
                 if (global.civic.garrison.tactic < 4){
@@ -491,7 +512,7 @@ function buildGarrison(garrison){
                 }
             },
             rating(val){
-                let army = val * global.tech.military;
+                let army = (val - (global.civic.garrison.wounded / 2)) * global.tech.military;
                 if (global.race['puny']){
                     army = Math.floor(army * 0.9);
                 }

@@ -711,6 +711,14 @@ function mainLoop() {
                 });
             }
 
+            // Soldier Healing
+            if (global.civic.garrison.wounded > 0){
+                global.civic.garrison.wounded -= global.race['regenerative'] ? 2 : 1;
+                if (global.civic.garrison.wounded < 0){
+                    global.civic.garrison.wounded = 0;
+                }
+            }
+
             // Time
             global.city.calendar.day++;
             global.stats.days++;

@@ -500,8 +500,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    regenerative: {
-        desc: '',
+    regenerative: { // Wounded soliders heal twice as fast
+        desc: 'Your race inherently heals quickly.',
         ranks: 0,
         type: 'major',
     },
