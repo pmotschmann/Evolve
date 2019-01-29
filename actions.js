@@ -914,15 +914,15 @@ export const actions = {
         },
         warehouse: {
             id: 'city-warehouse',
-            title: 'Warehouse',
-            desc: 'Build a Warehouse',
+            title: 'Container Port',
+            desc: 'Build a Container Port',
             reqs: { steel_container: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('warehouse', 400, 1.25); },
                 Cement: function(){ return costMultiplier('warehouse', 75, 1.25); },
                 Steel: function(){ return costMultiplier('warehouse', 100, 1.25); }
             },
-            effect: 'Warehouses are large storage facilities. Each warehouse is capable of storing 50 containers.',
+            effect: 'Container ports are large container storage facilities. Each port is capable of storing 50 containers.',
             action: function (){
                 if (payCosts(actions.city.warehouse.cost)){
                     if (global.resource.Containers.display === false){
@@ -930,7 +930,7 @@ export const actions = {
                     }
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
-                    global.resource.Containers.max += 50;
+                    global.resource.Containers.max += global.tech['steel_container'] >= 2 ? 100 : 50;
                     return true;
                 }
                 return false;
@@ -1731,6 +1731,24 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.steel_containers.cost)){
                     global.city['warehouse'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        gantry_crane: {
+            id: 'tech-gantry_crane',
+            title: 'Gantry Cranes',
+            desc: 'Add gantry cranes to container ports',
+            reqs: { steel_container: 1, high_tech: 2 },
+            grant: ['steel_container',2],
+            cost: { 
+                Knowledge: function(){ return 25000; },
+                Steel: function(){ return 5000; }
+            },
+            effect: 'Upgrade your container ports with gantry cranes. This doubles the number of containers that can be stored at each port.',
+            action: function (){
+                if (payCosts(actions.tech.gantry_crane.cost)){
                     return true;
                 }
                 return false;

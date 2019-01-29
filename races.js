@@ -240,7 +240,8 @@ export const races = {
         home: 'Armillaria',
         entity: 'sentient shrooms',
         traits: {
-            toxic: 1
+            toxic: 1,
+            nyctophilia: 1
         } 
     },
     mantis: {

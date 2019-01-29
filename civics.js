@@ -237,121 +237,121 @@ function buildGarrison(garrison){
                     switch(global.civic.garrison.tactic){
                         case 0:
                             money = Math.floor(Math.seededRandom(50,250));
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 food = Math.floor(Math.seededRandom(50,250));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 lumber = Math.floor(Math.seededRandom(50,250));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 stone = Math.floor(Math.seededRandom(50,250));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 2)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 copper = Math.floor(Math.seededRandom(25,100));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 2)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 iron = Math.floor(Math.seededRandom(25,100));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 1)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 1){
                                 cement = Math.floor(Math.seededRandom(25,100));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) === 0)){
+                            if (Math.floor(Math.seededRandom(0,10)) === 0){
                                 steel = Math.floor(Math.seededRandom(10,25));
                             }
                             break;
                         case 1:
                             money = Math.floor(Math.seededRandom(500,1000));
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 food = Math.floor(Math.seededRandom(500,1000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 lumber = Math.floor(Math.seededRandom(500,2500));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 stone = Math.floor(Math.seededRandom(500,2500));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 copper = Math.floor(Math.seededRandom(250,1000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 iron = Math.floor(Math.seededRandom(250,1000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 3)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 3){
                                 cement = Math.floor(Math.seededRandom(250,1000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 1)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 1){
                                 steel = Math.floor(Math.seededRandom(100,250));
                             }
                             break;
                         case 2:
                             money = Math.floor(Math.seededRandom(5000,10000));
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 food = Math.floor(Math.seededRandom(2500,10000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 lumber = Math.floor(Math.seededRandom(5000,25000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 stone = Math.floor(Math.seededRandom(5000,25000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 copper = Math.floor(Math.seededRandom(2500,10000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 iron = Math.floor(Math.seededRandom(2500,10000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 4)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 4){
                                 cement = Math.floor(Math.seededRandom(2500,10000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 2)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 steel = Math.floor(Math.seededRandom(1000,2500));
                             }
                             break;
                         case 3:
                             money = Math.floor(Math.seededRandom(25000,100000));
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 food = Math.floor(Math.seededRandom(5000,20000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 lumber = Math.floor(Math.seededRandom(10000,50000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 stone = Math.floor(Math.seededRandom(10000,50000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 copper = Math.floor(Math.seededRandom(5000,20000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 iron = Math.floor(Math.seededRandom(5000,20000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 4)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 4){
                                 cement = Math.floor(Math.seededRandom(5000,20000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 2)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 steel = Math.floor(Math.seededRandom(2000,5000));
                             }
                             break;
                         case 4:
                             money = Math.floor(Math.seededRandom(50000,250000));
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 food = Math.floor(Math.seededRandom(10000,40000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 lumber = Math.floor(Math.seededRandom(20000,100000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 stone = Math.floor(Math.seededRandom(20000,100000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 copper = Math.floor(Math.seededRandom(10000,50000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 5)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 iron = Math.floor(Math.seededRandom(10000,50000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 4)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 4){
                                 cement = Math.floor(Math.seededRandom(10000,50000));
                             }
-                            if (Math.floor(Math.seededRandom(0,10) <= 2)){
+                            if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 steel = Math.floor(Math.seededRandom(5000,25000));
                             }
                             break;

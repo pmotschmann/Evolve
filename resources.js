@@ -284,16 +284,16 @@ function drawModal(name,color){
                     return 'Construct a container, cost 100 Steel';
                 },
                 removeContainerLabel: function(){
-                    let cap = global.tech.steel_container >= 2 ? 75 : 50;
+                    let cap = global.tech.steel_container >= 3 ? 75 : 50;
                     if (global.race['pack_rat']){
-                        cap += global.tech.steel_container >= 2 ? 3 : 2;
+                        cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
                     return `Remove container from this resrouce (-${cap} cap)`;
                 },
                 addContainerLabel: function(){
-                    let cap = global.tech.steel_container >= 2 ? 75 : 50;
+                    let cap = global.tech.steel_container >= 3 ? 75 : 50;
                     if (global.race['pack_rat']){
-                        cap += global.tech.steel_container >= 2 ? 3 : 2;
+                        cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
                     return `Assign container to this resource (+${cap} cap)`;
                 },
@@ -306,9 +306,9 @@ function drawModal(name,color){
                 },
                 removeContainer: function(res){
                     let keyMutipler = keyMultiplier();
-                    let cap = global.tech.steel_container >= 2 ? 75 : 50;
+                    let cap = global.tech.steel_container >= 3 ? 75 : 50;
                     if (global.race['pack_rat']){
-                        cap += global.tech.steel_container >= 2 ? 3 : 2;
+                        cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
                     if (global.resource[res].containers >= keyMutipler){
                         global.resource.Containers.amount += keyMutipler;
@@ -319,9 +319,9 @@ function drawModal(name,color){
                 },
                 addContainer: function(res){
                     let keyMutipler = keyMultiplier();
-                    let cap = global.tech.steel_container >= 2 ? 75 : 50;
+                    let cap = global.tech.steel_container >= 3 ? 75 : 50;
                     if (global.race['pack_rat']){
-                        cap += global.tech.steel_container >= 2 ? 3 : 2;
+                        cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
                     if (global.resource.Containers.amount >= keyMutipler){
                         global.resource.Containers.amount -= keyMutipler;

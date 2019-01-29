@@ -502,7 +502,8 @@ function mainLoop() {
                 });
             }
             if (global.city['warehouse']){
-                caps['Containers'] += (global.city['warehouse'].count * 50);
+                let volume = global.tech['steel_container'] >= 2 ? 100 : 50;
+                caps['Containers'] += (global.city['warehouse'].count * volume);
                 Object.keys(caps).forEach(function (res){
                     caps['Containers'] -= global.resource[res].containers;
                 });
@@ -613,10 +614,10 @@ function mainLoop() {
             } 
 
             let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 30 : 25;
-            let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 2 ? 75 : 50;
+            let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 75 : 50;
             if (global.race['pack_rat']){
                 create_value += global.tech.container >= 2 ? 2 : 1;
-                container_value += global.tech.steel_container >= 2 ? 3 : 2;
+                container_value += global.tech.steel_container >= 3 ? 3 : 2;
             }
             Object.keys(caps).forEach(function (res){
                 caps[res] += global.resource[res].crates * create_value;
