@@ -111,7 +111,7 @@ function taxRates(govern){
 function buildGarrison(garrison){
     garrison.append($('<div class="header has-text-warning">Garrison</div>'));
 
-    garrison.append($('<div class="barracks"><span>soldiers</span> <span>{{ workers }} / {{ max }}</span> - <span>Rating {{ workers | rating }}</span></div>'));
+    garrison.append($('<div class="barracks"><span>Soldiers</span> <span>{{ workers }} / {{ max }}</span> - <span>Rating {{ workers | rating }}</span></div>'));
     garrison.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" type="is-dark" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
     garrison.append($('<b-tooltip :label="trainLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));

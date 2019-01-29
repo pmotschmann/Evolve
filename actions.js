@@ -811,7 +811,10 @@ export const actions = {
                 Iron: function(){ return costMultiplier('mill', 150, 1.32); },
                 Cement: function(){ return costMultiplier('mill', 125, 1.32); },
             },
-            effect: 'Increases farmer efficency by 3%',
+            effect: function() { 
+                let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
+                return `Increases farmer efficency by ${bonus}%`;
+            },
             action: function (){
                 if (payCosts(actions.city.mill.cost)){
                     global.city['mill'].count++;
@@ -1436,7 +1439,7 @@ export const actions = {
         mill: {
             id: 'tech-mill',
             title: 'Grain Mill',
-            desc: 'Develope mills to increase food production',
+            desc: 'Develop mills to increase food production',
             reqs: { agriculture: 3, mining: 3 },
             grant: ['agriculture',4],
             cost: { 
@@ -1446,6 +1449,23 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.mill.cost)){
                     global.city['mill'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        windmill: {
+            id: 'tech-windmill',
+            title: 'Windmill',
+            desc: 'Upgrade your grain mills with windmill turbines',
+            reqs: { agriculture: 4, high_tech: 1 },
+            grant: ['agriculture',5],
+            cost: { 
+                Knowledge: function(){ return 18000; }
+            },
+            effect: 'Add a windmill turbine to your grain mills, boosts the effectiveness of mills.',
+            action: function (){
+                if (payCosts(actions.tech.windmill.cost)){
                     return true;
                 }
                 return false;
@@ -2828,11 +2848,21 @@ function costMultiplier(structure,base,mutiplier){
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
         mutiplier -= 0.02;
     }
-    if (global.race['solitary'] && structure === 'basic_housing'){
-        mutiplier -= 0.02;
+    if (structure === 'basic_housing'){
+        if (global.race['solitary']){
+            mutiplier -= 0.02;
+        }
+        if (global.race['pack_mentality']){
+            mutiplier += 0.02;
+        }
     }
-    if (global.race['solitary'] && structure === 'cottage'){
-        mutiplier += 0.02;
+    if (structure === 'cottage'){
+        if (global.race['solitary']){
+            mutiplier += 0.02;
+        }
+        if (global.race['pack_mentality']){
+            mutiplier -= 0.02;
+        }
     }
     if (mutiplier < 0.01){
         mutiplier = 0.01;

@@ -254,7 +254,8 @@ function mainLoop() {
                     food_multiplier *= 1.1;
                 }
                 if (global.city['mill']){
-                    food_multiplier *= 1 + (global.city['mill'].count * 0.03);
+                    let mill_bonus = global.tech['agriculture'] >= 5 ? 0.05 : 0.03;
+                    food_multiplier *= 1 + (global.city['mill'].count * mill_bonus);
                 }
                 food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
                 food_multiplier *= racialTrait(global.civic.farmer.workers,'farmer');

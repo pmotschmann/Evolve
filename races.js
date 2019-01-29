@@ -47,7 +47,7 @@ export const races = {
         entity: 'cat people',
         traits: { 
             lazy: 1,
-            stealthy: 1
+            carnivore: 1
         }
     },
     wolven: {
@@ -58,7 +58,7 @@ export const races = {
         entity: 'dog people',
         traits: { 
             pack_mentality: 1,
-            carnivore: 1
+            tracker: 1
         }
     },
     centaur: {
@@ -430,17 +430,17 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    stealthy: {
-        desc: '',
-        ranks: 0,
-        type: 'major',
-    },
-    pack_mentality: {
-        desc: '',
-        ranks: 0,
-        type: 'major',
-    },
     carnivore: {
+        desc: '',
+        ranks: 0,
+        type: 'major',
+    },
+    pack_mentality: { // Cabins cost more, but cottages cost less.
+        desc: 'Your race prefers to live in groups.',
+        ranks: 0,
+        type: 'major',
+    },
+    tracker: {
         desc: '',
         ranks: 0,
         type: 'major',
