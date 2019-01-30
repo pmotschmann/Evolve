@@ -1,4 +1,4 @@
-import { global, vues } from './vars.js';
+import { global, vues, poppers } from './vars.js';
 import { racialTrait } from './races.js';
 
 export const job_desc = {
@@ -83,15 +83,16 @@ function loadUnemployed(){
     });
     vues['civ_free'].$mount(`#${id}`);
     
-    var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">The number of unemployed citizens. Unemployed citizens do not pay taxes however they also consume half rations.</div>`);
-    popper.hide();
-    $('#main').append(popper);
     $(`#${id} .job_label`).on('mouseover',function(){
+            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">The number of unemployed citizens. Unemployed citizens do not pay taxes however they also consume half rations.</div>`);
+            $('#main').append(popper);
             popper.show();
-            new Popper($(`#${id} .job_label`),popper);
+            poppers[id] = new Popper($(`#${id} .job_label`),popper);
         });
     $(`#${id} .job_label`).on('mouseout',function(){
-            popper.hide();
+            $(`#pop${id}`).hide();
+            poppers[id].destroy();
+            $(`#pop${id}`).remove();
         });
 }
 
@@ -142,15 +143,16 @@ function loadJob(job, name, impact, color){
     });
     vues['civ_'+job].$mount('#'+id);
     
-    var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
-    popper.hide();
-    $('#main').append(popper);
     $(`#${id} .job_label`).on('mouseover',function(){
+            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
+            $('#main').append(popper);
             popper.html(job_desc[job]());
             popper.show();
-            new Popper($(`#${id} .job_label`),popper);
+            poppers[id] = new Popper($(`#${id} .job_label`),popper);
         });
     $(`#${id} .job_label`).on('mouseout',function(){
-            popper.hide();
+            $(`#pop${id}`).hide();
+            poppers[id].destroy();
+            $(`#pop${id}`).remove();
         });
 }

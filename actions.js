@@ -1,4 +1,4 @@
-import { global, vues, save, messageQueue, keyMultiplier, modRes } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
 import { races, genus_traits, traits } from './races.js';
 import { defineResources } from './resources.js';
 
@@ -2757,16 +2757,17 @@ export function addAction(action,type){
         }
     });
     vues[id].$mount('#'+id);
-    var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
-    popper.hide();
-    $('#main').append(popper);
     $('#'+id).on('mouseover',function(){
+            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
+            $('#main').append(popper);
             actionDesc(popper,action,type);
             popper.show();
-            new Popper($('#'+id),popper);
+            poppers[id] = new Popper($('#'+id),popper);
         });
     $('#'+id).on('mouseout',function(){
-            popper.hide();
+            $(`#pop${id}`).hide();
+            poppers[id].destroy();
+            $(`#pop${id}`).remove();
         });
 }
 

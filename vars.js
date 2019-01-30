@@ -31,6 +31,7 @@ export var global = {
     event: 200
 };
 export var vues = {};
+export var poppers = {};
 export var runNew = false;
 
 Math.rand = function(min, max) {
