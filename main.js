@@ -398,6 +398,9 @@ function mainLoop() {
                 // Copper
                 if (global.resource.Copper.display){
                     var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+                    if (global.tech['explosives'] && global.tech['explosives'] >= 2){
+                        copper_multiplier *= 1.25;
+                    }
                     copper_multiplier *= tax_multiplier;
                     copper_multiplier *= racialTrait(global.civic.miner.workers,'miner');
                     if (global.race['tough']){
@@ -410,6 +413,9 @@ function mainLoop() {
                 // Iron
                 if (global.resource.Iron.display){
                     var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+                    if (global.tech['explosives'] && global.tech['explosives'] >= 2){
+                        iron_multiplier *= 1.25;
+                    }
                     iron_multiplier *= tax_multiplier;
                     iron_multiplier *= (1 + (iron_smelter * 0.1));
                     iron_multiplier *= racialTrait(global.civic.miner.workers,'miner');
@@ -423,6 +429,9 @@ function mainLoop() {
                 // Coal
                 if (global.resource.Coal.display){
                     var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+                    if (global.tech['explosives'] && global.tech['explosives'] >= 2){
+                        coal_multiplier *= 1.25;
+                    }
                     coal_multiplier *= tax_multiplier;
                     coal_multiplier *= racialTrait(global.civic.coal_miner.workers,'miner');
                     if (global.race['tough']){

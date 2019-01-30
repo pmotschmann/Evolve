@@ -2535,16 +2535,34 @@ export const actions = {
         dynamite: {
             id: 'tech-dynamite',
             title: 'Dynamite',
-            desc: 'Discover black powder',
+            desc: 'Dynamite',
             reqs: { explosives: 1 },
             grant: ['explosives',2],
             cost: {
                 Knowledge: function(){ return 5200; },
                 Coal: function(){ return 750; }
             },
-            effect: 'Dynamite can be used to increase the efficiency of rock mining, no one would ever misuse this invention for nefarious purposes.',
+            effect: 'Dynamite can be used to increase the efficiency of mining, no one would ever misuse this invention for nefarious purposes.',
             action: function (){
                 if (payCosts(actions.tech.dynamite.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        anfo: {
+            id: 'tech-anfo',
+            title: 'ANFO',
+            desc: 'ANFO',
+            reqs: { explosives: 2, oil: 1 },
+            grant: ['explosives',3],
+            cost: {
+                Knowledge: function(){ return 22500; },
+                Oil: function(){ return 750; }
+            },
+            effect: 'ANFO is a powerful explosive that can greatly aid mining activities.',
+            action: function (){
+                if (payCosts(actions.tech.anfo.cost)){
                     return true;
                 }
                 return false;
