@@ -2371,15 +2371,15 @@ export const actions = {
         },
         copper_hoe: {
             id: 'tech-copper_hoe',
-            title: 'Copper Hoes',
-            desc: 'Create farming tools made from copper',
+            title: 'Brass Hoes',
+            desc: 'Create farming tools made from brass',
             reqs: { mining: 2 },
             grant: ['hoe',1],
             cost: {
                 Knowledge: function(){ return 800; },
                 Copper: function(){ return 50; }
             },
-            effect: 'Create tools made from copper that aid farming. Improves farm efficiency.',
+            effect: 'Create tools made from brass that aid farming. Improves farm efficiency.',
             action: function (){
                 if (payCosts(actions.tech.copper_hoe.cost)){
                     return true;

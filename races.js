@@ -653,3 +653,12 @@ export function racialTrait(workers,type){
     }
     return modifier;
 }
+
+export const biomes = {
+    grassland: '',
+    oceanic: '',
+    forest: '',
+    desert: '',
+    volcanic: '',
+    tundra: ''
+};

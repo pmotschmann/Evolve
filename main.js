@@ -259,7 +259,8 @@ function mainLoop() {
                 }
                 food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
                 food_multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
-                var delta = (global.civic.farmer.workers * global.civic.farmer.impact * food_multiplier) - consume;
+                let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
+                var delta = (global.civic.farmer.workers * impact * food_multiplier) - consume;
 
                 if (modRes('Food',delta)){
                     fed = false;
@@ -382,7 +383,8 @@ function mainLoop() {
                     lum_multiplier *= 1 + (sawmills * 0.05);
                 }
                 lum_multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-                delta = global.civic.lumberjack.workers * global.civic.lumberjack.impact * lum_multiplier;
+                let lum_impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
+                delta = global.civic.lumberjack.workers * lum_impact * lum_multiplier;
                 modRes('Lumber',delta);
                 
                 // Stone
@@ -741,6 +743,30 @@ function mainLoop() {
             if (Math.rand(0,5) === 0){
                 let temp = Math.rand(0,3);
                 let sky = Math.rand(0,5);
+                switch(global.city.biome){
+                    case 'oceanic':
+                        if (Math.rand(0,3) === 0 && sky > 0){
+                            sky--;
+                        }
+                        break;
+                    case 'tundra':
+                        if (Math.rand(0,3) === 0 && temp > 0){
+                            temp--;
+                        }
+                        break;
+                    case 'desert':
+                        if (Math.rand(0,3) === 0 && sky < 4){
+                            sky++;
+                        }
+                        break;
+                    case 'volcanic':
+                        if (Math.rand(0,3) === 0 && temp < 2){
+                            temp++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
                 if (sky === 0){
                     global.city.calendar.weather = 0;
                 }

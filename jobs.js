@@ -5,13 +5,15 @@ export const job_desc = {
     farmer: function(){
         let multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
         multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
-        let gain = +(global.civic.farmer.impact * multiplier).toFixed(1);
+        let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
+        let gain = +(impact * multiplier).toFixed(1);
         return `Farmers create food to feed your population. Each farmer generates ${gain} food per tick.`;
     },
     lumberjack: function(){
         let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
         multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-        let gain = +(global.civic.lumberjack.impact * multiplier).toFixed(1);
+        let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
+        let gain = +(impact * multiplier).toFixed(1);
         return `Lumberjacks harvet lumber from the forests. Each lumberjack generates ${gain} lumber per tick.`;
     },
     quarry_worker: function(){

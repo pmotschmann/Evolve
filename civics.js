@@ -1,7 +1,7 @@
 import { global, vues, poppers, messageQueue, modRes } from './vars.js';
 import { races, racialTrait } from './races.js';
 
-// Sets up govenment in civics tab
+// Sets up government in civics tab
 export function defineGovernment(){
     var govern = $('<div id="government" class="government tile is-child"></div>');
     govern.append($('<div class="header has-text-warning" v-show="display">Government</div>'));

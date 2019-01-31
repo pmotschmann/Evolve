@@ -73,6 +73,10 @@ if (!global.city['powered']){
     global.city['power'] = 0;
 }
 
+if (!global.city['biome']){
+    global.city['biome'] = 'grassland';
+}
+
 export function messageQueue(msg,color){
     color = color || 'warning';
     var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
