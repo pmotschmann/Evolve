@@ -4,9 +4,8 @@
     <title>Evolve</title>
     <meta http-equiv="Content-type" content="text/html;charset=utf-8">
     <link rel="icon" href="evolved.ico" type="images/x-icon">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/buefy@0.7.2/dist/buefy.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bulmaswatch@0.7.2/darkly/bulmaswatch.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="evolved.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@2.5.17/dist/vue.min.js"></script>
@@ -56,6 +55,17 @@
                         <b-tab-item id="genetics" :visible="showGenetics" label="Genetics"></b-tab-item>
                         <b-tab-item id="space" :visible="showSpace" label="Space"></b-tab-item>
                         <b-tab-item id="settings" label="Settings">
+                            <div class="theme">
+                                <span>Theme </span>
+                                <b-dropdown hoverable>
+                                    <button class="button is-primary" slot="trigger">
+                                        <span>{{ theme | namecase }}</span>
+                                        <i class="fas fa-sort-down"></i>
+                                    </button>
+                                    <b-dropdown-item v-on:click="dark">Dark</b-dropdown-item>
+                                    <!--<b-dropdown-item v-on:click="light">Light</b-dropdown-item>-->
+                                </b-dropdown>
+                            </div>
                             <b-switch v-model="animated">Tab Animations</b-switch>
                             <div class="importExport">
                                 <b-field label="Import/Export Save">

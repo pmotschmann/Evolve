@@ -8,21 +8,6 @@ export var global = {
     civic: { free: 0 },
     race: {},
     genes: {},
-    main_tabs: {
-        data: {
-            civTabs: 0,
-            showEvolve: true,
-            showCity: false,
-            showIndustry: false,
-            showResearch: false,
-            showCivic: false,
-            showMarket: false,
-            showGenetics: false,
-            showSpace: false,
-            animated: true,
-            disableReset: false
-        }
-    },
     stats: {
         start: Date.now(),
         days: 0,
@@ -58,6 +43,25 @@ if (global_data) {
 else {
     runNew = true;
 }
+
+if (!global['settings']){
+    global['settings'] = {
+        civTabs: 0,
+        showEvolve: true,
+        showCity: false,
+        showIndustry: false,
+        showResearch: false,
+        showCivic: false,
+        showMarket: false,
+        showGenetics: false,
+        showSpace: false,
+        animated: true,
+        disableReset: false,
+        theme: 'dark'
+    }
+}
+
+$('html').addClass(global.settings.theme);
 
 if (!global.city['calendar']){
     global.city['calendar'] = {

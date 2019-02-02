@@ -12,7 +12,30 @@ if (runNew){
     newGame();
 }
 
-vues['vue_tabs'] = new Vue(global.main_tabs);
+let settings = {
+    data: global.settings,
+    methods: {
+        dark(){
+            global.settings.theme = 'dark';
+            $('html').removeClass();
+            $('html').addClass('dark');
+        },
+        light(){
+            global.settings.theme = 'light';
+            $('html').removeClass();
+            $('html').addClass('light');
+        }
+    },
+    filters: {
+        namecase(name){
+            return name.replace(/(?:^|\s)\w/g, function(match) {
+                return match.toUpperCase();
+            });
+        }
+    }
+}
+
+vues['vue_tabs'] = new Vue(settings);
 vues['vue_tabs'].$mount('#tabs');
 
 // Load Resources
@@ -445,8 +468,8 @@ function mainLoop() {
             }
             
             // Detect new unlocks
-            if (!global.main_tabs.data.showResearch && global.resource.Knowledge.amount >= 10){
-                global.main_tabs.data.showResearch = true;
+            if (!global.settings.showResearch && global.resource.Knowledge.amount >= 10){
+                global.settings.showResearch = true;
             }
 
             // Power grid state

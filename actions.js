@@ -592,9 +592,9 @@ export const actions = {
                         }
                     }
                     
-                    global.main_tabs.data.civTabs = 1;
-                    global.main_tabs.data.showEvolve = false;
-                    global.main_tabs.data.showCity = true;
+                    global.settings.civTabs = 1;
+                    global.settings.showEvolve = false;
+                    global.settings.showCity = true;
                     
                     registerTech('agriculture');
                     registerTech('housing');
@@ -708,7 +708,7 @@ export const actions = {
                     global['resource'][races[global.race.species].name].display = true;
                     global['resource'][races[global.race.species].name].max += 1;
                     global.city['basic_housing'].count++;
-                    global.main_tabs.data.showCivic = true;
+                    global.settings.showCivic = true;
                     return true;
                 }
                 return false;
@@ -1785,7 +1785,7 @@ export const actions = {
             effect: 'Opens a commodities market where you can buy and sell resources.',
             action: function (){
                 if (payCosts(actions.tech.market.cost)){
-                    global.main_tabs.data.showMarket = true;
+                    global.settings.showMarket = true;
                     return true;
                 }
                 return false;
