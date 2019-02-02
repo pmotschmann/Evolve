@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, modRes } from './vars.js';
+import { global, vues, keyMultiplier, modRes, poppers } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -78,9 +78,8 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     }
     
     var res_container = $(`<div id="res-${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
-    
     if (stackable){
-        res_container.append($('<span><span v-if="showTrigger()" class="interact has-text-success" @click="trigModal">+</span></span>'));
+        res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal">+</span></span>`));
     }
     else {
         res_container.append($('<span></span>'));
@@ -91,7 +90,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     }
     
     $('#resources').append(res_container);
-    
+
     var modal = {
             template: '<div id="modalBox" class="modalBox"></div>'
         };
@@ -127,6 +126,26 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     });
     vues['res_'+name].$mount('#res-' + name);
     
+    if (stackable){
+        $(`#con${name}`).on('mouseover',function(){
+            console.log('cheese');
+            var popper = $(`<div id="popContainer${name}" class="popper has-background-light has-text-dark"></div>`);
+            $('#main').append(popper);
+            popper.append($(`<div>Crates ${global.resource[name].crates}</div>`));
+            if (global.tech['steel_container']){
+                popper.append($(`<div>Containers ${global.resource[name].containers}</div>`));
+            }
+            popper.show();
+            poppers[name] = new Popper($(`#con${name}`),popper);
+        });
+        $(`#con${name}`).on('mouseout',function(){
+            console.log('cake');
+            $(`#popContainer${name}`).hide();
+            poppers[name].destroy();
+            $(`#popContainer${name}`).remove();
+        });
+    }
+
     if (tradable){
         var market_item = $(`<div id="market-${name}" class="market-item" v-show="display"></div>`);
         market_item.append($(`<span class="res has-text-${color}">{{ name }}</span>`));
