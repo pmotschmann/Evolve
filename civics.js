@@ -110,12 +110,13 @@ function taxRates(govern){
 }
 
 function buildGarrison(garrison){
-    garrison.append($('<div class="header has-text-warning">Garrison</div>'));
+    garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating {{ workers | rating }}</span></div>'));
 
-    garrison.append($('<div class="barracks"><span>Soldiers</span> <span>{{ workers }} / {{ max }}</span> - <span>Rating {{ workers | rating }}</span></div>'));
+    garrison.append($('<div class="barracks"><span>Soldiers</span> <span>{{ workers }} / {{ max }}</span></div>'));
     garrison.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" type="is-dark" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
     garrison.append($('<b-tooltip :label="trainLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="hireLabel()" position="is-bottom" type="is-dark" multilined animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip>'));
     garrison.append($('<b-tooltip :label="retireLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button" @click="retire">Retire soldier</button></b-tooltip>'));
 
     var tactics = $('<div id="tactics" v-show="display" class="tactics"><span>Campaign</span></div>');
@@ -143,6 +144,10 @@ function buildGarrison(garrison){
         };
     }
 
+    if (!global.civic.garrison['mercs']){
+        global.civic.garrison['mercs'] = false;
+    }
+
     vues['civ_garrison'] = new Vue({
         data: global.civic['garrison'],
         methods: {
@@ -153,6 +158,13 @@ function buildGarrison(garrison){
                     global.civic['garrison'].workers++;
                     global.civic.free--;
                     global['resource'][races[global.race.species].name].amount--;
+                }
+            },
+            hire(){
+                let cost = Math.round((1.75 ** global.civic.garrison.workers) * 75);
+                if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                    global.resource.Money.amount -= cost;
+                    global.civic['garrison'].workers++;
                 }
             },
             retire(){
@@ -479,6 +491,10 @@ function buildGarrison(garrison){
             trainLabel(){
                 let cost = Math.round((1.25 ** global.civic.garrison.workers) * 75) - 50;
                 return `Train a Soldier, costs \$${cost} and requires a recruit (unemployed citizen)`;
+            },
+            hireLabel(){
+                let cost = Math.round((1.35 ** global.civic.garrison.workers) * 100);
+                return `Hire a mercenary, costs \$${cost}`;
             },
             retireLabel(){
                 return `Return a soldier to civilian life, note if there is not any open housing they will leave your settlement.`;

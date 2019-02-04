@@ -51,6 +51,28 @@ export const events = {
             return `A fire has broken out destroying ${loss} lumber.`;
         }
     },
+    raid: {
+        reqs: { 
+            tech: 'military'
+        },
+        effect: function(){
+            let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
+            let enemy = global['resource'][races[global.race.species].name].amount / Math.rand(1,4);
+            
+            if (army > enemy){
+                global.civic.garrison.wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+                return `An attack by a rival city has been repelled, ${global.civic.garrison.wounded} soldiers were wounded.`;
+            }
+            else {
+                var loss = Math.rand(1,Math.round(global.resource.Money.amount / 4));
+                var res = global.resource.Money.amount - loss;
+                if (res < 0){ res = 0; }
+                global.resource.Money.amount = res;
+                global.civic.garrison.wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+                return `Your city was raided, \$${loss} was stolen and ${global.civic.garrison.wounded} soldiers were wounded.`;
+            }
+        }
+    },
     tax_revolt1: {
         reqs: { 
             tax_rate: 4

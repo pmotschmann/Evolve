@@ -2442,6 +2442,25 @@ export const actions = {
                 return false;
             }
         },
+        mercs: {
+            id: 'tech-mercs',
+            title: 'Mercenaries',
+            desc: 'Establish a mercenary recruitment center',
+            reqs: { military: 1 },
+            grant: ['mercs',1],
+            cost: {
+                Money: function(){ return 10000 },
+                Knowledge: function(){ return 5000; }
+            },
+            effect: 'Unlocks the ability to hire mercenaries. You can pay a man to die for you afterall.',
+            action: function (){
+                if (payCosts(actions.tech.mercs.cost)){
+                    global.civic.garrison['mercs'] = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         bows: {
             id: 'tech-bows',
             title: 'Bows',
