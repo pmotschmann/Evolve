@@ -1,4 +1,5 @@
 import { global } from './vars.js';
+import { races } from './races.js';
 
 export const events = {
     dna_replication: {
