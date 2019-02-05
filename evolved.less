@@ -175,7 +175,6 @@ a {
                     padding: 0 .25rem;
                     border-radius: 0 .25rem 0 .4375rem;
                     overflow: hidden;
-                    background: #1f2424;
                 }
             }
 
@@ -401,7 +400,6 @@ a {
     height: 1.2rem;
     line-height: 1.2rem;
     width: 100%;
-    background-color: #3a4344;
     position: fixed;
 }
 
@@ -502,6 +500,10 @@ html.dark {
         border-top: #ccc solid .0625rem;
         border-bottom: #ccc solid .0625rem;
     }
+    .topBar,
+    .promoBar {
+        background-color: #3a4344;
+    }
     .main {
         .content {
             .action {
@@ -509,6 +511,7 @@ html.dark {
                     span.count {
                         border-top: .0625rem solid #282f2f;
                         border-right: .0625rem solid #282f2f;
+                        background: #1f2424;
                     }
                 }
                 div.special {
@@ -597,5 +600,141 @@ html.dark {
 }
 
 html.light {
+    body {
+        color: #000000;
+        font-weight: 500;
+    }
+    .has-text-success {
+        color: #082412 !important;
+    }
+    .has-text-warning {
+        color: #7a6304  !important;
+    }
+    .has-text-danger {
+        color: #470303  !important;
+    }
+    .topBar,
+    .promoBar {
+        background-color: #c7c7c7;
+    }
+    .topBar {
+        .calendar {
+            .fa-temperature-low {
+                color: #00d6b2;
+            }
+            .fa-temperature-high {
+                color: #f10202;
+            }
+            .fa-sun {
+                color: #fffb00;
+            }
+            .fa-cloud {
+                color: #dfe2d3;
+            }
+            .fa-cloud-rain {
+                color: #00b0e6;
+            }
+            .fa-snowflake {
+                color: #fff;
+            }
+        }
+    }
+    .add,
+    .sub {
+        border: #000 solid .0625rem;
+    }
+    .main {
+        .content {
+            .action {
+                a.button {
+                    span.count {
+                        border-bottom: .0625rem solid #000;
+                        border-left: .0625rem solid #000;
+                    }
+                }
+                div.special {
+                    .gear {
+                        fill: #3a4344;
+                    }
+                }
+                div.on {
+                    color: #00af0f;
+                }
+                div.off {
+                    color: #c20000;
+                    border: .0625rem solid #000;
+                }
+                div.on:hover,
+                div.off:hover {
+                    border: .0625rem solid #000;
+                }
 
+                div.special:hover {
+                    border: .0625rem solid #000;
+                    .gear {
+                        fill: #4a5354;
+                    }
+                }
+            }
+
+            .button.is-dark {
+                background-color: #fff;
+                color: #000;
+                border: solid .0625rem black;
+            }
+            .button.is-dark.is-hovered, 
+            .button.is-dark:hover {
+                background-color: #ccc;
+            }
+        }
+
+        > div.popper {
+            > div:nth-child(2),
+            > div:nth-child(3) {
+                border-top: solid .0625rem black;
+            }
+        }
+    
+        .government {
+            .header {
+                border-bottom: .0625rem solid #4e4e4e;
+            }
+        }
+    
+        .garrison {
+            .header {
+                border-bottom: .0625rem solid #4e4e4e;
+            }
+        }
+
+        .market-header {
+            border-bottom: #4e4e4e solid 1px;
+        }
+    }
+
+    .market-item {
+        .order {
+            border: #000 solid .0625rem;
+        }
+        .order:hover {
+            border: #333 solid .0625rem;
+            background-color: #ccc;
+        }
+    }
+
+    .modalBox {
+        background: #ffffff;
+        p {
+            border-bottom: #4e4e4e solid .0625rem;
+        }
+        .market-item {
+            border-top: #4e4e4e solid .0625rem;
+        }
+        .divide {
+            border-top: #4e4e4e solid .0625rem;
+        }
+        .smelting {
+            border-top: #4e4e4e solid .0625rem;
+        }
+    }
 }
