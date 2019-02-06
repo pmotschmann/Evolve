@@ -128,7 +128,6 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     
     if (stackable){
         $(`#con${name}`).on('mouseover',function(){
-            console.log('cheese');
             var popper = $(`<div id="popContainer${name}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
             popper.append($(`<div>Crates ${global.resource[name].crates}</div>`));
@@ -139,7 +138,6 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             poppers[name] = new Popper($(`#con${name}`),popper);
         });
         $(`#con${name}`).on('mouseout',function(){
-            console.log('cake');
             $(`#popContainer${name}`).hide();
             poppers[name].destroy();
             $(`#popContainer${name}`).remove();

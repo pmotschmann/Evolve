@@ -678,24 +678,24 @@ export const actions = {
             cost: { 
                 Money: function(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ 
-                        return costMultiplier('basic_housing', 20, 1.15);
+                        return costMultiplier('basic_housing', 20, 1.18);
                     } 
                     else { 
                         return 0; 
                     } 
                 },
-                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.22); },
+                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.25); },
                 Stone: function(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
-                        return costMultiplier('basic_housing', 7, 1.22);
+                        return costMultiplier('basic_housing', 7, 1.25);
                     } 
                     else { 
-                        return costMultiplier('basic_housing', 8, 1.22); 
+                        return costMultiplier('basic_housing', 8, 1.25); 
                     }
                 },
                 Cement: function(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
-                        return costMultiplier('basic_housing', 2, 1.18);
+                        return costMultiplier('basic_housing', 2, 1.22);
                     } 
                     else { 
                         return 0; 
@@ -769,12 +769,15 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('farm', 20, 1.35); },
                 Stone: function(){ return costMultiplier('farm', 10, 1.35); }
             },
-            effect: 'Increases farmer capacity by one',
+            effect: function (){ return global.tech['farm'] ? 'Increases citizen and farmer capacity by one' : 'Increases farmer capacity by one'; },
             action: function (){
                 if (payCosts(actions.city.farm.cost)){
                     global.city['farm'].count++;
                     global.civic.farmer.display = true;
                     global.civic.farmer.max++;
+                    if (global.tech['farm']){
+                        global['resource'][races[global.race.species].name].max += 1;
+                    }
                     return true;
                 }
                 return false;
@@ -1395,6 +1398,24 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.agriculture.cost)){
                     global.city['farm'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        farm_house: {
+            id: 'tech-farm_house',
+            title: 'Farm Houses',
+            desc: 'Add a house to every farm',
+            reqs: { agriculture: 1, housing: 1, currency: 1 },
+            grant: ['farm',1],
+            cost: {
+                Money: function(){ return 50; },
+                Knowledge: function(){ return 200; }
+            },
+            effect: 'learn the joys of a short commute by living at work!',
+            action: function (){
+                if (payCosts(actions.tech.farm_house.cost)){
                     return true;
                 }
                 return false;

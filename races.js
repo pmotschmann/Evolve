@@ -69,7 +69,7 @@ export const races = {
         entity: 'horse people',
         traits: {
             beast_of_burdon: 1,
-            fast: 1,
+            herbivore: 1,
         }
     },
     kobold: {
@@ -159,8 +159,8 @@ export const races = {
         }
     },
     sethrak: {
-        name: 'Sethrak',
-        desc: 'Sethrak are a species who evolved from snakes. They have evolved to become bipedal creatures but otherwise maintain a strong resemblance to their snake ancestors.',
+        name: 'Slitheryn',
+        desc: 'Slitheryn are a reptillian species who evolved from snakes. They have humanoid upper bodies but retain snake like lower halves.',
         type: 'reptillian',
         home: 'Viper',
         entity: 'snake creatures',
@@ -170,8 +170,8 @@ export const races = {
         }
     },
     arrakoa: {
-        name: 'Arrakoa',
-        desc: 'Arrakoa are a feathered species of flghtless birds. Long ago they may have taken to the skies but modern Arrakoa are too heavy to fly.',
+        name: 'Arraak',
+        desc: 'Arraak are a feathered species of flghtless birds. Long ago they may have taken to the skies but modern Arraak are too heavy to fly.',
         type: 'avian',
         home: 'Daphne',
         entity: 'bird people',
@@ -451,7 +451,7 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    fast: {
+    herbivore: {
         desc: '',
         ranks: 0,
         type: 'major',

@@ -527,6 +527,9 @@ function mainLoop() {
             caps[races[global.race.species].name] = 0;
             if (global.city['farm']){
                 lCaps['farmer'] += global.city['farm'].count;
+                if (global.tech['farm']){
+                    caps[races[global.race.species].name] += global.city['farm'].count;
+                }
             }
             if (global.city['storage_yard']){
                 let size = global.tech.container >= 3 ? 100 : 50;
