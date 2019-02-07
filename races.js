@@ -158,7 +158,7 @@ export const races = {
             chameleon: 1
         }
     },
-    sethrak: {
+    slitheryn: {
         name: 'Slitheryn',
         desc: 'Slitheryn are a reptillian species who evolved from snakes. They have humanoid upper bodies but retain snake like lower halves.',
         type: 'reptillian',
@@ -169,7 +169,7 @@ export const races = {
             forked_tongue: 1
         }
     },
-    arrakoa: {
+    arraak: {
         name: 'Arraak',
         desc: 'Arraak are a feathered species of flghtless birds. Long ago they may have taken to the skies but modern Arraak are too heavy to fly.',
         type: 'avian',

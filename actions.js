@@ -516,10 +516,10 @@ export const actions = {
                             global.race.species = 'gecko';
                         }
                         else if (path < 50){
-                            global.race.species = 'sethrak';
+                            global.race.species = 'slitheryn';
                         }
                         else if (path < 67){
-                            global.race.species = 'arrakoa';
+                            global.race.species = 'arraak';
                         }
                         else if (path < 84){
                             global.race.species = 'pterodacti';
@@ -1006,13 +1006,25 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); },
                 Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); }
             },
-            effect: 'Allows workers to quarry for stone',
+            effect: function() { 
+                if (global.tech['mine_conveyor']){
+                    return 'Allows workers to quarry for stone. Each quarry with a powered convayer consumes 1kW but increases rock yield by 5%';
+                }
+                else {
+                    return 'Allows workers to quarry for stone.';
+                }
+            },
+            powered: 1,
+            power_reqs: { mine_conveyor: 1 },
             action: function (){
                 if (payCosts(actions.city.rock_quarry.cost)){
                     global.city['rock_quarry'].count++;
                     global.civic.quarry_worker.display = true;
                     global.civic.quarry_worker.max = global.city.rock_quarry.count;
                     global['resource']['Stone'].max += 100;
+                    if (global.tech['mine_conveyor']){
+                        global.city['rock_quarry'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1078,13 +1090,25 @@ export const actions = {
                 Money: function(){ return costMultiplier('mine', 60, 1.6); },
                 Lumber: function(){ return costMultiplier('mine', 175, 1.35); }
             },
-            effect: 'Builds a mine shaft allowing miners to mine minerals from the ground.',
+            effect: function() { 
+                if (global.tech['mine_conveyor']){
+                    return 'Builds a mine shaft allowing miners to mine minerals from the ground. Each mine with a powered convayer consumes 1kW but increases ore yield by 5%';
+                }
+                else {
+                    return 'Builds a mine shaft allowing miners to mine minerals from the ground.';
+                }
+            },
+            powered: 1,
+            power_reqs: { mine_conveyor: 1 },
             action: function (){
                 if (payCosts(actions.city.mine.cost)){
                     global.city['mine'].count++;
                     global.resource.Copper.display = true;
                     global.civic.miner.display = true;
                     global.civic.miner.max = global.city.mine.count;
+                    if (global.tech['mine_conveyor']){
+                        global.city['mine'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1093,20 +1117,32 @@ export const actions = {
         coal_mine: {
             id: 'city-coal_mine',
             title: 'Coal Mine',
-            desc: 'Build a Coal mine',
+            desc: 'Build a Coal Mine',
             reqs: { mining: 4 },
             cost: { 
                 Money: function(){ return costMultiplier('coal_mine', 480, 1.4); },
                 Lumber: function(){ return costMultiplier('coal_mine', 250, 1.35); },
                 Iron: function(){ return costMultiplier('coal_mine', 180, 1.35); }
             },
-            effect: 'Creates a mine shaft in a coal rich area allowing a coal miner to product coal.',
+            effect: function() { 
+                if (global.tech['mine_conveyor']){
+                    return 'Creates a mine in a coal rich area allowing a coal miner to produce coal. Each mine with a powered convayer consumes 1kW but increases ore yield by 5%';
+                }
+                else {
+                    return 'Creates a mine in a coal rich area allowing a coal miner to produce coal.';
+                }
+            },
+            powered: 1,
+            power_reqs: { mine_conveyor: 1 },
             action: function (){
                 if (payCosts(actions.city.coal_mine.cost)){
                     global.city['coal_mine'].count++;
                     global.resource.Coal.display = true;
                     global.civic.coal_miner.display = true;
                     global.civic.coal_miner.max = global.city.coal_mine.count;
+                    if (global.tech['mine_conveyor']){
+                        global.city['coal_mine'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1543,9 +1579,9 @@ export const actions = {
             grant: ['smelting',2],
             cost: { 
                 Knowledge: function(){ return 5500; },
-                Steel: function(){ return 50; }
+                Steel: function(){ return 25; }
             },
-            effect: 'Upgrade your smelters so they can produce steel. (hint, go pillage something)',
+            effect: 'Upgrade your smelters so they can produce steel. (hint, raid an enemy village)',
             action: function (){
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
@@ -2043,7 +2079,7 @@ export const actions = {
             reqs: { science: 2 },
             grant: ['science',3],
             cost: {
-                Knowledge: function(){ return 2000; }
+                Knowledge: function(){ return 1250; }
             },
             effect: 'Libraries will have a minor effect on professor effectiveness.',
             action: function (){
@@ -2105,6 +2141,24 @@ export const actions = {
                         count: 0,
                         on: 0
                     };
+                    return true;
+                }
+                return false;
+            }
+        },
+        mine_conveyor: {
+            id: 'tech-mine_conveyor',
+            title: 'Mine Conveyor Belts',
+            desc: 'Mine Conveyor Belts',
+            reqs: { high_tech: 2 },
+            grant: ['mine_conveyor',1],
+            cost: {
+                Knowledge: function(){ return 15000; },
+                Copper: function(){ return 1000; }
+            },
+            effect: 'Add mining conveyor belts to your mining opperations. Greatly increasing mining excavation rates.',
+            action: function (){
+                if (payCosts(actions.tech.mine_conveyor.cost)){
                     return true;
                 }
                 return false;
@@ -2673,6 +2727,19 @@ export function checkTechRequirements(tech){
     return false;
 }
 
+export function checkPowerRequirements(action,type){
+    var isMet = true;
+    if (actions[action][type]['power_reqs']){
+        Object.keys(actions[action][type].power_reqs).forEach(function (req) {
+            if (!global.tech[req] || global.tech[req] < actions[action][type].power_reqs[req]){
+                isMet = false;
+            }
+        });
+    }
+    return isMet;
+}
+
+
 function registerTech(action){
     var tech = actions.tech[action].grant[0];
     if (!global.tech[tech]){
@@ -2720,7 +2787,7 @@ export function addAction(action,type){
             </svg></div>`);
         parent.append(special);
     }
-    if (actions[action][type]['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2){
+    if (actions[action][type]['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(action,type)){
         if (!global[action][type]['on']){
             global[action][type]['on'] = 0;
         }

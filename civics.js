@@ -161,7 +161,7 @@ function buildGarrison(garrison){
                 }
             },
             hire(){
-                let cost = Math.round((1.75 ** global.civic.garrison.workers) * 75);
+                let cost = Math.round((1.35 ** global.civic.garrison.workers) * 100);
                 if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
                     global.resource.Money.amount -= cost;
                     global.civic['garrison'].workers++;
