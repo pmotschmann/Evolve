@@ -1279,10 +1279,10 @@ export const actions = {
                 let gain = 1000;
                 if (global.city.powered){
                     let pgain = gain * 2;
-                    return `Increases the maximum amount of knowledge you can store by ${gain}. Each powered tower uses 2Kw but doubles it's effectiveness to ${pgain}.`;
+                    return `Staffs one scientist and increases the maximum amount of knowledge you can store by ${gain}. Each powered tower uses 2Kw but doubles it's effectiveness to ${pgain}.`;
                 }
                 else {
-                    return `Increases the maximum amount of knowledge you can store by ${gain}.`;
+                    return `Staffs one scientist and increases the maximum amount of knowledge you can store by ${gain}.`;
                 }
             },
             powered: 2,
@@ -2153,8 +2153,9 @@ export const actions = {
             reqs: { high_tech: 2 },
             grant: ['mine_conveyor',1],
             cost: {
-                Knowledge: function(){ return 15000; },
-                Copper: function(){ return 1000; }
+                Knowledge: function(){ return 18000; },
+                Copper: function(){ return 2250; },
+                Steel: function(){ return 1750; }
             },
             effect: 'Add mining conveyor belts to your mining opperations. Greatly increasing mining excavation rates.',
             action: function (){
