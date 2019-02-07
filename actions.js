@@ -47,9 +47,9 @@ export const actions = {
             id: 'evo-organelles',
             title: 'Organelles',
             desc: 'Evolve Organelles',
-            cost: { 
+            cost: {
                 RNA: function(){ return (global.evolution['organelles'].count * 8) + 12; },
-                DNA: function(){ return (global.evolution['organelles'].count * 4) + 4; },
+                DNA: function(){ return (global.evolution['organelles'].count * 4) + 4; }
             },
             effect: 'Automatically generate RNA',
             action: function (){
@@ -64,9 +64,9 @@ export const actions = {
             id: 'evo-nucleus',
             title: 'Nucleus',
             desc: 'Evolve Nucleus',
-            cost: { 
-                RNA: function(){ return (global.evolution['nucleus'].count * 45) + 75; },
-                DNA: function(){ return (global.evolution['nucleus'].count * 18) + 30; },
+            cost: {
+                RNA: function(){ return (global.evolution['nucleus'].count * 38) + 60; },
+                DNA: function(){ return (global.evolution['nucleus'].count * 18) + 24; }
             },
             effect: 'Automatically consume RNA to create DNA',
             action: function (){
@@ -81,9 +81,9 @@ export const actions = {
             id: 'evo-eukaryotic_cell',
             title: 'Eukaryotic Cell',
             desc: 'Evolve Eukaryotic Cell',
-            cost: { 
+            cost: {
                 RNA: function(){ return (global.evolution['eukaryotic_cell'].count * 20) + 20; },
-                DNA: function(){ return (global.evolution['eukaryotic_cell'].count * 12) + 40; },
+                DNA: function(){ return (global.evolution['eukaryotic_cell'].count * 12) + 40; }
             },
             effect: 'Increases DNA capacity by 10',
             action: function (){
@@ -99,9 +99,9 @@ export const actions = {
             id: 'evo-mitochondria',
             title: 'Mitochondria',
             desc: 'Evolve Mitochondria',
-            cost: { 
+            cost: {
                 RNA: function(){ return (global.evolution['mitochondria'].count * 50) + 150; },
-                DNA: function(){ return (global.evolution['mitochondria'].count * 35) + 120; },
+                DNA: function(){ return (global.evolution['mitochondria'].count * 35) + 120; }
             },
             effect: 'Increases DNA capacity by 25 and RNA capacity by 50',
             action: function (){
@@ -118,8 +118,8 @@ export const actions = {
             id: 'evo-sexual_reproduction',
             title: 'Sexual Reproduction',
             desc: 'Evolve Sexual Reproduction',
-            cost: { 
-                DNA: function(){ return 225; },
+            cost: {
+                DNA: function(){ return 175; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -148,8 +148,8 @@ export const actions = {
             id: 'evo-phagocytosis',
             title: 'Phagocytosis',
             desc: 'Evolve Phagocytosis',
-            cost: { 
-                DNA: function(){ return 250; },
+            cost: {
+                DNA: function(){ return 200; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -166,8 +166,8 @@ export const actions = {
             id: 'evo-chloroplasts',
             title: 'Chloroplasts',
             desc: 'Evolve Chloroplasts',
-            cost: { 
-                DNA: function(){ return 250; },
+            cost: {
+                DNA: function(){ return 200; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -184,8 +184,8 @@ export const actions = {
             id: 'evo-chitin',
             title: 'Chitin',
             desc: 'Evolve Chitin',
-            cost: { 
-                DNA: function(){ return 250; },
+            cost: {
+                DNA: function(){ return 200; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -202,8 +202,8 @@ export const actions = {
             id: 'evo-multicellular',
             title: 'Multicellular',
             desc: 'Evolve Multicellular',
-            cost: { 
-                DNA: function(){ return 275; },
+            cost: {
+                DNA: function(){ return 225; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -231,8 +231,8 @@ export const actions = {
             id: 'evo-spores',
             title: 'Spores',
             desc: 'Evolve Spores',
-            cost: { 
-                DNA: function(){ return 300; },
+            cost: {
+                DNA: function(){ return 250; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -249,8 +249,8 @@ export const actions = {
             id: 'evo-poikilohydric',
             title: 'Poikilohydric',
             desc: 'Evolve Poikilohydric',
-            cost: { 
-                DNA: function(){ return 300; },
+            cost: {
+                DNA: function(){ return 250; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -267,8 +267,8 @@ export const actions = {
             id: 'evo-bilateral_symmetry',
             title: 'Bilateral Symmetry',
             desc: 'Evolve Bilateral Symmetry',
-            cost: { 
-                DNA: function(){ return 300; },
+            cost: {
+                DNA: function(){ return 250; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -293,8 +293,8 @@ export const actions = {
             id: 'evo-bryophyte',
             title: 'Bryophyte',
             desc: 'Evolve Bryophyte',
-            cost: { 
-                DNA: function(){ return 330; },
+            cost: {
+                DNA: function(){ return 275; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -325,8 +325,8 @@ export const actions = {
             id: 'evo-protostomes',
             title: 'Protostomes',
             desc: 'Evolve Protostomes',
-            cost: { 
-                DNA: function(){ return 330; },
+            cost: {
+                DNA: function(){ return 275; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -343,8 +343,8 @@ export const actions = {
             id: 'evo-deuterostome',
             title: 'Deuterostome',
             desc: 'Evolve Deuterostome',
-            cost: { 
-                DNA: function(){ return 330; },
+            cost: {
+                DNA: function(){ return 275; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -369,8 +369,8 @@ export const actions = {
             id: 'evo-vascular',
             title: 'Vascular',
             desc: 'Evolve Vascular',
-            cost: { 
-                DNA: function(){ return 360; },
+            cost: {
+                DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -387,8 +387,8 @@ export const actions = {
             id: 'evo-homoiohydric',
             title: 'Homoiohydric',
             desc: 'Evolve Homoiohydric',
-            cost: { 
-                DNA: function(){ return 360; },
+            cost: {
+                DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -405,8 +405,8 @@ export const actions = {
             id: 'evo-athropods',
             title: 'Athropods',
             desc: 'Evolve Athropods',
-            cost: { 
-                DNA: function(){ return 360; },
+            cost: {
+                DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -423,8 +423,8 @@ export const actions = {
             id: 'evo-mammals',
             title: 'Mammals',
             desc: 'Evolve Mammals',
-            cost: { 
-                DNA: function(){ return 360; },
+            cost: {
+                DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -441,8 +441,8 @@ export const actions = {
             id: 'evo-eggshell',
             title: 'Eggshell',
             desc: 'Evolve Eggshell',
-            cost: { 
-                DNA: function(){ return 360; },
+            cost: {
+                DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
             action: function (){
@@ -459,8 +459,9 @@ export const actions = {
             id: 'evo-sentience',
             title: 'Sentience',
             desc: 'Evolve Sentience',
-            cost: { 
-                DNA: function(){ return 400; },
+            cost: {
+                RNA: function(){ return 400; },
+                DNA: function(){ return 350; }
             },
             effect: 'Evolve into a species which has achieved sentience',
             action: function (){
@@ -608,6 +609,8 @@ export const actions = {
                         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
                         window.location.reload();
                     }
+
+                    messageQueue(`Congradulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
                 }
                 return false;
             }
