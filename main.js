@@ -224,7 +224,7 @@ function mainLoop() {
 
             var p_structs = ['apartment','wardenclyffe','rock_quarry','mine','coal_mine'];
             for (var i = 0; i < p_structs.length; i++) {
-                if (global.city[p_structs[i]]){
+                if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
                     let power = global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
                     while (power > power_grid && power > 0){
                         power -= actions.city[p_structs[i]].powered;
