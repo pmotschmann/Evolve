@@ -308,175 +308,186 @@ function mainLoop() {
             }
             
             // Resource Income
-            if (fed){
-                // Knowledge
-                var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
-                know_multiplier *= racialTrait(global.civic.professor.workers,'science');
-                var delta = (global.civic.professor.workers * know_multiplier) + 1;
-                let adjunct = 1;
-                if (global.tech['science'] >= 5 && global.city['wardenclyffe']){
-                    adjunct = 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
+            let hunger = fed ? 1 : 0.5;
+            if (global.race['angry'] && fed === false){
+                hunger = 0.25;
+            }
+
+            // Knowledge
+            var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
+            know_multiplier *= racialTrait(global.civic.professor.workers,'science');
+            know_multiplier *= hunger;
+            var delta = (global.civic.professor.workers * know_multiplier) + 1;
+            let adjunct = 1;
+            if (global.tech['science'] >= 5 && global.city['wardenclyffe']){
+                adjunct = 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
+            }
+            delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * adjunct;
+            modRes('Knowledge',delta);
+            
+            // Cement
+            if (global.resource.Cement.display && global.resource.Cement.amount < global.resource.Cement.max){
+                var consume = global.civic.cement_worker.workers * 3;
+                var workDone = global.civic.cement_worker.workers;
+                while (consume > global.resource.Stone.amount && consume > 0){
+                    consume -= 3;
+                    workDone--;
                 }
-                delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * adjunct;
-                modRes('Knowledge',delta);
+                modRes('Stone',-(consume));
                 
-                // Cement
-                if (global.resource.Cement.display && global.resource.Cement.amount < global.resource.Cement.max){
-                    var consume = global.civic.cement_worker.workers * 3;
-                    var workDone = global.civic.cement_worker.workers;
-                    while (consume > global.resource.Stone.amount && consume > 0){
-                        consume -= 3;
-                        workDone--;
+                var cement_multiplier = 1;
+                cement_multiplier *= tax_multiplier;
+                cement_multiplier *= racialTrait(global.civic.cement_worker.workers,'factory');
+                cement_multiplier *= hunger;
+                delta = (workDone * global.civic.cement_worker.impact) * cement_multiplier;
+                modRes('Cement',delta);
+            }
+            
+            // Smelters
+            let iron_smelter = 0;
+            if (global.city['smelter'] && global.city['smelter'].count > 0){
+                let consume_wood = global.city['smelter'].Wood * 3;
+                let consume_coal = global.city['smelter'].Coal * 0.25;
+                iron_smelter = global.city['smelter'].Iron;
+                let steel_smelter = global.city['smelter'].Steel;
+                while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal ){
+                    if (steel_smelter > 0){
+                        steel_smelter--;
                     }
-                    modRes('Stone',-(consume));
-                    
-                    var cement_multiplier = 1;
-                    cement_multiplier *= tax_multiplier;
-                    cement_multiplier *= racialTrait(global.civic.cement_worker.workers,'factory');
-                    delta = (workDone * global.civic.cement_worker.impact) * cement_multiplier;
-                    modRes('Cement',delta);
+                    else {
+                        iron_smelter--;
+                    }
                 }
-                
-                // Smelters
-                let iron_smelter = 0;
-                if (global.city['smelter'] && global.city['smelter'].count > 0){
-                    let consume_wood = global.city['smelter'].Wood * 3;
-                    let consume_coal = global.city['smelter'].Coal * 0.25;
-                    iron_smelter = global.city['smelter'].Iron;
-                    let steel_smelter = global.city['smelter'].Steel;
-                    while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal ){
-                        if (steel_smelter > 0){
-                            steel_smelter--;
-                        }
-                        else {
-                            iron_smelter--;
-                        }
+                while (consume_wood > global.resource.Lumber.amount && consume_wood > 0){
+                    consume_wood -= 3;
+                    if (steel_smelter > 0){
+                        steel_smelter--;
                     }
-                    while (consume_wood > global.resource.Lumber.amount && consume_wood > 0){
-                        consume_wood -= 3;
-                        if (steel_smelter > 0){
-                            steel_smelter--;
-                        }
-                        else {
-                            iron_smelter--;
-                        }
+                    else {
+                        iron_smelter--;
                     }
-                    while (consume_coal > global.resource.Lumber.amount && consume_coal > 0){
-                        consume_coal -= 0.25;
-                        if (steel_smelter > 0){
-                            steel_smelter--;
-                        }
-                        else {
-                            iron_smelter--;
-                        }
-                    }
-
-                    iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
-
-                    modRes('Lumber',-(consume_wood));
-                    modRes('Coal',-(consume_coal));
-
-                    //Steel Production
-                    if (global.resource.Steel.display && global.resource.Steel.amount < global.resource.Steel.max){
-                        var iron_consume = steel_smelter * 2;
-                        var coal_consume = steel_smelter * 0.25;
-                        while (iron_consume > global.resource.Iron.amount && iron_consume > 0 && coal_consume > global.resource.Coal.amount && coal_consume > 0){
-                            iron_consume -= 2;
-                            coal_consume -= 0.25;
-                        }
-                        modRes('Iron',-(iron_consume));
-                        modRes('Coal',-(coal_consume));
-
-                        var steel_multiplier = global.tech['smelting'] >= 3 ? 1.2 : 1;
-                        steel_multiplier *= tax_multiplier;
-                        delta = steel_smelter * steel_multiplier;
-                        modRes('Steel',delta);
-                    }
-                }                
-
-                // Lumber
-                var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
-                lum_multiplier *= tax_multiplier;
-                if (global.city.powered && global.city.sawmill){
-                    let sawmills = global.city.sawmill.on;
-                    while (sawmills > power_grid && sawmills > 0){
-                        sawmills--;
-                    }
-                    power_grid -= global.city.sawmill.on;
-                    lum_multiplier *= 1 + (sawmills * 0.05);
                 }
-                lum_multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-                let lum_impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
-                delta = global.civic.lumberjack.workers * lum_impact * lum_multiplier;
-                modRes('Lumber',delta);
-                
-                // Stone
-                var stone_multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.3 : 0) + 1;
+                while (consume_coal > global.resource.Lumber.amount && consume_coal > 0){
+                    consume_coal -= 0.25;
+                    if (steel_smelter > 0){
+                        steel_smelter--;
+                    }
+                    else {
+                        iron_smelter--;
+                    }
+                }
+
+                iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
+
+                modRes('Lumber',-(consume_wood));
+                modRes('Coal',-(consume_coal));
+
+                //Steel Production
+                if (global.resource.Steel.display && global.resource.Steel.amount < global.resource.Steel.max){
+                    var iron_consume = steel_smelter * 2;
+                    var coal_consume = steel_smelter * 0.25;
+                    while (iron_consume > global.resource.Iron.amount && iron_consume > 0 && coal_consume > global.resource.Coal.amount && coal_consume > 0){
+                        iron_consume -= 2;
+                        coal_consume -= 0.25;
+                    }
+                    modRes('Iron',-(iron_consume));
+                    modRes('Coal',-(coal_consume));
+
+                    var steel_multiplier = global.tech['smelting'] >= 3 ? 1.2 : 1;
+                    steel_multiplier *= tax_multiplier;
+                    steel_multiplier *= hunger;
+                    delta = steel_smelter * steel_multiplier;
+                    modRes('Steel',delta);
+                }
+            }                
+
+            // Lumber
+            var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
+            lum_multiplier *= tax_multiplier;
+            if (global.city.powered && global.city.sawmill){
+                let sawmills = global.city.sawmill.on;
+                while (sawmills > power_grid && sawmills > 0){
+                    sawmills--;
+                }
+                power_grid -= global.city.sawmill.on;
+                lum_multiplier *= 1 + (sawmills * 0.05);
+            }
+            lum_multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
+            lum_multiplier *= hunger;
+            let lum_impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
+            delta = global.civic.lumberjack.workers * lum_impact * lum_multiplier;
+            modRes('Lumber',delta);
+            
+            // Stone
+            var stone_multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.3 : 0) + 1;
+            if (global.tech['explosives'] && global.tech['explosives'] >= 2){
+                stone_multiplier *= 1.5;
+            }
+            stone_multiplier *= tax_multiplier;
+            stone_multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
+            if (global.city['rock_quarry']['on']){
+                stone_multiplier *= 1 + (global.city['rock_quarry'].on * 0.05);
+            }
+            stone_multiplier *= hunger;
+            delta = global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier;
+            modRes('Stone',delta);
+            
+            // Copper
+            if (global.resource.Copper.display){
+                var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                 if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-                    stone_multiplier *= 1.5;
+                    copper_multiplier *= 1.25;
                 }
-                stone_multiplier *= tax_multiplier;
-                stone_multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
-                if (global.city['rock_quarry']['on']){
-                    stone_multiplier *= 1 + (global.city['rock_quarry'].on * 0.05);
+                copper_multiplier *= tax_multiplier;
+                copper_multiplier *= racialTrait(global.civic.miner.workers,'miner');
+                if (global.city['mine']['on']){
+                    copper_multiplier *= 1 + (global.city['mine'].on * 0.05);
                 }
-                delta = global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier;
-                modRes('Stone',delta);
-                
-                // Copper
-                if (global.resource.Copper.display){
-                    var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
-                    if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-                        copper_multiplier *= 1.25;
-                    }
-                    copper_multiplier *= tax_multiplier;
-                    copper_multiplier *= racialTrait(global.civic.miner.workers,'miner');
-                    if (global.city['mine']['on']){
-                        copper_multiplier *= 1 + (global.city['mine'].on * 0.05);
-                    }
-                    if (global.race['tough']){
-                        copper_multiplier *= 1.1;
-                    }
-                    delta = (global.civic.miner.workers / 7) * copper_multiplier;
-                    modRes('Copper',delta);
+                if (global.race['tough']){
+                    copper_multiplier *= 1.1;
                 }
-                
-                // Iron
-                if (global.resource.Iron.display){
-                    var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
-                    if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-                        iron_multiplier *= 1.25;
-                    }
-                    iron_multiplier *= tax_multiplier;
-                    iron_multiplier *= (1 + (iron_smelter * 0.1));
-                    iron_multiplier *= racialTrait(global.civic.miner.workers,'miner');
-                    if (global.city['mine']['on']){
-                        iron_multiplier *= 1 + (global.city['mine'].on * 0.05);
-                    }
-                    if (global.race['tough']){
-                        iron_multiplier *= 1.1;
-                    }
-                    delta = (global.civic.miner.workers / 4) * iron_multiplier;
-                    modRes('Iron',delta);
+                copper_multiplier *= hunger;
+                delta = (global.civic.miner.workers / 7) * copper_multiplier;
+                modRes('Copper',delta);
+            }
+            
+            // Iron
+            if (global.resource.Iron.display){
+                var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+                if (global.tech['explosives'] && global.tech['explosives'] >= 2){
+                    iron_multiplier *= 1.25;
                 }
-                
-                // Coal
-                if (global.resource.Coal.display){
-                    var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
-                    if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-                        coal_multiplier *= 1.25;
-                    }
-                    coal_multiplier *= tax_multiplier;
-                    coal_multiplier *= racialTrait(global.civic.coal_miner.workers,'miner');
-                    if (global.city['coal_mine']['on']){
-                        coal_multiplier *= 1 + (global.city['coal_mine'].on * 0.05);
-                    }
-                    if (global.race['tough']){
-                        coal_multiplier *= 1.1;
-                    }
-                    delta = global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier;
-                    modRes('Coal',delta);
+                iron_multiplier *= tax_multiplier;
+                iron_multiplier *= (1 + (iron_smelter * 0.1));
+                iron_multiplier *= racialTrait(global.civic.miner.workers,'miner');
+                if (global.city['mine']['on']){
+                    iron_multiplier *= 1 + (global.city['mine'].on * 0.05);
                 }
+                if (global.race['tough']){
+                    iron_multiplier *= 1.1;
+                }
+                iron_multiplier *= hunger;
+                delta = (global.civic.miner.workers / 4) * iron_multiplier;
+                modRes('Iron',delta);
+            }
+            
+            // Coal
+            if (global.resource.Coal.display){
+                var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+                if (global.tech['explosives'] && global.tech['explosives'] >= 2){
+                    coal_multiplier *= 1.25;
+                }
+                coal_multiplier *= tax_multiplier;
+                coal_multiplier *= racialTrait(global.civic.coal_miner.workers,'miner');
+                if (global.city['coal_mine']['on']){
+                    coal_multiplier *= 1 + (global.city['coal_mine'].on * 0.05);
+                }
+                if (global.race['tough']){
+                    coal_multiplier *= 1.1;
+                }
+                coal_multiplier *= hunger;
+                delta = global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier;
+                modRes('Coal',delta);
             }
             
             // Detect new unlocks

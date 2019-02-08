@@ -416,13 +416,13 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    brute: {
-        desc: '',
+    brute: { // Recruitment costs are 1/2 price
+        desc: 'Your race loves fighting and is easier to recruit for battle.',
         ranks: 0,
         type: 'major',
     },
-    angry: {
-        desc: '',
+    angry: { // When hungry you get hangry, low food penalty is more severe
+        desc: 'Your race is quick to get angry when hungry.',
         ranks: 0,
         type: 'major',
     },

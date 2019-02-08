@@ -153,6 +153,9 @@ function buildGarrison(garrison){
         methods: {
             train(){
                 let cost = Math.round((1.25 ** global.civic.garrison.workers) * 75) - 50;
+                if (global.race['brute']){
+                    cost = Math.round(cost / 2);
+                }
                 if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost && global.civic.free > 0){
                     global.resource.Money.amount -= cost;
                     global.civic['garrison'].workers++;
@@ -162,6 +165,9 @@ function buildGarrison(garrison){
             },
             hire(){
                 let cost = Math.round((1.35 ** global.civic.garrison.workers) * 100);
+                if (global.race['brute']){
+                    cost = Math.round(cost / 2);
+                }
                 if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
                     global.resource.Money.amount -= cost;
                     global.civic['garrison'].workers++;
@@ -490,10 +496,16 @@ function buildGarrison(garrison){
             },
             trainLabel(){
                 let cost = Math.round((1.25 ** global.civic.garrison.workers) * 75) - 50;
+                if (global.race['brute']){
+                    cost = Math.round(cost / 2);
+                }
                 return `Train a Soldier, costs \$${cost} and requires a recruit (unemployed citizen)`;
             },
             hireLabel(){
                 let cost = Math.round((1.35 ** global.civic.garrison.workers) * 100);
+                if (global.race['brute']){
+                    cost = Math.round(cost / 2);
+                }
                 return `Hire a mercenary, costs \$${cost}`;
             },
             retireLabel(){
