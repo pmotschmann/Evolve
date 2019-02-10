@@ -4,7 +4,8 @@ export const races = {
     protoplasm: {
         name: 'Protoplasm',
         desc: "Your race has yet to evolve into a complex lifeform, currently you're nothing but protoplasm in the primortal ooze.",
-        type: 'organism'
+        type: 'organism',
+        home: 'Prehistoric'
     },
     human: {
         name: 'Human',

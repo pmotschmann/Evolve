@@ -3042,7 +3042,7 @@ function smelterModal(modal){
     let fuelTypes = $('<div></div>');
     modal.append(fuelTypes);
 
-    let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" type="is-dark" animated><span class="current">Wood {{ Wood }}</span></b-tooltip>`);
+    let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">Wood {{ Wood }}</span></b-tooltip>`);
     let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
     let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
     fuelTypes.append(subWood);
@@ -3050,7 +3050,7 @@ function smelterModal(modal){
     fuelTypes.append(addWood);
 
     if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" type="is-dark" animated><span class="current">Coal {{ Coal }}</span></b-tooltip>`);
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">Coal {{ Coal }}</span></b-tooltip>`);
         let subCoal = $('<span class="sub" @click="subCoal">&laquo;</span>');
         let addCoal = $('<span class="add" @click="addCoal">&raquo;</span>');
         fuelTypes.append(subCoal);
@@ -3060,8 +3060,8 @@ function smelterModal(modal){
 
     if (global.resource.Steel.display && global.tech.smelting >= 2){
         let smelt = $('<div class="smelting"></div>');
-        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" type="is-dark" animated multilined><button class="button" @click="ironSmelting()">Iron Smelting: {{ Iron }}</button></b-tooltip>`);
-        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" type="is-dark" animated multilined><button class="button" @click="steelSmelting()">Steel Smelting: {{ Steel }}</button></b-tooltip>`);
+        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" @click="ironSmelting()">Iron Smelting: {{ Iron }}</button></b-tooltip>`);
+        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" @click="steelSmelting()">Steel Smelting: {{ Steel }}</button></b-tooltip>`);
         modal.append(smelt);
         smelt.append(ironSmelt);
         smelt.append(steelSmelt);

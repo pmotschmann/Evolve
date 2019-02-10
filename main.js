@@ -1,4 +1,4 @@
-import { global, vues, save, runNew, messageQueue, modRes } from './vars.js';
+import { global, vues, save, poppers, runNew, messageQueue, modRes } from './vars.js';
 import { races, racialTrait } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
@@ -64,7 +64,8 @@ vues['race'].$mount('#race');
 
 vues['topBar'] = new Vue({
     data: {
-        city: global.city
+        city: global.city,
+        race: global.race
     },
     methods: {
         weather(){
@@ -92,9 +93,36 @@ vues['topBar'] = new Vue({
                     return 'Hot';// weather, hot weather may reduce worker productivity.';
             }
         }
+    },
+    filters: {
+        planet(species){
+            return races[species].home;
+        }
     }
 });
 vues['topBar'].$mount('#topBar');
+
+$('#topBar .planet').on('mouseover',function(){
+    var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
+    $('#main').append(popper);
+    let planet = races[global.race.species].home;
+    let race = races[global.race.species].name;
+    let biome = global.city.biome;
+    if (global.race.species === 'protoplasm'){
+        popper.append($(`<span>Life on this planet is in it's infancy and still evolving</span>`));
+    }
+    else {
+        popper.append($(`<span>${planet} is the home planet of the ${race} people. It is a ${biome} planet with an orbital period of 365 days.</span>`));
+    }
+    popper.show();
+    poppers['topbarPlanet'] = new Popper($('#topBar .planet'),popper);
+
+});
+$('#topBar .planet').on('mouseout',function(){
+    $(`#topbarPlanet`).hide();
+    poppers['topbarPlanet'].destroy();
+    $(`#topbarPlanet`).remove();
+});
 
 if (global.race.species === 'protoplasm'){
     global.resource.RNA.display = true;

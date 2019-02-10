@@ -280,9 +280,9 @@ function drawModal(name,color){
     
     crates.append($('<div class="crateHead"><span>Crates Owned: {{ crates.amount }}/{{ crates.max }}</span><span>Crates Assigned: {{ res.crates }}</span></div>'));
     
-    let buildCrate = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="buildCrate('${name}')">Construct Crate</button></b-tooltip>`);
-    let removeCrate = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="removeCrate('${name}')">Unassign Crate</button></b-tooltip>`);
-    let addCrate = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="addCrate('${name}')">Assign Crate</button></b-tooltip>`);
+    let buildCrate = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated><button class="button" @click="buildCrate('${name}')">Construct Crate</button></b-tooltip>`);
+    let removeCrate = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="removeCrate('${name}')">Unassign Crate</button></b-tooltip>`);
+    let addCrate = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">Assign Crate</button></b-tooltip>`);
     
     crates.append(buildCrate);
     crates.append(removeCrate);
@@ -355,9 +355,9 @@ function drawModal(name,color){
         
         containers.append($('<div class="crateHead"><span>Containers Owned: {{ containers.amount }}/{{ containers.max }}</span><span>Containers Assigned: {{ res.containers }}</span></div>'));
         
-        let buildContainer = $(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="buildContainer('${name}')">Construct Container</button></b-tooltip>`);
-        let removeContainer = $(`<b-tooltip :label="removeContainerLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="removeContainer('${name}')">Unassign Container</button></b-tooltip>`);
-        let addContainer = $(`<b-tooltip :label="addContainerLabel()" position="is-bottom" type="is-dark" animated><button class="button" @click="addContainer('${name}')">Assign Container</button></b-tooltip>`);
+        let buildContainer = $(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" animated><button class="button" @click="buildContainer('${name}')">Construct Container</button></b-tooltip>`);
+        let removeContainer = $(`<b-tooltip :label="removeContainerLabel()" position="is-bottom" animated><button class="button" @click="removeContainer('${name}')">Unassign Container</button></b-tooltip>`);
+        let addContainer = $(`<b-tooltip :label="addContainerLabel()" position="is-bottom" animated><button class="button" @click="addContainer('${name}')">Assign Container</button></b-tooltip>`);
         
         containers.append(buildContainer);
         containers.append(removeContainer);

@@ -430,6 +430,12 @@ a {
             color: #fff;
         }
     }
+    .planet {
+        margin: 0 auto 0 1rem;
+    }
+    .version {
+        margin: 0 1rem 0 auto;
+    }
 }
 
 .promoBar {
@@ -492,7 +498,19 @@ html.dark {
     .dropdown-content {
         background-color: #1f2424;
     }
-
+    .b-tooltip.is-right:before {
+        border-right: 5px solid #f2f2f2;
+    }
+    .b-tooltip.is-left:before {
+        border-left: 5px solid #f2f2f2;
+    }
+    .b-tooltip.is-bottom:before {
+        border-bottom: 5px solid #f2f2f2;
+    }
+    .b-tooltip:after {
+        background: #f2f2f2;
+        color: #000;
+    }
     .add,
     .sub {
         border: #ccc solid .0625rem;
@@ -622,6 +640,19 @@ html.light {
     .promoBar {
         background-color: #c7c7c7;
     }
+    .b-tooltip.is-right:before {
+        border-right: 5px solid #f2f2f2;
+    }
+    .b-tooltip.is-left:before {
+        border-left: 5px solid #f2f2f2;
+    }
+    .b-tooltip.is-bottom:before {
+        border-bottom: 5px solid #f2f2f2;
+    }
+    .b-tooltip:after {
+        background: #f2f2f2;
+        color: #000;
+    }
     .topBar {
         .calendar {
             .fa-temperature-low {
@@ -647,6 +678,10 @@ html.light {
     .add,
     .sub {
         border: #000 solid .0625rem;
+    }
+    .current {
+        border-top: #000 solid .0625rem;
+        border-bottom: #000 solid .0625rem;
     }
     .main {
         .content {

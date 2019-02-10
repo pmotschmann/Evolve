@@ -113,16 +113,16 @@ function buildGarrison(garrison){
     garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating {{ workers | rating }}</span></div>'));
 
     garrison.append($('<div class="barracks"><span>Soldiers</span> <span>{{ workers }} / {{ max }}</span></div>'));
-    garrison.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" type="is-dark" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
+    garrison.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
-    garrison.append($('<b-tooltip :label="trainLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));
-    garrison.append($('<b-tooltip :label="hireLabel()" position="is-bottom" type="is-dark" multilined animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip>'));
-    garrison.append($('<b-tooltip :label="retireLabel()" position="is-bottom" type="is-dark" multilined animated><button class="button" @click="retire">Retire soldier</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="trainLabel()" position="is-bottom" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="hireLabel()" position="is-bottom" multilined animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="retireLabel()" position="is-bottom" multilined animated><button class="button" @click="retire">Retire soldier</button></b-tooltip>'));
 
     var tactics = $('<div id="tactics" v-show="display" class="tactics"><span>Campaign</span></div>');
     garrison.append(tactics);
         
-    var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" type="is-dark" multilined animated><span class="current">{{ tactic | tactics }}</span></b-tooltip>');
+    var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ tactic | tactics }}</span></b-tooltip>');
     var last = $('<span class="sub" @click="last">&laquo;</span>');
     var next = $('<span class="add" @click="next">&raquo;</span>');
     tactics.append(last);
