@@ -157,6 +157,7 @@ mainLoop();
 function mainLoop() {
     var fed = true;
     var tax_multiplier = 1;
+    var p_on = {};
     var main_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
     intervals['main_loop'] = setInterval(function() {
             
@@ -222,15 +223,16 @@ function mainLoop() {
                 modRes('Coal',-(consume));
             }
 
-            var p_structs = ['apartment','wardenclyffe','rock_quarry','mine','coal_mine'];
+            let p_structs = ['apartment','wardenclyffe','rock_quarry','mine','coal_mine','sawmill'];
             for (var i = 0; i < p_structs.length; i++) {
                 if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
                     let power = global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
+                    p_on[p_structs[i]] = global.city[p_structs[i]].on;
                     while (power > power_grid && power > 0){
                         power -= actions.city[p_structs[i]].powered;
-                        global.city[p_structs[i]].on--;
+                        p_on[p_structs[i]]--;
                     }
-                    power_grid -= power;
+                    power_grid -= global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
                 }
             }
 
@@ -320,7 +322,7 @@ function mainLoop() {
             var delta = (global.civic.professor.workers * know_multiplier) + 1;
             let adjunct = 1;
             if (global.tech['science'] >= 5 && global.city['wardenclyffe']){
-                adjunct = 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
+                adjunct = 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
             }
             delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * adjunct;
             modRes('Knowledge',delta);
@@ -405,12 +407,7 @@ function mainLoop() {
             var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
             lum_multiplier *= tax_multiplier;
             if (global.city.powered && global.city.sawmill){
-                let sawmills = global.city.sawmill.on;
-                while (sawmills > power_grid && sawmills > 0){
-                    sawmills--;
-                }
-                power_grid -= global.city.sawmill.on;
-                lum_multiplier *= 1 + (sawmills * 0.05);
+                lum_multiplier *= 1 + (p_on['sawmill'] * 0.05);
             }
             lum_multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
             lum_multiplier *= hunger;
@@ -426,7 +423,7 @@ function mainLoop() {
             stone_multiplier *= tax_multiplier;
             stone_multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
             if (global.city['rock_quarry']['on']){
-                stone_multiplier *= 1 + (global.city['rock_quarry'].on * 0.05);
+                stone_multiplier *= 1 + (p_on['rock_quarry'] * 0.05);
             }
             stone_multiplier *= hunger;
             delta = global.civic.quarry_worker.workers * global.civic.quarry_worker.impact * stone_multiplier;
@@ -441,7 +438,7 @@ function mainLoop() {
                 copper_multiplier *= tax_multiplier;
                 copper_multiplier *= racialTrait(global.civic.miner.workers,'miner');
                 if (global.city['mine']['on']){
-                    copper_multiplier *= 1 + (global.city['mine'].on * 0.05);
+                    copper_multiplier *= 1 + (p_on['mine'] * 0.05);
                 }
                 if (global.race['tough']){
                     copper_multiplier *= 1.1;
@@ -461,7 +458,7 @@ function mainLoop() {
                 iron_multiplier *= (1 + (iron_smelter * 0.1));
                 iron_multiplier *= racialTrait(global.civic.miner.workers,'miner');
                 if (global.city['mine']['on']){
-                    iron_multiplier *= 1 + (global.city['mine'].on * 0.05);
+                    iron_multiplier *= 1 + (p_on['mine'] * 0.05);
                 }
                 if (global.race['tough']){
                     iron_multiplier *= 1.1;
@@ -480,7 +477,7 @@ function mainLoop() {
                 coal_multiplier *= tax_multiplier;
                 coal_multiplier *= racialTrait(global.civic.coal_miner.workers,'miner');
                 if (global.city['coal_mine']['on']){
-                    coal_multiplier *= 1 + (global.city['coal_mine'].on * 0.05);
+                    coal_multiplier *= 1 + (p_on['coal_mine'] * 0.05);
                 }
                 if (global.race['tough']){
                     coal_multiplier *= 1.1;

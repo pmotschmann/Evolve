@@ -1282,7 +1282,7 @@ export const actions = {
                 let gain = 1000;
                 if (global.city.powered){
                     let pgain = gain * 2;
-                    return `Staffs one scientist and increases the maximum amount of knowledge you can store by ${gain}. Each powered tower uses 2Kw but doubles it's effectiveness to ${pgain}.`;
+                    return `Staffs one scientist and increases the maximum amount of knowledge you can store by ${gain}. Each powered tower uses 2kW but doubles it's effectiveness to ${pgain}.`;
                 }
                 else {
                     return `Staffs one scientist and increases the maximum amount of knowledge you can store by ${gain}.`;
@@ -2815,6 +2815,9 @@ export function addAction(action,type){
         template: '<div id="modalBox" class="modalBox"></div>'
     };
 
+    if (vues[id]){
+        vues[id].$destroy();
+    }
     vues[id] = new Vue({
         data: {
             title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title(),
