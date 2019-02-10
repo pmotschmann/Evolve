@@ -233,6 +233,12 @@ function mainLoop() {
                         p_on[p_structs[i]]--;
                     }
                     power_grid -= global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
+                    if (p_on[p_structs[i]] !== global.city[p_structs[i]].on){
+                        $(`#city-${p_structs[i]} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#city-${p_structs[i]} .on`).removeClass('warn');
+                    }
                 }
             }
 
