@@ -300,7 +300,7 @@ export const genus_traits = {
     },
     avian: {
         hollow_bones: 1,
-        agile: 1
+        rigid: 1
     },
     insectoid: {
         fast_growth: 1,
@@ -362,7 +362,7 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    agile: {
+    rigid: {
         desc: '',
         ranks: 0,
         type: 'genus',

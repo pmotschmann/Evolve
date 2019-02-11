@@ -1252,6 +1252,9 @@ export const actions = {
             },
             effect: function (){
                 let gain = global.race['nearsighted'] ? '110' : '125';
+                if (global.tech['science'] && global.tech['science'] >= 5){
+                    gain *= 1 + (global.civic.scientist.workers * 0.12);
+                }
                 return `Increases the maximum amount of knowledge you can store by ${gain}`; 
             },
             action: function (){
@@ -2109,12 +2112,29 @@ export const actions = {
                 return false;
             }
         },
+        scientific_journal: {
+            id: 'tech-scientific_journal',
+            title: 'Scientific Journal',
+            desc: 'Publish a Scientific Journal',
+            reqs: { science: 4, high_tech: 3 },
+            grant: ['science',5],
+            cost: {
+                Knowledge: function(){ return 30000; }
+            },
+            effect: 'Each scientist will publish their work in a scientific journal. Libraries increased by 12% per scientist.',
+            action: function (){
+                if (payCosts(actions.tech.scientific_journal.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         adjunct_professor: {
             id: 'tech-adjunct_professor',
             title: 'Adjunct Professors',
             desc: 'Adjunct Professors',
-            reqs: { science: 4, high_tech: 2 },
-            grant: ['science',5],
+            reqs: { science: 5 },
+            grant: ['science',6],
             cost: {
                 Knowledge: function(){ return 40000; }
             },
@@ -2184,6 +2204,40 @@ export const actions = {
                     global.city['power'] = 0;
                     global.city['powered'] = true;
                     global.city['coal_power'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        industrialization: {
+            id: 'tech-industrialization',
+            title: 'Industrialization',
+            desc: 'Industrialization',
+            reqs: { high_tech: 2, cement: 2, steel_container: 1 },
+            grant: ['high_tech',3],
+            cost: {
+                Knowledge: function(){ return 28000; }
+            },
+            effect: 'Bring about the industrial revolution. Leads to all sorts of new technological developments.',
+            action: function (){
+                if (payCosts(actions.tech.industrialization.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        oil_well: {
+            id: 'tech-oil_well',
+            title: 'Oil Well',
+            desc: 'Oil Well',
+            reqs: { high_tech: 3, locked: 1 },
+            grant: ['oil',1],
+            cost: {
+                Knowledge: function(){ return 30000; }
+            },
+            effect: 'Unlock oil wells.',
+            action: function (){
+                if (payCosts(actions.tech.oil_well.cost)){
                     return true;
                 }
                 return false;

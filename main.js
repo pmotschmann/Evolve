@@ -355,7 +355,7 @@ function mainLoop() {
             know_multiplier *= hunger;
             var delta = (global.civic.professor.workers * know_multiplier) + 1;
             let adjunct = 1;
-            if (global.tech['science'] >= 5 && global.city['wardenclyffe']){
+            if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
                 adjunct = 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
             }
             delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * adjunct;
@@ -661,7 +661,11 @@ function mainLoop() {
                 lCaps['professor'] += global.city['university'].count;
             }
             if (global.city['library']){
-                caps['Knowledge'] += (global.city['library'].count * (global.race['nearsighted'] ? 110 : 125));
+                let shelving = (global.race['nearsighted'] ? 110 : 125);
+                if (global.tech['science'] && global.tech['science'] >= 5){
+                    shelving *= 1 + (global.civic.scientist.workers * 0.12);
+                }
+                caps['Knowledge'] += Math.round(global.city['library'].count * shelving);
                 if (global.tech['science'] && global.tech['science'] >= 3){
                     global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
                 }
