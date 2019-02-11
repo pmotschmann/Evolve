@@ -378,56 +378,56 @@ function buildGarrison(garrison){
 
                     let loot = 'Gained ';
                     if (global.resource.Money.display && money > 0){
-                        if (global.race['beast_of_burdon']){
+                        if (global.race['beast_of_burden']){
                             money = Math.floor(money * 1.1);
                         }
                         loot = loot + `\$${money}, `;
                         modRes('Money',money);
                     }
                     if (global.resource.Food.display && food > 0){
-                        if (global.race['beast_of_burdon']){
+                        if (global.race['beast_of_burden']){
                             food = Math.floor(food * 1.1);
                         }
                         loot = loot + `${food} Food, `;
                         modRes('Food',food);
                     }
                     if (global.resource.Lumber.display && lumber > 0){
-                        if (global.race['beast_of_burdon']){
+                        if (global.race['beast_of_burden']){
                             lumber = Math.floor(lumber * 1.1);
                         }
                         loot = loot + `${lumber} Lumber, `;
                         modRes('Lumber',lumber);
                     }
                     if (global.resource.Stone.display && stone > 0){
-                        if (global.race['beast_of_burdon']){
+                        if (global.race['beast_of_burden']){
                             stone = Math.floor(stone * 1.1);
                         }
                         loot = loot + `${stone} Stone, `;
                         modRes('Stone',stone);
                     }
                     if (global.resource.Copper.display && copper > 0){
-                        if (global.race['beast_of_burdon']){
+                        if (global.race['beast_of_burden']){
                             copper = Math.floor(copper * 1.1);
                         }
                         loot = loot + `${copper} Copper, `;
                         modRes('Copper',copper);
                     }
                     if (global.resource.Iron.display && iron > 0){
-                        if (global.race['beast_of_burdon']){
+                        if (global.race['beast_of_burden']){
                             iron = Math.floor(iron * 1.1);
                         }
                         loot = loot + `${iron} Iron, `;
                         modRes('Iron',iron);
                     }
                     if (global.resource.Cement.display && cement > 0){
-                        if (global.race['beast_of_burdon']){
+                        if (global.race['beast_of_burden']){
                             cement = Math.floor(cement * 1.1);
                         }
                         loot = loot + `${cement} Cement, `;
                         modRes('Cement',cement);
                     }
                     if (steel > 0){
-                        if (global.race['beast_of_burdon']){
+                        if (global.race['beast_of_burden']){
                             steel = Math.floor(steel * 1.1);
                         }
                         global.resource.Steel.display = true;

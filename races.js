@@ -9,7 +9,7 @@ export const races = {
     },
     human: {
         name: 'Human',
-        desc: "Humans are versatile creatures who are adept at bending the enviroment around them to suit their needs. They are a ambitious race who seek to expand their knowledge of the universe around them and build great empires.",
+        desc: "Humans are versatile creatures who are adept at bending the environment around them to suit their needs. They are an ambitious race who seek to expand their knowledge of the universe around them and build great empires.",
         type: 'humanoid',
         home: 'Earth',
         entity: 'bipedal creatures',
@@ -20,7 +20,7 @@ export const races = {
     },
     elven: {
         name: 'Elf',
-        desc: 'Elves are typically tall and slender creatures with pointy ears, they tend to be reclusive but sharp of wit. Elves live long lives and often devote themsevles to study seeking answers to the deep fundamental questsions of the universe.',
+        desc: 'Elves are typically tall and slender creatures with pointy ears, they tend to be reclusive but sharp of wit. Elves live long lives and often devote themselves to study seeking answers to the deep fundamental questions of the universe.',
         type: 'humanoid',
         home: 'Valinor',
         entity: 'pointy eared bipedal creatures',
@@ -31,7 +31,7 @@ export const races = {
     },
     orc: {
         name: 'Orc',
-        desc: "Orcs tend to be large and muscular creatures who are slow of wit but contain immense brute stength. They typically try to solve problems with violance first, then seek a more rational solution only when that doesn't work.",
+        desc: "Orcs tend to be large and muscular creatures who are slow of wit but contain immense brute strength. They typically try to solve problems with violence first, then seek a more rational solution only when that doesn't work.",
         type: 'humanoid',
         home: 'Roneard',
         entity: 'green skinned bipedal creatures',
@@ -44,7 +44,7 @@ export const races = {
         name: 'Cath',
         desc: 'The cath are a feline race who are typically lazy. They are stealthy and adapt at hunting when motivated, however most cath prefer to laze about rather then work hard.',
         type: 'animal',
-        home: 'Kath',
+        home: 'Cathar',
         entity: 'cat people',
         traits: { 
             lazy: 1,
@@ -69,7 +69,7 @@ export const races = {
         home: 'Sagittarius',
         entity: 'horse people',
         traits: {
-            beast_of_burdon: 1,
+            beast_of_burden: 1,
             herbivore: 1,
         }
     },
@@ -86,7 +86,7 @@ export const races = {
     },
     goblin: {
         name: 'Goblin',
-        desc: 'Goblins are small humanoid creatures who are known for their greed and cunning. They are highly intellegent but typically selfish in nature.',
+        desc: 'Goblins are small humanoid creatures who are known for their greed and cunning. They are highly intelligent but typically selfish in nature.',
         type: 'small',
         home: 'Crassus',
         entity: 'small green skinned bipedal creatures',
@@ -97,7 +97,7 @@ export const races = {
     },
     gnome: {
         name: 'Gnome',
-        desc: 'Gnomes are small humanoid creatures who are known for their superior intelligence. They are natural scientists and seek to expand their knowledge, often at the cost of safetly and morality.',
+        desc: 'Gnomes are small humanoid creatures who are known for their superior intelligence. They are natural scientists and seek to expand their knowledge, often at the cost of safety and morality.',
         type: 'small',
         home: 'Lawn',
         entity: 'small humanoids',
@@ -129,7 +129,7 @@ export const races = {
     },
     troll: {
         name: 'Troll',
-        desc: 'Trolls are large humanoid creatures who are knwon for their regenerative powers. They are a hardy race highly resistent to disease and injury.',
+        desc: 'Trolls are large humanoid creatures who are known for their regenerative powers. They are a hardy race highly resistant to disease and injury.',
         type: 'giant',
         home: 'Brücke',
         entity: 'large green humanoids',
@@ -140,8 +140,8 @@ export const races = {
     },
     tortollan: {
         name: 'Tortollan',
-        desc: 'Tortollans are a reptillan species with shells on their backs, they are slow moving and good at hiding.',
-        type: 'reptillian',
+        desc: 'Tortollans are a reptilian species with shells on their backs, they are slow moving and good at hiding.',
+        type: 'reptilian',
         home: 'Splinter',
         entity: 'turtle people',
         traits: { 
@@ -151,8 +151,8 @@ export const races = {
     },
     gecko: {
         name: 'Gecko',
-        desc: 'The gecks are a lizard species who can natually camouflage themselves to their surroundings. They are very agile and fast moving.',
-        type: 'reptillian',
+        desc: 'The gecks are a lizard species who can naturally camouflage themselves to their surroundings. They are very agile and fast moving.',
+        type: 'reptilian',
         home: 'Ijsabom',
         entity: 'lizard people',
         traits: {
@@ -161,8 +161,8 @@ export const races = {
     },
     slitheryn: {
         name: 'Slitheryn',
-        desc: 'Slitheryn are a reptillian species who evolved from snakes. They have humanoid upper bodies but retain snake like lower halves.',
-        type: 'reptillian',
+        desc: 'Slitheryn are a reptilian species who evolved from snakes. They have humanoid upper bodies but retain snake like lower halves.',
+        type: 'reptilian',
         home: 'Viper',
         entity: 'snake creatures',
         traits: {
@@ -172,7 +172,7 @@ export const races = {
     },
     arraak: {
         name: 'Arraak',
-        desc: 'Arraak are a feathered species of flghtless birds. Long ago they may have taken to the skies but modern Arraak are too heavy to fly.',
+        desc: 'Arraak are a feathered species of flightless birds. Long ago they may have taken to the skies but modern Arraak are too heavy to fly.',
         type: 'avian',
         home: 'Daphne',
         entity: 'bird people',
@@ -203,7 +203,7 @@ export const races = {
     },
     entish: {
         name: 'Ent',
-        desc: 'Ents are basically sentient trees who can uproot themselvs and move around. They are large and slow moving, but fearsome and can get most of their nutrients from the sun.',
+        desc: 'Ents are basically sentient trees who can uproot themselves and move around. They are large and slow moving, but fearsome and can get most of their nutrients from the sun.',
         type: 'plant',
         home: 'Fangorn',
         entity: 'sentient trees',
@@ -214,7 +214,7 @@ export const races = {
     },
     cacti: {
         name: 'Cacti',
-        desc: 'Cacti are small sentient plant creatures convered in spines. They are suprisingly fast moving, but easily startled.',
+        desc: 'Cacti are small sentient plant creatures covered in spines. They are surprisingly fast moving, but easily startled.',
         type: 'plant',
         home: 'Bikanel',
         entity: 'sentient cactuses',
@@ -258,7 +258,7 @@ export const races = {
     },
     scorpid: {
         name: 'Scorpid',
-        desc: 'Scorpid are a bipedal species with large claw hands and barbed tails. They are tough figters naturally equiped for close combat.',
+        desc: 'Scorpid are a bipedal species with large claw hands and barbed tails. They are tough fighters naturally equipped for close combat.',
         type: 'insectoid',
         home: 'Scorpio',
         entity: 'scorpians',
@@ -268,7 +268,7 @@ export const races = {
     },
     antid: {
         name: 'Antid',
-        desc: 'Antid are a hivemind species decended from ants. Individually they are not intelligent but as their swarm gets bigger so does their collective intellegnce.',
+        desc: 'Antid are a hivemind species descended from ants. Individually they are not intelligent but as their swarm gets bigger so does their collective intelligence.',
         type: 'insectoid',
         home: 'Menzel',
         entity: 'intelligent ants',
@@ -294,7 +294,7 @@ export const genus_traits = {
         large: 1,
         strong: 1
     },
-    reptillian: {
+    reptilian: {
         cold_blooded: 1,
         scales: 1
     },
@@ -447,7 +447,7 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    beast_of_burdon: { // Gains more loot during raids
+    beast_of_burden: { // Gains more loot during raids
         desc: 'Your race is able to carry away more loot when winning a military conflict.',
         ranks: 0,
         type: 'major',
