@@ -124,7 +124,8 @@ export const races = {
         home: 'Unus',
         entity: 'one-eyed giant humanoids',
         traits: {
-            nearsighted: 1
+            nearsighted: 1,
+            intelligent: 1
         } 
     },
     troll: {
@@ -187,7 +188,7 @@ export const races = {
         home: 'Crichton',
         entity: 'leathery winged creatures',
         traits: {
-            
+            leathery: 1
         } 
     },
     dracnid: {

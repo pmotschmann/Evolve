@@ -756,7 +756,9 @@ export const actions = {
                 if (payCosts(actions.city.apartment.cost)){
                     global['resource'][races[global.race.species].name].max += 5;
                     global.city['apartment'].count++;
-                    global.city['apartment'].on++;
+                    if (global.city.power > 0){
+                        global.city['apartment'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -991,7 +993,7 @@ export const actions = {
                     let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
                     global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
                     global['resource']['Lumber'].max += 200;
-                    if (global.city.powered){
+                    if (global.city.powered && global.city.power > 0){
                         global.city.sawmill.on++;
                     }
                     return true;
@@ -1025,7 +1027,7 @@ export const actions = {
                     global.civic.quarry_worker.display = true;
                     global.civic.quarry_worker.max = global.city.rock_quarry.count;
                     global['resource']['Stone'].max += 100;
-                    if (global.tech['mine_conveyor']){
+                    if (global.tech['mine_conveyor'] && global.city.power > 0){
                         global.city['rock_quarry'].on++;
                     }
                     return true;
@@ -1109,7 +1111,7 @@ export const actions = {
                     global.resource.Copper.display = true;
                     global.civic.miner.display = true;
                     global.civic.miner.max = global.city.mine.count;
-                    if (global.tech['mine_conveyor']){
+                    if (global.tech['mine_conveyor'] && global.city.power > 0){
                         global.city['mine'].on++;
                     }
                     return true;
@@ -1143,7 +1145,7 @@ export const actions = {
                     global.resource.Coal.display = true;
                     global.civic.coal_miner.display = true;
                     global.civic.coal_miner.max = global.city.coal_mine.count;
-                    if (global.tech['mine_conveyor']){
+                    if (global.tech['mine_conveyor'] && global.city.power > 0){
                         global.city['coal_mine'].on++;
                     }
                     return true;
@@ -1298,7 +1300,7 @@ export const actions = {
                     global.city.wardenclyffe.count++;
                     global.civic.scientist.display = true;
                     global.civic.scientist.max = global.city.wardenclyffe.count;
-                    if (global.city.powered){
+                    if (global.city.powered  && global.city.power >= 2){
                         global.city.wardenclyffe.on++;
                     }
                     return true;
