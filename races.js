@@ -14,8 +14,8 @@ export const races = {
         home: 'Earth',
         entity: 'bipedal creatures',
         traits: {
-            adaptable: 1,
-            xenophobic: 1
+            creative: 1,
+            diverse: 1
         }
     },
     elven: {
@@ -70,7 +70,7 @@ export const races = {
         entity: 'horse people',
         traits: {
             beast_of_burden: 1,
-            herbivore: 1,
+            herbivore: 1
         }
     },
     kobold: {
@@ -138,9 +138,9 @@ export const races = {
             gluttony: 1
         }
     },
-    tortollan: {
-        name: 'Tortollan',
-        desc: 'Tortollans are a reptilian species with shells on their backs, they are slow moving and good at hiding.',
+    tortoisan: {
+        name: 'Tortoisan',
+        desc: 'Tortoisans are a reptilian species with shells on their backs, they are slow moving and good at hiding.',
         type: 'reptilian',
         home: 'Splinter',
         entity: 'turtle people',
@@ -177,7 +177,7 @@ export const races = {
         home: 'Daphne',
         entity: 'bird people',
         traits: {
-            resourceful: 1,
+            resourceful: 1
         } 
     },
     pterodacti: {
@@ -280,7 +280,8 @@ export const races = {
 
 export const genus_traits = {
     humanoid: {
-        // Base experience
+        adaptable: 1,
+        xenophobic: 1
     },
     animal: {
         beast: 1,

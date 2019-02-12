@@ -511,7 +511,7 @@ export const actions = {
                     }
                     else if (global.evolution['eggshell']){
                         if (path < 17){
-                            global.race.species = 'tortollan';
+                            global.race.species = 'tortoisan';
                         }
                         else if (path < 34){
                             global.race.species = 'gecko';
@@ -1253,7 +1253,7 @@ export const actions = {
             effect: function (){
                 let gain = global.race['nearsighted'] ? '110' : '125';
                 if (global.tech['science'] && global.tech['science'] >= 5){
-                    gain *= 1 + (global.civic.scientist.workers * 0.12);
+                    gain = +(gain * (1 + (global.civic.scientist.workers * 0.12))).toFixed(1);
                 }
                 return `Increases the maximum amount of knowledge you can store by ${gain}`; 
             },
@@ -1318,7 +1318,7 @@ export const actions = {
                 Steel: function(){ return costMultiplier('coal_power', 2000, 1.2) - 1000; }
             },
             effect: function (){
-                let consume = 0.3;
+                let consume = 0.35;
                 return `A powerplant that runs on coal, generates 5 kW per plant. Consumes ${consume} coal per plant.`; 
             },
             powered: -5,
@@ -1606,9 +1606,27 @@ export const actions = {
                 Knowledge: function(){ return 15000; },
                 Coal: function(){ return 2000; }
             },
-            effect: 'Increases output of smelters by 20%',
+            effect: 'Increases Iron output of smelters by 20%',
             action: function (){
                 if (payCosts(actions.tech.blast_furnace.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        bessemer_process: {
+            id: 'tech-bessemer_process',
+            title: 'Bessemer Process',
+            desc: 'Upgrade your smelters',
+            reqs: { smelting: 3 },
+            grant: ['smelting',4],
+            cost: { 
+                Knowledge: function(){ return 22000; },
+                Coal: function(){ return 5000; }
+            },
+            effect: 'Increases Steel output of smelters by 20%',
+            action: function (){
+                if (payCosts(actions.tech.bessemer_process.cost)){
                     return true;
                 }
                 return false;
@@ -3167,7 +3185,7 @@ function smelterModal(modal){
                 return `Smelt Iron, boosts Iron production by ${boost}%`;
             },
             steelLabel: function(){
-                let boost = global.tech['smelting'] >= 3 ? 1.2 : 1;
+                let boost = global.tech['smelting'] >= 4 ? 1.2 : 1;
                 return `Smelt Steel, consumes 0.5 Coal and 2 Iron per tick but produces ${boost} Steel`;
             },
             ironSmelting: function(){

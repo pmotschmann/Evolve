@@ -242,10 +242,10 @@ function mainLoop() {
 
             if (global.city['coal_power']){
                 let power = global.city.coal_power.on * actions.city.coal_power.powered;
-                let consume = global.city.coal_power.on * 0.3;
+                let consume = global.city.coal_power.on * 0.35;
                 while (consume > global.resource.Coal.amount && consume > 0){
                     power += actions.city.coal_power.powered;
-                    consume -= 0.3;
+                    consume -= 0.35;
                 }
                 power_grid -= power;
                 modRes('Coal',-(consume));
@@ -429,7 +429,7 @@ function mainLoop() {
                     modRes('Iron',-(iron_consume));
                     modRes('Coal',-(coal_consume));
 
-                    var steel_multiplier = global.tech['smelting'] >= 3 ? 1.2 : 1;
+                    var steel_multiplier = global.tech['smelting'] >= 4 ? 1.2 : 1;
                     steel_multiplier *= tax_multiplier;
                     steel_multiplier *= hunger;
                     delta = steel_smelter * steel_multiplier;
@@ -758,15 +758,15 @@ function mainLoop() {
                         break;
                     case 3:
                         tax_rate = 1.25;
-                        tax_multiplier = 0.75;
+                        tax_multiplier = 0.9;
                         break;
                     case 4:
                         tax_rate = 1.5;
-                        tax_multiplier = 0.5;
+                        tax_multiplier = 0.75;
                         break;
                     case 5:
                         tax_rate = 1.75;
-                        tax_multiplier = 0.25;
+                        tax_multiplier = 0.5;
                         break;
                     default:
                         tax_rate = 1;
