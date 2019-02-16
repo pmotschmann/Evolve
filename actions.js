@@ -1156,6 +1156,51 @@ export const actions = {
                 return false;
             }
         },
+        oil_well: {
+            id: 'city-oil_well',
+            title: 'Oil Derrick',
+            desc: 'Build a Oil Derrick',
+            reqs: { oil: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('oil_well', 5000, 1.5); },
+                Steel: function(){ return costMultiplier('oil_well', 6000, 1.5); },
+                Cement: function(){ return costMultiplier('oil_well', 5250, 1.5); }
+            },
+            effect: function() { 
+                let oil = 0.4;
+                return `Oil derricks extract oil from deep underground. Each oil derrick pumps ${oil} oil per second`;
+            },
+            action: function (){
+                if (payCosts(actions.city.oil_well.cost)){
+                    global.city['oil_well'].count++;
+                    global.resource.Oil.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        oil_depot: {
+            id: 'city-oil_depot',
+            title: 'Oil Depot',
+            desc: 'Build a Oil Depot',
+            reqs: { oil: 2 },
+            cost: { 
+                Money: function(){ return costMultiplier('oil_depot', 2500, 1.45); },
+                Steel: function(){ return costMultiplier('oil_depot', 2250, 1.45); },
+                Cement: function(){ return costMultiplier('oil_depot', 3750, 1.45); }
+            },
+            effect: function() { 
+                let oil = 1000;
+                return `Oil depots allow you to store an additional ${oil} oil per depot.`;
+            },
+            action: function (){
+                if (payCosts(actions.city.oil_depot.cost)){
+                    global.city['oil_depot'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
         temple: {
             id: 'city-temple',
             title: 'Temple',
@@ -1330,10 +1375,35 @@ export const actions = {
             powered: -5,
             action: function (){
                 if (payCosts(actions.city.coal_power.cost)){
-                    global['resource']['Knowledge'].max += 1000;
                     global.city.coal_power.count++;
                     global.city.coal_power.on++;
                     global.city.power += 5;
+                    return true;
+                }
+                return false;
+            }
+        },
+        oil_power: {
+            id: 'city-oil_power',
+            title: 'Oil Powerplant',
+            desc: 'Construct an Oil Powerplant',
+            reqs: { oil: 3 },
+            cost: { 
+                Money: function(){ return costMultiplier('oil_power', 50000, 1.2); },
+                Copper: function(){ return costMultiplier('oil_power', 6500, 1.2) + 1000; },
+                Cement: function(){ return costMultiplier('oil_power', 5600, 1.2) + 1000;; },
+                Steel: function(){ return costMultiplier('oil_power', 9000, 1.2) + 3000; }
+            },
+            effect: function (){
+                let consume = 0.75;
+                return `A powerplant that runs on oil, generates 6 kW per plant. Consumes ${consume} oil per plant.`; 
+            },
+            powered: -6,
+            action: function (){
+                if (payCosts(actions.city.oil_power.cost)){
+                    global.city.oil_power.count++;
+                    global.city.oil_power.on++;
+                    global.city.power += 6;
                     return true;
                 }
                 return false;
@@ -1478,7 +1548,7 @@ export const actions = {
             cost: { 
                 Knowledge: function(){ return 75; }
             },
-            effect: 'Increase farm efficency by 50% with irrigation.',
+            effect: 'Increase farm efficency by 66% with irrigation.',
             action: function (){
                 if (payCosts(actions.tech.irrigation.cost)){
                     global.civic.farmer.impact = 2.5;
@@ -2252,17 +2322,53 @@ export const actions = {
         },
         oil_well: {
             id: 'tech-oil_well',
-            title: 'Oil Well',
-            desc: 'Oil Well',
-            reqs: { high_tech: 3, locked: 1 },
+            title: 'Oil Derrick',
+            desc: 'Oil Derrick',
+            reqs: { high_tech: 3 },
             grant: ['oil',1],
             cost: {
                 Knowledge: function(){ return 30000; }
             },
-            effect: 'Unlock oil wells.',
+            effect: 'Unlock oil derrecks and being the age of big oil.',
             action: function (){
                 if (payCosts(actions.tech.oil_well.cost)){
                     global.city['oil_well'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        oil_depot: {
+            id: 'tech-oil_depot',
+            title: 'Oil Depot',
+            desc: 'Oil Depot',
+            reqs: { oil: 1 },
+            grant: ['oil',2],
+            cost: {
+                Knowledge: function(){ return 35000; }
+            },
+            effect: 'Design a facility specially made to increase your oil reservers.',
+            action: function (){
+                if (payCosts(actions.tech.oil_depot.cost)){
+                    global.city['oil_depot'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        oil_power: {
+            id: 'tech-oil_power',
+            title: 'Oil Powerplant',
+            desc: 'Oil Powerplant',
+            reqs: { oil: 2 },
+            grant: ['oil',3],
+            cost: {
+                Knowledge: function(){ return 48000; }
+            },
+            effect: 'Design a power facility that runs on oil.',
+            action: function (){
+                if (payCosts(actions.tech.oil_power.cost)){
+                    global.city['oil_power'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -2655,6 +2761,24 @@ export const actions = {
                 return false;
             }
         },
+        machine_gun: {
+            id: 'tech-machine_gun',
+            title: 'Machine Gun',
+            desc: 'Machine Gun',
+            reqs: { military: 3, oil: 1 },
+            grant: ['military',4],
+            cost: {
+                Knowledge: function(){ return 37500; },
+                Oil: function(){ return 1500; }
+            },
+            effect: 'Decimate your foes with rapid fire weaponary.',
+            action: function (){
+                if (payCosts(actions.tech.machine_gun.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         armor: {
             id: 'tech-armor',
             title: 'Leather Armor',
@@ -2735,7 +2859,7 @@ export const actions = {
             grant: ['explosives',3],
             cost: {
                 Knowledge: function(){ return 45000; },
-                Oil: function(){ return 750; }
+                Oil: function(){ return 2500; }
             },
             effect: 'ANFO is a powerful explosive that can greatly aid mining activities.',
             action: function (){
@@ -3137,6 +3261,15 @@ function smelterModal(modal){
         fuelTypes.append(addCoal);
     }
 
+    if (global.resource.Oil.display){
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated><span class="current">Oil {{ Oil }}</span></b-tooltip>`);
+        let subOil = $('<span class="sub" @click="subOil">&laquo;</span>');
+        let addOil = $('<span class="add" @click="addOil">&raquo;</span>');
+        fuelTypes.append(subOil);
+        fuelTypes.append(oil);
+        fuelTypes.append(addOil);
+    }
+
     if (global.resource.Steel.display && global.tech.smelting >= 2){
         let smelt = $('<div class="smelting"></div>');
         let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" @click="ironSmelting()">Iron Smelting: {{ Iron }}</button></b-tooltip>`);
@@ -3187,13 +3320,32 @@ function smelterModal(modal){
                     global.city.smelter.Iron++;
                 }
             },
+            subOil: function(){
+                if (global.city.smelter.Oil > 0){
+                    global.city.smelter.Oil--;
+                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                        if (global.city.smelter.Steel > 0){
+                            global.city.smelter.Steel--;
+                        }
+                        else {
+                            global.city.smelter.Iron--;
+                        }
+                    }
+                }
+            },
+            addOil: function(){
+                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                    global.city.smelter.Oil++;
+                    global.city.smelter.Iron++;
+                }
+            },
             ironLabel: function(){
                 let boost = global.tech['smelting'] >= 3 ? 12 : 10;
                 return `Smelt Iron, boosts Iron production by ${boost}%`;
             },
             steelLabel: function(){
                 let boost = global.tech['smelting'] >= 4 ? 1.2 : 1;
-                return `Smelt Steel, consumes 0.5 Coal and 2 Iron per tick but produces ${boost} Steel`;
+                return `Smelt Steel, consumes 0.5 Coal and 2 Iron per second but produces ${boost} Steel`;
             },
             ironSmelting: function(){
                 let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
@@ -3222,6 +3374,9 @@ function smelterModal(modal){
                         break;
                     case 'coal':
                         return 'Consume 0.25 Coal/s to fuel a smelter';
+                        break;
+                    case 'oil':
+                        return 'Consume 0.35 Oil/s to fuel a smelter';
                         break;
                 }
             }

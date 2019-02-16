@@ -253,6 +253,17 @@ function mainLoop() {
                 modRes('Coal',-(consume));
             }
 
+            if (global.city['oil_power']){
+                let power = global.city.oil_power.on * actions.city.oil_power.powered;
+                let consume = global.city.oil_power.on * 0.75 * time_multiplier;
+                while (consume > global.resource.Oil.amount && consume > 0){
+                    power += actions.city.oil_power.powered;
+                    consume -= 0.75 * time_multiplier;
+                }
+                power_grid -= power;
+                modRes('Oil',-(consume));
+            }
+
             let p_structs = ['apartment','wardenclyffe','rock_quarry','mine','coal_mine','sawmill'];
             for (var i = 0; i < p_structs.length; i++) {
                 if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
@@ -396,6 +407,7 @@ function mainLoop() {
             if (global.city['smelter'] && global.city['smelter'].count > 0){
                 let consume_wood = global.city['smelter'].Wood * 3 * time_multiplier;
                 let consume_coal = global.city['smelter'].Coal * 0.25 * time_multiplier;
+                let consume_oil = global.city['smelter'].Oil * 0.35 * time_multiplier;
                 iron_smelter = global.city['smelter'].Iron;
                 let steel_smelter = global.city['smelter'].Steel;
                 while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal ){
@@ -415,8 +427,17 @@ function mainLoop() {
                         iron_smelter--;
                     }
                 }
-                while (consume_coal > global.resource.Lumber.amount && consume_coal > 0){
+                while (consume_coal > global.resource.Coal.amount && consume_coal > 0){
                     consume_coal -= 0.25 * time_multiplier;
+                    if (steel_smelter > 0){
+                        steel_smelter--;
+                    }
+                    else {
+                        iron_smelter--;
+                    }
+                }
+                while (consume_oil > global.resource.Oil.amount && consume_oil > 0){
+                    consume_oil -= 0.35 * time_multiplier;
                     if (steel_smelter > 0){
                         steel_smelter--;
                     }
@@ -429,6 +450,7 @@ function mainLoop() {
 
                 modRes('Lumber',-(consume_wood));
                 modRes('Coal',-(consume_coal));
+                modRes('Oil',-(consume_oil));
 
                 //Steel Production
                 if (global.resource.Steel.display && global.resource.Steel.amount < global.resource.Steel.max){
@@ -533,6 +555,14 @@ function mainLoop() {
                 modRes('Coal',delta);
             }
             
+            // Oil
+            if (global.city['oil_well']){
+                let oil_multiplier = 0.4;
+                oil_multiplier *= hunger;
+                delta = global.city.oil_well.count * oil_multiplier * global_multiplier * time_multiplier;
+                modRes('Oil',delta);
+            }
+
             // Detect new unlocks
             if (!global.settings.showResearch && global.resource.Knowledge.amount >= 10){
                 global.settings.showResearch = true;
@@ -577,6 +607,7 @@ function mainLoop() {
                 Iron: 100,
                 Cement: 100,
                 Coal: 50,
+                Oil: 0,
                 Steel: 50
             };
             // labor caps
@@ -665,6 +696,12 @@ function mainLoop() {
             }
             if (global.city['silo']){
                 caps['Food'] += (global.city['silo'].count * 250);
+            }
+            if (global.city['oil_well']){
+                caps['Oil'] += (global.city['oil_well'].count * 500);
+            }
+            if (global.city['oil_depot']){
+                caps['Oil'] += (global.city['oil_depot'].count * 1000);
             }
             if (global.city['university']){
                 let multiplier = 1;

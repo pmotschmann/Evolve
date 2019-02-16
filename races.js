@@ -409,7 +409,7 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    studious: { // Professors generate an extra 0.25 Knowledge per tick
+    studious: { // Professors generate an extra 0.25 Knowledge per second
         desc: 'Your race is more focused when studying then average. Knowledge is gained faster as a result.',
         ranks: 0,
         type: 'major',

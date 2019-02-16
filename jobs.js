@@ -7,14 +7,14 @@ export const job_desc = {
         multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
         let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
         let gain = +(impact * multiplier).toFixed(1);
-        return `Farmers create food to feed your population. Each farmer generates ${gain} food per tick.`;
+        return `Farmers create food to feed your population. Each farmer generates ${gain} food per second.`;
     },
     lumberjack: function(){
         let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
         multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
         let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
         let gain = +(impact * multiplier).toFixed(1);
-        return `Lumberjacks harvet lumber from the forests. Each lumberjack generates ${gain} lumber per tick.`;
+        return `Lumberjacks harvet lumber from the forests. Each lumberjack generates ${gain} lumber per second.`;
     },
     quarry_worker: function(){
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.3 : 0) + 1;
@@ -23,7 +23,7 @@ export const job_desc = {
             multiplier *= 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
-        return `Quarry Workers mine stone from rock quarries. Each quarry worker generates ${gain} stone per tick.`;
+        return `Quarry Workers mine stone from rock quarries. Each quarry worker generates ${gain} stone per second.`;
     },
     miner: function(){
         return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner can generate a variable amount of minerals of various types.';
@@ -34,7 +34,7 @@ export const job_desc = {
     cement_worker: function(){
         let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * cement_multiplier;
-        return `Cement plant workers turn stone into cement, each worker produces ${gain} cement and consumes 3 stone per tick.`;
+        return `Cement plant workers turn stone into cement, each worker produces ${gain} cement and consumes 3 stone per second.`;
     },
     banker: function(){
         let interest = global.civic.banker.impact * 100;
@@ -43,7 +43,7 @@ export const job_desc = {
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
         impact *= racialTrait(global.civic.professor.workers,'science');
-        return `Professors help educate your citizens and contribute to knowledge gain. Each professor generates ${impact} knowledge per tick.`;
+        return `Professors help educate your citizens and contribute to knowledge gain. Each professor generates ${impact} knowledge per second.`;
     },
     scientist: function(){
         let impact = global.civic.scientist.impact;
@@ -52,7 +52,7 @@ export const job_desc = {
             impact *= 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
         }
         impact = +impact.toFixed(2);
-        return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per tick.`;
+        return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per second.`;
     }
 }
 
