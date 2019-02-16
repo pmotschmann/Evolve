@@ -444,8 +444,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    tracker: {
-        desc: '',
+    tracker: { // 10% increased gains from hunting
+        desc: 'Your race excells at tracking game, and thus produces more from hunting.',
         ranks: 0,
         type: 'major',
     },
@@ -454,8 +454,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    herbivore: {
-        desc: '',
+    herbivore: { // No food is gained from hunting
+        desc: 'Your species does not eat meat.',
         ranks: 0,
         type: 'major',
     },
@@ -612,7 +612,7 @@ export const traits = {
 };
 
 /*
-types: farmer, miner, lumberjack, science, factory, army
+types: farmer, miner, lumberjack, science, factory, army, hunting
 */
 export function racialTrait(workers,type){
     let modifier = 1; 

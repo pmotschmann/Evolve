@@ -2,7 +2,7 @@ import { global, vues, save, poppers, runNew, messageQueue, modRes } from './var
 import { races, racialTrait } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
-import { defineGovernment, defineGarrison } from './civics.js';
+import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction } from './actions.js';
 import { events } from './events.js';
 
@@ -319,7 +319,8 @@ function mainLoop() {
                 food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
                 food_multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
                 let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
-                var delta = (global.civic.farmer.workers * impact * food_multiplier) - consume;
+                let hunting = global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
+                var delta = (global.civic.farmer.workers * impact * food_multiplier) + hunting - consume;
 
                 if (modRes('Food',delta)){
                     fed = false;
@@ -347,6 +348,13 @@ function mainLoop() {
             let hunger = fed ? 1 : 0.5;
             if (global.race['angry'] && fed === false){
                 hunger = 0.25;
+            }
+
+            if (global.resource.Furs.display){
+                let fur_multiplier = hunger;
+                let hunting = armyRating(global.civic.garrison.workers,'hunting') / 10;
+                let delta = hunting * fur_multiplier;
+                modRes('Furs',delta);
             }
 
             // Knowledge
@@ -560,6 +568,7 @@ function mainLoop() {
                 Containers: 0,
                 Lumber: 200,
                 Stone: 200,
+                Furs: 100,
                 Copper: 100,
                 Iron: 100,
                 Cement: 100,
@@ -644,6 +653,7 @@ function mainLoop() {
                 }
                 caps['Lumber'] += (global.city['shed'].count * (200 * multiplier));
                 caps['Stone'] += (global.city['shed'].count * (200 * multiplier));
+                caps['Furs'] += (global.city['shed'].count * (100 * multiplier));
                 caps['Copper'] += (global.city['shed'].count * (75 * multiplier));
                 caps['Iron'] += (global.city['shed'].count * (100 * multiplier));
                 caps['Cement'] += (global.city['shed'].count * (80 * multiplier));

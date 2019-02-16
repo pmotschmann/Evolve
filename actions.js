@@ -668,6 +668,7 @@ export const actions = {
                 if (payCosts(actions.city.garrison.cost)){
                     global.civic['garrison'].max += 2;
                     global.city['garrison'].count++;
+                    global.resource.Furs.display = true;
                     return true;
                 }
                 return false;
@@ -725,6 +726,7 @@ export const actions = {
             cost: { 
                 Money: function(){ return costMultiplier('cottage', 900, 1.15); },
                 Lumber: function(){ return costMultiplier('cottage', 220, 1.25); },
+                Furs: function(){ return costMultiplier('cottage', 120, 1.25); },
                 Iron: function(){ return costMultiplier('cottage', 105, 1.25); },
                 Copper: function(){ return costMultiplier('cottage', 20, 1.25); },
                 Cement: function(){ return costMultiplier('cottage', 135, 1.25); }
@@ -746,6 +748,7 @@ export const actions = {
             reqs: { housing: 3 },
             cost: { 
                 Money: function(){ return costMultiplier('apartment', 1750, 1.25) - 500; },
+                Furs: function(){ return costMultiplier('apartment', 725, 1.30) - 500; },
                 Copper: function(){ return costMultiplier('apartment', 650, 1.30) - 500; },
                 Cement: function(){ return costMultiplier('apartment', 700, 1.30) - 500; },
                 Steel: function(){ return costMultiplier('apartment', 800, 1.30) - 500; }
@@ -1250,6 +1253,7 @@ export const actions = {
             cost: {
                 Money: function(){ return costMultiplier('library', 45, 1.2); },
                 Lumber: function(){ return costMultiplier('library', 35, 1.20); },
+                Furs: function(){ return costMultiplier('library', 22, 1.20); },
                 Cement: function(){ return costMultiplier('library', 20, 1.20); }
             },
             effect: function (){
@@ -1477,7 +1481,7 @@ export const actions = {
             effect: 'Increase farm efficency by 50% with irrigation.',
             action: function (){
                 if (payCosts(actions.tech.irrigation.cost)){
-                    global.civic.farmer.impact = 3;
+                    global.civic.farmer.impact = 2.5;
                     return true;
                 }
                 return false;
@@ -2258,6 +2262,7 @@ export const actions = {
             effect: 'Unlock oil wells.',
             action: function (){
                 if (payCosts(actions.tech.oil_well.cost)){
+                    global.city['oil_well'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -2729,7 +2734,7 @@ export const actions = {
             reqs: { explosives: 2, oil: 1 },
             grant: ['explosives',3],
             cost: {
-                Knowledge: function(){ return 22500; },
+                Knowledge: function(){ return 45000; },
                 Oil: function(){ return 750; }
             },
             effect: 'ANFO is a powerful explosive that can greatly aid mining activities.',
@@ -3078,7 +3083,7 @@ function costMultiplier(structure,base,mutiplier){
             mutiplier -= 0.02;
         }
         if (global.race['pack_mentality']){
-            mutiplier += 0.02;
+            mutiplier += 0.03;
         }
     }
     if (structure === 'cottage'){

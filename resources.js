@@ -5,6 +5,7 @@ export const resource_values = {
     Food: 5,
     Lumber: 5,
     Stone: 5,
+    Furs: 8,
     Copper: 25,
     Iron: 40,
     Cement: 15,
@@ -32,8 +33,9 @@ export function defineResources() {
         loadResource('Crates',0,0,false,false,'warning');
         loadResource('Containers',0,0,false,false,'warning');
         loadResource('Food',250,1,true,true);
-        loadResource('Lumber',250,1,true,true);
-        loadResource('Stone',250,1,true,true);
+        loadResource('Lumber',200,1,true,true);
+        loadResource('Stone',200,1,true,true);
+        loadResource('Furs',100,1,true,true);
         loadResource('Copper',100,1,true,true);
         loadResource('Iron',100,1,true,true);
         loadResource('Cement',100,1,true,true);

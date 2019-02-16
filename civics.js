@@ -112,7 +112,7 @@ function taxRates(govern){
 function buildGarrison(garrison){
     garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating {{ workers | rating }}</span></div>'));
 
-    garrison.append($('<div class="barracks"><span>Soldiers</span> <span>{{ workers }} / {{ max }}</span></div>'));
+    garrison.append($('<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>Soldiers</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>'));
     garrison.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
     garrison.append($('<b-tooltip :label="trainLabel()" position="is-bottom" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));
@@ -511,6 +511,14 @@ function buildGarrison(garrison){
             retireLabel(){
                 return `Return a soldier to civilian life, note if there is not any open housing they will leave your settlement.`;
             },
+            soldierDesc(){
+                let rating = armyRating(global.civic.garrison.workers,'hunting');
+                let food = rating / 3;
+                let fur = rating / 10;
+                return global.race['herbivore']
+                    ? `Idle soldiers spend their time hunting, they are currently bringing in ${fur} furs per trip.`
+                    : `Idle soldiers spend their time hunting, they are currently bringing in ${food} food worth of meat per trip and ${fur} furs.`;
+            },
             woundedDesc(){
                 return `Wounded soldiers are both less effective in combat and more likely to die. Wounded soldiers will heal over time.`;
             },
@@ -541,16 +549,27 @@ function buildGarrison(garrison){
                 }
             },
             rating(val){
-                let army = (val - (global.civic.garrison.wounded / 2)) * global.tech.military;
-                if (global.race['puny']){
-                    army = Math.floor(army * 0.9);
-                }
-                else if (global.race['claws']){
-                    army = Math.floor(army * 1.2);
-                }
-                return army * racialTrait(val,'army');
+                return armyRating(val,'army');
             }
         }
     });
     vues['civ_garrison'].$mount('#garrison');
+}
+
+export function armyRating(val,type){
+    let army = (val - (global.civic.garrison.wounded / 2)) * global.tech.military;
+    if (type === 'army'){
+        if (global.race['puny']){
+            army = Math.floor(army * 0.9);
+        }
+        if (global.race['claws']){
+            army = Math.floor(army * 1.2);
+        }
+    }
+    else if (type === 'hunting'){
+        if (global.race['tracker']){
+            army = Math.floor(army * 1.1);
+        }
+    }
+    return army * racialTrait(val,type);
 }
