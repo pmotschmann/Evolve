@@ -836,9 +836,11 @@ export const actions = {
         },
         shed: {
             id: 'city-shed',
-            title: function(){ return global.tech['storage'] <= 2 ? 'Shed' : 'Barn'; },
+            title: function(){ 
+                return global.tech['storage'] <= 2 ? 'Shed' : (global.tech['storage'] >= 4 ? 'Warehouse' : 'Barn'); 
+            },
             desc: function(){
-                let build = global.tech['storage'] <= 2 ? 'Shed' : 'Barn';
+                let build = global.tech['storage'] <= 2 ? 'Shed' : (global.tech['storage'] >= 4 ? 'Warehouse' : 'Barn');
                 return `Construct a ${build}`; 
             },
             reqs: { storage: 1 },
@@ -1814,6 +1816,24 @@ export const actions = {
             effect: 'Replace smaller storage sheds with larger storage barns, a 100% increase in storage capactiy.',
             action: function (){
                 if (payCosts(actions.tech.barns.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        warehouse: {
+            id: 'tech-warehouse',
+            title: 'Warehouse',
+            desc: 'Replace barns with warehouses',
+            reqs: { high_tech: 3, smelting: 2 },
+            grant: ['storage',4],
+            cost: {
+                Knowledge: function(){ return 45000; },
+                Titanium: function(){ return 3000; }
+            },
+            effect: 'Replace your barns with huge storage facilities known as "warehouses".',
+            action: function (){
+                if (payCosts(actions.tech.warehouse.cost)){
                     return true;
                 }
                 return false;

@@ -453,21 +453,25 @@ function mainLoop() {
                 modRes('Oil',-(consume_oil));
 
                 //Steel Production
-                if (global.resource.Steel.display && global.resource.Steel.amount < global.resource.Steel.max){
+                if (global.resource.Steel.display){
                     var iron_consume = steel_smelter * 2 * time_multiplier;
                     var coal_consume = steel_smelter * 0.25 * time_multiplier;
                     while (iron_consume > global.resource.Iron.amount && iron_consume > 0 && coal_consume > global.resource.Coal.amount && coal_consume > 0){
                         iron_consume -= 2 * time_multiplier;
                         coal_consume -= 0.25 * time_multiplier;
                     }
-                    modRes('Iron',-(iron_consume));
-                    modRes('Coal',-(coal_consume));
-
+                    
                     var steel_multiplier = global.tech['smelting'] >= 4 ? 1.2 : 1;
                     steel_multiplier *= tax_multiplier;
                     steel_multiplier *= hunger;
                     delta = steel_smelter * steel_multiplier * global_multiplier * time_multiplier;
-                    modRes('Steel',delta);
+
+                    if (global.resource.Steel.amount < global.resource.Steel.max){
+                        modRes('Steel',delta);
+                        modRes('Iron',-(iron_consume));
+                        modRes('Coal',-(coal_consume));
+                    }
+                    
                     if (global.tech['titanium'] && global.tech['titanium'] > 0){
                         let divisor = global.tech['titanium'] >= 2 ? 10 : 25;
                         modRes('Titanium',delta / divisor);
@@ -685,7 +689,7 @@ function mainLoop() {
             if (global.city['shed']){
                 var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
                 if (global.tech['storage'] >= 3){
-                    multiplier *= 1.5;
+                    multiplier *= global.tech['storage'] >= 4 ? 2 : 1.5;
                     caps['Steel'] += (global.city['shed'].count * (25 * multiplier));
                 }
                 if (global.race['pack_rat']){
