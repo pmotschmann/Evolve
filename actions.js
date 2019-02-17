@@ -1986,11 +1986,28 @@ export const actions = {
                 return false;
             }
         },
+        corruption: {
+            id: 'tech-corruption',
+            title: 'Corrupt Politicians',
+            desc: 'Enable Extreme Taxes',
+            reqs: { currency: 4, high_tech: 3 },
+            grant: ['currency',5],
+            cost: { 
+                Knowledge: function(){ return 40000; }
+            },
+            effect: 'Corrupt politicians enable the setting of extreme tax strategies.',
+            action: function (){
+                if (payCosts(actions.tech.corruption.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         massive_trades: {
             id: 'tech-massive_trades',
             title: 'Massive Volume Trading',
             desc: 'Upgrades marketplace for massive orders',
-            reqs: { currency: 5 },
+            reqs: { currency: 5, locked: 1 },
             grant: ['currency',6],
             cost: { 
                 Knowledge: function(){ return 1000000; }
@@ -2315,6 +2332,7 @@ export const actions = {
             effect: 'Bring about the industrial revolution. Leads to all sorts of new technological developments.',
             action: function (){
                 if (payCosts(actions.tech.industrialization.cost)){
+                    global.resource.Titanium.display = true;
                     return true;
                 }
                 return false;
@@ -2507,6 +2525,24 @@ export const actions = {
                 return false;
             }
         },
+        titanium_axes: {
+            id: 'tech-titanium_axes',
+            title: 'Titanium Axe',
+            desc: 'Create the ultimate axe made from titanium',
+            reqs: { axe: 4, high_tech: 3 },
+            grant: ['axe',5],
+            cost: {
+                Knowledge: function(){ return 42000; },
+                Titanium: function(){ return 350; }
+            },
+            effect: 'Upgrade axe technology to durable axes made from titanium. Improves lumber harvesting.',
+            action: function (){
+                if (payCosts(actions.tech.titanium_axes.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         copper_sledgehammer: {
             id: 'tech-copper_sledgehammer',
             title: 'Brass Sledgehammer',
@@ -2556,6 +2592,24 @@ export const actions = {
             effect: 'Upgrade to stronger sledgehammers made from steel. Improves rock quarrying.',
             action: function (){
                 if (payCosts(actions.tech.steel_sledgehammer.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        titanium_sledgehammer: {
+            id: 'tech-titanium_sledgehammer',
+            title: 'Titanium Sledgehammer',
+            desc: 'Create a sledgehammer with a titanium head',
+            reqs: { hammer: 3, high_tech: 3 },
+            grant: ['hammer',4],
+            cost: {
+                Knowledge: function(){ return 44000; },
+                Titanium: function(){ return 400; }
+            },
+            effect: 'Upgrade to stronger sledgehammers made from titanium. Improves rock quarrying.',
+            action: function (){
+                if (payCosts(actions.tech.titanium_sledgehammer.cost)){
                     return true;
                 }
                 return false;
@@ -2687,6 +2741,24 @@ export const actions = {
                 return false;
             }
         },
+        titanium_hoe: {
+            id: 'tech-titanium_hoe',
+            title: 'Titanium Hoes',
+            desc: 'Create better farming tools made from steel',
+            reqs: { hoe: 3, high_tech: 3 },
+            grant: ['hoe',4],
+            cost: {
+                Knowledge: function(){ return 48000; },
+                Titanium: function(){ return 500; }
+            },
+            effect: 'Create tools made from titanium that aid farming. Improves farm efficiency.',
+            action: function (){
+                if (payCosts(actions.tech.titanium_hoe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         garrison: {
             id: 'tech-garrison',
             title: 'Garrison',
@@ -2787,7 +2859,8 @@ export const actions = {
             grant: ['armor',1],
             cost: {
                 Money: function(){ return 250; },
-                Knowledge: function(){ return 250; }
+                Knowledge: function(){ return 250; },
+                Furs: function(){ return 250; }
             },
             effect: 'Basic armor made from leather, will reduce the number of casulaties you take during military actions.',
             action: function (){
@@ -2900,6 +2973,24 @@ export const actions = {
             effect: 'Use stronger steel as rebar, further reducing cement costs.',
             action: function (){
                 if (payCosts(actions.tech.steel_rebar.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        hunter_process: {
+            id: 'tech-hunter_process',
+            title: 'Hunter Process',
+            desc: 'Hunter Process',
+            reqs: { high_tech: 3, smelting: 2 },
+            grant: ['titanium',1],
+            cost: {
+                Knowledge: function(){ return 50000; },
+                Titanium: function(){ return 1000; }
+            },
+            effect: 'Steel smelting will result in small amounts of titanium production.',
+            action: function (){
+                if (payCosts(actions.tech.hunter_process.cost)){
                     return true;
                 }
                 return false;

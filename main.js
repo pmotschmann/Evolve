@@ -468,6 +468,10 @@ function mainLoop() {
                     steel_multiplier *= hunger;
                     delta = steel_smelter * steel_multiplier * global_multiplier * time_multiplier;
                     modRes('Steel',delta);
+                    if (global.tech['titanium'] && global.tech['titanium'] > 0){
+                        let divisor = global.tech['titanium'] >= 2 ? 10 : 25;
+                        modRes('Titanium',delta / divisor);
+                    }
                 }
             }                
 
@@ -847,6 +851,14 @@ function mainLoop() {
                     let r_val = resource_values[res];
                     if (res === 'Copper' && global.tech['high_tech'] && global.tech['high_tech'] >= 2){
                         r_val *= 2;
+                    }
+                    if (res === 'Titanium'){
+                        if (global.tech['titanium'] && global.tech['titanium'] > 0){
+                            r_val *= global.tech['titanium'] && global.tech['titanium'] > 1 ? 1 : 2.5;
+                        }
+                        else {
+                            r_val *= 5;
+                        }
                     }
                     if (global.resource[res].display && Math.rand(0,10) === 0){
                         let max = r_val * 2;
