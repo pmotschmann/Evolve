@@ -255,10 +255,10 @@ function mainLoop() {
 
             if (global.city['oil_power']){
                 let power = global.city.oil_power.on * actions.city.oil_power.powered;
-                let consume = global.city.oil_power.on * 0.75 * time_multiplier;
+                let consume = global.city.oil_power.on * 0.65 * time_multiplier;
                 while (consume > global.resource.Oil.amount && consume > 0){
                     power += actions.city.oil_power.powered;
-                    consume -= 0.75 * time_multiplier;
+                    consume -= 0.65 * time_multiplier;
                 }
                 power_grid -= power;
                 modRes('Oil',-(consume));
@@ -354,7 +354,7 @@ function mainLoop() {
                     lowerBound *= 2;
                     lowerBound += 2;
                 }
-                if(Math.rand(0, global['resource'][races[global.race.species].name].amount) <= lowerBound){
+                if(Math.rand(0, global['resource'][races[global.race.species].name].amount * (3 - (2 ** time_multiplier))) <= lowerBound){
                     global['resource'][races[global.race.species].name].amount++;
                 }
             }
@@ -563,6 +563,7 @@ function mainLoop() {
             if (global.city['oil_well']){
                 let oil_multiplier = 0.4;
                 oil_multiplier *= hunger;
+                oil_multiplier *= tax_multiplier;
                 delta = global.city.oil_well.count * oil_multiplier * global_multiplier * time_multiplier;
                 modRes('Oil',delta);
             }

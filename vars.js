@@ -61,6 +61,10 @@ if (!global['settings']){
     }
 }
 
+if (!global['lastMsg']){
+    global['lastMsg'] = false;
+}
+
 $('html').addClass(global.settings.theme);
 
 if (!global.city['calendar']){
@@ -81,10 +85,15 @@ if (!global.city['biome']){
     global.city['biome'] = 'grassland';
 }
 
+if (global.lastMsg){
+    messageQueue(global.lastMsg.m, global.lastMsg.c);
+}
+
 export function messageQueue(msg,color){
     color = color || 'warning';
     var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
     $('#msgQueue').prepend(new_message);
+    global.lastMsg = { m: msg, c: color };
 }
 
 export function modRes(res,val){

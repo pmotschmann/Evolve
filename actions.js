@@ -1395,7 +1395,7 @@ export const actions = {
                 Steel: function(){ return costMultiplier('oil_power', 9000, 1.2) + 3000; }
             },
             effect: function (){
-                let consume = 0.75;
+                let consume = 0.65;
                 return `A powerplant that runs on oil, generates 6 kW per plant. Consumes ${consume} oil per plant.`; 
             },
             powered: -6,
@@ -2991,6 +2991,42 @@ export const actions = {
             effect: 'Steel smelting will result in small amounts of titanium production.',
             action: function (){
                 if (payCosts(actions.tech.hunter_process.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        kroll_process: {
+            id: 'tech-kroll_process',
+            title: 'Kroll Process',
+            desc: 'Kroll Process',
+            reqs: { titanium: 1, locked: 1 },
+            grant: ['titanium',2],
+            cost: {
+                Knowledge: function(){ return 125000; },
+                Titanium: function(){ return 10000; }
+            },
+            effect: 'Iron smelting will result in small amounts of titanium production.',
+            action: function (){
+                if (payCosts(actions.tech.kroll_process.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        cambridge_process: {
+            id: 'tech-cambridge_process',
+            title: 'Cambridge Process',
+            desc: 'Cambridge Process',
+            reqs: { titanium: 2, locked: 1 },
+            grant: ['titanium',3],
+            cost: {
+                Knowledge: function(){ return 250000; },
+                Titanium: function(){ return 25000; }
+            },
+            effect: 'Modern techniques result in more efficent production of titanium from smelters.',
+            action: function (){
+                if (payCosts(actions.tech.cambridge_process.cost)){
                     return true;
                 }
                 return false;
