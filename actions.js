@@ -993,7 +993,7 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('lumber_yard', 6, 1.9); },
                 Stone: function(){ return costMultiplier('lumber_yard', 2, 1.95); }
             },
-            effect: '+2 Max Lumberjacks',
+            effect: '<div>+2 Max Lumberjacks</div><div>+100 Max Lumber</div>',
             action: function (){
                 if (payCosts(actions.city.lumber_yard.cost)){
                     global.city['lumber_yard'].count++;
@@ -1019,10 +1019,10 @@ export const actions = {
             effect: function(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 if (global.city.powered){
-                    return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill uses 1kW but produces 5% more lumber.`; 
+                    return `<div>+200 Max Lumber</div><div>Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill uses 1kW but produces 5% more lumber.</div>`; 
                 }
                 else {
-                    return `Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%`;
+                    return `<div>+200 Max Lumber</div><div>Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%</div>`;
                 }
             },
             powered: 1,
@@ -1052,10 +1052,10 @@ export const actions = {
             },
             effect: function() { 
                 if (global.tech['mine_conveyor']){
-                    return '+1 Max Quarry Worker. If powered consumes 1kW but increases rock yield by 5%';
+                    return '<div>+1 Max Quarry Worker</div><div>+100 Max Stone</div><div>If powered consumes 1kW but increases rock yield by 5%</div>';
                 }
                 else {
-                    return '+1 Max Quarry Worker';
+                    return '<div>+1 Max Quarry Worker</div><div>+100 Max Stone</div>';
                 }
             },
             powered: 1,
@@ -1291,7 +1291,10 @@ export const actions = {
         bank: {
             id: 'city-bank',
             title: 'Bank',
-            desc: 'Secure money vault',
+            desc: function(){
+                let planet = races[global.race.species].home;
+                return `Bank of ${planet}`;
+            },
             reqs: { banking: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('bank', 250, 1.5); },
@@ -1315,6 +1318,9 @@ export const actions = {
                 if (global.tech['banking'] >= 7){
                     vault *= 1 + (global.civic.banker.workers * 0.05);
                 }
+                if (global.tech['banking'] >= 8){
+                    vault += 25 * global.resource[races[global.race.species].name].amount;
+                }
                 if (global.tech['banking'] >= 2){
                     return `<div>+\$${vault} Max Money</div><div>+1 Max Banker</div>`; 
                 }
@@ -1335,7 +1341,6 @@ export const actions = {
         university: {
             id: 'city-university',
             title: 'University',
-            desc: 'Higher learning center',
             desc: function(){
                 let planet = races[global.race.species].home;
                 return `${planet} University`;
@@ -1347,7 +1352,7 @@ export const actions = {
                 Stone: function(){ return costMultiplier('university', 750, 1.35) - 150; }
             },
             effect: function (){
-                let gain = 500;
+                let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                 if (global.tech['science'] >= 4){
                     gain *= 1 + (global.city['library'].count * 0.02);
                     gain = gain.toFixed(0);
@@ -1381,6 +1386,9 @@ export const actions = {
             },
             effect: function (){
                 let gain = global.race['nearsighted'] ? '110' : '125';
+                if (global.tech['science'] && global.tech['science'] >= 8){
+                    gain *= 1.4;
+                }
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     gain = +(gain * (1 + (global.civic.scientist.workers * 0.12))).toFixed(1);
                 }
@@ -1915,6 +1923,24 @@ export const actions = {
                 return false;
             }
         },
+        cameras: {
+            id: 'tech-cameras',
+            title: 'Security Cameras',
+            desc: 'Upgrade warehouses with cameras',
+            reqs: { high_tech: 4 },
+            grant: ['storage',5],
+            cost: {
+                Money: function(){ return 100000; },
+                Knowledge: function(){ return 65000; }
+            },
+            effect: 'Security cameras make monitoring large storage spaces easier increaseing storage potential.',
+            action: function (){
+                if (payCosts(actions.tech.cameras.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         containerization: {
             id: 'tech-containerization',
             title: 'Containerization',
@@ -2194,6 +2220,24 @@ export const actions = {
                 return false;
             }
         },
+        bonds: {
+            id: 'tech-bonds',
+            title: 'Savings Bonds',
+            desc: 'Savings Bonds',
+            reqs: { banking: 3 },
+            grant: ['banking',4],
+            cost: {
+                Money: function(){ return 20000; },
+                Knowledge: function(){ return 5500; }
+            },
+            effect: 'Raise new capital by creating a series of savings bonds. With savings bonds each citizen will increase your money cap by $250.',
+            action: function (){
+                if (payCosts(actions.tech.bonds.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         steel_vault: {
             id: 'tech-steel_vault',
             title: 'Steel Vault',
@@ -2208,24 +2252,6 @@ export const actions = {
             effect: 'Reinforce your bank vaults with heavy steel doors and walls, increases $ storage capacity.',
             action: function (){
                 if (payCosts(actions.tech.steel_vault.cost)){
-                    return true;
-                }
-                return false;
-            }
-        },
-        bonds: {
-            id: 'tech-bonds',
-            title: 'Savings Bonds',
-            desc: 'Savings Bonds',
-            reqs: { banking: 3 },
-            grant: ['banking',4],
-            cost: {
-                Money: function(){ return 20000; },
-                Knowledge: function(){ return 5500; }
-            },
-            effect: 'Raise new capital by creating a series of savings bonds. With savings bonds each citizen will increase your money cap by $250.',
-            action: function (){
-                if (payCosts(actions.tech.bonds.cost)){
                     return true;
                 }
                 return false;
@@ -2262,6 +2288,24 @@ export const actions = {
             effect: 'With new training your bankers will learn how to creatively store money. Increases bank vault capacity by 5% per banker.',
             action: function (){
                 if (payCosts(actions.tech.swiss_banking.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        safety_deposit: {
+            id: 'tech-safety_deposit',
+            title: 'Safety Deposit Box',
+            desc: 'Safety Deposit Box',
+            reqs: { banking: 7, high_tech: 4 },
+            grant: ['banking',8],
+            cost: {
+                Money: function(){ return 250000; },
+                Knowledge: function(){ return 75000; }
+            },
+            effect: 'Banks will offer safety deposit boxes, increasing bank capacity by $25 per citizen.',
+            action: function (){
+                if (payCosts(actions.tech.safety_deposit.cost)){
                     return true;
                 }
                 return false;
@@ -2383,6 +2427,23 @@ export const actions = {
             effect: 'Upgrade wardenclyffe towers with tesla coils increasing their science potental when powered.',
             action: function (){
                 if (payCosts(actions.tech.tesla_coil.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        internet: {
+            id: 'tech-internet',
+            title: 'Internet',
+            desc: 'Internet',
+            reqs: { science: 7, high_tech: 4 },
+            grant: ['science',8],
+            cost: {
+                Knowledge: function(){ return 68000; }
+            },
+            effect: 'The internet is a revolution which massively changes how information is exchanged. Increases the base value of Universities and Libraries by 40%',
+            action: function (){
+                if (payCosts(actions.tech.internet.cost)){
                     return true;
                 }
                 return false;
@@ -3140,6 +3201,23 @@ export const actions = {
             effect: 'Use stronger steel as rebar, further reducing cement costs.',
             action: function (){
                 if (payCosts(actions.tech.steel_rebar.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        portland_cement: {
+            id: 'tech-portland_cement',
+            title: 'Portland Cement',
+            desc: 'Portland Cement',
+            reqs: { cement: 3, high_tech: 3 },
+            grant: ['cement',4],
+            cost: {
+                Knowledge: function(){ return 35000; }
+            },
+            effect: 'Portland cement is easier to make boosting productivity of cement workers by 20%',
+            action: function (){
+                if (payCosts(actions.tech.portland_cement.cost)){
                     return true;
                 }
                 return false;

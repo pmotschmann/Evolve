@@ -431,7 +431,7 @@ function mainLoop() {
                 }
                 modRes('Stone',-(consume));
                 
-                let cement_multiplier = 1;
+                let cement_multiplier = global.tech['cement'] >= 4 ? 1.2 : 1;
                 cement_multiplier *= tax_multiplier;
                 cement_multiplier *= racialTrait(global.civic.cement_worker.workers,'factory');
                 cement_multiplier *= hunger;
@@ -762,14 +762,18 @@ function mainLoop() {
             }
             if (global.city['university']){
                 let multiplier = 1;
+                let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                 if (global.tech['science'] >= 4){
                     multiplier += global.city['library'].count * 0.02;
                 }
-                caps['Knowledge'] += (global.city['university'].count * 500 * multiplier);
+                caps['Knowledge'] += (global.city['university'].count * base * multiplier);
                 lCaps['professor'] += global.city['university'].count;
             }
             if (global.city['library']){
                 let shelving = (global.race['nearsighted'] ? 110 : 125);
+                if (global.tech['science'] && global.tech['science'] >= 8){
+                    shelving *= 1.4;
+                }
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     shelving *= 1 + (global.civic.scientist.workers * 0.12);
                 }
@@ -800,6 +804,9 @@ function mainLoop() {
                 }
                 if (global.tech['banking'] >= 7){
                     vault *= 1 + (global.civic.banker.workers * 0.05);
+                }
+                if (global.tech['banking'] >= 8){
+                    vault += 25 * global.resource[races[global.race.species].name].amount;
                 }
                 caps['Money'] += (global.city['bank'].count * vault);
             }

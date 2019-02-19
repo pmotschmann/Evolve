@@ -32,8 +32,9 @@ export const job_desc = {
         return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal from deep in the ground.';
     },
     cement_worker: function(){
+        let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
         let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
-        let gain = global.civic.cement_worker.impact * cement_multiplier;
+        let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
         return `Cement plant workers turn stone into cement, each worker produces ${gain} cement and consumes 3 stone per second.`;
     },
     banker: function(){
