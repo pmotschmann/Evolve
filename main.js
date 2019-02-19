@@ -499,6 +499,13 @@ function mainLoop() {
                     }
                     
                     var steel_multiplier = global.tech['smelting'] >= 4 ? 1.2 : 1;
+                    if (global.tech['smelting'] >= 5){
+                        steel_multiplier *= 1.2;
+                    }
+                    if (global.tech['smelting'] >= 6){
+                        steel_multiplier *= 1.2;
+                    }
+                    
                     steel_multiplier *= tax_multiplier;
                     steel_multiplier *= hunger;
                     delta = steel_smelter * steel_multiplier * global_multiplier * time_multiplier;
@@ -609,6 +616,9 @@ function mainLoop() {
             // Oil
             if (global.city['oil_well']){
                 let oil_multiplier = global.tech['oil'] >= 4 ? 0.48 : 0.4;
+                if (global.tech['oil'] >= 5){
+                    oil_multiplier *= 1.25;
+                }
                 oil_multiplier *= hunger;
                 oil_multiplier *= tax_multiplier;
                 delta = global.city.oil_well.count * oil_multiplier * global_multiplier * time_multiplier;

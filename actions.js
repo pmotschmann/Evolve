@@ -1164,7 +1164,7 @@ export const actions = {
             },
             effect: function() { 
                 if (global.tech['mine_conveyor']){
-                    return '+1 Max Miner. If powered consumes 1kW but increases ore yield by 5%';
+                    return '<div>+1 Max Miner</div><div>If powered consumes 1kW but increases ore yield by 5%</div>';
                 }
                 else {
                     return '+1 Max Miner';
@@ -1198,7 +1198,7 @@ export const actions = {
             },
             effect: function() { 
                 if (global.tech['mine_conveyor']){
-                    return '+1 Max Coal Miner. If powered consumes 1kW but increases coal yield by 5%';
+                    return '<div>+1 Max Coal Miner</div><div>If powered consumes 1kW but increases coal yield by 5%</div>';
                 }
                 else {
                     return '+1 Max Coal Miner';
@@ -1232,6 +1232,9 @@ export const actions = {
             },
             effect: function() { 
                 let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;
+                if (global.tech['oil'] >= 5){
+                    oil *= 1.25;
+                }
                 return `+${oil} oil per second. +500 Max Oil.`;
             },
             action: function (){
@@ -1794,6 +1797,42 @@ export const actions = {
                 return false;
             }
         },
+        oxygen_converter: {
+            id: 'tech-oxygen_converter',
+            title: 'Oxygen Converter',
+            desc: 'Upgrade your smelters',
+            reqs: { smelting: 4, high_tech: 3 },
+            grant: ['smelting',5],
+            cost: { 
+                Knowledge: function(){ return 52000; },
+                Coal: function(){ return 10000; }
+            },
+            effect: 'Increases Steel output of smelters by 20%',
+            action: function (){
+                if (payCosts(actions.tech.oxygen_converter.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        electric_arc_furnace: {
+            id: 'tech-electric_arc_furnace',
+            title: 'Electric Arc Furnace',
+            desc: 'Upgrade your smelters',
+            reqs: { smelting: 5, high_tech: 4 },
+            grant: ['smelting',6],
+            cost: { 
+                Knowledge: function(){ return 95000; },
+                Copper: function(){ return 25000; }
+            },
+            effect: 'Increases Steel output of smelters by 20%',
+            action: function (){
+                if (payCosts(actions.tech.electric_arc_furnace.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         metal_working: {
             id: 'tech-metal_working',
             title: 'Metal Working',
@@ -2147,10 +2186,10 @@ export const actions = {
             id: 'tech-massive_trades',
             title: 'Massive Volume Trading',
             desc: 'Upgrades marketplace for massive orders',
-            reqs: { currency: 5, locked: 1 },
+            reqs: { currency: 5, high_tech: 4 },
             grant: ['currency',6],
             cost: { 
-                Knowledge: function(){ return 1000000; }
+                Knowledge: function(){ return 120000; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at very high volumes.',
             action: function (){
@@ -2472,25 +2511,6 @@ export const actions = {
                 return false;
             }
         },
-        mine_conveyor: {
-            id: 'tech-mine_conveyor',
-            title: 'Mine Conveyor Belts',
-            desc: 'Mine Conveyor Belts',
-            reqs: { high_tech: 2 },
-            grant: ['mine_conveyor',1],
-            cost: {
-                Knowledge: function(){ return 18000; },
-                Copper: function(){ return 2250; },
-                Steel: function(){ return 1750; }
-            },
-            effect: 'Add mining conveyor belts to your mining opperations. Greatly increasing mining excavation rates.',
-            action: function (){
-                if (payCosts(actions.tech.mine_conveyor.cost)){
-                    return true;
-                }
-                return false;
-            }
-        },
         electricity: {
             id: 'tech-electricity',
             title: 'Electricity',
@@ -2543,6 +2563,25 @@ export const actions = {
             effect: 'Electronics is the next major step forward in technological advancement.',
             action: function (){
                 if (payCosts(actions.tech.electronics.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mine_conveyor: {
+            id: 'tech-mine_conveyor',
+            title: 'Mine Conveyor Belts',
+            desc: 'Mine Conveyor Belts',
+            reqs: { high_tech: 2 },
+            grant: ['mine_conveyor',1],
+            cost: {
+                Knowledge: function(){ return 18000; },
+                Copper: function(){ return 2250; },
+                Steel: function(){ return 1750; }
+            },
+            effect: 'Add mining conveyor belts to your mining opperations. Greatly increasing mining excavation rates.',
+            action: function (){
+                if (payCosts(actions.tech.mine_conveyor.cost)){
                     return true;
                 }
                 return false;
@@ -2615,6 +2654,24 @@ export const actions = {
             effect: 'New oil drills made from titanium will increase oil production by an estimated 20%.',
             action: function (){
                 if (payCosts(actions.tech.titanium_drills.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        alloy_drills: {
+            id: 'tech-alloy_drills',
+            title: 'Alloy Drills',
+            desc: 'Alloy Drills',
+            reqs: { oil: 4 },
+            grant: ['oil',5],
+            cost: {
+                Knowledge: function(){ return 85000; },
+                Alloy: function(){ return 1000; }
+            },
+            effect: 'Enhanced drills made with new alloys increase oil production by another estimated 25%.',
+            action: function (){
+                if (payCosts(actions.tech.alloy_drills.cost)){
                     return true;
                 }
                 return false;
@@ -2910,6 +2967,25 @@ export const actions = {
             effect: 'Replace old mining pick technology with jackhammers. Improves mining activities.',
             action: function (){
                 if (payCosts(actions.tech.jackhammer.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        jackhammer_mk2: {
+            id: 'tech-jackhammer_mk2',
+            title: 'Electric Jackhammer',
+            desc: 'Modern Jackhammers',
+            reqs: { pickaxe: 4, high_tech: 4},
+            grant: ['pickaxe',5],
+            cost: {
+                Knowledge: function(){ return 75000; },
+                Titanium: function(){ return 2000; },
+                Alloy: function(){ return 500; }
+            },
+            effect: 'Upgrade your jackhammers with newer models. Improves mining activities.',
+            action: function (){
+                if (payCosts(actions.tech.jackhammer_mk2.cost)){
                     return true;
                 }
                 return false;
@@ -3730,6 +3806,12 @@ function smelterModal(modal){
             },
             steelLabel: function(){
                 let boost = global.tech['smelting'] >= 4 ? 1.2 : 1;
+                if (global.tech['smelting'] >= 5){
+                    boost *= 1.2;
+                }
+                if (global.tech['smelting'] >= 6){
+                    boost *= 1.2;
+                }
                 return `Smelt Steel, consumes 0.5 Coal and 2 Iron per second but produces ${boost} Steel`;
             },
             ironSmelting: function(){
