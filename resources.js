@@ -12,7 +12,8 @@ export const resource_values = {
     Coal: 20,
     Oil: 75,
     Steel: 100,
-    Titanium: 150
+    Titanium: 150,
+    Alloy: 150,
     //Iridium: 200,
     //Deuterium: 450,
     //'Helium-3': 600,
@@ -43,6 +44,7 @@ export function defineResources() {
         loadResource('Oil',0,1,true,false);
         loadResource('Steel',50,1,true,true);
         loadResource('Titanium',50,1,true,true);
+        loadResource('Alloy',50,1,true,true);
         //loadResource('Iridium',50,1,true,true);
         //loadResource('Deuterium',0,1,true,false);
         //loadResource('Helium-3',0,1,true,false);
@@ -97,7 +99,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             template: '<div id="modalBox" class="modalBox"></div>'
         };
     
-    vues['res_'+name] = new Vue({
+    vues[`res_${name}`] = new Vue({
         data: global['resource'][name], 
         filters: {
             size: function (value){
@@ -126,7 +128,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             }
         }
     });
-    vues['res_'+name].$mount('#res-' + name);
+    vues[`res_${name}`].$mount(`#res-${name}`);
     
     if (stackable){
         $(`#con${name}`).on('mouseover',function(){
@@ -368,7 +370,7 @@ function drawModal(name,color){
         vues['modalContainer'].$mount('#modalContainers');
     }
 
-    vues['modal_res_'+name] = new Vue({
+    vues[`modal_res_${name}`] = new Vue({
         data: global['resource'][name], 
         filters: {
             size: function (value){
@@ -379,12 +381,12 @@ function drawModal(name,color){
             }
         }
     });
-    vues['modal_res_'+name].$mount('#modalBoxTitle');
+    vues[`modal_res_${name}`].$mount('#modalBoxTitle');
     
     if (global.tech['currency'] && global.tech['currency'] >= 2){
         var market_item = $(`<div id="pop_market" class="market-item" v-show="display"></div>`);
         body.append(market_item);
-        marketItem('pop_market_'+name,'#pop_market',market_item,name,color);
+        marketItem(`pop_market_${name}`,'#pop_market',market_item,name,color);
     }
 }
 

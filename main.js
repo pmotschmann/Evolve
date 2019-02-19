@@ -264,7 +264,7 @@ function mainLoop() {
                 modRes('Oil',-(consume));
             }
 
-            let p_structs = ['apartment','wardenclyffe','rock_quarry','mine','coal_mine','sawmill'];
+            let p_structs = ['apartment','factory','wardenclyffe','mine','coal_mine','rock_quarry','sawmill'];
             for (var i = 0; i < p_structs.length; i++) {
                 if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
                     let power = global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
@@ -565,7 +565,7 @@ function mainLoop() {
             
             // Oil
             if (global.city['oil_well']){
-                let oil_multiplier = 0.4;
+                let oil_multiplier = global.tech['oil'] >= 4 ? 0.48 : 0.4;
                 oil_multiplier *= hunger;
                 oil_multiplier *= tax_multiplier;
                 delta = global.city.oil_well.count * oil_multiplier * global_multiplier * time_multiplier;
@@ -617,7 +617,9 @@ function mainLoop() {
                 Cement: 100,
                 Coal: 50,
                 Oil: 0,
-                Steel: 50
+                Steel: 50,
+                Titanium: 50,
+                Alloy: 50
             };
             // labor caps
             var lCaps = {
@@ -691,6 +693,9 @@ function mainLoop() {
                 if (global.tech['storage'] >= 3){
                     multiplier *= global.tech['storage'] >= 4 ? 2 : 1.5;
                     caps['Steel'] += (global.city['shed'].count * (25 * multiplier));
+                }
+                if (global.tech['storage'] >= 4){
+                    caps['Titanium'] += (global.city['shed'].count * (10 * multiplier));
                 }
                 if (global.race['pack_rat']){
                     multiplier *= 1.05;
