@@ -1129,7 +1129,7 @@ export const actions = {
             id: 'city-factory',
             title: 'Factory',
             desc: 'Produces manufactured goods',
-            reqs: { high_tech: 3, locked: 1 },
+            reqs: { high_tech: 3 },
             cost: { 
                 Money: function(){ return costMultiplier('factory', 25000, 1.3); },
                 Cement: function(){ return costMultiplier('factory', 1000, 1.3); },
@@ -1144,6 +1144,7 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.city.factory.cost)){
                     global.city['factory'].count++;
+                    global.resource.Alloy.display = true;
                     if (global.city.power > 2){
                         global.city['factory'].on++;
                     }
@@ -1255,7 +1256,7 @@ export const actions = {
             },
             effect: function() { 
                 let oil = 1000;
-                return `+${oil} max oil.`;
+                return `+${oil} Max Oil.`;
             },
             action: function (){
                 if (payCosts(actions.city.oil_depot.cost)){
@@ -1412,8 +1413,8 @@ export const actions = {
             effect: function (){
                 let gain = 1000;
                 if (global.city.powered){
-                    let pgain = gain * 2;
-                    return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div><div>If powered uses 2kW but doubles it's Knowledge gain to ${pgain}</div>`;
+                    let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
+                    return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div><div>If powered uses 2kW but increases it's Knowledge gain to ${pgain}</div>`;
                 }
                 else {
                     return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
@@ -2006,6 +2007,24 @@ export const actions = {
                 return false;
             }
         },
+        alloy_containers: {
+            id: 'tech-alloy_containers',
+            title: 'Alloy Containers',
+            desc: 'New larger containers made from alloy',
+            reqs: { steel_container: 2, storage: 4 },
+            grant: ['steel_container',3],
+            cost: { 
+                Knowledge: function(){ return 55000; },
+                Alloy: function(){ return 2500; }
+            },
+            effect: 'Increase container capacity by 50% with new alloy containers.',
+            action: function (){
+                if (payCosts(actions.tech.alloy_containers.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: 'Currency',
@@ -2352,6 +2371,23 @@ export const actions = {
                 return false;
             }
         },
+        tesla_coil: {
+            id: 'tech-tesla_coil',
+            title: 'Tesla Coil',
+            desc: 'Tesla Coil',
+            reqs: { science: 6, high_tech: 3 },
+            grant: ['science',7],
+            cost: {
+                Knowledge: function(){ return 57500; }
+            },
+            effect: 'Upgrade wardenclyffe towers with tesla coils increasing their science potental when powered.',
+            action: function (){
+                if (payCosts(actions.tech.tesla_coil.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: 'Mad Science',
@@ -2429,6 +2465,23 @@ export const actions = {
                 if (payCosts(actions.tech.industrialization.cost)){
                     global.resource.Titanium.display = true;
                     global.city['factory'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        electronics: {
+            id: 'tech-electronics',
+            title: 'Electronics',
+            desc: 'Electronics',
+            reqs: { high_tech: 3, titanium: 1 },
+            grant: ['high_tech',4],
+            cost: {
+                Knowledge: function(){ return 55000; }
+            },
+            effect: 'Electronics is the next major step forward in technological advancement.',
+            action: function (){
+                if (payCosts(actions.tech.electronics.cost)){
                     return true;
                 }
                 return false;
@@ -3114,10 +3167,10 @@ export const actions = {
             id: 'tech-kroll_process',
             title: 'Kroll Process',
             desc: 'Kroll Process',
-            reqs: { titanium: 1, locked: 1 },
+            reqs: { titanium: 1, high_tech: 4 },
             grant: ['titanium',2],
             cost: {
-                Knowledge: function(){ return 125000; },
+                Knowledge: function(){ return 85000; },
                 Titanium: function(){ return 10000; }
             },
             effect: 'Iron smelting will result in small amounts of titanium production.',
@@ -3646,5 +3699,67 @@ function smelterModal(modal){
 }
 
 function factoryModal(modal){
-    
+    let fuel = $('<div><span class="has-text-warning">Opperating:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>');
+    modal.append(fuel);
+
+    if (!global.city.factory['Lux']){
+        global.city.factory['Lux'] = 0;
+    }
+
+    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-bottom" animated><span>Luxury Goods</span></b-tooltip></div>`);
+    modal.append(lux);
+
+    let luxCount = $(`<span class="current">{{ Lux }}</span>`);
+    let subLux = $(`<span class="sub" @click="subItem('Lux')">&laquo;</span>`);
+    let addLux = $(`<span class="add" @click="addItem('Lux')">&raquo;</span>`);
+    lux.append(subLux);
+    lux.append(luxCount);
+    lux.append(addLux);
+
+    if (!global.city.factory['Alloy']){
+        global.city.factory['Alloy'] = 0;
+    }
+
+    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-bottom" animated><span>Alloy</span></b-tooltip></div>`);
+    modal.append(alloy);
+
+    let alloyCount = $(`<span class="current">{{ Alloy }}</span>`);
+    let subAlloy = $(`<span class="sub" @click="subItem('Alloy')">&laquo;</span>`);
+    let addAlloy = $(`<span class="add" @click="addItem('Alloy')">&raquo;</span>`);
+    alloy.append(subAlloy);
+    alloy.append(alloyCount);
+    alloy.append(addAlloy);
+
+    vues['specialModal'] = new Vue({
+        data: global.city['factory'],
+        methods: {
+            subItem: function(item){
+                if (global.city.factory[item] > 0){
+                    global.city.factory[item]--;
+                }
+            },
+            addItem: function(item){
+                if (global.city.factory.Lux + global.city.factory.Alloy < global.city.factory.count){
+                    global.city.factory[item]++;
+                }
+            },
+            buildLabel: function(type){
+                switch(type){
+                    case 'Lux':
+                        return 'Consume 2 Furs/s to produce luxury goods worth $20';
+                        break;
+                    case 'Alloy':
+                        return 'Consume 0.75 Copper and 0.15 Titanium/s to produce Alloy';
+                        break;
+                }
+            }
+        },
+        filters: {
+            on: function(count){
+                return global.city.factory.Lux + global.city.factory.Alloy;
+            }
+        }
+    });
+
+    vues['specialModal'].$mount('#specialModal');
 }

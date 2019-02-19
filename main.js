@@ -384,17 +384,54 @@ function mainLoop() {
             delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * global_multiplier * time_multiplier * adjunct;
             modRes('Knowledge',delta);
             
+            // Factory
+            if (global.city['factory']){
+                if (global.city.factory['Lux'] && global.city.factory['Lux'] > 0){
+                    let consume = global.city.factory.Lux * 2 * time_multiplier;
+                    let workDone = global.city.factory.Lux;
+                    while (consume > global.resource.Furs.amount && consume > 0){
+                        consume -= 2 * time_multiplier;
+                        workDone--;
+                    }
+                    modRes('Furs',-(consume));
+
+                    delta = workDone * 20 * hunger * tax_multiplier * global_multiplier * time_multiplier;
+                    modRes('Money',delta);
+                }
+
+                if (global.city.factory['Alloy'] && global.city.factory['Alloy'] > 0){
+                    let copper = global.city.factory.Alloy * 0.75 * time_multiplier;
+                    let titanium = global.city.factory.Alloy * 0.15 * time_multiplier;
+                    let workDone = global.city.factory.Alloy;
+                    while (copper > global.resource.Copper.amount && copper > 0){
+                        copper -= 0.75 * time_multiplier;
+                        titanium -= 0.15 * time_multiplier;
+                        workDone--;
+                    }
+                    while (titanium > global.resource.Titanium.amount && titanium > 0){
+                        copper -= 0.75 * time_multiplier;
+                        titanium -= 0.15 * time_multiplier;
+                        workDone--;
+                    }
+                    modRes('Copper',-(copper));
+                    modRes('Titanium',-(titanium));
+
+                    delta = workDone * 0.075 * hunger * tax_multiplier * global_multiplier * time_multiplier;
+                    modRes('Alloy',delta);
+                }
+            }
+
             // Cement
             if (global.resource.Cement.display && global.resource.Cement.amount < global.resource.Cement.max){
-                var consume = global.civic.cement_worker.workers * 3 * time_multiplier;
-                var workDone = global.civic.cement_worker.workers;
+                let consume = global.civic.cement_worker.workers * 3 * time_multiplier;
+                let workDone = global.civic.cement_worker.workers;
                 while (consume > global.resource.Stone.amount && consume > 0){
                     consume -= 3 * time_multiplier;
                     workDone--;
                 }
                 modRes('Stone',-(consume));
                 
-                var cement_multiplier = 1;
+                let cement_multiplier = 1;
                 cement_multiplier *= tax_multiplier;
                 cement_multiplier *= racialTrait(global.civic.cement_worker.workers,'factory');
                 cement_multiplier *= hunger;
@@ -472,8 +509,8 @@ function mainLoop() {
                         modRes('Coal',-(coal_consume));
                     }
                     
-                    if (global.tech['titanium'] && global.tech['titanium'] > 0){
-                        let divisor = global.tech['titanium'] >= 2 ? 10 : 25;
+                    if (global.tech['titanium'] && global.tech['titanium'] >= 1){
+                        let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                         modRes('Titanium',delta / divisor);
                     }
                 }
@@ -542,6 +579,12 @@ function mainLoop() {
                 iron_multiplier *= hunger;
                 delta = (global.civic.miner.workers / 4) * iron_multiplier * global_multiplier * time_multiplier;
                 modRes('Iron',delta);
+
+                if (global.tech['titanium'] && global.tech['titanium'] >= 2){
+                    delta = (global.civic.miner.workers / 4) * iron_smelter * 0.1 * global_multiplier * time_multiplier;
+                    let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
+                    modRes('Titanium',delta / divisor);
+                }
             }
             
             // Coal
@@ -738,7 +781,8 @@ function mainLoop() {
             if (global.city['wardenclyffe']){
                 caps['Knowledge'] += (global.city['wardenclyffe'].count * 1000);
                 lCaps['scientist'] += global.city['wardenclyffe'].count;
-                caps['Knowledge'] += (global.city['wardenclyffe'].on * 1000);
+                let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
+                caps['Knowledge'] += (global.city['wardenclyffe'].on * powered_gain);
             }
             if (global.city['bank']){
                 let vault = 1000;
@@ -864,7 +908,7 @@ function mainLoop() {
                     }
                     if (res === 'Titanium'){
                         if (global.tech['titanium'] && global.tech['titanium'] > 0){
-                            r_val *= global.tech['titanium'] && global.tech['titanium'] > 1 ? 1 : 2.5;
+                            r_val *= global.resource.Alloy.display ? 1 : 2.5;
                         }
                         else {
                             r_val *= 5;

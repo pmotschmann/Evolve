@@ -13,7 +13,7 @@ export const resource_values = {
     Oil: 75,
     Steel: 100,
     Titanium: 150,
-    Alloy: 150,
+    Alloy: 275,
     //Iridium: 200,
     //Deuterium: 450,
     //'Helium-3': 600,
