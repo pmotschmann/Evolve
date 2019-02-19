@@ -1172,7 +1172,7 @@ export const actions = {
             },
             powered: 1,
             power_reqs: { mine_conveyor: 1 },
-            action: function (){d
+            action: function (){
                 if (payCosts(actions.city.mine.cost)){
                     global.city['mine'].count++;
                     global.resource.Copper.display = true;
