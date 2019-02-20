@@ -319,7 +319,6 @@ function mainLoop() {
                 if (global.race['carnivore']){
                     let hunt = global.tech['military'] ? global.tech.military : 1;
                     delta = global.civic.free * hunt * 2;
-                    delta = (delta * global_multiplier * time_multiplier) - consume;
                 }
                 else {
                     var food_multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
@@ -341,10 +340,14 @@ function mainLoop() {
                     food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
                     food_multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
                     let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
-                    let hunting = global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
-                    delta = (global.civic.farmer.workers * impact * food_multiplier) + hunting;
-                    delta = (delta * global_multiplier * time_multiplier) - consume;
+                    delta = (global.civic.farmer.workers * impact * food_multiplier);
                 }
+                
+                if (global.tech['military']){
+                    delta += global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
+                }
+                
+                delta = (delta * global_multiplier * time_multiplier) - consume;
 
                 if (modRes('Food',delta)){
                     fed = false;
