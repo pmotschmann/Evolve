@@ -375,13 +375,13 @@ function mainLoop() {
             // Knowledge
             var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
             know_multiplier *= racialTrait(global.civic.professor.workers,'science');
-            know_multiplier *= hunger;
-            var delta = (global.civic.professor.workers * know_multiplier) + 1;
+            know_multiplier *= hunger * time_multiplier * global_multiplier;
+            var delta = (global.civic.professor.workers * know_multiplier) + (1 * time_multiplier);
             let adjunct = 1;
             if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
                 adjunct = 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
             }
-            delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * global_multiplier * time_multiplier * adjunct;
+            delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * global_multiplier * time_multiplier * adjunct * hunger;
             modRes('Knowledge',delta);
             
             // Factory
@@ -542,7 +542,7 @@ function mainLoop() {
             }
             stone_multiplier *= tax_multiplier;
             stone_multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
-            if (global.city['rock_quarry']['on']){
+            if (global.city['rock_quarry'] && global.city.rock_quarry['on']){
                 stone_multiplier *= 1 + (p_on['rock_quarry'] * 0.05);
             }
             stone_multiplier *= hunger;
