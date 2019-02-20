@@ -499,7 +499,12 @@ function buildGarrison(garrison){
                 if (global.race['brute']){
                     cost = Math.round(cost / 2);
                 }
-                return `Train a Soldier, costs \$${cost} and requires a recruit (unemployed citizen)`;
+                if (global.race['carnivore']){
+                    return `Train a Soldier, costs \$${cost} and requires a recruit (hunter)`;
+                }
+                else {
+                    return `Train a Soldier, costs \$${cost} and requires a recruit (unemployed citizen)`;
+                }
             },
             hireLabel(){
                 let cost = Math.round((1.35 ** global.civic.garrison.workers) * 100);

@@ -597,7 +597,9 @@ export const actions = {
                     global.settings.showEvolve = false;
                     global.settings.showCity = true;
                     
-                    registerTech('agriculture');
+                    if (!global.race['carnivore']){
+                        registerTech('agriculture');
+                    }
                     registerTech('housing');
                     registerTech('storage');
                     
@@ -2094,7 +2096,7 @@ export const actions = {
             id: 'tech-currency',
             title: 'Currency',
             desc: 'Invent the concept of currency',
-            reqs: { agriculture: 1 },
+            reqs: { housing: 1 },
             grant: ['currency',1],
             cost: { 
                 Knowledge: function(){ return 25; },
@@ -2354,7 +2356,7 @@ export const actions = {
             id: 'tech-science',
             title: 'Scientific Method',
             desc: 'Begin a journey of testing and discovery',
-            reqs: { agriculture: 1 },
+            reqs: { housing: 1 },
             grant: ['science',1],
             cost: {
                 Knowledge: function(){ return 75; }
@@ -3433,6 +3435,9 @@ function gainTech(action){
 
 export function addAction(action,type){
     if (global.race['kindling_kindred'] && action === 'tech' && type === 'stone_axe'){
+        return;
+    }
+    if (global.race['carnivore'] && action === 'tech' && type === 'agriculture'){
         return;
     }
     var id = actions[action][type].id;

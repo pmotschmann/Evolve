@@ -73,11 +73,12 @@ export function defineJobs(){
 }
 
 function loadUnemployed(){
-    var color = 'warning';
+    let color = 'warning';
     
-    var id = 'civ-free';
-    var civ_container = $(`<div id="${id}" class="job"></div>`);
-    var job_label = $(`<div class="job_label"><span class="has-text-${color}">Unemployed</span><span class="count">{{ free }}</span></div>`);
+    let id = 'civ-free';
+    let civ_container = $(`<div id="${id}" class="job"></div>`);
+    let job = global.race['carnivore'] ? 'Hunter' : 'Unemployed';
+    let job_label = $(`<div class="job_label"><span class="has-text-${color}">${job}</span><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
@@ -87,7 +88,8 @@ function loadUnemployed(){
     vues['civ_free'].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
-            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">The number of unemployed citizens. Unemployed citizens do not pay taxes however they also consume half rations.</div>`);
+            let text = global.race['carnivore'] ? 'Citizens not assigned to any other task will hunt for food. Military technology will boost effectiveness.' : 'The number of unemployed citizens. Unemployed citizens do not pay taxes however they also consume half rations.';
+            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
             $('#main').append(popper);
             popper.show();
             poppers[id] = new Popper($(`#${id} .job_label`),popper);
