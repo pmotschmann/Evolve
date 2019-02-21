@@ -354,9 +354,12 @@ function mainLoop() {
                 }
             }
             
-            if (global.race['lazy'] && Math.rand(0, 25) <= 1){
-                // Cats are lazy and periodically go into food comas.
-                fed = false;
+            if (global.race['lazy'] && global.city.calendar.temp === 2){
+                global_multiplier *= 0.9;
+            }
+
+            if (global.race['nyctophilia'] && global.city.calendar.weather === 2){
+                global_multiplier *= 0.9;
             }
 
             // Citizen Growth
@@ -408,6 +411,9 @@ function mainLoop() {
                     modRes('Furs',-(consume));
 
                     delta = workDone * 20 * hunger * tax_multiplier * global_multiplier * time_multiplier;
+                    if (global.race['toxic']){
+                        delta *= 1.05;
+                    }
                     modRes('Money',delta);
                 }
 
@@ -429,6 +435,9 @@ function mainLoop() {
                     modRes('Titanium',-(titanium));
 
                     delta = workDone * 0.075 * hunger * tax_multiplier * global_multiplier * time_multiplier;
+                    if (global.race['toxic']){
+                        delta *= 1.05;
+                    }
                     modRes('Alloy',delta);
                 }
             }
@@ -497,6 +506,10 @@ function mainLoop() {
 
                 iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
 
+                if (global.race['pyrophobia']){
+                    iron_smelter *= 0.9;
+                }
+
                 modRes('Lumber',-(consume_wood));
                 modRes('Coal',-(consume_coal));
                 modRes('Oil',-(consume_oil));
@@ -521,6 +534,10 @@ function mainLoop() {
                     steel_multiplier *= tax_multiplier;
                     steel_multiplier *= hunger;
                     delta = steel_smelter * steel_multiplier * global_multiplier * time_multiplier;
+
+                    if (global.race['pyrophobia']){
+                        delta *= 0.9;
+                    }
 
                     if (global.resource.Steel.amount < global.resource.Steel.max){
                         modRes('Steel',delta);

@@ -1109,6 +1109,9 @@ export const actions = {
             },
             effect: function(){ 
                 var iron_yield = global.tech['smelting'] >= 3 ? 12 : 10;
+                if (global.race['pyrophobia']){
+                    iron_yield *= 0.9;
+                }
                 if (global.resource.Steel.display){
                     return `Smelters can either increase Iron yield by ${iron_yield}% per smelter or produce Steel by consuming Iron and Coal. Smelters require fuel to opperate.`;
                 }
@@ -3807,6 +3810,9 @@ function smelterModal(modal){
             },
             ironLabel: function(){
                 let boost = global.tech['smelting'] >= 3 ? 12 : 10;
+                if (global.race['pyrophobia']){
+                    boost *= 0.9;
+                }
                 return `Smelt Iron, boosts Iron production by ${boost}%`;
             },
             steelLabel: function(){
@@ -3816,6 +3822,9 @@ function smelterModal(modal){
                 }
                 if (global.tech['smelting'] >= 6){
                     boost *= 1.2;
+                }
+                if (global.race['pyrophobia']){
+                    boost *= 0.9;
                 }
                 return `Smelt Steel, consumes 0.5 Coal and 2 Iron per second but produces ${boost} Steel`;
             },

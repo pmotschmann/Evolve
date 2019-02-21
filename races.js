@@ -319,6 +319,16 @@ export const genus_traits = {
 };
 
 export const traits = {
+    adaptable: {
+        desc: '',
+        ranks: 0,
+        type: 'genus',
+    },
+    xenophobic: {
+        desc: '',
+        ranks: 0,
+        type: 'genus',
+    },
     beast: {
         desc: '',
         ranks: 0,
@@ -399,12 +409,12 @@ export const traits = {
         ranks: 0,
         type: 'genus',
     },
-    adaptable: {
+    creative: {
         desc: '',
         ranks: 0,
         type: 'major',
     },
-    xenophobic: {
+    diverse: {
         desc: '',
         ranks: 0,
         type: 'major',
@@ -429,13 +439,13 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    lazy: { // All production randomly stops periodically
-        desc: 'Your race loves nothing more then a lazy afternoon. Productivity is often lost as a result.',
+    lazy: { // All production is lowered when the temperature is hot
+        desc: 'Your race loves nothing more then a lazy afternoon. Productivity is lost in warm weather as a result.',
         ranks: 0,
         type: 'major',
     },
-    carnivore: {
-        desc: '',
+    carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
+        desc: 'Your species is carnivorous and does not engage in farming.',
         ranks: 0,
         type: 'major',
     },
@@ -559,8 +569,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    pyrophobia: {
-        desc: '',
+    pyrophobia: { // Smelter productivity is reduced
+        desc: 'Your race is afraid of fire and smelters opperate slower as a result',
         ranks: 0,
         type: 'major',
     },
@@ -584,8 +594,13 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    toxic: {
-        desc: '',
+    toxic: { // Factory type jobs are more productive
+        desc: 'Your species natural toxicity makes you resistent to toxic workplaces and thus are more productive in factories',
+        ranks: 0,
+        type: 'major',
+    },
+    nyctophilia: { // Productivity is lost when it is sunny
+        desc: `Your race does not like direct sunlight, they are less productive when it's sunny`,
         ranks: 0,
         type: 'major',
     },
@@ -653,6 +668,9 @@ export function racialTrait(workers,type){
     }
     if (global.race['hydrophilic'] && global.city.calendar.weather === 0 && global.city.calendar.temp > 0 && type !== 'factory'){
         modifier *= 0.75;
+    }
+    if (global.race['toxic'] && type === 'factory'){
+        modifier *= 1.1;
     }
     return modifier;
 }
