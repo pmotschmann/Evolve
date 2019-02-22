@@ -418,9 +418,12 @@ a {
             margin-left: 0.125rem;
             font-size: 0.875rem;
         }
-        .weather,
+        .weather {
+            font-size: 0.875rem;
+        }
         .moon {
             font-size: 0.875rem;
+            color: #fff;
         }
         .wi-thermometer-exterior {
             color: #00d6b2;
@@ -436,6 +439,8 @@ a {
         }
         .wi-rain {
             color: #00d6b2;
+            position: relative;
+            bottom: 0.125rem;
         }
         .wi-snowflake-cold {
             color: #fff;
@@ -670,22 +675,22 @@ html.light {
     }
     .topBar {
         .calendar {
-            .fa-temperature-low {
+            .wi-thermometer-exterior {
                 color: #00d6b2;
             }
-            .fa-temperature-high {
+            .wi-thermometer {
                 color: #f10202;
             }
-            .fa-sun {
+            .wi-day-sunny {
                 color: #fffb00;
             }
-            .fa-cloud {
+            .wi-cloud {
                 color: #dfe2d3;
             }
-            .fa-cloud-rain {
+            .wi-rain {
                 color: #00b0e6;
             }
-            .fa-snowflake {
+            .wi-snowflake-cold {
                 color: #fff;
             }
         }
