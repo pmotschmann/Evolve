@@ -92,6 +92,32 @@ vues['topBar'] = new Vue({
                 case 2:
                     return 'Hot';// weather, hot weather may reduce worker productivity.';
             }
+        },
+        moon(){
+            if (global.city.calendar.moon === 0){
+                return 'New Moon';
+            }
+            else if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
+                return 'Waxing Crescent Moon';
+            }
+            else if (global.city.calendar.moon === 7){
+                return 'First Quarter Moon';
+            }
+            else if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){
+                return 'Waxing Gibbous Moon';
+            }
+            else if (global.city.calendar.moon === 14){
+                return 'Full Moon';
+            }
+            else if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){
+                return 'Waning Gibbous Moon';
+            }
+            else if (global.city.calendar.moon === 21){
+                return 'Third Quarter Moon';
+            }
+            else if (global.city.calendar.moon > 21){
+                return 'Waning Crescent Moon';
+            }
         }
     },
     filters: {
@@ -176,6 +202,7 @@ else {
             addAction('tech',tech);
         }
     });
+    setWeather();
 }
 
 // Start game loop
@@ -1040,33 +1067,14 @@ function mainLoop() {
                     global.city.calendar.temp = new_temp;
                 }
             }
-            $('#weather').removeClass('fa-sun');
-            $('#weather').removeClass('fa-cloud');
-            $('#weather').removeClass('fa-cloud-rain');
-            $('#weather').removeClass('fa-snowflake');
-            $('#temp').removeClass('fa-temperature-low');
-            $('#temp').removeClass('fa-temperature-high');
 
-            if (global.city.calendar.temp === 0){
-                $('#temp').addClass('fa-temperature-low');
+            // Moon Phase
+            global.city.calendar.moon++;
+            if (global.city.calendar.moon > 27){
+                global.city.calendar.moon = 0;
             }
-            else if (global.city.calendar.temp === 2){
-                $('#temp').addClass('fa-temperature-high');
-            }
-            if (global.city.calendar.weather === 0){
-                if (global.city.calendar.temp === 0){
-                    $('#weather').addClass('fa-snowflake');
-                }
-                else {
-                    $('#weather').addClass('fa-cloud-rain');
-                }
-            }
-            else if (global.city.calendar.weather === 1){
-                $('#weather').addClass('fa-cloud');
-            }
-            else if (global.city.calendar.weather === 2){
-                $('#weather').addClass('fa-sun');
-            }
+
+            setWeather();
         }
 
         // Event triggered
@@ -1150,4 +1158,151 @@ window.cheat = function cheat(){
     global.resource.RNA.max = 10000;
     global.resource.DNA.amount = 10000;
     global.resource.RNA.amount = 10000;
+}
+
+function setWeather(){
+    // Moon Phase
+    switch(global.city.calendar.moon){
+        case 0:
+            $('#moon').removeClass('wi-moon-waning-crescent-6');
+            $('#moon').addClass('wi-moon-new');
+            break;
+        case 1:
+            $('#moon').removeClass('wi-moon-new');
+            $('#moon').addClass('wi-moon-waxing-crescent-1');
+            break;
+        case 2:
+            $('#moon').removeClass('wi-moon-waxing-crescent-1');
+            $('#moon').addClass('wi-moon-waxing-crescent-2');
+            break;
+        case 3:
+            $('#moon').removeClass('wi-moon-waxing-crescent-2');
+            $('#moon').addClass('wi-moon-waxing-crescent-3');
+            break;
+        case 4:
+            $('#moon').removeClass('wi-moon-waxing-crescent-3');
+            $('#moon').addClass('wi-moon-waxing-crescent-4');
+            break;
+        case 5:
+            $('#moon').removeClass('wi-moon-waxing-crescent-4');
+            $('#moon').addClass('wi-moon-waxing-crescent-5');
+            break;
+        case 6:
+            $('#moon').removeClass('wi-moon-waxing-crescent-5');
+            $('#moon').addClass('wi-moon-waxing-crescent-6');
+            break;
+        case 7:
+            $('#moon').removeClass('wi-moon-waxing-crescent-6');
+            $('#moon').addClass('wi-moon-first-quarter');
+            break;
+        case 8:
+            $('#moon').removeClass('wi-moon-first-quarter');
+            $('#moon').addClass('wi-moon-waxing-gibbous-1');
+            break;
+        case 9:
+            $('#moon').removeClass('wi-moon-waxing-gibbous-1');
+            $('#moon').addClass('wi-moon-waxing-gibbous-2');
+            break;
+        case 10:
+            $('#moon').removeClass('wi-moon-waxing-gibbous-2');
+            $('#moon').addClass('wi-moon-waxing-gibbous-3');
+            break;
+        case 11:
+            $('#moon').removeClass('wi-moon-waxing-gibbous-3');
+            $('#moon').addClass('wi-moon-waxing-gibbous-4');
+            break;
+        case 12:
+            $('#moon').removeClass('wi-moon-waxing-gibbous-4');
+            $('#moon').addClass('wi-moon-waxing-gibbous-5');
+            break;
+        case 13:
+            $('#moon').removeClass('wi-moon-waxing-gibbous-5');
+            $('#moon').addClass('wi-moon-waxing-gibbous-6');
+            break;
+        case 14:
+            $('#moon').removeClass('wi-moon-waxing-gibbous-6');
+            $('#moon').addClass('wi-moon-full');
+            break;
+        case 15:
+            $('#moon').removeClass('wi-moon-full');
+            $('#moon').addClass('wi-moon-waning-gibbous-1');
+            break;
+        case 16:
+            $('#moon').removeClass('wi-moon-waning-gibbous-1');
+            $('#moon').addClass('wi-moon-waning-gibbous-2');
+            break;
+        case 17:
+            $('#moon').removeClass('wi-moon-waning-gibbous-2');
+            $('#moon').addClass('wi-moon-waning-gibbous-3');
+            break;
+        case 18:
+            $('#moon').removeClass('wi-moon-waning-gibbous-3');
+            $('#moon').addClass('wi-moon-waning-gibbous-4');
+            break;
+        case 19:
+            $('#moon').removeClass('wi-moon-waning-gibbous-4');
+            $('#moon').addClass('wi-moon-waning-gibbous-5');
+            break;
+        case 20:
+            $('#moon').removeClass('wi-moon-waning-gibbous-5');
+            $('#moon').addClass('wi-moon-waning-gibbous-6');
+            break;
+        case 21:
+            $('#moon').removeClass('wi-moon-waning-gibbous-6');
+            $('#moon').addClass('wi-moon-third-quarter');
+            break;
+        case 22:
+            $('#moon').removeClass('wi-moon-third-quarter');
+            $('#moon').addClass('wi-moon-waning-crescent-1');
+            break;
+        case 23:
+            $('#moon').removeClass('wi-moon-waning-crescent-1');
+            $('#moon').addClass('wi-moon-waning-crescent-2');
+            break;
+        case 24:
+            $('#moon').removeClass('wi-moon-waning-crescent-2');
+            $('#moon').addClass('wi-moon-waning-crescent-3');
+            break;
+        case 25:
+            $('#moon').removeClass('wi-moon-waning-crescent-3');
+            $('#moon').addClass('wi-moon-waning-crescent-4');
+            break;
+        case 26:
+            $('#moon').removeClass('wi-moon-waning-crescent-4');
+            $('#moon').addClass('wi-moon-waning-crescent-5');
+            break;
+        case 27:
+            $('#moon').removeClass('wi-moon-waning-crescent-5');
+            $('#moon').addClass('wi-moon-waning-crescent-6');
+            break;
+    }
+
+    // Sky and Temp
+    $('#weather').removeClass('wi-day-sunny');
+            $('#weather').removeClass('wi-cloud');
+            $('#weather').removeClass('wi-rain');
+            $('#weather').removeClass('wi-snowflake-cold');
+            $('#temp').removeClass('wi-thermometer-exterior');
+            $('#temp').removeClass('wi-thermometer');
+
+            if (global.city.calendar.temp === 0){
+                $('#temp').addClass('wi-thermometer-exterior');
+            }
+            else if (global.city.calendar.temp === 2){
+                $('#temp').addClass('wi-thermometer');
+            }
+            if (global.city.calendar.weather === 0){
+                if (global.city.calendar.temp === 0){
+                    $('#weather').addClass('wi-snowflake-cold');
+                }
+                else {
+                    $('#weather').addClass('wi-rain');
+                }
+            }
+            else if (global.city.calendar.weather === 1){
+                $('#weather').addClass('wi-cloud');
+            }
+            else if (global.city.calendar.weather === 2){
+                $('#weather').addClass('wi-day-sunny');
+            }
 }

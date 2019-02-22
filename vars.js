@@ -76,6 +76,10 @@ if (!global.city['calendar']){
     };
 }
 
+if (!global.city.calendar['moon']){
+    global.city.calendar['moon'] = 0;
+}
+
 if (!global.city['powered']){
     global.city['powered'] = false;
     global.city['power'] = 0;
