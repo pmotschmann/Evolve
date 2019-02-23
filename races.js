@@ -579,8 +579,8 @@ export const traits = {
         ranks: 0,
         type: 'major',
     },
-    skittish: {
-        desc: '',
+    skittish: { // Thunderstorms lower all production
+        desc: 'Your race is easily startled and may lose producitivy when scared',
         ranks: 0,
         type: 'major',
     },

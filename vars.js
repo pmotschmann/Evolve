@@ -72,12 +72,23 @@ if (!global.city['calendar']){
         day: 0,
         year: 0,
         weather: 2,
-        temp: 1
+        temp: 1,
+        moon: 0,
+        wind: 0,
+        orbit: 365
     };
 }
 
 if (!global.city.calendar['moon']){
     global.city.calendar['moon'] = 0;
+}
+
+if (!global.city.calendar['wind']){
+    global.city.calendar['wind'] = 0;
+}
+
+if (!global.city.calendar['orbit']){
+    global.city.calendar['orbit'] = 365;
 }
 
 if (!global.city['powered']){

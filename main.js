@@ -72,15 +72,15 @@ vues['topBar'] = new Vue({
             switch(global.city.calendar.weather){
                 case 0:
                     if (global.city.calendar.temp === 0){
-                        return 'Snow'; //, snow has an adversely negative effect on food production.';
+                        return global.city.calendar.wind === 1 ? 'Snowstorm' : 'Snow';
                     }
                     else {
-                        return 'Rain';
+                        return global.city.calendar.wind === 1 ? 'Thunderstorm' : 'Rain';
                     }
                 case 1:
-                    return 'Cloudy';
+                    return global.city.calendar.wind === 1 ? 'Cloudy & Windy' : 'Cloudy';
                 case 2:
-                    return 'Sunny';
+                    return global.city.calendar.wind === 1 ? 'Sunny & Windy' : 'Sunny';
             }
         },
         temp(){
@@ -131,14 +131,15 @@ vues['topBar'].$mount('#topBar');
 $('#topBar .planet').on('mouseover',function(){
     var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
     $('#main').append(popper);
-    let planet = races[global.race.species].home;
-    let race = races[global.race.species].name;
-    let biome = global.city.biome;
     if (global.race.species === 'protoplasm'){
         popper.append($(`<span>Life on this planet is in it's infancy and still evolving</span>`));
     }
     else {
-        popper.append($(`<span>${planet} is the home planet of the ${race} people. It is a ${biome} planet with an orbital period of 365 days.</span>`));
+        let planet = races[global.race.species].home;
+        let race = races[global.race.species].name;
+        let biome = global.city.biome;
+        let orbit = global.city.calendar.orbit;
+        popper.append($(`<span>${planet} is the home planet of the ${race} people. It is a ${biome} planet with an orbital period of ${orbit} days.</span>`));
     }
     popper.show();
     poppers['topbarPlanet'] = new Popper($('#topBar .planet'),popper);
@@ -320,6 +321,18 @@ function mainLoop() {
                 global.civic.free = global.resource[races[global.race.species].name].amount - total;
             });
             
+            if (global.race['lazy'] && global.city.calendar.temp === 2){
+                global_multiplier *= 0.9;
+            }
+
+            if (global.race['nyctophilia'] && global.city.calendar.weather === 2){
+                global_multiplier *= 0.9;
+            }
+
+            if (global.race['skittish'] && global.city.calendar.weather === 0 && global.city.calendar.wind === 1){
+                global_multiplier *= 0.8;
+            }
+
             // Consumption
             fed = true;
             if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
@@ -379,14 +392,6 @@ function mainLoop() {
                 if (modRes('Food',delta)){
                     fed = false;
                 }
-            }
-            
-            if (global.race['lazy'] && global.city.calendar.temp === 2){
-                global_multiplier *= 0.9;
-            }
-
-            if (global.race['nyctophilia'] && global.city.calendar.weather === 2){
-                global_multiplier *= 0.9;
             }
 
             // Citizen Growth
@@ -1011,14 +1016,24 @@ function mainLoop() {
             // Time
             global.city.calendar.day++;
             global.stats.days++;
-            if (global.city.calendar.day > 365){
+            if (global.city.calendar.day > global.city.calendar.orbit){
                 global.city.calendar.day = 1;
                 global.city.calendar.year++;
             }
+
             // Weather
             if (Math.rand(0,5) === 0){
+                let season_length = Math.round(global.city.calendar.orbit / 4);
+                let days = global.city.calendar.day;
+                let season = 0;
+                while (days > season_length){
+                    days -= season_length;
+                    season++;
+                }
+
                 let temp = Math.rand(0,3);
                 let sky = Math.rand(0,5);
+                let wind = Math.rand(0,3);
                 switch(global.city.biome){
                     case 'oceanic':
                         if (Math.rand(0,3) === 0 && sky > 0){
@@ -1043,6 +1058,32 @@ function mainLoop() {
                     default:
                         break;
                 }
+
+                switch(season){
+                    case 0: // Spring
+                        if (Math.rand(0,3) === 0 && sky > 0){
+                            sky--;
+                        }
+                        break;
+                    case 1: // Summer
+                        if (Math.rand(0,3) === 0 && temp < 2){
+                            temp++;
+                        }
+                        break;
+                    case 2: // Fall
+                        if (Math.rand(0,3) === 0 && wind > 0){
+                            wind--;
+                        }
+                        break;
+                    case 3: // Winter
+                        if (Math.rand(0,3) === 0 && temp > 0){
+                            temp--;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
                 if (sky === 0){
                     global.city.calendar.weather = 0;
                 }
@@ -1066,6 +1107,8 @@ function mainLoop() {
                     }
                     global.city.calendar.temp = new_temp;
                 }
+
+                global.city.calendar.wind = wind === 0 ? 1 : 0;
             }
 
             // Moon Phase
@@ -1277,32 +1320,41 @@ function setWeather(){
             break;
     }
 
-    // Sky and Temp
-    $('#weather').removeClass('wi-day-sunny');
-            $('#weather').removeClass('wi-cloud');
-            $('#weather').removeClass('wi-rain');
-            $('#weather').removeClass('wi-snowflake-cold');
-            $('#temp').removeClass('wi-thermometer-exterior');
-            $('#temp').removeClass('wi-thermometer');
+    // Temp
+    $('#temp').removeClass('wi-thermometer');
+    $('#temp').removeClass('wi-thermometer-exterior');
+    if (global.city.calendar.temp === 0){
+        $('#temp').addClass('wi-thermometer-exterior');
+    }
+    else if (global.city.calendar.temp === 2){
+        $('#temp').addClass('wi-thermometer');
+    }
 
-            if (global.city.calendar.temp === 0){
-                $('#temp').addClass('wi-thermometer-exterior');
-            }
-            else if (global.city.calendar.temp === 2){
-                $('#temp').addClass('wi-thermometer');
-            }
-            if (global.city.calendar.weather === 0){
-                if (global.city.calendar.temp === 0){
-                    $('#weather').addClass('wi-snowflake-cold');
-                }
-                else {
-                    $('#weather').addClass('wi-rain');
-                }
-            }
-            else if (global.city.calendar.weather === 1){
-                $('#weather').addClass('wi-cloud');
-            }
-            else if (global.city.calendar.weather === 2){
-                $('#weather').addClass('wi-day-sunny');
-            }
+    // Sky
+    $('#weather').removeClass('wi-day-sunny');
+    $('#weather').removeClass('wi-day-windy');
+    $('#weather').removeClass('wi-cloud');
+    $('#weather').removeClass('wi-cloudy-gusts');
+    $('#weather').removeClass('wi-rain');
+    $('#weather').removeClass('wi-storm-showers');
+    $('#weather').removeClass('wi-snow');
+    $('#weather').removeClass('wi-snow-wind');
+    
+    
+    let weather;
+    if (global.city.calendar.weather === 0){
+        if (global.city.calendar.temp === 0){
+            weather = global.city.calendar.wind === 0 ? 'wi-snow' : 'wi-snow-wind';
+        }
+        else {
+            weather = global.city.calendar.wind === 0 ? 'wi-rain' : 'wi-storm-showers';
+        }
+    }
+    else if (global.city.calendar.weather === 1){
+        weather = global.city.calendar.wind === 0 ? 'wi-cloud' : 'wi-cloudy-gusts';
+    }
+    else if (global.city.calendar.weather === 2){
+        weather = global.city.calendar.wind === 0 ? 'wi-day-sunny' : 'wi-day-windy';
+    }
+    $('#weather').addClass(weather);
 }
