@@ -997,13 +997,13 @@ export const actions = {
                 Furs: function(){ return costMultiplier('trade', 65, 1.35); }
             },
             effect: function (){
-                let routes = global.race['xenophobic'] ? 1 : 2;
+                let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
                 return `+${routes} Trade Routes`; 
             },
             action: function (){
                 if (payCosts(actions.city.trade.cost)){
                     global.city['trade'].count++;
-                    global.city.market.mtrade += global.race['xenophobic'] ? 1 : 2;
+                    global.city.market.mtrade += global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
                     return true;
                 }
                 return false;
@@ -2234,7 +2234,7 @@ export const actions = {
         trade: {
             id: 'tech-trade',
             title: 'Trade Routes',
-            desc: 'Establish Trade Routes',
+            desc: 'Establish trade routes',
             reqs: { currency: 2, military: 1 },
             grant: ['trade',1],
             cost: { 
@@ -2242,9 +2242,43 @@ export const actions = {
             },
             effect: 'Create trade routes with your neighbors.',
             action: function (){
-                if (payCosts(actions.tech.market.cost)){
+                if (payCosts(actions.tech.trade.cost)){
                     global.city['trade'] = { count: 0 };
                     global.city.market.active = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        diplomacy: {
+            id: 'tech-diplomacy',
+            title: 'Diplomacy',
+            desc: 'Negotiate new trade routes',
+            reqs: { trade: 1, high_tech: 1 },
+            grant: ['trade',2],
+            cost: { 
+                Knowledge: function(){ return 18000; }
+            },
+            effect: 'Increase the effectiveness of each trade post by 1.',
+            action: function (){
+                if (payCosts(actions.tech.diplomacy.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        freight: {
+            id: 'tech-freight',
+            title: 'Freight Trains',
+            desc: 'Increase trade volume with trains',
+            reqs: { trade: 2, high_tech: 3 },
+            grant: ['trade',3],
+            cost: { 
+                Knowledge: function(){ return 42000; }
+            },
+            effect: 'Increase the effectiveness of each trade post by 1.',
+            action: function (){
+                if (payCosts(actions.tech.freight.cost)){
                     return true;
                 }
                 return false;

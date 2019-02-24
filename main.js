@@ -270,26 +270,28 @@ function mainLoop() {
             // Rest of game
 
             // trade routes
-            Object.keys(global.resource).forEach(function (res) {
-                if (global.resource[res].trade > 0){
-                    let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
-                    let price = Math.round(global.resource[res].trade * rate);
+            if (global.tech['trade']){
+                Object.keys(global.resource).forEach(function (res) {
+                    if (global.resource[res].trade > 0){
+                        let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+                        let price = Math.round(global.resource[res].trade * rate);
 
-                    if (global.resource.Money.amount >= price * time_multiplier){
-                        modRes(res,global.resource[res].trade * time_multiplier);
-                        modRes('Money',-(price * time_multiplier));
+                        if (global.resource.Money.amount >= price * time_multiplier){
+                            modRes(res,global.resource[res].trade * time_multiplier);
+                            modRes('Money',-(price * time_multiplier));
+                        }
                     }
-                }
-                else if (global.resource[res].trade < 0){
-                    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
-                    let price = Math.round(global.resource[res].value * global.resource[res].trade / divide);
+                    else if (global.resource[res].trade < 0){
+                        let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                        let price = Math.round(global.resource[res].value * global.resource[res].trade / divide);
 
-                    if (global.resource[res].amount >= time_multiplier){
-                        modRes(res,global.resource[res].trade * time_multiplier);
-                        modRes('Money',-(price * time_multiplier));
+                        if (global.resource[res].amount >= time_multiplier){
+                            modRes(res,global.resource[res].trade * time_multiplier);
+                            modRes('Money',-(price * time_multiplier));
+                        }
                     }
-                }
-            });
+                });
+            }
 
             let power_grid = 0;
 
@@ -915,7 +917,7 @@ function mainLoop() {
             }
 
             if (global.city['trade']){
-                let routes = global.race['xenophobic'] ? 1 : 2;
+                let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
                 global.city.market.mtrade = routes * global.city.trade.count;
             }
             
