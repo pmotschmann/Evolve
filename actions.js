@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
-import { races, genus_traits, traits } from './races.js';
-import { defineResources } from './resources.js';
+import { races, genus_traits } from './races.js';
+import { defineResources, loadMarket } from './resources.js';
 
 export const actions = {
     evolution: {
@@ -626,7 +626,7 @@ export const actions = {
             reqs: {},
             action: function (){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',global.race['strong'] ? global.race['strong'] + 1 : 1);
+                    modRes('Food',global.race['strong'] ? 2 : 1);
                 }
                 return false;
             }
@@ -638,7 +638,7 @@ export const actions = {
             reqs: {},
             action: function (){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',global.race['strong'] ? global.race['strong'] + 1 : 1);
+                    modRes('Lumber',global.race['strong'] ? 2 : 1);
                 }
                 return false;
             }
@@ -650,7 +650,7 @@ export const actions = {
             reqs: {},
             action: function (){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    modRes('Stone',global.race['strong'] ? global.race['strong'] + 1 : 1);
+                    modRes('Stone',global.race['strong'] ? 2 : 1);
                 }
                 return false;
             }
@@ -980,6 +980,30 @@ export const actions = {
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
                     global.resource.Containers.max += global.tech['steel_container'] >= 2 ? 100 : 50;
+                    return true;
+                }
+                return false;
+            }
+        },
+        trade: {
+            id: 'city-trade',
+            title: 'Trade Post',
+            desc: 'Increases trade route capacity',
+            reqs: { trade: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('trade', 500, 1.35); },
+                Lumber: function(){ return costMultiplier('trade', 125, 1.35); },
+                Stone: function(){ return costMultiplier('trade', 50, 1.35); },
+                Furs: function(){ return costMultiplier('trade', 65, 1.35); }
+            },
+            effect: function (){
+                let routes = global.race['xenophobic'] ? 1 : 2;
+                return `+${routes} Trade Routes`; 
+            },
+            action: function (){
+                if (payCosts(actions.city.trade.cost)){
+                    global.city['trade'].count++;
+                    global.city.market.mtrade += global.race['xenophobic'] ? 1 : 2;
                     return true;
                 }
                 return false;
@@ -2164,8 +2188,8 @@ export const actions = {
                 if (payCosts(actions.tech.large_trades.cost)){
                     var tech = actions.tech.large_trades.grant[0];
                     global.tech[tech] = actions.tech.large_trades.grant[1];
-                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-                    window.location.reload();;
+                    loadMarket();
+                    return true;
                 }
                 return false;
             }
@@ -2201,8 +2225,27 @@ export const actions = {
                 if (payCosts(actions.tech.massive_trades.cost)){
                     var tech = actions.tech.massive_trades.grant[0];
                     global.tech[tech] = actions.tech.massive_trades.grant[1];
-                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-                    window.location.reload();;
+                    loadMarket();
+                    return true;
+                }
+                return false;
+            }
+        },
+        trade: {
+            id: 'tech-trade',
+            title: 'Trade Routes',
+            desc: 'Establish Trade Routes',
+            reqs: { currency: 2, military: 1 },
+            grant: ['trade',1],
+            cost: { 
+                Knowledge: function(){ return 5000; }
+            },
+            effect: 'Create trade routes with your neighbors.',
+            action: function (){
+                if (payCosts(actions.tech.market.cost)){
+                    global.city['trade'] = { count: 0 };
+                    global.city.market.active = true;
+                    return true;
                 }
                 return false;
             }

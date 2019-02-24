@@ -268,6 +268,29 @@ function mainLoop() {
         }
         else {
             // Rest of game
+
+            // trade routes
+            Object.keys(global.resource).forEach(function (res) {
+                if (global.resource[res].trade > 0){
+                    let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+                    let price = Math.round(global.resource[res].trade * rate);
+
+                    if (global.resource.Money.amount >= price * time_multiplier){
+                        modRes(res,global.resource[res].trade * time_multiplier);
+                        modRes('Money',-(price * time_multiplier));
+                    }
+                }
+                else if (global.resource[res].trade < 0){
+                    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                    let price = Math.round(global.resource[res].value * global.resource[res].trade / divide);
+
+                    if (global.resource[res].amount >= time_multiplier){
+                        modRes(res,global.resource[res].trade * time_multiplier);
+                        modRes('Money',-(price * time_multiplier));
+                    }
+                }
+            });
+
             let power_grid = 0;
 
             if (global.city['coal_power']){
@@ -333,10 +356,16 @@ function mainLoop() {
                 global_multiplier *= 0.8;
             }
 
+            if (global.race['selenophobia']){
+                let moon = global.city.calendar.moon > 14 ? 28 - global.city.calendar.moon : global.city.calendar.moon;
+                moon = 1.04 - (moon / 100);
+                global_multiplier *= moon;
+            }
+
             // Consumption
             fed = true;
             if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
-                var consume = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.civic.free * 0.5)) * (global.race['gluttony'] ? ((global.race['gluttony'] * 0.25) + 1) : 1);
+                var consume = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.civic.free * 0.5)) * (global.race['gluttony'] ? 1.25 : 1);
                 if (global.race['high_metabolism']){
                     consume *= 1.1;
                 }
@@ -883,6 +912,11 @@ function mainLoop() {
             }
             if (global.tech['banking'] >= 4){
                 caps['Money'] += (global.tech['banking'] >= 6 ? 600 : 250) * (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers);
+            }
+
+            if (global.city['trade']){
+                let routes = global.race['xenophobic'] ? 1 : 2;
+                global.city.market.mtrade = routes * global.city.trade.count;
             }
             
             let pop_loss = global.resource[races[global.race.species].name].amount - caps[races[global.race.species].name];

@@ -178,7 +178,8 @@ export const races = {
         home: 'Daphne',
         entity: 'bird people',
         traits: {
-            resourceful: 1
+            resourceful: 1,
+            selenophobia: 1
         } 
     },
     pterodacti: {
@@ -321,307 +322,250 @@ export const genus_traits = {
 export const traits = {
     adaptable: {
         desc: '',
-        ranks: 0,
         type: 'genus',
     },
-    xenophobic: {
-        desc: '',
-        ranks: 0,
+    xenophobic: { // Trade posts suffer a -1 penalty per post
+        desc: 'Your races dislike of foreigners reduces the number of trade routes you can opperate.',
         type: 'genus',
     },
     beast: {
         desc: '',
-        ranks: 0,
         type: 'genus',
     },
     cautious: {
         desc: '',
-        ranks: 0,
         type: 'genus',
     },
     small: { // Reduces cost creep multipliers by 0.01
         desc: 'Your race is small and thus requires less materials to build things.',
-        ranks: 0,
         type: 'genus',
     },
     weak: { // Lumberjacks, miners, and quarry workers are 10% less effective
         desc: 'Your race is ineffective at tough manual labor tasks.',
-        ranks: 0,
         type: 'genus',
     },
     large: { // Increases cost creep mutipliers by 0.01
         desc: 'Your race is large and thus requires extra materials to build things.',
-        ranks: 0,
         type: 'genus',
     },
     strong: { // Increased manual resource gain
         desc: 'Your race has great strength and can harvest the basics in greater quantity.',
-        ranks: 1,
         type: 'genus',
     },
     cold_blooded: { // Weather affects productivity
         desc: 'Your species is sensitive to the outside temperature.',
-        ranks: 0,
         type: 'genus',
     },
     scales: { // Minor decrease of soliders killed in combat
         desc: 'Your species is protected by scales which act as a kind of natural armor.',
-        ranks: 0,
         type: 'genus',
     },
     hollow_bones: {
         desc: '',
-        ranks: 0,
         type: 'genus',
     },
     rigid: {
         desc: '',
-        ranks: 0,
         type: 'genus',
     },
     fast_growth: { // Greatly increases odds of population growth each cycle
         desc: 'Your species gestates quickly, population thus raises faster then other species.',
-        ranks: 0,
         type: 'genus',
     },
     high_metabolism: { // Food requirements increased by 10%
         desc: 'Your species metabolises food quickly, as a result you need more of it.',
-        ranks: 0,
         type: 'genus',
     },
     photosynth: { // Reduces food requirements dependant on sunshine.
         desc: 'Your race produces part of its food requirements through photosynthesis with the sun',
-        ranks: 0,
         type: 'genus',
     },
     asymmetrical: { // Trade selling prices are slightly worse then normal
         desc: 'Your species is asymmetrical. This gives you a more monstrous appearance making trade more difficult.',
-        ranks: 0,
         type: 'genus',
     },
     spores: {
         desc: '',
-        ranks: 0,
         type: 'genus',
     },
     spongy: {
         desc: '',
-        ranks: 0,
         type: 'genus',
     },
     creative: {
         desc: '',
-        ranks: 0,
         type: 'major',
     },
     diverse: {
         desc: '',
-        ranks: 0,
         type: 'major',
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second
         desc: 'Your race is more focused when studying then average. Knowledge is gained faster as a result.',
-        ranks: 0,
         type: 'major',
     },
     arrogant: { // Market prices are higher
         desc: 'The inherent arrogance of your species often leads to you overpaying in negotiations.',
-        ranks: 0,
         type: 'major',
     },
     brute: { // Recruitment costs are 1/2 price
         desc: 'Your race loves fighting and is easier to recruit for battle.',
-        ranks: 0,
         type: 'major',
     },
     angry: { // When hungry you get hangry, low food penalty is more severe
         desc: 'Your race is quick to get angry when hungry.',
-        ranks: 0,
         type: 'major',
     },
     lazy: { // All production is lowered when the temperature is hot
         desc: 'Your race loves nothing more then a lazy afternoon. Productivity is lost in warm weather as a result.',
-        ranks: 0,
         type: 'major',
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
         desc: 'Your species is carnivorous and does not engage in farming.',
-        ranks: 0,
         type: 'major',
     },
     pack_mentality: { // Cabins cost more, but cottages cost less.
         desc: 'Your race prefers to live in groups.',
-        ranks: 0,
         type: 'major',
     },
     tracker: { // 10% increased gains from hunting
         desc: 'Your race excells at tracking game, and thus produces more from hunting.',
-        ranks: 0,
         type: 'major',
     },
     beast_of_burden: { // Gains more loot during raids
         desc: 'Your race is able to carry away more loot when winning a military conflict.',
-        ranks: 0,
         type: 'major',
     },
     herbivore: { // No food is gained from hunting
         desc: 'Your species does not eat meat.',
-        ranks: 0,
         type: 'major',
     },
     pack_rat: { // Storage space is increased
         desc: 'Your species is adept at packing the most stuff into any storage space.',
-        ranks: 0,
         type: 'major',
     },
     paranoid: { // Bank capacity reduced by 10%
         desc: `Your race is paranoid and doesn't trust banks.`,
-        ranks: 0,
         type: 'major',
     },
     greedy: { // Lowers income from taxes
         desc: 'Your race is greedy and will not willingly part with money, reduces income from taxes.',
-        ranks: 0,
         type: 'major',
     },
     merchant: { // Better commodity selling prices
         desc: 'Your race has an innate gift for haggling.',
-        ranks: 0,
         type: 'major',
     },
     smart: { // Knowledge costs reduced by 10%
         desc: 'Your race more easily understands new concepts.',
-        ranks: 0,
         type: 'major',
     },
     puny: { // Lowers minium bound for army score roll
         desc: 'Your race is less effective in combat.',
-        ranks: 0,
         type: 'major',
     },
     dumb: { // Knowledge costs increased by 5%
         desc: 'Your race does not easily understand new concepts.',
-        ranks: 0,
         type: 'major',
     },
     tough: { // Mining output increased by 10%
         desc: 'Your race is tough and can withstand the most grueling jobs without sucumbing to weakness.',
-        ranks: 0,
         type: 'major',
     },
     nearsighted: { // Libraries are less effective
         desc: 'Your species is nearsighted and requires bigger font sizes to read.',
-        ranks: 0,
         type: 'major',
     },
     regenerative: { // Wounded soliders heal twice as fast
         desc: 'Your race inherently heals quickly.',
-        ranks: 0,
         type: 'major',
     },
     gluttony: { // Eats 25% more food per rank
         desc: 'Your species is always hungry and eats extra food.',
-        ranks: 1,
         type: 'major',
     },
     slow: { // The game moves at a 10% slower pace
         desc: 'Your species is slow moving and rarely in a hurry to get anything done.',
-        ranks: 0,
         type: 'major',
     },
     armored: { // Less soliders die in combat
         desc: 'Your race is naturally armored and thus less likely to be fatally wounded in battle.',
-        ranks: 0,
         type: 'major',
     },
     chameleon: {
         desc: '',
-        ranks: 0,
         type: 'major',
     },
     venomous: {
         desc: '',
-        ranks: 0,
         type: 'major',
     },
     forked_tongue: {
         desc: '',
-        ranks: 0,
         type: 'major',
     },
     resourceful: {
         desc: '',
-        ranks: 0,
+        type: 'major',
+    },
+    selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
+        desc: 'Your race prefers moonless nights.',
         type: 'major',
     },
     hoarder: { // Banks can store 10% more money
         desc: 'Your race loves to hoard money.',
-        ranks: 0,
         type: 'major',
     },
     solitary: { // Cabins are cheaper however cottages cost more
         desc: 'Your race perfers to live alone rather then with others.',
-        ranks: 0,
         type: 'major',
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
         desc: 'Your race is adverse to cutting down trees for lumber, all lumber costs are removed but other costs are increased.',
-        ranks: 0,
         type: 'major',
     },
     pyrophobia: { // Smelter productivity is reduced
         desc: 'Your race is afraid of fire and smelters opperate slower as a result',
-        ranks: 0,
         type: 'major',
     },
     hyper: { // The game moves at a 5% faster pace
         desc: 'Your race can never sit still and is always doing something.',
-        ranks: 0,
         type: 'major',
     },
     skittish: { // Thunderstorms lower all production
-        desc: 'Your race is easily startled and may lose producitivy when scared',
-        ranks: 0,
+        desc: 'Your race is easily startled and may lose productivity when scared',
         type: 'major',
     },
     mushy: {
         desc: '',
-        ranks: 0,
         type: 'major',
     },
     hydrophilic: { // none factory jobs are reduced by 25% when raining
         desc: 'Your species does not like rain.',
-        ranks: 0,
         type: 'major',
     },
     toxic: { // Factory type jobs are more productive
         desc: 'Your species natural toxicity makes you resistent to toxic workplaces and thus are more productive in factories',
-        ranks: 0,
         type: 'major',
     },
     nyctophilia: { // Productivity is lost when it is sunny
         desc: `Your race does not like direct sunlight, they are less productive when it's sunny`,
-        ranks: 0,
         type: 'major',
     },
     fraile: { // More soliders die in combat
         desc: 'Your race is fraile and is more likely to die in combat.',
-        ranks: 0,
         type: 'major',
     },
     quick: {
         desc: '',
-        ranks: 0,
         type: 'major',
     },
     claws: { // Raises maximum bound for army score roll
         desc: 'Your race is more effective in comabt.',
-        ranks: 0,
         type: 'major',
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
         desc: 'Your citizens are highly ineffectual when working as individuals but gain potency as they work in bigger groups.',
-        ranks: 0,
         type: 'major',
     }
 };

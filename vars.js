@@ -100,6 +100,15 @@ if (!global.city['biome']){
     global.city['biome'] = 'grassland';
 }
 
+if (!global.city['market']){
+    global.city['market'] = {
+        qty: 10,
+        mtrade: 0,
+        trade: 0,
+        active: false
+    };
+}
+
 if (global.lastMsg){
     messageQueue(global.lastMsg.m, global.lastMsg.c);
 }

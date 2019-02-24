@@ -80,6 +80,9 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     if (!global['resource'][name]['delta']){
         global['resource'][name]['delta'] = 0;
     }
+    if (!global['resource'][name]['trade'] && tradable){
+        global['resource'][name]['trade'] = 0;
+    }
     
     var res_container = $(`<div id="res-${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
     if (stackable){
@@ -149,22 +152,37 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     }
 
     if (tradable){
-        var market_item = $(`<div id="market-${name}" class="market-item" v-show="display"></div>`);
-        market_item.append($(`<span class="res has-text-${color}">{{ name }}</span>`));
+        var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
         $('#market').append(market_item);
-        marketItem('market_'+name,'#market-'+name,market_item,name,color);
+        marketItem(`market_${name}`,`#market-${name}`,market_item,name,color,true);
     }
 }
 
-function marketItem(vue,mount,market_item,name,color){
+function marketItem(vue,mount,market_item,name,color,full){
+    if (full){
+        market_item.append($(`<span class="res has-text-${color}">{{ r.name }}</span>`));
+    }
+
     market_item.append($('<span class="buy"><span class="has-text-success">BUY</span></span>'));
-    market_item.append($(`<span class="order" @click="purchase('${name}')">\${{ value | buy }}</span>`));
+    market_item.append($(`<span class="order" @click="purchase('${name}')">\${{ r.value | buy }}</span>`));
     
     market_item.append($('<span class="sell"><span class="has-text-danger">SELL</span></span>'));
-    market_item.append($(`<span class="order" @click="sell('${name}')">\${{ value | sell }}</span>`));
+    market_item.append($(`<span class="order" @click="sell('${name}')">\${{ r.value | sell }}</span>`));
+
+    if (full){
+        let trade = $('<span class="trade" v-show="m.active"><span class="has-text-warning">Routes</span></span>');
+        market_item.append(trade);
+        trade.append($(`<span class="sub" @click="autoSell('${name}')">&laquo;</span>`));
+        trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
+        trade.append($(`<span class="add" @click="autoBuy('${name}')">&raquo;</span>`));
+        tradeRouteColor(name);
+    }
     
     vues[vue] = new Vue({
-        data: global['resource'][name],
+        data: { 
+            r: global.resource[name],
+            m: global.city.market
+        },
         methods: {
             purchase(res){
                 let qty = Number(vues['market_qty'].qty);
@@ -190,22 +208,69 @@ function marketItem(vue,mount,market_item,name,color){
                         global.resource[res].value = Number(resource_values[res] / 2);
                     }
                 }
+            },
+            autoBuy(res){
+                if (global.resource[res].trade >= 0){
+                    if (global.city.market.trade < global.city.market.mtrade){
+                        global.city.market.trade++;
+                        global.resource[res].trade++;
+                    }
+                }
+                else {
+                    global.city.market.trade--;
+                    global.resource[res].trade++;
+                }
+                tradeRouteColor(res);
+            },
+            autoSell(res){
+                if (global.resource[res].trade <= 0){
+                    if (global.city.market.trade < global.city.market.mtrade){
+                        global.city.market.trade++;
+                        global.resource[res].trade--;
+                    }
+                }
+                else {
+                    global.city.market.trade--;
+                    global.resource[res].trade--;
+                }
+                tradeRouteColor(res);
             }
         },
         filters: {
-            buy: function (value){
+            buy(value){
                 if (global.race['arrogant']){
                     value = Math.round(value * 1.1);
                 }
                 return sizeApproximation(value * vues['market_qty'].qty,0);
             },
-            sell: function (value){
+            sell(value){
                 let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
                 return sizeApproximation(value * vues['market_qty'].qty / divide,0);
             },
+            trade(val){
+                if (val < 0){
+                    val = 0 - val;
+                }
+                return val;
+            }
         }
     });
     vues[vue].$mount(mount);
+}
+
+function tradeRouteColor(res){
+    $(`#market-${res} .trade .current`).removeClass('has-text-warning');
+    $(`#market-${res} .trade .current`).removeClass('has-text-danger');
+    $(`#market-${res} .trade .current`).removeClass('has-text-success');
+    if (global.resource[res].trade > 0){
+        $(`#market-${res} .trade .current`).addClass('has-text-success');
+    }
+    else if (global.resource[res].trade < 0){
+        $(`#market-${res} .trade .current`).addClass('has-text-danger');
+    }
+    else {
+        $(`#market-${res} .trade .current`).addClass('has-text-warning');
+    }
 }
 
 function drawModal(name,color){
@@ -386,14 +451,24 @@ function drawModal(name,color){
     if (global.tech['currency'] && global.tech['currency'] >= 2){
         var market_item = $(`<div id="pop_market" class="market-item" v-show="display"></div>`);
         body.append(market_item);
-        marketItem(`pop_market_${name}`,'#pop_market',market_item,name,color);
+        marketItem(`pop_market_${name}`,'#pop_market',market_item,name,color,false);
     }
 }
 
-function initMarket(){
-    var market = $('<div id="market-qty" class="market-header"></div>');
+export function initMarket(){
+    let market = $('<div id="market-qty" class="market-header"></div>');
     $('#market').append(market);
-    
+    loadMarket();
+}
+
+export function loadMarket(){
+    let market = $('#market-qty');
+    market.empty();
+
+    if (vues['market_qty']){
+        vues['market_qty'].$destroy();
+    }
+
     market.append($('<b-radio v-model="qty" native-value="10">10x</b-radio>'));
     market.append($('<b-radio v-model="qty" native-value="25">25x</b-radio>'));
     market.append($('<b-radio v-model="qty" native-value="100">100x</b-radio>'));
@@ -406,9 +481,11 @@ function initMarket(){
         market.append($('<b-radio v-model="qty" native-value="10000">10000x</b-radio>'));
         market.append($('<b-radio v-model="qty" native-value="25000">25000x</b-radio>'));
     }
-    
+
+    market.append($('<span class="trade" v-show="active"><span class="has-text-warning">Trade Routes</span> {{ trade }} / {{ mtrade }}</span>'));
+
     vues['market_qty'] = new Vue({
-        data: { qty: '10' }
+        data: global.city.market
     });
     vues['market_qty'].$mount('#market-qty');
 }
