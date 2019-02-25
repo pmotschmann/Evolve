@@ -746,7 +746,7 @@ export const actions = {
         apartment: {
             id: 'city-apartment',
             title: 'Apartment',
-            desc: 'Housing complex for 5 citizens. Requires power.',
+            desc: '<div>Housing complex for 5 citizens</div><div>Requires power</div>',
             reqs: { housing: 3 },
             cost: { 
                 Money: function(){ return costMultiplier('apartment', 1750, 1.25) - 500; },
@@ -1467,8 +1467,36 @@ export const actions = {
                     global.city.wardenclyffe.count++;
                     global.civic.scientist.display = true;
                     global.civic.scientist.max = global.city.wardenclyffe.count;
-                    if (global.city.powered  && global.city.power >= 2){
+                    if (global.city.powered && global.city.power >= 2){
                         global.city.wardenclyffe.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        biolab: {
+            id: 'city-biolab',
+            title: 'Bioscience Lab',
+            desc: '<div>Bioscience Labratory</div><div>Requires Power</div>',
+            reqs: { genetics: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('biolab', 25000, 1.28); },
+                Knowledge: function(){ return costMultiplier('biolab', 5000, 1.28); },
+                Copper: function(){ return costMultiplier('biolab', 1250, 1.28); },
+                Alloy: function(){ return costMultiplier('biolab', 350, 1.28); }
+            },
+            effect: function (){
+                let gain = 3000;
+                return `+${gain} Max Knowledge, -2kW`;
+            },
+            powered: 2,
+            action: function (){
+                if (payCosts(actions.city.biolab.cost)){
+                    global.city.biolab.count++;
+                    if (global.city.powered && global.city.power >= 2){
+                        global.resource.Knowledge.max += 3000;
+                        global.city.biolab.on++;
                     }
                     return true;
                 }
@@ -2570,6 +2598,41 @@ export const actions = {
                 return false;
             }
         },
+        bioscience: {
+            id: 'tech-bioscience',
+            title: 'Bioscience',
+            desc: 'Bioscience',
+            reqs: { science: 8 },
+            grant: ['genetics',1],
+            cost: {
+                Knowledge: function(){ return 75000; }
+            },
+            effect: 'Begin unlocking the mysteries of life.',
+            action: function (){
+                if (payCosts(actions.tech.bioscience.cost)){
+                    global.city['biolab'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        genetics: {
+            id: 'tech-genetics',
+            title: 'Genetics',
+            desc: 'Genetics',
+            reqs: { genetics: 1, locked: 1 },
+            grant: ['genetics',2],
+            cost: {
+                Knowledge: function(){ return 90000; }
+            },
+            effect: 'Begin unlocking the secrets of DNA.',
+            action: function (){
+                if (payCosts(actions.tech.genetics.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: 'Mad Science',
@@ -2718,6 +2781,27 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.oil_power.cost)){
                     global.city['oil_power'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        polymer: {
+            id: 'tech-polymer',
+            title: 'Polymer',
+            desc: 'Polymer',
+            reqs: { genetics: 1 },
+            grant: ['polymer',1],
+            cost: {
+                Knowledge: function(){ return 88000; },
+                Oil: function(){ return 5000; },
+                Alloy: function(){ return 450; }
+            },
+            effect: 'Create a new high tech polymer material that can be used for a wide variety of applications.',
+            action: function (){
+                if (payCosts(actions.tech.polymer.cost)){
+                    global.resource.Polymer.display = true;
+                    messageQueue('Polymer is now available for manufacture');
                     return true;
                 }
                 return false;
@@ -3266,9 +3350,27 @@ export const actions = {
                 Knowledge: function(){ return 3750; },
                 Iron: function(){ return 600; },
             },
-            effect: 'Armor reinforced with iron plates, heavy but offers better protection for your soliders.',
+            effect: 'Armor reinforced with iron plates, heavy but offers better protection for your soldiers.',
             action: function (){
                 if (payCosts(actions.tech.plate_armor.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        kevlar: {
+            id: 'tech-kevlar',
+            title: 'Kevlar',
+            desc: 'Create Kevlar Vests',
+            reqs: { armor: 2, polymer: 1 },
+            grant: ['armor',3],
+            cost: {
+                Knowledge: function(){ return 95000; },
+                Polymer: function(){ return 750; },
+            },
+            effect: 'New armor made out of kevlar provides modern protection for your soldiers.',
+            action: function (){
+                if (payCosts(actions.tech.kevlar.cost)){
                     return true;
                 }
                 return false;
@@ -3957,7 +4059,7 @@ function factoryModal(modal){
         global.city.factory['Lux'] = 0;
     }
 
-    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-bottom" animated><span>Luxury Goods</span></b-tooltip></div>`);
+    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>Luxury Goods</span></b-tooltip></div>`);
     modal.append(lux);
 
     let luxCount = $(`<span class="current">{{ Lux }}</span>`);
@@ -3971,7 +4073,7 @@ function factoryModal(modal){
         global.city.factory['Alloy'] = 0;
     }
 
-    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-bottom" animated><span>Alloy</span></b-tooltip></div>`);
+    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-left" size="is-small" multilined animated><span>Alloy</span></b-tooltip></div>`);
     modal.append(alloy);
 
     let alloyCount = $(`<span class="current">{{ Alloy }}</span>`);
@@ -3980,6 +4082,22 @@ function factoryModal(modal){
     alloy.append(subAlloy);
     alloy.append(alloyCount);
     alloy.append(addAlloy);
+
+    if (!global.city.factory['Polymer']){
+        global.city.factory['Polymer'] = 0;
+    }
+
+    if (global.tech['polymer']){
+        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" position="is-left" size="is-small" multilined animated><span>Polymer</span></b-tooltip></div>`);
+        modal.append(polymer);
+
+        let polymerCount = $(`<span class="current">{{ Polymer }}</span>`);
+        let subPolymer= $(`<span class="sub" @click="subItem('Polymer')">&laquo;</span>`);
+        let addPolymer = $(`<span class="add" @click="addItem('Polymer')">&raquo;</span>`);
+        polymer.append(subPolymer);
+        polymer.append(polymerCount);
+        polymer.append(addPolymer);
+    }
 
     vues['specialModal'] = new Vue({
         data: global.city['factory'],
@@ -3990,7 +4108,7 @@ function factoryModal(modal){
                 }
             },
             addItem: function(item){
-                if (global.city.factory.Lux + global.city.factory.Alloy < global.city.factory.count){
+                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer < global.city.factory.count){
                     global.city.factory[item]++;
                 }
             },
@@ -4002,12 +4120,20 @@ function factoryModal(modal){
                     case 'Alloy':
                         return 'Consume 0.75 Copper and 0.15 Titanium/s to produce Alloy';
                         break;
+                    case 'Polymer':
+                        if (global.race['kindling_kindred']){
+                            return 'Consume 0.22 Oil/s to produce Polymer';
+                        }
+                        else {
+                            return 'Consume 0.18 Oil and 15 Lumber/s to produce Polymer';
+                        }
+                        break;
                 }
             }
         },
         filters: {
             on: function(count){
-                return global.city.factory.Lux + global.city.factory.Alloy;
+                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer;
             }
         }
     });

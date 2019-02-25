@@ -317,7 +317,7 @@ function mainLoop() {
                 modRes('Oil',-(consume));
             }
 
-            let p_structs = ['apartment','factory','wardenclyffe','mine','coal_mine','rock_quarry','sawmill'];
+            let p_structs = ['apartment','factory','wardenclyffe','biolab','mine','coal_mine','rock_quarry','sawmill'];
             for (var i = 0; i < p_structs.length; i++) {
                 if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
                     let power = global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
@@ -484,6 +484,7 @@ function mainLoop() {
                     let copper = global.city.factory.Alloy * 0.75 * time_multiplier;
                     let titanium = global.city.factory.Alloy * 0.15 * time_multiplier;
                     let workDone = global.city.factory.Alloy;
+                    
                     while (copper > global.resource.Copper.amount && copper > 0){
                         copper -= 0.75 * time_multiplier;
                         titanium -= 0.15 * time_multiplier;
@@ -502,6 +503,33 @@ function mainLoop() {
                         delta *= 1.05;
                     }
                     modRes('Alloy',delta);
+                }
+
+                if (global.city.factory['Polymer'] && global.city.factory['Polymer'] > 0){
+                    let oilIncrement = global.race['kindling_kindred'] ? 0.22 * time_multiplier : 0.18 * time_multiplier;
+                    let lumberIncrement = global.race['kindling_kindred'] ? 0 : 15 * time_multiplier;
+                    let oil = global.city.factory.Polymer * oilIncrement;
+                    let lumber = global.city.factory.Polymer * lumberIncrement;
+                    let workDone = global.city.factory.Polymer;
+                    
+                    while (lumber > global.resource.Lumber.amount && lumber > 0){
+                        lumber -= lumberIncrement;
+                        oil -= oilIncrement;
+                        workDone--;
+                    }
+                    while (oil > global.resource.Oil.amount && oil > 0){
+                        lumber -= lumberIncrement;
+                        oil -= oilIncrement;
+                        workDone--;
+                    }
+                    modRes('Lumber',-(lumber));
+                    modRes('Oil',-(oil));
+
+                    delta = workDone * 0.125 * hunger * tax_multiplier * global_multiplier * time_multiplier;
+                    if (global.race['toxic']){
+                        delta *= 1.05;
+                    }
+                    modRes('Polymer',delta);
                 }
             }
 
@@ -764,7 +792,8 @@ function mainLoop() {
                 Oil: 0,
                 Steel: 50,
                 Titanium: 50,
-                Alloy: 50
+                Alloy: 50,
+                Polymer: 50
             };
             // labor caps
             var lCaps = {
@@ -889,6 +918,9 @@ function mainLoop() {
                 lCaps['scientist'] += global.city['wardenclyffe'].count;
                 let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
                 caps['Knowledge'] += (global.city['wardenclyffe'].on * powered_gain);
+            }
+            if (global.city['biolab']){
+                caps['Knowledge'] += (global.city['biolab'].on * 3000);
             }
             if (global.city['bank']){
                 let vault = 1000;

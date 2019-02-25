@@ -14,6 +14,7 @@ export const resource_values = {
     Steel: 100,
     Titanium: 150,
     Alloy: 275,
+    Polymer: 225,
     //Iridium: 200,
     //Deuterium: 450,
     //'Helium-3': 600,
@@ -45,6 +46,7 @@ export function defineResources() {
         loadResource('Steel',50,1,true,true);
         loadResource('Titanium',50,1,true,true);
         loadResource('Alloy',50,1,true,true);
+        loadResource('Polymer',50,1,true,true);
         //loadResource('Iridium',50,1,true,true);
         //loadResource('Deuterium',0,1,true,false);
         //loadResource('Helium-3',0,1,true,false);
@@ -449,7 +451,7 @@ function drawModal(name,color){
     vues[`modal_res_${name}`].$mount('#modalBoxTitle');
     
     if (global.tech['currency'] && global.tech['currency'] >= 2){
-        var market_item = $(`<div id="pop_market" class="market-item" v-show="display"></div>`);
+        var market_item = $(`<div id="pop_market" class="market-item" v-show="r.display"></div>`);
         body.append(market_item);
         marketItem(`pop_market_${name}`,'#pop_market',market_item,name,color,false);
     }
