@@ -24,6 +24,11 @@ let settings = {
             global.settings.theme = 'light';
             $('html').removeClass();
             $('html').addClass('light');
+        },
+        night(){
+            global.settings.theme = 'night';
+            $('html').removeClass();
+            $('html').addClass('night');
         }
     },
     filters: {

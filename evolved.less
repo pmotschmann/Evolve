@@ -353,6 +353,7 @@ a {
 
     .trade {
         margin-left: 1rem;
+        min-width: 9.375rem;
         .current {
             width: 3rem;
         }
@@ -499,6 +500,7 @@ a {
     }
 }
 
+.darkTheme,
 html.dark {
     background-color: #1f2424;
     body {
@@ -827,6 +829,34 @@ html.light {
         }
         .smelting {
             border-top: #4e4e4e solid .0625rem;
+        }
+    }
+}
+
+html.night {
+    .darkTheme();
+    background-color: #000;
+    .main {
+        .content {
+            .action {
+                a.button {
+                    span.count {
+                        background: #000;
+                    }
+                }
+                div.special {
+                    background: #000;
+                }
+                div.on {
+                    background: #000;
+                }
+                div.on.warn {
+                    color: #af5d00;
+                }
+                div.off {
+                    background: #000;
+                }
+            }
         }
     }
 }
