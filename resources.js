@@ -11,6 +11,7 @@ export const resource_values = {
     Cement: 15,
     Coal: 20,
     Oil: 75,
+    Uranium: 550,
     Steel: 100,
     Titanium: 150,
     Alloy: 275,
@@ -43,6 +44,7 @@ export function defineResources() {
         loadResource('Cement',100,1,true,true);
         loadResource('Coal',50,1,true,true);
         loadResource('Oil',0,1,true,false);
+        loadResource('Uranium',10,1,true,false);
         loadResource('Steel',50,1,true,true);
         loadResource('Titanium',50,1,true,true);
         loadResource('Alloy',50,1,true,true);

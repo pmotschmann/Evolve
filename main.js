@@ -317,6 +317,17 @@ function mainLoop() {
                 modRes('Oil',-(consume));
             }
 
+            if (global.city['fission_power']){
+                let power = global.city.fission_power.on * actions.city.fission_power.powered;
+                let consume = global.city.fission_power.on * 0.1 * time_multiplier;
+                while (consume > global.resource.Uranium.amount && consume > 0){
+                    power += actions.city.fission_power.powered;
+                    consume -= 0.1 * time_multiplier;
+                }
+                power_grid -= power;
+                modRes('Uranium',-(consume));
+            }
+
             let p_structs = ['apartment','factory','wardenclyffe','biolab','mine','coal_mine','rock_quarry','sawmill'];
             for (var i = 0; i < p_structs.length; i++) {
                 if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
@@ -464,9 +475,17 @@ function mainLoop() {
             
             // Factory
             if (global.city['factory']){
+                let opperating = 0;
                 if (global.city.factory['Lux'] && global.city.factory['Lux'] > 0){
+                    opperating += global.city.factory.Lux;
+                    while (opperating > global.city.factory.on && opperating > 0){
+                        opperating--;
+                        global.city.factory.Lux--;
+                    }
+
                     let consume = global.city.factory.Lux * 2 * time_multiplier;
                     let workDone = global.city.factory.Lux;
+                    
                     while (consume > global.resource.Furs.amount && consume > 0){
                         consume -= 2 * time_multiplier;
                         workDone--;
@@ -481,6 +500,12 @@ function mainLoop() {
                 }
 
                 if (global.city.factory['Alloy'] && global.city.factory['Alloy'] > 0){
+                    opperating += global.city.factory.Alloy;
+                    while (opperating > global.city.factory.on && opperating > 0){
+                        opperating--;
+                        global.city.factory.Alloy--;
+                    }
+
                     let copper = global.city.factory.Alloy * 0.75 * time_multiplier;
                     let titanium = global.city.factory.Alloy * 0.15 * time_multiplier;
                     let workDone = global.city.factory.Alloy;
@@ -506,6 +531,12 @@ function mainLoop() {
                 }
 
                 if (global.city.factory['Polymer'] && global.city.factory['Polymer'] > 0){
+                    opperating += global.city.factory.Polymer;
+                    while (opperating > global.city.factory.on && opperating > 0){
+                        opperating--;
+                        global.city.factory.Polymer--;
+                    }
+
                     let oilIncrement = global.race['kindling_kindred'] ? 0.22 * time_multiplier : 0.18 * time_multiplier;
                     let lumberIncrement = global.race['kindling_kindred'] ? 0 : 15 * time_multiplier;
                     let oil = global.city.factory.Polymer * oilIncrement;
@@ -731,6 +762,11 @@ function mainLoop() {
                 coal_multiplier *= hunger;
                 delta = global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier * global_multiplier * time_multiplier;
                 modRes('Coal',delta);
+
+                // Uranium
+                if (global.resource.Uranium.display){
+                    modRes('Uranium',delta / 125);
+                }
             }
             
             // Oil
@@ -790,6 +826,7 @@ function mainLoop() {
                 Cement: 100,
                 Coal: 50,
                 Oil: 0,
+                Uranium: 10,
                 Steel: 50,
                 Titanium: 50,
                 Alloy: 50,
@@ -881,6 +918,9 @@ function mainLoop() {
                 caps['Iron'] += (global.city['shed'].count * (100 * multiplier));
                 caps['Cement'] += (global.city['shed'].count * (80 * multiplier));
                 caps['Coal'] += (global.city['shed'].count * (50 * multiplier));
+                if (global.tech['uranium'] >= 2){
+                    caps['Uranium'] += (global.city['shed'].count * (15 * multiplier));
+                }
             }
             if (global.city['silo']){
                 caps['Food'] += (global.city['silo'].count * 250);

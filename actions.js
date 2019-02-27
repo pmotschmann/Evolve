@@ -908,6 +908,10 @@ export const actions = {
                     let val = 10 * multiplier;
                     storage = storage + `+${val} Max Titanium.`;
                 }
+                if (global.tech['uranium'] >= 2){
+                    let val = 15 * multiplier;
+                    storage = storage + `+${val} Max Uranium.`;
+                }
                 return storage;
             },
             action: function (){
@@ -924,6 +928,9 @@ export const actions = {
                     }
                     if (global.tech['storage'] >= 4){
                         global['resource']['Titanium'].max += (global.city['shed'].count * (10 * multiplier));
+                    }
+                    if (global.tech['uranium'] >= 2){
+                        global['resource']['Uranium'].max += (global.city['shed'].count * (15 * multiplier));
                     }
                     global.city['shed'].count++;
                     return true;
@@ -1537,7 +1544,7 @@ export const actions = {
             cost: { 
                 Money: function(){ return costMultiplier('oil_power', 50000, 1.2); },
                 Copper: function(){ return costMultiplier('oil_power', 6500, 1.2) + 1000; },
-                Cement: function(){ return costMultiplier('oil_power', 5600, 1.2) + 1000;; },
+                Cement: function(){ return costMultiplier('oil_power', 5600, 1.2) + 1000; },
                 Steel: function(){ return costMultiplier('oil_power', 9000, 1.2) + 3000; }
             },
             effect: function (){
@@ -1550,6 +1557,32 @@ export const actions = {
                     global.city.oil_power.count++;
                     global.city.oil_power.on++;
                     global.city.power += 6;
+                    return true;
+                }
+                return false;
+            }
+        },
+        fission_power: {
+            id: 'city-fission_power',
+            title: 'Fission Reactor',
+            desc: 'Uses nuclear fission to generate large amounts of power',
+            reqs: { high_tech: 5 },
+            cost: { 
+                Money: function(){ return costMultiplier('fission_power', 250000, 1.35); },
+                Copper: function(){ return costMultiplier('fission_power', 13500, 1.35); },
+                Cement: function(){ return costMultiplier('fission_power', 10800, 1.35); },
+                Titanium: function(){ return costMultiplier('fission_power', 7500, 1.35); }
+            },
+            effect: function (){
+                let consume = 0.1;
+                return `+20kW. -${consume} Uranium per second.`;
+            },
+            powered: -20,
+            action: function (){
+                if (payCosts(actions.city.fission_power.cost)){
+                    global.city.fission_power.count++;
+                    global.city.fission_power.on++;
+                    global.city.power += 20;
                     return true;
                 }
                 return false;
@@ -2628,6 +2661,7 @@ export const actions = {
             effect: 'Begin unlocking the secrets of DNA.',
             action: function (){
                 if (payCosts(actions.tech.genetics.cost)){
+                    global.settings.showGenetics = true;
                     return true;
                 }
                 return false;
@@ -2708,6 +2742,61 @@ export const actions = {
             effect: 'Electronics is the next major step forward in technological advancement.',
             action: function (){
                 if (payCosts(actions.tech.electronics.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        fission: {
+            id: 'tech-fission',
+            title: 'Nuclear Fission',
+            desc: 'Nuclear Fission',
+            reqs: { high_tech: 4, uranium: 1 },
+            grant: ['high_tech',5],
+            cost: {
+                Knowledge: function(){ return 86000; },
+                Uranium: function(){ return 10; }
+            },
+            effect: 'Learn to split the atom, a powerful but terrifying new development.',
+            action: function (){
+                if (payCosts(actions.tech.fission.cost)){
+                    global.city['fission_power'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        uranium: {
+            id: 'tech-uranium',
+            title: 'Uranium Extraction',
+            desc: 'Uranium Extraction',
+            reqs: { high_tech: 4 },
+            grant: ['uranium',1],
+            cost: {
+                Knowledge: function(){ return 80000; }
+            },
+            effect: 'Learn how to extract trace amounts of uranium from coal deposits.',
+            action: function (){
+                if (payCosts(actions.tech.uranium.cost)){
+                    global.resource.Uranium.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        uranium_storage: {
+            id: 'tech-uranium_storage',
+            title: 'Uranium Storage',
+            desc: 'Uranium Storage',
+            reqs: { uranium: 1 },
+            grant: ['uranium',2],
+            cost: {
+                Knowledge: function(){ return 84000; },
+                Alloy: function(){ return 2500; }
+            },
+            effect: 'Upgrade your warehouses with specially designed areas for storing uranium.',
+            action: function (){
+                if (payCosts(actions.tech.uranium_storage.cost)){
                     return true;
                 }
                 return false;
@@ -4052,7 +4141,7 @@ function smelterModal(modal){
 }
 
 function factoryModal(modal){
-    let fuel = $('<div><span class="has-text-warning">Opperating:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>');
+    let fuel = $('<div><span class="has-text-warning">Opperating:</span> <span class="has-text-info">{{count | on}}/{{ on }}</span></div>');
     modal.append(fuel);
 
     if (!global.city.factory['Lux']){
@@ -4108,7 +4197,7 @@ function factoryModal(modal){
                 }
             },
             addItem: function(item){
-                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer < global.city.factory.count){
+                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer < global.city.factory.on){
                     global.city.factory[item]++;
                 }
             },
