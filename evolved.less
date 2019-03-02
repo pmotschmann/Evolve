@@ -168,11 +168,11 @@ a {
                 
                 span.count {
                     position: absolute;
-                    top: -.0625rem;
-                    right: -.0625rem;
+                    top: 0;
+                    right: 0;
                     display: inline-block;
-                    height: 1.125rem;
-                    line-height: 1rem;
+                    height: 1.0625rem;
+                    line-height: .875rem;
                     padding: 0 .25rem;
                     border-radius: 0 .25rem 0 .4375rem;
                     overflow: hidden;
@@ -185,16 +185,24 @@ a {
                 position: absolute;
                 cursor: pointer;
                 display: block;
-                height: 1.125rem;
-                line-height: 1.0625rem;
+                height: 1.0625rem;
+                line-height: .8125rem;
                 padding: 0 .25rem;
                 overflow: hidden;
             }
 
             div.special {
+                height: 1.125rem;
+                line-height: .9375rem;
                 top: 1rem;
                 left: 0;
-                border-radius: .4375rem 0 .4375rem 0;
+                border-radius: .25rem 0 .4375rem 0;
+                width: 1.1875rem;
+
+                svg {
+                    position: relative;
+                    left: -.125rem;
+                }
             }
 
             div.on {
@@ -574,12 +582,11 @@ html.dark {
             .action {
                 a.button {
                     span.count {
-                        border-top: .0625rem solid #282f2f;
-                        border-right: .0625rem solid #282f2f;
                         background: #1f2424;
                     }
                 }
                 div.special {
+                    border: .0625rem solid #282f2f;
                     background: #1f2424;
                     .gear {
                         fill: #3a4344;
@@ -609,11 +616,6 @@ html.dark {
                         fill: #4a5354;
                     }
                 }
-            }
-
-            a.button:hover > span {
-                border-top: .0625rem solid #3a4344;
-                border-right: .0625rem solid #3a4344;
             }
         }
 
@@ -743,6 +745,7 @@ html.light {
                     }
                 }
                 div.special {
+                    border: .0625rem solid #3a4344;
                     .gear {
                         fill: #3a4344;
                     }
