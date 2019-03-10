@@ -109,6 +109,18 @@ if (!global.city['market']){
     };
 }
 
+if (!global.settings['arpa']){
+    global.settings['arpa'] = {
+        arpaTabs: 1,
+        physics: true,
+        genetics: false
+    };
+}
+
+if (!global['arpa']){
+    global['arpa'] = {};
+}
+
 if (global.lastMsg){
     messageQueue(global.lastMsg.m, global.lastMsg.c);
 }

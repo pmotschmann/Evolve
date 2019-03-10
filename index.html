@@ -17,6 +17,7 @@
     <script src="resources.js" type="module"></script>
     <script src="jobs.js" type="module"></script>
     <script src="civics.js" type="module"></script>
+    <script src="arpa.js" type="module"></script>
     <script src="actions.js" type="module"></script>
     <script src="events.js" type="module"></script>
     <script src="main.js" type="module"></script>
@@ -54,8 +55,16 @@
                         <b-tab-item id="civic" :visible="showCivic" label="Civics" class="columns"></b-tab-item>
                         <b-tab-item id="industry" :visible="showIndustry" label="Industry" class="columns"></b-tab-item>
                         <b-tab-item id="tech" :visible="showResearch" label="Research"></b-tab-item>
-                        <b-tab-item id="market" :visible="showMarket" label="Exchange"></b-tab-item>
-                        <b-tab-item id="genetics" :visible="showGenetics" label="Genetics"></b-tab-item>
+                        <b-tab-item id="market" :visible="showMarket" label="Market"></b-tab-item>
+                        <b-tab-item id="genetics" :visible="showGenetics" label="A.R.P.A.">
+                            <div id="apra" class="arpa">
+                                <b-tabs v-model="arpa.arpaTabs" :animated="animated">
+                                    <b-tab-item id="arpaBlank" :visible="false" label="none"></b-tab-item>
+                                    <b-tab-item id="arpaPhysics" :visible="arpa.physics" label="Physics"></b-tab-item>
+                                    <b-tab-item id="arpaGenetics" :visible="arpa.genetics" label="Genetics"></b-tab-item>
+                                </b-tabs>
+                            </div>
+                        </b-tab-item>
                         <b-tab-item id="space" :visible="showSpace" label="Space"></b-tab-item>
                         <b-tab-item id="settings" label="Settings">
                             <div class="theme">

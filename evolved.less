@@ -373,6 +373,12 @@ a {
     }
 }
 
+.arpa {
+    ul {
+        margin-top: 0;
+    }
+}
+
 .modalBox {
     padding: 1rem;
     border-radius: 1rem;
@@ -504,6 +510,52 @@ a {
         
         span {
             margin: 0 .5rem;
+        }
+    }
+}
+
+.arpaProject {
+    display: inline-block;
+    border: solid .0625rem;
+    padding: .5rem;
+    width: 20rem;
+    margin: 0 1rem 1rem 0;
+
+    .head {
+        margin-bottom: .25rem;
+        padding-bottom: .5rem;
+        border-bottom: solid .0625rem;
+
+        > span {
+            display: inline-block;
+            width: 50%;   
+        }
+
+        .rank {
+            text-align: right;
+        }
+
+        .pbar {
+            position: relative;
+            margin-top: .5rem;
+
+            .progress {
+                margin-bottom: 0;
+            }
+
+            .progress-value {
+                position: absolute;
+                display: block;
+                top: -.1875rem;
+                left: 49%;
+            }
+        }
+    }
+    .buy {
+        text-align: center;
+        .button {
+            height: 1.5rem;
+            width: 4.5625rem;
         }
     }
 }

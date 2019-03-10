@@ -5,6 +5,7 @@ import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction } from './actions.js';
 import { events } from './events.js';
+import { arpa } from './arpa.js';
 
 var intervals = {};
 
@@ -50,6 +51,8 @@ defineJobs();
 $('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent"></div>'));
 defineGovernment();
 defineGarrison();
+
+arpa('Physics');
 
 vues['race'] = new Vue({
     data: {
@@ -210,6 +213,8 @@ else {
     });
     setWeather();
 }
+
+
 
 // Start game loop
 mainLoop();
@@ -802,6 +807,11 @@ function mainLoop() {
             else {
                 $('#powerMeter').css('color','#c0ce00');
             }
+
+            //ARPA
+            if (global.tech['high_tech'] && global.tech['high_tech'] >= 6){
+                
+            }
         }
         
         // main resource delta tracking
@@ -942,8 +952,12 @@ function mainLoop() {
                 if (global.tech['science'] >= 4){
                     multiplier += global.city['library'].count * 0.02;
                 }
-                caps['Knowledge'] += (global.city['university'].count * base * multiplier);
+                let gain = (global.city['university'].count * base * multiplier);
                 lCaps['professor'] += global.city['university'].count;
+                if (global.tech['supercollider']){
+                    gain *= (global.tech['supercollider'] / 100) + 1;
+                }
+                caps['Knowledge'] += gain;
             }
             if (global.city['library']){
                 let shelving = (global.race['nearsighted'] ? 110 : 125);
@@ -959,10 +973,14 @@ function mainLoop() {
                 }
             }
             if (global.city['wardenclyffe']){
-                caps['Knowledge'] += (global.city['wardenclyffe'].count * 1000);
+                let gain = global.city['wardenclyffe'].count * 1000;
                 lCaps['scientist'] += global.city['wardenclyffe'].count;
                 let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
-                caps['Knowledge'] += (global.city['wardenclyffe'].on * powered_gain);
+                gain += (global.city['wardenclyffe'].on * powered_gain);
+                if (global.tech['supercollider']){
+                    gain *= (global.tech['supercollider'] / 100) + 1;
+                }
+                caps['Knowledge'] += gain;
             }
             if (global.city['biolab']){
                 caps['Knowledge'] += (global.city['biolab'].on * 3000);

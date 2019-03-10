@@ -1,6 +1,7 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
 import { races, genus_traits } from './races.js';
 import { defineResources, loadMarket } from './resources.js';
+import { arpa } from './arpa.js';
 
 export const actions = {
     evolution: {
@@ -1394,13 +1395,23 @@ export const actions = {
                 let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                 if (global.tech['science'] >= 4){
                     gain *= 1 + (global.city['library'].count * 0.02);
-                    gain = gain.toFixed(0);
                 }
+                if (global.tech['supercollider']){
+                    gain *= (global.tech['supercollider'] / 100) + 1;
+                }
+                gain = gain.toFixed(0);
                 return `<div>+1 Max Professor</div><div>+${gain} Max Knowledge</div>`;
             },
             action: function (){
                 if (payCosts(actions.city.university.cost)){
-                    global['resource']['Knowledge'].max += 500;
+                    let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
+                    if (global.tech['science'] >= 4){
+                        gain *= 1 + (global.city['library'].count * 0.02);
+                    }
+                    if (global.tech['supercollider']){
+                        gain *= (global.tech['supercollider'] / 100) + 1;
+                    }
+                    global['resource']['Knowledge'].max += gain;
                     global.city.university.count++;
                     global.civic.professor.display = true;
                     global.civic.professor.max = global.city.university.count;
@@ -1459,8 +1470,14 @@ export const actions = {
             },
             effect: function (){
                 let gain = 1000;
+                if (global.tech['supercollider']){
+                    gain *= (global.tech['supercollider'] / 100) + 1;
+                }
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
+                    if (global.tech['supercollider']){
+                        pgain *= (global.tech['supercollider'] / 100) + 1;
+                    }
                     return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div><div>If powered uses 2kW but increases it's Knowledge gain to ${pgain}</div>`;
                 }
                 else {
@@ -1470,13 +1487,18 @@ export const actions = {
             powered: 2,
             action: function (){
                 if (payCosts(actions.city.wardenclyffe.cost)){
-                    global['resource']['Knowledge'].max += 1000;
+                    let gain = 1000;
                     global.city.wardenclyffe.count++;
                     global.civic.scientist.display = true;
                     global.civic.scientist.max = global.city.wardenclyffe.count;
                     if (global.city.powered && global.city.power >= 2){
                         global.city.wardenclyffe.on++;
+                        gain = global.tech['science'] >= 7 ? 2500 : 2000;
                     }
+                    if (global.tech['supercollider']){
+                        gain *= (global.tech['supercollider'] / 100) + 1;
+                    }
+                    global['resource']['Knowledge'].max += gain;
                     return true;
                 }
                 return false;
@@ -2653,15 +2675,15 @@ export const actions = {
             id: 'tech-genetics',
             title: 'Genetics',
             desc: 'Genetics',
-            reqs: { genetics: 1, locked: 1 },
+            reqs: { genetics: 1, high_tech: 6, locked: 1 },
             grant: ['genetics',2],
             cost: {
-                Knowledge: function(){ return 90000; }
+                Knowledge: function(){ return 120000; }
             },
             effect: 'Begin unlocking the secrets of DNA.',
             action: function (){
                 if (payCosts(actions.tech.genetics.cost)){
-                    global.settings.showGenetics = true;
+                    arpa('Genetics');
                     return true;
                 }
                 return false;
@@ -2761,6 +2783,25 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.fission.cost)){
                     global.city['fission_power'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        arpa: {
+            id: 'tech-arpa',
+            title: 'ARPA',
+            desc: 'Advanced Reseach Projects Agency',
+            reqs: { high_tech: 5 },
+            grant: ['high_tech',6],
+            cost: {
+                Knowledge: function(){ return 100000; }
+            },
+            effect: 'Establish the Advanced Research Projects Agency (ARPA). This advanced labratory is dedicated to providing the facilties to progress all your special projects.',
+            action: function (){
+                if (payCosts(actions.tech.arpa.cost)){
+                    global.settings.showGenetics = true;
+                    arpa('Physics');
                     return true;
                 }
                 return false;
