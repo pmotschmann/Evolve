@@ -27,7 +27,7 @@ const arpaProjects = {
             Cement: function(){ return costMultiplier('lhc', 250000, 1.05); },
             Steel: function(){ return costMultiplier('lhc', 187500, 1.05); },
             Titanium: function(){ return costMultiplier('lhc', 50000, 1.05); },
-            Polymer: function(){ return costMultiplier('lhc', 25000, 1.05); }
+            Polymer: function(){ return costMultiplier('lhc', 12000, 1.05); }
         },
     }
 };
@@ -99,10 +99,10 @@ function addProject(parent,project){
         let buy = $('<div class="buy"></div>');
         current.append(buy);
 
-        buy.append($(`<button class="button x1" @click="build('${project}',1)">1X</button>`));
-        buy.append($(`<button class="button x10" @click="build('${project}',10)">10X</button>`));
-        buy.append($(`<button class="button x25" @click="build('${project}',25)">25X</button>`));
-        buy.append($(`<button class="button x100" @click="build('${project}',100)">100X</button>`));
+        buy.append($(`<button class="button x1" @click="build('${project}',1)">1%</button>`));
+        buy.append($(`<button class="button x10" @click="build('${project}',10)">10%</button>`));
+        buy.append($(`<button class="button x25" @click="build('${project}',25)">25%</button>`));
+        buy.append($(`<button class="button x100" @click="build('${project}',100)">100%</button>`));
 
         vues[`arpa${project}`] = new Vue({
             data: global.arpa[project],

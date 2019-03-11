@@ -314,6 +314,10 @@ function mainLoop() {
                 }
                 power_grid -= power;
                 modRes('Coal',-(consume));
+                // Uranium
+                if (global.tech['uranium'] && global.tech['uranium'] >= 3){
+                    modRes('Uranium',consume / 75);
+                }
             }
 
             if (global.city['oil_power']){

@@ -2843,6 +2843,23 @@ export const actions = {
                 return false;
             }
         },
+        uranium_ash: {
+            id: 'tech-uranium_ash',
+            title: 'Uranium Ash',
+            desc: 'Uranium Ash',
+            reqs: { uranium: 2 },
+            grant: ['uranium',3],
+            cost: {
+                Knowledge: function(){ return 135000; }
+            },
+            effect: 'Learn how to extract trace amounts of uranium from coal ash.',
+            action: function (){
+                if (payCosts(actions.tech.uranium_ash.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mine_conveyor: {
             id: 'tech-mine_conveyor',
             title: 'Mine Conveyor Belts',
