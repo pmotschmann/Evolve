@@ -176,9 +176,9 @@ function marketItem(vue,mount,market_item,name,color,full){
     if (full){
         let trade = $('<span class="trade" v-show="m.active"><span class="has-text-warning">Routes</span></span>');
         market_item.append(trade);
-        trade.append($(`<span class="sub" @click="autoSell('${name}')">&laquo;</span>`));
+        trade.append($(`<b-tooltip :label="aSell()" position="is-bottom" size="is-small" multilined animated><span class="sub" @click="autoSell('${name}')">&laquo;</span></b-tooltip>`));
         trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
-        trade.append($(`<span class="add" @click="autoBuy('${name}')">&raquo;</span>`));
+        trade.append($(`<b-tooltip :label="aBuy()" position="is-bottom" size="is-small" multilined animated><span class="add" @click="autoBuy('${name}')">&raquo;</span></b-tooltip>`));
         tradeRouteColor(name);
     }
     
@@ -188,6 +188,12 @@ function marketItem(vue,mount,market_item,name,color,full){
             m: global.city.market
         },
         methods: {
+            aSell(){
+                return 'Auto-sell 1 unit per second at market value';
+            },
+            aBuy(){
+                return 'Auto-buy 1 unit per second at market value';
+            },
             purchase(res){
                 let qty = Number(vues['market_qty'].qty);
                 let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
