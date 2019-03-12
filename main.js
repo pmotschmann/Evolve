@@ -872,6 +872,9 @@ function mainLoop() {
             }
             if (global.city['storage_yard']){
                 let size = global.tech.container >= 3 ? 100 : 50;
+                if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                    size *= 2;
+                }
                 caps['Crates'] += (global.city['storage_yard'].count * size);
                 Object.keys(caps).forEach(function (res){
                     caps['Crates'] -= global.resource[res].crates;
@@ -879,6 +882,9 @@ function mainLoop() {
             }
             if (global.city['warehouse']){
                 let volume = global.tech['steel_container'] >= 2 ? 100 : 50;
+                if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                    volume *= 2;
+                }
                 caps['Containers'] += (global.city['warehouse'].count * volume);
                 Object.keys(caps).forEach(function (res){
                     caps['Containers'] -= global.resource[res].containers;
@@ -907,7 +913,7 @@ function mainLoop() {
                 lCaps['cement_worker'] += global.city['cement_plant'].count * 3;
             }
             if (global.city['garrison']){
-                lCaps['garrison'] += global.city['garrison'].count * 2;
+                lCaps['garrison'] += global.city['garrison'].count * (global.tech['military'] >= 5 ? 3 : 2);
             }
             if (global.city['basic_housing']){
                 caps[races[global.race.species].name] += global.city['basic_housing'].count;
@@ -929,6 +935,9 @@ function mainLoop() {
                 }
                 if (global.race['pack_rat']){
                     multiplier *= 1.05;
+                }
+                if (global.tech['storage'] >= 6){
+                    multiplier *= 1 + (global.tech['supercollider'] / 20);
                 }
                 caps['Lumber'] += (global.city['shed'].count * (200 * multiplier));
                 caps['Stone'] += (global.city['shed'].count * (200 * multiplier));
@@ -959,7 +968,7 @@ function mainLoop() {
                 let gain = (global.city['university'].count * base * multiplier);
                 lCaps['professor'] += global.city['university'].count;
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 100) + 1;
+                    gain *= (global.tech['supercollider'] / 50) + 1;
                 }
                 caps['Knowledge'] += gain;
             }
@@ -982,7 +991,7 @@ function mainLoop() {
                 let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
                 gain += (global.city['wardenclyffe'].on * powered_gain);
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 100) + 1;
+                    gain *= (global.tech['supercollider'] / 50) + 1;
                 }
                 caps['Knowledge'] += gain;
             }

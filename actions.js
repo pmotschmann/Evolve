@@ -666,10 +666,12 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('garrison', 260, 1.6); },
                 Stone: function(){ return costMultiplier('garrison', 180, 1.6); }
             },
-            effect: '+2 Max Soldiers',
+            effect: function() {
+                return global.tech['military'] >= 5 ? '+3 Max Soldiers' : '+2 Max Soldiers';
+            },
             action: function (){
                 if (payCosts(actions.city.garrison.cost)){
-                    global.civic['garrison'].max += 2;
+                    global.civic['garrison'].max += global.tech['military'] >= 5 ? 3 : 2;
                     global.city['garrison'].count++;
                     global.resource.Furs.display = true;
                     return true;
@@ -878,39 +880,39 @@ export const actions = {
                 let storage = '';
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
-                    let val = 200 * multiplier;
+                    let val = +(200 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Lumber.`;
                 }
                 if (global.resource.Stone.display){
-                    let val = 200 * multiplier;
+                    let val = +(200 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Stone.`;
                 }
                 if (global.resource.Copper.display){
-                    let val = 75 * multiplier;
+                    let val = +(75 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Copper.`;
                 }
                 if (global.resource.Iron.display){
-                    let val = 100 * multiplier;
+                    let val = +(100 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Iron.`;
                 }
                 if (global.resource.Cement.display){
-                    let val = 80 * multiplier;
+                    let val = +(80 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Cement.`;
                 }
                 if (global.resource.Coal.display){
-                    let val = 50 * multiplier;
+                    let val = +(50 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Coal.`;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    let val = 25 * multiplier;
+                    let val = +(25 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Steel.`;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    let val = 10 * multiplier;
+                    let val = +(10 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Titanium.`;
                 }
                 if (global.tech['uranium'] >= 2){
-                    let val = 15 * multiplier;
+                    let val = +(15 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Uranium.`;
                 }
                 return storage;
@@ -951,6 +953,9 @@ export const actions = {
             },
             effect: function(){
                 let cap = global.tech.container >= 3 ? 100 : 50;
+                if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                    cap *= 2;
+                }
                 return `+${cap} Max Crates`; 
             },
             action: function (){
@@ -960,7 +965,11 @@ export const actions = {
                     }
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
-                    global.resource.Crates.max += global.tech.container >= 3 ? 100 : 50;
+                    let cap = global.tech.container >= 3 ? 100 : 50;
+                    if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                        cap *= 2;
+                    }
+                    global.resource.Crates.max += cap;
                     return true;
                 }
                 return false;
@@ -978,6 +987,9 @@ export const actions = {
             },
             effect: function(){
                 let cap = global.tech.steel_container >= 2 ? 100 : 50;
+                if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                    cap *= 2;
+                }
                 return `+${cap} Max Containers`; 
             },
             action: function (){
@@ -987,7 +999,11 @@ export const actions = {
                     }
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
-                    global.resource.Containers.max += global.tech['steel_container'] >= 2 ? 100 : 50;
+                    let cap = global.tech['steel_container'] >= 2 ? 100 : 50;
+                    if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                        cap *= 2;
+                    }
+                    global.resource.Containers.max += cap;
                     return true;
                 }
                 return false;
@@ -1471,12 +1487,12 @@ export const actions = {
             effect: function (){
                 let gain = 1000;
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 100) + 1;
+                    gain *= (global.tech['supercollider'] / 50) + 1;
                 }
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.tech['supercollider']){
-                        pgain *= (global.tech['supercollider'] / 100) + 1;
+                        pgain *= (global.tech['supercollider'] / 50) + 1;
                     }
                     return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div><div>If powered uses 2kW but increases it's Knowledge gain to ${pgain}</div>`;
                 }
@@ -1496,7 +1512,7 @@ export const actions = {
                         gain = global.tech['science'] >= 7 ? 2500 : 2000;
                     }
                     if (global.tech['supercollider']){
-                        gain *= (global.tech['supercollider'] / 100) + 1;
+                        gain *= (global.tech['supercollider'] / 50) + 1;
                     }
                     global['resource']['Knowledge'].max += gain;
                     return true;
@@ -2087,6 +2103,23 @@ export const actions = {
             effect: 'Security cameras make monitoring large storage spaces easier increaseing storage potential.',
             action: function (){
                 if (payCosts(actions.tech.cameras.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        pocket_dimensions: {
+            id: 'tech-pocket_dimensions',
+            title: 'Pocket Dimensions',
+            desc: 'Learn to create interior spaces that are larger then exterior spaces.',
+            reqs: { pynn: 1, storage: 5 },
+            grant: ['storage',6],
+            cost: {
+                Knowledge: function(){ return 120000; }
+            },
+            effect: 'The ulitmate upgrade for warehouses. Extra supercollier levels will increase the effectiveness of this technology.',
+            action: function (){
+                if (payCosts(actions.tech.pocket_dimensions.cost)){
                     return true;
                 }
                 return false;
@@ -2807,6 +2840,24 @@ export const actions = {
                 return false;
             }
         },
+        rocketry: {
+            id: 'tech-rocketry',
+            title: 'Rocketry',
+            desc: 'Rocketry',
+            reqs: { high_tech: 6, locked: 1 },
+            grant: ['high_tech',7],
+            cost: {
+                Knowledge: function(){ return 125000; },
+                Oil: function(){ return 8000; }
+            },
+            effect: 'Establish the the field of rocketry. Leads to all sorts of new ballistic technologies.',
+            action: function (){
+                if (payCosts(actions.tech.rocketry.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         uranium: {
             id: 'tech-uranium',
             title: 'Uranium Extraction',
@@ -3468,6 +3519,25 @@ export const actions = {
                 return false;
             }
         },
+        bunk_beds: {
+            id: 'tech-bunk_beds',
+            title: 'Bunk Beds',
+            desc: 'Bunk Beds',
+            reqs: { military: 4, high_tech: 4 },
+            grant: ['military',5],
+            cost: {
+                Knowledge: function(){ return 85000; },
+                Furs: function(){ return 25000; },
+                Alloy: function(){ return 3000; }
+            },
+            effect: 'Upgrade your garrisons to house additional soldiers.',
+            action: function (){
+                if (payCosts(actions.tech.bunk_beds.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         armor: {
             id: 'tech-armor',
             title: 'Leather Armor',
@@ -3670,15 +3740,49 @@ export const actions = {
             id: 'tech-cambridge_process',
             title: 'Cambridge Process',
             desc: 'Cambridge Process',
-            reqs: { titanium: 2, locked: 1 },
+            reqs: { titanium: 2, supercollider: 1 },
             grant: ['titanium',3],
             cost: {
-                Knowledge: function(){ return 250000; },
-                Titanium: function(){ return 25000; }
+                Knowledge: function(){ return 150000; },
+                Titanium: function(){ return 17500; }
             },
             effect: 'Modern techniques result in more efficent production of titanium from smelters.',
             action: function (){
                 if (payCosts(actions.tech.cambridge_process.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        pynn_partical: {
+            id: 'tech-pynn_partical',
+            title: 'Pynn Particals',
+            desc: 'Pynn Particals',
+            reqs: { supercollider: 1 },
+            grant: ['pynn',1],
+            cost: {
+                Knowledge: function(){ return 110000; }
+            },
+            effect: 'Subatomic particals discovered by Dr Hank Pynn using the supercollider. Has applications in dimensional physics.',
+            action: function (){
+                if (payCosts(actions.tech.pynn_partical.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        matter_compression: {
+            id: 'tech-matter_compression',
+            title: 'Matter Compression',
+            desc: 'Matter Compression',
+            reqs: { pynn: 1 },
+            grant: ['pynn',2],
+            cost: {
+                Knowledge: function(){ return 125000; }
+            },
+            effect: 'Use pynn particals to shrink containers down to half size, therefore doubling the amount you can store.',
+            action: function (){
+                if (payCosts(actions.tech.matter_compression.cost)){
                     return true;
                 }
                 return false;
@@ -3694,6 +3798,9 @@ function storageMultipler(){
     }
     if (global.race['pack_rat']){
         multiplier *= 1.05;
+    }
+    if (global.tech['storage'] >= 6){
+        multiplier *= 1 + (global.tech['supercollider'] / 20);
     }
     return multiplier;
 }
@@ -3976,7 +4083,6 @@ function payCosts(costs){
 }
 
 function checkCosts(costs){
-    costs = adjustCosts(costs);
     var test = true;
     Object.keys(costs).forEach(function (res){
         var testCost = Number(costs[res]()) || 0;

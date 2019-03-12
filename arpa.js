@@ -17,8 +17,14 @@ const arpaProjects = {
         desc: 'A supercollider will help expand your understanding of theoretical sciences',
         reqs: { high_tech: 6 },
         grant: 'supercollider',
-        effect: function() { 
-            return 'Each completed supercollider increases wardenclyffe and university science caps by 1%'; 
+        effect: function() {
+            if (global.tech['storage'] >= 6){
+                let warehouse = global.tech['supercollider'] * 5;
+                return `Each completed supercollider increases wardenclyffe and university science caps by 2%. They also boost warehouse capacty by ${warehouse}%.`;
+            }
+            else {
+                return 'Each completed supercollider increases wardenclyffe and university science caps by 2%.';
+            }
         },
         cost: {
             Money: function(){ return costMultiplier('lhc', 2500000, 1.05); },
@@ -43,6 +49,7 @@ function checkRequirements(tech){
 }
 
 function payCosts(costs){
+    costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
             global['resource'][res].amount -= costs[res]() / 100;
@@ -62,6 +69,17 @@ function checkCosts(costs){
         }
     });
     return test;
+}
+
+function adjustCosts(costs){
+    if (global.race['creative']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            newCosts[res] = function(){ return Math.round(costs[res]() * 0.98) || 0; }
+        });
+        return rebarAdjust(newCosts);
+    }
+    return costs;
 }
 
 function costMultiplier(project,base,mutiplier){

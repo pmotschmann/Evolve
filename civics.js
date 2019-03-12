@@ -152,7 +152,7 @@ function buildGarrison(garrison){
         data: global.civic['garrison'],
         methods: {
             train(){
-                let cost = Math.round((1.25 ** global.civic.garrison.workers) * 75) - 50;
+                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
                 if (global.race['brute']){
                     cost = Math.round(cost / 2);
                 }
@@ -164,7 +164,7 @@ function buildGarrison(garrison){
                 }
             },
             hire(){
-                let cost = Math.round((1.35 ** global.civic.garrison.workers) * 100);
+                let cost = Math.round((1.27 ** global.civic.garrison.workers) * 100);
                 if (global.race['brute']){
                     cost = Math.round(cost / 2);
                 }
@@ -495,7 +495,7 @@ function buildGarrison(garrison){
                 }
             },
             trainLabel(){
-                let cost = Math.round((1.25 ** global.civic.garrison.workers) * 75) - 50;
+                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
                 if (global.race['brute']){
                     cost = Math.round(cost / 2);
                 }
@@ -507,7 +507,7 @@ function buildGarrison(garrison){
                 }
             },
             hireLabel(){
-                let cost = Math.round((1.35 ** global.civic.garrison.workers) * 100);
+                let cost = Math.round((1.27 ** global.civic.garrison.workers) * 100);
                 if (global.race['brute']){
                     cost = Math.round(cost / 2);
                 }

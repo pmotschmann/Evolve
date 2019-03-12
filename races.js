@@ -11,7 +11,7 @@ export const races = {
         name: 'Human',
         desc: "Humans are versatile creatures who are adept at bending the environment around them to suit their needs. They are an ambitious race who seek to expand their knowledge of the universe around them and build great empires.",
         type: 'humanoid',
-        home: 'Earth',
+        home: 'Terra',
         entity: 'bipedal creatures',
         traits: {
             creative: 1,
@@ -392,8 +392,8 @@ export const traits = {
         desc: '',
         type: 'genus',
     },
-    creative: {
-        desc: '',
+    creative: { // A.R.P.A. Projects are 2% cheaper
+        desc: 'Your species natural creativity leads to faster development of super projects.',
         type: 'major',
     },
     diverse: {
