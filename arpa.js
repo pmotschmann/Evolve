@@ -18,11 +18,12 @@ const arpaProjects = {
         reqs: { high_tech: 6 },
         grant: 'supercollider',
         effect: function() {
+            let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? 8 : 4;
             if (global.tech['storage'] >= 6){
-                return `Each completed supercollider increases wardenclyffe and university science caps by 5%. They also boost warehouse capacty by 5%.`;
+                return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacty by 5%.`;
             }
             else {
-                return 'Each completed supercollider increases wardenclyffe and university science caps by 5%.';
+                return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%.`;
             }
         },
         cost: {

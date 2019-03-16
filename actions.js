@@ -911,10 +911,6 @@ export const actions = {
                     let val = +(10 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Titanium.`;
                 }
-                if (global.tech['uranium'] >= 2){
-                    let val = +(15 * multiplier).toFixed(1);
-                    storage = storage + `+${val} Max Uranium.`;
-                }
                 return storage;
             },
             action: function (){
@@ -931,9 +927,6 @@ export const actions = {
                     }
                     if (global.tech['storage'] >= 4){
                         global['resource']['Titanium'].max += (global.city['shed'].count * (10 * multiplier));
-                    }
-                    if (global.tech['uranium'] >= 2){
-                        global['resource']['Uranium'].max += (global.city['shed'].count * (15 * multiplier));
                     }
                     global.city['shed'].count++;
                     return true;
@@ -953,7 +946,7 @@ export const actions = {
             },
             effect: function(){
                 let cap = global.tech.container >= 3 ? 100 : 50;
-                if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
                 return `+${cap} Max Crates`; 
@@ -966,7 +959,7 @@ export const actions = {
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
                     let cap = global.tech.container >= 3 ? 100 : 50;
-                    if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                    if (global.tech['particles'] && global.tech['particles'] >= 2){
                         cap *= 2;
                     }
                     global.resource.Crates.max += cap;
@@ -987,7 +980,7 @@ export const actions = {
             },
             effect: function(){
                 let cap = global.tech.steel_container >= 2 ? 100 : 50;
-                if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
                 return `+${cap} Max Containers`; 
@@ -1000,7 +993,7 @@ export const actions = {
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
                     let cap = global.tech['steel_container'] >= 2 ? 100 : 50;
-                    if (global.tech['pynn'] && global.tech['pynn'] >= 2){
+                    if (global.tech['particles'] && global.tech['particles'] >= 2){
                         cap *= 2;
                     }
                     global.resource.Containers.max += cap;
@@ -1313,7 +1306,7 @@ export const actions = {
         oil_depot: {
             id: 'city-oil_depot',
             title: 'Fuel Depot',
-            desc: 'Store liquid fuels',
+            desc: 'Special storage for fuels',
             reqs: { oil: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('oil_depot', 2500, 1.45); },
@@ -1322,12 +1315,20 @@ export const actions = {
             },
             effect: function() { 
                 let oil = 1000;
-                return `+${oil} Max Oil.`;
+                let effect = `<div>+${oil} Max Oil.</div>`;
+                if (global.tech['uranium'] >= 2){
+                    let val = 250;
+                    effect = effect + `<div>+${val} Max Uranium.</div>`;
+                }
+                return effect;
             },
             action: function (){
                 if (payCosts(actions.city.oil_depot.cost)){
                     global.city['oil_depot'].count++;
                     global['resource']['Oil'].max += 1000;
+                    if (global.tech['uranium'] >= 2){
+                        global['resource']['Uranium'].max += 250;
+                    }
                     return true;
                 }
                 return false;
@@ -1426,7 +1427,8 @@ export const actions = {
                     gain *= 1 + (global.city['library'].count * 0.02);
                 }
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 20) + 1;
+                    let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                    gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
                 gain = gain.toFixed(0);
                 return `<div>+1 Max Professor</div><div>+${gain} Max Knowledge</div>`;
@@ -1438,7 +1440,8 @@ export const actions = {
                         gain *= 1 + (global.city['library'].count * 0.02);
                     }
                     if (global.tech['supercollider']){
-                        gain *= (global.tech['supercollider'] / 20) + 1;
+                        let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                        gain *= (global.tech['supercollider'] / ratio) + 1;
                     }
                     global['resource']['Knowledge'].max += gain;
                     global.city.university.count++;
@@ -1500,12 +1503,14 @@ export const actions = {
             effect: function (){
                 let gain = 1000;
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 20) + 1;
+                    let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                    gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.tech['supercollider']){
-                        pgain *= (global.tech['supercollider'] / 20) + 1;
+                        let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                        pgain *= (global.tech['supercollider'] / ratio) + 1;
                     }
                     return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div><div>If powered uses 2kW but increases it's Knowledge gain to ${pgain}</div>`;
                 }
@@ -1525,7 +1530,8 @@ export const actions = {
                         gain = global.tech['science'] >= 7 ? 2500 : 2000;
                     }
                     if (global.tech['supercollider']){
-                        gain *= (global.tech['supercollider'] / 50) + 1;
+                        let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                        gain *= (global.tech['supercollider'] / ratio) + 1;
                     }
                     global['resource']['Knowledge'].max += gain;
                     return true;
@@ -2125,12 +2131,12 @@ export const actions = {
             id: 'tech-pocket_dimensions',
             title: 'Pocket Dimensions',
             desc: 'Learn to create interior spaces that are larger then exterior spaces.',
-            reqs: { pynn: 1, storage: 5 },
+            reqs: { particles: 1, storage: 5 },
             grant: ['storage',6],
             cost: {
                 Knowledge: function(){ return 120000; }
             },
-            effect: 'The ulitmate upgrade for warehouses. Extra supercollier levels will increase the effectiveness of this technology.',
+            effect: 'The ulitmate upgrade for warehouses. Extra supercollider levels will increase the effectiveness of this technology.',
             action: function (){
                 if (payCosts(actions.tech.pocket_dimensions.cost)){
                     return true;
@@ -2898,7 +2904,7 @@ export const actions = {
             id: 'tech-rocketry',
             title: 'Rocketry',
             desc: 'Rocketry',
-            reqs: { high_tech: 6, locked: 1 },
+            reqs: { high_tech: 6 },
             grant: ['high_tech',7],
             cost: {
                 Knowledge: function(){ return 125000; },
@@ -2910,6 +2916,23 @@ export const actions = {
                     var tech = actions.tech.rocketry.grant[0];
                     global.tech[tech] = actions.tech.rocketry.grant[1];
                     arpa('Physics');
+                    return true;
+                }
+                return false;
+            }
+        },
+        lasers: {
+            id: 'tech-lasers',
+            title: 'Lasers',
+            desc: 'Light Amplification by Stimulated Emission of Radiation',
+            reqs: { high_tech: 7, supercollider: 1 },
+            grant: ['high_tech',8],
+            cost: {
+                Knowledge: function(){ return 200000; }
+            },
+            effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
+            action: function (){
+                if (payCosts(actions.tech.lasers.cost)){
                     return true;
                 }
                 return false;
@@ -3850,7 +3873,7 @@ export const actions = {
             title: 'Pynn Particals',
             desc: 'Pynn Particals',
             reqs: { supercollider: 1 },
-            grant: ['pynn',1],
+            grant: ['particles',1],
             cost: {
                 Knowledge: function(){ return 110000; }
             },
@@ -3866,8 +3889,8 @@ export const actions = {
             id: 'tech-matter_compression',
             title: 'Matter Compression',
             desc: 'Matter Compression',
-            reqs: { pynn: 1 },
-            grant: ['pynn',2],
+            reqs: { particles: 1 },
+            grant: ['particles',2],
             cost: {
                 Knowledge: function(){ return 125000; }
             },
@@ -3878,7 +3901,24 @@ export const actions = {
                 }
                 return false;
             }
-        }
+        },
+        higgs_boson: {
+            id: 'tech-higgs_boson',
+            title: 'Higgs Boson',
+            desc: 'Higgs Boson',
+            reqs: { particles: 2, supercollider: 2 },
+            grant: ['particles',3],
+            cost: {
+                Knowledge: function(){ return 135000; }
+            },
+            effect: 'Discover the Higgs Boson. No one knows what practical application this has but excitement about it will raise the contribution to science from supercolliders.',
+            action: function (){
+                if (payCosts(actions.tech.higgs_boson.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     }
 };
 
