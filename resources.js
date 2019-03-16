@@ -308,12 +308,18 @@ function drawModal(name,color){
                 if (global.race['pack_rat']){
                     cap += global.tech.container >= 2 ? 2 : 1;
                 }
+                if (global.tech.container >= 4){
+                    cap += 10;
+                }
                 return `Remove crate from this resrouce (-${cap} cap)`;
             },
             addCrateLabel: function(){
                 let cap = global.tech.container >= 2 ? 30 : 25;
                 if (global.race['pack_rat']){
                     cap += global.tech.container >= 2 ? 2 : 1;
+                }
+                if (global.tech.container >= 4){
+                    cap += 10;
                 }
                 return `Assign crate to this resource (+${cap} cap)`;
             },
@@ -328,6 +334,9 @@ function drawModal(name,color){
             removeCrate: function(res){
                 let keyMutipler = keyMultiplier();
                 let cap = global.tech.container >= 2 ? 30 : 25;
+                if (global.tech.container >= 4){
+                    cap += 10;
+                }
                 if (global.race['pack_rat']){
                     cap += global.tech.container >= 2 ? 2 : 1;
                 }
@@ -341,6 +350,9 @@ function drawModal(name,color){
             addCrate: function(res){
                 let keyMutipler = keyMultiplier();
                 let cap = global.tech.container >= 2 ? 30 : 25;
+                if (global.tech.container >= 4){
+                    cap += 10;
+                }
                 if (global.race['pack_rat']){
                     cap += global.tech.container >= 2 ? 2 : 1;
                 }

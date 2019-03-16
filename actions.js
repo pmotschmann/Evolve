@@ -1135,6 +1135,16 @@ export const actions = {
                 Stone: function(){ return costMultiplier('cement_plant', 2000, 1.3); }
             },
             effect: '+3 Max Cement Plant Workers',
+            effect: function() { 
+                if (global.tech['cement'] >= 5){
+                    return '<div>+3 Max Cement Plant Workers</div><div>If powered consumes 2kW but increases cement production by 5%</div>';
+                }
+                else {
+                    return '+3 Max Cement Plant Workers';
+                }
+            },
+            powered: 2,
+            power_reqs: { cement: 5 },
             action: function (){
                 if (payCosts(actions.city.cement_plant.cost)){
                     global.resource.Cement.display = true;
@@ -2178,6 +2188,24 @@ export const actions = {
             effect: 'Upgrade your freight yards with cranes, doubling the amount of crates that can be stored in each yard.',
             action: function (){
                 if (payCosts(actions.tech.cranes.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        titanium_crates: {
+            id: 'tech-titanium_crates',
+            title: 'Titanium Banded Crates',
+            desc: 'Titanium Banded Crates',
+            reqs: { container: 3, titanium: 1 },
+            grant: ['container',4],
+            cost: { 
+                Knowledge: function(){ return 75000; },
+                Titanium: function(){ return 1000; }
+            },
+            effect: 'Increase the maximum load of crates by adding strong titanium bands.',
+            action: function (){
+                if (payCosts(actions.tech.titanium_crates.cost)){
                     return true;
                 }
                 return false;
@@ -3721,6 +3749,23 @@ export const actions = {
             effect: 'Portland cement is easier to make boosting productivity of cement workers by 20%',
             action: function (){
                 if (payCosts(actions.tech.portland_cement.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        screw_conveyor: {
+            id: 'tech-screw_conveyor',
+            title: 'Screw Conveyor',
+            desc: 'Screw Conveyor',
+            reqs: { cement: 4, high_tech: 4 },
+            grant: ['cement',5],
+            cost: {
+                Knowledge: function(){ return 80000; }
+            },
+            effect: 'Screw conveyors can greatly increase the output of cement factories, however they require power to opperate.',
+            action: function (){
+                if (payCosts(actions.tech.screw_conveyor.cost)){
                     return true;
                 }
                 return false;

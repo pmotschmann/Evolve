@@ -342,7 +342,7 @@ function mainLoop() {
                 modRes('Uranium',-(consume));
             }
 
-            let p_structs = ['apartment','factory','wardenclyffe','biolab','mine','coal_mine','rock_quarry','sawmill'];
+            let p_structs = ['apartment','factory','wardenclyffe','biolab','mine','coal_mine','rock_quarry','sawmill','cement_plant'];
             for (var i = 0; i < p_structs.length; i++) {
                 if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
                     let power = global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
@@ -592,6 +592,9 @@ function mainLoop() {
                 cement_multiplier *= tax_multiplier;
                 cement_multiplier *= racialTrait(global.civic.cement_worker.workers,'factory');
                 cement_multiplier *= hunger;
+                if (global.city.powered && p_on['cement_plant']){
+                    cement_multiplier *= 1 + (p_on['cement_plant'] * 0.05);
+                }
                 delta = (workDone * global.civic.cement_worker.impact) * cement_multiplier * global_multiplier * time_multiplier;
                 modRes('Cement',delta);
             }
@@ -1047,6 +1050,9 @@ function mainLoop() {
             if (global.race['pack_rat']){
                 create_value += global.tech.container >= 2 ? 2 : 1;
                 container_value += global.tech.steel_container >= 3 ? 3 : 2;
+            }
+            if (global.tech['container'] && global.tech['container'] >= 4){
+                create_value += 10;
             }
             Object.keys(caps).forEach(function (res){
                 caps[res] += global.resource[res].crates * create_value;
