@@ -691,7 +691,7 @@ function mainLoop() {
             // Lumber
             var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
             lum_multiplier *= tax_multiplier;
-            if (global.city.powered && global.city.sawmill){
+            if (global.city.powered && global.city.sawmill && p_on['sawmill']){
                 lum_multiplier *= 1 + (p_on['sawmill'] * 0.05);
             }
             lum_multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
