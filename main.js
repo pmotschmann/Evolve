@@ -790,7 +790,7 @@ function mainLoop() {
             if (global.city['oil_well']){
                 let oil_multiplier = global.tech['oil'] >= 4 ? 0.48 : 0.4;
                 if (global.tech['oil'] >= 5){
-                    oil_multiplier *= 1.25;
+                    oil_multiplier *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
                 }
                 oil_multiplier *= hunger;
                 oil_multiplier *= tax_multiplier;
@@ -971,7 +971,7 @@ function mainLoop() {
                 let gain = (global.city['university'].count * base * multiplier);
                 lCaps['professor'] += global.city['university'].count;
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 50) + 1;
+                    gain *= (global.tech['supercollider'] / 20) + 1;
                 }
                 caps['Knowledge'] += gain;
             }
@@ -994,7 +994,7 @@ function mainLoop() {
                 let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
                 gain += (global.city['wardenclyffe'].on * powered_gain);
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 50) + 1;
+                    gain *= (global.tech['supercollider'] / 20) + 1;
                 }
                 caps['Knowledge'] += gain;
             }

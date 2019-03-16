@@ -19,11 +19,10 @@ const arpaProjects = {
         grant: 'supercollider',
         effect: function() {
             if (global.tech['storage'] >= 6){
-                let warehouse = global.tech['supercollider'] * 5;
-                return `Each completed supercollider increases wardenclyffe and university science caps by 2%. They also boost warehouse capacty by ${warehouse}%.`;
+                return `Each completed supercollider increases wardenclyffe and university science caps by 5%. They also boost warehouse capacty by 5%.`;
             }
             else {
-                return 'Each completed supercollider increases wardenclyffe and university science caps by 2%.';
+                return 'Each completed supercollider increases wardenclyffe and university science caps by 5%.';
             }
         },
         cost: {
@@ -50,6 +49,23 @@ const arpaProjects = {
             Copper: function(){ return costMultiplier('stock_exchange', 225000, 1.06); },
             Cement: function(){ return costMultiplier('stock_exchange', 400000, 1.06); },
             Steel: function(){ return costMultiplier('stock_exchange', 235000, 1.06); }
+        }
+    },
+    launch_facility: {
+        title: 'Launch Facility',
+        desc: 'A launch facility allows for construction and firing of rockets.',
+        reqs: { high_tech: 7, locked: 1 },
+        grant: 'launch_facility',
+        effect: function() {
+            return 'Each level of stock exchange will boost bank capacity by 10%';
+        },
+        cost: {
+            Money: function(){ return costMultiplier('launch_facility', 4000000, 1.1); },
+            Knowledge: function(){ return costMultiplier('launch_facility', 500000, 1.1); },
+            Cement: function(){ return costMultiplier('launch_facility', 200000, 1.1); },
+            Oil: function(){ return costMultiplier('launch_facility', 20000, 1.1); },
+            Steel: function(){ return costMultiplier('launch_facility', 250000, 1.1); },
+            Alloy: function(){ return costMultiplier('launch_facility', 25000, 1.1); }
         }
     }
 };
@@ -108,6 +124,7 @@ function physics(){
     parent.empty();
     addProject(parent,'lhc');
     addProject(parent,'stock_exchange');
+    addProject(parent,'launch_facility');
 }
 
 function genetics(){

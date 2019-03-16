@@ -1296,7 +1296,7 @@ export const actions = {
             effect: function() { 
                 let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;
                 if (global.tech['oil'] >= 5){
-                    oil *= 1.25;
+                    oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
                 }
                 return `+${oil} oil per second. +500 Max Oil.`;
             },
@@ -1426,7 +1426,7 @@ export const actions = {
                     gain *= 1 + (global.city['library'].count * 0.02);
                 }
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 100) + 1;
+                    gain *= (global.tech['supercollider'] / 20) + 1;
                 }
                 gain = gain.toFixed(0);
                 return `<div>+1 Max Professor</div><div>+${gain} Max Knowledge</div>`;
@@ -1438,7 +1438,7 @@ export const actions = {
                         gain *= 1 + (global.city['library'].count * 0.02);
                     }
                     if (global.tech['supercollider']){
-                        gain *= (global.tech['supercollider'] / 100) + 1;
+                        gain *= (global.tech['supercollider'] / 20) + 1;
                     }
                     global['resource']['Knowledge'].max += gain;
                     global.city.university.count++;
@@ -1500,12 +1500,12 @@ export const actions = {
             effect: function (){
                 let gain = 1000;
                 if (global.tech['supercollider']){
-                    gain *= (global.tech['supercollider'] / 50) + 1;
+                    gain *= (global.tech['supercollider'] / 20) + 1;
                 }
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.tech['supercollider']){
-                        pgain *= (global.tech['supercollider'] / 50) + 1;
+                        pgain *= (global.tech['supercollider'] / 20) + 1;
                     }
                     return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div><div>If powered uses 2kW but increases it's Knowledge gain to ${pgain}</div>`;
                 }
@@ -2907,6 +2907,9 @@ export const actions = {
             effect: 'Establish the the field of rocketry. Leads to all sorts of new ballistic technologies.',
             action: function (){
                 if (payCosts(actions.tech.rocketry.cost)){
+                    var tech = actions.tech.rocketry.grant[0];
+                    global.tech[tech] = actions.tech.rocketry.grant[1];
+                    arpa('Physics');
                     return true;
                 }
                 return false;
@@ -3090,6 +3093,23 @@ export const actions = {
             effect: 'Enhanced drills made with new alloys increase oil production by another estimated 25%.',
             action: function (){
                 if (payCosts(actions.tech.alloy_drills.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        fracking: {
+            id: 'tech-fracking',
+            title: 'Fracking',
+            desc: 'Fracking',
+            reqs: { oil: 5, high_tech: 6 },
+            grant: ['oil',6],
+            cost: {
+                Knowledge: function(){ return 145000; }
+            },
+            effect: 'A new oil mining technique, contravresal but effective. Improves oil derrick output by 40%',
+            action: function (){
+                if (payCosts(actions.tech.fracking.cost)){
                     return true;
                 }
                 return false;
