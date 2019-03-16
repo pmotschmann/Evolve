@@ -1377,6 +1377,9 @@ export const actions = {
                 if (global.tech['banking'] >= 8){
                     vault += 25 * global.resource[races[global.race.species].name].amount;
                 }
+                if (global.tech['stock_exchange']){
+                    vault *= 1 + (global.tech['stock_exchange'] * 0.1);
+                }
                 if (global.tech['banking'] >= 2){
                     return `<div>+\$${vault} Max Money</div><div>+1 Max Banker</div>`; 
                 }
@@ -2172,7 +2175,7 @@ export const actions = {
                 Copper: function(){ return 1000; },
                 Steel: function(){ return 2500; }
             },
-            effect: 'Upgrade your freight yards with cranes, doubling the ammount of crates that can be stored in each yard.',
+            effect: 'Upgrade your freight yards with cranes, doubling the amount of crates that can be stored in each yard.',
             action: function (){
                 if (payCosts(actions.tech.cranes.cost)){
                     return true;
@@ -2548,6 +2551,27 @@ export const actions = {
                 return false;
             }
         },
+        stock_market: {
+            id: 'tech-stock_market',
+            title: 'Stock Exchange',
+            desc: 'Stock Exchange',
+            reqs: { banking: 8, high_tech: 6 },
+            grant: ['banking',9],
+            cost: {
+                Money: function(){ return 325000; },
+                Knowledge: function(){ return 120000; }
+            },
+            effect: 'Establish a stock exchange to increase wealth potential.',
+            action: function (){
+                if (payCosts(actions.tech.stock_market.cost)){
+                    var tech = actions.tech.stock_market.grant[0];
+                    global.tech[tech] = actions.tech.stock_market.grant[1];
+                    arpa('Physics');
+                    return true;
+                }
+                return false;
+            }
+        },
         science: {
             id: 'tech-science',
             title: 'Scientific Method',
@@ -2823,17 +2847,19 @@ export const actions = {
         },
         arpa: {
             id: 'tech-arpa',
-            title: 'ARPA',
+            title: 'A.R.P.A.',
             desc: 'Advanced Reseach Projects Agency',
             reqs: { high_tech: 5 },
             grant: ['high_tech',6],
             cost: {
                 Knowledge: function(){ return 100000; }
             },
-            effect: 'Establish the Advanced Research Projects Agency (ARPA). This advanced labratory is dedicated to providing the facilties to progress all your special projects.',
+            effect: 'Establish the Advanced Research Projects Agency (A.R.P.A.). This advanced labratory is dedicated to providing the facilties to progress all your special projects.',
             action: function (){
                 if (payCosts(actions.tech.arpa.cost)){
                     global.settings.showGenetics = true;
+                    var tech = actions.tech.arpa.grant[0];
+                    global.tech[tech] = actions.tech.arpa.grant[1];
                     arpa('Physics');
                     return true;
                 }

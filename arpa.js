@@ -34,7 +34,23 @@ const arpaProjects = {
             Steel: function(){ return costMultiplier('lhc', 187500, 1.05); },
             Titanium: function(){ return costMultiplier('lhc', 50000, 1.05); },
             Polymer: function(){ return costMultiplier('lhc', 12000, 1.05); }
+        }
+    },
+    stock_exchange: {
+        title: 'Stock Exchange',
+        desc: 'The stock exchange will boost the amount of money your banks can trade in.',
+        reqs: { banking: 9 },
+        grant: 'stock_exchange',
+        effect: function() {
+            return 'Each level of stock exchange will boost bank capacity by 10%';
         },
+        cost: {
+            Money: function(){ return costMultiplier('stock_exchange', 3000000, 1.06); },
+            Knowledge: function(){ return costMultiplier('stock_exchange', 200000, 1.06); },
+            Copper: function(){ return costMultiplier('stock_exchange', 225000, 1.06); },
+            Cement: function(){ return costMultiplier('stock_exchange', 400000, 1.06); },
+            Steel: function(){ return costMultiplier('stock_exchange', 235000, 1.06); }
+        }
     }
 };
 
@@ -91,6 +107,7 @@ function physics(){
     let parent = $('#arpaPhysics');
     parent.empty();
     addProject(parent,'lhc');
+    addProject(parent,'stock_exchange');
 }
 
 function genetics(){

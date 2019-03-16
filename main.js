@@ -1018,6 +1018,9 @@ function mainLoop() {
                 if (global.tech['banking'] >= 8){
                     vault += 25 * global.resource[races[global.race.species].name].amount;
                 }
+                if (global.tech['stock_exchange']){
+                    vault *= 1 + (global.tech['stock_exchange'] * 0.1);
+                }
                 caps['Money'] += (global.city['bank'].count * vault);
             }
             if (global.tech['banking'] >= 4){
