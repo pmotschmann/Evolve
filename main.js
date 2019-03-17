@@ -1029,7 +1029,14 @@ function mainLoop() {
                 caps['Money'] += (global.city['bank'].count * vault);
             }
             if (global.tech['banking'] >= 4){
-                caps['Money'] += (global.tech['banking'] >= 6 ? 600 : 250) * (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers);
+                let cm = 250;
+                if (global.tech['banking'] >= 11){
+                    cm = 1000;
+                }
+                else if (global.tech['banking'] >= 6){
+                    cm = 600;
+                }
+                caps['Money'] += cm * (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers);
             }
 
             if (global.city['trade']){
@@ -1120,7 +1127,11 @@ function mainLoop() {
                 
                 if (fed){
                     if (global.tech['banking'] && global.tech['banking'] >= 2){
-                        income *= 1 + (global.civic.banker.workers * global.civic.banker.impact);
+                        let impact = global.civic.banker.impact;
+                        if (global.tech['banking'] >= 10){
+                            impact += 0.02 * global.tech['stock_exchange'];
+                        }
+                        income *= 1 + (global.civic.banker.workers * impact);
                     }
                 }
                 else {

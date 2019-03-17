@@ -42,7 +42,12 @@ const arpaProjects = {
         reqs: { banking: 9 },
         grant: 'stock_exchange',
         effect: function() {
-            return 'Each level of stock exchange will boost bank capacity by 10%';
+            if (global.tech['banking'] >= 10){
+                return 'Each level of stock exchange will boost bank capacity by 10% and banker effectiveness by 2%.';
+            }
+            else {
+                return 'Each level of stock exchange will boost bank capacity by 10%.';
+            }
         },
         cost: {
             Money: function(){ return costMultiplier('stock_exchange', 3000000, 1.06); },
@@ -58,7 +63,7 @@ const arpaProjects = {
         reqs: { high_tech: 7, locked: 1 },
         grant: 'launch_facility',
         effect: function() {
-            return 'Each level of stock exchange will boost bank capacity by 10%';
+            return 'Each launch facility will do something really awesome.';
         },
         cost: {
             Money: function(){ return costMultiplier('launch_facility', 4000000, 1.1); },

@@ -2606,6 +2606,42 @@ export const actions = {
                 return false;
             }
         },
+        hedge_funds: {
+            id: 'tech-hedge_funds',
+            title: 'Hedge Funds',
+            desc: 'Hedge Funds',
+            reqs: { banking: 9, stock_exchange: 1 },
+            grant: ['banking',10],
+            cost: {
+                Money: function(){ return 375000; },
+                Knowledge: function(){ return 140000; }
+            },
+            effect: 'Bankers also manage hedge funds, increasing the amount of money generated per banker by 2% per stock market level.',
+            action: function (){
+                if (payCosts(actions.tech.hedge_funds.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        four_oh_one: {
+            id: 'tech-four_oh_one',
+            title: '401K',
+            desc: '401K',
+            reqs: { banking: 10 },
+            grant: ['banking',11],
+            cost: {
+                Money: function(){ return 425000; },
+                Knowledge: function(){ return 160000; }
+            },
+            effect: 'Encourge citizens to establish 401K plans increasing the total amount of wealth available.',
+            action: function (){
+                if (payCosts(actions.tech.four_oh_one.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         science: {
             id: 'tech-science',
             title: 'Scientific Method',

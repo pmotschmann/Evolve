@@ -39,6 +39,9 @@ export const job_desc = {
     },
     banker: function(){
         let interest = global.civic.banker.impact * 100;
+        if (global.tech['banking'] >= 10){
+            interest += 2 * global.tech['stock_exchange'];
+        }
         return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by ${interest}% per tax cycle.`;
     },
     professor: function(){
