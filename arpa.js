@@ -20,7 +20,7 @@ const arpaProjects = {
         effect: function() {
             let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? 8 : 4;
             if (global.tech['storage'] >= 6){
-                return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacty by 5%.`;
+                return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacity by 5%.`;
             }
             else {
                 return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%.`;
@@ -208,7 +208,7 @@ function addProject(parent,project){
                 var cost = $('<div></div>');
                 var costs = arpaProjects[project].cost;
                 Object.keys(costs).forEach(function (res) {
-                    var res_cost = costs[res]() * (id / 100);
+                    var res_cost = (costs[res]() * (id / 100)).toFixed(0);
                     if (res_cost > 0){
                         var label = res === 'Money' ? '$' : res+': ';
                         var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';

@@ -2774,6 +2774,8 @@ export const actions = {
             effect: 'Begin unlocking the secrets of DNA.',
             action: function (){
                 if (payCosts(actions.tech.genetics.cost)){
+                    var tech = actions.tech.genetics.grant[0];
+                    global.tech[tech] = actions.tech.genetics.grant[1];
                     arpa('Genetics');
                     return true;
                 }
@@ -2904,7 +2906,7 @@ export const actions = {
             id: 'tech-rocketry',
             title: 'Rocketry',
             desc: 'Rocketry',
-            reqs: { high_tech: 6 },
+            reqs: { high_tech: 6, locked: 1 },
             grant: ['high_tech',7],
             cost: {
                 Knowledge: function(){ return 125000; },
@@ -2925,10 +2927,10 @@ export const actions = {
             id: 'tech-lasers',
             title: 'Lasers',
             desc: 'Light Amplification by Stimulated Emission of Radiation',
-            reqs: { high_tech: 7, supercollider: 1 },
+            reqs: { high_tech: 7, supercollider: 1, locked: 1 },
             grant: ['high_tech',8],
             cost: {
-                Knowledge: function(){ return 200000; }
+                Knowledge: function(){ return 175000; }
             },
             effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
             action: function (){
