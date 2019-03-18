@@ -61,6 +61,13 @@ if (!global['settings']){
     }
 }
 
+if (!global.stats['reset']){
+    global.stats['reset'] = 0;
+}
+if (!global.stats['plasmid']){
+    global.stats['plasmid'] = 0;
+}
+
 if (!global['lastMsg']){
     global['lastMsg'] = false;
 }

@@ -610,7 +610,12 @@ function defineMad(){
                 let orbit = global.city.calendar.orbit;
                 let biome = global.city.biome;
                 let plasmid = global.race.Plasmid.count;
-                plasmid += Math.round(global['resource'][races[global.race.species].name].amount / 4);
+                let new_plasmid = Math.round(global['resource'][races[global.race.species].name].amount / 4);
+                plasmid += new_plasmid;
+                global.stats.reset++;
+                global.stats.tdays += global.stats.days;
+                global.stats.days = 0;
+                global.stats.plasmid += new_plasmid;
                 global['race'] = { 
                     species : 'protoplasm', 
                     gods: god, 
