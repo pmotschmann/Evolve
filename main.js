@@ -228,8 +228,13 @@ function mainLoop() {
     intervals['main_loop'] = setInterval(function(){
         var global_multiplier = 1;
         if (global.race.Plasmid.count > 0){
-            global_multiplier += global.race.Plasmid.count / 1000;
+            let plasmid_bonus = (global.race.Plasmid.count / 1000);
+            if (global.city['temple'].count){
+                plasmid_bonus *= 1 + (global.city.temple.count * 0.05);
+            }
+            global_multiplier += plasmid_bonus;
         }
+        
         var time_multiplier = 0.25;
             
         if (global.race.species === 'protoplasm'){
@@ -1099,7 +1104,11 @@ function mainLoop() {
         if (global.race.species !== 'protoplasm'){
             var global_multiplier = 1;
             if (global.race.Plasmid.count > 0){
-                global_multiplier += global.race.Plasmid.count / 1000;
+                let plasmid_bonus = (global.race.Plasmid.count / 1000);
+                if (global.city['temple'].count){
+                    plasmid_bonus *= 1 + (global.city.temple.count * 0.05);
+                }
+                global_multiplier += plasmid_bonus;
             }
 
             // Tax Income
