@@ -54,6 +54,7 @@ export function defineResources() {
         //loadResource('Helium-3',0,1,true,false);
         //loadResource('Neutronium',0,1,true,true);
     }
+    loadSpecialResource('Plasmid');
 }
 
 // Load resource function
@@ -160,6 +161,26 @@ function loadResource(name,max,rate,tradable,stackable,color) {
         $('#market').append(market_item);
         marketItem(`market_${name}`,`#market-${name}`,market_item,name,color,true);
     }
+}
+
+function loadSpecialResource(name,color) {
+    if ($(`#res-${name}`).length){
+        let bind = $(`#res-${name}`);
+        bind.detach;
+        $('#resources').append(bind);
+        return;
+    }
+
+    color = color || 'special';
+    
+    var res_container = $(`<div id="res-${name}" class="resource" v-show="count"><span class="res has-text-${color}">${name}</span><span class="count">{{ count }}</span></div>`);
+   
+    $('#resources').append(res_container);
+    
+    vues[`res_${name}`] = new Vue({
+        data: global.race[name]
+    });
+    vues[`res_${name}`].$mount(`#res-${name}`);
 }
 
 function marketItem(vue,mount,market_item,name,color,full){

@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, modRes } from './vars.js';
+import { global, vues, poppers, messageQueue, modRes, save } from './vars.js';
 import { races, racialTrait } from './races.js';
 
 // Sets up government in civics tab
@@ -28,6 +28,7 @@ export function defineGarrison(){
     $('#r_civics').append(garrison);
     
     buildGarrison(garrison);
+    defineMad();
 }
 
 function taxRates(govern){
@@ -577,4 +578,99 @@ export function armyRating(val,type){
         }
     }
     return army * racialTrait(val,type);
+}
+
+function defineMad(){
+    if (!global.civic['mad']){
+        global.civic['mad'] = {
+            display: false,
+            armed: true
+        };
+    }
+
+    var mad_command = $('<div id="mad" v-show="display" class="tile is-child"></div>');
+    $('#r_civics').append(mad_command);
+    var mad = $('<div class="mad"></div>');
+    mad_command.append(mad);
+
+    mad.append($('<div class="warn">This will reset the game, you will gain some plasmids and you may gain some other minor bonuses as a result. Export a save state before proceeding.</div>'));
+
+    mad.append($('<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button" @click="arm">Arm Missiles</button></b-tooltip></div>'));
+    mad.append($('<div class="defcon"><b-tooltip :label="warning()" position="is-bottom" multilined animated><button class="button" @click="launch" :disabled="armed">Launch Missiles</button></b-tooltip></div>'));
+
+    if (!global.civic.mad.armed){
+        $('#mad').addClass('armed');
+    }
+
+    vues['mad'] = new Vue({
+        data: global.civic['mad'],
+        methods: {
+            launch(){
+                let god = races[global.race.species].name;
+                let orbit = global.city.calendar.orbit;
+                let biome = global.city.biome;
+                let plasmid = global.race.Plasmid.count;
+                plasmid += Math.round(global['resource'][races[global.race.species].name].amount / 4);
+                global['race'] = { 
+                    species : 'protoplasm', 
+                    gods: god, 
+                    rapid_mutation: 1,
+                    ancient_ruins: 1,
+                    Plasmid: { count: plasmid }
+                };
+                global.city = {
+                    calendar: {
+                        day: 0,
+                        year: 0,
+                        weather: 2,
+                        temp: 1,
+                        moon: 0,
+                        wind: 0,
+                        orbit: orbit
+                    },
+                    biome: biome
+                };
+                global.civic = { free: 0 };
+                global.resource = {};
+                global.evolution = {};
+                global.tech = { theology: 1 };
+                global.genes = {};
+                global.event = 100;
+                global.settings.civTabs = 0;
+                global.settings.showEvolve = true;
+                global.settings.showCity = false;
+                global.settings.showIndustry = false;
+                global.settings.showResearch = false;
+                global.settings.showCivic = false;
+                global.settings.showMarket = false;
+                global.settings.showGenetics = false;
+                global.settings.showSpace = false;
+                global.settings.arpa = false;
+                global.arpa = {};
+                global.lastMsg = false;
+                Math.seed = Math.rand(0,10000);
+                global.seed = Math.seed;
+                
+                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                window.location.reload();
+            },
+            arm(){
+                if (global.civic.mad.armed){
+                    global.civic.mad.armed = false;
+                    $('#mad').addClass('armed');
+                }
+                else {
+                    global.civic.mad.armed = true;
+                    $('#mad').removeClass('armed');
+                }
+            },
+            defcon(){
+                return `Enable or Disable the launch button. Launching a nuclear strike will trigger a retalitory strike which will result in the end of all life as we know it.`;
+            },
+            warning(){
+                return `This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning if you proceed.`;
+            }
+        }
+    });
+    vues['mad'].$mount('#mad');
 }

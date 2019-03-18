@@ -65,6 +65,10 @@ if (!global['lastMsg']){
     global['lastMsg'] = false;
 }
 
+if (!global.race['Plasmid']){
+    global.race['Plasmid'] = { count: 0 };
+}
+
 $('html').addClass(global.settings.theme);
 
 if (!global.city['calendar']){
@@ -85,10 +89,6 @@ if (!global.city.calendar['moon']){
 
 if (!global.city.calendar['wind']){
     global.city.calendar['wind'] = 0;
-}
-
-if (!global.city.calendar['orbit']){
-    global.city.calendar['orbit'] = 365;
 }
 
 if (!global.city['powered']){

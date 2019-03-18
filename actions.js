@@ -11,7 +11,7 @@ export const actions = {
             desc: 'Creates new RNA',
             action: function (){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
-                    modRes('RNA',1);
+                    modRes('RNA',global.race['rapid_mutation'] ? 2 : 1);
                 }
                 return false;
             }
@@ -1338,7 +1338,7 @@ export const actions = {
             id: 'city-temple',
             title: 'Temple',
             desc: `Construct a temple devoted to your race's deities`,
-            reqs: { religion: 1 },
+            reqs: { theology: 2 },
             cost: { 
                 Lumber: function(){ return costMultiplier('temple', 50, 1.35); },
                 Stone: function(){ return costMultiplier('temple', 10, 1.35); }
@@ -2942,7 +2942,7 @@ export const actions = {
             id: 'tech-rocketry',
             title: 'Rocketry',
             desc: 'Rocketry',
-            reqs: { high_tech: 6, locked: 1 },
+            reqs: { high_tech: 6 },
             grant: ['high_tech',7],
             cost: {
                 Knowledge: function(){ return 125000; },
@@ -3782,6 +3782,26 @@ export const actions = {
                 return false;
             }
         },
+        mad: {
+            id: 'tech-mad',
+            title: 'Mutual Destruction',
+            desc: 'Mutual Assured Destruction',
+            reqs: { uranium: 1, explosives: 3, high_tech: 7 },
+            grant: ['mad',1],
+            cost: {
+                Knowledge: function(){ return 140000; },
+                Oil: function(){ return 10000; },
+                Uranium: function(){ return 1250; }
+            },
+            effect: 'Create a network of nuclear armed ICBMs to counter a similar threat by your enemies.',
+            action: function (){
+                if (payCosts(actions.tech.mad.cost)){
+                    global.civic.mad.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         rebar: {
             id: 'tech-rebar',
             title: 'Rebar',
@@ -3957,6 +3977,23 @@ export const actions = {
                 return false;
             }
         },
+        theology: {
+            id: 'tech-theology',
+            title: 'Theology',
+            desc: 'Theology',
+            reqs: { theology: 1 },
+            grant: ['theology',2],
+            cost: {
+                Knowledge: function(){ return 1000; }
+            },
+            effect: 'Explore the mysteries of creation and faith.',
+            action: function (){
+                if (payCosts(actions.tech.theology.cost)){
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 };
 

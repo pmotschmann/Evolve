@@ -227,6 +227,9 @@ function mainLoop() {
     var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
     intervals['main_loop'] = setInterval(function(){
         var global_multiplier = 1;
+        if (global.race.Plasmid.count > 0){
+            global_multiplier += global.race.Plasmid.count / 1000;
+        }
         var time_multiplier = 0.25;
             
         if (global.race.species === 'protoplasm'){
@@ -243,7 +246,8 @@ function mainLoop() {
                 modRes('RNA',-(increment * 2 * time_multiplier));
             }
             if (global.evolution['organelles']){
-                modRes('RNA',global.evolution['organelles'].count * global_multiplier * time_multiplier);
+                let rna_multiplier = global.race['rapid_mutation'] ? 2 : 1;
+                modRes('RNA',global.evolution['organelles'].count * rna_multiplier * global_multiplier * time_multiplier);
             }
             // Detect new unlocks
             if (global['resource']['RNA'].amount >= 2 && !global.evolution['dna']){
@@ -479,7 +483,8 @@ function mainLoop() {
             var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
             know_multiplier *= racialTrait(global.civic.professor.workers,'science');
             know_multiplier *= hunger * time_multiplier * global_multiplier;
-            var delta = (global.civic.professor.workers * know_multiplier) + (1 * time_multiplier);
+            let know_base = global.race['ancient_ruins'] ? 2 : 1;
+            var delta = (global.civic.professor.workers * know_multiplier) + (know_base * time_multiplier);
             let adjunct = 1;
             if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
                 adjunct = 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
@@ -1093,6 +1098,9 @@ function mainLoop() {
             
         if (global.race.species !== 'protoplasm'){
             var global_multiplier = 1;
+            if (global.race.Plasmid.count > 0){
+                global_multiplier += global.race.Plasmid.count / 1000;
+            }
 
             // Tax Income
             if (global.tech['currency'] >= 1){
