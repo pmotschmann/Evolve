@@ -1337,14 +1337,14 @@ export const actions = {
         temple: {
             id: 'city-temple',
             title: 'Temple',
-            desc: `Construct a temple devoted to your race's deities`,
+            desc: 'Construct a temple devoted to your race\'s deities',
             reqs: { theology: 2 },
             cost: { 
                 Lumber: function(){ return costMultiplier('temple', 50, 1.35); },
                 Stone: function(){ return costMultiplier('temple', 10, 1.35); }
             },
             effect: function(){
-                let entity = races[global.race.gods].entity;
+                let entity = races[global.race.gods.toLowerCase()].entity;
                 return `Your race believes it was created by a species of ${entity}.`;
             },
             action: function (){
@@ -3981,7 +3981,7 @@ export const actions = {
             id: 'tech-theology',
             title: 'Theology',
             desc: 'Theology',
-            reqs: { theology: 1 },
+            reqs: { theology: 1, locked: 1 },
             grant: ['theology',2],
             cost: {
                 Knowledge: function(){ return 1000; }
@@ -3989,6 +3989,7 @@ export const actions = {
             effect: 'Explore the mysteries of creation and faith.',
             action: function (){
                 if (payCosts(actions.tech.theology.cost)){
+                    global.city['temple'] = { count: 0 };
                     return true;
                 }
                 return false;
