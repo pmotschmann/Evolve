@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, runNew, messageQueue, modRes } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes } from './vars.js';
 import { races, racialTrait } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
@@ -8,10 +8,6 @@ import { events } from './events.js';
 import { arpa } from './arpa.js';
 
 var intervals = {};
-
-if (runNew){
-    newGame();
-}
 
 let settings = {
     data: global.settings,
@@ -1371,12 +1367,6 @@ function diffCalc(res,period){
     else if (global.resource[res].diff >= 0 && $(`#res-${res} .diff`).hasClass('has-text-danger')){
         $(`#res-${res} .diff`).removeClass('has-text-danger');
     }
-}
-
-function newGame(){
-    global['race'] = { species : 'protoplasm', gods: 'none' };
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
 }
 
 window.cheat = function cheat(){

@@ -17,7 +17,6 @@ export var global = {
 };
 export var vues = {};
 export var poppers = {};
-export var runNew = false;
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -41,7 +40,9 @@ if (global_data) {
     Math.seed = global.seed;
 }
 else {
-    runNew = true;
+    global['race'] = { species : 'protoplasm', gods: 'none' };
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
 }
 
 if (!global['settings']){
