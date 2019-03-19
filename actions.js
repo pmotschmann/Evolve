@@ -620,7 +620,7 @@ export const actions = {
                         window.location.reload();
                     }
 
-                    messageQueue(`Congradulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
+                    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
                 }
                 return false;
             }
