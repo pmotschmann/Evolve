@@ -8,7 +8,10 @@ export const actions = {
         rna: {
             id: 'evo-rna',
             title: 'RNA',
-            desc: 'Creates new RNA',
+            desc: function(){
+                let rna = global.race['rapid_mutation'] ? 2 : 1;
+                return `Creates ${rna} RNA`;
+            },
             action: function (){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
                     modRes('RNA',global.race['rapid_mutation'] ? 2 : 1);
@@ -27,7 +30,8 @@ export const actions = {
                     modRes('DNA',1);
                 }
                 return false;
-            }
+            },
+            effect: 'Turn 2 RNA into 1 DNA'
         },
         membrane: {
             id: 'evo-membrane',
@@ -52,7 +56,10 @@ export const actions = {
                 RNA: function(){ return (global.evolution['organelles'].count * 8) + 12; },
                 DNA: function(){ return (global.evolution['organelles'].count * 4) + 4; }
             },
-            effect: 'Automatically generate RNA',
+            effect: function (){
+                let rna = global.race['rapid_mutation'] ? 2 : 1;
+                return `Automatically generate ${rna} RNA`; 
+            },
             action: function (){
                 if (payCosts(actions.evolution.organelles.cost)){
                     global.evolution['organelles'].count++;
@@ -69,7 +76,7 @@ export const actions = {
                 RNA: function(){ return (global.evolution['nucleus'].count * 38) + 60; },
                 DNA: function(){ return (global.evolution['nucleus'].count * 18) + 24; }
             },
-            effect: 'Automatically consume RNA to create DNA',
+            effect: 'Automatically consume 2 RNA to create 1 DNA',
             action: function (){
                 if (payCosts(actions.evolution.nucleus.cost)){
                     global.evolution['nucleus'].count++;
