@@ -3558,7 +3558,7 @@ export const actions = {
         titanium_hoe: {
             id: 'tech-titanium_hoe',
             title: 'Titanium Hoes',
-            desc: 'Create better farming tools made from steel',
+            desc: 'Create better farming tools made from titanium',
             reqs: { hoe: 3, high_tech: 3 },
             grant: ['hoe',4],
             cost: {
