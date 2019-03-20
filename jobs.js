@@ -47,6 +47,10 @@ export const job_desc = {
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
         impact *= racialTrait(global.civic.professor.workers,'science');
+        if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
+            impact *= 1 + (global.city.temple.count * 0.05);
+        }
+        impact = +impact.toFixed(2);
         return `Professors help educate your citizens and contribute to knowledge gain. Each professor generates ${impact} knowledge per second.`;
     },
     scientist: function(){

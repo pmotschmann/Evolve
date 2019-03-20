@@ -224,11 +224,7 @@ function mainLoop() {
     intervals['main_loop'] = setInterval(function(){
         var global_multiplier = 1;
         if (global.race.Plasmid.count > 0){
-            let plasmid_bonus = (global.race.Plasmid.count / 1000);
-            if (global.city['temple'].count){
-                plasmid_bonus *= 1 + (global.city.temple.count * 0.05);
-            }
-            global_multiplier += plasmid_bonus;
+            global_multiplier += plasmidBonus();
         }
         
         var time_multiplier = 0.25;
@@ -483,6 +479,9 @@ function mainLoop() {
             // Knowledge
             var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
             know_multiplier *= racialTrait(global.civic.professor.workers,'science');
+            if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
+                know_multiplier *= 1 + (global.city.temple.count * 0.05);
+            }
             know_multiplier *= hunger * time_multiplier * global_multiplier;
             let know_base = global.race['ancient_ruins'] ? 2 : 1;
             var delta = (global.civic.professor.workers * know_multiplier) + (know_base * time_multiplier);
@@ -990,6 +989,9 @@ function mainLoop() {
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     shelving *= 1 + (global.civic.scientist.workers * 0.12);
                 }
+                if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
+                    shelving *= 1 + (global.city.temple.count * 0.05);
+                }
                 caps['Knowledge'] += Math.round(global.city['library'].count * shelving);
                 if (global.tech['science'] && global.tech['science'] >= 3){
                     global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
@@ -1048,6 +1050,9 @@ function mainLoop() {
             if (global.city['trade']){
                 let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
                 global.city.market.mtrade = routes * global.city.trade.count;
+                if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
+                    global.city.market.mtrade += global.city.temple.count;
+                }
             }
             
             let pop_loss = global.resource[races[global.race.species].name].amount - caps[races[global.race.species].name];
@@ -1100,11 +1105,7 @@ function mainLoop() {
         if (global.race.species !== 'protoplasm'){
             var global_multiplier = 1;
             if (global.race.Plasmid.count > 0){
-                let plasmid_bonus = (global.race.Plasmid.count / 1000);
-                if (global.city['temple'].count){
-                    plasmid_bonus *= 1 + (global.city.temple.count * 0.05);
-                }
-                global_multiplier += plasmid_bonus;
+                global_multiplier += plasmidBonus();;
             }
 
             // Tax Income
@@ -1152,6 +1153,9 @@ function mainLoop() {
                 }
                 
                 income *= tax_rate * global_multiplier;
+                if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
+                    income *= 1 + (global.city.temple.count * 0.025);
+                }
                 
                 modRes('Money',Math.round(income));
             }
@@ -1369,13 +1373,6 @@ function diffCalc(res,period){
     }
 }
 
-window.cheat = function cheat(){
-    global.resource.DNA.max = 10000;
-    global.resource.RNA.max = 10000;
-    global.resource.DNA.amount = 10000;
-    global.resource.RNA.amount = 10000;
-}
-
 function setWeather(){
     // Moon Phase
     switch(global.city.calendar.moon){
@@ -1530,4 +1527,16 @@ function setWeather(){
         weather = global.city.calendar.wind === 0 ? 'wi-day-sunny' : 'wi-day-windy';
     }
     $('#weather').addClass(weather);
+}
+
+function plasmidBonus(){
+    let plasmid_bonus = (global.race.Plasmid.count / 1000);
+    if (global.city['temple'].count){
+        let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
+        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+            temple_bonus += global.civic.professor.workers * 0.002;
+        }
+        plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
+    }
+    return plasmid_bonus;
 }

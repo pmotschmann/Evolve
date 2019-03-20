@@ -1360,7 +1360,18 @@ export const actions = {
                 Cement: function(){ return costMultiplier('temple', 10, 1.35); }
             },
             effect: function(){
-                return `Increases the passive effect of Plasmids by 5%.`;
+                let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
+                if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                    plasmid += global.civic.professor.workers * 0.2;
+                }
+                let desc = `<div>Increases the passive effect of Plasmids by ${plasmid}%.</div>`;
+                if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
+                    desc = desc + '<div>+1 Trade Route</div>';
+                }
+                if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
+                    desc = desc + '<div>+2.5% Tax Income</div>';
+                }
+                return desc;
             },
             action: function (){
                 if (payCosts(actions.city.temple.cost)){
@@ -1485,6 +1496,9 @@ export const actions = {
                 let gain = global.race['nearsighted'] ? '110' : '125';
                 if (global.tech['science'] && global.tech['science'] >= 8){
                     gain *= 1.4;
+                }
+                if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
+                    gain *= 1 + (global.city.temple.count * 0.05);
                 }
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     gain = +(gain * (1 + (global.civic.scientist.workers * 0.12))).toFixed(1);
@@ -4026,6 +4040,221 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.theology.cost)){
                     global.city['temple'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        fanaticism: {
+            id: 'tech-fanaticism',
+            title: 'Fanaticism',
+            desc: 'Fanaticism',
+            reqs: { theology: 2 },
+            grant: ['theology',3],
+            cost: {
+                Knowledge: function(){ return 2500; }
+            },
+            effect: '<div>Revere your creators as literal gods and attempt to mimic them.</div><div>This is mutually exclusive with Anthropology, choose wisely.</div>',
+            action: function (){
+                if (payCosts(actions.tech.fanaticism.cost)){
+                    global.tech['fanaticism'] = 1;
+                    switch (global.race.gods){
+                        case 'human':
+                            global.race['creative'] = 1;
+                            break;
+                        case 'elven':
+                            global.race['studious'] = 1;
+                            break;
+                        case 'orc':
+                            global.race['brute'] = 1;
+                            break;
+                        case 'cath':
+                            global.race['carnivore'] = 1;
+                            break;
+                        case 'wolven':
+                            global.race['tracker'] = 1;
+                            break;
+                        case 'centaur':
+                            global.race['beast_of_burden'] = 1;
+                            break;
+                        case 'kobold':
+                            global.race['pack_rat'] = 1;
+                            break;
+                        case 'goblin':
+                            global.race['merchant'] = 1;
+                            break;
+                        case 'gnome':
+                            global.race['smart'] = 1;
+                            break;
+                        case 'orge':
+                            global.race['tough'] = 1;
+                            break;
+                        case 'cyclops':
+                            global.race['intelligent'] = 1;
+                            break;
+                        case 'troll':
+                            global.race['regenerative'] = 1;
+                            break;
+                        case 'tortoisan':
+                            global.race['armored'] = 1;
+                            break;
+                        case 'gecko':
+                            global.race['chameleon'] = 1;
+                            break;
+                        case 'slitheryn':
+                            global.race['forked_tongue'] = 1;
+                            break;
+                        case 'arraak':
+                            global.race['resourceful'] = 1;
+                            break;
+                        case 'pterodacti':
+                            global.race['leathery'] = 1;
+                            break;
+                        case 'dracnid':
+                            global.race['hoarder'] = 1;
+                            break;
+                        case 'entish':
+                            global.race['kindling_kindred'] = 1;
+                            break;
+                        case 'cacti':
+                            global.race['hyper'] = 1;
+                            break;
+                        case 'sporgar':
+                            global.race['mushy'] = 1;
+                            break;
+                        case 'shroomi':
+                            global.race['toxic'] = 1;
+                            break;
+                        case 'mantis':
+                            global.race['quick'] = 1;
+                            break;
+                        case 'scorpid':
+                            global.race['claws'] = 1;
+                            break;
+                        case 'antid':
+                            global.race['hivemind'] = 1;
+                            break;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        indoctrination: {
+            id: 'tech-indoctrination',
+            title: 'Indoctrination',
+            desc: 'Indoctrination',
+            reqs: { fanaticism: 1 },
+            grant: ['fanaticism',2],
+            cost: {
+                Knowledge: function(){ return 5000; }
+            },
+            effect: 'Professors will help spread your ideology. Each professor gives a minor boost to temple effectivenss',
+            action: function (){
+                if (payCosts(actions.tech.indoctrination.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        missionary: {
+            id: 'tech-missionary',
+            title: 'Missionary',
+            desc: 'Missionary',
+            reqs: { fanaticism: 2 },
+            grant: ['fanaticism',3],
+            cost: {
+                Knowledge: function(){ return 10000; }
+            },
+            effect: 'Missionaries will go forth to spread the word. Incidentally they will help establish new trade routes.',
+            action: function (){
+                if (payCosts(actions.tech.missionary.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        zealotry: {
+            id: 'tech-zealotry',
+            title: 'Zealotry',
+            desc: 'Zealotry',
+            reqs: { fanaticism: 3 },
+            grant: ['fanaticism',4],
+            cost: {
+                Knowledge: function(){ return 25000; }
+            },
+            effect: 'Your fanatical followers will fight to the death making you feared in combat. Temples add a minor bonus to soldier effectiveness.',
+            action: function (){
+                if (payCosts(actions.tech.zealotry.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        anthropology: {
+            id: 'tech-anthropology',
+            title: 'Anthropology',
+            desc: 'Anthropology',
+            reqs: { theology: 2 },
+            grant: ['theology',3],
+            cost: {
+                Knowledge: function(){ return 2500; }
+            },
+            effect: '<div>Study your ancient creators and attempt to learn from them.</div><div>This is mutually exclusive with Fanaticism, choose wisely.</div>',
+            action: function (){
+                if (payCosts(actions.tech.anthropology.cost)){
+                    global.tech['anthropology'] = 1;
+                    return true;
+                }
+                return false;
+            }
+        },
+        mythology: {
+            id: 'tech-mythology',
+            title: 'Mythology',
+            desc: 'Mythology',
+            reqs: { anthropology: 1 },
+            grant: ['anthropology',2],
+            cost: {
+                Knowledge: function(){ return 5000; }
+            },
+            effect: 'Mythological stories of the creators boost your libraries by 5% per temple',
+            action: function (){
+                if (payCosts(actions.tech.mythology.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        archaeology: {
+            id: 'tech-archaeology',
+            title: 'Archaeology',
+            desc: 'Archaeology',
+            reqs: { anthropology: 2 },
+            grant: ['anthropology',3],
+            cost: {
+                Knowledge: function(){ return 10000; }
+            },
+            effect: 'Professors studying the past history of the creators are boosted in effectiveness by 5% per temple',
+            action: function (){
+                if (payCosts(actions.tech.archaeology.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        merchandising: {
+            id: 'tech-merchandising',
+            title: 'Merchandising',
+            desc: 'Merchandising',
+            reqs: { anthropology: 3 },
+            grant: ['anthropology',4],
+            cost: {
+                Knowledge: function(){ return 25000; }
+            },
+            effect: 'The popularity of the creators among your culture has led to great merchandising opportunities. Tax income is boosted by 2.5% per temple.',
+            action: function (){
+                if (payCosts(actions.tech.merchandising.cost)){
                     return true;
                 }
                 return false;

@@ -192,6 +192,9 @@ function buildGarrison(garrison){
 
                 let luck = Math.floor(Math.seededRandom(lowLuck,highLuck)) / 10;
                 let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military * luck * racialTrait(global.civic.garrison.workers,'army');;
+                if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
+                    army *= 1 + (global.city.temple.count * 0.01);
+                }
                 let enemy = 0;
 
                 switch(global.civic.garrison.tactic){
