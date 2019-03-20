@@ -1706,7 +1706,7 @@ export const actions = {
             effect: 'Design high occupancy housing complexes.',
             action: function (){
                 if (payCosts(actions.tech.apartment.cost)){
-                    global.city['apartment'] = { 
+                    global.city['apartment'] = {
                         count: 0,
                         on: 0
                     };
@@ -1869,7 +1869,10 @@ export const actions = {
             effect: 'Learn how to dig up stone slabs from a quarry.',
             action: function (){
                 if (payCosts(actions.tech.mining.cost)){
-                    global.city['rock_quarry'] = { count: 0 };
+                    global.city['rock_quarry'] = { 
+                        count: 0, 
+                        on: 0 
+                    };
                     return true;
                 }
                 return false;
@@ -2003,7 +2006,10 @@ export const actions = {
             effect: 'Learn how to mine and refine copper into a pure form.',
             action: function (){
                 if (payCosts(actions.tech.metal_working.cost)){
-                    global.city['mine'] = { count: 0 };
+                    global.city['mine'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -2039,7 +2045,10 @@ export const actions = {
             effect: 'Learn about how coal can be used to as a resource.',
             action: function (){
                 if (payCosts(actions.tech.coal_mining.cost)){
-                    global.city['coal_mine'] = { count: 0 };
+                    global.city['coal_mine'] = {
+                        count: 0,
+                        on: 0
+                    };
                     global.resource.Coal.display = true;
                     return true;
                 }
@@ -2843,7 +2852,7 @@ export const actions = {
             effect: 'The greatest leaps in science are often made by "misunderstood" individuals.',
             action: function (){
                 if (payCosts(actions.tech.mad_science.cost)){
-                    global.city['wardenclyffe'] = { 
+                    global.city['wardenclyffe'] = {
                         count: 0,
                         on: 0
                     };
@@ -2867,7 +2876,10 @@ export const actions = {
                 if (payCosts(actions.tech.electricity.cost)){
                     global.city['power'] = 0;
                     global.city['powered'] = true;
-                    global.city['coal_power'] = { count: 0 };
+                    global.city['coal_power'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -2886,7 +2898,10 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.industrialization.cost)){
                     global.resource.Titanium.display = true;
-                    global.city['factory'] = { count: 0 };
+                    global.city['factory'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -2922,7 +2937,10 @@ export const actions = {
             effect: 'Learn to split the atom, a powerful but terrifying new development.',
             action: function (){
                 if (payCosts(actions.tech.fission.cost)){
-                    global.city['fission_power'] = { count: 0 };
+                    global.city['fission_power'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -3068,7 +3086,7 @@ export const actions = {
             cost: {
                 Knowledge: function(){ return 30000; }
             },
-            effect: 'Unlock oil derrecks and being the age of big oil.',
+            effect: 'Unlock oil derrecks and begin the age of big oil.',
             action: function (){
                 if (payCosts(actions.tech.oil_well.cost)){
                     global.city['oil_well'] = { count: 0 };
@@ -3086,7 +3104,7 @@ export const actions = {
             cost: {
                 Knowledge: function(){ return 35000; }
             },
-            effect: 'Design a facility specially made to increase your oil reservers.',
+            effect: 'Design a facility specially made to increase your oil reserves.',
             action: function (){
                 if (payCosts(actions.tech.oil_depot.cost)){
                     global.city['oil_depot'] = { count: 0 };
@@ -3199,7 +3217,10 @@ export const actions = {
             effect: 'Learn how to make cement from stone.',
             action: function (){
                 if (payCosts(actions.tech.cement.cost)){
-                    global.city['cement_plant'] = { count: 0 };
+                    global.city['cement_plant'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -3257,7 +3278,7 @@ export const actions = {
             effect: 'Sawmills increase the lumber yeild of your lumberjacks.',
             action: function (){
                 if (payCosts(actions.tech.iron_saw.cost)){
-                    global.city['sawmill'] = { 
+                    global.city['sawmill'] = {
                         count: 0,
                         on: 0
                     };
@@ -4094,6 +4115,9 @@ export function addAction(action,type){
     if (global.race['carnivore'] && action === 'tech' && type === 'agriculture'){
         return;
     }
+    if (actions[action][type]['powered'] && !global[action][type]['on']){
+        global[action][type]['on'] = 0;
+    }
     var id = actions[action][type].id;
     var parent = $(`<div id="${id}" class="action"></div>`);
     var element = $('<a class="button is-dark" v-on:click="action">{{ title }}</a>');
@@ -4112,9 +4136,6 @@ export function addAction(action,type){
         parent.append(special);
     }
     if (actions[action][type]['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(action,type)){
-        if (!global[action][type]['on']){
-            global[action][type]['on'] = 0;
-        }
         var powerOn = $('<div class="on" @click="power_on" title="ON">{{ act.on }}</div>');
         var powerOff = $('<div class="off" @click="power_off" title="OFF">{{ act.on | off }}</div>');
         parent.append(powerOn);
