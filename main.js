@@ -957,7 +957,7 @@ function mainLoop() {
                 caps['Coal'] += (global.city['shed'].count * (50 * multiplier));
             }
             if (global.city['silo']){
-                caps['Food'] += (global.city['silo'].count * 250);
+                caps['Food'] += (global.city['silo'].count * 125);
             }
             if (global.city['oil_well']){
                 caps['Oil'] += (global.city['oil_well'].count * 500);

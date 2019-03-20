@@ -785,7 +785,7 @@ export const actions = {
             desc: 'Increases farmer capacity',
             reqs: { agriculture: 1 },
             cost: { 
-                Money: function(){ if (global.city['farm'] && global.city['farm'].count >= 2){ return costMultiplier('farm', 50, 1.30);} else { return 0; } },
+                Money: function(){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', 50, 1.30);} else { return 0; } },
                 Lumber: function(){ return costMultiplier('farm', 20, 1.35); },
                 Stone: function(){ return costMultiplier('farm', 10, 1.35); }
             },
@@ -809,15 +809,15 @@ export const actions = {
             desc: 'Increases food storage capacity',
             reqs: { agriculture: 3 },
             cost: { 
-                Money: function(){ return costMultiplier('silo', 500, 1.30); },
-                Lumber: function(){ return costMultiplier('silo', 100, 1.35) + 50; },
-                Cement: function(){ return costMultiplier('silo', 50, 1.35); }
+                Money: function(){ return costMultiplier('silo', 85, 1.30); },
+                Lumber: function(){ return costMultiplier('silo', 65, 1.35) },
+                Stone: function(){ return costMultiplier('silo', 50, 1.35); }
             },
-            effect: '+250 Max Food',
+            effect: '+125 Max Food',
             action: function (){
                 if (payCosts(actions.city.silo.cost)){
                     global.city['silo'].count++;
-                    global['resource']['Food'].max += 250;
+                    global['resource']['Food'].max += 125;
                     return true;
                 }
                 return false;
@@ -893,6 +893,10 @@ export const actions = {
                 if (global.resource.Stone.display){
                     let val = +(200 * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Stone.`;
+                }
+                if (global.resource.Furs.display){
+                    let val = +(100 * multiplier).toFixed(1);
+                    storage = storage + `+${val} Max Furs.`;
                 }
                 if (global.resource.Copper.display){
                     let val = +(75 * multiplier).toFixed(1);
@@ -1793,7 +1797,7 @@ export const actions = {
             reqs: { agriculture: 1 },
             grant: ['agriculture',2],
             cost: { 
-                Knowledge: function(){ return 75; }
+                Knowledge: function(){ return 60; }
             },
             effect: 'Increase farm efficency by 66% with irrigation.',
             action: function (){
@@ -1808,10 +1812,10 @@ export const actions = {
             id: 'tech-silo',
             title: 'Grain Silo',
             desc: 'Devise a structure to house grain',
-            reqs: { agriculture: 2, storage: 1, cement: 1 },
+            reqs: { agriculture: 2, storage: 1 },
             grant: ['agriculture',3],
             cost: { 
-                Knowledge: function(){ return 1250; }
+                Knowledge: function(){ return 90; }
             },
             effect: 'Creates plans for a storage medium for food.',
             action: function (){
