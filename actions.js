@@ -73,8 +73,8 @@ export const actions = {
             title: 'Nucleus',
             desc: 'Evolve Nucleus',
             cost: {
-                RNA: function(){ return (global.evolution['nucleus'].count * 38) + 60; },
-                DNA: function(){ return (global.evolution['nucleus'].count * 18) + 24; }
+                RNA: function(){ return (global.evolution['nucleus'].count * 32) + 38; },
+                DNA: function(){ return (global.evolution['nucleus'].count * 16) + 18; }
             },
             effect: 'Automatically consume 2 RNA to create 1 DNA',
             action: function (){
@@ -562,7 +562,7 @@ export const actions = {
                     else if (global.evolution['chloroplasts'] && global.evolution['homoiohydric']){
                         global.race.species = 'cacti';
                     }
-                    
+
                     global.resource.RNA.display = false;
                     global.resource.DNA.display = false;
                     
@@ -582,17 +582,17 @@ export const actions = {
                     });
                     
                     defineResources();
-                    global.resource.Knowledge.display = true;
-                    global.resource.Food.display = true;
                     if (!global.race['kindling_kindred']){
                         global.resource.Lumber.display = true;
+                        global.city['lumber'] = 1;
                     }
-                    global.resource.Stone.display = true;
+                    else {
+                        global.resource.Stone.display = true;
+                        global.city['stone'] = 1;
+                    }
+                    registerTech('club');
                     
-                    global.city['food'] = 1;
-                    global.city['lumber'] = 1;
-                    global.city['stone'] = 1;
-                    global.city.calendar.day = 1;
+                    global.city.calendar.day = 0;
                     
                     var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
                     for (var i = 0; i < city_actions.length; i++) {
@@ -604,12 +604,6 @@ export const actions = {
                     global.settings.civTabs = 1;
                     global.settings.showEvolve = false;
                     global.settings.showCity = true;
-                    
-                    if (!global.race['carnivore']){
-                        registerTech('agriculture');
-                    }
-                    registerTech('housing');
-                    registerTech('storage');
                     
                     if (global.race.gods !== 'none'){
                         global.tech['religion'] = 1;
@@ -631,7 +625,7 @@ export const actions = {
             id: 'city-food',
             title: 'Gather Food',
             desc: 'Harvest and preserve food.',
-            reqs: {},
+            reqs: { primitive: 1 },
             action: function (){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     modRes('Food',global.race['strong'] ? 2 : 1);
@@ -655,7 +649,7 @@ export const actions = {
             id: 'city-stone',
             title: 'Gather Stone',
             desc: 'Gather stone from a quarry',
-            reqs: {},
+            reqs: { primitive: 2 },
             action: function (){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     modRes('Stone',global.race['strong'] ? 2 : 1);
@@ -1676,11 +1670,66 @@ export const actions = {
         }
     },
     tech: {
+        club: {
+            id: 'tech-club',
+            title: 'Club',
+            desc: 'Make a basic club',
+            reqs: {},
+            grant: ['primitive',1],
+            cost: {
+                Lumber: function(){ return global.race['kindling_kindred'] ? 0 : 5; },
+                Stone: function(){ return global.race['kindling_kindred'] ? 5 : 0; }
+            },
+            action: function (){
+                if (payCosts(actions.tech.club.cost)){
+                    global.resource.Food.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        bone_tools: {
+            id: 'tech-bone_tools',
+            title: 'Bone Tools',
+            desc: 'Create tools out of animal bones',
+            reqs: { primitive: 1 },
+            grant: ['primitive',2],
+            cost: {
+                Food: function(){ return 10; }
+            },
+            action: function (){
+                if (payCosts(actions.tech.bone_tools.cost)){
+                    global.resource.Stone.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        sundial: {
+            id: 'tech-sundial',
+            title: 'Sundial',
+            desc: 'Construct a sundial',
+            reqs: { primitive: 2 },
+            grant: ['primitive',3],
+            cost: {
+                Lumber: function(){ return 8; },
+                Stone: function(){ return 10; }
+            },
+            effect: 'Start tracking the days and begin building a settlement.',
+            action: function (){
+                if (payCosts(actions.tech.sundial.cost)){
+                    global.resource.Knowledge.display = true;
+                    global.city.calendar.day++;
+                    return true;
+                }
+                return false;
+            }
+        },
         housing: {
             id: 'tech-housing',
             title: 'Housing',
             desc: 'Discover Housing',
-            reqs: {},
+            reqs: { primitive: 3 },
             grant: ['housing',1],
             cost: { 
                 Knowledge: function(){ return 10; }
@@ -1772,7 +1821,7 @@ export const actions = {
             id: 'tech-agriculture',
             title: 'Agriculture',
             desc: 'Discover the basics of agriculture',
-            reqs: {},
+            reqs: { primitive: 3 },
             grant: ['agriculture',1],
             cost: { 
                 Knowledge: function(){ return 10; }
@@ -1879,7 +1928,7 @@ export const actions = {
             id: 'tech-mining',
             title: 'Mining',
             desc: 'Learn the basics of mining',
-            reqs: {},
+            reqs: { primitive: 3 },
             grant: ['mining',1],
             cost: { 
                 Knowledge: function(){ return 50; }
@@ -2077,7 +2126,7 @@ export const actions = {
             id: 'tech-storage',
             title: 'Basic Storage',
             desc: 'Design a structure to house resources',
-            reqs: {},
+            reqs: { primitive: 3 },
             grant: ['storage',1],
             cost: { 
                 Knowledge: function(){ return 20; }
@@ -3227,7 +3276,7 @@ export const actions = {
             id: 'tech-cement',
             title: 'Cement',
             desc: 'Learn how to turn stone into cement',
-            reqs: {},
+            reqs: { mining: 1, storage: 1, science: 1 },
             grant: ['cement',1],
             cost: {
                 Knowledge: function(){ return 1000; }
@@ -4280,6 +4329,9 @@ function storageMultipler(){
 export function checkCityRequirements(action){
     if (global.race['kindling_kindred'] && action === 'lumber'){
         return false;
+    }
+    else if (global.race['kindling_kindred'] && action === 'stone'){
+        return true;
     }
     var isMet = true;
     Object.keys(actions.city[action].reqs).forEach(function (req) {

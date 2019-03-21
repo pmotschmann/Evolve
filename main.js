@@ -210,8 +210,6 @@ else {
     setWeather();
 }
 
-
-
 // Start game loop
 mainLoop();
 
@@ -483,7 +481,10 @@ function mainLoop() {
                 know_multiplier *= 1 + (global.city.temple.count * 0.05);
             }
             know_multiplier *= hunger * time_multiplier * global_multiplier;
-            let know_base = global.race['ancient_ruins'] ? 2 : 1;
+            let know_base = global.tech['primitive'] && global.tech['primitive'] >= 3 ? 1 : 0;
+            if (global.race['ancient_ruins']){
+                know_base++;
+            }
             var delta = (global.civic.professor.workers * know_multiplier) + (know_base * time_multiplier);
             let adjunct = 1;
             if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
@@ -804,7 +805,7 @@ function mainLoop() {
             }
 
             // Detect new unlocks
-            if (!global.settings.showResearch && global.resource.Knowledge.amount >= 10){
+            if (!global.settings.showResearch && (global.resource.Lumber.amount >= 5 || global.resource.Stone.amount >= 6)){
                 global.settings.showResearch = true;
             }
 
@@ -1196,111 +1197,113 @@ function mainLoop() {
                 }
             }
 
-            // Time
-            global.city.calendar.day++;
-            global.stats.days++;
-            if (global.city.calendar.day > global.city.calendar.orbit){
-                global.city.calendar.day = 1;
-                global.city.calendar.year++;
-            }
-
-            // Weather
-            if (Math.rand(0,5) === 0){
-                let season_length = Math.round(global.city.calendar.orbit / 4);
-                let days = global.city.calendar.day;
-                let season = 0;
-                while (days > season_length){
-                    days -= season_length;
-                    season++;
+            if (global.city.calendar.day > 0){
+                // Time
+                global.city.calendar.day++;
+                global.stats.days++;
+                if (global.city.calendar.day > global.city.calendar.orbit){
+                    global.city.calendar.day = 1;
+                    global.city.calendar.year++;
                 }
 
-                let temp = Math.rand(0,3);
-                let sky = Math.rand(0,5);
-                let wind = Math.rand(0,3);
-                switch(global.city.biome){
-                    case 'oceanic':
-                        if (Math.rand(0,3) === 0 && sky > 0){
-                            sky--;
-                        }
-                        break;
-                    case 'tundra':
-                        if (Math.rand(0,3) === 0 && temp > 0){
-                            temp--;
-                        }
-                        break;
-                    case 'desert':
-                        if (Math.rand(0,3) === 0 && sky < 4){
-                            sky++;
-                        }
-                        break;
-                    case 'volcanic':
-                        if (Math.rand(0,3) === 0 && temp < 2){
-                            temp++;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                switch(season){
-                    case 0: // Spring
-                        if (Math.rand(0,3) === 0 && sky > 0){
-                            sky--;
-                        }
-                        break;
-                    case 1: // Summer
-                        if (Math.rand(0,3) === 0 && temp < 2){
-                            temp++;
-                        }
-                        break;
-                    case 2: // Fall
-                        if (Math.rand(0,3) === 0 && wind > 0){
-                            wind--;
-                        }
-                        break;
-                    case 3: // Winter
-                        if (Math.rand(0,3) === 0 && temp > 0){
-                            temp--;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                if (sky === 0){
-                    global.city.calendar.weather = 0;
-                }
-                else if (sky >= 1 && sky <= 2){
-                    global.city.calendar.weather = 1;
-                }
-                else {
-                    global.city.calendar.weather = 2;
-                }
-                if (temp === 0){
-                    let new_temp = global.city.calendar.temp - 1;
-                    if (new_temp < 0){
-                        new_temp = 0;
+                // Weather
+                if (Math.rand(0,5) === 0){
+                    let season_length = Math.round(global.city.calendar.orbit / 4);
+                    let days = global.city.calendar.day;
+                    let season = 0;
+                    while (days > season_length){
+                        days -= season_length;
+                        season++;
                     }
-                    global.city.calendar.temp = new_temp;
-                }
-                else if (temp === 2){
-                    let new_temp = global.city.calendar.temp + 1;
-                    if (new_temp > 2){
-                        new_temp = 2;
+
+                    let temp = Math.rand(0,3);
+                    let sky = Math.rand(0,5);
+                    let wind = Math.rand(0,3);
+                    switch(global.city.biome){
+                        case 'oceanic':
+                            if (Math.rand(0,3) === 0 && sky > 0){
+                                sky--;
+                            }
+                            break;
+                        case 'tundra':
+                            if (Math.rand(0,3) === 0 && temp > 0){
+                                temp--;
+                            }
+                            break;
+                        case 'desert':
+                            if (Math.rand(0,3) === 0 && sky < 4){
+                                sky++;
+                            }
+                            break;
+                        case 'volcanic':
+                            if (Math.rand(0,3) === 0 && temp < 2){
+                                temp++;
+                            }
+                            break;
+                        default:
+                            break;
                     }
-                    global.city.calendar.temp = new_temp;
+
+                    switch(season){
+                        case 0: // Spring
+                            if (Math.rand(0,3) === 0 && sky > 0){
+                                sky--;
+                            }
+                            break;
+                        case 1: // Summer
+                            if (Math.rand(0,3) === 0 && temp < 2){
+                                temp++;
+                            }
+                            break;
+                        case 2: // Fall
+                            if (Math.rand(0,3) === 0 && wind > 0){
+                                wind--;
+                            }
+                            break;
+                        case 3: // Winter
+                            if (Math.rand(0,3) === 0 && temp > 0){
+                                temp--;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (sky === 0){
+                        global.city.calendar.weather = 0;
+                    }
+                    else if (sky >= 1 && sky <= 2){
+                        global.city.calendar.weather = 1;
+                    }
+                    else {
+                        global.city.calendar.weather = 2;
+                    }
+                    if (temp === 0){
+                        let new_temp = global.city.calendar.temp - 1;
+                        if (new_temp < 0){
+                            new_temp = 0;
+                        }
+                        global.city.calendar.temp = new_temp;
+                    }
+                    else if (temp === 2){
+                        let new_temp = global.city.calendar.temp + 1;
+                        if (new_temp > 2){
+                            new_temp = 2;
+                        }
+                        global.city.calendar.temp = new_temp;
+                    }
+
+                    global.city.calendar.wind = wind === 0 ? 1 : 0;
                 }
 
-                global.city.calendar.wind = wind === 0 ? 1 : 0;
-            }
+                // Moon Phase
+                global.city.calendar.moon++;
+                if (global.city.calendar.moon > 27){
+                    global.city.calendar.moon = 0;
+                }
 
-            // Moon Phase
-            global.city.calendar.moon++;
-            if (global.city.calendar.moon > 27){
-                global.city.calendar.moon = 0;
+                setWeather();
             }
-
-            setWeather();
         }
 
         // Event triggered

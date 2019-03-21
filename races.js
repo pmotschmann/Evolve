@@ -344,7 +344,7 @@ export const traits = {
         desc: 'Your race is ineffective at tough manual labor tasks.',
         type: 'genus',
     },
-    large: { // Increases cost creep mutipliers by 0.01
+    large: { // Increases cost creep multipliers by 0.01
         desc: 'Your race is large and thus requires extra materials to build things.',
         type: 'genus',
     },
@@ -356,7 +356,7 @@ export const traits = {
         desc: 'Your species is sensitive to the outside temperature.',
         type: 'genus',
     },
-    scales: { // Minor decrease of soliders killed in combat
+    scales: { // Minor decrease of soldiers killed in combat
         desc: 'Your species is protected by scales which act as a kind of natural armor.',
         type: 'genus',
     },
@@ -429,7 +429,7 @@ export const traits = {
         type: 'major',
     },
     tracker: { // 10% increased gains from hunting
-        desc: 'Your race excells at tracking game, and thus produces more from hunting.',
+        desc: 'Your race excels at tracking game, and thus produces more from hunting.',
         type: 'major',
     },
     beast_of_burden: { // Gains more loot during raids
@@ -476,7 +476,7 @@ export const traits = {
         desc: 'Your species is nearsighted and requires bigger font sizes to read.',
         type: 'major',
     },
-    regenerative: { // Wounded soliders heal twice as fast
+    regenerative: { // Wounded soldiers heal twice as fast
         desc: 'Your race inherently heals quickly.',
         type: 'major',
     },
@@ -488,7 +488,7 @@ export const traits = {
         desc: 'Your species is slow moving and rarely in a hurry to get anything done.',
         type: 'major',
     },
-    armored: { // Less soliders die in combat
+    armored: { // Less soldiers die in combat
         desc: 'Your race is naturally armored and thus less likely to be fatally wounded in battle.',
         type: 'major',
     },
@@ -525,7 +525,7 @@ export const traits = {
         type: 'major',
     },
     pyrophobia: { // Smelter productivity is reduced
-        desc: 'Your race is afraid of fire and smelters opperate slower as a result',
+        desc: 'Your race is afraid of fire and smelters operate slower as a result',
         type: 'major',
     },
     hyper: { // The game moves at a 5% faster pace
@@ -552,8 +552,8 @@ export const traits = {
         desc: `Your race does not like direct sunlight, they are less productive when it's sunny`,
         type: 'major',
     },
-    fraile: { // More soliders die in combat
-        desc: 'Your race is fraile and is more likely to die in combat.',
+    frail: { // More soldiers die in combat
+        desc: 'Your race is frail and is more likely to die in combat.',
         type: 'major',
     },
     quick: {

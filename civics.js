@@ -228,7 +228,7 @@ function buildGarrison(garrison){
                     if (global.race['scales']){
                         death -= 2;
                     }
-                    if (global.race['fraile']){
+                    if (global.race['frail']){
                         death++;
                     }
                     if (global.tech['armor']){
@@ -460,7 +460,7 @@ function buildGarrison(garrison){
                     if (global.race['scales']){
                         death--;
                     }
-                    if (global.race['fraile']){
+                    if (global.race['frail']){
                         death += global.civic.garrison.tactic + 1;
                     }
                     if (global.tech['armor']){
