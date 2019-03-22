@@ -115,7 +115,7 @@ function adjustCosts(costs){
         Object.keys(costs).forEach(function (res){
             newCosts[res] = function(){ return Math.round(costs[res]() * 0.98) || 0; }
         });
-        return rebarAdjust(newCosts);
+        return newCosts;
     }
     return costs;
 }
