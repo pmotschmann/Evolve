@@ -1992,7 +1992,7 @@ export const actions = {
         blast_furnace: {
             id: 'tech-blast_furnace',
             title: 'Blast Furnace',
-            desc: 'Upgrade your smelters',
+            desc: 'Blast Furnace',
             reqs: { smelting: 2 },
             grant: ['smelting',3],
             cost: { 
@@ -2010,7 +2010,7 @@ export const actions = {
         bessemer_process: {
             id: 'tech-bessemer_process',
             title: 'Bessemer Process',
-            desc: 'Upgrade your smelters',
+            desc: 'Bessemer Process',
             reqs: { smelting: 3 },
             grant: ['smelting',4],
             cost: { 
@@ -2028,7 +2028,7 @@ export const actions = {
         oxygen_converter: {
             id: 'tech-oxygen_converter',
             title: 'Oxygen Converter',
-            desc: 'Upgrade your smelters',
+            desc: 'Oxygen Converter',
             reqs: { smelting: 4, high_tech: 3 },
             grant: ['smelting',5],
             cost: { 
@@ -2046,7 +2046,7 @@ export const actions = {
         electric_arc_furnace: {
             id: 'tech-electric_arc_furnace',
             title: 'Electric Arc Furnace',
-            desc: 'Upgrade your smelters',
+            desc: 'Electric Arc Furnace',
             reqs: { smelting: 5, high_tech: 4 },
             grant: ['smelting',6],
             cost: { 
@@ -2056,6 +2056,24 @@ export const actions = {
             effect: 'Increases Steel output of smelters by 20%',
             action: function (){
                 if (payCosts(actions.tech.electric_arc_furnace.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        rotary_kiln: {
+            id: 'tech-rotary_kiln',
+            title: 'Rotary Kiln',
+            desc: 'Rotary Kiln',
+            reqs: { smelting: 3, high_tech: 3 },
+            grant: ['copper',1],
+            cost: { 
+                Knowledge: function(){ return 64000; },
+                Coal: function(){ return 8000; }
+            },
+            effect: 'Advanced smelting processes improve copper refinement by 20%',
+            action: function (){
+                if (payCosts(actions.tech.rotary_kiln.cost)){
                     return true;
                 }
                 return false;
@@ -3217,6 +3235,23 @@ export const actions = {
                 if (payCosts(actions.tech.polymer.cost)){
                     global.resource.Polymer.display = true;
                     messageQueue('Polymer is now available for manufacture');
+                    return true;
+                }
+                return false;
+            }
+        },
+        fluidized_bed_reactor: {
+            id: 'tech-fluidized_bed_reactor',
+            title: 'Fluidized Bed Reactor',
+            desc: 'Fluidized Bed Reactor',
+            reqs: { polymer: 1, high_tech: 6 },
+            grant: ['polymer',2],
+            cost: {
+                Knowledge: function(){ return 110000; }
+            },
+            effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%',
+            action: function (){
+                if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
                     return true;
                 }
                 return false;

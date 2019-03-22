@@ -580,6 +580,9 @@ function mainLoop() {
                     if (global.race['toxic']){
                         delta *= 1.05;
                     }
+                    if (global.tech['polymer'] >= 2){
+                        delta *= 1.42;
+                    }
                     modRes('Polymer',delta);
                 }
             }
@@ -728,6 +731,9 @@ function mainLoop() {
                 var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
                 if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                     copper_multiplier *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
+                }
+                if (global.tech['copper']){
+                    copper_multiplier *= 1.2;
                 }
                 copper_multiplier *= tax_multiplier;
                 copper_multiplier *= racialTrait(global.civic.miner.workers,'miner');
