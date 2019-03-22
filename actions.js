@@ -2967,7 +2967,10 @@ export const actions = {
                     global.resource.Titanium.display = true;
                     global.city['factory'] = {
                         count: 0,
-                        on: 0
+                        on: 0,
+                        Lux: 0,
+                        Alloy: 0,
+                        Polymer: 0
                     };
                     return true;
                 }
@@ -4832,10 +4835,6 @@ function factoryModal(modal){
     let fuel = $('<div><span class="has-text-warning">Opperating:</span> <span class="has-text-info">{{count | on}}/{{ on }}</span></div>');
     modal.append(fuel);
 
-    if (!global.city.factory['Lux']){
-        global.city.factory['Lux'] = 0;
-    }
-
     let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>Luxury Goods</span></b-tooltip></div>`);
     modal.append(lux);
 
@@ -4846,10 +4845,6 @@ function factoryModal(modal){
     lux.append(luxCount);
     lux.append(addLux);
 
-    if (!global.city.factory['Alloy']){
-        global.city.factory['Alloy'] = 0;
-    }
-
     let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-left" size="is-small" multilined animated><span>Alloy</span></b-tooltip></div>`);
     modal.append(alloy);
 
@@ -4859,10 +4854,6 @@ function factoryModal(modal){
     alloy.append(subAlloy);
     alloy.append(alloyCount);
     alloy.append(addAlloy);
-
-    if (!global.city.factory['Polymer']){
-        global.city.factory['Polymer'] = 0;
-    }
 
     if (global.tech['polymer']){
         let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" position="is-left" size="is-small" multilined animated><span>Polymer</span></b-tooltip></div>`);

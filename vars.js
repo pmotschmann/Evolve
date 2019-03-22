@@ -129,6 +129,18 @@ if (!global['arpa']){
     global['arpa'] = {};
 }
 
+if (global.city['factory']){
+    if (!global.city.factory['Lux']){
+        global.city.factory['Lux'] = 0;
+    }
+    if (!global.city.factory['Alloy']){
+        global.city.factory['Alloy'] = 0;
+    }
+    if (!global.city.factory['Polymer']){
+        global.city.factory['Polymer'] = 0;
+    }
+}
+
 if (global.lastMsg){
     messageQueue(global.lastMsg.m, global.lastMsg.c);
 }
