@@ -1980,7 +1980,7 @@ export const actions = {
                 Knowledge: function(){ return 5500; },
                 Steel: function(){ return 25; }
             },
-            effect: 'Upgrade your smelters so they can produce steel. (hint, raid an enemy village)',
+            effect: 'Upgrade your smelters so they can produce steel.',
             action: function (){
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
