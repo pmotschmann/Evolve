@@ -1113,7 +1113,7 @@ function mainLoop() {
         if (global.race.species !== 'protoplasm'){
             var global_multiplier = 1;
             if (global.race.Plasmid.count > 0){
-                global_multiplier += plasmidBonus();;
+                global_multiplier += plasmidBonus();
             }
 
             // Tax Income

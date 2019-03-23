@@ -42,12 +42,12 @@
                     <div class="column is-half"></div>
                     <div class="column is-one-quarter power"><span class="has-text-warning" v-show="city.powered"><span>kW</span> <span id="powerMeter" class="meter">{{ city.power }}</span></span></div>
                 </div>
-                <b-collapse :open="true">
+                <div id="sideQueue">
                     <div id="msgQueue" class="msgQueue has-text-info"></div>
-                </b-collapse>
+                </div>
                 <div id="resources" class="resources"></div>
             </div>
-            <div class="column is-three-quarters">
+            <div id="mainColumn" class="column is-three-quarters">
                 <div id="tabs" class="content">
                     <b-tabs v-model="civTabs" :animated="animated">
                         <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
@@ -106,6 +106,7 @@
                     </b-tabs>
                 </div>
             </div>
+            <div id="queueColumn" class="column"></div>
         </div>
     </div>
     <div class="promoBar"><span class="left"><span class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</span></span><span class="right"><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a><span>|</span><a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a></span></div>

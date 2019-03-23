@@ -220,6 +220,33 @@ export function keyMultiplier(){
     return number;
 }
 
+function resizeGame(){
+    if ($(window).width() >= 1400 && $('#msgQueue:not(.right)')){
+        let queue = $('#msgQueue').detach();
+        queue.addClass('right');
+        queue.removeClass('has-text-info');
+        $('#queueColumn').addClass('is-one-quarter');
+        $('#queueColumn').append(queue);
+        $('#mainColumn').removeClass('is-three-quarters');
+        $('#mainColumn').addClass('is-half');
+    }
+    else if ($(window).width() < 1400 && $('#msgQueue').hasClass('right')){
+        let queue = $('#msgQueue').detach();
+        queue.removeClass('right');
+        queue.addClass('has-text-info');
+        $('#queueColumn').removeClass('is-one-quarter');
+        $('#sideQueue').append(queue);
+        $('#mainColumn').removeClass('is-half');
+        $('#mainColumn').addClass('is-three-quarters');
+    }
+}
+
+$(window).resize(function(){
+    resizeGame();
+});
+
+resizeGame();
+
 window.exportGame = function exportGame(){
     $('#importExport').val(LZString.compressToBase64(JSON.stringify(global)));
 }

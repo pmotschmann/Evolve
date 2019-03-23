@@ -53,6 +53,7 @@ export function defineResources() {
         //loadResource('Deuterium',0,1,true,false);
         //loadResource('Helium-3',0,1,true,false);
         //loadResource('Neutronium',0,1,true,true);
+        loadRouteCounter();
     }
     loadSpecialResource('Plasmid');
 }
@@ -287,6 +288,16 @@ function marketItem(vue,mount,market_item,name,color,full){
         }
     });
     vues[vue].$mount(mount);
+}
+
+function loadRouteCounter(){
+    var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><span class="tradeTotal"><span class="has-text-warning">Trade Routes</span> {{ trade }} / {{ mtrade }}</span></div>`);
+    $('#market').append(market_item);
+
+    vues['market_totals'] = new Vue({
+        data: global.city.market
+    });
+    vues['market_totals'].$mount('#tradeTotal');
 }
 
 function tradeRouteColor(res){
@@ -524,8 +535,6 @@ export function loadMarket(){
         market.append($('<b-radio v-model="qty" native-value="10000">10000x</b-radio>'));
         market.append($('<b-radio v-model="qty" native-value="25000">25000x</b-radio>'));
     }
-
-    market.append($('<span class="trade" v-show="active"><span class="has-text-warning">Trade Routes</span> {{ trade }} / {{ mtrade }}</span>'));
 
     vues['market_qty'] = new Vue({
         data: global.city.market
