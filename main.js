@@ -512,7 +512,8 @@ function mainLoop() {
                     }
                     modRes('Furs',-(consume));
 
-                    delta = workDone * 20 * hunger * tax_multiplier * global_multiplier * time_multiplier;
+                    let demand = global.resource[races[global.race.species].name].amount * 0.14;
+                    delta = workDone * demand * hunger * tax_multiplier * global_multiplier * time_multiplier;
                     if (global.race['toxic']){
                         delta *= 1.05;
                     }

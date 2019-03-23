@@ -4918,7 +4918,8 @@ function factoryModal(modal){
             buildLabel: function(type){
                 switch(type){
                     case 'Lux':
-                        return 'Consume 2 Furs/s to produce luxury goods worth $20';
+                        let demand = +(global.resource[races[global.race.species].name].amount * 0.14).toFixed(2);
+                        return `Consume 2 Furs/s to produce luxury goods worth \$${demand}`;
                         break;
                     case 'Alloy':
                         return 'Consume 0.75 Copper and 0.15 Titanium/s to produce Alloy';
