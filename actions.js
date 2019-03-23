@@ -1411,6 +1411,7 @@ export const actions = {
                 if (global.tech['stock_exchange']){
                     vault *= 1 + (global.tech['stock_exchange'] * 0.1);
                 }
+                vault = +(vault).toFixed(0);
                 if (global.tech['banking'] >= 2){
                     return `<div>+\$${vault} Max Money</div><div>+1 Max Banker</div>`; 
                 }
@@ -3121,7 +3122,7 @@ export const actions = {
                 Knowledge: function(){ return 84000; },
                 Alloy: function(){ return 2500; }
             },
-            effect: 'Upgrade your warehouses with specially designed areas for storing uranium.',
+            effect: 'Upgrade your fuel depots with specially designed areas for storing uranium.',
             action: function (){
                 if (payCosts(actions.tech.uranium_storage.cost)){
                     return true;

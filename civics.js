@@ -522,8 +522,8 @@ function buildGarrison(garrison){
             },
             soldierDesc(){
                 let rating = armyRating(global.civic.garrison.workers,'hunting');
-                let food = rating / 3;
-                let fur = rating / 10;
+                let food = +(rating / 3).toFixed(2);
+                let fur = +(rating / 10).toFixed(2);
                 return global.race['herbivore']
                     ? `Idle soldiers spend their time hunting, they are currently bringing in ${fur} furs per trip.`
                     : `Idle soldiers spend their time hunting, they are currently bringing in ${food} food worth of meat per trip and ${fur} furs.`;
@@ -613,7 +613,7 @@ function defineMad(){
                 let orbit = global.city.calendar.orbit;
                 let biome = global.city.biome;
                 let plasmid = global.race.Plasmid.count;
-                let new_plasmid = Math.round(global['resource'][races[global.race.species].name].amount / 4);
+                let new_plasmid = Math.round(global['resource'][races[global.race.species].name].amount / 3);
                 plasmid += new_plasmid;
                 global.stats.reset++;
                 global.stats.tdays += global.stats.days;
