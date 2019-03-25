@@ -1783,7 +1783,7 @@ export const actions = {
             reqs: { housing: 1, cement: 1, mining: 3 },
             grant: ['housing',2],
             cost: { 
-                Knowledge: function(){ return 4000; }
+                Knowledge: function(){ return 3600; }
             },
             effect: 'Learn to construct more comfortable housing for couples.',
             action: function (){
@@ -1801,7 +1801,7 @@ export const actions = {
             reqs: { housing: 2, high_tech: 2 },
             grant: ['housing',3],
             cost: { 
-                Knowledge: function(){ return 17500; }
+                Knowledge: function(){ return 15750; }
             },
             effect: 'Design high occupancy housing complexes.',
             action: function (){
@@ -1822,7 +1822,7 @@ export const actions = {
             reqs: { housing: 2, smelting: 2 },
             grant: ['housing_reduction',1],
             cost: { 
-                Knowledge: function(){ return 12500; },
+                Knowledge: function(){ return 11250; },
                 Steel: function(){ return 2500; }
             },
             effect: 'Reduce material costs of Cabins and Cottages by introducing strong steel beams.',
@@ -1840,7 +1840,7 @@ export const actions = {
             reqs: { housing: 2 },
             grant: ['reproduction',1],
             cost: { 
-                Knowledge: function(){ return 5000; }
+                Knowledge: function(){ return 4500; }
             },
             effect: 'Develop a substance that aids with population growth.',
             action: function (){
@@ -1876,7 +1876,7 @@ export const actions = {
             grant: ['farm',1],
             cost: {
                 Money: function(){ return 50; },
-                Knowledge: function(){ return 200; }
+                Knowledge: function(){ return 180; }
             },
             effect: 'learn the joys of a short commute by living at work!',
             action: function (){
@@ -1893,7 +1893,7 @@ export const actions = {
             reqs: { agriculture: 1 },
             grant: ['agriculture',2],
             cost: { 
-                Knowledge: function(){ return 60; }
+                Knowledge: function(){ return 55; }
             },
             effect: 'Increase farm efficency by 66% with irrigation.',
             action: function (){
@@ -1911,7 +1911,7 @@ export const actions = {
             reqs: { agriculture: 2, storage: 1 },
             grant: ['agriculture',3],
             cost: { 
-                Knowledge: function(){ return 90; }
+                Knowledge: function(){ return 80; }
             },
             effect: 'Creates plans for a storage medium for food.',
             action: function (){
@@ -1929,7 +1929,7 @@ export const actions = {
             reqs: { agriculture: 3, mining: 3 },
             grant: ['agriculture',4],
             cost: { 
-                Knowledge: function(){ return 6000; }
+                Knowledge: function(){ return 5400; }
             },
             effect: 'Creates plans for a grain mill, grain mills boost farm effectiveness.',
             action: function (){
@@ -1947,7 +1947,7 @@ export const actions = {
             reqs: { agriculture: 4, high_tech: 1 },
             grant: ['agriculture',5],
             cost: { 
-                Knowledge: function(){ return 18000; }
+                Knowledge: function(){ return 16200; }
             },
             effect: 'Add a windmill sail to your grain mills, boosts the effectiveness of mills.',
             action: function (){
@@ -1964,7 +1964,7 @@ export const actions = {
             reqs: { housing: 1, currency: 1 },
             grant: ['theatre',1],
             cost: {
-                Knowledge: function(){ return 100; }
+                Knowledge: function(){ return 90; }
             },
             effect: 'Design a space for shows to help uplift your spirits.',
             action: function (){
@@ -1982,7 +1982,7 @@ export const actions = {
             reqs: { theatre: 1, science: 2 },
             grant: ['theatre',2],
             cost: {
-                Knowledge: function(){ return 1200; }
+                Knowledge: function(){ return 1080; }
             },
             effect: 'Playwrights will increase the quality of entertainment incresing the effectiveness of entertainers.',
             action: function (){
@@ -1999,7 +1999,7 @@ export const actions = {
             reqs: { theatre: 2, high_tech: 1 },
             grant: ['theatre',3],
             cost: {
-                Knowledge: function(){ return 8800; }
+                Knowledge: function(){ return 7920; }
             },
             effect: 'Techno Wizards are a new type of stage performer that uses technology to preform "Magic". Increases effectiveness of entertainers.',
             action: function (){
@@ -2016,7 +2016,7 @@ export const actions = {
             reqs: { theatre: 3, high_tech: 2 },
             grant: ['broadcast',1],
             cost: {
-                Knowledge: function(){ return 18000; }
+                Knowledge: function(){ return 16200; }
             },
             effect: 'Powered Wardenclyffe towers broadcast radio signals which help entertain your citizens.',
             action: function (){
@@ -2033,7 +2033,7 @@ export const actions = {
             reqs: { broadcast: 1, high_tech: 4 },
             grant: ['broadcast',2],
             cost: {
-                Knowledge: function(){ return 75000; }
+                Knowledge: function(){ return 67500; }
             },
             effect: 'New broadcast TV signals double the entertainment value of Wardenclyffe towers.',
             action: function (){
@@ -2050,7 +2050,7 @@ export const actions = {
             reqs: { primitive: 3 },
             grant: ['mining',1],
             cost: { 
-                Knowledge: function(){ return 50; }
+                Knowledge: function(){ return 45; }
             },
             effect: 'Learn how to dig up stone slabs from a quarry.',
             action: function (){
@@ -2071,7 +2071,7 @@ export const actions = {
             reqs: { mining: 3 },
             grant: ['smelting',1],
             cost: { 
-                Knowledge: function(){ return 4500; }
+                Knowledge: function(){ return 4050; }
             },
             effect: 'Learn advanced techniques for smelting ore that will increase yield.',
             action: function (){
@@ -2096,7 +2096,7 @@ export const actions = {
             reqs: { smelting: 1 },
             grant: ['smelting',2],
             cost: { 
-                Knowledge: function(){ return 5500; },
+                Knowledge: function(){ return 4950; },
                 Steel: function(){ return 25; }
             },
             effect: 'Upgrade your smelters so they can produce steel.',
@@ -2115,7 +2115,7 @@ export const actions = {
             reqs: { smelting: 2 },
             grant: ['smelting',3],
             cost: { 
-                Knowledge: function(){ return 15000; },
+                Knowledge: function(){ return 13500; },
                 Coal: function(){ return 2000; }
             },
             effect: 'Increases Iron output of smelters by 20%',
@@ -2133,7 +2133,7 @@ export const actions = {
             reqs: { smelting: 3 },
             grant: ['smelting',4],
             cost: { 
-                Knowledge: function(){ return 22000; },
+                Knowledge: function(){ return 19800; },
                 Coal: function(){ return 5000; }
             },
             effect: 'Increases Steel output of smelters by 20%',
@@ -2151,7 +2151,7 @@ export const actions = {
             reqs: { smelting: 4, high_tech: 3 },
             grant: ['smelting',5],
             cost: { 
-                Knowledge: function(){ return 52000; },
+                Knowledge: function(){ return 46800; },
                 Coal: function(){ return 10000; }
             },
             effect: 'Increases Steel output of smelters by 20%',
@@ -2169,7 +2169,7 @@ export const actions = {
             reqs: { smelting: 5, high_tech: 4 },
             grant: ['smelting',6],
             cost: { 
-                Knowledge: function(){ return 95000; },
+                Knowledge: function(){ return 85500; },
                 Copper: function(){ return 25000; }
             },
             effect: 'Increases Steel output of smelters by 20%',
@@ -2187,7 +2187,7 @@ export const actions = {
             reqs: { smelting: 3, high_tech: 3 },
             grant: ['copper',1],
             cost: { 
-                Knowledge: function(){ return 64000; },
+                Knowledge: function(){ return 57600; },
                 Coal: function(){ return 8000; }
             },
             effect: 'Advanced smelting processes improve copper refinement by 20%',
@@ -2205,7 +2205,7 @@ export const actions = {
             reqs: { mining: 1 },
             grant: ['mining',2],
             cost: { 
-                Knowledge: function(){ return 500; }
+                Knowledge: function(){ return 450; }
             },
             effect: 'Learn how to mine and refine copper into a pure form.',
             action: function (){
@@ -2226,7 +2226,7 @@ export const actions = {
             reqs: { mining: 2 },
             grant: ['mining',3],
             cost: { 
-                Knowledge: function(){ return 3000; }
+                Knowledge: function(){ return 2700; }
             },
             effect: 'Learn how to extract iron ore from mines.',
             action: function (){
@@ -2244,7 +2244,7 @@ export const actions = {
             reqs: { mining: 3 },
             grant: ['mining',4],
             cost: { 
-                Knowledge: function(){ return 4800; }
+                Knowledge: function(){ return 4320; }
             },
             effect: 'Learn about how coal can be used to as a resource.',
             action: function (){
@@ -2285,7 +2285,7 @@ export const actions = {
             grant: ['storage',2],
             cost: {
                 Money: function(){ return 3750; },
-                Knowledge: function(){ return 2500; },
+                Knowledge: function(){ return 2250; },
                 Iron: function(){ return 750; },
                 Cement: function(){ return 500; }
             },
@@ -2304,7 +2304,7 @@ export const actions = {
             reqs: { storage: 2, smelting: 2 },
             grant: ['storage',3],
             cost: {
-                Knowledge: function(){ return 17500; },
+                Knowledge: function(){ return 15750; },
                 Steel: function(){ return 5000; }
             },
             effect: 'Replace smaller storage sheds with larger storage barns, a 100% increase in storage capactiy.',
@@ -2322,7 +2322,7 @@ export const actions = {
             reqs: { high_tech: 3, smelting: 2 },
             grant: ['storage',4],
             cost: {
-                Knowledge: function(){ return 45000; },
+                Knowledge: function(){ return 40500; },
                 Titanium: function(){ return 3000; }
             },
             effect: 'Replace your barns with huge storage facilities known as "warehouses".',
@@ -2340,7 +2340,7 @@ export const actions = {
             reqs: { high_tech: 4 },
             grant: ['storage',5],
             cost: {
-                Money: function(){ return 100000; },
+                Money: function(){ return 90000; },
                 Knowledge: function(){ return 65000; }
             },
             effect: 'Security cameras make monitoring large storage spaces easier increaseing storage potential.',
@@ -2358,7 +2358,7 @@ export const actions = {
             reqs: { particles: 1, storage: 5 },
             grant: ['storage',6],
             cost: {
-                Knowledge: function(){ return 120000; }
+                Knowledge: function(){ return 108000; }
             },
             effect: 'The ulitmate upgrade for warehouses. Extra supercollider levels will increase the effectiveness of this technology.',
             action: function (){
@@ -2375,7 +2375,7 @@ export const actions = {
             reqs: { cement: 1 },
             grant: ['container',1],
             cost: { 
-                Knowledge: function(){ return 3000; }
+                Knowledge: function(){ return 2700; }
             },
             effect: 'Designs a scalable storage solution for all your storage needs.',
             action: function (){
@@ -2393,7 +2393,7 @@ export const actions = {
             reqs: { container: 1, smelting: 2 },
             grant: ['container',2],
             cost: { 
-                Knowledge: function(){ return 7500; },
+                Knowledge: function(){ return 6750; },
                 Steel: function(){ return 250; }
             },
             effect: 'Upgrade wooden crates by reinforcing them with steel.',
@@ -2411,7 +2411,7 @@ export const actions = {
             reqs: { container: 2, high_tech: 2 },
             grant: ['container',3],
             cost: { 
-                Knowledge: function(){ return 20000; },
+                Knowledge: function(){ return 18000; },
                 Copper: function(){ return 1000; },
                 Steel: function(){ return 2500; }
             },
@@ -2430,7 +2430,7 @@ export const actions = {
             reqs: { container: 3, titanium: 1 },
             grant: ['container',4],
             cost: { 
-                Knowledge: function(){ return 75000; },
+                Knowledge: function(){ return 67500; },
                 Titanium: function(){ return 1000; }
             },
             effect: 'Increase the maximum load of crates by adding strong titanium bands.',
@@ -2448,7 +2448,7 @@ export const actions = {
             reqs: { smelting: 2, container: 1 },
             grant: ['steel_container',1],
             cost: { 
-                Knowledge: function(){ return 10000; },
+                Knowledge: function(){ return 9000; },
                 Steel: function(){ return 500; }
             },
             effect: 'Replace cheap wooden crates with more durable steel containers.',
@@ -2467,7 +2467,7 @@ export const actions = {
             reqs: { steel_container: 1, high_tech: 2 },
             grant: ['steel_container',2],
             cost: { 
-                Knowledge: function(){ return 25000; },
+                Knowledge: function(){ return 22500; },
                 Steel: function(){ return 5000; }
             },
             effect: 'Upgrade your container ports with gantry cranes. This doubles the number of containers that can be stored at each port.',
@@ -2485,7 +2485,7 @@ export const actions = {
             reqs: { steel_container: 2, storage: 4 },
             grant: ['steel_container',3],
             cost: { 
-                Knowledge: function(){ return 55000; },
+                Knowledge: function(){ return 49500; },
                 Alloy: function(){ return 2500; }
             },
             effect: 'Increase container capacity by 50% with new alloy containers.',
@@ -2503,7 +2503,7 @@ export const actions = {
             reqs: { housing: 1 },
             grant: ['currency',1],
             cost: { 
-                Knowledge: function(){ return 25; },
+                Knowledge: function(){ return 22; },
                 Lumber: function(){ return 10; } 
             },
             effect: 'Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.',
@@ -2522,7 +2522,7 @@ export const actions = {
             reqs: { banking: 1, currency: 1 },
             grant: ['currency',2],
             cost: { 
-                Knowledge: function(){ return 2000; }
+                Knowledge: function(){ return 1800; }
             },
             effect: 'Opens a commodities market where you can buy and sell resources.',
             action: function (){
@@ -2540,7 +2540,7 @@ export const actions = {
             reqs: { banking: 2, currency: 2 },
             grant: ['currency',3],
             cost: { 
-                Knowledge: function(){ return 3750; }
+                Knowledge: function(){ return 3375; }
             },
             effect: 'Allows government to adjust the tax rate.',
             action: function (){
@@ -2558,7 +2558,7 @@ export const actions = {
             reqs: { currency: 3 },
             grant: ['currency',4],
             cost: { 
-                Knowledge: function(){ return 7500; }
+                Knowledge: function(){ return 6750; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at higher volumes.',
             action: function (){
@@ -2578,7 +2578,7 @@ export const actions = {
             reqs: { currency: 4, high_tech: 3 },
             grant: ['currency',5],
             cost: { 
-                Knowledge: function(){ return 40000; }
+                Knowledge: function(){ return 36000; }
             },
             effect: 'Corrupt politicians enable the setting of extreme tax strategies.',
             action: function (){
@@ -2595,7 +2595,7 @@ export const actions = {
             reqs: { currency: 5, high_tech: 4 },
             grant: ['currency',6],
             cost: { 
-                Knowledge: function(){ return 120000; }
+                Knowledge: function(){ return 108000; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at very high volumes.',
             action: function (){
@@ -2615,7 +2615,7 @@ export const actions = {
             reqs: { currency: 2, military: 1 },
             grant: ['trade',1],
             cost: { 
-                Knowledge: function(){ return 5000; }
+                Knowledge: function(){ return 4500; }
             },
             effect: 'Create trade routes with your neighbors.',
             action: function (){
@@ -2634,7 +2634,7 @@ export const actions = {
             reqs: { trade: 1, high_tech: 1 },
             grant: ['trade',2],
             cost: { 
-                Knowledge: function(){ return 18000; }
+                Knowledge: function(){ return 16200; }
             },
             effect: 'Increase the effectiveness of each trade post by 1.',
             action: function (){
@@ -2651,7 +2651,7 @@ export const actions = {
             reqs: { trade: 2, high_tech: 3 },
             grant: ['trade',3],
             cost: { 
-                Knowledge: function(){ return 42000; }
+                Knowledge: function(){ return 37800; }
             },
             effect: 'Increase the effectiveness of each trade post by 1.',
             action: function (){
@@ -2668,7 +2668,7 @@ export const actions = {
             reqs: { currency: 1 },
             grant: ['banking',1],
             cost: { 
-                Knowledge: function(){ return 100; }
+                Knowledge: function(){ return 90; }
             },
             effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money',
             action: function (){
@@ -2687,7 +2687,7 @@ export const actions = {
             grant: ['banking',2],
             cost: { 
                 Money: function(){ return 2500; },
-                Knowledge: function(){ return 1000; }
+                Knowledge: function(){ return 900; }
             },
             effect: 'Discover the principles of investing, unlocks the banker job.',
             action: function (){
@@ -2706,7 +2706,7 @@ export const actions = {
             grant: ['banking',3],
             cost: {
                 Money: function(){ return 2000; },
-                Knowledge: function(){ return 4000; },
+                Knowledge: function(){ return 3600; },
                 Iron: function(){ return 500; },
                 Cement: function(){ return 750; }
             },
@@ -2726,7 +2726,7 @@ export const actions = {
             grant: ['banking',4],
             cost: {
                 Money: function(){ return 20000; },
-                Knowledge: function(){ return 5500; }
+                Knowledge: function(){ return 5000; }
             },
             effect: 'Raise new capital by creating a series of savings bonds. With savings bonds each citizen will increase your money cap by $250.',
             action: function (){
@@ -2744,7 +2744,7 @@ export const actions = {
             grant: ['banking',5],
             cost: {
                 Money: function(){ return 30000; },
-                Knowledge: function(){ return 7500; },
+                Knowledge: function(){ return 6750; },
                 Steel: function(){ return 3000; }
             },
             effect: 'Reinforce your bank vaults with heavy steel doors and walls, increases $ storage capacity.',
@@ -2763,7 +2763,7 @@ export const actions = {
             grant: ['banking',6],
             cost: {
                 Money: function(){ return 75000; },
-                Knowledge: function(){ return 20000; }
+                Knowledge: function(){ return 18000; }
             },
             effect: 'Create new series EE savings bonds which mature at a much higher value. Each citizen will increase your money cap by $600.',
             action: function (){
@@ -2781,7 +2781,7 @@ export const actions = {
             grant: ['banking',7],
             cost: {
                 Money: function(){ return 125000; },
-                Knowledge: function(){ return 50000; }
+                Knowledge: function(){ return 45000; }
             },
             effect: 'With new training your bankers will learn how to creatively store money. Increases bank vault capacity by 5% per banker.',
             action: function (){
@@ -2799,7 +2799,7 @@ export const actions = {
             grant: ['banking',8],
             cost: {
                 Money: function(){ return 250000; },
-                Knowledge: function(){ return 75000; }
+                Knowledge: function(){ return 67500; }
             },
             effect: 'Banks will offer safety deposit boxes, increasing bank capacity by $25 per citizen.',
             action: function (){
@@ -2817,7 +2817,7 @@ export const actions = {
             grant: ['banking',9],
             cost: {
                 Money: function(){ return 325000; },
-                Knowledge: function(){ return 120000; }
+                Knowledge: function(){ return 108000; }
             },
             effect: 'Establish a stock exchange to increase wealth potential.',
             action: function (){
@@ -2838,7 +2838,7 @@ export const actions = {
             grant: ['banking',10],
             cost: {
                 Money: function(){ return 375000; },
-                Knowledge: function(){ return 140000; }
+                Knowledge: function(){ return 126000; }
             },
             effect: 'Bankers also manage hedge funds, increasing the amount of money generated per banker by 2% per stock market level.',
             action: function (){
@@ -2856,7 +2856,7 @@ export const actions = {
             grant: ['banking',11],
             cost: {
                 Money: function(){ return 425000; },
-                Knowledge: function(){ return 160000; }
+                Knowledge: function(){ return 144000; }
             },
             effect: 'Encourge citizens to establish 401K plans increasing the total amount of wealth available.',
             action: function (){
@@ -2873,7 +2873,7 @@ export const actions = {
             reqs: { housing: 1 },
             grant: ['science',1],
             cost: {
-                Knowledge: function(){ return 75; }
+                Knowledge: function(){ return 65; }
             },
             effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
             action: function (){
@@ -2891,7 +2891,7 @@ export const actions = {
             reqs: { science: 1, cement: 1 },
             grant: ['science',2],
             cost: {
-                Knowledge: function(){ return 800; }
+                Knowledge: function(){ return 720; }
             },
             effect: 'Create a system for organizing and storing knowledge in large storage buildings designed specifically for books.',
             action: function (){
@@ -2909,7 +2909,7 @@ export const actions = {
             reqs: { science: 2 },
             grant: ['science',3],
             cost: {
-                Knowledge: function(){ return 1250; }
+                Knowledge: function(){ return 1125; }
             },
             effect: 'Libraries will have a minor effect on professor effectiveness.',
             action: function (){
@@ -2926,7 +2926,7 @@ export const actions = {
             reqs: { science: 3 },
             grant: ['science',4],
             cost: {
-                Knowledge: function(){ return 3600; }
+                Knowledge: function(){ return 3240; }
             },
             effect: 'Libraries will boost the effect of universities by 2% per library',
             action: function (){
@@ -2943,7 +2943,7 @@ export const actions = {
             reqs: { science: 4, high_tech: 3 },
             grant: ['science',5],
             cost: {
-                Knowledge: function(){ return 30000; }
+                Knowledge: function(){ return 27000; }
             },
             effect: 'Each scientist will publish their work in a scientific journal. Libraries increased by 12% per scientist.',
             action: function (){
@@ -2960,7 +2960,7 @@ export const actions = {
             reqs: { science: 5 },
             grant: ['science',6],
             cost: {
-                Knowledge: function(){ return 40000; }
+                Knowledge: function(){ return 36000; }
             },
             effect: 'Professors will boost the effectiveness of scientists by 1% per powered wardenclyffe tower.',
             action: function (){
@@ -2977,7 +2977,7 @@ export const actions = {
             reqs: { science: 6, high_tech: 3 },
             grant: ['science',7],
             cost: {
-                Knowledge: function(){ return 57500; }
+                Knowledge: function(){ return 51750; }
             },
             effect: 'Upgrade wardenclyffe towers with tesla coils increasing their science potental when powered.',
             action: function (){
@@ -2994,7 +2994,7 @@ export const actions = {
             reqs: { science: 7, high_tech: 4 },
             grant: ['science',8],
             cost: {
-                Knowledge: function(){ return 68000; }
+                Knowledge: function(){ return 61200; }
             },
             effect: 'The internet is a revolution which massively changes how information is exchanged. Increases the base value of Universities and Libraries by 40%',
             action: function (){
@@ -3011,7 +3011,7 @@ export const actions = {
             reqs: { science: 8 },
             grant: ['genetics',1],
             cost: {
-                Knowledge: function(){ return 75000; }
+                Knowledge: function(){ return 67500; }
             },
             effect: 'Begin unlocking the mysteries of life.',
             action: function (){
@@ -3029,7 +3029,7 @@ export const actions = {
             reqs: { genetics: 1, high_tech: 6, locked: 1 },
             grant: ['genetics',2],
             cost: {
-                Knowledge: function(){ return 120000; }
+                Knowledge: function(){ return 108000; }
             },
             effect: 'Begin unlocking the secrets of DNA.',
             action: function (){
@@ -3050,7 +3050,7 @@ export const actions = {
             grant: ['high_tech',1],
             cost: {
                 Money: function(){ return 10000; },
-                Knowledge: function(){ return 7500; },
+                Knowledge: function(){ return 6750; },
                 Steel: function(){ return 1000; }
             },
             effect: 'The greatest leaps in science are often made by "misunderstood" individuals.',
@@ -3072,7 +3072,7 @@ export const actions = {
             reqs: { high_tech: 1 },
             grant: ['high_tech',2],
             cost: {
-                Knowledge: function(){ return 15000; },
+                Knowledge: function(){ return 13500; },
                 Copper: function(){ return 1000; }
             },
             effect: 'Discover electricity, no kites required.',
@@ -3096,7 +3096,7 @@ export const actions = {
             reqs: { high_tech: 2, cement: 2, steel_container: 1 },
             grant: ['high_tech',3],
             cost: {
-                Knowledge: function(){ return 28000; }
+                Knowledge: function(){ return 25200; }
             },
             effect: 'Bring about the industrial revolution. Leads to all sorts of new technological developments.',
             action: function (){
@@ -3121,7 +3121,7 @@ export const actions = {
             reqs: { high_tech: 3, titanium: 1 },
             grant: ['high_tech',4],
             cost: {
-                Knowledge: function(){ return 55000; }
+                Knowledge: function(){ return 50000; }
             },
             effect: 'Electronics is the next major step forward in technological advancement.',
             action: function (){
@@ -3138,7 +3138,7 @@ export const actions = {
             reqs: { high_tech: 4, uranium: 1 },
             grant: ['high_tech',5],
             cost: {
-                Knowledge: function(){ return 86000; },
+                Knowledge: function(){ return 77400; },
                 Uranium: function(){ return 10; }
             },
             effect: 'Learn to split the atom, a powerful but terrifying new development.',
@@ -3160,7 +3160,7 @@ export const actions = {
             reqs: { high_tech: 5 },
             grant: ['high_tech',6],
             cost: {
-                Knowledge: function(){ return 100000; }
+                Knowledge: function(){ return 90000; }
             },
             effect: 'Establish the Advanced Research Projects Agency (A.R.P.A.). This advanced labratory is dedicated to providing the facilties to progress all your special projects.',
             action: function (){
@@ -3181,7 +3181,7 @@ export const actions = {
             reqs: { high_tech: 6 },
             grant: ['high_tech',7],
             cost: {
-                Knowledge: function(){ return 125000; },
+                Knowledge: function(){ return 112500; },
                 Oil: function(){ return 8000; }
             },
             effect: 'Establish the the field of rocketry. Leads to all sorts of new ballistic technologies.',
@@ -3202,7 +3202,7 @@ export const actions = {
             reqs: { high_tech: 7, supercollider: 1, locked: 1 },
             grant: ['high_tech',8],
             cost: {
-                Knowledge: function(){ return 175000; }
+                Knowledge: function(){ return 160000; }
             },
             effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
             action: function (){
@@ -3219,7 +3219,7 @@ export const actions = {
             reqs: { high_tech: 4 },
             grant: ['uranium',1],
             cost: {
-                Knowledge: function(){ return 80000; }
+                Knowledge: function(){ return 72000; }
             },
             effect: 'Learn how to extract trace amounts of uranium from coal deposits.',
             action: function (){
@@ -3237,7 +3237,7 @@ export const actions = {
             reqs: { uranium: 1 },
             grant: ['uranium',2],
             cost: {
-                Knowledge: function(){ return 84000; },
+                Knowledge: function(){ return 75600; },
                 Alloy: function(){ return 2500; }
             },
             effect: 'Upgrade your fuel depots with specially designed areas for storing uranium.',
@@ -3255,7 +3255,7 @@ export const actions = {
             reqs: { uranium: 2 },
             grant: ['uranium',3],
             cost: {
-                Knowledge: function(){ return 135000; }
+                Knowledge: function(){ return 122000; }
             },
             effect: 'Learn how to extract trace amounts of uranium from coal ash.',
             action: function (){
@@ -3272,7 +3272,7 @@ export const actions = {
             reqs: { high_tech: 2 },
             grant: ['mine_conveyor',1],
             cost: {
-                Knowledge: function(){ return 18000; },
+                Knowledge: function(){ return 16200; },
                 Copper: function(){ return 2250; },
                 Steel: function(){ return 1750; }
             },
@@ -3291,7 +3291,7 @@ export const actions = {
             reqs: { high_tech: 3 },
             grant: ['oil',1],
             cost: {
-                Knowledge: function(){ return 30000; }
+                Knowledge: function(){ return 27000; }
             },
             effect: 'Unlock oil derrecks and begin the age of big oil.',
             action: function (){
@@ -3309,7 +3309,7 @@ export const actions = {
             reqs: { oil: 1 },
             grant: ['oil',2],
             cost: {
-                Knowledge: function(){ return 35000; }
+                Knowledge: function(){ return 32000; }
             },
             effect: 'Design a facility specially made to increase your oil reserves.',
             action: function (){
@@ -3327,7 +3327,7 @@ export const actions = {
             reqs: { oil: 2 },
             grant: ['oil',3],
             cost: {
-                Knowledge: function(){ return 48000; }
+                Knowledge: function(){ return 44000; }
             },
             effect: 'Design a power facility that runs on oil.',
             action: function (){
@@ -3345,7 +3345,7 @@ export const actions = {
             reqs: { genetics: 1 },
             grant: ['polymer',1],
             cost: {
-                Knowledge: function(){ return 88000; },
+                Knowledge: function(){ return 80000; },
                 Oil: function(){ return 5000; },
                 Alloy: function(){ return 450; }
             },
@@ -3366,7 +3366,7 @@ export const actions = {
             reqs: { polymer: 1, high_tech: 6 },
             grant: ['polymer',2],
             cost: {
-                Knowledge: function(){ return 110000; }
+                Knowledge: function(){ return 99000; }
             },
             effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%',
             action: function (){
@@ -3383,7 +3383,7 @@ export const actions = {
             reqs: { oil: 3 },
             grant: ['oil',4],
             cost: {
-                Knowledge: function(){ return 60000; },
+                Knowledge: function(){ return 54000; },
                 Titanium: function(){ return 3500; }
             },
             effect: 'New oil drills made from titanium will increase oil production by an estimated 20%.',
@@ -3401,7 +3401,7 @@ export const actions = {
             reqs: { oil: 4 },
             grant: ['oil',5],
             cost: {
-                Knowledge: function(){ return 85000; },
+                Knowledge: function(){ return 77000; },
                 Alloy: function(){ return 1000; }
             },
             effect: 'Enhanced drills made with new alloys increase oil production by another estimated 25%.',
@@ -3419,7 +3419,7 @@ export const actions = {
             reqs: { oil: 5, high_tech: 6 },
             grant: ['oil',6],
             cost: {
-                Knowledge: function(){ return 145000; }
+                Knowledge: function(){ return 132000; }
             },
             effect: 'A new oil mining technique, controversial but effective. Improves oil derrick output by 40%',
             action: function (){
@@ -3436,7 +3436,7 @@ export const actions = {
             reqs: { mining: 1, storage: 1, science: 1 },
             grant: ['cement',1],
             cost: {
-                Knowledge: function(){ return 1000; }
+                Knowledge: function(){ return 900; }
             },
             effect: 'Learn how to make cement from stone.',
             action: function (){
@@ -3457,7 +3457,7 @@ export const actions = {
             reqs: { storage: 1 },
             grant: ['axe',1],
             cost: {
-                Knowledge: function(){ return 50; },
+                Knowledge: function(){ return 45; },
                 Lumber: function(){ return 20; },
                 Stone: function(){ return 20; }
             },
@@ -3478,7 +3478,7 @@ export const actions = {
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
             cost: {
-                Knowledge: function(){ return 600; },
+                Knowledge: function(){ return 540; },
                 Copper: function(){ return 25; }
             },
             effect: 'Upgrade axe technology to metal axes made from brass. Improves lumber harvesting.',
@@ -3496,7 +3496,7 @@ export const actions = {
             reqs: { axe: 1, mining: 3 },
             grant: ['saw',1],
             cost: {
-                Knowledge: function(){ return 3750; },
+                Knowledge: function(){ return 3375; },
                 Iron: function(){ return 400; }
             },
             effect: 'Sawmills increase the lumber yeild of your lumberjacks.',
@@ -3518,7 +3518,7 @@ export const actions = {
             reqs: { smelting: 2, saw: 1 },
             grant: ['saw',2],
             cost: {
-                Knowledge: function(){ return 12000; },
+                Knowledge: function(){ return 10800; },
                 Steel: function(){ return 400; }
             },
             effect: 'Upgrade sawmills with steel blades.',
@@ -3536,7 +3536,7 @@ export const actions = {
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
             cost: {
-                Knowledge: function(){ return 3000; },
+                Knowledge: function(){ return 2700; },
                 Iron: function(){ return 250; }
             },
             effect: 'Upgrade axe technology to metal axes made from iron. Improves lumber harvesting.',
@@ -3554,7 +3554,7 @@ export const actions = {
             reqs: { axe: 3, smelting: 2 },
             grant: ['axe',4],
             cost: {
-                Knowledge: function(){ return 10000; },
+                Knowledge: function(){ return 9000; },
                 Steel: function(){ return 250; }
             },
             effect: 'Upgrade axe technology to durable axes made from steel. Improves lumber harvesting.',
@@ -3572,7 +3572,7 @@ export const actions = {
             reqs: { axe: 4, high_tech: 3 },
             grant: ['axe',5],
             cost: {
-                Knowledge: function(){ return 42000; },
+                Knowledge: function(){ return 38000; },
                 Titanium: function(){ return 350; }
             },
             effect: 'Upgrade axe technology to durable axes made from titanium. Improves lumber harvesting.',
@@ -3590,7 +3590,7 @@ export const actions = {
             reqs: { mining: 2 },
             grant: ['hammer',1],
             cost: {
-                Knowledge: function(){ return 600; },
+                Knowledge: function(){ return 540; },
                 Copper: function(){ return 25; }
             },
             effect: 'Create sledgehammers made from brass. Improves rock quarrying.',
@@ -3608,7 +3608,7 @@ export const actions = {
             reqs: { hammer: 1, mining: 3 },
             grant: ['hammer',2],
             cost: {
-                Knowledge: function(){ return 3000; },
+                Knowledge: function(){ return 2700; },
                 Iron: function(){ return 250; }
             },
             effect: 'Upgrade to more durable sledgehammers made from iron. Improves rock quarrying.',
@@ -3626,7 +3626,7 @@ export const actions = {
             reqs: { hammer: 2, smelting: 2 },
             grant: ['hammer',3],
             cost: {
-                Knowledge: function(){ return 8000; },
+                Knowledge: function(){ return 7200; },
                 Steel: function(){ return 250; }
             },
             effect: 'Upgrade to stronger sledgehammers made from steel. Improves rock quarrying.',
@@ -3644,7 +3644,7 @@ export const actions = {
             reqs: { hammer: 3, high_tech: 3 },
             grant: ['hammer',4],
             cost: {
-                Knowledge: function(){ return 44000; },
+                Knowledge: function(){ return 40000; },
                 Titanium: function(){ return 400; }
             },
             effect: 'Upgrade to stronger sledgehammers made from titanium. Improves rock quarrying.',
@@ -3662,7 +3662,7 @@ export const actions = {
             reqs: { mining: 2 },
             grant: ['pickaxe',1],
             cost: {
-                Knowledge: function(){ return 750; },
+                Knowledge: function(){ return 675; },
                 Copper: function(){ return 25; }
             },
             effect: 'Create metal pickaxes made with brass heads. Improves mining activities.',
@@ -3680,7 +3680,7 @@ export const actions = {
             reqs: { pickaxe: 1, mining: 3 },
             grant: ['pickaxe',2],
             cost: {
-                Knowledge: function(){ return 3500; },
+                Knowledge: function(){ return 3200; },
                 Iron: function(){ return 250; }
             },
             effect: 'Upgrades pickaxe technology to metal pickaxes made from iron. Improves mining activities.',
@@ -3698,7 +3698,7 @@ export const actions = {
             reqs: { pickaxe: 2, smelting: 2},
             grant: ['pickaxe',3],
             cost: {
-                Knowledge: function(){ return 10000; },
+                Knowledge: function(){ return 9000; },
                 Steel: function(){ return 250; }
             },
             effect: 'Upgrades pickaxe technology to steel pickaxes. Improves mining activities.',
@@ -3716,7 +3716,7 @@ export const actions = {
             reqs: { pickaxe: 3, high_tech: 2},
             grant: ['pickaxe',4],
             cost: {
-                Knowledge: function(){ return 25000; },
+                Knowledge: function(){ return 22500; },
                 Copper: function(){ return 5000; }
             },
             effect: 'Replace old mining pick technology with jackhammers. Improves mining activities.',
@@ -3734,7 +3734,7 @@ export const actions = {
             reqs: { pickaxe: 4, high_tech: 4},
             grant: ['pickaxe',5],
             cost: {
-                Knowledge: function(){ return 75000; },
+                Knowledge: function(){ return 67500; },
                 Titanium: function(){ return 2000; },
                 Alloy: function(){ return 500; }
             },
@@ -3753,7 +3753,7 @@ export const actions = {
             reqs: { mining: 2 },
             grant: ['hoe',1],
             cost: {
-                Knowledge: function(){ return 800; },
+                Knowledge: function(){ return 720; },
                 Copper: function(){ return 50; }
             },
             effect: 'Create tools made from brass that aid farming. Improves farm efficiency.',
@@ -3771,7 +3771,7 @@ export const actions = {
             reqs: { hoe: 1, mining: 3 },
             grant: ['hoe',2],
             cost: {
-                Knowledge: function(){ return 4000; },
+                Knowledge: function(){ return 3600; },
                 Iron: function(){ return 500; }
             },
             effect: 'Create tools made from iron that aid farming. Improves farm efficiency.',
@@ -3789,7 +3789,7 @@ export const actions = {
             reqs: { hoe: 2, smelting: 2 },
             grant: ['hoe',3],
             cost: {
-                Knowledge: function(){ return 14000; },
+                Knowledge: function(){ return 12600; },
                 Steel: function(){ return 500; }
             },
             effect: 'Create tools made from steel that aid farming. Improves farm efficiency.',
@@ -3807,7 +3807,7 @@ export const actions = {
             reqs: { hoe: 3, high_tech: 3 },
             grant: ['hoe',4],
             cost: {
-                Knowledge: function(){ return 48000; },
+                Knowledge: function(){ return 44000; },
                 Titanium: function(){ return 500; }
             },
             effect: 'Create tools made from titanium that aid farming. Improves farm efficiency.',
@@ -3825,7 +3825,7 @@ export const actions = {
             reqs: { science: 1, housing: 1 },
             grant: ['military',1],
             cost: {
-                Knowledge: function(){ return 80; }
+                Knowledge: function(){ return 70; }
             },
             effect: 'Establish a military to keep your people safe from external threats, or to conquer your enemies with.',
             action: function (){
@@ -3845,7 +3845,7 @@ export const actions = {
             grant: ['mercs',1],
             cost: {
                 Money: function(){ return 10000 },
-                Knowledge: function(){ return 5000; }
+                Knowledge: function(){ return 4500; }
             },
             effect: 'Unlocks the ability to hire mercenaries. You can pay a man to die for you afterall.',
             action: function (){
@@ -3863,7 +3863,7 @@ export const actions = {
             reqs: { military: 1 },
             grant: ['military',2],
             cost: {
-                Knowledge: function(){ return 250; },
+                Knowledge: function(){ return 225; },
                 Lumber: function(){ return 250; }
             },
             effect: 'Create the bow and outfit your army with ranged weapons. Sure to give you dominance over the primates.',
@@ -3881,7 +3881,7 @@ export const actions = {
             reqs: { military: 2, explosives: 1 },
             grant: ['military',3],
             cost: {
-                Knowledge: function(){ return 6000; },
+                Knowledge: function(){ return 5400; },
                 Coal: function(){ return 750; }
             },
             effect: 'Outfit your army with firearms, much deadlier then primative bows and arrows.',
@@ -3899,7 +3899,7 @@ export const actions = {
             reqs: { military: 3, oil: 1 },
             grant: ['military',4],
             cost: {
-                Knowledge: function(){ return 37500; },
+                Knowledge: function(){ return 33750; },
                 Oil: function(){ return 1500; }
             },
             effect: 'Decimate your foes with rapid fire weaponary.',
@@ -3917,7 +3917,7 @@ export const actions = {
             reqs: { military: 4, high_tech: 4 },
             grant: ['military',5],
             cost: {
-                Knowledge: function(){ return 85000; },
+                Knowledge: function(){ return 76500; },
                 Furs: function(){ return 25000; },
                 Alloy: function(){ return 3000; }
             },
@@ -3937,7 +3937,7 @@ export const actions = {
             grant: ['armor',1],
             cost: {
                 Money: function(){ return 250; },
-                Knowledge: function(){ return 250; },
+                Knowledge: function(){ return 225; },
                 Furs: function(){ return 250; }
             },
             effect: 'Basic armor made from leather, will reduce the number of casulaties you take during military actions.',
@@ -3955,7 +3955,7 @@ export const actions = {
             reqs: { armor: 1, mining: 3 },
             grant: ['armor',2],
             cost: {
-                Knowledge: function(){ return 3750; },
+                Knowledge: function(){ return 3400; },
                 Iron: function(){ return 600; },
             },
             effect: 'Armor reinforced with iron plates, heavy but offers better protection for your soldiers.',
@@ -3973,7 +3973,7 @@ export const actions = {
             reqs: { armor: 2, polymer: 1 },
             grant: ['armor',3],
             cost: {
-                Knowledge: function(){ return 95000; },
+                Knowledge: function(){ return 86000; },
                 Polymer: function(){ return 750; },
             },
             effect: 'New armor made out of kevlar provides modern protection for your soldiers.',
@@ -3991,7 +3991,7 @@ export const actions = {
             reqs: { mining: 4 },
             grant: ['explosives',1],
             cost: {
-                Knowledge: function(){ return 5000; },
+                Knowledge: function(){ return 4500; },
                 Coal: function(){ return 500; }
             },
             effect: 'Usher in a new era of things that go boom. Surely nothing bad can happen thanks to this discovery.',
@@ -4009,7 +4009,7 @@ export const actions = {
             reqs: { explosives: 1 },
             grant: ['explosives',2],
             cost: {
-                Knowledge: function(){ return 5200; },
+                Knowledge: function(){ return 4800; },
                 Coal: function(){ return 750; }
             },
             effect: 'Dynamite can be used to increase the efficiency of mining, no one would ever misuse this invention for nefarious purposes.',
@@ -4027,7 +4027,7 @@ export const actions = {
             reqs: { explosives: 2, oil: 1 },
             grant: ['explosives',3],
             cost: {
-                Knowledge: function(){ return 45000; },
+                Knowledge: function(){ return 42000; },
                 Oil: function(){ return 2500; }
             },
             effect: 'ANFO is a powerful explosive that can greatly aid mining activities.',
@@ -4045,7 +4045,7 @@ export const actions = {
             reqs: { uranium: 1, explosives: 3, high_tech: 7 },
             grant: ['mad',1],
             cost: {
-                Knowledge: function(){ return 140000; },
+                Knowledge: function(){ return 126000; },
                 Oil: function(){ return 10000; },
                 Uranium: function(){ return 1250; }
             },
@@ -4065,7 +4065,7 @@ export const actions = {
             reqs: { mining: 3, cement: 1 },
             grant: ['cement',2],
             cost: {
-                Knowledge: function(){ return 3500; },
+                Knowledge: function(){ return 3200; },
                 Iron: function(){ return 750; }
             },
             effect: 'Adding rebar to concrete will make it much stronger and reduce cement costs.',
@@ -4083,7 +4083,7 @@ export const actions = {
             reqs: { smelting: 2, cement: 2 },
             grant: ['cement',3],
             cost: {
-                Knowledge: function(){ return 7500; },
+                Knowledge: function(){ return 6750; },
                 Steel: function(){ return 750; }
             },
             effect: 'Use stronger steel as rebar, further reducing cement costs.',
@@ -4101,7 +4101,7 @@ export const actions = {
             reqs: { cement: 3, high_tech: 3 },
             grant: ['cement',4],
             cost: {
-                Knowledge: function(){ return 35000; }
+                Knowledge: function(){ return 32000; }
             },
             effect: 'Portland cement is easier to make boosting productivity of cement workers by 20%',
             action: function (){
@@ -4118,7 +4118,7 @@ export const actions = {
             reqs: { cement: 4, high_tech: 4 },
             grant: ['cement',5],
             cost: {
-                Knowledge: function(){ return 80000; }
+                Knowledge: function(){ return 72000; }
             },
             effect: 'Screw conveyors can greatly increase the output of cement factories, however they require power to opperate.',
             action: function (){
@@ -4135,7 +4135,7 @@ export const actions = {
             reqs: { high_tech: 3, smelting: 2 },
             grant: ['titanium',1],
             cost: {
-                Knowledge: function(){ return 50000; },
+                Knowledge: function(){ return 45000; },
                 Titanium: function(){ return 1000; }
             },
             effect: 'Steel smelting will result in small amounts of titanium production.',
@@ -4153,7 +4153,7 @@ export const actions = {
             reqs: { titanium: 1, high_tech: 4 },
             grant: ['titanium',2],
             cost: {
-                Knowledge: function(){ return 85000; },
+                Knowledge: function(){ return 78000; },
                 Titanium: function(){ return 10000; }
             },
             effect: 'Iron smelting will result in small amounts of titanium production.',
@@ -4171,7 +4171,7 @@ export const actions = {
             reqs: { titanium: 2, supercollider: 1 },
             grant: ['titanium',3],
             cost: {
-                Knowledge: function(){ return 150000; },
+                Knowledge: function(){ return 135000; },
                 Titanium: function(){ return 17500; }
             },
             effect: 'Modern techniques result in more efficent production of titanium from smelters.',
@@ -4189,7 +4189,7 @@ export const actions = {
             reqs: { supercollider: 1 },
             grant: ['particles',1],
             cost: {
-                Knowledge: function(){ return 110000; }
+                Knowledge: function(){ return 100000; }
             },
             effect: 'Subatomic particals discovered by Dr Hank Pynn using the supercollider. Has applications in dimensional physics.',
             action: function (){
@@ -4206,7 +4206,7 @@ export const actions = {
             reqs: { particles: 1 },
             grant: ['particles',2],
             cost: {
-                Knowledge: function(){ return 125000; }
+                Knowledge: function(){ return 112500; }
             },
             effect: 'Use pynn particals to shrink containers down to half size, therefore doubling the amount you can store.',
             action: function (){
@@ -4223,7 +4223,7 @@ export const actions = {
             reqs: { particles: 2, supercollider: 2 },
             grant: ['particles',3],
             cost: {
-                Knowledge: function(){ return 135000; }
+                Knowledge: function(){ return 125000; }
             },
             effect: 'Discover the Higgs Boson. No one knows what practical application this has but excitement about it will raise the contribution to science from supercolliders.',
             action: function (){
@@ -4240,7 +4240,7 @@ export const actions = {
             reqs: { theology: 1, housing: 1 },
             grant: ['theology',2],
             cost: {
-                Knowledge: function(){ return 1000; }
+                Knowledge: function(){ return 900; }
             },
             effect: 'Explore the mysteries of creation and faith.',
             action: function (){

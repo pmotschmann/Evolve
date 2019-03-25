@@ -1223,6 +1223,9 @@ function mainLoop() {
                 if (global.resource[res].amount > global.resource[res].max){
                     global.resource[res].amount = global.resource[res].max;
                 }
+                else if (global.resource[res].amount < 0){
+                    global.resource[res].amount = 0;
+                }
             });
             
             Object.keys(lCaps).forEach(function (job){
