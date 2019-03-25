@@ -79,16 +79,31 @@ if (!global.race['Plasmid']){
 
 $('html').addClass(global.settings.theme);
 
+if (!global.city['morale']){
+    global.city['morale'] = {
+        current: 0,
+        stress: 0,
+        entertain: 0,
+        season: 0,
+        weather: 0
+    };
+}
+
 if (!global.city['calendar']){
     global.city['calendar'] = {
         day: 0,
         year: 0,
+        season: 0,
         weather: 2,
         temp: 1,
         moon: 0,
         wind: 0,
         orbit: 365
     };
+}
+
+if (!global.city.calendar['season']){
+    global.city.calendar['season'] = 0;
 }
 
 if (!global.city.calendar['moon']){

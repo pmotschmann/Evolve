@@ -1,4 +1,5 @@
 import { global, vues, poppers, messageQueue, modRes } from './vars.js';
+import { drawCity, drawTech } from './actions.js';
 
 export function arpa(type) {
     switch(type){
@@ -173,6 +174,7 @@ function addProject(parent,project){
                                 global.arpa[pro].rank++;
                                 global.arpa[pro].complete = 0;
                                 global.tech[arpaProjects[pro].grant] = global.arpa[pro].rank;
+                                drawTech();
                             }
                         }
                     }

@@ -116,9 +116,9 @@ function buildGarrison(garrison){
     garrison.append($('<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>Soldiers</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>'));
     garrison.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
-    garrison.append($('<b-tooltip :label="trainLabel()" position="is-bottom" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));
-    garrison.append($('<b-tooltip :label="hireLabel()" position="is-bottom" multilined animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip>'));
-    garrison.append($('<b-tooltip :label="retireLabel()" position="is-bottom" multilined animated><button class="button" @click="retire">Retire soldier</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="trainLabel()" size="is-small" position="is-bottom" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" multilined animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip>'));
+    garrison.append($('<b-tooltip :label="retireLabel()" size="is-small" position="is-bottom" multilined animated><button class="button" @click="retire">Retire soldier</button></b-tooltip>'));
 
     var tactics = $('<div id="tactics" v-show="display" class="tactics"><span>Campaign</span></div>');
     garrison.append(tactics);
@@ -619,6 +619,8 @@ function defineMad(){
                 global.stats.tdays += global.stats.days;
                 global.stats.days = 0;
                 global.stats.plasmid += new_plasmid;
+                global.stats.achieve['apocalypse'] = 1;
+                global.stats.achieve[`extinct_${god}`] = 1;
                 global['race'] = { 
                     species : 'protoplasm', 
                     gods: god, 

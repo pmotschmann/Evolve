@@ -66,6 +66,63 @@ vues['race'] = new Vue({
 });
 vues['race'].$mount('#race');
 
+$('#morale').on('mouseover',function(){
+    var popper = $(`<div id="popMorale" class="popper has-background-light has-text-dark"></div>`);
+    $('#main').append(popper);
+    if (global.city.morale.stress !== 0){
+        let type = global.city.morale.stress > 0 ? 'success' : 'danger';
+        popper.append(`<p>Stress<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
+    }
+    if (global.city.morale.entertain !== 0){
+        let type = global.city.morale.entertain > 0 ? 'success' : 'danger';
+        popper.append(`<p>Entertainment<span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
+    }
+    if (global.city.morale.season !== 0){
+        let season = global.city.calendar.season === 0 ? 'Spring' : 'Winter';
+        let type = global.city.morale.season > 0 ? 'success' : 'danger';
+        popper.append(`<p>${season}<span class="has-text-${type}"> ${global.city.morale.season}%</span></p>`);
+    }
+    if (global.city.morale.weather !== 0){
+        let type = global.city.morale.weather > 0 ? 'success' : 'danger';
+        popper.append(`<p>Weather<span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
+    }
+    let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather;
+    if (total > 125 || total < 50){
+        popper.append(`<div>Current<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
+    }
+    else {
+        popper.append(`<div>Current<span class="has-text-warning"> ${global.city.morale.current}%</span></div>`);
+    }
+    popper.show();
+    poppers['morale'] = new Popper($('#morale'),popper);
+});
+$('#morale').on('mouseout',function(){
+    $(`#popMorale`).hide();
+    poppers['morale'].destroy();
+    $(`#popMorale`).remove();
+});
+
+$('#powerStatus').on('mouseover',function(){
+    var popper = $(`<div id="popPowerStatus" class="popper has-background-light has-text-dark"></div>`);
+    $('#main').append(popper);
+    let drain = global.city.power_total - global.city.power;
+    popper.append(`<p>Generated<span class="has-text-success"> +${global.city.power_total}</span></p>`);
+    popper.append(`<p>Consumed<span class="has-text-danger"> -${drain}</span></p>`);
+    if (global.city.power > 0){
+        popper.append(`<div>Available <span class="has-text-success">${global.city.power}</span></div>`);
+    }
+    else {
+        popper.append(`<div>Available <span class="has-text-danger">${global.city.power}</span></div>`);
+    }
+    popper.show();
+    poppers['PowerStatus'] = new Popper($('#powerStatus'),popper);
+});
+$('#powerStatus').on('mouseout',function(){
+    $(`#popPowerStatus`).hide();
+    poppers['PowerStatus'].destroy();
+    $(`#popPowerStatus`).remove();
+});
+
 vues['topBar'] = new Vue({
     data: {
         city: global.city,
@@ -278,6 +335,49 @@ function mainLoop() {
         else {
             // Rest of game
 
+            let morale = 100;
+            if (global.city.calendar.season === 0 && global.city.calendar.year > 0){
+                morale += 10;
+                global.city.morale.season = 10;
+            }
+            else if (global.city.calendar.season === 3){
+                morale -= 20;
+                global.city.morale.season = -20;
+            }
+            else {
+                global.city.morale.season = 0;
+            }
+
+            if (global.city.calendar.weather === 0){
+                if (global.city.calendar.wind === 1){
+                    morale -= 5;
+                    global.city.morale.weather = -5;
+                }
+                else {
+                    morale -= 2;
+                    global.city.morale.weather = -2;
+                }
+            }
+            else if (global.city.calendar.weather === 2 && global.city.calendar.wind === 0){
+                morale += 2;
+                global.city.morale.weather = 2;
+            }
+            else {
+                global.city.morale.weather = 0;
+            }
+
+            let stress = 0;
+            if (!global.race['carnivore']){
+                stress -= global.civic.free * 2;
+            }
+            else {
+                stress -= Math.round(global.civic.free / 5);
+            }
+
+            if (global.civic['garrison']){
+                stress -= Math.round(global.civic.garrison.workers / 2);
+            }
+
             // trade routes
             if (global.tech['trade']){
                 Object.keys(global.resource).forEach(function (res) {
@@ -303,6 +403,7 @@ function mainLoop() {
             }
 
             let power_grid = 0;
+            let max_power = 0;
 
             if (global.city['coal_power']){
                 let power = global.city.coal_power.on * actions.city.coal_power.powered;
@@ -311,6 +412,7 @@ function mainLoop() {
                     power += actions.city.coal_power.powered;
                     consume -= 0.35 * time_multiplier;
                 }
+                max_power += power;
                 power_grid -= power;
                 modRes('Coal',-(consume));
                 // Uranium
@@ -326,6 +428,7 @@ function mainLoop() {
                     power += actions.city.oil_power.powered;
                     consume -= 0.65 * time_multiplier;
                 }
+                max_power += power;
                 power_grid -= power;
                 modRes('Oil',-(consume));
             }
@@ -337,6 +440,7 @@ function mainLoop() {
                     power += actions.city.fission_power.powered;
                     consume -= 0.1 * time_multiplier;
                 }
+                max_power += power;
                 power_grid -= power;
                 modRes('Uranium',-(consume));
             }
@@ -361,15 +465,44 @@ function mainLoop() {
             }
 
             // Detect labor anomalies
-            var total = 0;
+            let total = 0;
             Object.keys(job_desc).forEach(function (job) {
                 total += global.civic[job].workers;
                 if (total > global.resource[races[global.race.species].name].amount){
                     global.civic[job].workers -= total - global.resource[races[global.race.species].name].amount;
                 }
-                global.civic.free = global.resource[races[global.race.species].name].amount - total;
+                stress -= +(global.civic[job].workers / 5).toFixed(0);
             });
+            global.civic.free = global.resource[races[global.race.species].name].amount - total;
             
+            let entertainment = 0;
+            if (global.tech['theatre']){
+                entertainment += global.civic.entertainer.workers * global.tech.theatre
+            }
+            if (global.tech['broadcast']){
+                entertainment += global.city.wardenclyffe.on * global.tech.broadcast;
+            }
+            global.city.morale.entertain = entertainment;
+            morale += entertainment;
+            global.city.morale.stress = stress;
+            morale += stress;
+
+            if (morale < 50){
+                morale = 50;
+            }
+            else if (morale > 125){
+                morale = 125;
+            }
+
+            global.city.morale.current = morale;
+
+            if (global.city.morale.current < 100){
+                global_multiplier *= global.city.morale.current / 100;
+            }
+            else {
+                global_multiplier *= 1 + ((global.city.morale.current - 100) / 200);
+            }
+
             if (global.race['lazy'] && global.city.calendar.temp === 2){
                 global_multiplier *= 0.9;
             }
@@ -817,6 +950,7 @@ function mainLoop() {
             }
 
             // Power grid state
+            global.city.power_total = -max_power;
             global.city.power = power_grid;
             if (global.city.power < 0){
                 $('#powerMeter').css('color','#cc0000');
@@ -1213,16 +1347,17 @@ function mainLoop() {
                     global.city.calendar.year++;
                 }
 
+                let season_length = Math.round(global.city.calendar.orbit / 4);
+                let days = global.city.calendar.day;
+                let season = 0;
+                while (days > season_length){
+                    days -= season_length;
+                    season++;
+                }
+                global.city.calendar.season = season;
+
                 // Weather
                 if (Math.rand(0,5) === 0){
-                    let season_length = Math.round(global.city.calendar.orbit / 4);
-                    let days = global.city.calendar.day;
-                    let season = 0;
-                    while (days > season_length){
-                        days -= season_length;
-                        season++;
-                    }
-
                     let temp = Math.rand(0,3);
                     let sky = Math.rand(0,5);
                     let wind = Math.rand(0,3);
@@ -1251,7 +1386,7 @@ function mainLoop() {
                             break;
                     }
 
-                    switch(season){
+                    switch(global.city.calendar.season){
                         case 0: // Spring
                             if (Math.rand(0,3) === 0 && sky > 0){
                                 sky--;
@@ -1541,7 +1676,7 @@ function setWeather(){
 
 function plasmidBonus(){
     let plasmid_bonus = (global.race.Plasmid.count / 1000);
-    if (global.city['temple'].count){
+    if (global.city['temple'] && global.city['temple'].count){
         let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
             temple_bonus += global.civic.professor.workers * 0.002;

@@ -688,19 +688,19 @@ export const actions = {
             cost: { 
                 Money: function(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ 
-                        return costMultiplier('basic_housing', 20, 1.18);
+                        return costMultiplier('basic_housing', 20, 1.16);
                     } 
                     else { 
                         return 0; 
                     } 
                 },
-                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.25); },
+                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.22); },
                 Stone: function(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
-                        return costMultiplier('basic_housing', 7, 1.25);
+                        return costMultiplier('basic_housing', 7, 1.22);
                     } 
                     else { 
-                        return costMultiplier('basic_housing', 8, 1.25); 
+                        return costMultiplier('basic_housing', 8, 1.22); 
                     }
                 },
                 Cement: function(){ 
@@ -1149,6 +1149,9 @@ export const actions = {
                     global.city.cement_plant.count++;
                     global.civic.cement_worker.display = true;
                     global.civic.cement_worker.max = global.city.cement_plant.count * 3;
+                    if (global.tech['cement'] && global.tech['cement'] >= 5 && global.city.power >= 2){
+                        global.city['cement_plant'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1339,6 +1342,27 @@ export const actions = {
                 return false;
             }
         },
+        amphitheatre: {
+            id: 'city-amphitheatre',
+            title: 'Amphitheatre',
+            desc: 'A stage for the preforming arts',
+            reqs: { theatre: 1 },
+            cost: {
+                Money: function(){ return costMultiplier('amphitheatre', 500, 1.55); },
+                Lumber: function(){ return costMultiplier('amphitheatre', 50, 1.75); },
+                Stone: function(){ return costMultiplier('amphitheatre', 200, 1.75); }
+            },
+            effect: '+1 Max Entertainer',
+            action: function (){
+                if (payCosts(actions.city.amphitheatre.cost)){
+                    global.city['amphitheatre'].count++;
+                    global.civic.entertainer.max++;
+                    global.civic.entertainer.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         temple: {
             id: 'city-temple',
             title: 'Temple',
@@ -1356,7 +1380,7 @@ export const actions = {
             effect: function(){
                 let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                    plasmid += global.civic.professor.workers * 0.2;
+                    plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
                 }
                 let desc = `<div>Increases the passive effect of Plasmids by ${plasmid}%.</div>`;
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
@@ -1536,7 +1560,15 @@ export const actions = {
                         let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                         pgain *= (global.tech['supercollider'] / ratio) + 1;
                     }
-                    return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div><div>If powered uses 2kW but increases it's Knowledge gain to ${pgain}</div>`;
+                    let desc = `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
+                    if (global.tech['broadcast']){
+                        let morale = global.tech['broadcast'];
+                        desc = desc + `<div>If powered uses 2kW but increases it's Knowledge gain to ${pgain} and morale by ${morale}%</div>`
+                    }
+                    else {
+                        desc = desc + `<div>If powered uses 2kW but increases it's Knowledge gain to ${pgain}</div>`;
+                    }
+                    return desc;
                 }
                 else {
                     return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
@@ -1911,15 +1943,101 @@ export const actions = {
         windmill: {
             id: 'tech-windmill',
             title: 'Windmill',
-            desc: 'Upgrade your grain mills with windmill turbines',
+            desc: 'Upgrade your grain mills with windmill sail',
             reqs: { agriculture: 4, high_tech: 1 },
             grant: ['agriculture',5],
             cost: { 
                 Knowledge: function(){ return 18000; }
             },
-            effect: 'Add a windmill turbine to your grain mills, boosts the effectiveness of mills.',
+            effect: 'Add a windmill sail to your grain mills, boosts the effectiveness of mills.',
             action: function (){
                 if (payCosts(actions.tech.windmill.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        theatre: {
+            id: 'tech-theatre',
+            title: 'Theatre',
+            desc: 'Theatre',
+            reqs: { housing: 1, currency: 1 },
+            grant: ['theatre',1],
+            cost: {
+                Knowledge: function(){ return 100; }
+            },
+            effect: 'Design a space for shows to help uplift your spirits.',
+            action: function (){
+                if (payCosts(actions.tech.theatre.cost)){
+                    global.city['amphitheatre'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        playwright: {
+            id: 'tech-playwright',
+            title: 'Playwright',
+            desc: 'Playwright',
+            reqs: { theatre: 1, science: 2 },
+            grant: ['theatre',2],
+            cost: {
+                Knowledge: function(){ return 1200; }
+            },
+            effect: 'Playwrights will increase the quality of entertainment incresing the effectiveness of entertainers.',
+            action: function (){
+                if (payCosts(actions.tech.playwright.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        magic: {
+            id: 'tech-magic',
+            title: 'Techno Wizards',
+            desc: 'Techno Wizards',
+            reqs: { theatre: 2, high_tech: 1 },
+            grant: ['theatre',3],
+            cost: {
+                Knowledge: function(){ return 8800; }
+            },
+            effect: 'Techno Wizards are a new type of stage performer that uses technology to preform "Magic". Increases effectiveness of entertainers.',
+            action: function (){
+                if (payCosts(actions.tech.magic.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        radio: {
+            id: 'tech-radio',
+            title: 'Radio',
+            desc: 'Radio',
+            reqs: { theatre: 3, high_tech: 2 },
+            grant: ['broadcast',1],
+            cost: {
+                Knowledge: function(){ return 18000; }
+            },
+            effect: 'Powered Wardenclyffe towers broadcast radio signals which help entertain your citizens.',
+            action: function (){
+                if (payCosts(actions.tech.radio.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        tv: {
+            id: 'tech-tv',
+            title: 'Television',
+            desc: 'Television',
+            reqs: { broadcast: 1, high_tech: 4 },
+            grant: ['broadcast',2],
+            cost: {
+                Knowledge: function(){ return 75000; }
+            },
+            effect: 'New broadcast TV signals double the entertainment value of Wardenclyffe towers.',
+            action: function (){
+                if (payCosts(actions.tech.tv.cost)){
                     return true;
                 }
                 return false;
@@ -3303,7 +3421,7 @@ export const actions = {
             cost: {
                 Knowledge: function(){ return 145000; }
             },
-            effect: 'A new oil mining technique, contravresal but effective. Improves oil derrick output by 40%',
+            effect: 'A new oil mining technique, controversial but effective. Improves oil derrick output by 40%',
             action: function (){
                 if (payCosts(actions.tech.fracking.cost)){
                     return true;
@@ -4119,7 +4237,7 @@ export const actions = {
             id: 'tech-theology',
             title: 'Theology',
             desc: 'Theology',
-            reqs: { theology: 1 },
+            reqs: { theology: 1, housing: 1 },
             grant: ['theology',2],
             cost: {
                 Knowledge: function(){ return 1000; }
@@ -4418,12 +4536,20 @@ function gainTech(action){
     var tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
     
+    drawCity();
+    drawTech();
+}
+
+export function drawCity(){
     Object.keys(actions.city).forEach(function (city) {
         removeAction(actions.city[city].id);
         if (checkCityRequirements(city)){
             addAction('city',city);
         }
     });
+}
+
+export function drawTech(){
     Object.keys(actions.tech).forEach(function (tech) {
         removeAction(actions.tech[tech].id);
         if (checkTechRequirements(tech)){

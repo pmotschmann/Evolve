@@ -44,6 +44,10 @@ export const job_desc = {
         }
         return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by ${interest}% per tax cycle.`;
     },
+    entertainer: function(){
+        let morale = global.tech['theatre'];
+        return `Entertainers help combat the dreariness of everyday life. Each entertainer raise the morale of your citizens by ${morale}%.`;
+    },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
         impact *= racialTrait(global.civic.professor.workers,'science');
@@ -74,6 +78,7 @@ export function defineJobs(){
     loadJob('miner','Miner',1);
     loadJob('coal_miner','Coal Miner',0.2);
     loadJob('cement_worker','Cement Plant Worker',0.25);
+    loadJob('entertainer','Entertainer',1);
     loadJob('professor','Professor',0.5);
     loadJob('scientist','Scientist',1);
     loadJob('banker','Banker',0.1);
@@ -95,7 +100,7 @@ function loadUnemployed(){
     vues['civ_free'].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
-            let text = global.race['carnivore'] ? 'Citizens not assigned to any other task will hunt for food. Military technology will boost effectiveness.' : 'The number of unemployed citizens. Unemployed citizens do not pay taxes however they also consume half rations.';
+            let text = global.race['carnivore'] ? 'Citizens not assigned to any other task will hunt for food. Military technology will boost effectiveness.' : 'The number of unemployed citizens. Unemployed citizens lower morale and do not pay taxes however they also consume half rations.';
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
             $('#main').append(popper);
             popper.show();
