@@ -1230,6 +1230,9 @@ function mainLoop() {
                 if (global.civic[job].workers > global.civic[job].max){
                     global.civic[job].workers = global.civic[job].max;
                 }
+                else if (global.civic[job].workers < 0){
+                    global.civic[job].workers = 0;
+                }
             });
             
             // medium resource delta tracking
