@@ -198,9 +198,9 @@ function marketItem(vue,mount,market_item,name,color,full){
     if (full){
         let trade = $('<span class="trade" v-show="m.active"><span class="has-text-warning">Routes</span></span>');
         market_item.append(trade);
-        trade.append($(`<b-tooltip :label="aBuy()" position="is-bottom" size="is-small" multilined animated><span class="sub has-text-success" @click="autoBuy('${name}')"><span class="route">B</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aBuy()" position="is-bottom" size="is-small" multilined animated><span class="sub has-text-success" @click="autoBuy('${name}')"><span class="route">+</span></span></b-tooltip>`));
         trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
-        trade.append($(`<b-tooltip :label="aSell()" position="is-bottom" size="is-small" multilined animated><span class="add has-text-danger" @click="autoSell('${name}')"><span class="route">S</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aSell()" position="is-bottom" size="is-small" multilined animated><span class="add has-text-danger" @click="autoSell('${name}')"><span class="route">-</span></span></b-tooltip>`));
         tradeRouteColor(name);
     }
     

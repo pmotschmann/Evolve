@@ -755,7 +755,7 @@ function fastLoop(){
         }
 
         // Cement
-        if (global.resource.Cement.display && global.resource.Cement.amount < global.resource.Cement.max){
+        if (global.resource.Cement.display){
             let consume = global.civic.cement_worker.workers * 3 * time_multiplier;
             let workDone = global.civic.cement_worker.workers;
             while (consume > global.resource.Stone.amount && consume > 0){
@@ -854,11 +854,9 @@ function fastLoop(){
                     delta *= 0.9;
                 }
 
-                if (global.resource.Steel.amount < global.resource.Steel.max){
-                    modRes('Steel',delta);
-                    modRes('Iron',-(iron_consume));
-                    modRes('Coal',-(coal_consume));
-                }
+                modRes('Steel',delta);
+                modRes('Iron',-(iron_consume));
+                modRes('Coal',-(coal_consume));
                 
                 if (global.tech['titanium'] && global.tech['titanium'] >= 1){
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
