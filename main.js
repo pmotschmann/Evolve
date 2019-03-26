@@ -1,4 +1,5 @@
 import { global, vues, save, poppers, messageQueue, modRes } from './vars.js';
+import { drawAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
@@ -267,6 +268,8 @@ else {
     setWeather();
 }
 
+drawAchieve();
+
 var fed = true;
 var tax_multiplier = 1;
 var p_on = {};
@@ -450,7 +453,7 @@ function fastLoop(){
             modRes('Coal',-(consume));
             // Uranium
             if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                modRes('Uranium',consume / 75);
+                modRes('Uranium',consume / 65);
             }
         }
 
@@ -959,7 +962,7 @@ function fastLoop(){
 
             // Uranium
             if (global.resource.Uranium.display){
-                modRes('Uranium',delta / 125);
+                modRes('Uranium',delta / 115);
             }
         }
         
@@ -1274,6 +1277,8 @@ function midLoop(){
                 diffCalc(res,mid_timer);
             }
         });
+
+        checkAchievements();
     }
 }
 

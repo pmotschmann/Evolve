@@ -374,6 +374,27 @@ a {
             margin-top: .5rem;
         }
     }
+
+    #achievePanel > span {
+        width: 100%;
+    }
+
+    .achievement {
+        border: .0625rem solid;
+        padding: .125rem;
+        margin: .125rem 0;
+        width: 100%;
+        span {
+            display: inline-block;
+        }
+        :first-child {
+            margin-left: 1rem;
+            width: 10rem;
+        }
+        :nth-child(2){
+            width: ~"calc(100% - 11rem)";
+        }
+    }
 }
 
 .market-item {

@@ -1,4 +1,5 @@
 import { global, vues, poppers, messageQueue, modRes, save } from './vars.js';
+import { unlockAchieve } from './achieve.js';
 import { races, racialTrait } from './races.js';
 
 // Sets up government in civics tab
@@ -619,8 +620,8 @@ function defineMad(){
                 global.stats.tdays += global.stats.days;
                 global.stats.days = 0;
                 global.stats.plasmid += new_plasmid;
-                global.stats.achieve['apocalypse'] = 1;
-                global.stats.achieve[`extinct_${god}`] = 1;
+                unlockAchieve(`apocalypse`);
+                unlockAchieve(`extinct_${god}`);
                 global['race'] = { 
                     species : 'protoplasm', 
                     gods: god, 

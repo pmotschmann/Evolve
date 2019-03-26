@@ -56,10 +56,15 @@ if (!global['settings']){
         showMarket: false,
         showGenetics: false,
         showSpace: false,
+        showAchieve: false,
         animated: true,
         disableReset: false,
         theme: 'dark'
     }
+}
+
+if (!global.settings['showAchieve']){
+    global.settings['showAchieve'] = false;
 }
 
 if (!global.stats['reset']){

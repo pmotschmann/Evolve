@@ -1,133 +1,200 @@
-import { global } from './vars.js';
+import { global, vues, messageQueue } from './vars.js';
 
 if (!global.stats['achieve']){
     global.stats['achieve'] = {};
 }
 
-export var achievements = {
+var achievements = {
     apocalypse: {
         name: `Apocalypse`,
-        desc: `Wipe yourself out with nuclear weapons`,
+        desc: `Wiped yourself out with nuclear weapons`,
         flair: `The vaults didn't help`
     },
     extinct_human: {
         name: `Homo Adeadus`,
-        desc: `Destroyed a human civilization`,
+        desc: `Led a human civilization to destruction`,
         flair: `Homo Erectus? More like Homo Flacidus`
     },
     extinct_elven: {
         name: `The few, the proud, the dead`,
-        desc: `Destroyed an elven civilization`,
+        desc: `Led an elven civilization to destruction`,
         flair: `Now they can help the trees as fertilizer`
     },
     extinct_orc: {
         name: `Outlander`,
-        desc: `Destroyed an orc civilization`,
+        desc: `Led an orc civilization to destruction`,
         flair: `Went out in a blaze of glory`
     },
     extinct_cath: {
         name: `Saber Tooth Tiger`,
-        desc: `Destroyed a cath civilization`,
+        desc: `Led a cath civilization to destruction`,
         flair: `Scratched their last post`
     },
     extinct_wolven: {
         name: `Dire Wolf`,
-        desc: `Destroyed a wolven civilization`,
+        desc: `Led a wolven civilization to destruction`,
         flair: `The moon will be lonely`
     },
     extinct_centaur: {
         name: `Ferghana`,
-        desc: `Destroyed a centaur civilization`,
+        desc: `Led a centaur civilization to destruction`,
         flair: `Just dust in the wind`
     },
     extinct_kobold: {
         name: `Took their candle`,
-        desc: `Destroyed a kobold civilization`,
+        desc: `Led a kobold civilization to destruction`,
         flair: `It didn't smell very good`
     },
     extinct_goblin: {
         name: `Greed before Need`,
-        desc: `Destroyed a goblin civilization`,
+        desc: `Led a goblin civilization to destruction`,
         flair: `Too cheap for tombstones`
+    },
+    extinct_gnome: {
+        name: `Unathletic`,
+        desc: `Led a gnome civilization to destruction`,
+        flair: `Couldn't outrun the bombs`
     },
     extinct_orge: {
         name: `Too stupid to live`,
-        desc: `Destroyed an orge civilization`,
+        desc: `Led an orge civilization to destruction`,
         flair: `Darwin would be proud`
     },
     extinct_cyclops: {
         name: `Blind Ambition`,
-        desc: `Destroyed a cyclops civilization`,
+        desc: `Led a cyclops civilization to destruction`,
         flair: `Lost an eye and didn't have a spare`
     },
     extinct_troll: {
         name: `Bad Juju`,
-        desc: `Destroyed a troll civilization`,
+        desc: `Led a troll civilization to destruction`,
         flair: `Paid the final toll`
     },
     extinct_tortoisan: {
         name: `Circle of Life`,
-        desc: `Destroyed a tortoisan civilization`,
+        desc: `Led a tortoisan civilization to destruction`,
         flair: `A turtle didn't make it to the water`
     },
     extinct_gecko: {
         name: `No Savings`,
-        desc: `Destroyed a gecko civilization`,
+        desc: `Led a gecko civilization to destruction`,
         flair: `The rates weren't that good afterall`
     },
     extinct_slitheryn: {
         name: `Final Shedding`,
-        desc: `Destroyed a slitheryn civilization`,
+        desc: `Led a slitheryn civilization to destruction`,
         flair: `Choked on the apple`
     },
     extinct_arraak: {
         name: `Way of the Dodo`,
-        desc: `Destroyed an arraak civilization`,
+        desc: `Led an arraak civilization to destruction`,
         flair: `Tastes like chicken`
     },
     extinct_pterodacti: {
         name: `Chicxulub`,
-        desc: `Destroyed a pterodacti civilization`,
+        desc: `Led a pterodacti civilization to destruction`,
         flair: `Just couldn't adapt`
     },
     extinct_dracnid: {
         name: `Desolate Smaug`,
-        desc: `Destroyed a dracnid civilization`,
+        desc: `Led a dracnid civilization to destruction`,
         flair: `The forever lonely mountain`
     },
     extinct_entish: {
         name: `Saruman's Revenge`,
-        desc: `Destroyed an entish civilization`,
+        desc: `Led an entish civilization to destruction`,
         flair: `Ripped them all down`
     },
     extinct_cacti: {
         name: `Desert Deserted`,
-        desc: `Destroyed a cacti civilization`,
+        desc: `Led a cacti civilization to destruction`,
         flair: `The oasis was a mirage`
     },
     extinct_sporgar: {
         name: `Fungicide`,
-        desc: `Destroyed a sporgar civilization`,
+        desc: `Led a sporgar civilization to destruction`,
         flair: `The oil of the future`
     },
     extinct_shroomi: {
         name: `Bad Trip`,
-        desc: `Destroyed a shroomi civilization`,
+        desc: `Led a shroomi civilization to destruction`,
         flair: `Shouldn't have eaten that`
     },
     extinct_mantis: {
         name: `Praying Unanswered`,
-        desc: `Destroyed a mantis civilization`,
+        desc: `Led a mantis civilization to destruction`,
         flair: `Maybe next time they'll be listening`
     },
     extinct_scorpid: {
         name: `Pulmonoscorpius`,
-        desc: `Destroyed a scorpid civilization`,
+        desc: `Led a scorpid civilization to destruction`,
         flair: `Owl supremacy`
     },
     extinct_antid: {
         name: `Ophiocordyceps Unilateralis`,
-        desc: `Destroyed an antid civilization`,
+        desc: `Led an antid civilization to destruction`,
         flair: `Walked off into history`
+    },
+    mass_extinction: {
+        name: `Mass Extinction`,
+        desc: `Led all civilizations to destruction`,
+        flair: `Cosmic rays have got nothing on you`
     }
 };
+
+export function unlockAchieve(achievement){
+    if (!global.stats.achieve[achievement]){
+        global.settings.showAchieve = true;
+        global.stats.achieve[achievement] = true;
+        messageQueue(`Achievement Unlocked! ${achievements[achievement].name}`,'special');
+    }
+}
+
+export function drawAchieve(){
+    if (vues['vue_achieve']){
+        vues['vue_achieve'].$destroy();
+    }
+
+    $('#achieve').empty();
+    let achieve = $('<div id="achievePanel"></div>');
+    $('#achieve').append(achieve);
+    let earned = 0;
+    let total = 0;
+    Object.keys(achievements).forEach(function (achievement){
+        total++;
+        if (global.stats.achieve[achievement]){
+            earned++;
+            achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span></div></b-tooltip>`));
+        }
+    });
+    achieve.prepend(`<div class="has-text-warning">Achivements Earned: ${earned} of ${total}</div>`);
+
+    let avue = {
+        methods: {
+            flair(flair){
+                return achievements[flair].flair;
+            }
+        }
+    }
+    
+    vues['vue_achieve'] = new Vue(avue);
+    vues['vue_achieve'].$mount('#achievePanel');
+}
+
+export function checkAchievements(){
+    if (!global.stats.achieve['mass_extinction']){
+        let check = true;
+        const keys = Object.keys(achievements)
+        for (const key of keys) {
+            if (key.includes('extinct_')){
+                if (!global.stats.achieve[key]){
+                    check = false;
+                    break;
+                }
+            }
+        }
+        if (check){
+            unlockAchieve('mass_extinction');
+        }
+    }
+}
