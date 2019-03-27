@@ -373,12 +373,12 @@ function fastLoop(){
 
         let morale = 100;
         if (global.city.calendar.season === 0 && global.city.calendar.year > 0){
-            morale += 10; // Spring
-            global.city.morale.season = 10;
+            morale += 5; // Spring
+            global.city.morale.season = 5;
         }
         else if (global.city.calendar.season === 3){
-            morale -= 20; // Winter
-            global.city.morale.season = -20;
+            morale -= 5; // Winter
+            global.city.morale.season = -5;
         }
         else {
             global.city.morale.season = 0;
@@ -390,7 +390,7 @@ function fastLoop(){
                     // Thunderstorm
                     if (global.race['skittish']){
                         morale -= 25; 
-                        global.city.morale.weather = -25;
+                        global.city.morale.weather = -12;
                     }
                     else {
                         morale -= 5; 
@@ -411,7 +411,7 @@ function fastLoop(){
             // Sunny
             if (global.race['nyctophilia']){
                 morale -= 10;
-                global.city.morale.weather = -10;
+                global.city.morale.weather = -5;
             }
             else if (global.city.calendar.wind === 0 && global.city.calendar.temp < 2){
                 morale += 2;
@@ -726,7 +726,7 @@ function fastLoop(){
                 let demand = global.resource[races[global.race.species].name].amount * 0.14;
                 delta = workDone * demand * hunger * tax_multiplier * global_multiplier * time_multiplier;
                 if (global.race['toxic']){
-                    delta *= 1.05;
+                    delta *= 1.08;
                 }
                 modRes('Money',delta);
             }
@@ -757,7 +757,7 @@ function fastLoop(){
 
                 delta = workDone * 0.075 * hunger * tax_multiplier * global_multiplier * time_multiplier;
                 if (global.race['toxic']){
-                    delta *= 1.05;
+                    delta *= 1.08;
                 }
                 modRes('Alloy',delta);
             }
@@ -790,7 +790,7 @@ function fastLoop(){
 
                 delta = workDone * 0.125 * hunger * tax_multiplier * global_multiplier * time_multiplier;
                 if (global.race['toxic']){
-                    delta *= 1.05;
+                    delta *= 1.08;
                 }
                 if (global.tech['polymer'] >= 2){
                     delta *= 1.42;
@@ -817,6 +817,9 @@ function fastLoop(){
                 cement_multiplier *= 1 + (p_on['cement_plant'] * 0.05);
             }
             delta = (workDone * global.civic.cement_worker.impact) * cement_multiplier * global_multiplier * time_multiplier;
+            if (global.race['toxic']){
+                delta *= 1.08;
+            }
             modRes('Cement',delta);
         }
         
@@ -911,7 +914,7 @@ function fastLoop(){
         }                
 
         // Lumber
-        var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.25 : 0) + 1;
+        var lum_multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
         lum_multiplier *= tax_multiplier;
         if (global.city.powered && global.city.sawmill && p_on['sawmill']){
             lum_multiplier *= 1 + (p_on['sawmill'] * 0.05);
@@ -923,7 +926,7 @@ function fastLoop(){
         modRes('Lumber',delta);
         
         // Stone
-        var stone_multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.3 : 0) + 1;
+        var stone_multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
             stone_multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
@@ -938,7 +941,7 @@ function fastLoop(){
         
         // Copper
         if (global.resource.Copper.display){
-            var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+            var copper_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.15 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 copper_multiplier *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
@@ -960,7 +963,7 @@ function fastLoop(){
         
         // Iron
         if (global.resource.Iron.display){
-            var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+            var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.15 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 iron_multiplier *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
@@ -986,7 +989,7 @@ function fastLoop(){
         
         // Coal
         if (global.resource.Coal.display){
-            var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.1 : 0) + 1;
+            var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.12 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 coal_multiplier *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
@@ -1059,7 +1062,7 @@ function midLoop(){
         var caps = {
             Money: 1000,
             Knowledge: 100,
-            Food: 250,
+            Food: 1000,
             Crates: 0,
             Containers: 0,
             Lumber: 200,
@@ -1173,7 +1176,7 @@ function midLoop(){
             caps['Coal'] += (global.city['shed'].count * (50 * multiplier));
         }
         if (global.city['silo']){
-            caps['Food'] += (global.city['silo'].count * 125);
+            caps['Food'] += (global.city['silo'].count * 500);
         }
         if (global.city['oil_well']){
             caps['Oil'] += (global.city['oil_well'].count * 500);
@@ -1506,12 +1509,18 @@ function longLoop(){
                     if (new_temp < 0){
                         new_temp = 0;
                     }
+                    if (global.city.calendar.season === 1 && new_temp === 0){
+                        new_temp = 1;
+                    }
                     global.city.calendar.temp = new_temp;
                 }
                 else if (temp === 2){
                     let new_temp = global.city.calendar.temp + 1;
                     if (new_temp > 2){
                         new_temp = 2;
+                    }
+                    if (global.city.calendar.season === 3 && new_temp === 2){
+                        new_temp = 1;
                     }
                     global.city.calendar.temp = new_temp;
                 }

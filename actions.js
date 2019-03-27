@@ -695,22 +695,7 @@ export const actions = {
                     } 
                 },
                 Lumber: function(){ return costMultiplier('basic_housing', 10, 1.22); },
-                Stone: function(){ 
-                    if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
-                        return costMultiplier('basic_housing', 7, 1.22);
-                    } 
-                    else { 
-                        return costMultiplier('basic_housing', 8, 1.22); 
-                    }
-                },
-                Cement: function(){ 
-                    if (global.city['basic_housing'] && global.city['basic_housing'].count >= 25){ 
-                        return costMultiplier('basic_housing', 2, 1.22);
-                    } 
-                    else { 
-                        return 0; 
-                    } 
-                }
+                Stone: function(){ return costMultiplier('basic_housing', 7, 1.22); }
             },
             effect: '+1 Max Citizen',
             action: function (){
@@ -807,11 +792,11 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('silo', 65, 1.35) },
                 Stone: function(){ return costMultiplier('silo', 50, 1.35); }
             },
-            effect: '+125 Max Food',
+            effect: '+500 Max Food',
             action: function (){
                 if (payCosts(actions.city.silo.cost)){
                     global.city['silo'].count++;
-                    global['resource']['Food'].max += 125;
+                    global['resource']['Food'].max += 500;
                     return true;
                 }
                 return false;
@@ -4045,7 +4030,7 @@ export const actions = {
             reqs: { uranium: 1, explosives: 3, high_tech: 7 },
             grant: ['mad',1],
             cost: {
-                Knowledge: function(){ return 126000; },
+                Knowledge: function(){ return 120000; },
                 Oil: function(){ return 10000; },
                 Uranium: function(){ return 1250; }
             },
