@@ -1555,6 +1555,11 @@ function longLoop(){
                             isOk = false;
                         }
                         break;
+                    case 'trait':
+                        if (!global.race[events[event].reqs[req]]){
+                            isOk = false;
+                        }
+                        break;
                     case 'tech':
                         if (!global.tech[events[event].reqs[req]]){
                             isOk = false;

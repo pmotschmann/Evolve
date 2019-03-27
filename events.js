@@ -74,6 +74,27 @@ export const events = {
             }
         }
     },
+    fire: {
+        reqs: { 
+            trait: 'ancient_ruins'
+        },
+        effect: function(){
+            let resources = ['Iron','Copper','Steel','Cement'];
+            for (var i = 0; i < resources.length; i++){
+                let res = resources[i];
+                if (global.resource[res].display){
+                    let gain = Math.rand(1,Math.round(global.resource[res].max / 4));
+                    if (global.resource[res].amount + gain > global.resource[res].max){
+                        global.resource[res].amount = global.resource[res].max;
+                    }
+                    else {
+                        global.resource[res].amount += gain;
+                    }
+                }
+            }
+            return `An ancient cache of resources has been discovered.`;
+        }
+    },
     tax_revolt1: {
         reqs: { 
             tax_rate: 4
