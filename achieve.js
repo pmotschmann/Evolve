@@ -139,6 +139,11 @@ var achievements = {
         name: `Mass Extinction`,
         desc: `Led all civilizations to destruction`,
         flair: `Cosmic rays have got nothing on you`
+    },
+    blackhole: {
+        name: `Blackhole? No hole`,
+        desc: `Didn't destroy your planet with an artifical blackhole`,
+        flair: `Science 1, Fearmongers 0`
     }
 };
 
@@ -197,5 +202,8 @@ export function checkAchievements(){
         if (check){
             unlockAchieve('mass_extinction');
         }
+    }
+    if (!global.stats.achieve['blackhole'] && global.tech['supercollider'] && global.tech['supercollider'] >= 99){
+        unlockAchieve('blackhole');
     }
 }
