@@ -4305,7 +4305,7 @@ export const actions = {
                             global.race['armored'] = 1;
                             break;
                         case 'gecko':
-                            global.race['chameleon'] = 1;
+                            global.race['optimistic'] = 1;
                             break;
                         case 'slitheryn':
                             global.race['forked_tongue'] = 1;

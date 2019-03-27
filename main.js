@@ -373,11 +373,11 @@ function fastLoop(){
 
         let morale = 100;
         if (global.city.calendar.season === 0 && global.city.calendar.year > 0){
-            morale += 10;
+            morale += 10; // Spring
             global.city.morale.season = 10;
         }
         else if (global.city.calendar.season === 3){
-            morale -= 20;
+            morale -= 20; // Winter
             global.city.morale.season = -20;
         }
         else {
@@ -385,29 +385,70 @@ function fastLoop(){
         }
 
         if (global.city.calendar.weather === 0){
-            if (global.city.calendar.wind === 1){
-                morale -= 5;
-                global.city.morale.weather = -5;
+            if (global.city.calendar.temp > 0){
+                if (global.city.calendar.wind === 1){
+                    // Thunderstorm
+                    if (global.race['skittish']){
+                        morale -= 25; 
+                        global.city.morale.weather = -25;
+                    }
+                    else {
+                        morale -= 5; 
+                        global.city.morale.weather = -5;
+                    }
+                }
+                else { 
+                    // Rain
+                    morale -= 2; 
+                    global.city.morale.weather = -2;
+                }
             }
             else {
-                morale -= 2;
-                global.city.morale.weather = -2;
+                global.city.morale.weather = 0;
             }
         }
-        else if (global.city.calendar.weather === 2 && global.city.calendar.wind === 0){
-            morale += 2;
-            global.city.morale.weather = 2;
+        else if (global.city.calendar.weather === 2){
+            // Sunny
+            if (global.race['nyctophilia']){
+                morale -= 10;
+                global.city.morale.weather = -10;
+            }
+            else if (global.city.calendar.wind === 0 && global.city.calendar.temp < 2){
+                morale += 2;
+                global.city.morale.weather = 2;
+            }
+            else if (global.city.calendar.wind === 1 && global.city.calendar.temp === 2){
+                morale += 2;
+                global.city.morale.weather = 2;
+            }
+            else {
+                global.city.morale.weather = 0;
+            }
         }
         else {
-            global.city.morale.weather = 0;
+            if (global.race['nyctophilia']){
+                morale += 2;
+                global.city.morale.weather = 2;
+            }
+            else {
+                global.city.morale.weather = 0;
+            }
         }
 
         let stress = 0;
         if (!global.race['carnivore']){
-            stress -= global.civic.free * 2;
+            stress -= global.civic.free;
         }
         else {
             stress -= Math.round(global.civic.free / 5);
+        }
+
+        if (global.race['optimistic']){
+            stress -= 2;
+        }
+
+        if (global.race['pessimistic']){
+            stress += 2;
         }
 
         if (global.civic['garrison']){
@@ -541,14 +582,6 @@ function fastLoop(){
 
         if (global.race['lazy'] && global.city.calendar.temp === 2){
             global_multiplier *= 0.9;
-        }
-
-        if (global.race['nyctophilia'] && global.city.calendar.weather === 2){
-            global_multiplier *= 0.9;
-        }
-
-        if (global.race['skittish'] && global.city.calendar.weather === 0 && global.city.calendar.wind === 1){
-            global_multiplier *= 0.8;
         }
 
         if (global.race['selenophobia']){

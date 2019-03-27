@@ -157,6 +157,7 @@ export const races = {
         home: 'Ijsabom',
         entity: 'lizard people',
         traits: {
+            optimistic: 1,
             chameleon: 1
         }
     },
@@ -189,7 +190,8 @@ export const races = {
         home: 'Crichton',
         entity: 'leathery winged creatures',
         traits: {
-            leathery: 1
+            leathery: 1,
+            pessimistic: 1
         } 
     },
     dracnid: {
@@ -492,6 +494,10 @@ export const traits = {
         desc: 'Your race is naturally armored and thus less likely to be fatally wounded in battle.',
         type: 'major',
     },
+    optimistic: { // Minor reduction to stress
+        desc: 'Your race always tries to look for the best possible outcome',
+        type: 'major',
+    },
     chameleon: {
         desc: '',
         type: 'major',
@@ -510,6 +516,14 @@ export const traits = {
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
         desc: 'Your race prefers moonless nights.',
+        type: 'major',
+    },
+    leathery: {
+        desc: '',
+        type: 'major',
+    },
+    pessimistic: { // Minor increase to stress
+        desc: 'Your race gets depressed easily',
         type: 'major',
     },
     hoarder: { // Banks can store 10% more money

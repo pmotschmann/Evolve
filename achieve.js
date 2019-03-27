@@ -147,6 +147,7 @@ export function unlockAchieve(achievement){
         global.settings.showAchieve = true;
         global.stats.achieve[achievement] = true;
         messageQueue(`Achievement Unlocked! ${achievements[achievement].name}`,'special');
+        drawAchieve();
     }
 }
 
