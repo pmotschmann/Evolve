@@ -653,13 +653,22 @@ function fastLoop(){
 
         // Citizen Growth
         if (fed && global['resource']['Food'].amount > 0 && global['resource'][races[global.race.species].name].max > global['resource'][races[global.race.species].name].amount){
-            var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
-            if (global.race['fast_growth']){
-                lowerBound *= 2;
-                lowerBound += 2;
+            if (global.race['spongy'] && global.city.calendar.weather === 0){
+                // Do Nothing
             }
-            if(Math.rand(0, global['resource'][races[global.race.species].name].amount * (3 - (2 ** time_multiplier))) <= lowerBound){
-                global['resource'][races[global.race.species].name].amount++;
+            else {
+                var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
+                if (global.race['fast_growth']){
+                    lowerBound *= 2;
+                    lowerBound += 2;
+                }
+                if (global.race['spores'] && global.city.calendar.wind === 1){
+                    lowerBound += 2;
+                    lowerBound *= 2;
+                }
+                if(Math.rand(0, global['resource'][races[global.race.species].name].amount * (3 - (2 ** time_multiplier))) <= lowerBound){
+                    global['resource'][races[global.race.species].name].amount++;
+                }
             }
         }
         

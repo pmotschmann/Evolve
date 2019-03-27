@@ -575,10 +575,16 @@ export function armyRating(val,type){
         if (global.race['claws']){
             army = Math.floor(army * 1.2);
         }
+        if (global.race['cautious'] && global.city.calendar.weather === 0){
+            army = Math.floor(army * 0.9);
+        }
     }
     else if (type === 'hunting'){
         if (global.race['tracker']){
             army = Math.floor(army * 1.1);
+        }
+        if (global.race['beast'] && global.city.calendar.wind === 1){
+            army = Math.floor(army * 1.15);
         }
     }
     return army * racialTrait(val,type);

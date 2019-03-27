@@ -330,12 +330,12 @@ export const traits = {
         desc: 'Your races dislike of foreigners reduces the number of trade routes you can opperate.',
         type: 'genus',
     },
-    beast: {
-        desc: '',
+    beast: { // Hunting improved when it's windy
+        desc: 'Your races keen senses help you detect the scent of prey.',
         type: 'genus',
     },
     cautious: {
-        desc: '',
+        desc: 'Your race is less effective at combat when it is precipitating.',
         type: 'genus',
     },
     small: { // Reduces cost creep multipliers by 0.01
@@ -386,12 +386,12 @@ export const traits = {
         desc: 'Your species is asymmetrical. This gives you a more monstrous appearance making trade more difficult.',
         type: 'genus',
     },
-    spores: {
-        desc: '',
+    spores: { // Birthrate increased when it's windy
+        desc: `Your species propagates quickly when it's windy`,
         type: 'genus',
     },
-    spongy: {
-        desc: '',
+    spongy: { // Birthrate decreased when it's raining
+        desc: `Your species doesn't propagate when it's precipitating`,
         type: 'genus',
     },
     creative: { // A.R.P.A. Projects are 2% cheaper
