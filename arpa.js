@@ -213,7 +213,7 @@ function addProject(parent,project){
             let id = classes[i];
             $(`#arpa${project} .buy .x${id}`).on('mouseover',function(){
                 var cost = $('<div></div>');
-                var costs = arpaProjects[project].cost;
+                var costs = adjustCosts(arpaProjects[project].cost);
                 Object.keys(costs).forEach(function (res) {
                     var res_cost = (costs[res]() * (id / 100)).toFixed(0);
                     if (res_cost > 0){
