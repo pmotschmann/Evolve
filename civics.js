@@ -616,7 +616,11 @@ function defineMad(){
         data: global.civic['mad'],
         methods: {
             launch(){
-                let god = races[global.race.species].name;
+                Object.keys(vues).forEach(function (v){
+                    vues[v].$destroy();
+                });
+
+                let god = global.race.species;
                 let orbit = global.city.calendar.orbit;
                 let biome = global.city.biome;
                 let plasmid = global.race.Plasmid.count;
@@ -626,8 +630,9 @@ function defineMad(){
                 global.stats.tdays += global.stats.days;
                 global.stats.days = 0;
                 global.stats.plasmid += new_plasmid;
+                console.log(`extinct_${god}`);
                 unlockAchieve(`apocalypse`);
-                unlockAchieve(`extinct_${god}`);
+                let new_achieve = unlockAchieve(`extinct_${god}`);
                 global['race'] = { 
                     species : 'protoplasm', 
                     gods: god, 
@@ -664,7 +669,10 @@ function defineMad(){
                 global.settings.showSpace = false;
                 global.settings.arpa = false;
                 global.arpa = {};
-                global.lastMsg = false;
+                if (!new_achieve){
+                    global.lastMsg = false;
+                }
+                global.new = true;
                 Math.seed = Math.rand(0,10000);
                 global.seed = Math.seed;
                 

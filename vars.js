@@ -43,6 +43,7 @@ else {
     global['race'] = { species : 'protoplasm', gods: 'none' };
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
+    global['new'] = true;
 }
 
 if (!global['settings']){
@@ -163,6 +164,11 @@ if (global.city['factory']){
 
 if (global.lastMsg){
     messageQueue(global.lastMsg.m, global.lastMsg.c);
+}
+
+if (global['new']){
+    messageQueue('You are protoplasm in the primordial ooze', 'warning');
+    global['new'] = false;
 }
 
 export function messageQueue(msg,color){

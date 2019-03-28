@@ -153,7 +153,9 @@ export function unlockAchieve(achievement){
         global.stats.achieve[achievement] = true;
         messageQueue(`Achievement Unlocked! ${achievements[achievement].name}`,'special');
         drawAchieve();
+        return true;
     }
+    return false;
 }
 
 export function drawAchieve(){
