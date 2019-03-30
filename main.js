@@ -321,6 +321,7 @@ function fastLoop(){
     }
 
     breakdown['consume'] = {
+        Money: {},
         Food: {},
         Lumber: {},
         Stone: {},
@@ -474,6 +475,9 @@ function fastLoop(){
             stress -= Math.round(global.civic.garrison.workers / 2);
         }
 
+        let money_bd = {};
+        breakdown.consume.Money['Trade'] = 0;
+
         // trade routes
         if (global.tech['trade']){
             Object.keys(global.resource).forEach(function (res) {
@@ -484,6 +488,7 @@ function fastLoop(){
                     if (global.resource.Money.amount >= price * time_multiplier){
                         modRes(res,global.resource[res].trade * time_multiplier);
                         modRes('Money',-(price * time_multiplier));
+                        breakdown.consume.Money['Trade'] -= price;
                         breakdown.consume[res]['Trade'] = global.resource[res].trade;
                     }
                 }
@@ -494,6 +499,7 @@ function fastLoop(){
                     if (global.resource[res].amount >= time_multiplier){
                         modRes(res,global.resource[res].trade * time_multiplier);
                         modRes('Money',-(price * time_multiplier));
+                        breakdown.consume.Money['Trade'] -= price;
                         breakdown.consume[res]['Trade'] = global.resource[res].trade;
                     }
                 }
@@ -780,11 +786,14 @@ function fastLoop(){
                 breakdown.consume.Furs['Factory'] = -(consume) / time_multiplier;
 
                 let demand = global.resource[races[global.race.species].name].amount * 0.14;
-                delta = workDone * demand * hunger * tax_multiplier * global_multiplier * time_multiplier;
+                delta = workDone * demand;
                 if (global.race['toxic']){
                     delta *= 1.08;
                 }
+                money_bd['Factory'] = delta + 'v';
+                delta *= hunger * tax_multiplier * global_multiplier * time_multiplier;
                 modRes('Money',delta);
+                
             }
 
             if (global.city.factory['Alloy'] && global.city.factory['Alloy'] > 0){
@@ -1188,6 +1197,62 @@ function fastLoop(){
             breakdown['Oil'] = oil_bd;
         }
 
+        // Tax Income
+        if (global.tech['currency'] >= 1){
+            var income = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] ? 0 : global.civic.free)) * ( global.race['greedy'] ? 1 : 2 );
+            income /= 5;
+            var tax_rate;
+            switch(Number(global.civic.taxes.tax_rate)){
+                case 0:
+                    tax_rate = 0;
+                    tax_multiplier = 1.4;
+                    break;
+                case 1:
+                    tax_rate = 0.5;
+                    tax_multiplier = 1.2;
+                    break;
+                case 3:
+                    tax_rate = 1.25;
+                    tax_multiplier = 0.9;
+                    break;
+                case 4:
+                    tax_rate = 1.5;
+                    tax_multiplier = 0.75;
+                    break;
+                case 5:
+                    tax_rate = 1.75;
+                    tax_multiplier = 0.5;
+                    break;
+                default:
+                    tax_rate = 1;
+                    tax_multiplier = 1;
+                    break;
+            }
+            
+            if (fed){
+                if (global.tech['banking'] && global.tech['banking'] >= 2){
+                    let impact = global.civic.banker.impact;
+                    if (global.tech['banking'] >= 10){
+                        impact += 0.02 * global.tech['stock_exchange'];
+                    }
+                    income *= 1 + (global.civic.banker.workers * impact);
+                }
+            }
+            else {
+                income = income / 2;
+            }
+            money_bd['Taxes'] = (income * tax_rate) + 'v';
+            
+            income *= tax_rate * global_multiplier * time_multiplier;
+            if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
+                income *= 1 + (global.city.temple.count * 0.025);
+                money_bd['Temple'] = (global.city.temple.count * 2.5) + '%';
+            }
+            
+            modRes('Money',Math.round(income));
+        }
+        breakdown['Money'] = money_bd;
+
         // Detect new unlocks
         if (!global.settings.showResearch && (global.resource.Lumber.amount >= 5 || global.resource.Stone.amount >= 6)){
             global.settings.showResearch = true;
@@ -1205,16 +1270,11 @@ function fastLoop(){
         else {
             $('#powerMeter').css('color','#c0ce00');
         }
-
-        //ARPA
-        if (global.tech['high_tech'] && global.tech['high_tech'] >= 6){
-            
-        }
     }
     
     // main resource delta tracking
     Object.keys(global.resource).forEach(function (res) {
-        if (global['resource'][res].rate === 1){
+        if (global['resource'][res].rate > 0){
             diffCalc(res,main_timer);
         }
     });
@@ -1480,13 +1540,6 @@ function midLoop(){
                 global.civic[job].workers = 0;
             }
         });
-        
-        // medium resource delta tracking
-        Object.keys(global.resource).forEach(function (res) {
-            if (global['resource'][res].rate === 2){
-                diffCalc(res,mid_timer);
-            }
-        });
 
         checkAchievements();
     }
@@ -1494,62 +1547,6 @@ function midLoop(){
 
 function longLoop(){
     if (global.race.species !== 'protoplasm'){
-        var global_multiplier = 1;
-        if (global.race.Plasmid.count > 0){
-            global_multiplier += plasmidBonus();
-        }
-
-        // Tax Income
-        if (global.tech['currency'] >= 1){
-            var income = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] ? 0 : global.civic.free)) * ( global.race['greedy'] ? 1 : 2 );
-            var tax_rate;
-            switch(Number(global.civic.taxes.tax_rate)){
-                case 0:
-                    tax_rate = 0;
-                    tax_multiplier = 1.4;
-                    break;
-                case 1:
-                    tax_rate = 0.5;
-                    tax_multiplier = 1.2;
-                    break;
-                case 3:
-                    tax_rate = 1.25;
-                    tax_multiplier = 0.9;
-                    break;
-                case 4:
-                    tax_rate = 1.5;
-                    tax_multiplier = 0.75;
-                    break;
-                case 5:
-                    tax_rate = 1.75;
-                    tax_multiplier = 0.5;
-                    break;
-                default:
-                    tax_rate = 1;
-                    tax_multiplier = 1;
-                    break;
-            }
-            
-            if (fed){
-                if (global.tech['banking'] && global.tech['banking'] >= 2){
-                    let impact = global.civic.banker.impact;
-                    if (global.tech['banking'] >= 10){
-                        impact += 0.02 * global.tech['stock_exchange'];
-                    }
-                    income *= 1 + (global.civic.banker.workers * impact);
-                }
-            }
-            else {
-                income = income / 2;
-            }
-            
-            income *= tax_rate * global_multiplier;
-            if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
-                income *= 1 + (global.city.temple.count * 0.025);
-            }
-            
-            modRes('Money',Math.round(income));
-        }
         
         // Market price fluctuation
         if (global.tech['currency'] && global.tech['currency'] >= 2){
@@ -1753,13 +1750,6 @@ function longLoop(){
     else {
         global.event--;
     }
-    
-    // slow resource delta tracking
-    Object.keys(global.resource).forEach(function (res) {
-        if (global['resource'][res].rate === 3){
-            diffCalc(res,long_timer);
-        }
-    });
     
     // Save game state
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

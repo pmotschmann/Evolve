@@ -30,8 +30,8 @@ export function defineResources() {
     }
     else {
         initMarket();
-        loadResource('Money',1000,3,false,false,'success');
-        loadResource(races[global.race.species].name,0,1,false,false,'warning');
+        loadResource('Money',1000,1,false,false,'success');
+        loadResource(races[global.race.species].name,0,0,false,false,'warning');
         loadResource('Knowledge',100,1,false,false,'warning');
         loadResource('Crates',0,0,false,false,'warning');
         loadResource('Containers',0,0,false,false,'warning');
