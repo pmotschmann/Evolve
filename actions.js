@@ -4932,7 +4932,7 @@ function smelterModal(modal){
                 if (global.race['pyrophobia']){
                     boost *= 0.9;
                 }
-                return `Smelt Steel, consumes 0.5 Coal and 2 Iron per second but produces ${boost} Steel`;
+                return `Smelt Steel, consumes 0.25 Coal and 2 Iron per second but produces ${boost} Steel`;
             },
             ironSmelting: function(){
                 let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;

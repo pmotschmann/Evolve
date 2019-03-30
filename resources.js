@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, modRes, poppers } from './vars.js';
+import { global, vues, keyMultiplier, modRes, poppers, breakdown } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -99,7 +99,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     }
     
     if (name !== races[global.race.species].name && name !== 'Crates' && name !== 'Containers'){
-        res_container.append($('<span class="diff">{{ diff | diffSize }} /s</span></div>'));
+        res_container.append($(`<span id="inc${name}" class="diff">{{ diff | diffSize }} /s</span></div>`));
     }
     
     $('#resources').append(res_container);
@@ -154,6 +154,77 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             $(`#popContainer${name}`).hide();
             poppers[name].destroy();
             $(`#popContainer${name}`).remove();
+        });
+    }
+
+    if (name !== races[global.race.species].name && name !== 'Crates' && name !== 'Containers'){
+        $(`#inc${name}`).on('mouseover',function(){
+            if (breakdown[name]){
+                var popper = $(`<div id="resBreak${name}" class="popper has-background-light has-text-dark"></div>`);
+                $('#main').append(popper);
+                let bd = $(`<div class="resBreakdown"><div class="has-text-info">${name}</div></div>`);
+
+                let types = [name,'Global'];
+                for (var i = 0; i < types.length; i++){
+                    let t = types[i];
+                    Object.keys(breakdown[t]).forEach(function (mod){
+                        let raw = breakdown[t][mod];
+                        let val = parseFloat(raw.slice(0,-1));
+                        if (val != 0){
+                            let type = val > 0 ? 'success' : 'danger';
+                            bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ ${t}.${mod} | translate }} </span></div>`);
+                        }
+                    });
+                }
+
+                if (breakdown.consume[name]){
+                    Object.keys(breakdown.consume[name]).forEach(function (mod){
+                        let val = breakdown.consume[name][mod];
+                        if (val != 0){
+                            let type = val > 0 ? 'success' : 'danger';
+                            bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}.${mod} | fix | translate }} </span></div>`);
+                        }
+                    });
+                }
+
+                popper.append(bd);
+                popper.show();
+                poppers[name] = new Popper($(`#inc${name}`),popper);
+            }
+
+            vues[`res_${name}_temp`] = new Vue({
+                data: {
+                    'Global': breakdown['Global'],
+                    [name]: breakdown[name],
+                    'consume': breakdown['consume']
+                }, 
+                filters: {
+                    translate(raw){
+                        let type = raw[raw.length -1];
+                        let val = parseFloat(raw.slice(0,-1));
+                        val = +(val).toFixed(2);
+                        let suffix = type === '%' ? '%' : '';
+                        if (val > 0){
+                            return '+' + val + suffix;
+                        }
+                        else if (val < 0){
+                            return val + suffix;
+                        }
+                    },
+                    fix(val){
+                        return val + 'v';
+                    }
+                }
+            });
+            vues[`res_${name}_temp`].$mount(`#resBreak${name} > div`);
+        });
+        $(`#inc${name}`).on('mouseout',function(){
+                if (breakdown[name]){
+                $(`#resBreak${name}`).hide();
+                poppers[name].destroy();
+                $(`#resBreak${name}`).remove();
+            }
+            //vues[`res_${name}_temp`].$destroy();
         });
     }
 

@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown } from './vars.js';
 import { drawAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { defineResources, resource_values } from './resources.js';
@@ -313,10 +313,24 @@ else {
 }
 
 function fastLoop(){
+    breakdown['Global'] = {};
     var global_multiplier = 1;
     if (global.race.Plasmid.count > 0){
+        breakdown['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();
     }
+
+    breakdown['consume'] = {
+        Lumber: {},
+        Stone: {},
+        Furs: {},
+        Copper: {},
+        Iron: {},
+        Coal: {},
+        Oil: {},
+        Titanium: {},
+        Uranium: {}
+    };
     
     var time_multiplier = 0.25;
         
@@ -489,6 +503,7 @@ function fastLoop(){
                 power += actions.city.coal_power.powered;
                 consume -= 0.35 * time_multiplier;
             }
+            breakdown.consume.Coal['Powerplant'] = -(consume) / time_multiplier;
             max_power += power;
             power_grid -= power;
             modRes('Coal',-(consume));
@@ -505,6 +520,7 @@ function fastLoop(){
                 power += actions.city.oil_power.powered;
                 consume -= 0.65 * time_multiplier;
             }
+            breakdown.consume.Oil['Powerplant'] = -(consume) / time_multiplier;
             max_power += power;
             power_grid -= power;
             modRes('Oil',-(consume));
@@ -517,6 +533,7 @@ function fastLoop(){
                 power += actions.city.fission_power.powered;
                 consume -= 0.1 * time_multiplier;
             }
+            breakdown.consume.Uranium['Reactor'] = -(consume) / time_multiplier;
             max_power += power;
             power_grid -= power;
             modRes('Uranium',-(consume));
@@ -554,7 +571,7 @@ function fastLoop(){
         
         let entertainment = 0;
         if (global.tech['theatre']){
-            entertainment += global.civic.entertainer.workers * global.tech.theatre
+            entertainment += global.civic.entertainer.workers * global.tech.theatre;
         }
         if (global.tech['broadcast']){
             entertainment += global.city.wardenclyffe.on * global.tech.broadcast;
@@ -575,12 +592,15 @@ function fastLoop(){
 
         if (global.city.morale.current < 100){
             global_multiplier *= global.city.morale.current / 100;
+            breakdown['Global']['Morale'] = (global.city.morale.current - 100) + '%';
         }
         else {
             global_multiplier *= 1 + ((global.city.morale.current - 100) / 200);
+            breakdown['Global']['Morale'] = ((global.city.morale.current - 100) / 2) + '%';
         }
 
         if (global.race['lazy'] && global.city.calendar.temp === 2){
+            breakdown['Global']['Lazy'] = ((global.city.morale.current - 100) / 2) + '%';
             global_multiplier *= 0.9;
         }
 
@@ -686,23 +706,32 @@ function fastLoop(){
         }
 
         // Knowledge
-        var know_multiplier = (global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact) * tax_multiplier;
-        know_multiplier *= racialTrait(global.civic.professor.workers,'science');
-        if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-            know_multiplier *= 1 + (global.city.temple.count * 0.05);
-        }
-        know_multiplier *= hunger * time_multiplier * global_multiplier;
+        let know_bd = {};
         let know_base = global.tech['primitive'] && global.tech['primitive'] >= 3 ? 1 : 0;
         if (global.race['ancient_ruins']){
             know_base++;
         }
+        know_bd['Sundial'] = know_base + 'v';
+        let professors = global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
+        professors *= racialTrait(global.civic.professor.workers,'science');
+        var know_multiplier = professors * tax_multiplier;
+        if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
+            know_multiplier *= 1 + (global.city.temple.count * 0.05);
+        }
+        know_multiplier *= hunger * time_multiplier * global_multiplier;
+        know_bd['Professors'] = (professors * global.civic.professor.workers)  + 'v';
         var delta = (global.civic.professor.workers * know_multiplier) + (know_base * time_multiplier);
         let adjunct = 1;
         if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
             adjunct = 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
         }
-        delta += global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * tax_multiplier * global_multiplier * time_multiplier * adjunct * hunger;
+        let scientist = global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * adjunct;
+        know_bd['Scientist'] = scientist  + 'v';
+        know_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        delta += scientist * tax_multiplier * global_multiplier * time_multiplier * hunger;
         modRes('Knowledge',delta);
+        know_bd['Taxes'] = ((tax_multiplier * 100) - 100)  + '%';
+        breakdown['Knowledge'] = know_bd;
         
         // Factory
         if (global.city['factory']){
@@ -722,6 +751,7 @@ function fastLoop(){
                     workDone--;
                 }
                 modRes('Furs',-(consume));
+                breakdown.consume.Furs['Factory'] = -(consume) / time_multiplier;
 
                 let demand = global.resource[races[global.race.species].name].amount * 0.14;
                 delta = workDone * demand * hunger * tax_multiplier * global_multiplier * time_multiplier;
@@ -732,6 +762,7 @@ function fastLoop(){
             }
 
             if (global.city.factory['Alloy'] && global.city.factory['Alloy'] > 0){
+                let alloy_bd = {};
                 opperating += global.city.factory.Alloy;
                 while (opperating > global.city.factory.on && opperating > 0){
                     opperating--;
@@ -754,15 +785,23 @@ function fastLoop(){
                 }
                 modRes('Copper',-(copper));
                 modRes('Titanium',-(titanium));
+                breakdown.consume.Copper['Factory'] = -(copper) / time_multiplier;
+                breakdown.consume.Titanium['Factory'] = -(titanium) / time_multiplier;
 
+                alloy_bd['Factory'] = (workDone * 0.075);
                 delta = workDone * 0.075 * hunger * tax_multiplier * global_multiplier * time_multiplier;
                 if (global.race['toxic']){
                     delta *= 1.08;
+                    alloy_bd['Factory'] *= 1.08;
                 }
+                alloy_bd['Factory'] = alloy_bd['Factory'] + 'v';
+                alloy_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown['Alloy'] = alloy_bd;
                 modRes('Alloy',delta);
             }
 
             if (global.city.factory['Polymer'] && global.city.factory['Polymer'] > 0){
+                let polymer_bd = {};
                 opperating += global.city.factory.Polymer;
                 while (opperating > global.city.factory.on && opperating > 0){
                     opperating--;
@@ -787,20 +826,29 @@ function fastLoop(){
                 }
                 modRes('Lumber',-(lumber));
                 modRes('Oil',-(oil));
+                breakdown.consume.Lumber['Factory'] = -(lumber) / time_multiplier;
+                breakdown.consume.Oil['Factory'] = -(oil) / time_multiplier;
 
+                polymer_bd['Factory'] = (workDone * 0.125);
                 delta = workDone * 0.125 * hunger * tax_multiplier * global_multiplier * time_multiplier;
                 if (global.race['toxic']){
                     delta *= 1.08;
+                    polymer_bd['Factory'] *= 1.08;
                 }
                 if (global.tech['polymer'] >= 2){
                     delta *= 1.42;
+                    polymer_bd['Factory'] *= 1.42;
                 }
+                polymer_bd['Factory'] = polymer_bd['Factory'] + 'v';
+                polymer_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown['Polymer'] = polymer_bd;
                 modRes('Polymer',delta);
             }
         }
 
         // Cement
         if (global.resource.Cement.display){
+            let cement_bd = {};
             let consume = global.civic.cement_worker.workers * 3 * time_multiplier;
             let workDone = global.civic.cement_worker.workers;
             while (consume > global.resource.Stone.amount && consume > 0){
@@ -813,13 +861,21 @@ function fastLoop(){
             cement_multiplier *= tax_multiplier;
             cement_multiplier *= racialTrait(global.civic.cement_worker.workers,'factory');
             cement_multiplier *= hunger;
+            let bd_powered = 0;
             if (global.city.powered && p_on['cement_plant']){
                 cement_multiplier *= 1 + (p_on['cement_plant'] * 0.05);
+                bd_powered = (p_on['cement_plant'] * 0.05) * 100;
             }
             delta = (workDone * global.civic.cement_worker.impact) * cement_multiplier * global_multiplier * time_multiplier;
+            cement_bd['Factory'] = (workDone * global.civic.cement_worker.impact) * racialTrait(global.civic.cement_worker.workers,'factory') * (global.tech['cement'] >= 4 ? 1.2 : 1);
             if (global.race['toxic']){
                 delta *= 1.08;
+                cement_bd['Factory'] *= 1.08;
             }
+            cement_bd['Factory'] = cement_bd['Factory'] + 'v';
+            cement_bd['Power'] = bd_powered + '%';
+            cement_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            breakdown['Cement'] = cement_bd;
             modRes('Cement',delta);
         }
         
@@ -873,12 +929,17 @@ function fastLoop(){
                 iron_smelter *= 0.9;
             }
 
+            breakdown.consume.Lumber['Smelter'] = -(consume_wood) / time_multiplier;
+            breakdown.consume.Coal['Smelter'] = -(consume_coal) / time_multiplier;
+            breakdown.consume.Oil['Smelter'] = -(consume_oil) / time_multiplier;
+
             modRes('Lumber',-(consume_wood));
             modRes('Coal',-(consume_coal));
             modRes('Oil',-(consume_oil));
 
             //Steel Production
             if (global.resource.Steel.display){
+                let steel_bd = {};
                 var iron_consume = steel_smelter * 2 * time_multiplier;
                 var coal_consume = steel_smelter * 0.25 * time_multiplier;
                 while (iron_consume > global.resource.Iron.amount && iron_consume > 0 && coal_consume > global.resource.Coal.amount && coal_consume > 0){
@@ -898,9 +959,18 @@ function fastLoop(){
                 steel_multiplier *= hunger;
                 delta = steel_smelter * steel_multiplier * global_multiplier * time_multiplier;
 
+                steel_bd['Smelter'] = steel_smelter * steel_multiplier;
+
                 if (global.race['pyrophobia']){
                     delta *= 0.9;
+                    steel_bd['Smelter'] *= 0.9;
                 }
+                steel_bd['Smelter'] = steel_bd['Smelter'] + 'v';
+                steel_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown['Steel'] = steel_bd;
+
+                breakdown.consume.Coal['Smelter'] -= coal_consume / time_multiplier;
+                breakdown.consume.Iron['Smelter'] = -(iron_consume) / time_multiplier;
 
                 modRes('Steel',delta);
                 modRes('Iron',-(iron_consume));
@@ -963,22 +1033,33 @@ function fastLoop(){
         
         // Iron
         if (global.resource.Iron.display){
+            let iron_bd = {};
             var iron_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.15 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 iron_multiplier *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
+            let iron_tools = iron_multiplier;
             iron_multiplier *= tax_multiplier;
             iron_multiplier *= (1 + (iron_smelter * 0.1));
             iron_multiplier *= racialTrait(global.civic.miner.workers,'miner');
+            let bd_power = 0;
             if (global.city['mine']['on']){
                 iron_multiplier *= 1 + (p_on['mine'] * 0.05);
+                bd_power = p_on['mine'] * 5;
             }
             if (global.race['tough']){
                 iron_multiplier *= 1.1;
+                iron_tools *= 1.1;
             }
             iron_multiplier *= hunger;
             delta = (global.civic.miner.workers / 4) * iron_multiplier * global_multiplier * time_multiplier;
             modRes('Iron',delta);
+
+            iron_bd['Miners'] = (global.civic.miner.workers / 4) * iron_tools * racialTrait(global.civic.miner.workers,'miner') + 'v';
+            iron_bd['Smelter'] = (iron_smelter * 10) + '%';
+            iron_bd['Power'] = bd_power + '%';
+            iron_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            breakdown['Iron'] = iron_bd;
 
             if (global.tech['titanium'] && global.tech['titanium'] >= 2){
                 delta = (global.civic.miner.workers / 4) * iron_smelter * 0.1 * global_multiplier * time_multiplier;
@@ -989,21 +1070,32 @@ function fastLoop(){
         
         // Coal
         if (global.resource.Coal.display){
+            let coal_bd = {};
             var coal_multiplier = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.12 : 0) + 1;
+            let bd_tools = (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.12 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 coal_multiplier *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
+                bd_tools *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
             coal_multiplier *= tax_multiplier;
             coal_multiplier *= racialTrait(global.civic.coal_miner.workers,'miner');
+            let bd_power = 0;
             if (global.city['coal_mine']['on']){
                 coal_multiplier *= 1 + (p_on['coal_mine'] * 0.05);
+                bd_power = (p_on['coal_mine'] * 5);
             }
             if (global.race['tough']){
                 coal_multiplier *= 1.1;
+                bd_tools *= 1.1;
             }
             coal_multiplier *= hunger;
             delta = global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier * global_multiplier * time_multiplier;
             modRes('Coal',delta);
+
+            coal_bd['Miners'] = (global.civic.coal_miner.workers * global.civic.coal_miner.impact * bd_tools * racialTrait(global.civic.coal_miner.workers,'miner')) + 'v';
+            coal_bd['Power'] = bd_power + '%';
+            coal_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            breakdown['Coal'] = coal_bd;
 
             // Uranium
             if (global.resource.Uranium.display){
@@ -1013,14 +1105,20 @@ function fastLoop(){
         
         // Oil
         if (global.city['oil_well']){
+            let oil_bd = {};
             let oil_multiplier = global.tech['oil'] >= 4 ? 0.48 : 0.4;
             if (global.tech['oil'] >= 5){
                 oil_multiplier *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
             }
+            let derrick_bd = global.city.oil_well.count * oil_multiplier;
             oil_multiplier *= hunger;
             oil_multiplier *= tax_multiplier;
             delta = global.city.oil_well.count * oil_multiplier * global_multiplier * time_multiplier;
             modRes('Oil',delta);
+
+            oil_bd['Derrick'] = derrick_bd + 'v';
+            oil_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            breakdown['Oil'] = oil_bd;
         }
 
         // Detect new unlocks
@@ -1769,7 +1867,18 @@ function setWeather(){
 }
 
 function plasmidBonus(){
-    let plasmid_bonus = (global.race.Plasmid.count / 1000);
+    let plasmids = global.race.Plasmid.count;
+    let plasmid_bonus = 0;
+    if (plasmids > 250){
+        let divisor = 500 - plasmids;
+        if (divisor < 250){
+            divisor = 250;
+        }
+        plasmid_bonus = 0.625 + (Math.log(plasmids - 249) / Math.LN2 / divisor);
+    }
+    else {
+        plasmid_bonus = plasmids / 400;
+    }
     if (global.city['temple'] && global.city['temple'].count){
         let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){

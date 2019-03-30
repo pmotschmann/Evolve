@@ -17,6 +17,7 @@ export var global = {
 };
 export var vues = {};
 export var poppers = {};
+export var breakdown = {};
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
