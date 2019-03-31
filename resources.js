@@ -76,6 +76,11 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             rate: rate
         };
     }
+
+    if (vues[`res_${name}`]){
+        vues[`res_${name}`].$destroy();
+    }
+
     global['resource'][name]['stackable'] = stackable;
     if (!global['resource'][name]['crates']){
         global['resource'][name]['crates'] = 0;

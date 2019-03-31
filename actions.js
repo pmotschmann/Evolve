@@ -953,6 +953,8 @@ export const actions = {
                         cap *= 2;
                     }
                     global.resource.Crates.max += cap;
+                    $('#resources').empty();
+                    defineResources();
                     return true;
                 }
                 return false;
