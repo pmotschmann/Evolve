@@ -170,7 +170,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                     Object.keys(breakdown[t]).forEach(function (mod){
                         let raw = breakdown[t][mod];
                         let val = parseFloat(raw.slice(0,-1));
-                        if (val != 0){
+                        if (val != 0 && !isNaN(val)){
                             let type = val > 0 ? 'success' : 'danger';
                             bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ ${t}.${mod} | translate }} </span></div>`);
                         }
@@ -180,7 +180,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                 if (breakdown.consume[name]){
                     Object.keys(breakdown.consume[name]).forEach(function (mod){
                         let val = breakdown.consume[name][mod];
-                        if (val != 0){
+                        if (val != 0 && !isNaN(val)){
                             let type = val > 0 ? 'success' : 'danger';
                             bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}.${mod} | fix | translate }} </span></div>`);
                         }
@@ -224,7 +224,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                 poppers[name].destroy();
                 $(`#resBreak${name}`).remove();
             }
-            //vues[`res_${name}_temp`].$destroy();
+            vues[`res_${name}_temp`].$destroy();
         });
     }
 
