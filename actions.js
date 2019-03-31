@@ -4062,7 +4062,7 @@ export const actions = {
             }
         },
         steel_rebar: {
-            id: 'tech-rebar',
+            id: 'tech-steel_rebar',
             title: 'Steel Rebar',
             desc: 'Steel Rebar',
             reqs: { smelting: 2, cement: 2 },
