@@ -77,9 +77,10 @@ export const events = {
             }
         }
     },
-    fire: {
+    ruins: {
         reqs: { 
-            trait: 'ancient_ruins'
+            trait: 'ancient_ruins',
+            resource: 'Knowledge'
         },
         effect: function(){
             let resources = ['Iron','Copper','Steel','Cement'];
