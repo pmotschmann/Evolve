@@ -663,16 +663,20 @@ export const actions = {
             desc: 'Increases solider capacity',
             reqs: { military: 1, housing: 1 },
             cost: { 
-                Money: function(){ return costMultiplier('garrison', 250, 1.6); },
-                Lumber: function(){ return costMultiplier('garrison', 260, 1.6); },
-                Stone: function(){ return costMultiplier('garrison', 180, 1.6); }
+                Money: function(){ return costMultiplier('garrison', 240, 1.5); },
+                Lumber: function(){ return costMultiplier('garrison', 260, 1.45); },
+                Stone: function(){ return costMultiplier('garrison', 180, 1.45); }
             },
             effect: function() {
                 return global.tech['military'] >= 5 ? '+3 Max Soldiers' : '+2 Max Soldiers';
             },
             action: function (){
                 if (payCosts(actions.city.garrison.cost)){
-                    global.civic['garrison'].max += global.tech['military'] >= 5 ? 3 : 2;
+                    let gain = global.tech['military'] >= 5 ? 3 : 2;
+                    if (global.race['chameleon']){
+                        gain -= global.city.garrison.count;
+                    }
+                    global.civic['garrison'].max += gain;
                     global.city['garrison'].count++;
                     global.resource.Furs.display = true;
                     return true;
@@ -1013,6 +1017,9 @@ export const actions = {
                 if (payCosts(actions.city.trade.cost)){
                     global.city['trade'].count++;
                     global.city.market.mtrade += global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+                    if (global.race['resourceful']){
+                        global.city.market.mtrade++;
+                    }
                     return true;
                 }
                 return false;

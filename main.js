@@ -1273,7 +1273,8 @@ function fastLoop(){
     }
     
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
-        global.civic.garrison.progress += 2.5 * time_multiplier;
+        let rate = global.race['diverse'] ? 2 : 2.5;
+        global.civic.garrison.progress += rate * time_multiplier;
         if (global.race['brute']){
             global.civic.garrison.progress += 2.5 * time_multiplier;
         }
@@ -1377,7 +1378,10 @@ function midLoop(){
             lCaps['cement_worker'] += global.city['cement_plant'].count * 3;
         }
         if (global.city['garrison']){
-            lCaps['garrison'] += global.city['garrison'].count * (global.tech['military'] >= 5 ? 3 : 2);
+            lCaps['garrison'] += global.city.garrison.count * (global.tech['military'] >= 5 ? 3 : 2);
+            if (global.race['chameleon']){
+                lCaps['garrison'] -= global.city.garrison.count;
+            }
         }
         if (global.city['basic_housing']){
             caps[races[global.race.species].name] += global.city['basic_housing'].count;
@@ -1505,6 +1509,9 @@ function midLoop(){
 
         if (global.city['trade']){
             let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+            if (global.race['resourceful']){
+                routes++;
+            }
             global.city.market.mtrade = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
                 global.city.market.mtrade += global.city.temple.count;

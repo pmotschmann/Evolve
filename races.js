@@ -398,8 +398,8 @@ export const traits = {
         desc: 'Your species natural creativity leads to faster development of super projects.',
         type: 'major',
     },
-    diverse: {
-        desc: '',
+    diverse: { // Training soldiers takes longer
+        desc: 'The diverse nature of your species makes working together as a cohesive military unit more difficult.',
         type: 'major',
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second
@@ -495,11 +495,11 @@ export const traits = {
         type: 'major',
     },
     optimistic: { // Minor reduction to stress
-        desc: 'Your race always tries to look for the best possible outcome',
+        desc: 'Your race always tries to look for the best possible outcome.',
         type: 'major',
     },
-    chameleon: {
-        desc: '',
+    chameleon: { // Barracks have less soldiers
+        desc: 'Your species natural affinity for hiding has caused you to be more averse to having a standing army.',
         type: 'major',
     },
     venomous: {
@@ -510,8 +510,8 @@ export const traits = {
         desc: '',
         type: 'major',
     },
-    resourceful: {
-        desc: '',
+    resourceful: { // Gain extra trade routes
+        desc: 'Your species natural resourcefulness has increased the number of available trade routes.',
         type: 'major',
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
@@ -523,7 +523,7 @@ export const traits = {
         type: 'major',
     },
     pessimistic: { // Minor increase to stress
-        desc: 'Your race gets depressed easily',
+        desc: 'Your race gets depressed easily.',
         type: 'major',
     },
     hoarder: { // Banks can store 10% more money
