@@ -1272,6 +1272,17 @@ function fastLoop(){
         }
     }
     
+    if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
+        global.civic.garrison.progress += 2.5 * time_multiplier;
+        if (global.race['brute']){
+            global.civic.garrison.progress += 2.5 * time_multiplier;
+        }
+        if (global.civic.garrison.progress >= 100){
+            global.civic.garrison.progress = 0;
+            global.civic.garrison.workers++;
+        }
+    }
+
     // main resource delta tracking
     Object.keys(global.resource).forEach(function (res) {
         if (global['resource'][res].rate > 0){

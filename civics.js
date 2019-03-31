@@ -112,17 +112,29 @@ function taxRates(govern){
 }
 
 function buildGarrison(garrison){
-    garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating {{ workers | rating }}</span></div>'));
+    garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>'));
 
-    garrison.append($('<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>Soldiers</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>'));
-    garrison.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
+    var barracks = $('<div class="columns is-mobile bunk"></div>');
+    garrison.append(barracks);
 
-    garrison.append($('<b-tooltip :label="trainLabel()" size="is-small" position="is-bottom" multilined animated><button class="button first" @click="train">Train soldier</button></b-tooltip>'));
-    garrison.append($('<b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" multilined animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip>'));
-    garrison.append($('<b-tooltip :label="retireLabel()" size="is-small" position="is-bottom" multilined animated><button class="button" @click="retire">Retire soldier</button></b-tooltip>'));
+    var bunks = $('<div class="column"></div>');
+    barracks.append(bunks);
+    bunks.append($('<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>Soldiers</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>'));
+    bunks.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
+
+    barracks.append($('<div class="column hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip><div>'));
+    
+    garrison.append($(`<div class="training"><span>Training</span> <progress class="progress" :value="progress" max="100">{{ progress }}%</progress></div>`));
+
+    var campaign = $('<div class="columns is-mobile"></div>');
+    garrison.append(campaign);
+
+    var wrap = $('<div class="column war"></div>');
+    campaign.append(wrap);
+
 
     var tactics = $('<div id="tactics" v-show="display" class="tactics"><span>Campaign</span></div>');
-    garrison.append(tactics);
+    wrap.append(tactics);
         
     var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ tactic | tactics }}</span></b-tooltip>');
     var last = $('<span class="sub" @click="last">&laquo;</span>');
@@ -131,7 +143,17 @@ function buildGarrison(garrison){
     tactics.append(strategy);
     tactics.append(next);
 
-    garrison.append($('<button class="button campaign" @click="campaign">Launch Campaign</button>'));
+    var battalion = $('<div id="battalion" v-show="display" class="tactics"><span>Battalion</span></div>');
+    wrap.append(battalion);
+        
+    var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ raid }}</span></b-tooltip>');
+    var alast = $('<span class="sub" @click="aLast">&laquo;</span>');
+    var anext = $('<span class="add" @click="aNext">&raquo;</span>');
+    battalion.append(alast);
+    battalion.append(armysize);
+    battalion.append(anext);
+
+    campaign.append($('<div class="column launch"><button class="button campaign" @click="campaign">Launch Campaign</button></div>'));
 
     if (!global.civic['garrison']){
         global.civic['garrison'] = {
@@ -153,20 +175,11 @@ function buildGarrison(garrison){
     vues['civ_garrison'] = new Vue({
         data: global.civic['garrison'],
         methods: {
-            train(){
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (global.race['brute']){
-                    cost = Math.round(cost / 2);
-                }
-                if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost && global.civic.free > 0){
-                    global.resource.Money.amount -= cost;
-                    global.civic['garrison'].workers++;
-                    global.civic.free--;
-                    global['resource'][races[global.race.species].name].amount--;
-                }
-            },
             hire(){
-                let cost = Math.round((1.27 ** global.civic.garrison.workers) * 100);
+                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                if (cost > 25000){
+                    cost = 25000;
+                }
                 if (global.race['brute']){
                     cost = Math.round(cost / 2);
                 }
@@ -175,24 +188,20 @@ function buildGarrison(garrison){
                     global.civic['garrison'].workers++;
                 }
             },
-            retire(){
-                if (global.civic['garrison'].workers > 0){
-                    global.civic['garrison'].workers--;
-                    global.civic.free++;
-                    global['resource'][races[global.race.species].name].amount++;
-                }
-            },
             campaign(){
-                if (global.civic.garrison.workers === 0){
+                if (global.civic.garrison.raid === 0){
                     messageQueue('Can not start a campaign without any soldiers.','warning');
                     return;
+                }
+                if (global.civic.garrison.raid > global.civic.garrison.workers){
+                    global.civic.garrison.raid = global.civic.garrison.workers;
                 }
 
                 let highLuck = global.race['claws'] ? 20 : 16;
                 let lowLuck = global.race['puny'] ? 3 : 5;
 
                 let luck = Math.floor(Math.seededRandom(lowLuck,highLuck)) / 10;
-                let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military * luck * racialTrait(global.civic.garrison.workers,'army');;
+                let army = armyRating(global.civic.garrison.raid,'army') * luck;
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
                     army *= 1 + (global.city.temple.count * 0.01);
                 }
@@ -216,9 +225,14 @@ function buildGarrison(garrison){
                         break;
                 }
 
+                let wounded = 0;
+                if (global.civic.garrison.raid > global.civic.garrison.workers - global.civic.garrison.wounded){
+                    wounded = global.civic.garrison.raid - (global.civic.garrison.workers - global.civic.garrison.wounded);
+                }
+
                 if (army > enemy){
-                    let deathCap = Math.floor(global.civic.garrison.workers / (5 - global.civic.garrison.tactic));
-                    deathCap += global.civic.garrison.wounded;
+                    let deathCap = Math.floor(global.civic.garrison.raid / (5 - global.civic.garrison.tactic));
+                    deathCap += wounded;
                     if (deathCap < 0){
                         deathCap = 0;
                     }
@@ -238,17 +252,20 @@ function buildGarrison(garrison){
                     if (death < 0){
                         death = 0;
                     }
-                    if (death > global.civic.garrison.workers){
-                        death = global.civic.garrison.workers;
+                    if (death > global.civic.garrison.raid){
+                        death = global.civic.garrison.raid;
                     }
                     global.civic.garrison.workers -= death;
-                    if (death > global.civic.garrison.wounded){
-                        global.civic.garrison.wounded = 0;
+                    if (death > wounded){
+                        global.civic.garrison.wounded -= wounded;
+                        wounded = 0;
                     }
                     else {
                         global.civic.garrison.wounded -= death;
+                        wounded -= death;
                     }
-                    global.civic.garrison.wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+
+                    global.civic.garrison.wounded += Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death));
 
                     let money = 0;
                     let food = 0;
@@ -383,58 +400,42 @@ function buildGarrison(garrison){
 
                     let loot = 'Gained ';
                     if (global.resource.Money.display && money > 0){
-                        if (global.race['beast_of_burden']){
-                            money = Math.floor(money * 1.1);
-                        }
+                        money = lootModify(money);
                         loot = loot + `\$${money}, `;
                         modRes('Money',money);
                     }
                     if (global.resource.Food.display && food > 0){
-                        if (global.race['beast_of_burden']){
-                            food = Math.floor(food * 1.1);
-                        }
+                        food = lootModify(food);
                         loot = loot + `${food} Food, `;
                         modRes('Food',food);
                     }
                     if (global.resource.Lumber.display && lumber > 0){
-                        if (global.race['beast_of_burden']){
-                            lumber = Math.floor(lumber * 1.1);
-                        }
+                        lumber = lootModify(lumber);
                         loot = loot + `${lumber} Lumber, `;
                         modRes('Lumber',lumber);
                     }
                     if (global.resource.Stone.display && stone > 0){
-                        if (global.race['beast_of_burden']){
-                            stone = Math.floor(stone * 1.1);
-                        }
+                        stone = lootModify(stone);
                         loot = loot + `${stone} Stone, `;
                         modRes('Stone',stone);
                     }
                     if (global.resource.Copper.display && copper > 0){
-                        if (global.race['beast_of_burden']){
-                            copper = Math.floor(copper * 1.1);
-                        }
+                        copper = lootModify(copper);
                         loot = loot + `${copper} Copper, `;
                         modRes('Copper',copper);
                     }
                     if (global.resource.Iron.display && iron > 0){
-                        if (global.race['beast_of_burden']){
-                            iron = Math.floor(iron * 1.1);
-                        }
+                        iron = lootModify(iron);
                         loot = loot + `${iron} Iron, `;
                         modRes('Iron',iron);
                     }
                     if (global.resource.Cement.display && cement > 0){
-                        if (global.race['beast_of_burden']){
-                            cement = Math.floor(cement * 1.1);
-                        }
+                        cement = lootModify(cement);
                         loot = loot + `${cement} Cement, `;
                         modRes('Cement',cement);
                     }
                     if (steel > 0){
-                        if (global.race['beast_of_burden']){
-                            steel = Math.floor(steel * 1.1);
-                        }
+                        steel = lootModify(steel);
                         global.resource.Steel.display = true;
                         loot = loot + `${steel} Steel, `;
                         modRes('Steel',steel);
@@ -446,8 +447,8 @@ function buildGarrison(garrison){
                     messageQueue(`Your army was victorious! ${death} soldiers died in the conflict.`,'success');
                 }
                 else {
-                    let deathCap = global.civic.garrison.workers;
-                    deathCap += global.civic.garrison.wounded;
+                    let deathCap = global.civic.garrison.raid;
+                    deathCap += wounded;
                     if (global.civic.garrison.tactic === 0){
                         deathCap = Math.floor(deathCap / 2);
                     }
@@ -470,19 +471,27 @@ function buildGarrison(garrison){
                     if (death < 0){
                         death = 0;
                     }
-                    if (death > global.civic.garrison.workers){
-                        death = global.civic.garrison.workers;
+                    if (death > global.civic.garrison.raid){
+                        death = global.civic.garrison.raid;
                     }
                     global.civic.garrison.workers -= death;
-                    if (death > global.civic.garrison.wounded){
-                        global.civic.garrison.wounded = 0;
+                    if (death > wounded){
+                        global.civic.garrison.wounded -= wounded;
+                        wounded = 0;
                     }
                     else {
                         global.civic.garrison.wounded -= death;
+                        wounded -= death;
                     }
-                    global.civic.garrison.wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
 
+                    global.civic.garrison.wounded += Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death));
                     messageQueue(`Your army was defeated. ${death} soldiers died in the conflict.`,'danger');
+                }
+                if (global.civic.garrison.wounded > global.civic.garrison.workers){
+                    global.civic.garrison.wounded = global.civic.garrison.workers;
+                }
+                else if (global.civic.garrison.wounded < 0){
+                    global.civic.garrison.wounded = 0;
                 }
             },
             strategyLabel(){
@@ -499,27 +508,18 @@ function buildGarrison(garrison){
                         return 'Attempt to seige a rival city. This opperation is suicide for all but the strongest armies, but if sucessful will be glorious.';
                 }
             },
-            trainLabel(){
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (global.race['brute']){
-                    cost = Math.round(cost / 2);
-                }
-                if (global.race['carnivore']){
-                    return `Train a Soldier, costs \$${cost} and requires a recruit (hunter)`;
-                }
-                else {
-                    return `Train a Soldier, costs \$${cost} and requires a recruit (unemployed citizen)`;
-                }
-            },
             hireLabel(){
-                let cost = Math.round((1.27 ** global.civic.garrison.workers) * 100);
+                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                if (cost > 25000){
+                    cost = 25000;
+                }
                 if (global.race['brute']){
                     cost = Math.round(cost / 2);
                 }
-                return `Hire a mercenary, costs \$${cost}`;
+                return `Hire a mercenary: \$${cost}`;
             },
-            retireLabel(){
-                return `Return a soldier to civilian life, note if there is not any open housing they will leave your settlement.`;
+            armyLabel(){
+                return `Number of soldiers to commit to millitary campaigns.`;
             },
             soldierDesc(){
                 let rating = armyRating(global.civic.garrison.workers,'hunting');
@@ -532,6 +532,12 @@ function buildGarrison(garrison){
             woundedDesc(){
                 return `Wounded soldiers are both less effective in combat and more likely to die. Wounded soldiers will heal over time.`;
             },
+            defense(){
+                return `Defensive Rating`;
+            },
+            offense(){
+                return `Offensive Rating`;
+            },
             next(){
                 if (global.civic.garrison.tactic < 4){
                     global.civic.garrison.tactic++; 
@@ -540,6 +546,16 @@ function buildGarrison(garrison){
             last(){
                 if (global.civic.garrison.tactic > 0){
                     global.civic.garrison.tactic-- 
+                }
+            },
+            aNext(){
+                if (global.civic.garrison.raid < global.civic.garrison.workers){
+                    global.civic.garrison.raid++; 
+                }
+            },
+            aLast(){
+                if (global.civic.garrison.raid > 0){
+                    global.civic.garrison.raid-- 
                 }
             }
         },
@@ -566,8 +582,43 @@ function buildGarrison(garrison){
     vues['civ_garrison'].$mount('#garrison');
 }
 
+function lootModify(val){
+    let cap = 0;
+    let looters = global.civic.garrison.raid;
+    switch(global.civic.garrison.tactic){
+        case 0:
+            cap = 5;
+            break;
+        case 1:
+            cap = 10;
+            break;
+        case 2:
+            cap = 25;
+            break;
+        case 3:
+            cap = 50;
+            break;
+        case 4:
+            cap = 999;
+            break;
+    }
+    if (looters > cap){
+        looters = cap;
+    }
+    let loot = val * Math.log(looters + 1);
+    if (global.race['beast_of_burden']){
+        loot = loot * 1.1;
+    }
+    return Math.floor(loot);
+}
+
 export function armyRating(val,type){
-    let army = (val - (global.civic.garrison.wounded / 2)) * global.tech.military;
+    let wounded = 0;
+    if (val > global.civic.garrison.workers - global.civic.garrison.wounded){
+        wounded = val - (global.civic.garrison.workers - global.civic.garrison.wounded);
+    }
+
+    let army = (val - (wounded / 2)) * global.tech.military;
     if (type === 'army'){
         if (global.race['puny']){
             army = Math.floor(army * 0.9);

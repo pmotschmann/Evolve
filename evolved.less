@@ -303,8 +303,28 @@ a {
         .header {
             margin-bottom: .5rem;
         }
+        .bunk {
+            > div {
+                padding-bottom: 0;
+            }
+            .hire {
+                padding-left: 0;
+                margin-top: .5rem;
+            }
+            margin-bottom: 0;
+        }
         .barracks {
-            margin-bottom: .5rem;
+            margin-bottom: .25rem;
+        }
+        .training {
+            > span {
+                display: inline-block;
+            }
+            > progress {
+                display: inline-block;
+                width: ~"calc(100% - 4rem)";
+            }
+            margin-bottom: .75rem;
         }
         button {
             height: 2rem;
@@ -313,19 +333,30 @@ a {
         button.first {
             margin-right: .5rem;
         }
-        .tactics {
-            margin: .5rem 0;
-            height: 1.25rem;
-            display: flex;
-            > :first-child {
-                display: inline-block;
-                line-height: 1.125rem;
+        .war {
+            padding-right: 0;
+            .tactics {
+                margin: .5rem 0;
+                height: 1.25rem;
+                display: flex;
+                > :first-child {
+                    display: inline-block;
+                    line-height: 1.125rem;
+                    width: 4.75rem;
+                }
+            }
+        }
+        .launch {
+            .campaign {
+                width: 6rem;
+                height: 3rem;
+                white-space: normal;
+                margin-top: .5rem;
             }
         }
     }
 
     .mad {
-        margin-top: 1rem;
         padding: 1rem;
         border: .0625rem solid #fff;
         border-radius: .5rem;
