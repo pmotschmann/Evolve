@@ -1249,7 +1249,7 @@ function fastLoop(){
                 money_bd['Temple'] = (global.city.temple.count * 2.5) + '%';
             }
             
-            modRes('Money',Math.round(income));
+            modRes('Money',+(income).toFixed(2));
         }
         breakdown['Money'] = money_bd;
 
