@@ -135,7 +135,18 @@ function physics(){
 }
 
 function genetics(){
+    let parent = $('#arpaGenetics');
+    parent.empty();
+    if (!global.settings.arpa.genetics){
+        return false;
+    }
 
+    if (global.tech['genetics'] === 2){
+        let genome = $(`<div class="genome"></div>`);
+        parent.append(genome);
+        
+        genome.append($(`<div class="training"><span>Sequence Genome</span> <progress class="progress" :value="progress" max="100">{{ progress }}%</progress></div>`));
+    }
 }
 
 function addProject(parent,project){

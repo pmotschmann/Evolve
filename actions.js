@@ -808,8 +808,10 @@ export const actions = {
         },
         mill: {
             id: 'city-mill',
-            title: 'Mill',
-            desc: function() { 
+            title: function(){
+                return global.tech['agriculture'] >= 5 ? 'Windmill' : 'Mill';
+            },
+            desc: function(){ 
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 return `Increases farmer efficency by ${bonus}%`;
             },
@@ -3030,6 +3032,7 @@ export const actions = {
                 if (payCosts(actions.tech.genetics.cost)){
                     var tech = actions.tech.genetics.grant[0];
                     global.tech[tech] = actions.tech.genetics.grant[1];
+                    global.settings.arpa.genetics = true;
                     arpa('Genetics');
                     return true;
                 }
@@ -4564,7 +4567,7 @@ export function addAction(action,type){
     }
     var id = actions[action][type].id;
     var parent = $(`<div id="${id}" class="action"></div>`);
-    var element = $('<a class="button is-dark" v-on:click="action">{{ title }}</a>');
+    var element = $('<a class="button is-dark" v-on:click="action"><span class="aTitle">{{ title }}</span></a>');
     parent.append(element);
 
     if (actions[action][type]['special']){
@@ -4764,6 +4767,10 @@ function payCosts(costs){
     }
     return false;
 }
+
+export function checkAffordable(type,action){
+    return checkCosts(adjustCosts(actions[type][action].cost));
+} 
 
 function checkCosts(costs){
     var test = true;

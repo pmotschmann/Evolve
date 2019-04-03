@@ -141,7 +141,7 @@ if (!global.city['market']){
 
 if (!global.settings['arpa']){
     global.settings['arpa'] = {
-        arpaTabs: 1,
+        arpaTabs: 0,
         physics: true,
         genetics: false
     };

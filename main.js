@@ -4,7 +4,7 @@ import { races, racialTrait } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
-import { actions, checkCityRequirements, checkTechRequirements, addAction } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable } from './actions.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -50,6 +50,7 @@ defineGovernment();
 defineGarrison();
 
 arpa('Physics');
+arpa('Genetics');
 
 vues['race'] = new Vue({
     data: {
@@ -275,7 +276,7 @@ var tax_multiplier = 1;
 var p_on = {};
 
 var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
-var mid_timer = global.race['slow'] ? 2200 : (global.race['hyper'] ? 1900 : 2000);
+var mid_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
 var long_timer = global.race['slow'] ? 5500 : (global.race['hyper'] ? 4750 : 5000);
 
 if (window.Worker){
@@ -982,9 +983,12 @@ function fastLoop(){
                 let steel_bd = {};
                 let iron_consume = steel_smelter * 2 * time_multiplier;
                 let coal_consume = steel_smelter * 0.25 * time_multiplier;
-                while (iron_consume > global.resource.Iron.amount && iron_consume > 0 && coal_consume > global.resource.Coal.amount && coal_consume > 0){
+                //console.log(coal_consume);
+                //console.log(global.resource.Coal.amount);
+                while ((iron_consume > global.resource.Iron.amount && iron_consume > 0) || (coal_consume > global.resource.Coal.amount && coal_consume > 0)){
                     iron_consume -= 2 * time_multiplier;
                     coal_consume -= 0.25 * time_multiplier;
+                    steel_smelter--;
                 }
                 
                 let steel_multiplier = global.tech['smelting'] >= 4 ? 1.2 : 1;
@@ -1293,8 +1297,24 @@ function fastLoop(){
 }
 
 function midLoop(){
-    if (global.race.species !== 'protoplasm'){
-            
+    if (global.race.species === 'protoplasm'){
+        Object.keys(actions.evolution).forEach(function (action){
+            if (actions.evolution[action] && actions.evolution[action].cost){
+                let element = $('#'+actions.evolution[action].id);
+                if (element.length > 0){
+                    if (checkAffordable('evolution',action)){
+                        if (element.hasClass('cna')){
+                            element.removeClass('cna');
+                        }
+                    }
+                    else if (!element.hasClass('cna')){
+                        element.addClass('cna');
+                    }
+                }
+            }
+        });
+    }
+    else {
         // Resource caps
         var caps = {
             Money: 1000,
@@ -1556,6 +1576,36 @@ function midLoop(){
             }
             else if (global.civic[job].workers < 0){
                 global.civic[job].workers = 0;
+            }
+        });
+
+        Object.keys(global.city).forEach(function (action){
+            if (actions.city[action] && actions.city[action].cost){
+                let element = $('#'+actions.city[action].id);
+                if (checkAffordable('city',action)){
+                    if (element.hasClass('cna')){
+                        element.removeClass('cna');
+                    }
+                }
+                else if (!element.hasClass('cna')){
+                    element.addClass('cna');
+                }
+            }
+        });
+
+        Object.keys(actions.tech).forEach(function (action){
+            if (actions.tech[action] && actions.tech[action].cost){
+                let element = $('#'+actions.tech[action].id);
+                if (element.length > 0){
+                    if (checkAffordable('tech',action)){
+                        if (element.hasClass('cna')){
+                            element.removeClass('cna');
+                        }
+                    }
+                    else if (!element.hasClass('cna')){
+                        element.addClass('cna');
+                    }
+                }
             }
         });
 
