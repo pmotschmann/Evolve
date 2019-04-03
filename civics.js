@@ -667,69 +667,18 @@ function defineMad(){
         data: global.civic['mad'],
         methods: {
             launch(){
-                Object.keys(vues).forEach(function (v){
-                    vues[v].$destroy();
-                });
-
-                let god = global.race.species;
-                let orbit = global.city.calendar.orbit;
-                let biome = global.city.biome;
-                let plasmid = global.race.Plasmid.count;
-                let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
-                let new_plasmid = Math.round(pop / 3);
-                plasmid += new_plasmid;
-                global.stats.reset++;
-                global.stats.tdays += global.stats.days;
-                global.stats.days = 0;
-                global.stats.plasmid += new_plasmid;
-                console.log(`extinct_${god}`);
-                unlockAchieve(`apocalypse`);
-                let new_achieve = unlockAchieve(`extinct_${god}`);
-                global['race'] = { 
-                    species : 'protoplasm', 
-                    gods: god, 
-                    rapid_mutation: 1,
-                    ancient_ruins: 1,
-                    Plasmid: { count: plasmid }
-                };
-                global.city = {
-                    calendar: {
-                        day: 0,
-                        year: 0,
-                        weather: 2,
-                        temp: 1,
-                        moon: 0,
-                        wind: 0,
-                        orbit: orbit
-                    },
-                    biome: biome
-                };
-                global.civic = { free: 0 };
-                global.resource = {};
-                global.evolution = {};
-                global.tech = { theology: 1 };
-                global.genes = {};
-                global.event = 100;
-                global.settings.civTabs = 0;
-                global.settings.showEvolve = true;
-                global.settings.showCity = false;
-                global.settings.showIndustry = false;
-                global.settings.showResearch = false;
-                global.settings.showCivic = false;
-                global.settings.showMarket = false;
-                global.settings.showGenetics = false;
-                global.settings.showSpace = false;
-                global.settings.arpa = false;
-                global.arpa = {};
-                if (!new_achieve){
-                    global.lastMsg = false;
-                }
-                global.new = true;
-                Math.seed = Math.rand(0,10000);
-                global.seed = Math.seed;
-                
-                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-                window.location.reload();
+                $('body').addClass('nuke');
+                let nuke = $('<div class="nuke"></div>');
+                $('body').append(nuke);
+                setTimeout(function(){
+                    nuke.addClass('burn');
+                }, 500);
+                setTimeout(function(){
+                    nuke.addClass('b');
+                }, 600);
+                setTimeout(function(){
+                    warhead();
+                }, 4000);
             },
             arm(){
                 if (global.civic.mad.armed){
@@ -750,4 +699,70 @@ function defineMad(){
         }
     });
     vues['mad'].$mount('#mad');
+}
+
+function warhead(){
+    Object.keys(vues).forEach(function (v){
+        vues[v].$destroy();
+    });
+
+    let god = global.race.species;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let plasmid = global.race.Plasmid.count;
+    let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
+    let new_plasmid = Math.round(pop / 3);
+    plasmid += new_plasmid;
+    global.stats.reset++;
+    global.stats.tdays += global.stats.days;
+    global.stats.days = 0;
+    global.stats.plasmid += new_plasmid;
+    console.log(`extinct_${god}`);
+    unlockAchieve(`apocalypse`);
+    let new_achieve = unlockAchieve(`extinct_${god}`);
+    global['race'] = { 
+        species : 'protoplasm', 
+        gods: god, 
+        rapid_mutation: 1,
+        ancient_ruins: 1,
+        Plasmid: { count: plasmid }
+    };
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome
+    };
+    global.civic = { free: 0 };
+    global.resource = {};
+    global.evolution = {};
+    global.tech = { theology: 1 };
+    global.genes = {};
+    global.event = 100;
+    global.settings.civTabs = 0;
+    global.settings.showEvolve = true;
+    global.settings.showCity = false;
+    global.settings.showIndustry = false;
+    global.settings.showResearch = false;
+    global.settings.showCivic = false;
+    global.settings.showMarket = false;
+    global.settings.showGenetics = false;
+    global.settings.showSpace = false;
+    global.settings.arpa = false;
+    global.arpa = {};
+    if (!new_achieve){
+        global.lastMsg = false;
+    }
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+    
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
 }
