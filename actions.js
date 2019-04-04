@@ -4685,7 +4685,7 @@ function actionDesc(parent,action,type){
             if (res_cost > 0){
                 var label = res === 'Money' ? '$' : res+': ';
                 var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
-                cost.append($(`<div class="${color}">${label}${res_cost}</div>`));
+                cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${res_cost}</div>`));
             }
         });
         parent.append(cost);

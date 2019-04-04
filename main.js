@@ -1611,6 +1611,20 @@ function midLoop(){
 
         checkAchievements();
     }
+    Object.keys(global.resource).forEach(function (res){
+        $(`[data-${res}]`).each(function (i,v){
+            if (global.resource[res].amount < $(this).attr(`data-${res}`)){
+                if ($(this).hasClass('has-text-dark')){
+                    $(this).removeClass('has-text-dark');
+                    $(this).addClass('has-text-danger');
+                }
+            }
+            else if ($(this).hasClass('has-text-danger')){
+                $(this).removeClass('has-text-danger');
+                $(this).addClass('has-text-dark');
+            }
+        });
+    });
 }
 
 function longLoop(){
