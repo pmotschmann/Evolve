@@ -587,6 +587,7 @@ function drawModal(name,color){
 
 export function initMarket(){
     let market = $('<div id="market-qty" class="market-header"></div>');
+    $('#market').empty();
     $('#market').append(market);
     loadMarket();
 }
