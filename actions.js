@@ -4567,6 +4567,9 @@ export function addAction(action,type){
     }
     var id = actions[action][type].id;
     var parent = $(`<div id="${id}" class="action"></div>`);
+    if (!checkAffordable(action,type)){
+        parent.addClass('cna');
+    }
     var element = $('<a class="button is-dark" v-on:click="action"><span class="aTitle">{{ title }}</span></a>');
     parent.append(element);
 
@@ -4769,7 +4772,10 @@ function payCosts(costs){
 }
 
 export function checkAffordable(type,action){
-    return checkCosts(adjustCosts(actions[type][action].cost));
+    if (actions[type][action].cost){
+        return checkCosts(adjustCosts(actions[type][action].cost));
+    }
+    return true;
 } 
 
 function checkCosts(costs){
