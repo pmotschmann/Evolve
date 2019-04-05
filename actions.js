@@ -2862,6 +2862,27 @@ export const actions = {
                 return false;
             }
         },
+        monument: {
+            id: 'tech-monument',
+            title: 'Monuments',
+            desc: 'Monuments',
+            reqs: { high_tech: 6 },
+            grant: ['monument',1],
+            cost: {
+                Knowledge: function(){ return 120000; }
+            },
+            effect: `Plan the construction of a monument to celebrate your civilization's greatness`,
+            action: function (){
+                if (payCosts(actions.tech.monument.cost)){
+                    var tech = actions.tech.monument.grant[0];
+                    global.tech[tech] = actions.tech.monument.grant[1];
+                    global.arpa['m_type'] = arpa('Monument');
+                    arpa('Physics');
+                    return true;
+                }
+                return false;
+            }
+        },
         science: {
             id: 'tech-science',
             title: 'Scientific Method',
@@ -3022,7 +3043,7 @@ export const actions = {
             id: 'tech-genetics',
             title: 'Genetics',
             desc: 'Genetics',
-            reqs: { genetics: 1, high_tech: 6, locked: 1 },
+            reqs: { genetics: 1, high_tech: 6 },
             grant: ['genetics',2],
             cost: {
                 Knowledge: function(){ return 108000; }

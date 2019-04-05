@@ -9,6 +9,8 @@ export function arpa(type) {
         case 'Genetics':
             genetics();
             break;
+        case 'Monument':
+            return pick_monument()
     }
 }
 
@@ -74,8 +76,49 @@ const arpaProjects = {
             Steel: function(){ return costMultiplier('launch_facility', 250000, 1.1); },
             Alloy: function(){ return costMultiplier('launch_facility', 25000, 1.1); }
         }
+    },
+    monument: {
+        title: function(){ return global.arpa.m_type },
+        desc: `Construct a monument to your civilization's greatness.`,
+        reqs: { monument: 1 },
+        grant: 'monuments',
+        effect: function() {
+            return 'Each monument increases maximum morale by 1%';
+        },
+        cost: {
+            Stone: function(){ return monument_costs('Stone') },
+            Copper: function(){ return monument_costs('Copper') },
+            Cement: function(){ return monument_costs('Cement') },
+            Steel: function(){ return monument_costs('Steel') }
+        }
     }
 };
+
+function pick_monument(){
+    switch(Math.rand(0,4)){
+        case 0:
+            return 'Obelisk';
+        case 1:
+            return 'Statue';
+        case 2:
+            return 'Sculpture';
+        case 3:
+            return 'Monolith';
+    }
+}
+
+function monument_costs(res){
+    switch(global.arpa.m_type){
+        case 'Obelisk':
+            return res === 'Stone' ? costMultiplier('monument', 1000000, 1.1) : 0;
+        case 'Statue':
+            return res === 'Copper' ? costMultiplier('monument', 500000, 1.1) : 0;
+        case 'Sculpture':
+            return res === 'Steel' ? costMultiplier('monument', 500000, 1.1) : 0;
+        case 'Monolith':
+            return res === 'Cement' ? costMultiplier('monument', 500000, 1.1) : 0;
+    }
+}
 
 function checkRequirements(tech){
     var isMet = true;
@@ -132,6 +175,7 @@ function physics(){
     addProject(parent,'lhc');
     addProject(parent,'stock_exchange');
     addProject(parent,'launch_facility');
+    addProject(parent,'monument');
 }
 
 function genetics(){
@@ -160,7 +204,8 @@ function addProject(parent,project){
         let current = $(`<div id="arpa${project}" class="arpaProject"></div>`);
         parent.append(current);
 
-        let head = $(`<div class="head"><span class="desc has-text-warning">${arpaProjects[project].title}</span><span v-show="rank" class="rank">Level - {{ rank }}</span></div>`);
+        let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
+        let head = $(`<div class="head"><span class="desc has-text-warning">${title}</span><span v-show="rank" class="rank">Level - {{ rank }}</span></div>`);
         current.append(head);
 
         let progress = $(`<div class="pbar"><progress class="progress" :value="complete" max="100"></progress><span class="progress-value has-text-danger">{{ complete }}%</span></div>`);
@@ -185,6 +230,10 @@ function addProject(parent,project){
                                 global.arpa[pro].rank++;
                                 global.arpa[pro].complete = 0;
                                 global.tech[arpaProjects[pro].grant] = global.arpa[pro].rank;
+                                if (pro === 'monument'){
+                                    global.arpa['m_type'] = pick_monument();
+                                    $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
+                                }
                                 drawTech();
                             }
                         }
