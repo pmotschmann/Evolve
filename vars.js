@@ -147,6 +147,10 @@ if (!global.settings['arpa']){
     };
 }
 
+if (!global.settings.arpa['crispr']){
+    global.settings.arpa['crispr'] = false;
+}
+
 if (!global['arpa']){
     global['arpa'] = {};
 }

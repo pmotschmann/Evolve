@@ -4,7 +4,7 @@ import { races, racialTrait } from './races.js';
 import { defineResources, resource_values } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
-import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech } from './actions.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -51,6 +51,7 @@ defineGarrison();
 
 arpa('Physics');
 arpa('Genetics');
+arpa('Crispr');
 
 vues['race'] = new Vue({
     data: {
@@ -323,6 +324,7 @@ function fastLoop(){
 
     breakdown['consume'] = {
         Money: {},
+        Knowledge: {},
         Food: {},
         Lumber: {},
         Stone: {},
@@ -765,8 +767,18 @@ function fastLoop(){
         delta += scientist * tax_multiplier * global_multiplier * time_multiplier * hunger;
         modRes('Knowledge',delta);
         know_bd['Taxes'] = ((tax_multiplier * 100) - 100)  + '%';
+        if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
+            let spend = 50 * time_multiplier;
+            if (spend <= global.resource.Knowledge.amount){
+                modRes('Knowledge',-(spend));
+            }
+            else {
+                global.arpa.sequence.on = false;
+            }
+            breakdown.consume.Knowledge['Genome'] = -50;
+        }
         breakdown['Knowledge'] = know_bd;
-        
+
         // Factory
         if (global.city['factory']){
             let opperating = 0;
@@ -1609,6 +1621,16 @@ function midLoop(){
                 }
             }
         });
+
+        if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
+            global.arpa.sequence.time -= global.city.biolab.on;
+            global.arpa.sequence.progress = 50000 - global.arpa.sequence.time;
+            if (global.arpa.sequence.time <= 0){
+                global.tech['genetics'] = 3;
+                arpa('Genetics');
+                drawTech();
+            }
+        }
 
         checkAchievements();
     }

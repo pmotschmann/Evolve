@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
 import { races, genus_traits } from './races.js';
 import { defineResources, loadMarket } from './resources.js';
-import { arpa } from './arpa.js';
+import { arpa, gainGene } from './arpa.js';
 
 export const actions = {
     evolution: {
@@ -3060,6 +3060,29 @@ export const actions = {
                 return false;
             }
         },
+        crispr: {
+            id: 'tech-crispr',
+            title: 'Crispr Cas9',
+            desc: 'Crispr Cas9',
+            reqs: { genetics: 3 },
+            grant: ['genetics',4],
+            cost: {
+                Knowledge: function(){ return 125000; }
+            },
+            effect: 'Crispr is a breakthrough in genetic engineering that will allow you to permanently modify your own genome.',
+            action: function (){
+                if (payCosts(actions.tech.crispr.cost)){
+                    var tech = actions.tech.crispr.grant[0];
+                    global.tech[tech] = actions.tech.crispr.grant[1];
+                    global.settings.arpa.crispr = true;
+                    global.settings.arpa.arpaTabs = 2;
+                    arpa('Genetics');
+                    arpa('Crispr');
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: 'Mad Science',
@@ -4484,7 +4507,8 @@ export const actions = {
                 return false;
             }
         }
-    }
+    },
+    genes: arpa('GeneTech')
 };
 
 function storageMultipler(){
@@ -4553,7 +4577,6 @@ function registerTech(action){
 function gainTech(action){
     var tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
-    
     drawCity();
     drawTech();
 }
@@ -4637,19 +4660,29 @@ export function addAction(action,type){
         },
         methods: {
             action: function(){
-                var keyMult = (action === 'tech' ? 1 : keyMultiplier());
-                for (var i=0; i<keyMult; i++){
-                    if (actions[action][type].action()){
-                        if (action === 'tech'){
+                switch (action){
+                    case 'tech':
+                        if (actions[action][type].action()){
                             gainTech(type);
                         }
-                        else {
-                            updateDesc(action,type);
-                        }
-                    }
-                    else {
                         break;
-                    }
+                    case 'genes':
+                        if (actions[action][type].action()){
+                            gainGene(type);
+                        }
+                        break;
+                    default:
+                        var keyMult = keyMultiplier();
+                        for (var i=0; i<keyMult; i++){
+                            if (actions[action][type].action()){
+                                updateDesc(action,type);
+                                break;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        break;
                 }
             },
             trigModal: function(){
@@ -4720,7 +4753,7 @@ function actionDesc(parent,action,type){
     }
 }
 
-function removeAction(id){
+export function removeAction(id){
     $('#'+id).remove();
     $('#pop'+id).remove();
 }
@@ -4832,6 +4865,9 @@ function costMultiplier(structure,base,mutiplier){
         if (global.race['pack_mentality']){
             mutiplier -= 0.02;
         }
+    }
+    if (global.genes['creep']){
+        mutiplier -= global.genes['creep'] * 0.01;
     }
     if (mutiplier < 0.01){
         mutiplier = 0.01;

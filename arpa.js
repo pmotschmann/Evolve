@@ -1,5 +1,6 @@
 import { global, vues, poppers, messageQueue, modRes } from './vars.js';
-import { drawCity, drawTech } from './actions.js';
+import { actions, drawCity, drawTech, addAction, removeAction } from './actions.js';
+import { races, traits } from './races.js';
 
 export function arpa(type) {
     switch(type){
@@ -10,7 +11,12 @@ export function arpa(type) {
             genetics();
             break;
         case 'Monument':
-            return pick_monument()
+            return pick_monument();
+        case 'GeneTech':
+            return genePool;
+        case 'Crispr':
+            crispr();
+            break;
     }
 }
 
@@ -93,6 +99,61 @@ const arpaProjects = {
         }
     }
 };
+
+const genePool = {
+    spatial_reasoning: {
+        id: 'genes-spatial_reasoning',
+        title: 'Spatial Reasoning',
+        desc: 'Reduces cost creep by 0.01',
+        reqs: {},
+        grant: ['creep',1],
+        cost: 25,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>25</span></div>',
+        action: function (){
+            if (payPlasmids('spatial_reasoning')){
+                return true;
+            }
+            return false;
+        }
+    }
+}
+
+function payPlasmids(gene){
+    console.log(genePool[gene].cost);
+    if (global.race.Plasmid.count >= genePool[gene].cost){
+        global.race.Plasmid.count -= genePool[gene].cost;
+        return true;
+    }
+    return false;
+}
+
+export function drawGenes(){
+    Object.keys(actions.genes).forEach(function (gene) {
+        removeAction(actions.genes[gene].id);
+        if (checkGeneRequirements(gene)){
+            addAction('genes',gene);
+        }
+    });
+}
+
+export function checkGeneRequirements(gene){
+    var isMet = true;
+    Object.keys(actions.genes[gene].reqs).forEach(function (req) {
+        if (!global.genes[req] || global.genes[req] < actions.genes[gene].reqs[req]){
+            isMet = false;
+        }
+    });
+    if (isMet && (!global.genes[actions.genes[gene].grant[0]] || global.genes[actions.genes[gene].grant[0]] < actions.genes[gene].grant[1])){
+        return true;
+    }
+    return false;
+}
+
+export function gainGene(action){
+    var gene = actions.genes[action].grant[0];
+    global.genes[gene] = actions.genes[action].grant[1];
+    crispr();
+}
 
 function pick_monument(){
     switch(Math.rand(0,4)){
@@ -186,10 +247,79 @@ function genetics(){
     }
 
     if (global.tech['genetics'] === 2){
-        let genome = $(`<div class="genome"></div>`);
+        if (vues[`arpaSequence`]){
+            vues[`arpaSequence`].$destroy();
+        }
+        let genome = $(`<div id="arpaSequence" class="genome"></div>`);
         parent.append(genome);
+
+        if (!global.arpa['sequence']){
+            global.arpa['sequence'] = {
+                progress: 0,
+                time: 50000,
+                on: false
+            };
+        }
         
-        genome.append($(`<div class="training"><span>Sequence Genome</span> <progress class="progress" :value="progress" max="100">{{ progress }}%</progress></div>`));
+        let sequence = $(`<div><b-tooltip class="has-text-warning" :label="seq()" position="is-bottom" size="is-small" multilined animated>Sequence Genome</b-tooltip> - To Complete: {{ time | timer }}</div>`);
+        genome.append(sequence);
+        let progress = $('<progress class="progress" :value="progress" max="50000">{{ progress }}%</progress>');
+        genome.append(progress);
+        let button = $('<button class="button" @click="toggle">Sequence</button>');
+        genome.append(button);
+        if (global.arpa.sequence.on){
+            $('#arpaSequence button').addClass('has-text-success');
+        }
+
+        vues[`arpaSequence`] = new Vue({
+            data: global.arpa.sequence,
+            methods: {
+                seq(){
+                    return 'Sequence your genome, this will unlock the secrets of DNA. More Bio Labs will make this go faster';
+                },
+                toggle(){
+                    if (global.arpa.sequence.on){
+                        global.arpa.sequence.on = false;
+                        $('#arpaSequence button').removeClass('has-text-success');
+                    }
+                    else {
+                        global.arpa.sequence.on = true;
+                        $('#arpaSequence button').addClass('has-text-success');
+                    }
+                },
+            },
+            filters: {
+                timer(val){
+                    if (global.city.biolab.on > 0){
+                        return (val / global.city.biolab.on).toFixed(0) + 's';
+                    }
+                    else {
+                        return 'Never';
+                    }
+                }
+            }
+        });
+        vues[`arpaSequence`].$mount(`#arpaSequence`);
+    }
+    else if (global.tech['genetics'] > 2){
+        let breakdown = $('<div id="geneticBreakdown"></div>');
+        $('#arpaGenetics').append(breakdown);
+        breakdown.append(`<div class="trait has-text-success">${races[global.race.species].name} Genetic Traits</div>`)
+        
+        Object.keys(global.race).forEach(function (trait){
+            if (traits[trait]){
+                breakdown.append(`<div class="trait has-text-warning">${traits[trait].desc}</div>`);
+            }
+        });
+    }
+}
+
+function crispr(){
+    if (global.tech['genetics'] > 3){
+        $('#arpaCrispr').empty();
+        $('#arpaCrispr').append('<div class="has-text-warning">Permanently alter your DNA. These upgrades carry over across resets.</div>');
+        $('#arpaCrispr').append('<div id="genes"></div>');
+        drawGenes();
     }
 }
 
