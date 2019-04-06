@@ -140,7 +140,7 @@ const genePool = {
         cost: 250,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>250</span></div>',
         action: function (){
-            if (payPlasmids('animus')){
+            if (payPlasmids('divine_remembrance')){
                 return true;
             }
             return false;
