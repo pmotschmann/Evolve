@@ -12,7 +12,7 @@ export const races = {
         desc: "Humans are versatile creatures who are adept at bending the environment around them to suit their needs. They are an ambitious race who seek to expand their knowledge of the universe around them and build great empires.",
         type: 'humanoid',
         home: 'Terra',
-        entity: 'bipedal creatures',
+        entity: 'pink skinned bipedal creatures',
         traits: {
             creative: 1,
             diverse: 1
@@ -100,7 +100,7 @@ export const races = {
         desc: 'Gnomes are small humanoid creatures who are known for their superior intelligence. They are natural scientists and seek to expand their knowledge, often at the cost of safety and morality.',
         type: 'small',
         home: 'Lawn',
-        entity: 'small humanoids',
+        entity: 'small pink humanoids',
         traits: { 
             smart: 1,
             puny: 1

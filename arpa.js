@@ -101,16 +101,91 @@ const arpaProjects = {
 };
 
 const genePool = {
-    spatial_reasoning: {
-        id: 'genes-spatial_reasoning',
-        title: 'Spatial Reasoning',
+    genetic_memory: {
+        id: 'genes-genetic_memory',
+        title: 'Genetic Memory',
         desc: 'Reduces cost creep by 0.01',
         reqs: {},
         grant: ['creep',1],
         cost: 25,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>25</span></div>',
         action: function (){
+            if (payPlasmids('genetic_memory')){
+                return true;
+            }
+            return false;
+        }
+    },
+    animus: {
+        id: 'genes-animus',
+        title: 'Animus',
+        desc: 'Reduces cost creep by 0.02',
+        reqs: { creep: 1 },
+        grant: ['creep',2],
+        cost: 75,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>75</span></div>',
+        action: function (){
+            if (payPlasmids('animus')){
+                return true;
+            }
+            return false;
+        }
+    },
+    divine_remembrance: {
+        id: 'genes-divine_remembrance',
+        title: 'Divine Remembrance',
+        desc: 'Reduces cost creep by 0.03',
+        reqs: { creep: 2 },
+        grant: ['creep',3],
+        cost: 250,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>250</span></div>',
+        action: function (){
+            if (payPlasmids('animus')){
+                return true;
+            }
+            return false;
+        }
+    },
+    spatial_reasoning: {
+        id: 'genes-spatial_reasoning',
+        title: 'Spatial Reasoning',
+        desc: 'Plasmids boost stroage space',
+        reqs: {},
+        grant: ['store',1],
+        cost: 50,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>50</span></div>',
+        action: function (){
             if (payPlasmids('spatial_reasoning')){
+                return true;
+            }
+            return false;
+        }
+    },
+    replication: {
+        id: 'genes-replication',
+        title: 'Replication',
+        desc: 'Increases Birth Rate',
+        reqs: {},
+        grant: ['birth',1],
+        cost: 65,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>65</span></div>',
+        action: function (){
+            if (payPlasmids('replication')){
+                return true;
+            }
+            return false;
+        }
+    },
+    transcendence: {
+        id: 'genes-transcendence',
+        title: 'Transcendence',
+        desc: 'Can unlock both fanaticism and anthropology',
+        reqs: { creep: 1, birth: 1, store: 1, locked: 1 },
+        grant: ['transcendence',1],
+        cost: 500,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>500</span></div>',
+        action: function (){
+            if (payPlasmids('transcendence')){
                 return true;
             }
             return false;

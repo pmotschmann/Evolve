@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown } from './vars.js';
 import { drawAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
-import { defineResources, resource_values } from './resources.js';
+import { defineResources, resource_values, spatialReasoning } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech } from './actions.js';
@@ -717,6 +717,9 @@ function fastLoop(){
                     lowerBound += 2;
                     lowerBound *= 2;
                 }
+                if (global.genes['birth']){
+                    lowerBound += global.genes['birth'];
+                }
                 if(Math.rand(0, global['resource'][races[global.race.species].name].amount * (3 - (2 ** time_multiplier))) <= lowerBound){
                     global['resource'][races[global.race.species].name].amount++;
                 }
@@ -1390,14 +1393,14 @@ function midLoop(){
         }
         if (global.city['rock_quarry']){
             lCaps['quarry_worker'] += global.city['rock_quarry'].count;
-            caps['Stone'] += (global.city['rock_quarry'].count * 100);
+            caps['Stone'] += (global.city['rock_quarry'].count * spatialReasoning(100));
         }
         if (global.city['lumber_yard']){
             lCaps['lumberjack'] += global.city['lumber_yard'].count * 2;
-            caps['Lumber'] += (global.city['lumber_yard'].count * 100);
+            caps['Lumber'] += (global.city['lumber_yard'].count * spatialReasoning(100));
         }
         if (global.city['sawmill']){
-            caps['Lumber'] += (global.city['sawmill'].count * 200);
+            caps['Lumber'] += (global.city['sawmill'].count * spatialReasoning(200));
             let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
             global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
         }
@@ -1429,10 +1432,10 @@ function midLoop(){
             var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
             if (global.tech['storage'] >= 3){
                 multiplier *= global.tech['storage'] >= 4 ? 2 : 1.5;
-                caps['Steel'] += (global.city['shed'].count * (25 * multiplier));
+                caps['Steel'] += (global.city['shed'].count * (spatialReasoning(25) * multiplier));
             }
             if (global.tech['storage'] >= 4){
-                caps['Titanium'] += (global.city['shed'].count * (10 * multiplier));
+                caps['Titanium'] += (global.city['shed'].count * (spatialReasoning(10) * multiplier));
             }
             if (global.race['pack_rat']){
                 multiplier *= 1.05;
@@ -1440,24 +1443,24 @@ function midLoop(){
             if (global.tech['storage'] >= 6){
                 multiplier *= 1 + (global.tech['supercollider'] / 20);
             }
-            caps['Lumber'] += (global.city['shed'].count * (200 * multiplier));
-            caps['Stone'] += (global.city['shed'].count * (200 * multiplier));
-            caps['Furs'] += (global.city['shed'].count * (100 * multiplier));
-            caps['Copper'] += (global.city['shed'].count * (75 * multiplier));
-            caps['Iron'] += (global.city['shed'].count * (100 * multiplier));
-            caps['Cement'] += (global.city['shed'].count * (80 * multiplier));
-            caps['Coal'] += (global.city['shed'].count * (50 * multiplier));
+            caps['Lumber'] += (global.city['shed'].count * (spatialReasoning(200) * multiplier));
+            caps['Stone'] += (global.city['shed'].count * (spatialReasoning(200) * multiplier));
+            caps['Furs'] += (global.city['shed'].count * (spatialReasoning(100) * multiplier));
+            caps['Copper'] += (global.city['shed'].count * (spatialReasoning(75) * multiplier));
+            caps['Iron'] += (global.city['shed'].count * (spatialReasoning(100) * multiplier));
+            caps['Cement'] += (global.city['shed'].count * (spatialReasoning(80) * multiplier));
+            caps['Coal'] += (global.city['shed'].count * (spatialReasoning(50) * multiplier));
         }
         if (global.city['silo']){
-            caps['Food'] += (global.city['silo'].count * 500);
+            caps['Food'] += (global.city['silo'].count * spatialReasoning(500));
         }
         if (global.city['oil_well']){
-            caps['Oil'] += (global.city['oil_well'].count * 500);
+            caps['Oil'] += (global.city['oil_well'].count * spatialReasoning(500));
         }
         if (global.city['oil_depot']){
-            caps['Oil'] += (global.city['oil_depot'].count * 1000);
+            caps['Oil'] += (global.city['oil_depot'].count * spatialReasoning(1000));
             if (global.tech['uranium'] >= 2){
-                caps['Uranium'] += (global.city['oil_depot'].count * 250);
+                caps['Uranium'] += (global.city['oil_depot'].count * spatialReasoning(250));
             }
         }
         if (global.city['university']){

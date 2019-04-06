@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
 import { races, genus_traits } from './races.js';
-import { defineResources, loadMarket } from './resources.js';
+import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { arpa, gainGene } from './arpa.js';
 
 export const actions = {
@@ -796,11 +796,14 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('silo', 65, 1.35) },
                 Stone: function(){ return costMultiplier('silo', 50, 1.35); }
             },
-            effect: '+500 Max Food',
+            effect: function(){ 
+                let food = spatialReasoning(500);
+                return `+${food} Max Food`; 
+            },
             action: function (){
                 if (payCosts(actions.city.silo.cost)){
                     global.city['silo'].count++;
-                    global['resource']['Food'].max += 500;
+                    global['resource']['Food'].max += spatialReasoning(500);
                     return true;
                 }
                 return false;
@@ -872,39 +875,39 @@ export const actions = {
                 let storage = '';
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
-                    let val = +(200 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(200) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Lumber.`;
                 }
                 if (global.resource.Stone.display){
-                    let val = +(200 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(200) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Stone.`;
                 }
                 if (global.resource.Furs.display){
-                    let val = +(100 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(100) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Furs.`;
                 }
                 if (global.resource.Copper.display){
-                    let val = +(75 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(75) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Copper.`;
                 }
                 if (global.resource.Iron.display){
-                    let val = +(100 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(100) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Iron.`;
                 }
                 if (global.resource.Cement.display){
-                    let val = +(80 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(80) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Cement.`;
                 }
                 if (global.resource.Coal.display){
-                    let val = +(50 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(50) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Coal.`;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    let val = +(25 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(25) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Steel.`;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    let val = +(10 * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(10) * multiplier).toFixed(1);
                     storage = storage + `+${val} Max Titanium.`;
                 }
                 return storage;
@@ -912,17 +915,17 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.city.shed.cost)){
                     let multiplier = storageMultipler();
-                    global['resource']['Lumber'].max += (200 * multiplier);
-                    global['resource']['Stone'].max += (200 * multiplier);
-                    global['resource']['Copper'].max += (75 * multiplier);
-                    global['resource']['Iron'].max += (100 * multiplier);
-                    global['resource']['Cement'].max += (80 * multiplier);
-                    global['resource']['Coal'].max += (50 * multiplier);
+                    global['resource']['Lumber'].max += (spatialReasoning(200) * multiplier);
+                    global['resource']['Stone'].max += (spatialReasoning(200) * multiplier);
+                    global['resource']['Copper'].max += (spatialReasoning(75) * multiplier);
+                    global['resource']['Iron'].max += (spatialReasoning(100) * multiplier);
+                    global['resource']['Cement'].max += (spatialReasoning(80) * multiplier);
+                    global['resource']['Coal'].max += (spatialReasoning(50) * multiplier);
                     if (global.tech['storage'] >= 3){
-                        global['resource']['Steel'].max += (global.city['shed'].count * (25 * multiplier));
+                        global['resource']['Steel'].max += (global.city['shed'].count * (spatialReasoning(25) * multiplier));
                     }
                     if (global.tech['storage'] >= 4){
-                        global['resource']['Titanium'].max += (global.city['shed'].count * (10 * multiplier));
+                        global['resource']['Titanium'].max += (global.city['shed'].count * (spatialReasoning(10) * multiplier));
                     }
                     global.city['shed'].count++;
                     return true;
@@ -1037,13 +1040,16 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('lumber_yard', 6, 1.9); },
                 Stone: function(){ return costMultiplier('lumber_yard', 2, 1.95); }
             },
-            effect: '<div>+2 Max Lumberjacks</div><div>+100 Max Lumber</div>',
+            effect:  function(){
+                let lum = spatialReasoning(100);
+                return `<div>+2 Max Lumberjacks</div><div>+${lum} Max Lumber</div>`;
+            },
             action: function (){
                 if (payCosts(actions.city.lumber_yard.cost)){
                     global.city['lumber_yard'].count++;
                     global.civic.lumberjack.display = true;
                     global.civic.lumberjack.max = global.city.lumber_yard.count * 2;
-                    global['resource']['Lumber'].max += 100;
+                    global['resource']['Lumber'].max += spatialReasoning(100);
                     return true;
                 }
                 return false;
@@ -1062,11 +1068,12 @@ export const actions = {
             },
             effect: function(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
+                let lum = spatialReasoning(200);
                 if (global.city.powered){
-                    return `<div>+200 Max Lumber</div><div>Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill uses 1kW but produces 5% more lumber.</div>`; 
+                    return `<div>+${lum} Max Lumber</div><div>Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill uses 1kW but produces 5% more lumber.</div>`; 
                 }
                 else {
-                    return `<div>+200 Max Lumber</div><div>Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%</div>`;
+                    return `<div>+${lum} Max Lumber</div><div>Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%</div>`;
                 }
             },
             powered: 1,
@@ -1075,7 +1082,7 @@ export const actions = {
                     global.city['sawmill'].count++;
                     let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
                     global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
-                    global['resource']['Lumber'].max += 200;
+                    global['resource']['Lumber'].max += spatialReasoning(200);
                     if (global.city.powered && global.city.power > 0){
                         global.city.sawmill.on++;
                     }
@@ -1094,12 +1101,13 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('rock_quarry', 50, 1.35); },
                 Stone: function(){ return costMultiplier('rock_quarry', 10, 1.35); }
             },
-            effect: function() { 
+            effect: function() {
+                let stone = spatialReasoning(100);
                 if (global.tech['mine_conveyor']){
-                    return '<div>+1 Max Quarry Worker</div><div>+100 Max Stone</div><div>If powered consumes 1kW but increases rock yield by 5%</div>';
+                    return `<div>+1 Max Quarry Worker</div><div>+${stone} Max Stone</div><div>If powered consumes 1kW but increases rock yield by 5%</div>`;
                 }
                 else {
-                    return '<div>+1 Max Quarry Worker</div><div>+100 Max Stone</div>';
+                    return `<div>+1 Max Quarry Worker</div><div>+${stone} Max Stone</div>`;
                 }
             },
             powered: 1,
@@ -1295,13 +1303,14 @@ export const actions = {
                 if (global.tech['oil'] >= 5){
                     oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
                 }
-                return `+${oil} oil per second. +500 Max Oil.`;
+                let oc = spatialReasoning(500);
+                return `+${oil} oil per second. +${oc} Max Oil.`;
             },
             action: function (){
                 if (payCosts(actions.city.oil_well.cost)){
                     global.city['oil_well'].count++;
                     global.resource.Oil.display = true;
-                    global['resource']['Oil'].max += 500;
+                    global['resource']['Oil'].max += spatialReasoning(500);
                     return true;
                 }
                 return false;
@@ -1318,10 +1327,10 @@ export const actions = {
                 Cement: function(){ return costMultiplier('oil_depot', 3750, 1.45); }
             },
             effect: function() { 
-                let oil = 1000;
+                let oil = spatialReasoning(1000);
                 let effect = `<div>+${oil} Max Oil.</div>`;
                 if (global.tech['uranium'] >= 2){
-                    let val = 250;
+                    let val = spatialReasoning(250);
                     effect = effect + `<div>+${val} Max Uranium.</div>`;
                 }
                 return effect;
@@ -1329,9 +1338,9 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.city.oil_depot.cost)){
                     global.city['oil_depot'].count++;
-                    global['resource']['Oil'].max += 1000;
+                    global['resource']['Oil'].max += spatialReasoning(1000);
                     if (global.tech['uranium'] >= 2){
-                        global['resource']['Uranium'].max += 250;
+                        global['resource']['Uranium'].max += spatialReasoning(250);
                     }
                     return true;
                 }

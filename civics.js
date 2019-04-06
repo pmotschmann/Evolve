@@ -694,7 +694,8 @@ function defineMad(){
                 return `Enable or Disable the launch button. Launching a nuclear strike will trigger a retalitory strike which will result in the end of all life as we know it.`;
             },
             warning(){
-                return `This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning if you proceed.`;
+                let plasma = Math.round((global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers) / 3);
+                return `This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning. You will gain ${plasma} Plasmids.`;
             }
         }
     });

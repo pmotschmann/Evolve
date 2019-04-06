@@ -419,6 +419,7 @@ function drawModal(name,color){
                 if (global.tech.container >= 4){
                     cap += 10;
                 }
+                cap = spatialReasoning(cap);
                 return `Remove crate from this resrouce (-${cap} cap)`;
             },
             addCrateLabel: function(){
@@ -429,6 +430,7 @@ function drawModal(name,color){
                 if (global.tech.container >= 4){
                     cap += 10;
                 }
+                cap = spatialReasoning(cap);
                 return `Assign crate to this resource (+${cap} cap)`;
             },
             buildCrate: function(res){
@@ -448,6 +450,7 @@ function drawModal(name,color){
                 if (global.race['pack_rat']){
                     cap += global.tech.container >= 2 ? 2 : 1;
                 }
+                cap = spatialReasoning(cap);
                 if (global.resource[res].crates >= keyMutipler){
                     global.resource.Crates.amount += keyMutipler;
                     global.resource.Crates.max += keyMutipler;
@@ -464,6 +467,7 @@ function drawModal(name,color){
                 if (global.race['pack_rat']){
                     cap += global.tech.container >= 2 ? 2 : 1;
                 }
+                cap = spatialReasoning(cap);
                 if (global.resource.Crates.amount >= keyMutipler){
                     global.resource.Crates.amount -= keyMutipler;
                     global.resource.Crates.max -= keyMutipler;
@@ -504,6 +508,7 @@ function drawModal(name,color){
                     if (global.race['pack_rat']){
                         cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
+                    cap = spatialReasoning(cap);
                     return `Remove container from this resrouce (-${cap} cap)`;
                 },
                 addContainerLabel: function(){
@@ -511,6 +516,7 @@ function drawModal(name,color){
                     if (global.race['pack_rat']){
                         cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
+                    cap = spatialReasoning(cap);
                     return `Assign container to this resource (+${cap} cap)`;
                 },
                 buildContainer: function(res){
@@ -526,6 +532,7 @@ function drawModal(name,color){
                     if (global.race['pack_rat']){
                         cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
+                    cap = spatialReasoning(cap);
                     if (global.resource[res].containers >= keyMutipler){
                         global.resource.Containers.amount += keyMutipler;
                         global.resource.Containers.max += keyMutipler;
@@ -539,6 +546,7 @@ function drawModal(name,color){
                     if (global.race['pack_rat']){
                         cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
+                    cap = spatialReasoning(cap);
                     if (global.resource.Containers.amount >= keyMutipler){
                         global.resource.Containers.amount -= keyMutipler;
                         global.resource.Containers.max -= keyMutipler;
@@ -647,4 +655,12 @@ function sizeApproximation(value,precision){
     else {
         return +(value / 1000000000000000000000000).toFixed(1) + 'Y';
     }
+}
+
+export function spatialReasoning(value){
+    if (global.genes['store']){
+        value *= 1 + (global.race.Plasmid.count / 2500);
+        value = Math.round(value);
+    }
+    return value;
 }
