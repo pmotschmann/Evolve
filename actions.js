@@ -4697,7 +4697,7 @@ export function addAction(action,type){
     if (global.race['carnivore'] && action === 'tech' && type === 'agriculture'){
         return;
     }
-    else if (!global.race['carnivore'] && action === 'tech' && type === 'agriculture'){
+    else if (!global.race['carnivore'] && action === 'tech' && type === 'smokehouse'){
         return;
     }
     if (actions[action][type]['powered'] && !global[action][type]['on']){
