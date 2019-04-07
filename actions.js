@@ -1,6 +1,7 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
 import { races, genus_traits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
+import { defineGarrison } from './civics.js';
 import { arpa, gainGene } from './arpa.js';
 
 export const actions = {
@@ -609,14 +610,14 @@ export const actions = {
                         global.tech['religion'] = 1;
                     }
 
+                    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
+
                     if (global.race['slow'] || global.race['hyper']){
                         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
                         window.location.reload();
                     }
 
                     defineGarrison();
-
-                    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
                 }
                 return false;
             }
@@ -4391,7 +4392,7 @@ export const actions = {
             cost: {
                 Knowledge: function(){ return 2500; }
             },
-            effect: '<div>Revere your creators as literal gods and attempt to mimic them.</div><div>This is mutually exclusive with Anthropology, choose wisely.</div>',
+            effect: '<div>Revere your creators as literal gods and attempt to mimic them.</div><div class="has-text-special">This is mutually exclusive with Anthropology, choose wisely.</div>',
             action: function (){
                 if (payCosts(actions.tech.fanaticism.cost)){
                     global.tech['fanaticism'] = 1;
@@ -4537,7 +4538,7 @@ export const actions = {
             cost: {
                 Knowledge: function(){ return 2500; }
             },
-            effect: '<div>Study your ancient creators and attempt to learn from them.</div><div>This is mutually exclusive with Fanaticism, choose wisely.</div>',
+            effect: '<div>Study your ancient creators and attempt to learn from them.</div><div class="has-text-special">This is mutually exclusive with Fanaticism, choose wisely.</div>',
             action: function (){
                 if (payCosts(actions.tech.anthropology.cost)){
                     global.tech['anthropology'] = 1;
@@ -4882,9 +4883,9 @@ function adjustCosts(costs){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
             }
         });
-        costs = newCosts;
+        return rebarAdjust(newCosts);
     }
-    if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
+    else if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
@@ -4894,7 +4895,7 @@ function adjustCosts(costs){
                 newCosts[res] = function(){ return costs[res](); }
             }
         });
-        costs = newCosts;
+        return rebarAdjust(newCosts);
     }
     return rebarAdjust(costs);
 }
