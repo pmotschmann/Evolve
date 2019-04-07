@@ -941,8 +941,12 @@ function fastLoop(){
         let iron_smelter = 0;
         let titanium_bd = {};
         if (global.city['smelter'] && global.city['smelter'].count > 0){
+            if (global.race['kindling_kindred']){
+                global.city['smelter'].Wood = 0;
+            }
+            let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
             let consume_wood = global.city['smelter'].Wood * 3 * time_multiplier;
-            let consume_coal = global.city['smelter'].Coal * 0.25 * time_multiplier;
+            let consume_coal = global.city['smelter'].Coal * coal_fuel * time_multiplier;
             let consume_oil = global.city['smelter'].Oil * 0.35 * time_multiplier;
             iron_smelter = global.city['smelter'].Iron;
             let steel_smelter = global.city['smelter'].Steel;
@@ -964,7 +968,7 @@ function fastLoop(){
                 }
             }
             while (consume_coal > global.resource.Coal.amount && consume_coal > 0){
-                consume_coal -= 0.25 * time_multiplier;
+                consume_coal -= coal_fuel * time_multiplier;
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }

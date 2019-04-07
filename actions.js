@@ -689,7 +689,7 @@ export const actions = {
         },
         basic_housing: {
             id: 'city-house',
-            title: 'Cabin',
+            title: function() { return global.race.species === 'entish' ? 'Grove' : 'Cabin'; },
             desc: 'Basic housing for one citizen',
             reqs: { housing: 1 },
             cost: { 
@@ -1221,7 +1221,7 @@ export const actions = {
                 if (global.race['pyrophobia']){
                     iron_yield *= 0.9;
                 }
-                if (global.resource.Steel.display){
+                if (global.tech['smelting'] >= 2){
                     return `Smelters can either increase Iron yield by ${iron_yield}% per smelter or produce Steel by consuming Iron and Coal. Smelters require fuel to opperate.`;
                 }
                 else {
@@ -1232,7 +1232,12 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.city.smelter.cost)){
                     global.city['smelter'].count++;
-                    global.city['smelter'].Wood++;
+                    if (global.race['kindling_kindred']){
+                        global.city['smelter'].Coal++;
+                    }
+                    else {
+                        global.city['smelter'].Wood++;
+                    }
                     global.city['smelter'].Iron++;
                     return true;
                 }
@@ -5002,12 +5007,14 @@ function smelterModal(modal){
     let fuelTypes = $('<div></div>');
     modal.append(fuelTypes);
 
-    let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">Wood {{ Wood }}</span></b-tooltip>`);
-    let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
-    let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
-    fuelTypes.append(subWood);
-    fuelTypes.append(wood);
-    fuelTypes.append(addWood);
+    if (!global.race['kindling_kindred']){
+        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">Wood {{ Wood }}</span></b-tooltip>`);
+        let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
+        let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
+        fuelTypes.append(subWood);
+        fuelTypes.append(wood);
+        fuelTypes.append(addWood);
+    }
 
     if (global.resource.Coal.display){
         let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">Coal {{ Coal }}</span></b-tooltip>`);
@@ -5142,7 +5149,8 @@ function smelterModal(modal){
                         return 'Consume 3 Lumber/s to fuel a smelter';
                         break;
                     case 'coal':
-                        return 'Consume 0.25 Coal/s to fuel a smelter';
+                        let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
+                        return `Consume ${coal_fuel} Coal/s to fuel a smelter`;
                         break;
                     case 'oil':
                         return 'Consume 0.35 Oil/s to fuel a smelter';
