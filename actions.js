@@ -3881,7 +3881,7 @@ export const actions = {
             id: 'tech-copper_hoe',
             title: 'Brass Hoes',
             desc: 'Create farming tools made from brass',
-            reqs: { mining: 2 },
+            reqs: { mining: 2, agriculture: 1 },
             grant: ['hoe',1],
             cost: {
                 Knowledge: function(){ return 720; },
@@ -3899,7 +3899,7 @@ export const actions = {
             id: 'tech-iron_hoe',
             title: 'Iron Hoes',
             desc: 'Create farming tools made from iron',
-            reqs: { hoe: 1, mining: 3 },
+            reqs: { hoe: 1, mining: 3, agriculture: 1 },
             grant: ['hoe',2],
             cost: {
                 Knowledge: function(){ return 3600; },
@@ -3917,7 +3917,7 @@ export const actions = {
             id: 'tech-steel_hoe',
             title: 'Steel Hoes',
             desc: 'Create better farming tools made from steel',
-            reqs: { hoe: 2, smelting: 2 },
+            reqs: { hoe: 2, smelting: 2, agriculture: 1 },
             grant: ['hoe',3],
             cost: {
                 Knowledge: function(){ return 12600; },
@@ -3935,7 +3935,7 @@ export const actions = {
             id: 'tech-titanium_hoe',
             title: 'Titanium Hoes',
             desc: 'Create better farming tools made from titanium',
-            reqs: { hoe: 3, high_tech: 3 },
+            reqs: { hoe: 3, high_tech: 3, agriculture: 1 },
             grant: ['hoe',4],
             cost: {
                 Knowledge: function(){ return 44000; },
