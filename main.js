@@ -621,7 +621,7 @@ function fastLoop(){
         }
 
         if (global.race['lazy'] && global.city.calendar.temp === 2){
-            breakdown['Global']['Lazy'] = ((global.city.morale.current - 100) / 2) + '%';
+            breakdown['Global']['Lazy'] = '-10%';
             global_multiplier *= 0.9;
         }
 
@@ -1430,6 +1430,9 @@ function midLoop(){
         if (global.city['apartment']){
             caps[races[global.race.species].name] += global.city['apartment'].on * 5;
         }
+        if (global.city['lodge']){
+            caps[races[global.race.species].name] += global.city['lodge'].count;
+        }
         if (global.city['shed']){
             var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
             if (global.tech['storage'] >= 3){
@@ -1455,6 +1458,9 @@ function midLoop(){
         }
         if (global.city['silo']){
             caps['Food'] += (global.city['silo'].count * spatialReasoning(500));
+        }
+        if (global.city['smokehouse']){
+            caps['Food'] += (global.city['smokehouse'].count * spatialReasoning(500));
         }
         if (global.city['oil_well']){
             caps['Oil'] += (global.city['oil_well'].count * spatialReasoning(500));

@@ -764,6 +764,49 @@ export const actions = {
                 return false;
             }
         },
+        lodge: {
+            id: 'city-lodge',
+            title: 'Lodge',
+            desc: 'Increases hunter capacity',
+            reqs: { hunting: 2 },
+            cost: { 
+                Money: function(){ return costMultiplier('lodge', 50, 1.30); },
+                Lumber: function(){ return costMultiplier('lodge', 20, 1.35); },
+                Stone: function(){ return costMultiplier('lodge', 10, 1.35); }
+            },
+            effect: function (){ return '+1 Max Citizen'; },
+            action: function (){
+                if (payCosts(actions.city.lodge.cost)){
+                    global.city['lodge'].count++;
+                    global['resource'][races[global.race.species].name].max += 1;
+                    return true;
+                }
+                return false;
+            }
+        },
+        smokehouse: {
+            id: 'city-smokehouse',
+            title: 'Smokehouse',
+            desc: 'Increases food storage capacity',
+            reqs: { hunting: 1 },
+            cost: { 
+                Money: function(){ return costMultiplier('smokehouse', 85, 1.30); },
+                Lumber: function(){ return costMultiplier('smokehouse', 65, 1.35) },
+                Stone: function(){ return costMultiplier('smokehouse', 50, 1.35); }
+            },
+            effect: function(){ 
+                let food = spatialReasoning(500);
+                return `+${food} Max Food`; 
+            },
+            action: function (){
+                if (payCosts(actions.city.smokehouse.cost)){
+                    global.city['smokehouse'].count++;
+                    global['resource']['Food'].max += spatialReasoning(500);
+                    return true;
+                }
+                return false;
+            }
+        },
         farm: {
             id: 'city-farm',
             title: 'Farm',
@@ -1852,6 +1895,42 @@ export const actions = {
             effect: 'Develop a substance that aids with population growth.',
             action: function (){
                 if (payCosts(actions.tech.aphrodisiac.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        smokehouse: {
+            id: 'tech-smokehouse',
+            title: 'Smokehouse',
+            desc: 'Devise a method of preserving meat',
+            reqs: { primitive: 3, storage: 1 },
+            grant: ['hunting',1],
+            cost: { 
+                Knowledge: function(){ return 80; }
+            },
+            effect: 'Creates plans for a long term storage medium for meat.',
+            action: function (){
+                if (payCosts(actions.tech.smokehouse.cost)){
+                    global.city['smokehouse'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        lodge: {
+            id: 'tech-lodge',
+            title: 'Hunting Lodge',
+            desc: 'Hunting Lodge',
+            reqs: { hunting: 1, housing: 1, currency: 1 },
+            grant: ['hunting',2],
+            cost: {
+                Knowledge: function(){ return 180; }
+            },
+            effect: 'Design a hunting lodge to help bolster your food income.',
+            action: function (){
+                if (payCosts(actions.tech.lodge.cost)){
+                    global.city['lodge'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -4615,6 +4694,9 @@ export function addAction(action,type){
         return;
     }
     if (global.race['carnivore'] && action === 'tech' && type === 'agriculture'){
+        return;
+    }
+    else if (!global.race['carnivore'] && action === 'tech' && type === 'agriculture'){
         return;
     }
     if (actions[action][type]['powered'] && !global[action][type]['on']){
