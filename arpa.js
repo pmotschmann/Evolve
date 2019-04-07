@@ -137,10 +137,25 @@ const genePool = {
         desc: 'Reduces cost creep by 0.03',
         reqs: { creep: 2 },
         grant: ['creep',3],
-        cost: 250,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>250</span></div>',
+        cost: 225,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>225</span></div>',
         action: function (){
             if (payPlasmids('divine_remembrance')){
+                return true;
+            }
+            return false;
+        }
+    },
+    divine_proportion: {
+        id: 'genes-divine_proportion',
+        title: 'Divine Proportion',
+        desc: 'Reduces cost creep by 0.04',
+        reqs: { creep: 3 },
+        grant: ['creep',4],
+        cost: 618,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>618</span></div>',
+        action: function (){
+            if (payPlasmids('divine_proportion')){
                 return true;
             }
             return false;
@@ -161,11 +176,26 @@ const genePool = {
             return false;
         }
     },
+    morphogenesis: {
+        id: 'genes-morphogenesis',
+        title: 'Morphogenesis',
+        desc: 'Decreases evolution costs',
+        reqs: {},
+        grant: ['evolve',1],
+        cost: 10,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>10</span></div>',
+        action: function (){
+            if (payPlasmids('morphogenesis')){
+                return true;
+            }
+            return false;
+        }
+    },
     replication: {
         id: 'genes-replication',
         title: 'Replication',
         desc: 'Increases Birth Rate',
-        reqs: {},
+        reqs: { evolve: 1},
         grant: ['birth',1],
         cost: 65,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>65</span></div>',

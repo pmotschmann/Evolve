@@ -614,6 +614,8 @@ export const actions = {
                         window.location.reload();
                     }
 
+                    defineGarrison();
+
                     messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
                 }
                 return false;
@@ -4782,6 +4784,15 @@ function updateDesc(category,action){
 }
 
 function adjustCosts(costs){
+    if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'RNA' || res === 'DNA'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.8); }
+            }
+        });
+        return newCosts;
+    }
     if (global.race['kindling_kindred'] && costs['Lumber']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
@@ -4789,9 +4800,9 @@ function adjustCosts(costs){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
             }
         });
-        return rebarAdjust(newCosts);
+        costs = newCosts;
     }
-    else if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
+    if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
@@ -4801,7 +4812,7 @@ function adjustCosts(costs){
                 newCosts[res] = function(){ return costs[res](); }
             }
         });
-        return rebarAdjust(newCosts);
+        costs = newCosts;
     }
     return rebarAdjust(costs);
 }

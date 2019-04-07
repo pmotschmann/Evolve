@@ -744,7 +744,6 @@ function warhead(){
     global.resource = {};
     global.evolution = {};
     global.tech = { theology: 1 };
-    global.genes = {};
     global.event = 100;
     global.settings.civTabs = 0;
     global.settings.showEvolve = true;

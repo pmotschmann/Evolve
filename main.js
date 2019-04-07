@@ -47,7 +47,9 @@ $('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
 defineJobs();
 $('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent"></div>'));
 defineGovernment();
-defineGarrison();
+if (global.race.species !== 'protoplasm'){
+    defineGarrison();
+}
 
 arpa('Physics');
 arpa('Genetics');
@@ -249,8 +251,8 @@ if (global.race.species === 'protoplasm'){
     }
     else {
         var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','protostomes','deuterostome','vascular','homoiohydric','athropods','mammals','eggshell','sentience'];
-        for (var i = 0; i < late_actions.length; i++) {
-            if (global.race[late_actions[i]] && global.race[late_actions[i]].count == 0){
+        for (var i = 0; i < late_actions.length; i++){
+            if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
             }
         }
