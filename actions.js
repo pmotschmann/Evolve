@@ -1,4 +1,5 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
+import { unlockAchieve } from './achieve.js';
 import { races, genus_traits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { defineGarrison } from './civics.js';
@@ -4433,6 +4434,9 @@ export const actions = {
                             delete global.tech['agriculture'];
                             delete global.tech['farm'];
                             global.civic.farmer.display = false;
+                            if (global.race.species === 'entish'){
+                                unlockAchieve(`madagascar_tree`);
+                            }
                             break;
                         case 'wolven':
                             global.race['tracker'] = 1;

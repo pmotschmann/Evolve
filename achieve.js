@@ -144,6 +144,11 @@ var achievements = {
         name: `Blackhole? No hole`,
         desc: `Didn't destroy your planet with an artifical blackhole`,
         flair: `Science 1, Fearmongers 0`
+    },
+    madagascar_tree: {
+        name: `Madagascar Tree`,
+        desc: `Evolved nightmarish flesh eating trees`,
+        flair: `Audrey III`
     }
 };
 
