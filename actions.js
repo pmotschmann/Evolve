@@ -4413,6 +4413,26 @@ export const actions = {
                             break;
                         case 'cath':
                             global.race['carnivore'] = 1;
+                            if (global.tech['farm'] >= 1){
+                                global.tech['hunting'] = 2;
+                            }
+                            else if (global.tech['agriculture'] >= 3){
+                                global.tech['hunting'] = 1;
+                            }
+                            if (global.city['farm']){
+                                global.city['lodge'] = { count: global.city.farm.count };
+                                delete global.city['farm'];
+                            }
+                            if (global.city['silo']){
+                                global.city['smokehouse'] = { count: global.city.silo.count };
+                                delete global.city['silo'];
+                            }
+                            if (global.city['mill']){
+                                delete global.city['mill'];
+                            }
+                            delete global.tech['agriculture'];
+                            delete global.tech['farm'];
+                            global.civic.farmer.display = false;
                             break;
                         case 'wolven':
                             global.race['tracker'] = 1;
@@ -4703,6 +4723,9 @@ export function addAction(action,type){
         return;
     }
     else if (!global.race['carnivore'] && action === 'tech' && type === 'smokehouse'){
+        return;
+    }
+    if (global.race['herbivore'] && action === 'tech' && type === 'fanaticism'){
         return;
     }
     if (actions[action][type]['powered'] && !global[action][type]['on']){
