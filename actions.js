@@ -2,6 +2,7 @@ import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
+import { loadFoundry } from './jobs.js';
 import { defineGarrison } from './civics.js';
 import { arpa, gainGene } from './arpa.js';
 
@@ -668,11 +669,14 @@ export const actions = {
             reqs: { military: 1, housing: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('garrison', 240, 1.5); },
-                Lumber: function(){ return costMultiplier('garrison', 260, 1.45); },
-                Stone: function(){ return costMultiplier('garrison', 180, 1.45); }
+                Stone: function(){ return costMultiplier('garrison', 260, 1.45); }
             },
             effect: function() {
-                return global.tech['military'] >= 5 ? '+3 Max Soldiers' : '+2 Max Soldiers';
+                let bunks = global.tech['military'] >= 5 ? 3 : 2;
+                if (global.race['chameleon']){
+                    bunks--;
+                }
+                return `+${bunks} Max Soldiers`;
             },
             action: function (){
                 if (payCosts(actions.city.garrison.cost)){
@@ -702,8 +706,8 @@ export const actions = {
                         return 0; 
                     } 
                 },
-                Lumber: function(){ return costMultiplier('basic_housing', 10, 1.22); },
-                Stone: function(){ return costMultiplier('basic_housing', 7, 1.22); }
+                Lumber: function(){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', 10, 1.22); },
+                Stone: function(){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', 10, 1.22) : 0; }
             },
             effect: '+1 Max Citizen',
             action: function (){
@@ -724,11 +728,9 @@ export const actions = {
             reqs: { housing: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('cottage', 900, 1.15); },
-                Lumber: function(){ return costMultiplier('cottage', 220, 1.25); },
-                Furs: function(){ return costMultiplier('cottage', 120, 1.25); },
-                Iron: function(){ return costMultiplier('cottage', 105, 1.25); },
-                Copper: function(){ return costMultiplier('cottage', 20, 1.25); },
-                Cement: function(){ return costMultiplier('cottage', 135, 1.25); }
+                Plywood: function(){ return costMultiplier('cottage', 25, 1.25); },
+                Wrought_Iron: function(){ return costMultiplier('cottage', 15, 1.25); },
+                Brick: function(){ return costMultiplier('cottage', 20, 1.25); }
             },
             effect: '+2 Max Citizens',
             action: function (){
@@ -980,15 +982,52 @@ export const actions = {
                 return false;
             }
         },
+        foundry: {
+            id: 'city-foundry',
+            title: 'Foundry',
+            desc: 'Manufacture building materials from raw materials',
+            reqs: { foundry: 1 },
+            cost: {
+                Money: function(){ return costMultiplier('foundry', 750, 1.35); },
+                Copper: function(){ return costMultiplier('foundry', 250, 1.35); },
+                Stone: function(){ return costMultiplier('foundry', 100, 1.35); }
+            },
+            effect: function (){
+                if (global.tech['foundry'] >= 2){
+                    return `<div>+1 Craftsman</div><div>+3% Crafted Materials</div>`;
+                }
+                else {
+                    return `+1 Craftsman`;
+                }
+            },
+            action: function (){
+                if (payCosts(actions.city.foundry.cost)){
+                    global.city['foundry'].count++;
+                    global.civic.craftsman.max++;
+                    global.civic.craftsman.display = true;
+                    global.resource.Plywood.display = true;
+                    global.resource.Brick.display = true;
+                    if (global.resource.Iron.display){
+                        global.resource.Wrought_Iron.display = true;
+                    }
+                    if (global.tech['smelting'] && global.tech['smelting'] >= 2){
+                        global.resource.Sheet_Metal.display = true;
+                    }
+                    loadFoundry();
+                    return true;
+                }
+                return false;
+            }
+        },
         storage_yard: {
             id: 'city-storage_yard',
             title: 'Freight Yard',
             desc: 'Increases crate capacity',
             reqs: { container: 1 },
             cost: { 
-                Money: function(){ return costMultiplier('storage_yard', 5, 1.85); },
-                Iron: function(){ return costMultiplier('storage_yard', 4, 1.8); },
-                Cement: function(){ return costMultiplier('storage_yard', 6, 1.9); }
+                Money: function(){ return costMultiplier('storage_yard', 5, 1.8); },
+                Wrought_Iron: function(){ return costMultiplier('storage_yard', 3, 1.8); },
+                Brick: function(){ return costMultiplier('storage_yard', 2, 1.8); }
             },
             effect: function(){
                 let cap = global.tech.container >= 3 ? 100 : 50;
@@ -1109,7 +1148,6 @@ export const actions = {
             reqs: { saw: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('sawmill', 3000, 1.25); },
-                Lumber: function(){ return costMultiplier('sawmill', 800, 1.25); },
                 Iron: function(){ return costMultiplier('sawmill', 400, 1.25); },
                 Cement: function(){ return costMultiplier('sawmill', 420, 1.25); }
             },
@@ -1183,13 +1221,13 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('cement_plant', 1800, 1.35); },
                 Stone: function(){ return costMultiplier('cement_plant', 2000, 1.3); }
             },
-            effect: '+3 Max Cement Plant Workers',
+            effect: '+2 Max Cement Plant Workers',
             effect: function() { 
                 if (global.tech['cement'] >= 5){
-                    return '<div>+3 Max Cement Plant Workers</div><div>If powered consumes 2kW but increases cement production by 5%</div>';
+                    return '<div>+2 Max Cement Plant Workers</div><div>If powered consumes 2kW but increases cement production by 5%</div>';
                 }
                 else {
-                    return '+3 Max Cement Plant Workers';
+                    return '+2 Max Cement Plant Workers';
                 }
             },
             powered: 2,
@@ -1199,7 +1237,7 @@ export const actions = {
                     global.resource.Cement.display = true;
                     global.city.cement_plant.count++;
                     global.civic.cement_worker.display = true;
-                    global.civic.cement_worker.max = global.city.cement_plant.count * 3;
+                    global.civic.cement_worker.max = global.city.cement_plant.count * 2;
                     if (global.tech['cement'] && global.tech['cement'] >= 5 && global.city.power >= 2){
                         global.city['cement_plant'].on++;
                     }
@@ -1314,7 +1352,7 @@ export const actions = {
             cost: { 
                 Money: function(){ return costMultiplier('coal_mine', 480, 1.4); },
                 Lumber: function(){ return costMultiplier('coal_mine', 250, 1.35); },
-                Iron: function(){ return costMultiplier('coal_mine', 180, 1.35); }
+                Wrought_Iron: function(){ return costMultiplier('coal_mine', 18, 1.35); }
             },
             effect: function() { 
                 if (global.tech['mine_conveyor']){
@@ -1564,9 +1602,9 @@ export const actions = {
             reqs: { science: 2 },
             cost: {
                 Money: function(){ return costMultiplier('library', 45, 1.2); },
-                Lumber: function(){ return costMultiplier('library', 35, 1.20); },
+                Plywood: function(){ return costMultiplier('library', 20, 1.20); },
                 Furs: function(){ return costMultiplier('library', 22, 1.20); },
-                Cement: function(){ return costMultiplier('library', 20, 1.20); }
+                Brick: function(){ return costMultiplier('library', 15, 1.20); }
             },
             effect: function (){
                 let gain = global.race['nearsighted'] ? '110' : '125';
@@ -2050,14 +2088,57 @@ export const actions = {
                 return false;
             }
         },
+        foundry: {
+            id: 'tech-foundry',
+            title: 'Foundry',
+            desc: 'Foundry',
+            reqs: { mining: 1, cement: 1 },
+            grant: ['foundry',1],
+            cost: {
+                Knowledge: function(){ return 650; }
+            },
+            effect: 'Design the foundry, a place for crastman to produce manufactured materials.',
+            action: function (){
+                if (payCosts(actions.tech.foundry.cost)){
+                    global.city['foundry'] = {
+                        count: 0,
+                        crafting: 0,
+                        Plywood: 0,
+                        Brick: 0,
+                        Bronze: 0,
+                        Wrought_Iron: 0,
+                        Sheet_Metal: 0
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        artisans: {
+            id: 'tech-artisans',
+            title: 'Artisans',
+            desc: 'Foundry',
+            reqs: { foundry: 1 },
+            grant: ['foundry',2],
+            cost: {
+                Knowledge: function(){ return 1500; }
+            },
+            effect: 'Craftsman produce an extra 3% per cycle for each Foundry',
+            action: function (){
+                if (payCosts(actions.tech.artisans.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         theatre: {
             id: 'tech-theatre',
             title: 'Theatre',
             desc: 'Theatre',
-            reqs: { housing: 1, currency: 1 },
+            reqs: { housing: 1, currency: 1, cement: 1 },
             grant: ['theatre',1],
             cost: {
-                Knowledge: function(){ return 90; }
+                Knowledge: function(){ return 750; }
             },
             effect: 'Design a space for shows to help uplift your spirits.',
             action: function (){
@@ -2196,6 +2277,7 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
+                    global.resource.Sheet_Metal.display = true;
                     return true;
                 }
                 return false;
@@ -2298,7 +2380,7 @@ export const actions = {
             reqs: { mining: 1 },
             grant: ['mining',2],
             cost: { 
-                Knowledge: function(){ return 450; }
+                Knowledge: function(){ return 350; }
             },
             effect: 'Learn how to mine and refine copper into a pure form.',
             action: function (){
@@ -2319,12 +2401,16 @@ export const actions = {
             reqs: { mining: 2 },
             grant: ['mining',3],
             cost: { 
-                Knowledge: function(){ return 2700; }
+                Knowledge: function(){ return 2500; }
             },
             effect: 'Learn how to extract iron ore from mines.',
             action: function (){
                 if (payCosts(actions.tech.iron_mining.cost)){
                     global.resource.Iron.display = true;
+                    if (global.city['foundry'] && global.city['foundry'].count > 0){
+                        global.resource.Wrought_Iron.display = true;
+                        loadFoundry();
+                    }
                     return true;
                 }
                 return false;
@@ -2487,7 +2573,7 @@ export const actions = {
             grant: ['container',2],
             cost: { 
                 Knowledge: function(){ return 6750; },
-                Steel: function(){ return 250; }
+                Sheet_Metal: function(){ return 100; }
             },
             effect: 'Upgrade wooden crates by reinforcing them with steel.',
             action: function (){
@@ -3567,27 +3653,6 @@ export const actions = {
                 return false;
             }
         },
-        cement: {
-            id: 'tech-cement',
-            title: 'Cement',
-            desc: 'Learn how to turn stone into cement',
-            reqs: { mining: 1, storage: 1, science: 1 },
-            grant: ['cement',1],
-            cost: {
-                Knowledge: function(){ return 900; }
-            },
-            effect: 'Learn how to make cement from stone.',
-            action: function (){
-                if (payCosts(actions.tech.cement.cost)){
-                    global.city['cement_plant'] = {
-                        count: 0,
-                        on: 0
-                    };
-                    return true;
-                }
-                return false;
-            }
-        },
         stone_axe: {
             id: 'tech-stone_axe',
             title: 'Primitive Axes',
@@ -3611,15 +3676,15 @@ export const actions = {
         },
         copper_axes: {
             id: 'tech-copper_axes',
-            title: 'Brass Axe',
-            desc: 'Create an axe made from brass',
+            title: 'Bronze Axe',
+            desc: 'Create an axe made from bronze',
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
             cost: {
                 Knowledge: function(){ return 540; },
                 Copper: function(){ return 25; }
             },
-            effect: 'Upgrade axe technology to metal axes made from brass. Improves lumber harvesting.',
+            effect: 'Upgrade axe technology to metal axes made from bronze. Improves lumber harvesting.',
             action: function (){
                 if (payCosts(actions.tech.copper_axes.cost)){
                     return true;
@@ -3723,15 +3788,15 @@ export const actions = {
         },
         copper_sledgehammer: {
             id: 'tech-copper_sledgehammer',
-            title: 'Brass Sledgehammer',
-            desc: 'Create a sledgehammer with a brass head',
+            title: 'Bronze Sledgehammer',
+            desc: 'Create a sledgehammer with a bronze head',
             reqs: { mining: 2 },
             grant: ['hammer',1],
             cost: {
                 Knowledge: function(){ return 540; },
                 Copper: function(){ return 25; }
             },
-            effect: 'Create sledgehammers made from brass. Improves rock quarrying.',
+            effect: 'Create sledgehammers made from bronze. Improves rock quarrying.',
             action: function (){
                 if (payCosts(actions.tech.copper_sledgehammer.cost)){
                     return true;
@@ -3795,15 +3860,15 @@ export const actions = {
         },
         copper_pickaxe: {
             id: 'tech-copper_pickaxe',
-            title: 'Brass Pickaxe',
-            desc: 'Create a pickaxe made from brass',
+            title: 'Bronze Pickaxe',
+            desc: 'Create a pickaxe made from bronze',
             reqs: { mining: 2 },
             grant: ['pickaxe',1],
             cost: {
                 Knowledge: function(){ return 675; },
                 Copper: function(){ return 25; }
             },
-            effect: 'Create metal pickaxes made with brass heads. Improves mining activities.',
+            effect: 'Create metal pickaxes made with bronze heads. Improves mining activities.',
             action: function (){
                 if (payCosts(actions.tech.copper_pickaxe.cost)){
                     return true;
@@ -3886,15 +3951,15 @@ export const actions = {
         },
         copper_hoe: {
             id: 'tech-copper_hoe',
-            title: 'Brass Hoes',
-            desc: 'Create farming tools made from brass',
+            title: 'Bronze Hoes',
+            desc: 'Create farming tools made from bronze',
             reqs: { mining: 2, agriculture: 1 },
             grant: ['hoe',1],
             cost: {
                 Knowledge: function(){ return 720; },
                 Copper: function(){ return 50; }
             },
-            effect: 'Create tools made from brass that aid farming. Improves farm efficiency.',
+            effect: 'Create tools made from bronze that aid farming. Improves farm efficiency.',
             action: function (){
                 if (payCosts(actions.tech.copper_hoe.cost)){
                     return true;
@@ -4191,6 +4256,27 @@ export const actions = {
             action: function (){
                 if (payCosts(actions.tech.mad.cost)){
                     global.civic.mad.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        cement: {
+            id: 'tech-cement',
+            title: 'Cement',
+            desc: 'Learn how to turn stone into cement',
+            reqs: { mining: 1, storage: 1, science: 1 },
+            grant: ['cement',1],
+            cost: {
+                Knowledge: function(){ return 500; }
+            },
+            effect: 'Learn how to make cement from stone.',
+            action: function (){
+                if (payCosts(actions.tech.cement.cost)){
+                    global.city['cement_plant'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -4867,6 +4953,7 @@ function actionDesc(parent,action,type){
             var res_cost = costs[res]();
             if (res_cost > 0){
                 var label = res === 'Money' ? '$' : res+': ';
+                label = label.replace("_", " ");
                 var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
                 cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${res_cost}</div>`));
             }
@@ -4908,10 +4995,10 @@ function adjustCosts(costs){
         });
         return newCosts;
     }
-    if (global.race['kindling_kindred'] && costs['Lumber']){
+    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Lumber'){
+            if (res !== 'Lumber' && res !== 'Plywood'){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
             }
         });

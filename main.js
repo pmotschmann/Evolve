@@ -1,7 +1,7 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier } from './vars.js';
 import { drawAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
-import { defineResources, resource_values, spatialReasoning } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech } from './actions.js';
@@ -45,7 +45,7 @@ vues['vue_tabs'].$mount('#tabs');
 defineResources();
 $('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
 defineJobs();
-$('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent"></div>'));
+$('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent civics"></div>'));
 defineGovernment();
 if (global.race.species !== 'protoplasm'){
     defineGarrison();
@@ -259,12 +259,12 @@ if (global.race.species === 'protoplasm'){
     }
 }
 else {
-    Object.keys(actions.city).forEach(function (city) {
+    Object.keys(actions.city).forEach(function (city){
         if (checkCityRequirements(city)){
             addAction('city',city);
         }
     });
-    Object.keys(actions.tech).forEach(function (tech) {
+    Object.keys(actions.tech).forEach(function (tech){
         if (checkTechRequirements(tech)){
             addAction('tech',tech);
         }
@@ -317,6 +317,8 @@ else {
 }
 
 function fastLoop(){
+    keyMultiplier();
+    
     breakdown['Global'] = {};
     var global_multiplier = 1;
     if (global.race.Plasmid.count > 0){
@@ -1417,7 +1419,7 @@ function midLoop(){
             lCaps['banker'] += global.city['bank'].count;
         }
         if (global.city['cement_plant']){
-            lCaps['cement_worker'] += global.city['cement_plant'].count * 3;
+            lCaps['cement_worker'] += global.city['cement_plant'].count * 2;
         }
         if (global.city['garrison']){
             lCaps['garrison'] += global.city.garrison.count * (global.tech['military'] >= 5 ? 3 : 2);
@@ -1647,6 +1649,15 @@ function midLoop(){
             }
         }
 
+        let fworkers = global.civic.craftsman.workers;
+        Object.keys(craftCost).forEach(function (craft){
+            while (global.city.foundry[craft] > fworkers && global.city.foundry[craft] > 0){
+                global.city.foundry[craft]--;
+                global.city.foundry.crafting--;
+            }
+            fworkers -= global.city.foundry[craft];
+        });
+
         checkAchievements();
     }
     Object.keys(global.resource).forEach(function (res){
@@ -1814,6 +1825,23 @@ function longLoop(){
             global.city.calendar.moon++;
             if (global.city.calendar.moon > 27){
                 global.city.calendar.moon = 0;
+            }
+
+            // Crafting
+            if (global.city.calendar.moon === 0 && global.tech['foundry']){
+                let craft_volume = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
+                Object.keys(craftCost).forEach(function (craft){
+                    let num = global.city.foundry[craft];
+                    if (num > 0){
+                        while (num > 0){
+                            if (global.resource[craftCost[craft].r].amount >= craftCost[craft].a){
+                                global.resource[craftCost[craft].r].amount -= craftCost[craft].a;
+                                global.resource[craft].amount += craft_volume;
+                            }
+                            num--;
+                        }
+                    }
+                });
             }
 
             setWeather();

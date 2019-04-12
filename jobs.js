@@ -31,6 +31,9 @@ export const job_desc = {
     coal_miner: function(){
         return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal from deep in the ground.';
     },
+    craftsman: function(){
+        return 'Craftsman can be assigned to craft various construction materials out of raw materials.';
+    },
     cement_worker: function(){
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
         let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
@@ -70,18 +73,20 @@ export const job_desc = {
 
 // Sets up jobs in civics tab
 export function defineJobs(){
-    $('#civics').append($('<div class="tile is-parent"><div id="jobs" class="tile is-child"></div></div>'));
+    $('#civics').append($('<div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>'));
     loadUnemployed();
     loadJob('farmer','Farmer',1.5);
     loadJob('lumberjack','Lumberjack',1);
     loadJob('quarry_worker','Quarry Worker',1);
     loadJob('miner','Miner',1);
     loadJob('coal_miner','Coal Miner',0.2);
-    loadJob('cement_worker','Cement Plant Worker',0.25);
+    loadJob('craftsman','Craftsman',1);
+    loadJob('cement_worker','Cement Plant Worker',0.4);
     loadJob('entertainer','Entertainer',1);
     loadJob('professor','Professor',0.5);
     loadJob('scientist','Scientist',1);
     loadJob('banker','Banker',0.1);
+    loadFoundry();
 }
 
 function loadUnemployed(){
@@ -128,9 +133,9 @@ function loadJob(job, name, impact, color){
     
     var id = 'civ-' + job;
     
-    var civ_container = $('<div id="' + id + '" v-show="display" class="job"></div>');
+    var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
     var controls = $('<div class="controls"></div>');
-    var job_label = $('<div class="job_label"><span class="has-text-' + color + '">{{ name }}</span><span class="count">{{ workers }} / {{ max }}</span></div>');
+    var job_label = $(`<div class="job_label"><span class="has-text-${color}">{{ name }}</span><span class="count">{{ workers }} / {{ max }}</span></div>`);
     civ_container.append(job_label);
     civ_container.append(controls);
     $('#jobs').append(civ_container);
@@ -141,7 +146,7 @@ function loadJob(job, name, impact, color){
     controls.append(sub);
     controls.append(add);
     
-    vues['civ_'+job] = new Vue({
+    vues[`civ_+${job}`] = new Vue({
         data: global.civic[job],
         methods: {
             add(){
@@ -158,7 +163,7 @@ function loadJob(job, name, impact, color){
             }
         }
     });
-    vues['civ_'+job].$mount('#'+id);
+    vues[`civ_+${job}`].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
@@ -172,4 +177,87 @@ function loadJob(job, name, impact, color){
             poppers[id].destroy();
             $(`#pop${id}`).remove();
         });
+}
+
+export function loadFoundry(){
+    if (vues['foundry']){
+        vues['foundry'].$destroy();
+    }
+    $('#foundry').empty();
+    if (global.city['foundry']){
+        var foundry = $('<div class="job"><div class="foundry job_label"><span class="has-text-warning">Craftman Assigned</span><span class="count">{{ f.crafting }} / {{ c.workers }}</span></div></div>');
+        $('#foundry').append(foundry);
+
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal'];
+        for (let i=0; i<list.length; i++){
+            let res = list[i];
+            if (global.resource[res].display){
+                let name = res.replace("_", " ");
+                let resource = $(`<div class="job"></div>`);
+                $('#foundry').append(resource);
+
+                let controls = $('<div class="controls"></div>');
+                let job_label = $(`<div id="craft${res}" class="job_label" @mouseover="hover('${res}')" @mouseout="unhover('${res}')"><span class="has-text-danger">${name}</span><span class="count">{{ f.${res} }}</span></div>`);
+                resource.append(job_label);
+                resource.append(controls);
+                $('#foundry').append(resource);
+                
+                let sub = $(`<span class="sub" @click="sub('${res}')">&laquo;</span>`);
+                let add = $(`<span class="add" @click="add('${res}')">&raquo;</span>`);
+                
+                controls.append(sub);
+                controls.append(add);
+            }
+        }
+        vues['foundry'] = new Vue({
+            data: {
+                f: global.city.foundry,
+                c: global.civic.craftsman
+            },
+            methods: {
+                add(res){
+                    if (global.city.foundry.crafting < global.civic.craftsman.workers){
+                        global.city.foundry.crafting++;
+                        global.city.foundry[res]++;
+                    }
+                },
+                sub(res){
+                    if (global.city.foundry[res] > 0){
+                        global.city.foundry[res]--;
+                        global.city.foundry.crafting--;
+                    }
+                },
+                hover(res){
+                    var popper = $(`<div id="popCraft${res}" class="popper has-background-light has-text-dark"></div>`);
+                    $('#main').append(popper);
+                    let name = res.replace("_", " ");
+                    let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
+                    let final = +(global.city.foundry[res] * multiplier).toFixed(2);
+                    popper.append($(`<div>+${final} ${name}/cycle</div>`));
+    
+                    popper.show();
+                    poppers[`cr${res}`] = new Popper($(`#craft${res}`),popper);
+                },
+                unhover(res){
+                    $(`#popCraft${res}`).hide();
+                    poppers[`cr${res}`].destroy();
+                    $(`#popCraft${res}`).remove();
+                }
+            }
+        });
+        vues['foundry'].$mount(`#foundry`);
+
+        $(`#foundry .foundry`).on('mouseover',function(){
+            var popper = $(`<div id="popFoundry" class="popper has-background-light has-text-dark"></div>`);
+            $('#main').append(popper);
+            popper.html('Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon each month.');
+            popper.show();
+            poppers['popFoundry'] = new Popper($(`#foundry .foundry`),popper);
+        });
+        $(`#foundry .foundry`).on('mouseout',function(){
+            $(`#popFoundry`).hide();
+            poppers['popFoundry'].destroy();
+            $(`#popFoundry`).remove();
+        });
+    }
 }

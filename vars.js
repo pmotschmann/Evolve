@@ -47,6 +47,13 @@ else {
     global['new'] = true;
 }
 
+if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
+    global.civic.cement_worker.impact = 0.4;
+}
+
+global['version'] = '0.2.0';
+$('#topBar .version').html('v'+global.version);
+
 if (!global['settings']){
     global['settings'] = {
         civTabs: 0,
@@ -186,7 +193,7 @@ export function messageQueue(msg,color){
 export function modRes(res,val){
     let count = global.resource[res].amount + val;
     let depleted = false;
-    if (count > global.resource[res].max){
+    if (count > global.resource[res].max && global.resource[res].max != -1){
         count = global.resource[res].max;
     }
     else if (count < 0){
@@ -237,6 +244,7 @@ $(document).keyup(function(event){
     }
 });
 
+export var keyMultiplierNumber = 1;
 export function keyMultiplier(){
     let number = 1;
     if (cntrlIsPressed){
@@ -248,6 +256,12 @@ export function keyMultiplier(){
     if (altIsPressed){
         number *= 100;
     }
+    keyMultiplierNumber = number;
+    $('.craft').each(function(e){
+        if (typeof $(this).data('val') === 'number'){
+            $(this).html($(this).data('val') * number);
+        }
+    });
     return number;
 }
 

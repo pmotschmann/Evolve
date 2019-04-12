@@ -22,6 +22,14 @@ export const resource_values = {
     //Neutronium: 1000
 };
 
+export const craftCost = {
+    Plywood: { r: 'Lumber', a: 75 },
+    Brick: { r: 'Cement', a: 50 },
+    Bronze: { r: 'Copper', a: 80 },
+    Wrought_Iron: { r: 'Iron', a: 80 },
+    Sheet_Metal: { r: 'Steel', a: 60 },
+};
+
 // Sets up resource definitions
 export function defineResources() {
     if (global.race.species === 'protoplasm'){
@@ -53,6 +61,11 @@ export function defineResources() {
         //loadResource('Deuterium',0,1,true,false);
         //loadResource('Helium-3',0,1,true,false);
         //loadResource('Neutronium',0,1,true,true);
+        loadResource('Plywood',-1,0,false,false,'danger');
+        loadResource('Brick',-1,0,false,false,'danger');
+        loadResource('Bronze',-1,0,false,false,'danger');
+        loadResource('Wrought_Iron',-1,0,false,false,'danger');
+        loadResource('Sheet_Metal',-1,0,false,false,'danger');
         loadRouteCounter();
     }
     loadSpecialResource('Plasmid');
@@ -95,16 +108,35 @@ function loadResource(name,max,rate,tradable,stackable,color) {
         global['resource'][name]['trade'] = 0;
     }
     
-    var res_container = $(`<div id="res-${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
+    var res_container;
+    if (global.resource[name].max === -1){
+        res_container = $(`<div id="res-${name}" class="resource crafted" v-show="display"><span class="res has-text-${color}">{{ name | namespace }}</span><span class="count">{{ amount | diffSize }}</span></div>`);
+    }
+    else {
+        res_container = $(`<div id="res-${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name | namespace }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
+    }
+
     if (stackable){
         res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal">+</span></span>`));
     }
-    else {
+    else if (max !== -1){
         res_container.append($('<span></span>'));
     }
     
-    if (name !== races[global.race.species].name && name !== 'Crates' && name !== 'Containers'){
-        res_container.append($(`<span id="inc${name}" class="diff">{{ diff | diffSize }} /s</span></div>`));
+    if (rate !== 0){
+        res_container.append($(`<span id="inc${name}" class="diff">{{ diff | diffSize }} /s</span>`));
+    }
+    else if (max === -1){
+        let craft = $('<span class="craftable"></span>');
+        res_container.append(craft);
+
+        let inc = [1,5];
+        for (let i=0; i<inc.length; i++){
+            craft.append($(`<span id="inc${name}${inc[i]}" @mouseover="hover('${name}',${inc[i]})" @mouseout="unhover('${name}',${inc[i]})"><a @click="craft('${name}',${inc[i]})">+<span class="craft" data-val="${inc[i]}">${inc[i]}</span></a></span>`));
+        }
+    }
+    else {
+        res_container.append($(`<span></span>`));
     }
     
     $('#resources').append(res_container);
@@ -121,6 +153,9 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             },
             diffSize: function (value){
                 return sizeApproximation(value,2);
+            },
+            namespace(val){
+                return val.replace("_", " ");
             }
         },
         methods: {
@@ -130,7 +165,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                     component: modal
                 });
                 
-                var checkExist = setInterval(function() {
+                var checkExist = setInterval(function(){
                    if ($('#modalBox').length > 0) {
                       clearInterval(checkExist);
                       drawModal(name,color);
@@ -139,11 +174,51 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             },
             showTrigger: function(){
                 return global.resource.Crates.display;
+            },
+            craft: function(res,vol){
+                var keyMult = keyMultiplier();
+                let craft_bonus = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
+                for (var i=0; i<keyMult; i++){
+                    let num = vol * craftCost[res].a;
+                    let br = false;
+                    while (num > 0){
+                        if (global.resource[craftCost[res].r].amount >= num){
+                            global.resource[craftCost[res].r].amount -= num;
+                            global.resource[res].amount += vol * craft_bonus;
+                            num = 0;
+                        }
+                        else {
+                            num -= craftCost[res].a;
+                            br = true;
+                        }
+                    }
+                    if (br){
+                        break;
+                    }
+                }
+            },
+            craftCost: function(res,vol){
+                let num = vol * craftCost[res].a * keyMultiplier();
+                return `${craftCost[res].r} ${num}`;
+            },
+            hover(res,vol){
+                var popper = $(`<div id="popRes${res}${vol}" class="popper has-background-light has-text-dark"></div>`);
+                $('#main').append(popper);
+                let num = typeof vol === 'number' ? vol * craftCost[res].a : vol;
+                popper.append($(`<div>${craftCost[res].r} <span class="craft" data-val="${num}">${num}</span></div>`));
+
+                popper.show();
+                poppers[`r${res}${vol}`] = new Popper($(`#inc${res}${vol}`),popper);
+            },
+            unhover(res,vol){
+                $(`#popRes${res}${vol}`).hide();
+                poppers[`r${res}${vol}`].destroy();
+                $(`#popRes${res}${vol}`).remove();
             }
         }
     });
     vues[`res_${name}`].$mount(`#res-${name}`);
-    
+
     if (stackable){
         $(`#con${name}`).on('mouseover',function(){
             var popper = $(`<div id="popContainer${name}" class="popper has-background-light has-text-dark"></div>`);
@@ -262,7 +337,7 @@ function loadSpecialResource(name,color) {
 
 function marketItem(vue,mount,market_item,name,color,full){
     if (full){
-        market_item.append($(`<span class="res has-text-${color}">{{ r.name }}</span>`));
+        market_item.append($(`<span class="res has-text-${color}">{{ r.name | namespace }}</span>`));
     }
 
     market_item.append($('<span class="buy"><span class="has-text-success">BUY</span></span>'));
@@ -360,6 +435,9 @@ function marketItem(vue,mount,market_item,name,color,full){
                     val = 0 - val;
                 }
                 return val;
+            },
+            namespace(val){
+                return val.replace("_", " ");
             }
         }
     });
@@ -408,7 +486,7 @@ function drawModal(name,color){
                     return 'Construct a crate, cost 250 Stone';
                 }
                 else {
-                    return 'Construct a crate, cost 250 Lumber';
+                    return 'Construct a crate, cost 5 Plywood';
                 }
             },
             removeCrateLabel: function(){
@@ -433,11 +511,13 @@ function drawModal(name,color){
                 cap = spatialReasoning(cap);
                 return `Assign crate to this resource (+${cap} cap)`;
             },
-            buildCrate: function(res){
+            buildCrate: function(){
                 let keyMutipler = keyMultiplier();
-                let material = global.race['kindling_kindred'] ? 'Stone' : 'Lumber';
-                if (global.resource[material].amount >= (250 * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
-                    modRes(material,-(250 * keyMutipler));
+                let material = global.race['kindling_kindred'] ? 'Stone' : 'Plywood';
+                let cost = global.race['kindling_kindred'] ? 250 : 5;
+                console.log(cost * keyMutipler);
+                if (global.resource[material].amount >= (cost * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
+                    modRes(material,-(cost * keyMutipler));
                     global.resource.Crates.amount += keyMutipler;
                 }
             },
@@ -483,7 +563,7 @@ function drawModal(name,color){
     
     crates.append($('<div class="crateHead"><span>Crates Owned: {{ crates.amount }}/{{ crates.max }}</span><span>Crates Assigned: {{ res.crates }}</span></div>'));
     
-    let buildCrate = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated><button class="button" @click="buildCrate('${name}')">Construct Crate</button></b-tooltip>`);
+    let buildCrate = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated><button class="button" @click="buildCrate()">Construct Crate</button></b-tooltip>`);
     let removeCrate = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="removeCrate('${name}')">Unassign Crate</button></b-tooltip>`);
     let addCrate = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">Assign Crate</button></b-tooltip>`);
     
@@ -519,7 +599,7 @@ function drawModal(name,color){
                     cap = spatialReasoning(cap);
                     return `Assign container to this resource (+${cap} cap)`;
                 },
-                buildContainer: function(res){
+                buildContainer: function(){
                     let keyMutipler = keyMultiplier();
                     if (global.resource['Steel'].amount >= (100 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
                         modRes('Steel',-(100 * keyMutipler));
@@ -562,7 +642,7 @@ function drawModal(name,color){
         
         containers.append($('<div class="crateHead"><span>Containers Owned: {{ containers.amount }}/{{ containers.max }}</span><span>Containers Assigned: {{ res.containers }}</span></div>'));
         
-        let buildContainer = $(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" animated><button class="button" @click="buildContainer('${name}')">Construct Container</button></b-tooltip>`);
+        let buildContainer = $(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" animated><button class="button" @click="buildContainer()">Construct Container</button></b-tooltip>`);
         let removeContainer = $(`<b-tooltip :label="removeContainerLabel()" position="is-bottom" animated><button class="button" @click="removeContainer('${name}')">Unassign Container</button></b-tooltip>`);
         let addContainer = $(`<b-tooltip :label="addContainerLabel()" position="is-bottom" animated><button class="button" @click="addContainer('${name}')">Assign Container</button></b-tooltip>`);
         
