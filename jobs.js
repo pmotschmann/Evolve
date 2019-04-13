@@ -231,7 +231,7 @@ export function loadFoundry(){
                     var popper = $(`<div id="popCraft${res}" class="popper has-background-light has-text-dark"></div>`);
                     $('#main').append(popper);
                     let name = res.replace("_", " ");
-                    let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
+                    let multiplier = craftingRatio(res);
                     let final = +(global.city.foundry[res] * multiplier).toFixed(2);
                     popper.append($(`<div>+${final} ${name}/cycle</div>`));
     
@@ -260,4 +260,15 @@ export function loadFoundry(){
             $(`#popFoundry`).remove();
         });
     }
+}
+
+export function craftingRatio(res){
+    let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
+    if (global.tech['foundry'] >= 3 && global.city.foundry[res] > 1){
+        multiplier += (global.city.foundry[res] - 1) * 0.03;
+    }
+    if (global.tech['foundry'] >= 4 && res === 'Plywood' && global.city['sawmill']){
+        multiplier += global.city['sawmill'].count * 0.02;
+    }
+    return multiplier;
 }

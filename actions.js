@@ -1154,12 +1154,14 @@ export const actions = {
             effect: function(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = spatialReasoning(200);
+                let desc = `<div>+${lum} Max Lumber</div><div>Lumberjack efficiency +${impact}%</div>`;
+                if (global.tech['foundry'] && global.tech['foundry'] >= 4){
+                    desc = desc + `<div>+2% Plywood production</div>`; 
+                }
                 if (global.city.powered){
-                    return `<div>+${lum} Max Lumber</div><div>Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%. Each powered sawmill uses 1kW but produces 5% more lumber.</div>`; 
+                    desc = desc + `<div>Each powered sawmill uses 1kW but produces 5% more lumber</div>`; 
                 }
-                else {
-                    return `<div>+${lum} Max Lumber</div><div>Each sawmill increases the amount of lumber harvested per lumberjack by ${impact}%</div>`;
-                }
+                return desc;
             },
             powered: 1,
             action: function (){
@@ -2117,15 +2119,49 @@ export const actions = {
         artisans: {
             id: 'tech-artisans',
             title: 'Artisans',
-            desc: 'Foundry',
+            desc: 'Artisans',
             reqs: { foundry: 1 },
             grant: ['foundry',2],
             cost: {
                 Knowledge: function(){ return 1500; }
             },
-            effect: 'Craftsman produce an extra 3% per cycle for each Foundry',
+            effect: 'Craftsman produce an extra 3% per cycle for each Foundry.',
             action: function (){
                 if (payCosts(actions.tech.artisans.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        apprentices: {
+            id: 'tech-apprentices',
+            title: 'Apprentices',
+            desc: 'Foundry',
+            reqs: { foundry: 2 },
+            grant: ['foundry',3],
+            cost: {
+                Knowledge: function(){ return 3200; }
+            },
+            effect: 'Each craftsman beyond the first assigned to a resource increases production of that resource by 3%.',
+            action: function (){
+                if (payCosts(actions.tech.apprentices.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        carpentry: {
+            id: 'tech-carpentry',
+            title: 'Carpentry',
+            desc: 'Carpentry',
+            reqs: { foundry: 3, saw: 1 },
+            grant: ['foundry',4],
+            cost: {
+                Knowledge: function(){ return 5200; }
+            },
+            effect: 'Sawmills increase Plywood production by 2%.',
+            action: function (){
+                if (payCosts(actions.tech.carpentry.cost)){
                     return true;
                 }
                 return false;
@@ -2267,7 +2303,7 @@ export const actions = {
             id: 'tech-steel',
             title: 'Crucible Steel',
             desc: 'Learn to smelt steel',
-            reqs: { smelting: 1 },
+            reqs: { smelting: 1, mining: 4 },
             grant: ['smelting',2],
             cost: { 
                 Knowledge: function(){ return 4950; },
@@ -2628,7 +2664,7 @@ export const actions = {
             grant: ['steel_container',1],
             cost: { 
                 Knowledge: function(){ return 9000; },
-                Steel: function(){ return 500; }
+                Sheet_Metal: function(){ return 200; }
             },
             effect: 'Replace cheap wooden crates with more durable steel containers.',
             action: function (){

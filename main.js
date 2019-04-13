@@ -2,7 +2,7 @@ import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultip
 import { drawAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost } from './resources.js';
-import { defineJobs, job_desc } from './jobs.js';
+import { defineJobs, job_desc, craftingRatio } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech } from './actions.js';
 import { events } from './events.js';
@@ -1829,14 +1829,14 @@ function longLoop(){
 
             // Crafting
             if (global.city.calendar.moon === 0 && global.tech['foundry']){
-                let craft_volume = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
                 Object.keys(craftCost).forEach(function (craft){
                     let num = global.city.foundry[craft];
+                    let craft_multiplier = craftingRatio(craft);
                     if (num > 0){
                         while (num > 0){
                             if (global.resource[craftCost[craft].r].amount >= craftCost[craft].a){
                                 global.resource[craftCost[craft].r].amount -= craftCost[craft].a;
-                                global.resource[craft].amount += craft_volume;
+                                global.resource[craft].amount += craft_multiplier;
                             }
                             num--;
                         }
