@@ -4964,14 +4964,11 @@ export function addAction(action,type){
                     default:
                         var keyMult = keyMultiplier();
                         for (var i=0; i<keyMult; i++){
-                            if (actions[action][type].action()){
-                                updateDesc(action,type);
-                                break;
-                            }
-                            else {
+                            if (!actions[action][type].action()){
                                 break;
                             }
                         }
+                        updateDesc(action,type);
                         if (!checkAffordable(action,type)){
                             let id = actions[action][type].id;
                             $(`#${id}`).addClass('cna');
