@@ -15,7 +15,7 @@ export const actions = {
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return `Creates ${rna} RNA`;
             },
-            action: function (){
+            action: function(){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
                     modRes('RNA',global.race['rapid_mutation'] ? 2 : 1);
                 }
@@ -27,7 +27,7 @@ export const actions = {
             title: 'Form DNA',
             desc: 'Creates a new strand of DNA',
             cost: { RNA: function(){ return 2; } },
-            action: function (){
+            action: function(){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
                     modRes('RNA',-2);
                     modRes('DNA',1);
@@ -42,7 +42,7 @@ export const actions = {
             desc: 'Evolve Membranes',
             cost: { RNA: function(){ return (global.evolution['membrane'].count * 2) + 2; } },
             effect: 'Increases RNA capacity by 5',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.membrane.cost)){
                     global['resource']['RNA'].max += 5;
                     global.evolution['membrane'].count++;
@@ -59,11 +59,11 @@ export const actions = {
                 RNA: function(){ return (global.evolution['organelles'].count * 8) + 12; },
                 DNA: function(){ return (global.evolution['organelles'].count * 4) + 4; }
             },
-            effect: function (){
+            effect: function(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return `Automatically generate ${rna} RNA`; 
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.organelles.cost)){
                     global.evolution['organelles'].count++;
                     return true;
@@ -80,7 +80,7 @@ export const actions = {
                 DNA: function(){ return (global.evolution['nucleus'].count * 16) + 18; }
             },
             effect: 'Automatically consume 2 RNA to create 1 DNA',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.nucleus.cost)){
                     global.evolution['nucleus'].count++;
                     return true;
@@ -97,7 +97,7 @@ export const actions = {
                 DNA: function(){ return (global.evolution['eukaryotic_cell'].count * 12) + 40; }
             },
             effect: 'Increases DNA capacity by 10',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.eukaryotic_cell.cost)){
                     global.evolution['eukaryotic_cell'].count++;
                     global['resource']['DNA'].max += 10;
@@ -115,7 +115,7 @@ export const actions = {
                 DNA: function(){ return (global.evolution['mitochondria'].count * 35) + 120; }
             },
             effect: 'Increases DNA capacity by 25 and RNA capacity by 50',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.mitochondria.cost)){
                     global.evolution['mitochondria'].count++;
                     global['resource']['DNA'].max += 25;
@@ -133,7 +133,7 @@ export const actions = {
                 DNA: function(){ return 175; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.sexual_reproduction.cost)){
                     global.evolution['sexual_reproduction'].count++;
                     removeAction(actions.evolution.sexual_reproduction.id);
@@ -163,7 +163,7 @@ export const actions = {
                 DNA: function(){ return 200; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.phagocytosis.cost)){
                     global.evolution['phagocytosis'].count++;
                     removeAction(actions.evolution.phagocytosis.id);
@@ -181,7 +181,7 @@ export const actions = {
                 DNA: function(){ return 200; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.chloroplasts.cost)){
                     global.evolution['chloroplasts'].count++;
                     removeAction(actions.evolution.chloroplasts.id);
@@ -199,7 +199,7 @@ export const actions = {
                 DNA: function(){ return 200; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.chitin.cost)){
                     global.evolution['chitin'].count++;
                     removeAction(actions.evolution.chitin.id);
@@ -217,7 +217,7 @@ export const actions = {
                 DNA: function(){ return 225; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.multicellular.cost)){
                     global.evolution['multicellular'].count++;
                     removeAction(actions.evolution.multicellular.id);
@@ -246,7 +246,7 @@ export const actions = {
                 DNA: function(){ return 250; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.spores.cost)){
                     global.evolution['spores'].count++;
                     removeAction(actions.evolution.spores.id);
@@ -264,7 +264,7 @@ export const actions = {
                 DNA: function(){ return 250; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.poikilohydric.cost)){
                     global.evolution['poikilohydric'].count++;
                     removeAction(actions.evolution.poikilohydric.id);
@@ -282,7 +282,7 @@ export const actions = {
                 DNA: function(){ return 250; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.bilateral_symmetry.cost)){
                     global.evolution['bilateral_symmetry'].count++;
                     removeAction(actions.evolution.bilateral_symmetry.id);
@@ -308,7 +308,7 @@ export const actions = {
                 DNA: function(){ return 275; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.bryophyte.cost)){
                     global.evolution['bryophyte'].count++;
                     removeAction(actions.evolution.bryophyte.id);
@@ -340,7 +340,7 @@ export const actions = {
                 DNA: function(){ return 275; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.protostomes.cost)){
                     global.evolution['protostomes'].count++;
                     removeAction(actions.evolution.protostomes.id);
@@ -358,7 +358,7 @@ export const actions = {
                 DNA: function(){ return 275; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.deuterostome.cost)){
                     global.evolution['deuterostome'].count++;
                     removeAction(actions.evolution.deuterostome.id);
@@ -384,7 +384,7 @@ export const actions = {
                 DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.vascular.cost)){
                     global.evolution['vascular'].count++;
                     removeAction(actions.evolution.vascular.id);
@@ -402,7 +402,7 @@ export const actions = {
                 DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.homoiohydric.cost)){
                     global.evolution['homoiohydric'].count++;
                     removeAction(actions.evolution.homoiohydric.id);
@@ -420,7 +420,7 @@ export const actions = {
                 DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.athropods.cost)){
                     global.evolution['athropods'].count++;
                     removeAction(actions.evolution.athropods.id);
@@ -438,7 +438,7 @@ export const actions = {
                 DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.mammals.cost)){
                     global.evolution['mammals'].count++;
                     removeAction(actions.evolution.mammals.id);
@@ -456,7 +456,7 @@ export const actions = {
                 DNA: function(){ return 300; }
             },
             effect: 'Unlocks the next step in evolution',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.eggshell.cost)){
                     global.evolution['eggshell'].count++;
                     removeAction(actions.evolution.eggshell.id);
@@ -475,7 +475,7 @@ export const actions = {
                 DNA: function(){ return 350; }
             },
             effect: 'Evolve into a species which has achieved sentience',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.evolution.sentience.cost)){
                     global.evolution['sentience'].count++;
                     removeAction(actions.evolution.sentience.id);
@@ -631,7 +631,7 @@ export const actions = {
             title: 'Gather Food',
             desc: 'Harvest and preserve food.',
             reqs: { primitive: 1 },
-            action: function (){
+            action: function(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     modRes('Food',global.race['strong'] ? 2 : 1);
                 }
@@ -643,7 +643,7 @@ export const actions = {
             title: 'Gather Lumber',
             desc: 'Harvest lumber from the forest',
             reqs: {},
-            action: function (){
+            action: function(){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',global.race['strong'] ? 2 : 1);
                 }
@@ -655,7 +655,7 @@ export const actions = {
             title: 'Gather Stone',
             desc: 'Gather stone from a quarry',
             reqs: { primitive: 2 },
-            action: function (){
+            action: function(){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     modRes('Stone',global.race['strong'] ? 2 : 1);
                 }
@@ -678,7 +678,7 @@ export const actions = {
                 }
                 return `+${bunks} Max Soldiers`;
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.garrison.cost)){
                     let gain = global.tech['military'] >= 5 ? 3 : 2;
                     if (global.race['chameleon']){
@@ -710,7 +710,7 @@ export const actions = {
                 Stone: function(){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', 10, 1.22) : 0; }
             },
             effect: '+1 Max Citizen',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.basic_housing.cost)){
                     global['resource'][races[global.race.species].name].display = true;
                     global['resource'][races[global.race.species].name].max += 1;
@@ -733,7 +733,7 @@ export const actions = {
                 Brick: function(){ return costMultiplier('cottage', 20, 1.25); }
             },
             effect: '+2 Max Citizens',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.cottage.cost)){
                     global['resource'][races[global.race.species].name].max += 2;
                     global.city['cottage'].count++;
@@ -756,7 +756,7 @@ export const actions = {
             },
             effect: '+5 Max Citizens. -1kW.',
             powered: 1,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.apartment.cost)){
                     global['resource'][races[global.race.species].name].max += 5;
                     global.city['apartment'].count++;
@@ -778,8 +778,8 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('lodge', 20, 1.35); },
                 Stone: function(){ return costMultiplier('lodge', 10, 1.35); }
             },
-            effect: function (){ return '+1 Max Citizen'; },
-            action: function (){
+            effect: function(){ return '+1 Max Citizen'; },
+            action: function(){
                 if (payCosts(actions.city.lodge.cost)){
                     global.city['lodge'].count++;
                     global['resource'][races[global.race.species].name].max += 1;
@@ -802,7 +802,7 @@ export const actions = {
                 let food = spatialReasoning(500);
                 return `+${food} Max Food`; 
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.smokehouse.cost)){
                     global.city['smokehouse'].count++;
                     global['resource']['Food'].max += spatialReasoning(500);
@@ -821,8 +821,8 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('farm', 20, 1.35); },
                 Stone: function(){ return costMultiplier('farm', 10, 1.35); }
             },
-            effect: function (){ return global.tech['farm'] ? '+1 Max Farmers. +1 Max Citizen' : '+1 Max Farmers'; },
-            action: function (){
+            effect: function(){ return global.tech['farm'] ? '+1 Max Farmers. +1 Max Citizen' : '+1 Max Farmers'; },
+            action: function(){
                 if (payCosts(actions.city.farm.cost)){
                     global.city['farm'].count++;
                     global.civic.farmer.display = true;
@@ -849,7 +849,7 @@ export const actions = {
                 let food = spatialReasoning(500);
                 return `+${food} Max Food`; 
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.silo.cost)){
                     global.city['silo'].count++;
                     global['resource']['Food'].max += spatialReasoning(500);
@@ -874,7 +874,7 @@ export const actions = {
                 Iron: function(){ return costMultiplier('mill', 150, 1.32); },
                 Cement: function(){ return costMultiplier('mill', 125, 1.32); },
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.mill.cost)){
                     global.city['mill'].count++;
                     return true;
@@ -968,7 +968,7 @@ export const actions = {
                 }
                 return storage;
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.shed.cost)){
                     let multiplier = storageMultipler();
                     global['resource']['Lumber'].max += (spatialReasoning(200) * multiplier);
@@ -999,15 +999,16 @@ export const actions = {
                 Copper: function(){ return costMultiplier('foundry', 250, 1.35); },
                 Stone: function(){ return costMultiplier('foundry', 100, 1.35); }
             },
-            effect: function (){
+            effect: function(){
                 if (global.tech['foundry'] >= 2){
-                    return `<div>+1 Craftsman</div><div>+3% Crafted Materials</div>`;
+                    let skill = global.tech['foundry'] >= 5 ? 5 : 3;
+                    return `<div>+1 Craftsman</div><div>+${skill}% Crafted Materials</div>`;
                 }
                 else {
                     return `+1 Craftsman`;
                 }
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.foundry.cost)){
                     global.city['foundry'].count++;
                     global.civic.craftsman.max++;
@@ -1043,7 +1044,7 @@ export const actions = {
                 }
                 return `+${cap} Max Crates`; 
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.storage_yard.cost)){
                     if (global.resource.Crates.display === false){
                         messageQueue('You have unlocked a new method of resource management, click the + symbol next to a resource to manage it.','success');
@@ -1079,7 +1080,7 @@ export const actions = {
                 }
                 return `+${cap} Max Containers`; 
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.warehouse.cost)){
                     if (global.resource.Containers.display === false){
                         messageQueue('You can now construct containers, click the + symbol next to a resource to manage containers.','success');
@@ -1107,11 +1108,11 @@ export const actions = {
                 Stone: function(){ return costMultiplier('trade', 50, 1.35); },
                 Furs: function(){ return costMultiplier('trade', 65, 1.35); }
             },
-            effect: function (){
+            effect: function(){
                 let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
                 return `+${routes} Trade Routes`; 
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.trade.cost)){
                     global.city['trade'].count++;
                     global.city.market.mtrade += global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
@@ -1137,7 +1138,7 @@ export const actions = {
                 let lum = spatialReasoning(100);
                 return `<div>+2 Max Lumberjacks</div><div>+${lum} Max Lumber</div>`;
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.lumber_yard.cost)){
                     global.city['lumber_yard'].count++;
                     global.civic.lumberjack.display = true;
@@ -1171,7 +1172,7 @@ export const actions = {
                 return desc;
             },
             powered: 1,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.sawmill.cost)){
                     global.city['sawmill'].count++;
                     let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
@@ -1206,7 +1207,7 @@ export const actions = {
             },
             powered: 1,
             power_reqs: { mine_conveyor: 1 },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.rock_quarry.cost)){
                     global.city['rock_quarry'].count++;
                     global.civic.quarry_worker.display = true;
@@ -1241,7 +1242,7 @@ export const actions = {
             },
             powered: 2,
             power_reqs: { cement: 5 },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.cement_plant.cost)){
                     global.resource.Cement.display = true;
                     global.city.cement_plant.count++;
@@ -1277,7 +1278,7 @@ export const actions = {
                 }
             },
             special: true,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.smelter.cost)){
                     global.city['smelter'].count++;
                     if (global.race['kindling_kindred']){
@@ -1308,7 +1309,7 @@ export const actions = {
             },
             powered: 3,
             special: true,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.factory.cost)){
                     global.city['factory'].count++;
                     global.resource.Alloy.display = true;
@@ -1339,7 +1340,7 @@ export const actions = {
             },
             powered: 1,
             power_reqs: { mine_conveyor: 1 },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.mine.cost)){
                     global.city['mine'].count++;
                     global.resource.Copper.display = true;
@@ -1373,7 +1374,7 @@ export const actions = {
             },
             powered: 1,
             power_reqs: { mine_conveyor: 1 },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.coal_mine.cost)){
                     global.city['coal_mine'].count++;
                     global.resource.Coal.display = true;
@@ -1405,7 +1406,7 @@ export const actions = {
                 let oc = spatialReasoning(500);
                 return `+${oil} oil per second. +${oc} Max Oil.`;
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.oil_well.cost)){
                     global.city['oil_well'].count++;
                     global.resource.Oil.display = true;
@@ -1434,7 +1435,7 @@ export const actions = {
                 }
                 return effect;
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.oil_depot.cost)){
                     global.city['oil_depot'].count++;
                     global['resource']['Oil'].max += spatialReasoning(1000);
@@ -1457,7 +1458,7 @@ export const actions = {
                 Stone: function(){ return costMultiplier('amphitheatre', 200, 1.75); }
             },
             effect: '+1 Max Entertainer',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.amphitheatre.cost)){
                     global.city['amphitheatre'].count++;
                     global.civic.entertainer.max++;
@@ -1495,7 +1496,7 @@ export const actions = {
                 }
                 return desc;
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.temple.cost)){
                     global.city['temple'].count++;
                     return true;
@@ -1516,7 +1517,7 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('bank', 75, 1.30); },
                 Stone: function(){ return costMultiplier('bank', 100, 1.45); }
             },
-            effect: function (){ 
+            effect: function(){ 
                 let vault = 1000;
                 if (global.tech['banking'] >= 5){
                     vault = 5000;
@@ -1547,7 +1548,7 @@ export const actions = {
                     return `+\$${vault} Max Money.`; 
                 }
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.bank.cost)){
                     global['resource']['Money'].max += 1000;
                     global.city.bank.count++;
@@ -1570,7 +1571,7 @@ export const actions = {
                 Lumber: function(){ return costMultiplier('university', 500, 1.35) - 100; },
                 Stone: function(){ return costMultiplier('university', 750, 1.35) - 150; }
             },
-            effect: function (){
+            effect: function(){
                 let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                 if (global.tech['science'] >= 4){
                     gain *= 1 + (global.city['library'].count * 0.02);
@@ -1582,7 +1583,7 @@ export const actions = {
                 gain = gain.toFixed(0);
                 return `<div>+1 Max Professor</div><div>+${gain} Max Knowledge</div>`;
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.university.cost)){
                     let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                     if (global.tech['science'] >= 4){
@@ -1615,7 +1616,7 @@ export const actions = {
                 Furs: function(){ return costMultiplier('library', 22, 1.20); },
                 Brick: function(){ return costMultiplier('library', 15, 1.20); }
             },
-            effect: function (){
+            effect: function(){
                 let gain = global.race['nearsighted'] ? '110' : '125';
                 if (global.tech['science'] && global.tech['science'] >= 8){
                     gain *= 1.4;
@@ -1628,7 +1629,7 @@ export const actions = {
                 }
                 return `+${gain} Max Knowledge`; 
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.library.cost)){
                     global['resource']['Knowledge'].max += global.race['nearsighted'] ? 110 : 125;
                     global.city.library.count++;
@@ -1650,9 +1651,9 @@ export const actions = {
                 Knowledge: function(){ return costMultiplier('wardenclyffe', 1000, 1.2); },
                 Copper: function(){ return costMultiplier('wardenclyffe', 500, 1.2); },
                 Cement: function(){ return costMultiplier('wardenclyffe', 350, 1.2); },
-                Sheet_Metal: function(){ return costMultiplier('wardenclyffe', 225, 1.2); }
+                Sheet_Metal: function(){ return costMultiplier('wardenclyffe', 175, 1.2); }
             },
-            effect: function (){
+            effect: function(){
                 let gain = 1000;
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
@@ -1679,7 +1680,7 @@ export const actions = {
                 }
             },
             powered: 2,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.wardenclyffe.cost)){
                     let gain = 1000;
                     global.city.wardenclyffe.count++;
@@ -1710,12 +1711,12 @@ export const actions = {
                 Copper: function(){ return costMultiplier('biolab', 1250, 1.28); },
                 Alloy: function(){ return costMultiplier('biolab', 350, 1.28); }
             },
-            effect: function (){
+            effect: function(){
                 let gain = 3000;
                 return `+${gain} Max Knowledge, -2kW`;
             },
             powered: 2,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.biolab.cost)){
                     global.city.biolab.count++;
                     if (global.city.powered && global.city.power >= 2){
@@ -1738,12 +1739,12 @@ export const actions = {
                 Cement: function(){ return costMultiplier('coal_power', 600, 1.2); },
                 Steel: function(){ return costMultiplier('coal_power', 2000, 1.2) - 1000; }
             },
-            effect: function (){
+            effect: function(){
                 let consume = 0.35;
                 return `+5kW. -${consume} Coal per second.`;
             },
             powered: -5,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.coal_power.cost)){
                     global.city.coal_power.count++;
                     global.city.coal_power.on++;
@@ -1764,12 +1765,12 @@ export const actions = {
                 Cement: function(){ return costMultiplier('oil_power', 5600, 1.2) + 1000; },
                 Steel: function(){ return costMultiplier('oil_power', 9000, 1.2) + 3000; }
             },
-            effect: function (){
+            effect: function(){
                 let consume = 0.65;
                 return `+6kW. -${consume} Oil per second.`;
             },
             powered: -6,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.oil_power.cost)){
                     global.city.oil_power.count++;
                     global.city.oil_power.on++;
@@ -1790,12 +1791,12 @@ export const actions = {
                 Cement: function(){ return costMultiplier('fission_power', 10800, 1.35); },
                 Titanium: function(){ return costMultiplier('fission_power', 7500, 1.35); }
             },
-            effect: function (){
+            effect: function(){
                 let consume = 0.1;
                 return `+20kW. -${consume} Uranium per second.`;
             },
             powered: -20,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.city.fission_power.cost)){
                     global.city.fission_power.count++;
                     global.city.fission_power.on++;
@@ -1817,7 +1818,7 @@ export const actions = {
                 Lumber: function(){ return global.race['kindling_kindred'] ? 0 : 5; },
                 Stone: function(){ return global.race['kindling_kindred'] ? 5 : 0; }
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.club.cost)){
                     global.resource.Food.display = true;
                     return true;
@@ -1834,7 +1835,7 @@ export const actions = {
             cost: {
                 Food: function(){ return 10; }
             },
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.bone_tools.cost)){
                     global.resource.Stone.display = true;
                     return true;
@@ -1853,7 +1854,7 @@ export const actions = {
                 Stone: function(){ return 10; }
             },
             effect: 'Start tracking the days and begin building a settlement.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.sundial.cost)){
                     global.resource.Knowledge.display = true;
                     global.city.calendar.day++;
@@ -1872,7 +1873,7 @@ export const actions = {
                 Knowledge: function(){ return 10; }
             },
             effect: 'Learn to construct basic housing for your citizens.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.housing.cost)){
                     global.city['basic_housing'] = { count: 0 };
                     return true;
@@ -1890,7 +1891,7 @@ export const actions = {
                 Knowledge: function(){ return 3600; }
             },
             effect: 'Learn to construct more comfortable housing for couples.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.cottage.cost)){
                     global.city['cottage'] = { count: 0 };
                     return true;
@@ -1908,7 +1909,7 @@ export const actions = {
                 Knowledge: function(){ return 15750; }
             },
             effect: 'Design high occupancy housing complexes.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.apartment.cost)){
                     global.city['apartment'] = {
                         count: 0,
@@ -1930,7 +1931,7 @@ export const actions = {
                 Steel: function(){ return 2500; }
             },
             effect: 'Reduce material costs of Cabins and Cottages by introducing strong steel beams.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_beams.cost)){
                     return true;
                 }
@@ -1947,7 +1948,7 @@ export const actions = {
                 Knowledge: function(){ return 4500; }
             },
             effect: 'Develop a substance that aids with population growth.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.aphrodisiac.cost)){
                     return true;
                 }
@@ -1964,7 +1965,7 @@ export const actions = {
                 Knowledge: function(){ return 80; }
             },
             effect: 'Creates plans for a long term storage medium for meat.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.smokehouse.cost)){
                     global.city['smokehouse'] = { count: 0 };
                     return true;
@@ -1982,7 +1983,7 @@ export const actions = {
                 Knowledge: function(){ return 180; }
             },
             effect: 'Design a hunting lodge to help bolster your food income.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.lodge.cost)){
                     global.city['lodge'] = { count: 0 };
                     return true;
@@ -2000,7 +2001,7 @@ export const actions = {
                 Knowledge: function(){ return 10; }
             },
             effect: 'Learn to plant crops and harvest them for food.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.agriculture.cost)){
                     global.city['farm'] = { count: 0 };
                     return true;
@@ -2019,7 +2020,7 @@ export const actions = {
                 Knowledge: function(){ return 180; }
             },
             effect: 'learn the joys of a short commute by living at work!',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.farm_house.cost)){
                     return true;
                 }
@@ -2036,7 +2037,7 @@ export const actions = {
                 Knowledge: function(){ return 55; }
             },
             effect: 'Increase farm efficency by 66% with irrigation.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.irrigation.cost)){
                     global.civic.farmer.impact = 2.5;
                     return true;
@@ -2054,7 +2055,7 @@ export const actions = {
                 Knowledge: function(){ return 80; }
             },
             effect: 'Creates plans for a storage medium for food.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.silo.cost)){
                     global.city['silo'] = { count: 0 };
                     return true;
@@ -2072,7 +2073,7 @@ export const actions = {
                 Knowledge: function(){ return 5400; }
             },
             effect: 'Creates plans for a grain mill, grain mills boost farm effectiveness.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.mill.cost)){
                     global.city['mill'] = { count: 0 };
                     return true;
@@ -2090,7 +2091,7 @@ export const actions = {
                 Knowledge: function(){ return 16200; }
             },
             effect: 'Add a windmill sail to your grain mills, boosts the effectiveness of mills.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.windmill.cost)){
                     return true;
                 }
@@ -2107,7 +2108,7 @@ export const actions = {
                 Knowledge: function(){ return 650; }
             },
             effect: 'Design the foundry, a place for crastman to produce manufactured materials.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.foundry.cost)){
                     global.city['foundry'] = {
                         count: 0,
@@ -2133,7 +2134,7 @@ export const actions = {
                 Knowledge: function(){ return 1500; }
             },
             effect: 'Craftsman produce an extra 3% per cycle for each Foundry.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.artisans.cost)){
                     return true;
                 }
@@ -2150,7 +2151,7 @@ export const actions = {
                 Knowledge: function(){ return 3200; }
             },
             effect: 'Each craftsman beyond the first assigned to a resource increases production of that resource by 3%.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.apprentices.cost)){
                     return true;
                 }
@@ -2167,8 +2168,25 @@ export const actions = {
                 Knowledge: function(){ return 5200; }
             },
             effect: 'Sawmills increase Plywood production by 2%.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.carpentry.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        master_craftsman: {
+            id: 'tech-master_craftsman',
+            title: 'Master Craftsman',
+            desc: 'Master Craftsman',
+            reqs: { foundry: 4 },
+            grant: ['foundry',5],
+            cost: {
+                Knowledge: function(){ return 12000; }
+            },
+            effect: 'Craftsman produce an extra 5% per cycle for each Foundry.',
+            action: function(){
+                if (payCosts(actions.tech.master_craftsman.cost)){
                     return true;
                 }
                 return false;
@@ -2184,7 +2202,7 @@ export const actions = {
                 Knowledge: function(){ return 750; }
             },
             effect: 'Design a space for shows to help uplift your spirits.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.theatre.cost)){
                     global.city['amphitheatre'] = { count: 0 };
                     return true;
@@ -2202,7 +2220,7 @@ export const actions = {
                 Knowledge: function(){ return 1080; }
             },
             effect: 'Playwrights will increase the quality of entertainment incresing the effectiveness of entertainers.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.playwright.cost)){
                     return true;
                 }
@@ -2219,7 +2237,7 @@ export const actions = {
                 Knowledge: function(){ return 7920; }
             },
             effect: 'Techno Wizards are a new type of stage performer that uses technology to preform "Magic". Increases effectiveness of entertainers.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.magic.cost)){
                     return true;
                 }
@@ -2236,7 +2254,7 @@ export const actions = {
                 Knowledge: function(){ return 16200; }
             },
             effect: 'Powered Wardenclyffe towers broadcast radio signals which help entertain your citizens.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.radio.cost)){
                     return true;
                 }
@@ -2253,7 +2271,7 @@ export const actions = {
                 Knowledge: function(){ return 67500; }
             },
             effect: 'New broadcast TV signals double the entertainment value of Wardenclyffe towers.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.tv.cost)){
                     return true;
                 }
@@ -2270,7 +2288,7 @@ export const actions = {
                 Knowledge: function(){ return 45; }
             },
             effect: 'Learn how to dig up stone slabs from a quarry.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.mining.cost)){
                     global.city['rock_quarry'] = { 
                         count: 0, 
@@ -2291,7 +2309,7 @@ export const actions = {
                 Knowledge: function(){ return 4050; }
             },
             effect: 'Learn advanced techniques for smelting ore that will increase yield.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.smelting.cost)){
                     global.city['smelter'] = { 
                         count: 0,
@@ -2317,7 +2335,7 @@ export const actions = {
                 Steel: function(){ return 25; }
             },
             effect: 'Upgrade your smelters so they can produce steel.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
                     global.resource.Sheet_Metal.display = true;
@@ -2337,7 +2355,7 @@ export const actions = {
                 Coal: function(){ return 2000; }
             },
             effect: 'Increases Iron output of smelters by 20%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.blast_furnace.cost)){
                     return true;
                 }
@@ -2355,7 +2373,7 @@ export const actions = {
                 Coal: function(){ return 5000; }
             },
             effect: 'Increases Steel output of smelters by 20%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.bessemer_process.cost)){
                     return true;
                 }
@@ -2373,7 +2391,7 @@ export const actions = {
                 Coal: function(){ return 10000; }
             },
             effect: 'Increases Steel output of smelters by 20%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.oxygen_converter.cost)){
                     return true;
                 }
@@ -2391,7 +2409,7 @@ export const actions = {
                 Copper: function(){ return 25000; }
             },
             effect: 'Increases Steel output of smelters by 20%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.electric_arc_furnace.cost)){
                     return true;
                 }
@@ -2409,7 +2427,7 @@ export const actions = {
                 Coal: function(){ return 8000; }
             },
             effect: 'Advanced smelting processes improve copper refinement by 20%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.rotary_kiln.cost)){
                     return true;
                 }
@@ -2426,7 +2444,7 @@ export const actions = {
                 Knowledge: function(){ return 350; }
             },
             effect: 'Learn how to mine and refine copper into a pure form.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.metal_working.cost)){
                     global.city['mine'] = {
                         count: 0,
@@ -2447,7 +2465,7 @@ export const actions = {
                 Knowledge: function(){ return 2500; }
             },
             effect: 'Learn how to extract iron ore from mines.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.iron_mining.cost)){
                     global.resource.Iron.display = true;
                     if (global.city['foundry'] && global.city['foundry'].count > 0){
@@ -2469,7 +2487,7 @@ export const actions = {
                 Knowledge: function(){ return 4320; }
             },
             effect: 'Learn about how coal can be used to as a resource.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.coal_mining.cost)){
                     global.city['coal_mine'] = {
                         count: 0,
@@ -2491,7 +2509,7 @@ export const actions = {
                 Knowledge: function(){ return 20; }
             },
             effect: 'Designs a small storage shed.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.storage.cost)){
                     global.city['shed'] = { count: 0 };
                     return true;
@@ -2512,7 +2530,7 @@ export const actions = {
                 Cement: function(){ return 500; }
             },
             effect: 'Reinforce your sheds with newer materials to increase storage capacity.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.reinforced_shed.cost)){
                     return true;
                 }
@@ -2530,7 +2548,7 @@ export const actions = {
                 Steel: function(){ return 5000; }
             },
             effect: 'Replace smaller storage sheds with larger storage barns, a 100% increase in storage capactiy.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.barns.cost)){
                     return true;
                 }
@@ -2548,7 +2566,7 @@ export const actions = {
                 Titanium: function(){ return 3000; }
             },
             effect: 'Replace your barns with huge storage facilities known as "warehouses".',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.warehouse.cost)){
                     return true;
                 }
@@ -2566,7 +2584,7 @@ export const actions = {
                 Knowledge: function(){ return 65000; }
             },
             effect: 'Security cameras make monitoring large storage spaces easier increaseing storage potential.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.cameras.cost)){
                     return true;
                 }
@@ -2583,7 +2601,7 @@ export const actions = {
                 Knowledge: function(){ return 108000; }
             },
             effect: 'The ulitmate upgrade for warehouses. Extra supercollider levels will increase the effectiveness of this technology.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.pocket_dimensions.cost)){
                     return true;
                 }
@@ -2600,7 +2618,7 @@ export const actions = {
                 Knowledge: function(){ return 2700; }
             },
             effect: 'Designs a scalable storage solution for all your storage needs.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.containerization.cost)){
                     global.city['storage_yard'] = { count: 0 };
                     return true;
@@ -2619,7 +2637,7 @@ export const actions = {
                 Sheet_Metal: function(){ return 100; }
             },
             effect: 'Upgrade wooden crates by reinforcing them with steel.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.reinforced_crates.cost)){
                     return true;
                 }
@@ -2638,7 +2656,7 @@ export const actions = {
                 Steel: function(){ return 2500; }
             },
             effect: 'Upgrade your freight yards with cranes, doubling the amount of crates that can be stored in each yard.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.cranes.cost)){
                     return true;
                 }
@@ -2656,7 +2674,7 @@ export const actions = {
                 Titanium: function(){ return 1000; }
             },
             effect: 'Increase the maximum load of crates by adding strong titanium bands.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.titanium_crates.cost)){
                     return true;
                 }
@@ -2674,7 +2692,7 @@ export const actions = {
                 Sheet_Metal: function(){ return 200; }
             },
             effect: 'Replace cheap wooden crates with more durable steel containers.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_containers.cost)){
                     global.city['warehouse'] = { count: 0 };
                     return true;
@@ -2693,7 +2711,7 @@ export const actions = {
                 Steel: function(){ return 5000; }
             },
             effect: 'Upgrade your container ports with gantry cranes. This doubles the number of containers that can be stored at each port.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.gantry_crane.cost)){
                     return true;
                 }
@@ -2711,7 +2729,7 @@ export const actions = {
                 Alloy: function(){ return 2500; }
             },
             effect: 'Increase container capacity by 50% with new alloy containers.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.alloy_containers.cost)){
                     return true;
                 }
@@ -2729,7 +2747,7 @@ export const actions = {
                 Lumber: function(){ return 10; } 
             },
             effect: 'Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.currency.cost)){
                     global.resource.Money.display = true;
                     return true;
@@ -2747,7 +2765,7 @@ export const actions = {
                 Knowledge: function(){ return 1800; }
             },
             effect: 'Opens a commodities market where you can buy and sell resources.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.market.cost)){
                     global.settings.showMarket = true;
                     return true;
@@ -2765,7 +2783,7 @@ export const actions = {
                 Knowledge: function(){ return 3375; }
             },
             effect: 'Allows government to adjust the tax rate.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.tax_rates.cost)){
                     global.civic['taxes'].display = true;
                     return true;
@@ -2783,7 +2801,7 @@ export const actions = {
                 Knowledge: function(){ return 6750; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at higher volumes.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.large_trades.cost)){
                     var tech = actions.tech.large_trades.grant[0];
                     global.tech[tech] = actions.tech.large_trades.grant[1];
@@ -2803,7 +2821,7 @@ export const actions = {
                 Knowledge: function(){ return 36000; }
             },
             effect: 'Corrupt politicians enable the setting of extreme tax strategies.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.corruption.cost)){
                     return true;
                 }
@@ -2820,7 +2838,7 @@ export const actions = {
                 Knowledge: function(){ return 108000; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at very high volumes.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.massive_trades.cost)){
                     var tech = actions.tech.massive_trades.grant[0];
                     global.tech[tech] = actions.tech.massive_trades.grant[1];
@@ -2840,7 +2858,7 @@ export const actions = {
                 Knowledge: function(){ return 4500; }
             },
             effect: 'Create trade routes with your neighbors.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.trade.cost)){
                     global.city['trade'] = { count: 0 };
                     global.city.market.active = true;
@@ -2859,7 +2877,7 @@ export const actions = {
                 Knowledge: function(){ return 16200; }
             },
             effect: 'Increase the effectiveness of each trade post by 1.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.diplomacy.cost)){
                     return true;
                 }
@@ -2876,7 +2894,7 @@ export const actions = {
                 Knowledge: function(){ return 37800; }
             },
             effect: 'Increase the effectiveness of each trade post by 1.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.freight.cost)){
                     return true;
                 }
@@ -2893,7 +2911,7 @@ export const actions = {
                 Knowledge: function(){ return 90; }
             },
             effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.banking.cost)){
                     global.city['bank'] = { count: 0 };
                     return true;
@@ -2912,7 +2930,7 @@ export const actions = {
                 Knowledge: function(){ return 900; }
             },
             effect: 'Discover the principles of investing, unlocks the banker job.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.investing.cost)){
                     global.civic.banker.display = true;
                     return true;
@@ -2933,7 +2951,7 @@ export const actions = {
                 Cement: function(){ return 750; }
             },
             effect: 'Upgrade your banks with vaults made out of concrete, increases $ storage capacity.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.vault.cost)){
                     return true;
                 }
@@ -2951,7 +2969,7 @@ export const actions = {
                 Knowledge: function(){ return 5000; }
             },
             effect: 'Raise new capital by creating a series of savings bonds. With savings bonds each citizen will increase your money cap by $250.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.bonds.cost)){
                     return true;
                 }
@@ -2970,7 +2988,7 @@ export const actions = {
                 Steel: function(){ return 3000; }
             },
             effect: 'Reinforce your bank vaults with heavy steel doors and walls, increases $ storage capacity.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_vault.cost)){
                     return true;
                 }
@@ -2988,7 +3006,7 @@ export const actions = {
                 Knowledge: function(){ return 18000; }
             },
             effect: 'Create new series EE savings bonds which mature at a much higher value. Each citizen will increase your money cap by $600.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.eebonds.cost)){
                     return true;
                 }
@@ -3006,7 +3024,7 @@ export const actions = {
                 Knowledge: function(){ return 45000; }
             },
             effect: 'With new training your bankers will learn how to creatively store money. Increases bank vault capacity by 5% per banker.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.swiss_banking.cost)){
                     return true;
                 }
@@ -3024,7 +3042,7 @@ export const actions = {
                 Knowledge: function(){ return 67500; }
             },
             effect: 'Banks will offer safety deposit boxes, increasing bank capacity by $25 per citizen.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.safety_deposit.cost)){
                     return true;
                 }
@@ -3042,7 +3060,7 @@ export const actions = {
                 Knowledge: function(){ return 108000; }
             },
             effect: 'Establish a stock exchange to increase wealth potential.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.stock_market.cost)){
                     var tech = actions.tech.stock_market.grant[0];
                     global.tech[tech] = actions.tech.stock_market.grant[1];
@@ -3063,7 +3081,7 @@ export const actions = {
                 Knowledge: function(){ return 126000; }
             },
             effect: 'Bankers also manage hedge funds, increasing the amount of money generated per banker by 2% per stock market level.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.hedge_funds.cost)){
                     return true;
                 }
@@ -3081,7 +3099,7 @@ export const actions = {
                 Knowledge: function(){ return 144000; }
             },
             effect: 'Encourge citizens to establish 401K plans increasing the total amount of wealth available.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.four_oh_one.cost)){
                     return true;
                 }
@@ -3098,7 +3116,7 @@ export const actions = {
                 Knowledge: function(){ return 120000; }
             },
             effect: `Plan the construction of a monument to celebrate your civilization's greatness`,
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.monument.cost)){
                     var tech = actions.tech.monument.grant[0];
                     global.tech[tech] = actions.tech.monument.grant[1];
@@ -3119,7 +3137,7 @@ export const actions = {
                 Knowledge: function(){ return 65; }
             },
             effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.science.cost)){
                     global.city['university'] = { count: 0 };
                     return true;
@@ -3137,7 +3155,7 @@ export const actions = {
                 Knowledge: function(){ return 720; }
             },
             effect: 'Create a system for organizing and storing knowledge in large storage buildings designed specifically for books.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.library.cost)){
                     global.city['library'] = { count: 0 };
                     return true;
@@ -3155,7 +3173,7 @@ export const actions = {
                 Knowledge: function(){ return 1125; }
             },
             effect: 'Libraries will have a minor effect on professor effectiveness.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.library.cost)){
                     return true;
                 }
@@ -3172,7 +3190,7 @@ export const actions = {
                 Knowledge: function(){ return 3240; }
             },
             effect: 'Libraries will boost the effect of universities by 2% per library',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.research_grant.cost)){
                     return true;
                 }
@@ -3189,7 +3207,7 @@ export const actions = {
                 Knowledge: function(){ return 27000; }
             },
             effect: 'Each scientist will publish their work in a scientific journal. Libraries increased by 12% per scientist.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.scientific_journal.cost)){
                     return true;
                 }
@@ -3206,7 +3224,7 @@ export const actions = {
                 Knowledge: function(){ return 36000; }
             },
             effect: 'Professors will boost the effectiveness of scientists by 1% per powered wardenclyffe tower.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.adjunct_professor.cost)){
                     return true;
                 }
@@ -3223,7 +3241,7 @@ export const actions = {
                 Knowledge: function(){ return 51750; }
             },
             effect: 'Upgrade wardenclyffe towers with tesla coils increasing their science potental when powered.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.tesla_coil.cost)){
                     return true;
                 }
@@ -3240,7 +3258,7 @@ export const actions = {
                 Knowledge: function(){ return 61200; }
             },
             effect: 'The internet is a revolution which massively changes how information is exchanged. Increases the base value of Universities and Libraries by 40%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.internet.cost)){
                     return true;
                 }
@@ -3257,7 +3275,7 @@ export const actions = {
                 Knowledge: function(){ return 67500; }
             },
             effect: 'Begin unlocking the mysteries of life.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.bioscience.cost)){
                     global.city['biolab'] = { count: 0 };
                     return true;
@@ -3275,7 +3293,7 @@ export const actions = {
                 Knowledge: function(){ return 108000; }
             },
             effect: 'Begin unlocking the secrets of DNA.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.genetics.cost)){
                     var tech = actions.tech.genetics.grant[0];
                     global.tech[tech] = actions.tech.genetics.grant[1];
@@ -3296,7 +3314,7 @@ export const actions = {
                 Knowledge: function(){ return 125000; }
             },
             effect: 'Crispr is a breakthrough in genetic engineering that will allow you to permanently modify your own genome.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.crispr.cost)){
                     var tech = actions.tech.crispr.grant[0];
                     global.tech[tech] = actions.tech.crispr.grant[1];
@@ -3321,7 +3339,7 @@ export const actions = {
                 Steel: function(){ return 1000; }
             },
             effect: 'The greatest leaps in science are often made by "misunderstood" individuals.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.mad_science.cost)){
                     global.city['wardenclyffe'] = {
                         count: 0,
@@ -3343,7 +3361,7 @@ export const actions = {
                 Copper: function(){ return 1000; }
             },
             effect: 'Discover electricity, no kites required.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.electricity.cost)){
                     global.city['power'] = 0;
                     global.city['powered'] = true;
@@ -3366,7 +3384,7 @@ export const actions = {
                 Knowledge: function(){ return 25200; }
             },
             effect: 'Bring about the industrial revolution. Leads to all sorts of new technological developments.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.industrialization.cost)){
                     global.resource.Titanium.display = true;
                     global.city['factory'] = {
@@ -3391,7 +3409,7 @@ export const actions = {
                 Knowledge: function(){ return 50000; }
             },
             effect: 'Electronics is the next major step forward in technological advancement.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.electronics.cost)){
                     return true;
                 }
@@ -3409,7 +3427,7 @@ export const actions = {
                 Uranium: function(){ return 10; }
             },
             effect: 'Learn to split the atom, a powerful but terrifying new development.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.fission.cost)){
                     global.city['fission_power'] = {
                         count: 0,
@@ -3430,7 +3448,7 @@ export const actions = {
                 Knowledge: function(){ return 90000; }
             },
             effect: 'Establish the Advanced Research Projects Agency (A.R.P.A.). This advanced labratory is dedicated to providing the facilties to progress all your special projects.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.arpa.cost)){
                     global.settings.showGenetics = true;
                     var tech = actions.tech.arpa.grant[0];
@@ -3452,7 +3470,7 @@ export const actions = {
                 Oil: function(){ return 8000; }
             },
             effect: 'Establish the the field of rocketry. Leads to all sorts of new ballistic technologies.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.rocketry.cost)){
                     var tech = actions.tech.rocketry.grant[0];
                     global.tech[tech] = actions.tech.rocketry.grant[1];
@@ -3472,7 +3490,7 @@ export const actions = {
                 Knowledge: function(){ return 160000; }
             },
             effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.lasers.cost)){
                     return true;
                 }
@@ -3489,7 +3507,7 @@ export const actions = {
                 Knowledge: function(){ return 72000; }
             },
             effect: 'Learn how to extract trace amounts of uranium from coal deposits.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.uranium.cost)){
                     global.resource.Uranium.display = true;
                     return true;
@@ -3508,7 +3526,7 @@ export const actions = {
                 Alloy: function(){ return 2500; }
             },
             effect: 'Upgrade your fuel depots with specially designed areas for storing uranium.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.uranium_storage.cost)){
                     return true;
                 }
@@ -3525,7 +3543,7 @@ export const actions = {
                 Knowledge: function(){ return 122000; }
             },
             effect: 'Learn how to extract trace amounts of uranium from coal ash.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.uranium_ash.cost)){
                     return true;
                 }
@@ -3544,7 +3562,7 @@ export const actions = {
                 Steel: function(){ return 1750; }
             },
             effect: 'Add mining conveyor belts to your mining opperations. Greatly increasing mining excavation rates.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.mine_conveyor.cost)){
                     return true;
                 }
@@ -3561,7 +3579,7 @@ export const actions = {
                 Knowledge: function(){ return 27000; }
             },
             effect: 'Unlock oil derrecks and begin the age of big oil.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.oil_well.cost)){
                     global.city['oil_well'] = { count: 0 };
                     return true;
@@ -3579,7 +3597,7 @@ export const actions = {
                 Knowledge: function(){ return 32000; }
             },
             effect: 'Design a facility specially made to increase your oil reserves.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.oil_depot.cost)){
                     global.city['oil_depot'] = { count: 0 };
                     return true;
@@ -3597,7 +3615,7 @@ export const actions = {
                 Knowledge: function(){ return 44000; }
             },
             effect: 'Design a power facility that runs on oil.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.oil_power.cost)){
                     global.city['oil_power'] = { count: 0 };
                     return true;
@@ -3617,7 +3635,7 @@ export const actions = {
                 Alloy: function(){ return 450; }
             },
             effect: 'Create a new high tech polymer material that can be used for a wide variety of applications.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.polymer.cost)){
                     global.resource.Polymer.display = true;
                     messageQueue('Polymer is now available for manufacture');
@@ -3636,7 +3654,7 @@ export const actions = {
                 Knowledge: function(){ return 99000; }
             },
             effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
                     return true;
                 }
@@ -3654,7 +3672,7 @@ export const actions = {
                 Titanium: function(){ return 3500; }
             },
             effect: 'New oil drills made from titanium will increase oil production by an estimated 20%.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.titanium_drills.cost)){
                     return true;
                 }
@@ -3672,7 +3690,7 @@ export const actions = {
                 Alloy: function(){ return 1000; }
             },
             effect: 'Enhanced drills made with new alloys increase oil production by another estimated 25%.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.alloy_drills.cost)){
                     return true;
                 }
@@ -3689,7 +3707,7 @@ export const actions = {
                 Knowledge: function(){ return 132000; }
             },
             effect: 'A new oil mining technique, controversial but effective. Improves oil derrick output by 40%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.fracking.cost)){
                     return true;
                 }
@@ -3708,7 +3726,7 @@ export const actions = {
                 Stone: function(){ return 20; }
             },
             effect: 'Creates a primitive axe made from stone lashed to a stick. Enables lumber harvesting.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.stone_axe.cost)){
                     global.civic.lumberjack.display = true;
                     global.city['lumber_yard'] = { count: 0 };
@@ -3728,7 +3746,7 @@ export const actions = {
                 Copper: function(){ return 25; }
             },
             effect: 'Upgrade axe technology to metal axes made from bronze. Improves lumber harvesting.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.copper_axes.cost)){
                     return true;
                 }
@@ -3746,7 +3764,7 @@ export const actions = {
                 Iron: function(){ return 400; }
             },
             effect: 'Sawmills increase the lumber yeild of your lumberjacks.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.iron_saw.cost)){
                     global.city['sawmill'] = {
                         count: 0,
@@ -3768,7 +3786,7 @@ export const actions = {
                 Steel: function(){ return 400; }
             },
             effect: 'Upgrade sawmills with steel blades.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_saw.cost)){
                     return true;
                 }
@@ -3786,7 +3804,7 @@ export const actions = {
                 Iron: function(){ return 250; }
             },
             effect: 'Upgrade axe technology to metal axes made from iron. Improves lumber harvesting.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.iron_axes.cost)){
                     return true;
                 }
@@ -3804,7 +3822,7 @@ export const actions = {
                 Steel: function(){ return 250; }
             },
             effect: 'Upgrade axe technology to durable axes made from steel. Improves lumber harvesting.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_axes.cost)){
                     return true;
                 }
@@ -3822,7 +3840,7 @@ export const actions = {
                 Titanium: function(){ return 350; }
             },
             effect: 'Upgrade axe technology to durable axes made from titanium. Improves lumber harvesting.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.titanium_axes.cost)){
                     return true;
                 }
@@ -3840,7 +3858,7 @@ export const actions = {
                 Copper: function(){ return 25; }
             },
             effect: 'Create sledgehammers made from bronze. Improves rock quarrying.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.copper_sledgehammer.cost)){
                     return true;
                 }
@@ -3858,7 +3876,7 @@ export const actions = {
                 Iron: function(){ return 250; }
             },
             effect: 'Upgrade to more durable sledgehammers made from iron. Improves rock quarrying.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.iron_sledgehammer.cost)){
                     return true;
                 }
@@ -3876,7 +3894,7 @@ export const actions = {
                 Steel: function(){ return 250; }
             },
             effect: 'Upgrade to stronger sledgehammers made from steel. Improves rock quarrying.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_sledgehammer.cost)){
                     return true;
                 }
@@ -3894,7 +3912,7 @@ export const actions = {
                 Titanium: function(){ return 400; }
             },
             effect: 'Upgrade to stronger sledgehammers made from titanium. Improves rock quarrying.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.titanium_sledgehammer.cost)){
                     return true;
                 }
@@ -3912,7 +3930,7 @@ export const actions = {
                 Copper: function(){ return 25; }
             },
             effect: 'Create metal pickaxes made with bronze heads. Improves mining activities.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.copper_pickaxe.cost)){
                     return true;
                 }
@@ -3930,7 +3948,7 @@ export const actions = {
                 Iron: function(){ return 250; }
             },
             effect: 'Upgrades pickaxe technology to metal pickaxes made from iron. Improves mining activities.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.iron_pickaxe.cost)){
                     return true;
                 }
@@ -3948,7 +3966,7 @@ export const actions = {
                 Steel: function(){ return 250; }
             },
             effect: 'Upgrades pickaxe technology to steel pickaxes. Improves mining activities.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_pickaxe.cost)){
                     return true;
                 }
@@ -3966,7 +3984,7 @@ export const actions = {
                 Copper: function(){ return 5000; }
             },
             effect: 'Replace old mining pick technology with jackhammers. Improves mining activities.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.jackhammer.cost)){
                     return true;
                 }
@@ -3985,7 +4003,7 @@ export const actions = {
                 Alloy: function(){ return 500; }
             },
             effect: 'Upgrade your jackhammers with newer models. Improves mining activities.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.jackhammer_mk2.cost)){
                     return true;
                 }
@@ -4003,7 +4021,7 @@ export const actions = {
                 Copper: function(){ return 50; }
             },
             effect: 'Create tools made from bronze that aid farming. Improves farm efficiency.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.copper_hoe.cost)){
                     return true;
                 }
@@ -4021,7 +4039,7 @@ export const actions = {
                 Iron: function(){ return 500; }
             },
             effect: 'Create tools made from iron that aid farming. Improves farm efficiency.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.iron_hoe.cost)){
                     return true;
                 }
@@ -4039,7 +4057,7 @@ export const actions = {
                 Steel: function(){ return 500; }
             },
             effect: 'Create tools made from steel that aid farming. Improves farm efficiency.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_hoe.cost)){
                     return true;
                 }
@@ -4057,7 +4075,7 @@ export const actions = {
                 Titanium: function(){ return 500; }
             },
             effect: 'Create tools made from titanium that aid farming. Improves farm efficiency.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.titanium_hoe.cost)){
                     return true;
                 }
@@ -4074,7 +4092,7 @@ export const actions = {
                 Knowledge: function(){ return 70; }
             },
             effect: 'Establish a military to keep your people safe from external threats, or to conquer your enemies with.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.garrison.cost)){
                     global.civic['garrison'].display = true;
                     global.city['garrison'] = { count: 0 };
@@ -4094,7 +4112,7 @@ export const actions = {
                 Knowledge: function(){ return 4500; }
             },
             effect: 'Unlocks the ability to hire mercenaries. You can pay a man to die for you afterall.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.mercs.cost)){
                     global.civic.garrison['mercs'] = true;
                     return true;
@@ -4113,7 +4131,7 @@ export const actions = {
                 Lumber: function(){ return 250; }
             },
             effect: 'Create the bow and outfit your army with ranged weapons. Sure to give you dominance over the primates.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.bows.cost)){
                     return true;
                 }
@@ -4131,7 +4149,7 @@ export const actions = {
                 Coal: function(){ return 750; }
             },
             effect: 'Outfit your army with firearms, much deadlier then primative bows and arrows.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.flintlock_rifle.cost)){
                     return true;
                 }
@@ -4149,7 +4167,7 @@ export const actions = {
                 Oil: function(){ return 1500; }
             },
             effect: 'Decimate your foes with rapid fire weaponary.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.machine_gun.cost)){
                     return true;
                 }
@@ -4168,7 +4186,7 @@ export const actions = {
                 Alloy: function(){ return 3000; }
             },
             effect: 'Upgrade your garrisons to house additional soldiers.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.bunk_beds.cost)){
                     return true;
                 }
@@ -4187,7 +4205,7 @@ export const actions = {
                 Furs: function(){ return 250; }
             },
             effect: 'Basic armor made from leather, will reduce the number of casulaties you take during military actions.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.armor.cost)){
                     return true;
                 }
@@ -4205,7 +4223,7 @@ export const actions = {
                 Iron: function(){ return 600; },
             },
             effect: 'Armor reinforced with iron plates, heavy but offers better protection for your soldiers.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.plate_armor.cost)){
                     return true;
                 }
@@ -4223,7 +4241,7 @@ export const actions = {
                 Polymer: function(){ return 750; },
             },
             effect: 'New armor made out of kevlar provides modern protection for your soldiers.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.kevlar.cost)){
                     return true;
                 }
@@ -4241,7 +4259,7 @@ export const actions = {
                 Coal: function(){ return 500; }
             },
             effect: 'Usher in a new era of things that go boom. Surely nothing bad can happen thanks to this discovery.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.black_powder.cost)){
                     return true;
                 }
@@ -4259,7 +4277,7 @@ export const actions = {
                 Coal: function(){ return 750; }
             },
             effect: 'Dynamite can be used to increase the efficiency of mining, no one would ever misuse this invention for nefarious purposes.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.dynamite.cost)){
                     return true;
                 }
@@ -4277,7 +4295,7 @@ export const actions = {
                 Oil: function(){ return 2500; }
             },
             effect: 'ANFO is a powerful explosive that can greatly aid mining activities.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.anfo.cost)){
                     return true;
                 }
@@ -4296,7 +4314,7 @@ export const actions = {
                 Uranium: function(){ return 1250; }
             },
             effect: 'Create a network of nuclear armed ICBMs to counter a similar threat by your enemies.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.mad.cost)){
                     global.civic.mad.display = true;
                     return true;
@@ -4314,7 +4332,7 @@ export const actions = {
                 Knowledge: function(){ return 500; }
             },
             effect: 'Learn how to make cement from stone.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.cement.cost)){
                     global.city['cement_plant'] = {
                         count: 0,
@@ -4336,7 +4354,7 @@ export const actions = {
                 Iron: function(){ return 750; }
             },
             effect: 'Adding rebar to concrete will make it much stronger and reduce cement costs.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.rebar.cost)){
                     return true;
                 }
@@ -4354,7 +4372,7 @@ export const actions = {
                 Steel: function(){ return 750; }
             },
             effect: 'Use stronger steel as rebar, further reducing cement costs.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.steel_rebar.cost)){
                     return true;
                 }
@@ -4371,7 +4389,7 @@ export const actions = {
                 Knowledge: function(){ return 32000; }
             },
             effect: 'Portland cement is easier to make boosting productivity of cement workers by 20%',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.portland_cement.cost)){
                     return true;
                 }
@@ -4388,7 +4406,7 @@ export const actions = {
                 Knowledge: function(){ return 72000; }
             },
             effect: 'Screw conveyors can greatly increase the output of cement factories, however they require power to opperate.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.screw_conveyor.cost)){
                     return true;
                 }
@@ -4406,7 +4424,7 @@ export const actions = {
                 Titanium: function(){ return 1000; }
             },
             effect: 'Steel smelting will result in small amounts of titanium production.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.hunter_process.cost)){
                     return true;
                 }
@@ -4424,7 +4442,7 @@ export const actions = {
                 Titanium: function(){ return 10000; }
             },
             effect: 'Iron smelting will result in small amounts of titanium production.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.kroll_process.cost)){
                     return true;
                 }
@@ -4442,7 +4460,7 @@ export const actions = {
                 Titanium: function(){ return 17500; }
             },
             effect: 'Modern techniques result in more efficent production of titanium from smelters.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.cambridge_process.cost)){
                     return true;
                 }
@@ -4459,7 +4477,7 @@ export const actions = {
                 Knowledge: function(){ return 100000; }
             },
             effect: 'Subatomic particals discovered by Dr Hank Pynn using the supercollider. Has applications in dimensional physics.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.pynn_partical.cost)){
                     return true;
                 }
@@ -4476,7 +4494,7 @@ export const actions = {
                 Knowledge: function(){ return 112500; }
             },
             effect: 'Use pynn particals to shrink containers down to half size, therefore doubling the amount you can store.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.matter_compression.cost)){
                     return true;
                 }
@@ -4493,7 +4511,7 @@ export const actions = {
                 Knowledge: function(){ return 125000; }
             },
             effect: 'Discover the Higgs Boson. No one knows what practical application this has but excitement about it will raise the contribution to science from supercolliders.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.higgs_boson.cost)){
                     return true;
                 }
@@ -4510,7 +4528,7 @@ export const actions = {
                 Knowledge: function(){ return 900; }
             },
             effect: 'Explore the mysteries of creation and faith.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.theology.cost)){
                     global.city['temple'] = { count: 0 };
                     return true;
@@ -4528,7 +4546,7 @@ export const actions = {
                 Knowledge: function(){ return 2500; }
             },
             effect: '<div>Revere your creators as literal gods and attempt to mimic them.</div><div class="has-text-special">This is mutually exclusive with Anthropology, choose wisely.</div>',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.fanaticism.cost)){
                     global.tech['fanaticism'] = 1;
                     switch (global.race.gods){
@@ -4646,7 +4664,7 @@ export const actions = {
                 Knowledge: function(){ return 5000; }
             },
             effect: 'Professors will help spread your ideology. Each professor gives a minor boost to temple effectivenss',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.indoctrination.cost)){
                     return true;
                 }
@@ -4663,7 +4681,7 @@ export const actions = {
                 Knowledge: function(){ return 10000; }
             },
             effect: 'Missionaries will go forth to spread the word. Incidentally they will help establish new trade routes.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.missionary.cost)){
                     return true;
                 }
@@ -4680,7 +4698,7 @@ export const actions = {
                 Knowledge: function(){ return 25000; }
             },
             effect: 'Your fanatical followers will fight to the death making you feared in combat. Temples add a minor bonus to soldier effectiveness.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.zealotry.cost)){
                     return true;
                 }
@@ -4697,7 +4715,7 @@ export const actions = {
                 Knowledge: function(){ return 2500; }
             },
             effect: '<div>Study your ancient creators and attempt to learn from them.</div><div class="has-text-special">This is mutually exclusive with Fanaticism, choose wisely.</div>',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.anthropology.cost)){
                     global.tech['anthropology'] = 1;
                     return true;
@@ -4715,7 +4733,7 @@ export const actions = {
                 Knowledge: function(){ return 5000; }
             },
             effect: 'Mythological stories of the creators boost your libraries by 5% per temple',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.mythology.cost)){
                     return true;
                 }
@@ -4732,7 +4750,7 @@ export const actions = {
                 Knowledge: function(){ return 10000; }
             },
             effect: 'Professors studying the past history of the creators are boosted in effectiveness by 5% per temple',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.archaeology.cost)){
                     return true;
                 }
@@ -4749,7 +4767,7 @@ export const actions = {
                 Knowledge: function(){ return 25000; }
             },
             effect: 'The popularity of the creators among your culture has led to great merchandising opportunities. Tax income is boosted by 2.5% per temple.',
-            action: function (){
+            action: function(){
                 if (payCosts(actions.tech.merchandising.cost)){
                     return true;
                 }
@@ -4848,6 +4866,23 @@ export function drawTech(){
     });
 }
 
+export function evalAffordable(){
+    Object.keys(global.resource).forEach(function (res){
+        $(`[data-${res}]`).each(function (i,v){
+            if (global.resource[res].amount < $(this).attr(`data-${res}`)){
+                if ($(this).hasClass('has-text-dark')){
+                    $(this).removeClass('has-text-dark');
+                    $(this).addClass('has-text-danger');
+                }
+            }
+            else if ($(this).hasClass('has-text-danger')){
+                $(this).removeClass('has-text-danger');
+                $(this).addClass('has-text-dark');
+            }
+        });
+    });
+}
+
 export function addAction(action,type){
     if (global.race['kindling_kindred'] && action === 'tech' && type === 'stone_axe'){
         return;
@@ -4936,6 +4971,10 @@ export function addAction(action,type){
                             else {
                                 break;
                             }
+                        }
+                        if (!checkAffordable(action,type)){
+                            let id = actions[action][type].id;
+                            $(`#${id}`).addClass('cna');
                         }
                         break;
                 }

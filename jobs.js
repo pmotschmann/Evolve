@@ -265,7 +265,8 @@ export function loadFoundry(){
 export function craftingRatio(res){
     let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
     if (global.tech['foundry'] >= 3 && global.city.foundry[res] > 1){
-        multiplier += (global.city.foundry[res] - 1) * 0.03;
+        let skill = global.tech['foundry'] >= 5 ? 0.05 : 0.03;
+        multiplier += (global.city.foundry[res] - 1) * skill;
     }
     if (global.tech['foundry'] >= 4 && res === 'Plywood' && global.city['sawmill']){
         multiplier += global.city['sawmill'].count * 0.02;
