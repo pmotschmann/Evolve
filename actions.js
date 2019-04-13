@@ -894,17 +894,24 @@ export const actions = {
             reqs: { storage: 1 },
             cost: { 
                 Money: function(){ return costMultiplier('shed', 75, 1.2); },
-                Lumber: function(){ return costMultiplier('shed', 60, 1.3); },
+                Lumber: function(){
+                    if (global.tech['storage'] && global.tech['storage'] < 4){ 
+                        return costMultiplier('shed', 55, 1.3);
+                    }
+                    else { 
+                        return 0; 
+                    }
+                },
                 Stone: function(){
-                    if (global.tech['storage'] && global.tech['storage'] === 1){ 
-                        return costMultiplier('shed', 40, 1.35);
+                    if (global.tech['storage'] && global.tech['storage'] < 3){ 
+                        return costMultiplier('shed', 45, 1.3);
                     }
                     else { 
                         return 0; 
                     }
                 },
                 Iron: function(){
-                    if (global.tech['storage'] && global.tech['storage'] >= 2){
+                    if (global.tech['storage'] && global.tech['storage'] >= 4){
                         return costMultiplier('shed', 22, 1.3);
                     }
                     else {
@@ -912,7 +919,7 @@ export const actions = {
                     }
                 },
                 Cement: function(){ 
-                    if (global.tech['storage'] && global.tech['storage'] >= 2){
+                    if (global.tech['storage'] && global.tech['storage'] >= 3){
                         return costMultiplier('shed', 18, 1.3);
                     }
                     else {
@@ -1063,7 +1070,7 @@ export const actions = {
             cost: { 
                 Money: function(){ return costMultiplier('warehouse', 400, 1.25); },
                 Cement: function(){ return costMultiplier('warehouse', 75, 1.25); },
-                Steel: function(){ return costMultiplier('warehouse', 100, 1.25); }
+                Sheet_Metal: function(){ return costMultiplier('warehouse', 25, 1.25); }
             },
             effect: function(){
                 let cap = global.tech.steel_container >= 2 ? 100 : 50;
@@ -1643,7 +1650,7 @@ export const actions = {
                 Knowledge: function(){ return costMultiplier('wardenclyffe', 1000, 1.2); },
                 Copper: function(){ return costMultiplier('wardenclyffe', 500, 1.2); },
                 Cement: function(){ return costMultiplier('wardenclyffe', 350, 1.2); },
-                Steel: function(){ return costMultiplier('wardenclyffe', 900, 1.2); }
+                Sheet_Metal: function(){ return costMultiplier('wardenclyffe', 225, 1.2); }
             },
             effect: function (){
                 let gain = 1000;

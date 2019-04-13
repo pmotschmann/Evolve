@@ -234,7 +234,7 @@ export const races = {
         home: 'Zanger',
         entity: 'sentient mold',
         traits: {
-            mushy: 1,
+            crafty: 1,
             hydrophilic: 1
         } 
     },
@@ -267,7 +267,8 @@ export const races = {
         home: 'Scorpio',
         entity: 'scorpians',
         traits: {
-            claws: 1
+            claws: 1,
+            inept: 1
         } 
     },
     antid: {
@@ -510,8 +511,8 @@ export const traits = {
         desc: '',
         type: 'major',
     },
-    resourceful: { // Gain extra trade routes
-        desc: 'Your species natural resourcefulness has increased the number of available trade routes.',
+    resourceful: { // Crafting costs are reduced slightly
+        desc: 'Your species resourcefulness leads to less waste when crafting.',
         type: 'major',
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
@@ -550,8 +551,8 @@ export const traits = {
         desc: 'Your race is easily startled and may lose productivity when scared',
         type: 'major',
     },
-    mushy: {
-        desc: '',
+    crafty: { // 3% bonus craft ratio
+        desc: 'Your race has a knack for crafting',
         type: 'major',
     },
     hydrophilic: { // none factory jobs are reduced by 25% when raining
@@ -576,6 +577,10 @@ export const traits = {
     },
     claws: { // Raises maximum bound for army score roll
         desc: 'Your race is more effective in comabt.',
+        type: 'major',
+    },
+    inept: { // Crafting production lowered slightly
+        desc: 'Your race is not good at precision work and crafts less efficiently.',
         type: 'major',
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 

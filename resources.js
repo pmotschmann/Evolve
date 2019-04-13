@@ -23,7 +23,7 @@ export const resource_values = {
 };
 
 export const craftCost = {
-    Plywood: { r: 'Lumber', a: 75 },
+    Plywood: { r: 'Lumber', a: 100 },
     Brick: { r: 'Cement', a: 40 },
     Bronze: { r: 'Copper', a: 80 },
     Wrought_Iron: { r: 'Iron', a: 80 },

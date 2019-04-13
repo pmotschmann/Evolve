@@ -1559,9 +1559,6 @@ function midLoop(){
 
         if (global.city['trade']){
             let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-            if (global.race['resourceful']){
-                routes++;
-            }
             global.city.market.mtrade = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
                 global.city.market.mtrade += global.city.temple.count;
@@ -1829,14 +1826,15 @@ function longLoop(){
 
             // Crafting
             if (global.city.calendar.moon === 0 && global.tech['foundry']){
+                let craft_costs = global.race['resourceful'] ? 0.95 : 1;
                 Object.keys(craftCost).forEach(function (craft){
                     let num = global.city.foundry[craft];
-                    let craft_multiplier = craftingRatio(craft);
+                    let craft_ratio = craftingRatio(craft);
                     if (num > 0){
                         while (num > 0){
-                            if (global.resource[craftCost[craft].r].amount >= craftCost[craft].a){
-                                global.resource[craftCost[craft].r].amount -= craftCost[craft].a;
-                                global.resource[craft].amount += craft_multiplier;
+                            if (global.resource[craftCost[craft].r].amount >= craftCost[craft].a * craft_costs){
+                                global.resource[craftCost[craft].r].amount -= craftCost[craft].a * craft_costs;
+                                global.resource[craft].amount += craft_ratio;
                             }
                             num--;
                         }
