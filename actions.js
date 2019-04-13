@@ -1000,13 +1000,15 @@ export const actions = {
                 Stone: function(){ return costMultiplier('foundry', 100, 1.35); }
             },
             effect: function(){
+                let desc = `<div>+1 Craftsman</div>`;
                 if (global.tech['foundry'] >= 2){
                     let skill = global.tech['foundry'] >= 5 ? 5 : 3;
-                    return `<div>+1 Craftsman</div><div>+${skill}% Crafted Materials</div>`;
+                    desc = desc + `<div>+${skill}% Crafted Materials</div>`;
                 }
-                else {
-                    return `+1 Craftsman`;
+                if (global.tech['foundry'] >= 6){
+                    desc = desc + `<div>+2% Crafted Bricks</div>`;
                 }
+                return desc;
             },
             action: function(){
                 if (payCosts(actions.city.foundry.cost)){
@@ -2187,6 +2189,23 @@ export const actions = {
             effect: 'Craftsman produce an extra 5% per cycle for each Foundry.',
             action: function(){
                 if (payCosts(actions.tech.master_craftsman.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        brickworks: {
+            id: 'tech-brickworks',
+            title: 'Brickworks',
+            desc: 'Brickworks',
+            reqs: { foundry: 5 },
+            grant: ['foundry',6],
+            cost: {
+                Knowledge: function(){ return 18500; }
+            },
+            effect: 'New specialied brickmaking equipment adds an extra 2% bonus to brick crafting per foundry.',
+            action: function(){
+                if (payCosts(actions.tech.brickworks.cost)){
                     return true;
                 }
                 return false;

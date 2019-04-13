@@ -271,6 +271,9 @@ export function craftingRatio(res){
     if (global.tech['foundry'] >= 4 && res === 'Plywood' && global.city['sawmill']){
         multiplier += global.city['sawmill'].count * 0.02;
     }
+    if (global.tech['foundry'] >= 6 && res === 'Brick'){
+        multiplier += global.city['foundry'].count * 0.02;
+    }
     if (global.race['crafty']){
         multiplier += 0.03;
     }

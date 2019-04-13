@@ -578,6 +578,9 @@ function fastLoop(){
                     $(`#city-${p_structs[i]} .on`).removeClass('warn');
                 }
             }
+            else {
+                p_on[p_structs[i]] = 0;
+            }
         }
 
         // Detect labor anomalies
