@@ -1015,7 +1015,9 @@ export const actions = {
                     global.city['foundry'].count++;
                     global.civic.craftsman.max++;
                     global.civic.craftsman.display = true;
-                    global.resource.Plywood.display = true;
+                    if (!global.race['kindling_kindred']){
+                        global.resource.Plywood.display = true;
+                    }
                     global.resource.Brick.display = true;
                     if (global.resource.Iron.display){
                         global.resource.Wrought_Iron.display = true;
@@ -1425,7 +1427,7 @@ export const actions = {
             reqs: { oil: 2 },
             cost: { 
                 Money: function(){ return costMultiplier('oil_depot', 2500, 1.45); },
-                Steel: function(){ return costMultiplier('oil_depot', 2250, 1.45); },
+                Sheet_Metal: function(){ return costMultiplier('oil_depot', 100, 1.45); },
                 Cement: function(){ return costMultiplier('oil_depot', 3750, 1.45); }
             },
             effect: function() { 
@@ -1619,7 +1621,7 @@ export const actions = {
                 Brick: function(){ return costMultiplier('library', 15, 1.20); }
             },
             effect: function(){
-                let gain = global.race['nearsighted'] ? '110' : '125';
+                let gain = global.race['nearsighted'] ? 110 : 125;
                 if (global.tech['science'] && global.tech['science'] >= 8){
                     gain *= 1.4;
                 }
@@ -4649,6 +4651,18 @@ export const actions = {
                             break;
                         case 'entish':
                             global.race['kindling_kindred'] = 1;
+                            global.resource.Lumber.display = false;
+                            global.resource.Plywood.display = false;
+                            global.city['lumber'] = 0;
+                            if (global.city['sawmill']){
+                                delete global.city['sawmill'];
+                            }
+                            if (global.city['lumber_yard']){
+                                delete global.city['lumber_yard'];
+                            }
+                            delete global.tech['axe'];
+                            delete global.tech['saw'];
+                            global.civic.lumberjack.display = false;
                             break;
                         case 'cacti':
                             global.race['hyper'] = 1;

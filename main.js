@@ -1658,6 +1658,10 @@ function midLoop(){
             fworkers -= global.city.foundry[craft];
         });
 
+        if (global.tech['foundry'] === 3 && global.race['kindling_kindred']){
+            global.tech['foundry'] = 4;
+        }
+
         checkAchievements();
     }
     Object.keys(global.resource).forEach(function (res){
