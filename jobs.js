@@ -131,6 +131,10 @@ function loadJob(job, name, impact, color){
         };
     }
     
+    if (job === 'craftsman'){
+        return;
+    }
+
     var id = 'civ-' + job;
     
     var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
@@ -185,7 +189,7 @@ export function loadFoundry(){
     }
     $('#foundry').empty();
     if (global.city['foundry']){
-        var foundry = $('<div class="job"><div class="foundry job_label"><span class="has-text-warning">Craftman Assigned</span><span class="count">{{ f.crafting }} / {{ c.workers }}</span></div></div>');
+        var foundry = $('<div class="job"><div class="foundry job_label"><span class="has-text-warning">Craftman Assigned</span><span class="count">{{ f.crafting }} / {{ f.count }}</span></div></div>');
         $('#foundry').append(foundry);
 
         let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal'];
@@ -216,7 +220,8 @@ export function loadFoundry(){
             },
             methods: {
                 add(res){
-                    if (global.city.foundry.crafting < global.civic.craftsman.workers){
+                    if (global.city.foundry.crafting < global.city.foundry.count){
+                        global.civic.craftsman.workers++;
                         global.city.foundry.crafting++;
                         global.city.foundry[res]++;
                     }
@@ -224,6 +229,7 @@ export function loadFoundry(){
                 sub(res){
                     if (global.city.foundry[res] > 0){
                         global.city.foundry[res]--;
+                        global.civic.craftsman.workers--;
                         global.city.foundry.crafting--;
                     }
                 },

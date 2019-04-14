@@ -1006,7 +1006,7 @@ export const actions = {
                     desc = desc + `<div>+${skill}% Crafted Materials</div>`;
                 }
                 if (global.tech['foundry'] >= 6){
-                    desc = desc + `<div>+2% Crafted Bricks</div>`;
+                    desc = desc + `<div>+2% Brick Crafting</div>`;
                 }
                 return desc;
             },
@@ -1035,9 +1035,9 @@ export const actions = {
             desc: 'Increases crate capacity',
             reqs: { container: 1 },
             cost: { 
-                Money: function(){ return costMultiplier('storage_yard', 5, 1.8); },
-                Wrought_Iron: function(){ return costMultiplier('storage_yard', 3, 1.8); },
-                Brick: function(){ return costMultiplier('storage_yard', 2, 1.8); }
+                Money: function(){ return costMultiplier('storage_yard', 10, 1.35); },
+                Wrought_Iron: function(){ return costMultiplier('storage_yard', 5, 1.35); },
+                Brick: function(){ return costMultiplier('storage_yard', 3, 1.35); }
             },
             effect: function(){
                 let cap = global.tech.container >= 3 ? 100 : 50;
@@ -1166,7 +1166,7 @@ export const actions = {
                 let lum = spatialReasoning(200);
                 let desc = `<div>+${lum} Max Lumber</div><div>Lumberjack efficiency +${impact}%</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
-                    desc = desc + `<div>+2% Plywood production</div>`; 
+                    desc = desc + `<div>+2% Plywood Crafting</div>`; 
                 }
                 if (global.city.powered){
                     desc = desc + `<div>Each powered sawmill uses 1kW but produces 5% more lumber</div>`; 
@@ -1627,8 +1627,9 @@ export const actions = {
                     gain *= 1 + (global.city.temple.count * 0.05);
                 }
                 if (global.tech['science'] && global.tech['science'] >= 5){
-                    gain = +(gain * (1 + (global.civic.scientist.workers * 0.12))).toFixed(1);
+                    gain *= 1 + (global.civic.scientist.workers * 0.12);
                 }
+                gain = +(gain).toFixed(1);
                 return `+${gain} Max Knowledge`; 
             },
             action: function(){
@@ -3608,8 +3609,8 @@ export const actions = {
         },
         oil_depot: {
             id: 'tech-oil_depot',
-            title: 'Oil Depot',
-            desc: 'Oil Depot',
+            title: 'Fuel Depot',
+            desc: 'Fuel Depot',
             reqs: { oil: 1 },
             grant: ['oil',2],
             cost: {
