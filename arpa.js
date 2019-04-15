@@ -278,7 +278,7 @@ function monument_costs(res){
         case 'Obelisk':
             return res === 'Stone' ? costMultiplier('monument', 1000000, 1.1) : 0;
         case 'Statue':
-            return res === 'Copper' ? costMultiplier('monument', 500000, 1.1) : 0;
+            return res === 'Wrought_Iron' ? costMultiplier('monument', 25000, 1.1) : 0;
         case 'Sculpture':
             return res === 'Steel' ? costMultiplier('monument', 500000, 1.1) : 0;
         case 'Monolith':

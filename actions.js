@@ -1656,7 +1656,7 @@ export const actions = {
                 Knowledge: function(){ return costMultiplier('wardenclyffe', 1000, 1.2); },
                 Copper: function(){ return costMultiplier('wardenclyffe', 500, 1.2); },
                 Cement: function(){ return costMultiplier('wardenclyffe', 350, 1.2); },
-                Sheet_Metal: function(){ return costMultiplier('wardenclyffe', 175, 1.2); }
+                Sheet_Metal: function(){ return costMultiplier('wardenclyffe', 125, 1.2); }
             },
             effect: function(){
                 let gain = 1000;

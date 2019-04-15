@@ -531,7 +531,10 @@ function drawModal(name,color){
                     cap += global.tech.container >= 2 ? 2 : 1;
                 }
                 cap = spatialReasoning(cap);
-                if (global.resource[res].crates >= keyMutipler){
+                if (keyMutipler > global.resource[res].crates){
+                    keyMutipler = global.resource[res].crates;
+                }
+                if (keyMutipler > 0){
                     global.resource.Crates.amount += keyMutipler;
                     global.resource.Crates.max += keyMutipler;
                     global.resource[res].crates -= keyMutipler;
@@ -547,8 +550,10 @@ function drawModal(name,color){
                 if (global.race['pack_rat']){
                     cap += global.tech.container >= 2 ? 2 : 1;
                 }
-                cap = spatialReasoning(cap);
-                if (global.resource.Crates.amount >= keyMutipler){
+                if (keyMutipler > global.resource.Crates.amount){
+                    keyMutipler = global.resource.Crates.amount;
+                }
+                if (keyMutipler > 0){
                     global.resource.Crates.amount -= keyMutipler;
                     global.resource.Crates.max -= keyMutipler;
                     global.resource[res].crates += keyMutipler;
@@ -613,7 +618,10 @@ function drawModal(name,color){
                         cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
                     cap = spatialReasoning(cap);
-                    if (global.resource[res].containers >= keyMutipler){
+                    if (keyMutipler > global.resource[res].containers){
+                        keyMutipler = global.resource[res].containers;
+                    }
+                    if (keyMutipler > 0){
                         global.resource.Containers.amount += keyMutipler;
                         global.resource.Containers.max += keyMutipler;
                         global.resource[res].containers -= keyMutipler;
@@ -627,7 +635,10 @@ function drawModal(name,color){
                         cap += global.tech.steel_container >= 3 ? 3 : 2;
                     }
                     cap = spatialReasoning(cap);
-                    if (global.resource.Containers.amount >= keyMutipler){
+                    if (keyMutipler > global.resource.Containers.amount){
+                        keyMutipler = global.resource.Containers.amount;
+                    }
+                    if (keyMutipler > 0){
                         global.resource.Containers.amount -= keyMutipler;
                         global.resource.Containers.max -= keyMutipler;
                         global.resource[res].containers += keyMutipler;
