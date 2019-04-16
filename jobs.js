@@ -27,10 +27,20 @@ export const job_desc = {
         return `Quarry Workers mine stone from rock quarries. Each quarry worker generates ${gain} stone per second.`;
     },
     miner: function(){
-        return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner can generate a variable amount of minerals of various types.';
+        if (global.tech['mining'] >= 3){
+            return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner will extract copper and iron from the ground.';
+        }
+        else {
+            return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner will extract copper from the ground.';
+        }
     },
     coal_miner: function(){
-        return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal from deep in the ground.';
+        if (global.tech['uranium']){
+            return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal and uranium from deep in the ground.';
+        }
+        else {
+            return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal from deep in the ground.';
+        }
     },
     craftsman: function(){
         return 'Craftsman can be assigned to craft various construction materials out of raw materials.';
