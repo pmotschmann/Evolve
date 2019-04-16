@@ -729,33 +729,33 @@ export function loadMarket(){
     vues['market_qty'].$mount('#market-qty');
 }
 
-function sizeApproximation(value,precision){
+function sizeApproximation(value,precision,fixed){
     if (value <= 9999){
         return +value.toFixed(precision);
     }
     else if (value <= 1000000){
-        return +(value / 1000).toFixed(1) + 'K';
+        return fixed ? +(value / 1000).toFixed(1) + 'K' : (Math.floor(value / 100) / 10) + 'K';
     }
     else if (value <= 1000000000){
-        return +(value / 1000000).toFixed(1) + 'M';
+        return fixed ? +(value / 1000000).toFixed(1) + 'M' : (Math.floor(value / 100000) / 10) + 'M';
     }
     else if (value <= 1000000000000){
-        return +(value / 1000000000).toFixed(1) + 'G';
+        return fixed ? +(value / 1000000000).toFixed(1) + 'G' : (Math.floor(value / 100000000) / 10) + 'G';
     }
     else if (value <= 1000000000000000){
-        return +(value / 1000000000000).toFixed(1) + 'T';
+        return fixed ? +(value / 1000000000000).toFixed(1) + 'T' : (Math.floor(value / 100000000000) / 10) + 'T';
     }
     else if (value <= 1000000000000000000){
-        return +(value / 1000000000000000).toFixed(1) + 'P';
+        return fixed ? +(value / 1000000000000000).toFixed(1) + 'P' : (Math.floor(value / 100000000000000) / 10) + 'P';
     }
     else if (value <= 1000000000000000000000){
-        return +(value / 1000000000000000000).toFixed(1) + 'E';
+        return fixed ? +(value / 1000000000000000000).toFixed(1) + 'E' : (Math.floor(value / 100000000000000000) / 10) + 'E';
     }
     else if (value <= 1000000000000000000000000){
-        return +(value / 1000000000000000000000).toFixed(1) + 'Z';
+        return fixed ? +(value / 1000000000000000000000).toFixed(1) + 'Z' : (Math.floor(value / 100000000000000000000) / 10) + 'Z';
     }
     else {
-        return +(value / 1000000000000000000000000).toFixed(1) + 'Y';
+        return fixed ? +(value / 1000000000000000000000000).toFixed(1) + 'Y' : (Math.floor(value / 100000000000000000000000) / 10) + 'Y';
     }
 }
 
