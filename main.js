@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier } from './vars.js';
 import { drawAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus } from './resources.js';
 import { defineJobs, job_desc, craftingRatio } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech } from './actions.js';
@@ -2074,27 +2074,4 @@ function setWeather(){
         weather = global.city.calendar.wind === 0 ? 'wi-day-sunny' : 'wi-day-windy';
     }
     $('#weather').addClass(weather);
-}
-
-function plasmidBonus(){
-    let plasmids = global.race.Plasmid.count;
-    let plasmid_bonus = 0;
-    if (plasmids > 250){
-        let divisor = 500 - plasmids;
-        if (divisor < 250){
-            divisor = 250;
-        }
-        plasmid_bonus = 0.625 + (Math.log(plasmids - 249) / Math.LN2 / divisor);
-    }
-    else {
-        plasmid_bonus = plasmids / 400;
-    }
-    if (global.city['temple'] && global.city['temple'].count){
-        let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
-        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            temple_bonus += global.civic.professor.workers * 0.002;
-        }
-        plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
-    }
-    return plasmid_bonus;
 }

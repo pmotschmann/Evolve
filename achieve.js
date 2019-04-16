@@ -10,6 +10,21 @@ var achievements = {
         desc: `Wiped yourself out with nuclear weapons`,
         flair: `The vaults didn't help`
     },
+    blackhole: {
+        name: `Blackhole? No hole`,
+        desc: `Didn't destroy your planet with an artifical blackhole`,
+        flair: `Science 1, Fearmongers 0`
+    },
+    madagascar_tree: {
+        name: `Madagascar Tree`,
+        desc: `Evolved nightmarish flesh eating trees`,
+        flair: `Audrey III`
+    },
+    mass_extinction: {
+        name: `Mass Extinction`,
+        desc: `Led all civilizations to destruction`,
+        flair: `Cosmic rays have got nothing on you`
+    },
     extinct_human: {
         name: `Homo Adeadus`,
         desc: `Led a human civilization to destruction`,
@@ -134,21 +149,6 @@ var achievements = {
         name: `Ophiocordyceps Unilateralis`,
         desc: `Led an antid civilization to destruction`,
         flair: `Walked off into history`
-    },
-    mass_extinction: {
-        name: `Mass Extinction`,
-        desc: `Led all civilizations to destruction`,
-        flair: `Cosmic rays have got nothing on you`
-    },
-    blackhole: {
-        name: `Blackhole? No hole`,
-        desc: `Didn't destroy your planet with an artifical blackhole`,
-        flair: `Science 1, Fearmongers 0`
-    },
-    madagascar_tree: {
-        name: `Madagascar Tree`,
-        desc: `Evolved nightmarish flesh eating trees`,
-        flair: `Audrey III`
     }
 };
 

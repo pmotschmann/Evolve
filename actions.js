@@ -3489,7 +3489,7 @@ export const actions = {
             grant: ['high_tech',7],
             cost: {
                 Knowledge: function(){ return 112500; },
-                Oil: function(){ return 8000; }
+                Oil: function(){ return 6800; }
             },
             effect: 'Establish the the field of rocketry. Leads to all sorts of new ballistic technologies.',
             action: function(){
@@ -4332,7 +4332,7 @@ export const actions = {
             grant: ['mad',1],
             cost: {
                 Knowledge: function(){ return 120000; },
-                Oil: function(){ return 10000; },
+                Oil: function(){ return 8500; },
                 Uranium: function(){ return 1250; }
             },
             effect: 'Create a network of nuclear armed ICBMs to counter a similar threat by your enemies.',

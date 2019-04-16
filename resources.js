@@ -515,7 +515,12 @@ function drawModal(name,color){
                 let keyMutipler = keyMultiplier();
                 let material = global.race['kindling_kindred'] ? 'Stone' : 'Plywood';
                 let cost = global.race['kindling_kindred'] ? 250 : 5;
-                console.log(cost * keyMutipler);
+                if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
+                    keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;
+                }
+                if (global.resource[material].amount < cost * keyMutipler){
+                    keyMutipler = Math.floor(global.resource[material].amount / cost);
+                }
                 if (global.resource[material].amount >= (cost * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
                     modRes(material,-(cost * keyMutipler));
                     global.resource.Crates.amount += keyMutipler;
@@ -606,6 +611,12 @@ function drawModal(name,color){
                 },
                 buildContainer: function(){
                     let keyMutipler = keyMultiplier();
+                    if (keyMutipler + global.resource.Containers.amount > global.resource.Containers.max){
+                        keyMutipler = global.resource.Containers.max - global.resource.Containers.amount;
+                    }
+                    if (global.resource['Steel'].amount < 100 * keyMutipler){
+                        keyMutipler = Math.floor(global.resource['Steel'].amount / 100);
+                    }
                     if (global.resource['Steel'].amount >= (100 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
                         modRes('Steel',-(100 * keyMutipler));
                         global.resource.Containers.amount += keyMutipler;
@@ -754,4 +765,27 @@ export function spatialReasoning(value){
         value = Math.round(value);
     }
     return value;
+}
+
+export function plasmidBonus(){
+    let plasmids = global.race.Plasmid.count;
+    let plasmid_bonus = 0;
+    if (plasmids > 250){
+        let divisor = 500 - plasmids;
+        if (divisor < 250){
+            divisor = 250;
+        }
+        plasmid_bonus = 0.625 + (Math.log(plasmids - 249) / Math.LN2 / divisor);
+    }
+    else {
+        plasmid_bonus = plasmids / 400;
+    }
+    if (global.city['temple'] && global.city['temple'].count){
+        let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
+        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+            temple_bonus += global.civic.professor.workers * 0.002;
+        }
+        plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
+    }
+    return plasmid_bonus;
 }
