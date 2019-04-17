@@ -51,7 +51,7 @@ if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25)
     global.civic.cement_worker.impact = 0.4;
 }
 
-global['version'] = '0.2.11';
+global['version'] = '0.2.12';
 $('#topBar .version').html('v'+global.version);
 
 if (!global['settings']){

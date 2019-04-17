@@ -764,15 +764,15 @@ function fastLoop(){
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
             know_multiplier *= 1 + (global.city.temple.count * 0.05);
         }
+        know_bd['Professors'] = (global.civic.professor.workers * know_multiplier)  + 'v';
         know_multiplier *= hunger * time_multiplier * global_multiplier;
-        know_bd['Professors'] = (professors * global.civic.professor.workers)  + 'v';
         var delta = (global.civic.professor.workers * know_multiplier) + (know_base * time_multiplier);
         let adjunct = 1;
         if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
             adjunct = 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
         }
         let scientist = global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * adjunct;
-        know_bd['Scientist'] = scientist  + 'v';
+        know_bd['Scientist'] = (scientist * tax_multiplier)  + 'v';
         know_bd['Hunger'] = ((hunger - 1) * 100) + '%';
         delta += scientist * tax_multiplier * global_multiplier * time_multiplier * hunger;
         modRes('Knowledge',delta);

@@ -62,8 +62,8 @@ const arpaProjects = {
             Money: function(){ return costMultiplier('stock_exchange', 3000000, 1.06); },
             Knowledge: function(){ return costMultiplier('stock_exchange', 200000, 1.06); },
             Copper: function(){ return costMultiplier('stock_exchange', 225000, 1.06); },
-            Cement: function(){ return costMultiplier('stock_exchange', 400000, 1.06); },
-            Steel: function(){ return costMultiplier('stock_exchange', 235000, 1.06); }
+            Brick: function(){ return costMultiplier('stock_exchange', 20000, 1.06); },
+            Wrought_Iron: function(){ return costMultiplier('stock_exchange', 10000, 1.06); }
         }
     },
     launch_facility: {
@@ -513,6 +513,7 @@ function addProject(parent,project){
                     var res_cost = (costs[res]() * (id / 100)).toFixed(0);
                     if (res_cost > 0){
                         var label = res === 'Money' ? '$' : res+': ';
+                        label = label.replace("_", " ");
                         var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
                         cost.append($(`<div class="${color}">${label}${res_cost}</div>`));
                     }
