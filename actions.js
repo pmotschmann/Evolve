@@ -1491,7 +1491,7 @@ export const actions = {
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                     plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
                 }
-                let desc = `<div>Increases the passive effect of Plasmids by ${plasmid}%.</div>`;
+                let desc = `<div>Increases the production effect of Plasmids by ${plasmid}%.</div>`;
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
                     desc = desc + '<div>+1 Trade Route</div>';
                 }

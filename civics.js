@@ -656,11 +656,12 @@ function defineMad(){
 
     mad.append($('<div class="warn">This will reset the game, you will gain some plasmids and you may gain some other minor bonuses as a result. Export a save state before proceeding.</div>'));
 
-    mad.append($('<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button" @click="arm">Arm Missiles</button></b-tooltip></div>'));
+    mad.append($('<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button arm" @click="arm">Arm Missiles</button></b-tooltip></div>'));
     mad.append($('<div class="defcon"><b-tooltip :label="warning()" position="is-bottom" multilined animated><button class="button" @click="launch" :disabled="armed">Launch Missiles</button></b-tooltip></div>'));
 
     if (!global.civic.mad.armed){
         $('#mad').addClass('armed');
+        $('#mad .arm').html('Disarm Missiles');
     }
 
     vues['mad'] = new Vue({
@@ -682,10 +683,12 @@ function defineMad(){
             },
             arm(){
                 if (global.civic.mad.armed){
+                    $('#mad .arm').html('Disarm Missiles');
                     global.civic.mad.armed = false;
                     $('#mad').addClass('armed');
                 }
                 else {
+                    $('#mad .arm').html('Arm Missiles');
                     global.civic.mad.armed = true;
                     $('#mad').removeClass('armed');
                 }
