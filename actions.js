@@ -5186,6 +5186,7 @@ function checkCosts(costs){
 function costMultiplier(structure,base,mutiplier){
     if (global.race['small']){ mutiplier -= 0.01; }
     else if (global.race['large']){ mutiplier += 0.01; }
+    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
         mutiplier -= 0.02;
     }

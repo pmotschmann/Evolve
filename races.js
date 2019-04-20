@@ -424,7 +424,7 @@ export const traits = {
         type: 'major',
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
-        desc: 'Your species is carnivorous and does not engage in farming.',
+        desc: 'Your species is carnivorous and does not engage in agriculture.',
         type: 'major',
     },
     pack_mentality: { // Cabins cost more, but cottages cost less.
@@ -519,8 +519,8 @@ export const traits = {
         desc: 'Your race prefers moonless nights.',
         type: 'major',
     },
-    leathery: {
-        desc: '',
+    leathery: { // Morale penalty from some weather conditions are reduced.
+        desc: 'Your race has leathery skin which makes you more weather resistent.',
         type: 'major',
     },
     pessimistic: { // Minor increase to stress
@@ -587,6 +587,10 @@ export const traits = {
         desc: 'Your citizens are highly ineffectual when working as individuals but gain potency as they work in bigger groups.',
         type: 'major',
     },
+    tunneler: { // Mines and Coal Mines are cheaper. 
+        desc: 'Your species is naturally adept at digging tunnels which make mine shafts cheaper to produce.',
+        type: 'major',
+    },
     tactical: { // War Bonus
         desc: 'A genetic disposition to tactical thinking gives your race an edge in combat.',
         type: 'minor',
@@ -608,7 +612,7 @@ export const traits = {
         type: 'minor',
     },
     hardy: {
-        desc: 'A genetically Hardy physiology lets your race endure tough factory condiditons.',
+        desc: 'A genetically hardy physiology lets your race endure tough factory condiditons.',
         type: 'minor',
     },
     ambidextrous: { // Crafting Bonus
