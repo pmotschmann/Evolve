@@ -294,6 +294,9 @@ export function craftingRatio(res){
     if (global.race['crafty']){
         multiplier += 0.03;
     }
+    if (global.race['ambidextrous']){
+        multiplier += (global.race['ambidextrous'] / 100);
+    }
     if (global.race['inept']){
         multiplier -= 0.01;
     }

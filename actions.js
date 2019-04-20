@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
 import { unlockAchieve } from './achieve.js';
-import { races, genus_traits } from './races.js';
+import { races, genus_traits, randomMinorTrait } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison } from './civics.js';
@@ -610,6 +610,10 @@ export const actions = {
                     
                     if (global.race.gods !== 'none'){
                         global.tech['religion'] = 1;
+                    }
+
+                    if (global.genes['recombination']){
+                        randomMinorTrait();
                     }
 
                     messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);

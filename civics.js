@@ -629,6 +629,10 @@ export function armyRating(val,type){
         if (global.race['cautious'] && global.city.calendar.weather === 0){
             army = Math.floor(army * 0.9);
         }
+        if (global.race['tactical']){
+            let bonus = 1 + (global.race['tactical'] / 20);
+            army = Math.floor(army * bonus);
+        }
     }
     else if (type === 'hunting'){
         if (global.race['tracker']){
@@ -636,6 +640,10 @@ export function armyRating(val,type){
         }
         if (global.race['beast'] && global.city.calendar.wind === 1){
             army = Math.floor(army * 1.15);
+        }
+        if (global.race['cunning']){
+            let bonus = 1 + (global.race['cunning'] / 20);
+            army = Math.floor(army * bonus);
         }
     }
     return army * racialTrait(val,type);

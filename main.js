@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier } from './vars.js';
 import { drawAchieve, checkAchievements } from './achieve.js';
-import { races, racialTrait } from './races.js';
+import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus } from './resources.js';
 import { defineJobs, job_desc, craftingRatio } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
@@ -585,12 +585,16 @@ function fastLoop(){
 
         // Detect labor anomalies
         let total = 0;
+        let stress_level = 5;
+        if (global.race['content']){
+            stress_level += global.race['content'] * 0.5;
+        }
         Object.keys(job_desc).forEach(function (job) {
             total += global.civic[job].workers;
             if (total > global.resource[races[global.race.species].name].amount){
                 global.civic[job].workers -= total - global.resource[races[global.race.species].name].amount;
             }
-            stress -= +(global.civic[job].workers / 5).toFixed(0);
+            stress -= +(global.civic[job].workers / stress_level).toFixed(0);
         });
         global.civic.free = global.resource[races[global.race.species].name].amount - total;
         
@@ -727,6 +731,9 @@ function fastLoop(){
                 if (global.genes['birth']){
                     lowerBound += global.genes['birth'];
                 }
+                if (global.race['promiscuous']){
+                    lowerBound += global.race['promiscuous'];
+                }
                 if(Math.rand(0, global['resource'][races[global.race.species].name].amount * (3 - (2 ** time_multiplier))) <= lowerBound){
                     global['resource'][races[global.race.species].name].amount++;
                 }
@@ -778,14 +785,15 @@ function fastLoop(){
         modRes('Knowledge',delta);
         know_bd['Taxes'] = ((tax_multiplier * 100) - 100)  + '%';
         if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
-            let spend = 50 * time_multiplier;
+            let gene_cost = 50 + (global.race.mutation * 10);
+            let spend = gene_cost * time_multiplier;
             if (spend <= global.resource.Knowledge.amount){
                 modRes('Knowledge',-(spend));
             }
             else {
                 global.arpa.sequence.on = false;
             }
-            breakdown.consume.Knowledge['Genome'] = -50;
+            breakdown.consume.Knowledge['Genome'] = -(gene_cost);
         }
         breakdown['Knowledge'] = know_bd;
 
@@ -1120,6 +1128,11 @@ function fastLoop(){
                 copper_multiplier *= 1.1;
                 copper_bd['Miners'] *= 1.1;
             }
+            if (global.race['industrious']){
+                let bonus = 1 + (global.race['industrious'] / 50);
+                copper_multiplier *= bonus;
+                copper_bd['Miners'] *= bonus;
+            }
             copper_multiplier *= hunger;
             delta = (global.civic.miner.workers / 7) * copper_multiplier * global_multiplier * time_multiplier;
             modRes('Copper',delta);
@@ -1149,6 +1162,11 @@ function fastLoop(){
             if (global.race['tough']){
                 iron_multiplier *= 1.1;
                 iron_tools *= 1.1;
+            }
+            if (global.race['industrious']){
+                let bonus = 1 + (global.race['industrious'] / 50);
+                iron_multiplier *= bonus;
+                iron_tools *= bonus;
             }
             iron_multiplier *= hunger;
             delta = (global.civic.miner.workers / 4) * iron_multiplier * global_multiplier * time_multiplier;
@@ -1190,6 +1208,11 @@ function fastLoop(){
             if (global.race['tough']){
                 coal_multiplier *= 1.1;
                 bd_tools *= 1.1;
+            }
+            if (global.race['resilient']){
+                let bonus = 1 + (global.race['resilient'] / 50);
+                coal_multiplier *= bonus;
+                bd_tools *= bonus;
             }
             coal_multiplier *= hunger;
             delta = global.civic.coal_miner.workers * global.civic.coal_miner.impact * coal_multiplier * global_multiplier * time_multiplier;
@@ -1639,11 +1662,24 @@ function midLoop(){
             }
         });
 
-        if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
+        if (global.arpa['sequence'] && global.arpa.sequence.on){
             global.arpa.sequence.time -= global.city.biolab.on;
-            global.arpa.sequence.progress = 50000 - global.arpa.sequence.time;
+            global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
             if (global.arpa.sequence.time <= 0){
-                global.tech['genetics'] = 3;
+                global.arpa.sequence.max = 50000 * (1 + (global.race.mutation ** 2));
+                if (global.race['adaptable']){
+                    global.arpa.sequence.max = Math.floor(global.arpa.sequence.max * 0.9);
+                }
+                global.arpa.sequence.progress = 0;
+                global.arpa.sequence.time = global.arpa.sequence.max;
+                if (global.tech['genetics'] === 2){
+                    global.tech['genetics'] = 3;
+                }
+                else {
+                    global.race.mutation++;
+                    randomMinorTrait();
+                    messageQueue('Gene therapy has resulted in a permanent improvement to your species.','success');
+                }
                 arpa('Genetics');
                 drawTech();
             }

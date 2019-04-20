@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, modRes, poppers, breakdown } from './vars.js';
+import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -727,36 +727,6 @@ export function loadMarket(){
         data: global.city.market
     });
     vues['market_qty'].$mount('#market-qty');
-}
-
-function sizeApproximation(value,precision,fixed){
-    if (value <= 9999){
-        return +value.toFixed(precision);
-    }
-    else if (value <= 1000000){
-        return fixed ? +(value / 1000).toFixed(1) + 'K' : (Math.floor(value / 100) / 10) + 'K';
-    }
-    else if (value <= 1000000000){
-        return fixed ? +(value / 1000000).toFixed(1) + 'M' : (Math.floor(value / 100000) / 10) + 'M';
-    }
-    else if (value <= 1000000000000){
-        return fixed ? +(value / 1000000000).toFixed(1) + 'G' : (Math.floor(value / 100000000) / 10) + 'G';
-    }
-    else if (value <= 1000000000000000){
-        return fixed ? +(value / 1000000000000).toFixed(1) + 'T' : (Math.floor(value / 100000000000) / 10) + 'T';
-    }
-    else if (value <= 1000000000000000000){
-        return fixed ? +(value / 1000000000000000).toFixed(1) + 'P' : (Math.floor(value / 100000000000000) / 10) + 'P';
-    }
-    else if (value <= 1000000000000000000000){
-        return fixed ? +(value / 1000000000000000000).toFixed(1) + 'E' : (Math.floor(value / 100000000000000000) / 10) + 'E';
-    }
-    else if (value <= 1000000000000000000000000){
-        return fixed ? +(value / 1000000000000000000000).toFixed(1) + 'Z' : (Math.floor(value / 100000000000000000000) / 10) + 'Z';
-    }
-    else {
-        return fixed ? +(value / 1000000000000000000000000).toFixed(1) + 'Y' : (Math.floor(value / 100000000000000000000000) / 10) + 'Y';
-    }
 }
 
 export function spatialReasoning(value){

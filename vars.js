@@ -51,7 +51,7 @@ if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25)
     global.civic.cement_worker.impact = 0.4;
 }
 
-global['version'] = '0.2.13';
+global['version'] = '0.2.14';
 $('#topBar .version').html('v'+global.version);
 
 if (!global['settings']){
@@ -174,6 +174,10 @@ if (global.city['factory']){
     }
 }
 
+if (!global.race['mutation']){
+    global.race['mutation'] = 0;
+}
+
 if (global.lastMsg){
     messageQueue(global.lastMsg.m, global.lastMsg.c);
 }
@@ -259,7 +263,7 @@ export function keyMultiplier(){
     keyMultiplierNumber = number;
     $('.craft').each(function(e){
         if (typeof $(this).data('val') === 'number'){
-            $(this).html($(this).data('val') * number);
+            $(this).html(sizeApproximation($(this).data('val') * number,1));
         }
     });
     return number;
@@ -283,6 +287,36 @@ function resizeGame(){
         $('#sideQueue').append(queue);
         $('#mainColumn').removeClass('is-half');
         $('#mainColumn').addClass('is-three-quarters');
+    }
+}
+
+export function sizeApproximation(value,precision,fixed){
+    if (value <= 9999){
+        return +value.toFixed(precision);
+    }
+    else if (value <= 1000000){
+        return fixed ? +(value / 1000).toFixed(1) + 'K' : (Math.floor(value / 100) / 10) + 'K';
+    }
+    else if (value <= 1000000000){
+        return fixed ? +(value / 1000000).toFixed(1) + 'M' : (Math.floor(value / 100000) / 10) + 'M';
+    }
+    else if (value <= 1000000000000){
+        return fixed ? +(value / 1000000000).toFixed(1) + 'G' : (Math.floor(value / 100000000) / 10) + 'G';
+    }
+    else if (value <= 1000000000000000){
+        return fixed ? +(value / 1000000000000).toFixed(1) + 'T' : (Math.floor(value / 100000000000) / 10) + 'T';
+    }
+    else if (value <= 1000000000000000000){
+        return fixed ? +(value / 1000000000000000).toFixed(1) + 'P' : (Math.floor(value / 100000000000000) / 10) + 'P';
+    }
+    else if (value <= 1000000000000000000000){
+        return fixed ? +(value / 1000000000000000000).toFixed(1) + 'E' : (Math.floor(value / 100000000000000000) / 10) + 'E';
+    }
+    else if (value <= 1000000000000000000000000){
+        return fixed ? +(value / 1000000000000000000000).toFixed(1) + 'Z' : (Math.floor(value / 100000000000000000000) / 10) + 'Z';
+    }
+    else {
+        return fixed ? +(value / 1000000000000000000000000).toFixed(1) + 'Y' : (Math.floor(value / 100000000000000000000000) / 10) + 'Y';
     }
 }
 

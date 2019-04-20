@@ -323,8 +323,8 @@ export const genus_traits = {
 };
 
 export const traits = {
-    adaptable: {
-        desc: '',
+    adaptable: { // Genetic Mutations occur faster from gene tampering
+        desc: 'Your race is more easily modified by gene therapy.',
         type: 'genus',
     },
     xenophobic: { // Trade posts suffer a -1 penalty per post
@@ -335,7 +335,7 @@ export const traits = {
         desc: 'Your races keen senses help you detect the scent of prey.',
         type: 'genus',
     },
-    cautious: {
+    cautious: { // Rain reduces combat rating
         desc: 'Your race is less effective at combat when it is precipitating.',
         type: 'genus',
     },
@@ -586,7 +586,43 @@ export const traits = {
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
         desc: 'Your citizens are highly ineffectual when working as individuals but gain potency as they work in bigger groups.',
         type: 'major',
-    }
+    },
+    tactical: { // War Bonus
+        desc: 'A genetic disposition to tactical thinking gives your race an edge in combat.',
+        type: 'minor',
+    },
+    analytical: { // Science Bonus
+        desc: 'Your race has an enhanced analytical mind which increases your knowledge gain.',
+        type: 'minor',
+    },
+    promiscuous: { // Population Growth Bonus
+        desc: 'Your race has an elevated birth rate.',
+        type: 'minor',
+    },
+    resilient: { // Coal Mining Bonus
+        desc: 'Natural resilence to harsh conditions makes your species more adapt at coal mining.',
+        type: 'minor',
+    },
+    cunning: { // Hunting Bonus
+        desc: 'Your race possesses an affinity for tracking game.',
+        type: 'minor',
+    },
+    hardy: {
+        desc: 'A genetically Hardy physiology lets your race endure tough factory condiditons.',
+        type: 'minor',
+    },
+    ambidextrous: { // Crafting Bonus
+        desc: 'A natural ability to work with both hands improves your crafting.',
+        type: 'minor',
+    },
+    industrious: { // Miner Bonus
+        desc: 'Your natually hard working citizens produce extra copper and iron ore from mining.',
+        type: 'minor',
+    },
+    content: { // Morale Bonus
+        desc: 'Your people are natually content reducing the stress gained from everyday life.',
+        type: 'minor',
+    },
 };
 
 /*
@@ -635,7 +671,29 @@ export function racialTrait(workers,type){
     if (global.race['toxic'] && type === 'factory'){
         modifier *= 1.1;
     }
+    if (global.race['hardy'] && type === 'factory'){
+        modifier *= 1 + (global.race['hardy'] / 100);
+    }
+    if (global.race['analytical'] && type === 'science'){
+        modifier *= 1 + (global.race['analytical'] / 100);
+    }
     return modifier;
+}
+
+export function randomMinorTrait(){
+    let trait_list = [];
+    Object.keys(traits).forEach(function (t){
+        if (traits[t].type === 'minor'){
+            trait_list.push(t);
+        }
+    });
+    let trait = trait_list[Math.floor(Math.seededRandom(0,trait_list.length))];
+    if (global.race[trait]){
+        global.race[trait]++;
+    }
+    else {
+        global.race[trait] = 1;
+    }
 }
 
 export const biomes = {

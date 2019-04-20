@@ -61,7 +61,7 @@ const arpaProjects = {
         cost: {
             Money: function(){ return costMultiplier('stock_exchange', 3000000, 1.06); },
             Knowledge: function(){ return costMultiplier('stock_exchange', 200000, 1.06); },
-            Copper: function(){ return costMultiplier('stock_exchange', 225000, 1.06); },
+            Plywood: function(){ return costMultiplier('stock_exchange', 25000, 1.06); },
             Brick: function(){ return costMultiplier('stock_exchange', 20000, 1.06); },
             Wrought_Iron: function(){ return costMultiplier('stock_exchange', 10000, 1.06); }
         }
@@ -191,11 +191,26 @@ const genePool = {
             return false;
         }
     },
+    recombination: {
+        id: 'genes-recombination',
+        title: 'Recombination',
+        desc: 'Gain a minor trait when evolving',
+        reqs: { evolve: 1 },
+        grant: ['evolve',2],
+        cost: 35,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>35</span></div>',
+        action: function (){
+            if (payPlasmids('recombination')){
+                return true;
+            }
+            return false;
+        }
+    },
     replication: {
         id: 'genes-replication',
         title: 'Replication',
         desc: 'Increases Birth Rate',
-        reqs: { evolve: 1},
+        reqs: { evolve: 1 },
         grant: ['birth',1],
         cost: 65,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>65</span></div>',
@@ -351,7 +366,7 @@ function genetics(){
         return false;
     }
 
-    if (global.tech['genetics'] === 2){
+    if (global.tech['genetics'] > 1){
         if (vues[`arpaSequence`]){
             vues[`arpaSequence`].$destroy();
         }
@@ -360,17 +375,20 @@ function genetics(){
 
         if (!global.arpa['sequence']){
             global.arpa['sequence'] = {
+                max: 50000,
                 progress: 0,
                 time: 50000,
                 on: false
             };
         }
-        
-        let sequence = $(`<div><b-tooltip class="has-text-warning" :label="seq()" position="is-bottom" size="is-small" multilined animated>Sequence Genome</b-tooltip> - To Complete: {{ time | timer }}</div>`);
+
+        let label = global.tech.genetics > 2 ? 'Gene Mutation' : 'Sequence Genome';
+        let sequence = $(`<div><b-tooltip class="has-text-warning" :label="seq()" position="is-bottom" size="is-small" multilined animated>${label}</b-tooltip> - To Complete: {{ time | timer }}</div>`);
         genome.append(sequence);
-        let progress = $('<progress class="progress" :value="progress" max="50000">{{ progress }}%</progress>');
+        let progress = $(`<progress class="progress" :value="progress" max="${global.arpa.sequence.max}">{{ progress }}%</progress>`);
         genome.append(progress);
-        let button = $('<button class="button" @click="toggle">Sequence</button>');
+        let b_label = global.tech.genetics > 2 ? 'Mutate' : 'Sequence';
+        let button = $(`<button class="button" @click="toggle">${b_label}</button>`);
         genome.append(button);
         if (global.arpa.sequence.on){
             $('#arpaSequence button').addClass('has-text-success');
@@ -380,7 +398,12 @@ function genetics(){
             data: global.arpa.sequence,
             methods: {
                 seq(){
-                    return 'Sequence your genome, this will unlock the secrets of DNA. More Bio Labs will make this go faster';
+                    if (global.tech.genetics > 2){
+                        return 'Research beneficial gene mutations. More Bio Labs will make this go faster';
+                    }
+                    else {
+                        return 'Sequence your genome, this will unlock the secrets of DNA. More Bio Labs will make this go faster';
+                    }
                 },
                 toggle(){
                     if (global.arpa.sequence.on){
@@ -406,14 +429,19 @@ function genetics(){
         });
         vues[`arpaSequence`].$mount(`#arpaSequence`);
     }
-    else if (global.tech['genetics'] > 2){
+    if (global.tech['genetics'] > 2){
         let breakdown = $('<div id="geneticBreakdown"></div>');
         $('#arpaGenetics').append(breakdown);
         breakdown.append(`<div class="trait has-text-success">${races[global.race.species].name} Genetic Traits</div>`)
         
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait]){
-                breakdown.append(`<div class="trait has-text-warning">${traits[trait].desc}</div>`);
+                if (global.race[trait]> 1){
+                    breakdown.append(`<div class="trait has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</div>`);
+                }
+                else {
+                    breakdown.append(`<div class="trait has-text-warning">${traits[trait].desc}</div>`);
+                }
             }
         });
     }
