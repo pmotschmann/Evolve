@@ -840,7 +840,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: '100% Organic'
+            flair(){ return global.tech.agriculture >= 6 ? '100% Inorganic' : '100% Organic'; }
         },
         silo: {
             id: 'city-silo',
@@ -2113,6 +2113,23 @@ export const actions = {
             effect: 'Add a windmill sail to your grain mills, boosts the effectiveness of mills.',
             action(){
                 if (payCosts(actions.tech.windmill.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        gmfood: {
+            id: 'tech-gmfood',
+            title: 'GM Food',
+            desc: 'Genetically Modified Food',
+            reqs: { agriculture: 5, genetics: 1 },
+            grant: ['agriculture',6],
+            cost: { 
+                Knowledge(){ return 95000; }
+            },
+            effect: 'Genetically modify your crops to yield more usable food.',
+            action(){
+                if (payCosts(actions.tech.gmfood.cost)){
                     return true;
                 }
                 return false;

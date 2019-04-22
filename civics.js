@@ -729,7 +729,6 @@ function warhead(){
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
     global.stats.plasmid += new_plasmid;
-    console.log(`extinct_${god}`);
     unlockAchieve(`apocalypse`);
     let new_achieve = unlockAchieve(`extinct_${god}`);
     global['race'] = { 

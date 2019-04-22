@@ -5,6 +5,9 @@ import { plasmidBonus } from './resources.js';
 export const job_desc = {
     farmer: function(){
         let multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
+        if (global.tech.agriculture >= 6){
+            multiplier *= 1.1;
+        }
         multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
         let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
         let gain = +(impact * multiplier).toFixed(1);

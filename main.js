@@ -683,6 +683,9 @@ function fastLoop(){
                 if (global.city.calendar.weather === 2){
                     food_multiplier *= 1.1;
                 }
+                if (global.tech['agriculture'] >= 6){
+                    food_multiplier *= 1.1;
+                }
                 food_bd['Farmers'] = food_multiplier;
                 if (global.city['mill']){
                     let mill_bonus = global.tech['agriculture'] >= 5 ? 0.05 : 0.03;
@@ -1018,8 +1021,6 @@ function fastLoop(){
                 let steel_bd = {};
                 let iron_consume = steel_smelter * 2 * time_multiplier;
                 let coal_consume = steel_smelter * 0.25 * time_multiplier;
-                //console.log(coal_consume);
-                //console.log(global.resource.Coal.amount);
                 while ((iron_consume > global.resource.Iron.amount && iron_consume > 0) || (coal_consume > global.resource.Coal.amount && coal_consume > 0)){
                     iron_consume -= 2 * time_multiplier;
                     coal_consume -= 0.25 * time_multiplier;

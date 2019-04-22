@@ -239,7 +239,6 @@ const genePool = {
 }
 
 function payPlasmids(gene){
-    console.log(genePool[gene].cost);
     if (global.race.Plasmid.count >= genePool[gene].cost){
         global.race.Plasmid.count -= genePool[gene].cost;
         return true;
