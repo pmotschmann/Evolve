@@ -698,7 +698,9 @@ export const actions = {
         },
         basic_housing: {
             id: 'city-house',
-            title: function() { return global.race.species === 'entish' ? 'Grove' : 'Cabin'; },
+            title: function(){
+                return basicHousingLabel();
+            },
             desc: 'Basic housing for one citizen',
             reqs: { housing: 1 },
             cost: { 
@@ -1939,7 +1941,10 @@ export const actions = {
                 Knowledge: function(){ return 11250; },
                 Steel: function(){ return 2500; }
             },
-            effect: 'Reduce material costs of Cabins and Cottages by introducing strong steel beams.',
+            effect: function(){
+                let label = basicHousingLabel();
+                return `Reduce material costs of ${label}s and Cottages by introducing strong steel beams.`;
+            },
             action: function(){
                 if (payCosts(actions.tech.steel_beams.cost)){
                     return true;
@@ -5477,4 +5482,21 @@ function factoryModal(modal){
     });
 
     vues['specialModal'].$mount('#specialModal');
+}
+
+function basicHousingLabel(){
+    switch (global.race.species){
+        case 'orc':
+            return 'Hut';
+        case 'wolven':
+            return 'Den';
+        case 'entish':
+            return 'Grove';
+        case 'arraak':
+            return 'Nest';
+        case 'pterodacti':
+            return 'Nest';
+        default:
+            return 'Cabin';
+    }
 }
