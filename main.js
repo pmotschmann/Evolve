@@ -561,6 +561,12 @@ function fastLoop(){
             modRes('Uranium',-(consume));
         }
 
+        if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
+            let power = global.city.mill.on * actions.city.mill.powered;
+            max_power += power;
+            power_grid -= power;
+        }
+
         let p_structs = ['apartment','factory','wardenclyffe','biolab','mine','coal_mine','rock_quarry','sawmill','cement_plant'];
         for (var i = 0; i < p_structs.length; i++) {
             if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
@@ -683,14 +689,15 @@ function fastLoop(){
                 if (global.city.calendar.weather === 2){
                     food_multiplier *= 1.1;
                 }
-                if (global.tech['agriculture'] >= 6){
+                if (global.tech['agriculture'] >= 7){
                     food_multiplier *= 1.1;
                 }
                 food_bd['Farmers'] = food_multiplier;
                 if (global.city['mill']){
                     let mill_bonus = global.tech['agriculture'] >= 5 ? 0.05 : 0.03;
-                    food_multiplier *= 1 + (global.city['mill'].count * mill_bonus);
-                    food_bd['Mills'] = (global.city['mill'].count * mill_bonus) * 100;
+                    let working = global.city['mill'].count - global.city['mill'].on;
+                    food_multiplier *= 1 + (working * mill_bonus);
+                    food_bd['Mills'] = (working * mill_bonus) * 100;
                 }
                 food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
                 food_multiplier *= racialTrait(global.civic.farmer.workers,'farmer');

@@ -872,7 +872,12 @@ export const actions = {
             },
             desc(){ 
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
-                return `Increases farmer efficency by ${bonus}%`;
+                if (global.tech['agriculture'] >= 6){
+                    return `+${bonus}% Farmer efficency OR +1kW`;
+                }
+                else {
+                    return `Increases farmer efficency by ${bonus}%`;
+                }
             },
             reqs: { agriculture: 4 },
             cost: { 
@@ -881,12 +886,22 @@ export const actions = {
                 Iron(){ return costMultiplier('mill', 150, 1.32); },
                 Cement(){ return costMultiplier('mill', 125, 1.32); },
             },
+            powered: -1,
+            power_reqs: { agriculture: 6 },
             action(){
                 if (payCosts(actions.city.mill.cost)){
                     global.city['mill'].count++;
                     return true;
                 }
                 return false;
+            },
+            effect(){
+                if (global.tech['agriculture'] >= 6){
+                    return '<span class="has-text-success">ON</span> for power, <span class="has-text-danger">OFF</span> for grain mill.';
+                }
+                else {
+                    return false;
+                }
             }
         },
         shed: {
@@ -1810,14 +1825,14 @@ export const actions = {
             },
             effect(){
                 let consume = 0.1;
-                return `+20kW. -${consume} Uranium per second.`;
+                return `+14kW. -${consume} Uranium per second.`;
             },
-            powered: -20,
+            powered: -14,
             action(){
                 if (payCosts(actions.city.fission_power.cost)){
                     global.city.fission_power.count++;
                     global.city.fission_power.on++;
-                    global.city.power += 20;
+                    global.city.power += 14;
                     return true;
                 }
                 return false;
@@ -2095,7 +2110,10 @@ export const actions = {
             effect: 'Creates plans for a grain mill, grain mills boost farm effectiveness.',
             action(){
                 if (payCosts(actions.tech.mill.cost)){
-                    global.city['mill'] = { count: 0 };
+                    global.city['mill'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -2118,12 +2136,29 @@ export const actions = {
                 return false;
             }
         },
+        windturbine: {
+            id: 'tech-windturbine',
+            title: 'Wind Turbine',
+            desc: 'Wind Turbine',
+            reqs: { agriculture: 5, high_tech: 4 },
+            grant: ['agriculture',6],
+            cost: { 
+                Knowledge(){ return 66000; }
+            },
+            effect: 'Add a turbine to your windmills allowing you to use them for power instead of milling.',
+            action(){
+                if (payCosts(actions.tech.windturbine.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         gmfood: {
             id: 'tech-gmfood',
             title: 'GM Food',
             desc: 'Genetically Modified Food',
-            reqs: { agriculture: 5, genetics: 1 },
-            grant: ['agriculture',6],
+            reqs: { agriculture: 6, genetics: 1 },
+            grant: ['agriculture',7],
             cost: { 
                 Knowledge(){ return 95000; }
             },
@@ -5107,7 +5142,9 @@ function actionDesc(parent,action,type){
     }
     if (actions[action][type].effect){
         var effect = typeof actions[action][type].effect === 'string' ? actions[action][type].effect : actions[action][type].effect();
-        parent.append($(`<div>${effect}</div>`)); 
+        if (effect){
+            parent.append($(`<div>${effect}</div>`));
+        }
     }
     if (actions[action][type].flair){
         var flair = typeof actions[action][type].flair === 'string' ? actions[action][type].flair : actions[action][type].flair();
