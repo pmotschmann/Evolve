@@ -616,7 +616,7 @@ function fastLoop(){
         global.city.morale.stress = stress;
         morale += stress;
 
-        let moraleCap = global.tech['monuments'] ? 125 + global.tech['monuments'] : 125;
+        let moraleCap = global.tech['monuments'] ? 110 + (global.tech['monuments'] * 2) : 110;
         if (morale < 50){
             morale = 50;
         }

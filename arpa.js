@@ -89,11 +89,11 @@ const arpaProjects = {
         reqs: { monument: 1 },
         grant: 'monuments',
         effect: function() {
-            return 'Each monument increases maximum morale by 1%';
+            return 'Each monument increases maximum morale by 2%';
         },
         cost: {
             Stone: function(){ return monument_costs('Stone') },
-            Copper: function(){ return monument_costs('Copper') },
+            Wrought_Iron: function(){ return monument_costs('Wrought_Iron') },
             Cement: function(){ return monument_costs('Cement') },
             Steel: function(){ return monument_costs('Steel') }
         }
