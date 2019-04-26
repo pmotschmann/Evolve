@@ -363,12 +363,12 @@ export const traits = {
         desc: 'Your species is protected by scales which act as a kind of natural armor.',
         type: 'genus',
     },
-    hollow_bones: {
-        desc: '',
+    hollow_bones: { // Less Crafted Materials Needed
+        desc: 'Your species has light weight bones and requires less crafted materials to build structures.',
         type: 'genus',
     },
-    rigid: {
-        desc: '',
+    rigid: { // Crafting production lowered slightly
+        desc: 'Your race has a stiff skeletal structure and crafts less efficiently.',
         type: 'genus',
     },
     fast_growth: { // Greatly increases odds of population growth each cycle
@@ -579,8 +579,8 @@ export const traits = {
         desc: 'Your race is more effective in comabt.',
         type: 'major',
     },
-    inept: { // Crafting production lowered slightly
-        desc: 'Your race is not good at precision work and crafts less efficiently.',
+    inept: {
+        desc: '',
         type: 'major',
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
@@ -611,7 +611,7 @@ export const traits = {
         desc: 'Your race possesses an affinity for tracking game.',
         type: 'minor',
     },
-    hardy: {
+    hardy: { // Factory Woker Bonus
         desc: 'A genetically hardy physiology lets your race endure tough factory condiditons.',
         type: 'minor',
     },

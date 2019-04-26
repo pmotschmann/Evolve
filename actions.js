@@ -5182,16 +5182,11 @@ function adjustCosts(costs){
         });
         return newCosts;
     }
-    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
-        var newCosts = {};
-        Object.keys(costs).forEach(function (res){
-            if (res !== 'Lumber' && res !== 'Plywood'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
-            }
-        });
-        return rebarAdjust(newCosts);
-    }
-    else if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
+    return craftAdjust(rebarAdjust(scienceAdjust(kindlingAdjust(costs))));
+}
+
+function scienceAdjust(costs){
+    if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
@@ -5203,7 +5198,36 @@ function adjustCosts(costs){
         });
         return rebarAdjust(newCosts);
     }
-    return rebarAdjust(costs);
+    return costs;
+}
+
+function kindlingAdjust(costs){
+    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res !== 'Lumber' && res !== 'Plywood'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function craftAdjust(costs){
+    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'])){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res]()); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function rebarAdjust(costs){

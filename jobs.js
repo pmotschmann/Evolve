@@ -300,7 +300,7 @@ export function craftingRatio(res){
     if (global.race['ambidextrous']){
         multiplier += (global.race['ambidextrous'] / 100);
     }
-    if (global.race['inept']){
+    if (global.race['rigid']){
         multiplier -= 0.01;
     }
     if (global.race.Plasmid.count > 0){
