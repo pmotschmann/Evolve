@@ -4672,6 +4672,11 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.fanaticism.cost)){
                     global.tech['fanaticism'] = 1;
+                    if (global.race.gods === global.race.species){
+                        unlockAchieve(`second_evolution`);
+                        randomMinorTrait();
+                        return true;
+                    }
                     switch (global.race.gods){
                         case 'human':
                             global.race['creative'] = 1;

@@ -10,6 +10,11 @@ var achievements = {
         desc: `Wiped yourself out with nuclear weapons`,
         flair: `The vaults didn't help`
     },
+    second_evolution: {
+        name: `Second Evolution`,
+        desc: `Evolve the same species twice in a row and then worship your anscestors.`,
+        flair: `Coincidence or ancient hubris?`
+    },
     blackhole: {
         name: `Blackhole? No hole`,
         desc: `Didn't destroy your planet with an artifical blackhole`,
