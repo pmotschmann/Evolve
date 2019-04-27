@@ -619,7 +619,8 @@ function fastLoop(){
         global.city.morale.stress = stress;
         morale += stress;
 
-        let moraleCap = global.tech['monuments'] ? 110 + (global.tech['monuments'] * 2) : 110;
+        let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
+        let moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
         if (morale < 50){
             morale = 50;
         }
@@ -1405,6 +1406,7 @@ function midLoop(){
             miner: 0,
             cement_worker: 0,
             banker: 0,
+            entertainer: 0,
             professor: 0,
             scientist: 0,
             garrison: 0
@@ -1454,6 +1456,9 @@ function midLoop(){
         }
         if (global.city['bank']){
             lCaps['banker'] += global.city['bank'].count;
+        }
+        if (global.city['amphitheatre']){
+            lCaps['entertainer'] += global.city['amphitheatre'].count;
         }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += global.city['cement_plant'].count * 2;

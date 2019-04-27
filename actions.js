@@ -1519,7 +1519,7 @@ export const actions = {
                 Lumber(){ return costMultiplier('amphitheatre', 50, 1.75); },
                 Stone(){ return costMultiplier('amphitheatre', 200, 1.75); }
             },
-            effect: '+1 Max Entertainer',
+            effect: '<div>+1 Max Entertainer</div><div>+1% Max Morale</div>',
             action(){
                 if (payCosts(actions.city.amphitheatre.cost)){
                     global.city['amphitheatre'].count++;
