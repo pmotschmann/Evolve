@@ -151,6 +151,8 @@ export const actions = {
                         global.evolution['chitin'] = { count: 0 };
                         addAction('evolution','chitin');
                     }
+                    global.evolution['final'] = 14;
+                    evoProgress();
                 }
                 return false;
             }
@@ -168,7 +170,9 @@ export const actions = {
                     global.evolution['phagocytosis'].count++;
                     removeAction(actions.evolution.phagocytosis.id);
                     global.evolution['multicellular'] = { count: 0 };
+                    global.evolution['final'] = 28;
                     addAction('evolution','multicellular');
+                    evoProgress();
                 }
                 return false;
             }
@@ -186,7 +190,9 @@ export const actions = {
                     global.evolution['chloroplasts'].count++;
                     removeAction(actions.evolution.chloroplasts.id);
                     global.evolution['multicellular'] = { count: 0 };
+                    global.evolution['final'] = 28;
                     addAction('evolution','multicellular');
+                    evoProgress();
                 }
                 return false;
             }
@@ -204,7 +210,9 @@ export const actions = {
                     global.evolution['chitin'].count++;
                     removeAction(actions.evolution.chitin.id);
                     global.evolution['multicellular'] = { count: 0 };
+                    global.evolution['final'] = 28;
                     addAction('evolution','multicellular');
+                    evoProgress();
                 }
                 return false;
             }
@@ -221,6 +229,7 @@ export const actions = {
                 if (payCosts(actions.evolution.multicellular.cost)){
                     global.evolution['multicellular'].count++;
                     removeAction(actions.evolution.multicellular.id);
+                    global.evolution['final'] = 42;
                     
                     if (global.evolution['phagocytosis']){
                         global.evolution['bilateral_symmetry'] = { count: 0 };
@@ -234,6 +243,7 @@ export const actions = {
                         global.evolution['spores'] = { count: 0 };
                         addAction('evolution','spores');
                     }
+                    evoProgress();
                 }
                 return false;
             }
@@ -251,7 +261,9 @@ export const actions = {
                     global.evolution['spores'].count++;
                     removeAction(actions.evolution.spores.id);
                     global.evolution['bryophyte'] = { count: 0 };
+                    global.evolution['final'] = 56;
                     addAction('evolution','bryophyte');
+                    evoProgress();
                 }
                 return false;
             }
@@ -269,7 +281,9 @@ export const actions = {
                     global.evolution['poikilohydric'].count++;
                     removeAction(actions.evolution.poikilohydric.id);
                     global.evolution['bryophyte'] = { count: 0 };
+                    global.evolution['final'] = 56;
                     addAction('evolution','bryophyte');
+                    evoProgress();
                 }
                 return false;
             }
@@ -286,6 +300,7 @@ export const actions = {
                 if (payCosts(actions.evolution.bilateral_symmetry.cost)){
                     global.evolution['bilateral_symmetry'].count++;
                     removeAction(actions.evolution.bilateral_symmetry.id);
+                    global.evolution['final'] = 56;
                     
                     var path = Math.floor(Math.seededRandom(0,100));
                     if (path < 14){
@@ -296,6 +311,7 @@ export const actions = {
                         global.evolution['deuterostome'] = { count: 0 };
                         addAction('evolution','deuterostome');
                     }
+                    evoProgress();
                 }
                 return false;
             }
@@ -312,6 +328,7 @@ export const actions = {
                 if (payCosts(actions.evolution.bryophyte.cost)){
                     global.evolution['bryophyte'].count++;
                     removeAction(actions.evolution.bryophyte.id);
+                    global.evolution['final'] = 70;
                     
                     if (global.evolution['spores']){
                         global.evolution['vascular'] = { count: 0 };
@@ -328,6 +345,7 @@ export const actions = {
                             addAction('evolution','homoiohydric');
                         }
                     }
+                    evoProgress();
                 }
                 return false;
             }
@@ -345,7 +363,9 @@ export const actions = {
                     global.evolution['protostomes'].count++;
                     removeAction(actions.evolution.protostomes.id);
                     global.evolution['athropods'] = { count: 0 };
+                    global.evolution['final'] = 70;
                     addAction('evolution','athropods');
+                    evoProgress();
                 }
                 return false;
             }
@@ -362,6 +382,7 @@ export const actions = {
                 if (payCosts(actions.evolution.deuterostome.cost)){
                     global.evolution['deuterostome'].count++;
                     removeAction(actions.evolution.deuterostome.id);
+                    global.evolution['final'] = 70;
                     
                     var path = Math.floor(Math.seededRandom(0,100));
                     if (path < 67){
@@ -372,6 +393,7 @@ export const actions = {
                         global.evolution['eggshell'] = { count: 0 };
                         addAction('evolution','eggshell');
                     }
+                    evoProgress();
                 }
                 return false;
             }
@@ -389,7 +411,9 @@ export const actions = {
                     global.evolution['vascular'].count++;
                     removeAction(actions.evolution.vascular.id);
                     global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 85;
                     addAction('evolution','sentience');
+                    evoProgress();
                 }
                 return false;
             }
@@ -407,7 +431,9 @@ export const actions = {
                     global.evolution['homoiohydric'].count++;
                     removeAction(actions.evolution.homoiohydric.id);
                     global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 85;
                     addAction('evolution','sentience');
+                    evoProgress();
                 }
                 return false;
             }
@@ -425,7 +451,9 @@ export const actions = {
                     global.evolution['athropods'].count++;
                     removeAction(actions.evolution.athropods.id);
                     global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 85;
                     addAction('evolution','sentience');
+                    evoProgress();
                 }
                 return false;
             }
@@ -443,7 +471,9 @@ export const actions = {
                     global.evolution['mammals'].count++;
                     removeAction(actions.evolution.mammals.id);
                     global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 85;
                     addAction('evolution','sentience');
+                    evoProgress();
                 }
                 return false;
             }
@@ -461,7 +491,9 @@ export const actions = {
                     global.evolution['eggshell'].count++;
                     removeAction(actions.evolution.eggshell.id);
                     global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 85;
                     addAction('evolution','sentience');
+                    evoProgress();
                 }
                 return false;
             }
@@ -479,6 +511,8 @@ export const actions = {
                 if (payCosts(actions.evolution.sentience.cost)){
                     global.evolution['sentience'].count++;
                     removeAction(actions.evolution.sentience.id);
+                    global.evolution['final'] = 100;
+                    evoProgress();
                     
                     // Trigger Next Phase of game
                     var path = Math.floor(Math.seededRandom(0,100));
@@ -5160,7 +5194,7 @@ export function removeAction(id){
 
 function updateDesc(category,action){
     var id = actions[category][action].id;
-    if (category !== 'tech'){
+    if (global[category] && global[category][action] && global[category][action]['count']){
         $(`#${id} .count`).html(global[category][action].count);
         if (global[category][action] && global[category][action].count > 0){
             $(`#${id} .count`).css('display','inline-block');
@@ -5182,7 +5216,10 @@ function adjustCosts(costs){
         });
         return newCosts;
     }
-    return craftAdjust(rebarAdjust(scienceAdjust(kindlingAdjust(costs))));
+    costs = kindlingAdjust(costs);
+    costs = scienceAdjust(costs);
+    costs = rebarAdjust(costs);
+    return craftAdjust(costs);
 }
 
 function scienceAdjust(costs){
@@ -5571,6 +5608,12 @@ function factoryModal(modal){
     });
 
     vues['specialModal'].$mount('#specialModal');
+}
+
+export function evoProgress(){
+    $('#evolution .evolving').remove();
+    let progress = $(`<div class="evolving"><progress class="progress" value="${global.evolution.final}" max="100">${global.evolution.final}%</progress></div>`);
+    $('#evolution').append(progress);
 }
 
 function basicHousingLabel(){

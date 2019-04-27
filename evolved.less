@@ -178,6 +178,43 @@ a {
         }
     }
     
+    .evolving {
+        margin-top: 1rem;
+        max-width: 51rem;
+        @media only screen and (max-width: 113rem){
+            max-width: 38rem;
+        }
+        @media only screen and (max-width: 88.5rem){
+            max-width: 51rem;
+        }
+        @media only screen and (max-width: 76.375rem){
+            max-width: 38rem;
+        }
+        @media only screen and (max-width: 59rem){
+            max-width: 25rem;
+        }
+        @media only screen and (max-width: 48rem){
+            max-width: 38rem;
+        }
+        @media only screen and (max-width: 45rem){
+            max-width: 25rem;
+        }
+        @media only screen and (max-width: 32rem){
+            max-width: 12rem;
+        }
+        .progress {
+            height: 1.2rem;
+        }
+    }
+    .evolving::after {
+        display: block;
+        position: relative;
+        top: -1.375rem;
+        content: "Evolving";
+        text-align: center;
+        color: #af8d07;
+    }
+
     .content {
         .tab-content {
             padding: 0 1rem 1rem;

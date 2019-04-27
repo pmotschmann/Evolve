@@ -4,7 +4,7 @@ import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus } from './resources.js';
 import { defineJobs, job_desc, craftingRatio } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
-import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech, evoProgress } from './actions.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -256,6 +256,9 @@ if (global.race.species === 'protoplasm'){
                 addAction('evolution',late_actions[i]);
             }
         }
+    }
+    if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
+        evoProgress();
     }
 }
 else {
@@ -1693,14 +1696,16 @@ function midLoop(){
             }
         }
 
-        let fworkers = global.civic.craftsman.workers;
-        Object.keys(craftCost).forEach(function (craft){
-            while (global.city.foundry[craft] > fworkers && global.city.foundry[craft] > 0){
-                global.city.foundry[craft]--;
-                global.city.foundry.crafting--;
-            }
-            fworkers -= global.city.foundry[craft];
-        });
+        if (global.city['foundry']){
+            let fworkers = global.civic.craftsman.workers;
+            Object.keys(craftCost).forEach(function (craft){
+                while (global.city.foundry[craft] > fworkers && global.city.foundry[craft] > 0){
+                    global.city.foundry[craft]--;
+                    global.city.foundry.crafting--;
+                }
+                fworkers -= global.city.foundry[craft];
+            });
+        }
 
         if (global.tech['foundry'] === 3 && global.race['kindling_kindred']){
             global.tech['foundry'] = 4;
