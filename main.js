@@ -726,6 +726,9 @@ function fastLoop(){
             if (modRes('Food',f_delta)){
                 fed = false;
                 let threshold = global.race['slow_digestion'] ? 2.5 : 2;
+                if (global.race['atrophy']){
+                    threshold -= 0.5;
+                }
                 if (delta * threshold < consume){
                     if (Math.rand(0, 10) === 0){
                         global['resource'][races[global.race.species].name].amount--;
@@ -765,7 +768,10 @@ function fastLoop(){
         // Resource Income
         let hunger = fed ? 1 : 0.5;
         if (global.race['angry'] && fed === false){
-            hunger = 0.25;
+            hunger -= 0.25;
+        }
+        if (global.race['malnutrition'] && fed === false){
+            hunger += 0.25;
         }
 
         // Furs
@@ -1532,6 +1538,9 @@ function midLoop(){
             let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
             if (global.tech['science'] >= 4){
                 multiplier += global.city['library'].count * 0.02;
+            }
+            if (global.race['hard_of_hearing']){
+                multiplier *= 0.95;
             }
             let gain = (global.city['university'].count * base * multiplier);
             lCaps['professor'] += global.city['university'].count;

@@ -1639,6 +1639,9 @@ export const actions = {
                 if (global.tech['science'] >= 4){
                     gain *= 1 + (global.city['library'].count * 0.02);
                 }
+                if (global.race['hard_of_hearing']){
+                    gain *= 0.95;
+                }
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
@@ -4744,7 +4747,7 @@ export const actions = {
                             global.race['optimistic'] = 1;
                             break;
                         case 'slitheryn':
-                            global.race['forked_tongue'] = 1;
+                            global.race['slow_digestion'] = 1;
                             break;
                         case 'arraak':
                             global.race['resourceful'] = 1;
@@ -4780,7 +4783,7 @@ export const actions = {
                             global.race['toxic'] = 1;
                             break;
                         case 'mantis':
-                            global.race['quick'] = 1;
+                            global.race['malnutrition'] = 1;
                             break;
                         case 'scorpid':
                             global.race['claws'] = 1;

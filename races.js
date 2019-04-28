@@ -257,7 +257,7 @@ export const races = {
         entity: 'insects',
         traits: {
             fraile: 1,
-            quick: 1
+            malnutrition: 1
         } 
     },
     scorpid: {
@@ -268,7 +268,7 @@ export const races = {
         entity: 'scorpians',
         traits: {
             claws: 1,
-            inept: 1
+            atrophy: 1
         } 
     },
     antid: {
@@ -278,7 +278,8 @@ export const races = {
         home: 'Menzel',
         entity: 'intelligent ants',
         traits: {
-            hivemind: 1
+            hivemind: 1,
+            tunneler: 1
         } 
     }
 };
@@ -507,8 +508,8 @@ export const traits = {
         desc: 'Your race digests food slowly and thus will not starve as easily.',
         type: 'major',
     },
-    forked_tongue: {
-        desc: '',
+    hard_of_hearing: { // University science cap gain reduced by 5%
+        desc: 'Your species has poor hearing and thus lectures are less effective.',
         type: 'major',
     },
     resourceful: { // Crafting costs are reduced slightly
@@ -571,16 +572,16 @@ export const traits = {
         desc: 'Your race is frail and is more likely to die in combat.',
         type: 'major',
     },
-    quick: {
-        desc: '',
+    malnutrition: { // The rationing penalty is weaker
+        desc: 'Your race can function while suffering from malnutrition better then most.',
         type: 'major',
     },
     claws: { // Raises maximum bound for army score roll
         desc: 'Your race is more effective in comabt.',
         type: 'major',
     },
-    inept: {
-        desc: '',
+    atrophy: { // More prone to starvation
+        desc: 'Your race atrophies quicker when not well fed.',
         type: 'major',
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
