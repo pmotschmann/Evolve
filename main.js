@@ -719,11 +719,19 @@ function fastLoop(){
                 food_bd['Hunting'] = hunting + 'v';
             }
             
-            delta = (delta * global_multiplier * time_multiplier) - consume;
+            delta = delta * global_multiplier * time_multiplier;
+            let f_delta = delta - consume;
             breakdown['Food'] = food_bd;
 
-            if (modRes('Food',delta)){
+            if (modRes('Food',f_delta)){
                 fed = false;
+                let threshold = global.race['slow_digestion'] ? 2.5 : 2;
+                if (delta * threshold < consume){
+                    if (Math.rand(0, 10) === 0){
+                        global['resource'][races[global.race.species].name].amount--;
+                        global.stats.starved++;
+                    }
+                }
             }
         }
 

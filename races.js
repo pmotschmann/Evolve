@@ -168,7 +168,7 @@ export const races = {
         home: 'Viper',
         entity: 'snake creatures',
         traits: {
-            venomous: 1,
+            slow_digestion: 1,
             forked_tongue: 1
         }
     },
@@ -503,8 +503,8 @@ export const traits = {
         desc: 'Your species natural affinity for hiding has caused you to be more averse to having a standing army.',
         type: 'major',
     },
-    venomous: {
-        desc: '',
+    slow_digestion: { // Your race is more resilent to starvation
+        desc: 'Your race digests food slowly and thus will not starve as easily.',
         type: 'major',
     },
     forked_tongue: {

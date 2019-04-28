@@ -51,7 +51,7 @@ if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25)
     global.civic.cement_worker.impact = 0.4;
 }
 
-global['version'] = '0.2.24';
+global['version'] = '0.2.25';
 $('#topBar .version').html('v'+global.version);
 
 if (!global['settings']){
@@ -81,6 +81,9 @@ if (!global.stats['reset']){
 }
 if (!global.stats['plasmid']){
     global.stats['plasmid'] = 0;
+}
+if (!global.stats['starved']){
+    global.stats['starved'] = 0;
 }
 
 if (!global['lastMsg']){
