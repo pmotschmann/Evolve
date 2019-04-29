@@ -77,9 +77,9 @@ const arpaProjects = {
         cost: {
             Money: function(){ return costMultiplier('launch_facility', 4000000, 1.1); },
             Knowledge: function(){ return costMultiplier('launch_facility', 500000, 1.1); },
-            Cement: function(){ return costMultiplier('launch_facility', 200000, 1.1); },
+            Cement: function(){ return costMultiplier('launch_facility', 150000, 1.1); },
             Oil: function(){ return costMultiplier('launch_facility', 20000, 1.1); },
-            Steel: function(){ return costMultiplier('launch_facility', 250000, 1.1); },
+            Sheet_Metal: function(){ return costMultiplier('launch_facility', 25000, 1.1); },
             Alloy: function(){ return costMultiplier('launch_facility', 25000, 1.1); }
         }
     },

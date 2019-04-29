@@ -772,7 +772,15 @@ export const actions = {
                 Wrought_Iron(){ return costMultiplier('cottage', 15, 1.25); },
                 Brick(){ return costMultiplier('cottage', 20, 1.25); }
             },
-            effect: '+2 Max Citizens',
+            effect(){
+                if (global.tech['home_safe']){
+                    let safe = spatialReasoning(1000);
+                    return `<div>+2 Max Citizens</div><div>+${safe} Max Money</div>`;
+                }
+                else {
+                    return '+2 Max Citizens';
+                }
+            },
             action(){
                 if (payCosts(actions.city.cottage.cost)){
                     global['resource'][races[global.race.species].name].max += 2;
@@ -794,7 +802,15 @@ export const actions = {
                 Cement(){ return costMultiplier('apartment', 700, 1.30) - 500; },
                 Steel(){ return costMultiplier('apartment', 800, 1.30) - 500; }
             },
-            effect: '+5 Max Citizens. -1kW.',
+            effect(){
+                if (global.tech['home_safe']){
+                    let safe = spatialReasoning(2000);
+                    return `<div>+5 Max Citizens. -1kW.</div><div>+${safe} Max Money</div>`;
+                }
+                else {
+                    return '+5 Max Citizens. -1kW.';
+                }
+            },
             powered: 1,
             action(){
                 if (payCosts(actions.city.apartment.cost)){
@@ -1603,6 +1619,7 @@ export const actions = {
                 if (global.tech['stock_exchange']){
                     vault *= 1 + (global.tech['stock_exchange'] * 0.1);
                 }
+                vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
                 if (global.tech['banking'] >= 2){
                     return `<div>+\$${vault} Max Money</div><div>+1 Max Banker</div>`; 
@@ -3227,6 +3244,25 @@ export const actions = {
             effect: 'Encourge citizens to establish 401K plans increasing the total amount of wealth available.',
             action(){
                 if (payCosts(actions.tech.four_oh_one.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        home_safe: {
+            id: 'tech-home_safe',
+            title: 'House Safe',
+            desc: 'House Safe',
+            reqs: { banking: 5 },
+            grant: ['home_safe',1],
+            cost: {
+                Money(){ return 42000; },
+                Knowledge(){ return 8000; },
+                Steel(){ return 4500; }
+            },
+            effect: 'Install a safe in every cottage and apartment to store valuables.',
+            action(){
+                if (payCosts(actions.tech.home_safe.cost)){
                     return true;
                 }
                 return false;

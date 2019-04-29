@@ -1488,9 +1488,15 @@ function midLoop(){
         }
         if (global.city['cottage']){
             caps[races[global.race.species].name] += global.city['cottage'].count * 2;
+            if (global.tech['home_safe']){
+                caps['Money'] += (global.city['cottage'].count * spatialReasoning(1000));
+            }
         }
         if (global.city['apartment']){
             caps[races[global.race.species].name] += global.city['apartment'].on * 5;
+            if (global.tech['home_safe']){
+                caps['Money'] += (global.city['apartment'].on * spatialReasoning(2000));
+            }
         }
         if (global.city['lodge']){
             caps[races[global.race.species].name] += global.city['lodge'].count;
@@ -1603,7 +1609,7 @@ function midLoop(){
             if (global.tech['stock_exchange']){
                 vault *= 1 + (global.tech['stock_exchange'] * 0.1);
             }
-            caps['Money'] += (global.city['bank'].count * vault);
+            caps['Money'] += (global.city['bank'].count * spatialReasoning(vault));
         }
         if (global.tech['banking'] >= 4){
             let cm = 250;
