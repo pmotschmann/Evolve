@@ -71,6 +71,7 @@ vues['race'] = new Vue({
 });
 vues['race'].$mount('#race');
 
+var moraleCap = 125;
 $('#morale').on('mouseover',function(){
     var popper = $(`<div id="popMorale" class="popper has-background-light has-text-dark"></div>`);
     $('#main').append(popper);
@@ -92,7 +93,7 @@ $('#morale').on('mouseover',function(){
         popper.append(`<p>Weather<span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
     }
     let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather;
-    if (total > 125 || total < 50){
+    if (total > moraleCap || total < 50){
         popper.append(`<div>Current<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
     }
     else {
@@ -620,7 +621,7 @@ function fastLoop(){
         morale += stress;
 
         let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
-        let moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
+        moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
         if (morale < 50){
             morale = 50;
         }
