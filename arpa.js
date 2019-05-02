@@ -294,9 +294,9 @@ function monument_costs(res){
         case 'Statue':
             return res === 'Wrought_Iron' ? costMultiplier('monument', 25000, 1.1) : 0;
         case 'Sculpture':
-            return res === 'Steel' ? costMultiplier('monument', 500000, 1.1) : 0;
+            return res === 'Steel' ? costMultiplier('monument', 300000, 1.1) : 0;
         case 'Monolith':
-            return res === 'Cement' ? costMultiplier('monument', 500000, 1.1) : 0;
+            return res === 'Cement' ? costMultiplier('monument', 300000, 1.1) : 0;
     }
 }
 
