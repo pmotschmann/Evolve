@@ -1719,6 +1719,8 @@ function midLoop(){
                     global.race.mutation++;
                     randomMinorTrait();
                     messageQueue('Gene therapy has resulted in a permanent improvement to your species.','success');
+                    global.stats.plasmid++;
+                    global.race.Plasmid.count++;
                 }
                 arpa('Genetics');
                 drawTech();
