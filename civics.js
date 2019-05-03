@@ -728,6 +728,8 @@ function warhead(){
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
+    global.stats.tknow += global.stats.know;
+    global.stats.know = 0;
     global.stats.plasmid += new_plasmid;
     unlockAchieve(`apocalypse`);
     let new_achieve = unlockAchieve(`extinct_${god}`);

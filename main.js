@@ -1,5 +1,5 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier } from './vars.js';
-import { drawAchieve, checkAchievements } from './achieve.js';
+import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus } from './resources.js';
 import { defineJobs, job_desc, craftingRatio } from './jobs.js';
@@ -276,7 +276,7 @@ else {
     setWeather();
 }
 
-drawAchieve();
+setupStats();
 
 var fed = true;
 var tax_multiplier = 1;
@@ -1983,7 +1983,7 @@ function longLoop(){
     else {
         global.event--;
     }
-    
+
     // Save game state
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
 }

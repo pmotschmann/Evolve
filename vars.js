@@ -47,7 +47,7 @@ else {
     global['new'] = true;
 }
 
-global['version'] = '0.2.31';
+global['version'] = '0.2.32';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -85,6 +85,12 @@ if (!global.stats['plasmid']){
 }
 if (!global.stats['starved']){
     global.stats['starved'] = 0;
+}
+if (!global.stats['know']){
+    global.stats['know'] = 0;
+}
+if (!global.stats['tknow']){
+    global.stats['tknow'] = 0;
 }
 
 if (!global['lastMsg']){

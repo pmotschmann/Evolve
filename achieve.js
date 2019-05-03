@@ -168,14 +168,23 @@ export function unlockAchieve(achievement){
     return false;
 }
 
+export function setupStats(){
+    $('#achieve').empty();
+    let stats = $('<div id="statsPanel"></div>');
+    $('#achieve').append(stats);
+    let achieve = $('<div id="achievePanel"></div>');
+    $('#achieve').append(achieve);
+    drawStats();
+    drawAchieve();
+}
+
 export function drawAchieve(){
     if (vues['vue_achieve']){
         vues['vue_achieve'].$destroy();
     }
 
-    $('#achieve').empty();
-    let achieve = $('<div id="achievePanel"></div>');
-    $('#achieve').append(achieve);
+    $('#achievePanel').empty();
+    let achieve = $('#achievePanel');
     let earned = 0;
     let total = 0;
     Object.keys(achievements).forEach(function (achievement){
@@ -218,4 +227,33 @@ export function checkAchievements(){
     if (!global.stats.achieve['blackhole'] && global.tech['supercollider'] && global.tech['supercollider'] >= 99){
         unlockAchieve('blackhole');
     }
+}
+
+export function drawStats(){
+    if (vues['vue_stats']){
+        vues['vue_stats'].$destroy();
+    }
+
+    $('#statsPanel').empty();
+    let stats = $('#statsPanel');
+    
+    stats.append(`<div><span class="has-text-warning">Plasmids Earned:</span> {{ plasmid }}</div>`);
+    stats.append(`<div><span class="has-text-warning">Knowledge Spent:</span> {{ know | t_know }}</div>`);
+    stats.append(`<div><span class="has-text-warning">Game Days Played:</span> {{ days | played }}</div>`);
+    stats.append(`<div><span class="has-text-warning">Total Resets:</span> {{ reset }}</div>`);
+
+    let svue = {
+        data: global.stats,
+        filters: {
+            played(d){
+                return d + global.stats.tdays;
+            },
+            t_know(k){
+                return k + global.stats.tknow;
+            }
+        }
+    }
+    
+    vues['vue_stats'] = new Vue(svue);
+    vues['vue_stats'].$mount('#statsPanel');
 }

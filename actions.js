@@ -5332,7 +5332,11 @@ function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            global['resource'][res].amount -= costs[res]();
+            let cost = costs[res]();
+            global['resource'][res].amount -= cost;
+            if (res === 'Knowledge'){
+                global.stats.know += cost;
+            }
         });
         return true;
     }
