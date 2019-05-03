@@ -47,7 +47,7 @@ else {
     global['new'] = true;
 }
 
-global['version'] = '0.2.32';
+global['version'] = '0.2.33';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

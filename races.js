@@ -169,7 +169,7 @@ export const races = {
         entity: 'snake creatures',
         traits: {
             slow_digestion: 1,
-            forked_tongue: 1
+            hard_of_hearing: 1
         }
     },
     arraak: {
@@ -504,7 +504,7 @@ export const traits = {
         desc: 'Your species natural affinity for hiding has caused you to be more averse to having a standing army.',
         type: 'major',
     },
-    slow_digestion: { // Your race is more resilent to starvation
+    slow_digestion: { // Your race is more resilient to starvation
         desc: 'Your race digests food slowly and thus will not starve as easily.',
         type: 'major',
     },
@@ -577,7 +577,7 @@ export const traits = {
         type: 'major',
     },
     claws: { // Raises maximum bound for army score roll
-        desc: 'Your race is more effective in comabt.',
+        desc: 'Your race is more effective in combat.',
         type: 'major',
     },
     atrophy: { // More prone to starvation
