@@ -47,7 +47,7 @@ else {
     global['new'] = true;
 }
 
-global['version'] = '0.2.33';
+global['version'] = '0.2.34';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -202,6 +202,9 @@ export function messageQueue(msg,color){
     var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
     $('#msgQueue').prepend(new_message);
     global.lastMsg = { m: msg, c: color };
+    if ($('#msgQueue').children().length > 30){
+        $('#msgQueue').children().last().remove();
+    }
 }
 
 export function modRes(res,val){
