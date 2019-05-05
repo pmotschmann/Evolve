@@ -256,6 +256,7 @@ function buildGarrison(garrison){
                         death = global.civic.garrison.raid;
                     }
                     global.civic.garrison.workers -= death;
+                    global.stats.died += death;
                     if (death > wounded){
                         global.civic.garrison.wounded -= wounded;
                         wounded = 0;
@@ -475,6 +476,7 @@ function buildGarrison(garrison){
                         death = global.civic.garrison.raid;
                     }
                     global.civic.garrison.workers -= death;
+                    global.stats.died += death;
                     if (death > wounded){
                         global.civic.garrison.wounded -= wounded;
                         wounded = 0;
@@ -730,6 +732,10 @@ function warhead(){
     global.stats.days = 0;
     global.stats.tknow += global.stats.know;
     global.stats.know = 0;
+    global.stats.tstarved += global.stats.starved;
+    global.stats.starved = 0;
+    global.stats.tdied += global.stats.died;
+    global.stats.died = 0;
     global.stats.plasmid += new_plasmid;
     unlockAchieve(`apocalypse`);
     let new_achieve = unlockAchieve(`extinct_${god}`);

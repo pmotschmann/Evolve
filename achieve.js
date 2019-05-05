@@ -25,6 +25,11 @@ var achievements = {
         desc: `Evolved nightmarish flesh eating trees`,
         flair: `Audrey III`
     },
+    mass_starvation: {
+        name: `Great Leap Backwards`,
+        desc: `Have 100 citizens starve to death in a single game`,
+        flair: `Was Mao your mentor?`
+    },
     mass_extinction: {
         name: `Mass Extinction`,
         desc: `Led all civilizations to destruction`,
@@ -227,6 +232,9 @@ export function checkAchievements(){
     if (!global.stats.achieve['blackhole'] && global.tech['supercollider'] && global.tech['supercollider'] >= 99){
         unlockAchieve('blackhole');
     }
+    if (!global.stats.achieve['mass_starvation'] && global.stats.starved >= 100){
+        unlockAchieve('mass_starvation');
+    }
 }
 
 export function drawStats(){
@@ -237,10 +245,18 @@ export function drawStats(){
     $('#statsPanel').empty();
     let stats = $('#statsPanel');
     
+    stats.append(`<div><span class="has-text-success">Overall</span></div>`);
     stats.append(`<div><span class="has-text-warning">Plasmids Earned:</span> {{ plasmid }}</div>`);
     stats.append(`<div><span class="has-text-warning">Knowledge Spent:</span> {{ know | t_know }}</div>`);
+    stats.append(`<div><span class="has-text-warning">Starved to Death:</span> {{ starved | t_starved }}</div>`);
+    stats.append(`<div><span class="has-text-warning">Died in Combat:</span> {{ died | t_died }}</div>`);
     stats.append(`<div><span class="has-text-warning">Game Days Played:</span> {{ days | played }}</div>`);
     stats.append(`<div><span class="has-text-warning">Total Resets:</span> {{ reset }}</div>`);
+    stats.append(`<div class="cstat"><span class="has-text-success">Current Game</span></div>`);
+    stats.append(`<div><span class="has-text-warning">Knowledge Spent:</span> {{ know }}</div>`);
+    stats.append(`<div><span class="has-text-warning">Starved to Death:</span> {{ starved }}</div>`);
+    stats.append(`<div><span class="has-text-warning">Died in Combat:</span> {{ died }}</div>`);
+    stats.append(`<div><span class="has-text-warning">Game Days Played:</span> {{ days }}</div>`);
 
     let svue = {
         data: global.stats,
@@ -250,6 +266,12 @@ export function drawStats(){
             },
             t_know(k){
                 return k + global.stats.tknow;
+            },
+            t_starved(s){
+                return s + global.stats.tstarved;
+            },
+            t_died(d){
+                return d + global.stats.tdied;
             }
         }
     }

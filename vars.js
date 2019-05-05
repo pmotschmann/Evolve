@@ -47,7 +47,7 @@ else {
     global['new'] = true;
 }
 
-global['version'] = '0.2.36';
+global['version'] = '0.2.37';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -85,6 +85,15 @@ if (!global.stats['plasmid']){
 }
 if (!global.stats['starved']){
     global.stats['starved'] = 0;
+}
+if (!global.stats['tstarved']){
+    global.stats['tstarved'] = 0;
+}
+if (!global.stats['died']){
+    global.stats['died'] = 0;
+}
+if (!global.stats['tdied']){
+    global.stats['tdied'] = 0;
 }
 if (!global.stats['know']){
     global.stats['know'] = 0;
