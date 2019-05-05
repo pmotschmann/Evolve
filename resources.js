@@ -134,6 +134,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
         for (let i=0; i<inc.length; i++){
             craft.append($(`<span id="inc${name}${inc[i]}" @mouseover="hover('${name}',${inc[i]})" @mouseout="unhover('${name}',${inc[i]})"><a @click="craft('${name}',${inc[i]})">+<span class="craft" data-val="${inc[i]}">${inc[i]}</span></a></span>`));
         }
+        craft.append($(`<span id="inc${name}A"><a @click="craft('${name}','A')">+A</a></span>`));
     }
     else {
         res_container.append($(`<span></span>`));
@@ -176,24 +177,32 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                 return global.resource.Crates.display;
             },
             craft: function(res,vol){
-                var keyMult = keyMultiplier();
                 let craft_bonus = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
-                for (var i=0; i<keyMult; i++){
-                    let num = vol * craftCost[res].a;
-                    let br = false;
-                    while (num > 0){
-                        if (global.resource[craftCost[res].r].amount >= num){
-                            global.resource[craftCost[res].r].amount -= num;
-                            global.resource[res].amount += vol * craft_bonus;
-                            num = 0;
+                if (vol === 'A'){
+                    let volume = Math.floor(global.resource[craftCost[res].r].amount / craftCost[res].a);
+                    let num = volume * craftCost[res].a;
+                    global.resource[craftCost[res].r].amount -= num;
+                    global.resource[res].amount += volume * craft_bonus;
+                }
+                else {
+                    var keyMult = keyMultiplier();
+                    for (var i=0; i<keyMult; i++){
+                        let num = vol * craftCost[res].a;
+                        let br = false;
+                        while (num > 0){
+                            if (global.resource[craftCost[res].r].amount >= num){
+                                global.resource[craftCost[res].r].amount -= num;
+                                global.resource[res].amount += vol * craft_bonus;
+                                num = 0;
+                            }
+                            else {
+                                num -= craftCost[res].a;
+                                br = true;
+                            }
                         }
-                        else {
-                            num -= craftCost[res].a;
-                            br = true;
+                        if (br){
+                            break;
                         }
-                    }
-                    if (br){
-                        break;
                     }
                 }
             },
