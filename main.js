@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier } from './vars.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio } from './resources.js';
 import { defineJobs, job_desc, craftingRatio } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech, evoProgress } from './actions.js';
@@ -491,27 +491,27 @@ function fastLoop(){
 
         // trade routes
         if (global.tech['trade']){
-            Object.keys(global.resource).forEach(function (res) {
+            Object.keys(global.resource).forEach(function (res){
                 if (global.resource[res].trade > 0){
                     let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
-                    let price = Math.round(global.resource[res].trade * rate);
+                    let price = Math.round(global.resource[res].trade * rate * tradeRatio[res]);
 
                     if (global.resource.Money.amount >= price * time_multiplier){
-                        modRes(res,global.resource[res].trade * time_multiplier);
+                        modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
                         modRes('Money',-(price * time_multiplier));
                         breakdown.consume.Money['Trade'] -= price;
-                        breakdown.consume[res]['Trade'] = global.resource[res].trade;
+                        breakdown.consume[res]['Trade'] = global.resource[res].trade * tradeRatio[res];
                     }
                 }
                 else if (global.resource[res].trade < 0){
                     let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
-                    let price = Math.round(global.resource[res].value * global.resource[res].trade / divide);
+                    let price = Math.round(global.resource[res].value * global.resource[res].trade * tradeRatio[res] / divide);
 
                     if (global.resource[res].amount >= time_multiplier){
-                        modRes(res,global.resource[res].trade * time_multiplier);
+                        modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
                         modRes('Money',-(price * time_multiplier));
                         breakdown.consume.Money['Trade'] -= price;
-                        breakdown.consume[res]['Trade'] = global.resource[res].trade;
+                        breakdown.consume[res]['Trade'] = global.resource[res].trade * tradeRatio[res];
                     }
                 }
             });

@@ -22,6 +22,23 @@ export const resource_values = {
     //Neutronium: 1000
 };
 
+export const tradeRatio = {
+    Food: 1,
+    Lumber: 1,
+    Stone: 1,
+    Furs: 1,
+    Copper: 1,
+    Iron: 1,
+    Cement: 1,
+    Coal: 1,
+    Oil: 0.5,
+    Uranium: 0.25,
+    Steel: 1,
+    Titanium: 0.25,
+    Alloy: 0.25,
+    Polymer: 0.25,
+}
+
 export const craftCost = {
     Plywood: { r: 'Lumber', a: 100 },
     Brick: { r: 'Cement', a: 40 },
@@ -358,9 +375,9 @@ function marketItem(vue,mount,market_item,name,color,full){
     if (full){
         let trade = $('<span class="trade" v-show="m.active"><span class="has-text-warning">Routes</span></span>');
         market_item.append(trade);
-        trade.append($(`<b-tooltip :label="aBuy()" position="is-bottom" size="is-small" multilined animated><span class="sub has-text-success" @click="autoBuy('${name}')"><span class="route">+</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span class="sub has-text-success" @click="autoBuy('${name}')"><span class="route">+</span></span></b-tooltip>`));
         trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
-        trade.append($(`<b-tooltip :label="aSell()" position="is-bottom" size="is-small" multilined animated><span class="add has-text-danger" @click="autoSell('${name}')"><span class="route">-</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span class="add has-text-danger" @click="autoSell('${name}')"><span class="route">-</span></span></b-tooltip>`));
         tradeRouteColor(name);
     }
     
@@ -370,11 +387,13 @@ function marketItem(vue,mount,market_item,name,color,full){
             m: global.city.market
         },
         methods: {
-            aSell(){
-                return 'Auto-sell 1 unit per second at market value';
+            aSell(res){
+                let unit = tradeRatio[res] === 1 ? 'unit' : 'units';
+                return `Auto-sell ${tradeRatio[res]} ${unit} per second at market value`;
             },
-            aBuy(){
-                return 'Auto-buy 1 unit per second at market value';
+            aBuy(res){
+                let unit = tradeRatio[res] === 1 ? 'unit' : 'units';
+                return `Auto-buy ${tradeRatio[res]} ${unit} per second at market value`;
             },
             purchase(res){
                 let qty = Number(vues['market_qty'].qty);
