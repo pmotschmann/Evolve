@@ -475,11 +475,11 @@ function fastLoop(){
         }
 
         if (global.race['optimistic']){
-            stress -= 2;
+            stress += 2;
         }
 
         if (global.race['pessimistic']){
-            stress += 2;
+            stress -= 2;
         }
 
         if (global.civic['garrison']){
