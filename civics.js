@@ -708,6 +708,13 @@ function defineMad(){
             },
             warning(){
                 let plasma = Math.round((global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers) / 3);
+                let k_base = global.stats.know;
+                let k_inc = 100000;
+                while (k_base > k_inc){
+                    plasma++;
+                    k_base -= k_inc;
+                    k_inc *= 1.1;
+                }
                 return `This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning. You will gain ${plasma} Plasmids.`;
             }
         }
@@ -719,13 +726,19 @@ function warhead(){
     Object.keys(vues).forEach(function (v){
         vues[v].$destroy();
     });
-
     let god = global.race.species;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
     let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 3);
+    let k_base = global.stats.know;
+    let k_inc = 100000;
+    while (k_base > k_inc){
+        new_plasmid++;
+        k_base -= k_inc;
+        k_inc *= 1.1;
+    }
     plasmid += new_plasmid;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
