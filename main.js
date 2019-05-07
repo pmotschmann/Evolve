@@ -674,36 +674,43 @@ function fastLoop(){
                 food_bd['Hunters'] = delta + 'v';
             }
             else {
-                var food_multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
+                let farmers_base = global.civic.farmer.workers;
+                farmers_base *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
+                farmers_base *= global.city.biome === 'grassland' ? 1.1 : 1;
+                farmers_base *= global.civic.farmer.impact;
+                farmers_base *= racialTrait(global.civic.farmer.workers,'farmer');
+                if (global.tech['agriculture'] >= 7){
+                    farmers_base *= 1.1;
+                }
+
+                let weather_multiplier = 1;
                 if (global.city.calendar.temp === 0){
                     if (global.city.calendar.weather === 0){
-                        food_multiplier *= 0.7;
+                        weather_multiplier *= 0.7;
                     }
                     else {
-                        food_multiplier *= 0.85;
+                        weather_multiplier *= 0.85;
                     }
                 }
                 if (global.city.calendar.weather === 2){
-                    food_multiplier *= 1.1;
+                    weather_multiplier *= 1.1;
                 }
-                if (global.tech['agriculture'] >= 7){
-                    food_multiplier *= 1.1;
-                }
-                food_bd['Farmers'] = food_multiplier;
+
+                let mill_multiplier = 1;
                 if (global.city['mill']){
                     let mill_bonus = global.tech['agriculture'] >= 5 ? 0.05 : 0.03;
                     let working = global.city['mill'].count - global.city['mill'].on;
-                    food_multiplier *= 1 + (working * mill_bonus);
-                    food_bd['Mills'] = (working * mill_bonus) * 100;
+                    mill_multiplier += (working * mill_bonus);
                 }
-                food_multiplier *= ((tax_multiplier - 1) / 2) + 1;
-                food_multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
-                let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
-                delta = (global.civic.farmer.workers * impact * food_multiplier);
 
-                food_bd['Farmers'] = (food_bd['Farmers'] * global.civic.farmer.workers * impact * racialTrait(global.civic.farmer.workers,'farmer')) + 'v';
-                food_bd['Mills'] = food_bd['Mills'] + '%';
-                food_bd['Taxes'] = ((tax_multiplier * 100) - 100)  + '%';
+                let food_tax_mult = ((tax_multiplier - 1) / 2) + 1;
+
+                delta = (farmers_base * weather_multiplier * mill_multiplier * food_tax_mult);
+
+                food_bd['Farmers'] = (farmers_base) + 'v';
+                food_bd['Weather'] = ((weather_multiplier - 1) * 100) + '%';
+                food_bd['Mills'] = ((mill_multiplier - 1) * 100) + '%';
+                food_bd['Taxes'] = ((food_tax_mult - 1) * 100)  + '%';
             }
             
             if (global.tech['military']){
