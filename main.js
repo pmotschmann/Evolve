@@ -407,56 +407,44 @@ function fastLoop(){
             global.city.morale.season = 0;
         }
 
+        let weather_morale = 0;
         if (global.city.calendar.weather === 0){
             if (global.city.calendar.temp > 0){
                 if (global.city.calendar.wind === 1){
                     // Thunderstorm
                     if (global.race['skittish']){
-                        morale -= 25; 
-                        global.city.morale.weather = -12;
+                        weather_morale = -12; //possibly -25??
                     }
                     else {
-                        morale -= global.race['leathery'] ? 4: 5; 
-                        global.city.morale.weather = global.race['leathery'] ? -4 : -5;
+                        weather_morale = global.race['leathery'] ? -4 : -5;
                     }
                 }
-                else { 
+                else {
                     // Rain
-                    morale -= 2; 
-                    global.city.morale.weather = global.race['leathery'] ? -1 : -2;
+                    weather_morale = global.race['leathery'] ? -1 : -2;
                 }
-            }
-            else {
-                global.city.morale.weather = 0;
             }
         }
         else if (global.city.calendar.weather === 2){
             // Sunny
             if (global.race['nyctophilia']){
-                morale -= 10;
-                global.city.morale.weather = -5;
+                weather_morale = -5; //possibly -10??
             }
-            else if (global.city.calendar.wind === 0 && global.city.calendar.temp < 2){
-                morale += 2;
-                global.city.morale.weather = 2;
-            }
-            else if (global.city.calendar.wind === 1 && global.city.calendar.temp === 2){
-                morale += 2;
-                global.city.morale.weather = 2;
-            }
-            else {
-                global.city.morale.weather = 0;
+            else if ((global.city.calendar.wind === 0 && global.city.calendar.temp < 2) || (global.city.calendar.wind === 1 && global.city.calendar.temp === 2)){
+                //Still and Not Hot
+                // -or-
+                //Windy and Hot
+                weather_morale = 2;
             }
         }
         else {
+            //Cloudy
             if (global.race['nyctophilia']){
-                morale += 2;
-                global.city.morale.weather = 2;
-            }
-            else {
-                global.city.morale.weather = 0;
+                weather_morale = 2;
             }
         }
+        global.city.morale.weather = weather_morale;
+        morale += weather_morale;
 
         let stress = 0;
         if (!global.race['carnivore']){
@@ -598,6 +586,9 @@ function fastLoop(){
             }
             stress -= +(global.civic[job].workers / stress_level).toFixed(0);
         });
+        //if (global.race['content']){
+        //    stress = stress / 1.1;
+        //}
         global.civic.free = global.resource[races[global.race.species].name].amount - total;
         
         let entertainment = 0;
