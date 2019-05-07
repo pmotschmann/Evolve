@@ -586,9 +586,6 @@ function fastLoop(){
             }
             stress -= +(global.civic[job].workers / stress_level).toFixed(0);
         });
-        //if (global.race['content']){
-        //    stress = stress / 1.1;
-        //}
         global.civic.free = global.resource[races[global.race.species].name].amount - total;
         
         let entertainment = 0;

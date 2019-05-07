@@ -233,22 +233,27 @@ function buildGarrison(garrison){
                 if (army > enemy){
                     let deathCap = Math.floor(global.civic.garrison.raid / (5 - global.civic.garrison.tactic));
                     deathCap += wounded;
-                    if (deathCap < 0){
-                        deathCap = 0;
+                    if (deathCap < 1){
+                        deathCap = 1;
                     }
                     let death = Math.floor(Math.seededRandom(0,deathCap));
-                    if (global.race['armored']){
-                        death = Math.floor(death * 0.75);
-                    }
-                    if (global.race['scales']){
-                        death -= 2;
-                    }
                     if (global.race['frail']){
                         death++;
                     }
-                    if (global.tech['armor']){
-                        death -= global.tech['armor'];
+                    let armor = 0;
+                    if (global.race['armored']){
+                        armor += Math.floor(death * 0.75);
                     }
+                    if (global.race['scales']){
+                        armor += 2;
+                    }
+                    if (global.tech['armor']){
+                        armor += global.tech['armor'];
+                    }
+                    if (global.civic.garrison.raid > wounded){
+                        death -= armor;
+                    }
+
                     if (death < 0){
                         death = 0;
                     }
@@ -457,18 +462,23 @@ function buildGarrison(garrison){
                         deathCap = 1;
                     }
                     let death = Math.floor(Math.seededRandom(1,deathCap));
-                    if (global.race['armored']){
-                        death = Math.floor(death * 0.75);
-                    }
-                    if (global.race['scales']){
-                        death--;
-                    }
                     if (global.race['frail']){
                         death += global.civic.garrison.tactic + 1;
                     }
-                    if (global.tech['armor']){
-                        death -= global.tech['armor'];
+                    let armor = 0;
+                    if (global.race['armored']){
+                        armor += Math.floor(death * 0.75);
                     }
+                    if (global.race['scales']){
+                        armor++;
+                    }
+                    if (global.tech['armor']){
+                        armor += global.tech['armor'];
+                    }
+                    if (global.civic.garrison.raid > wounded){
+                        death -= armor;
+                    }
+
                     if (death < 0){
                         death = 0;
                     }
@@ -486,7 +496,7 @@ function buildGarrison(garrison){
                         wounded -= death;
                     }
 
-                    global.civic.garrison.wounded += Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death));
+                    global.civic.garrison.wounded += 1 + Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death));
                     messageQueue(`Your army was defeated. ${death} soldiers died in the conflict.`,'danger');
                 }
                 if (global.civic.garrison.wounded > global.civic.garrison.workers){
