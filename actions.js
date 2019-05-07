@@ -628,7 +628,7 @@ export const actions = {
         garrison: {
             id: 'city-garrison',
             title: 'Barracks',
-            desc: 'Increases solider capacity',
+            desc: 'Increases soldier capacity',
             reqs: { military: 1, housing: 1 },
             cost: { 
                 Money(){ return costMultiplier('garrison', 240, 1.5); },
@@ -1636,7 +1636,7 @@ export const actions = {
                     gain *= 1 + (global.civic.scientist.workers * 0.12);
                 }
                 gain = +(gain).toFixed(1);
-                return `+${gain} Max Knowledge`; 
+                return `<div>+${gain} Max Knowledge</div><div>+5% Knowledge Production</div>`; 
             },
             action(){
                 if (payCosts(actions.city.library.cost)){

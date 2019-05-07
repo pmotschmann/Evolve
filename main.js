@@ -709,7 +709,7 @@ function fastLoop(){
             if (global.tech['military']){
                 let hunting = global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
                 delta += hunting;
-                food_bd['Hunting'] = hunting + 'v';
+                food_bd['Soldiers'] = hunting + 'v';
             }
             
             delta = delta * global_multiplier * time_multiplier;
@@ -774,7 +774,7 @@ function fastLoop(){
             let hunting = armyRating(global.civic.garrison.workers,'hunting') / 10;
             let delta = hunting * fur_multiplier * global_multiplier * time_multiplier;
             modRes('Furs',delta);
-            fur_bd['Hunting'] = hunting  + 'v';
+            fur_bd['Soldiers'] = hunting  + 'v';
             fur_bd['Hunger'] = ((hunger - 1) * 100) + '%';
             breakdown['Furs'] = fur_bd;
         }
@@ -802,7 +802,12 @@ function fastLoop(){
         let scientist = global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * adjunct;
         know_bd['Scientist'] = (scientist * tax_multiplier)  + 'v';
         know_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-        delta += scientist * tax_multiplier * global_multiplier * time_multiplier * hunger;
+        let library_bonus = 1;
+        if (global.city['library']){
+            library_bonus = 1 + (global.city['library'].count * 0.05);
+            know_bd['Library'] = ((library_bonus - 1) * 100) + '%';
+        }
+        delta += scientist * tax_multiplier * global_multiplier * time_multiplier * hunger * library_bonus;
         modRes('Knowledge',delta);
         know_bd['Taxes'] = ((tax_multiplier * 100) - 100)  + '%';
         if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
