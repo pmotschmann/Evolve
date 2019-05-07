@@ -99,7 +99,7 @@ function taxRates(govern){
     vues['civ_taxes'].$mount('#tax_rates');
     
     $('#taxRateLabel').on('mouseover',function(){
-            var popper = $('<div id="popTaxRate" class="popper has-background-light has-text-dark">High tax rates yield more money per tax cycle but reduce worker productivity, low taxes have the inverse effect.</div>');
+            var popper = $('<div id="popTaxRate" class="popper has-background-light has-text-dark">High tax rates yield more money but reduce worker productivity, low taxes have the inverse effect.</div>');
             $('#main').append(popper);
             popper.show();
             poppers['popTaxRate'] = new Popper($('#taxRateLabel'),popper);

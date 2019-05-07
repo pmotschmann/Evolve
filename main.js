@@ -230,28 +230,13 @@ if (global.race.species === 'protoplasm'){
     if (global.evolution['sexual_reproduction'] && !global.evolution['phagocytosis'] && !global.evolution['chloroplasts'] && !global.evolution['chitin']){
         addAction('evolution','sexual_reproduction');
     }
-    else if (global.evolution['phagocytosis'] && global.evolution['phagocytosis'].count == 0){
+    else if ((global.evolution['phagocytosis'] || global.evolution['chloroplasts'] || global.evolution['chitin']) && !global.evolution['multicellular']){
         addAction('evolution','phagocytosis');
-    }
-    else if (global.evolution['chloroplasts'] && global.evolution['chloroplasts'].count == 0){
         addAction('evolution','chloroplasts');
-    }
-    else if (global.evolution['chitin'] && global.evolution['chitin'].count == 0){
         addAction('evolution','chitin');
     }
-    else if ((global.evolution['phagocytosis'] || global.evolution['chloroplasts'] || global.evolution['chitin']) && !global.evolution['multicellular']){
-        if (global.evolution['phagocytosis']){
-            addAction('evolution','phagocytosis');
-        }
-        else if (global.evolution['chloroplasts']){
-            addAction('evolution','chloroplasts');
-        }
-        else if (global.evolution['chitin']){
-            addAction('evolution','chitin');
-        }
-    }
     else {
-        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','protostomes','deuterostome','vascular','homoiohydric','athropods','mammals','eggshell','sentience'];
+        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','sentience'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -361,11 +346,18 @@ function fastLoop(){
                 increment--;
                 if (increment <= 0){ break; }
             }
+            let rna = increment;
+            if (global.evolution['bryophyte'] || global.evolution['protostomes'] || global.evolution['deuterostome']){
+                increment *= 2;
+            }
             modRes('DNA',increment * global_multiplier * time_multiplier);
-            modRes('RNA',-(increment * 2 * time_multiplier));
+            modRes('RNA',-(rna * 2 * time_multiplier));
         }
         if (global.evolution['organelles']){
             let rna_multiplier = global.race['rapid_mutation'] ? 2 : 1;
+            if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
+                rna_multiplier++;
+            }
             modRes('RNA',global.evolution['organelles'].count * rna_multiplier * global_multiplier * time_multiplier);
         }
         // Detect new unlocks
@@ -1375,6 +1367,22 @@ function fastLoop(){
 
 function midLoop(){
     if (global.race.species === 'protoplasm'){
+        var caps = {
+            RNA: 100,
+            DNA: 100
+        };
+        if (global.evolution['membrane']){
+            let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
+            caps['RNA'] += global.evolution['membrane'].count * effect;
+        }
+        if (global.evolution['eukaryotic_cell']){
+            let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 10 + 10 : 10;
+            caps['DNA'] += global.evolution['eukaryotic_cell'].count * effect;
+        }
+
+        global.resource.RNA.max = caps['RNA'];
+        global.resource.DNA.max = caps['DNA'];
+
         Object.keys(actions.evolution).forEach(function (action){
             if (actions.evolution[action] && actions.evolution[action].cost){
                 let element = $('#'+actions.evolution[action].id);

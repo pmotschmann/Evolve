@@ -41,10 +41,13 @@ export const actions = {
             title: 'Membrane',
             desc: 'Evolve Membranes',
             cost: { RNA(){ return (global.evolution['membrane'].count * 2) + 2; } },
-            effect: 'Increases RNA capacity by 5',
+            effect(){
+                let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
+                return `Increases RNA capacity by ${effect}`;
+            },
             action(){
                 if (payCosts(actions.evolution.membrane.cost)){
-                    global['resource']['RNA'].max += 5;
+                    global['resource']['RNA'].max += global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
                     global.evolution['membrane'].count++;
                     return true;
                 }
@@ -61,6 +64,9 @@ export const actions = {
             },
             effect(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
+                if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
+                    rna++;
+                }
                 return `Automatically generate ${rna} RNA`; 
             },
             action(){
@@ -76,10 +82,13 @@ export const actions = {
             title: 'Nucleus',
             desc: 'Evolve Nucleus',
             cost: {
-                RNA(){ return (global.evolution['nucleus'].count * 32) + 38; },
-                DNA(){ return (global.evolution['nucleus'].count * 16) + 18; }
+                RNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 16 : 32)) + 38; },
+                DNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16)) + 18; }
             },
-            effect: 'Automatically consume 2 RNA to create 1 DNA',
+            effect(){
+                let dna = global.evolution['bryophyte'] || global.evolution['protostomes'] || global.evolution['deuterostome'] ? 2 : 1;
+                return `Automatically consume 2 RNA to create ${dna} DNA`;
+            },
             action(){
                 if (payCosts(actions.evolution.nucleus.cost)){
                     global.evolution['nucleus'].count++;
@@ -96,11 +105,14 @@ export const actions = {
                 RNA(){ return (global.evolution['eukaryotic_cell'].count * 20) + 20; },
                 DNA(){ return (global.evolution['eukaryotic_cell'].count * 12) + 40; }
             },
-            effect: 'Increases DNA capacity by 10',
+            effect(){
+                let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 10 + 10 : 10;
+                return `Increases DNA capacity by ${effect}`;
+            },
             action(){
                 if (payCosts(actions.evolution.eukaryotic_cell.cost)){
                     global.evolution['eukaryotic_cell'].count++;
-                    global['resource']['DNA'].max += 10;
+                    global['resource']['DNA'].max += global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 10 + 10 : 10;
                     return true;
                 }
                 return false;
@@ -111,15 +123,13 @@ export const actions = {
             title: 'Mitochondria',
             desc: 'Evolve Mitochondria',
             cost: {
-                RNA(){ return (global.evolution['mitochondria'].count * 50) + 150; },
-                DNA(){ return (global.evolution['mitochondria'].count * 35) + 120; }
+                RNA(){ return (global.evolution['mitochondria'].count * 50) + 75; },
+                DNA(){ return (global.evolution['mitochondria'].count * 35) + 65; }
             },
-            effect: 'Increases DNA capacity by 25 and RNA capacity by 50',
+            effect: 'Increases the effect of membranes and eukaryotic cells',
             action(){
                 if (payCosts(actions.evolution.mitochondria.cost)){
                     global.evolution['mitochondria'].count++;
-                    global['resource']['DNA'].max += 25;
-                    global['resource']['RNA'].max += 50;
                     return true;
                 }
                 return false;
@@ -130,28 +140,22 @@ export const actions = {
             title: 'Sexual Reproduction',
             desc: 'Evolve Sexual Reproduction',
             cost: {
-                DNA(){ return 175; }
+                DNA(){ return 150; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Increases RNA generation from organelles',
             action(){
                 if (payCosts(actions.evolution.sexual_reproduction.cost)){
                     global.evolution['sexual_reproduction'].count++;
                     removeAction(actions.evolution.sexual_reproduction.id);
                     
-                    var path = Math.floor(Math.seededRandom(0,100));
-                    if (path < 84){
-                        global.evolution['phagocytosis'] = { count: 0 };
-                        addAction('evolution','phagocytosis');
-                    }
-                    else if (path < 92){
-                        global.evolution['chloroplasts'] = { count: 0 };
-                        addAction('evolution','chloroplasts');
-                    }
-                    else {
-                        global.evolution['chitin'] = { count: 0 };
-                        addAction('evolution','chitin');
-                    }
-                    global.evolution['final'] = 14;
+                    global.evolution['phagocytosis'] = { count: 0 };
+                    addAction('evolution','phagocytosis');
+                    global.evolution['chloroplasts'] = { count: 0 };
+                    addAction('evolution','chloroplasts');
+                    global.evolution['chitin'] = { count: 0 };
+                    addAction('evolution','chitin');
+
+                    global.evolution['final'] = 20;
                     evoProgress();
                 }
                 return false;
@@ -162,15 +166,19 @@ export const actions = {
             title: 'Phagocytosis',
             desc: 'Evolve Phagocytosis',
             cost: {
-                DNA(){ return 200; }
+                DNA(){ return 175; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Evolve in the direction of the animal kingdom. This is a major evolutionary fork.',
             action(){
                 if (payCosts(actions.evolution.phagocytosis.cost)){
                     global.evolution['phagocytosis'].count++;
                     removeAction(actions.evolution.phagocytosis.id);
+                    removeAction(actions.evolution.chloroplasts.id);
+                    removeAction(actions.evolution.chitin.id);
+                    delete global.evolution.chloroplasts;
+                    delete global.evolution.chitin;
                     global.evolution['multicellular'] = { count: 0 };
-                    global.evolution['final'] = 28;
+                    global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
                     evoProgress();
                 }
@@ -182,15 +190,19 @@ export const actions = {
             title: 'Chloroplasts',
             desc: 'Evolve Chloroplasts',
             cost: {
-                DNA(){ return 200; }
+                DNA(){ return 175; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Evolve in the direction of the plant kingdom. This is a major evolutionary fork.',
             action(){
                 if (payCosts(actions.evolution.chloroplasts.cost)){
                     global.evolution['chloroplasts'].count++;
                     removeAction(actions.evolution.chloroplasts.id);
+                    removeAction(actions.evolution.phagocytosis.id);
+                    removeAction(actions.evolution.chitin.id);
+                    delete global.evolution.phagocytosis;
+                    delete global.evolution.chitin;
                     global.evolution['multicellular'] = { count: 0 };
-                    global.evolution['final'] = 28;
+                    global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
                     evoProgress();
                 }
@@ -202,15 +214,19 @@ export const actions = {
             title: 'Chitin',
             desc: 'Evolve Chitin',
             cost: {
-                DNA(){ return 200; }
+                DNA(){ return 175; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Evolve in the direction of the fungi kingdom. This is a major evolutionary fork.',
             action(){
                 if (payCosts(actions.evolution.chitin.cost)){
                     global.evolution['chitin'].count++;
                     removeAction(actions.evolution.chitin.id);
+                    removeAction(actions.evolution.phagocytosis.id);
+                    removeAction(actions.evolution.chloroplasts.id);
+                    delete global.evolution.phagocytosis;
+                    delete global.evolution.chloroplasts;
                     global.evolution['multicellular'] = { count: 0 };
-                    global.evolution['final'] = 28;
+                    global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
                     evoProgress();
                 }
@@ -222,14 +238,14 @@ export const actions = {
             title: 'Multicellular',
             desc: 'Evolve Multicellular',
             cost: {
-                DNA(){ return 225; }
+                DNA(){ return 200; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Decreases cost of producing new nucleus',
             action(){
                 if (payCosts(actions.evolution.multicellular.cost)){
                     global.evolution['multicellular'].count++;
                     removeAction(actions.evolution.multicellular.id);
-                    global.evolution['final'] = 42;
+                    global.evolution['final'] = 60;
                     
                     if (global.evolution['phagocytosis']){
                         global.evolution['bilateral_symmetry'] = { count: 0 };
@@ -253,15 +269,15 @@ export const actions = {
             title: 'Spores',
             desc: 'Evolve Spores',
             cost: {
-                DNA(){ return 250; }
+                DNA(){ return 230; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Increases DNA generation from nucleus',
             action(){
                 if (payCosts(actions.evolution.spores.cost)){
                     global.evolution['spores'].count++;
                     removeAction(actions.evolution.spores.id);
                     global.evolution['bryophyte'] = { count: 0 };
-                    global.evolution['final'] = 56;
+                    global.evolution['final'] = 80;
                     addAction('evolution','bryophyte');
                     evoProgress();
                 }
@@ -273,15 +289,15 @@ export const actions = {
             title: 'Poikilohydric',
             desc: 'Evolve Poikilohydric',
             cost: {
-                DNA(){ return 250; }
+                DNA(){ return 230; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Increases DNA generation from nucleus',
             action(){
                 if (payCosts(actions.evolution.poikilohydric.cost)){
                     global.evolution['poikilohydric'].count++;
                     removeAction(actions.evolution.poikilohydric.id);
                     global.evolution['bryophyte'] = { count: 0 };
-                    global.evolution['final'] = 56;
+                    global.evolution['final'] = 80;
                     addAction('evolution','bryophyte');
                     evoProgress();
                 }
@@ -293,24 +309,22 @@ export const actions = {
             title: 'Bilateral Symmetry',
             desc: 'Evolve Bilateral Symmetry',
             cost: {
-                DNA(){ return 250; }
+                DNA(){ return 230; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Increases DNA generation from nucleus',
             action(){
                 if (payCosts(actions.evolution.bilateral_symmetry.cost)){
                     global.evolution['bilateral_symmetry'].count++;
                     removeAction(actions.evolution.bilateral_symmetry.id);
-                    global.evolution['final'] = 56;
+                    global.evolution['final'] = 80;
                     
-                    var path = Math.floor(Math.seededRandom(0,100));
-                    if (path < 14){
-                        global.evolution['protostomes'] = { count: 0 };
-                        addAction('evolution','protostomes');
-                    }
-                    else {
-                        global.evolution['deuterostome'] = { count: 0 };
-                        addAction('evolution','deuterostome');
-                    }
+                    global.evolution['athropods'] = { count: 0 };
+                    addAction('evolution','athropods');
+                    global.evolution['mammals'] = { count: 0 };
+                    addAction('evolution','mammals');
+                    global.evolution['eggshell'] = { count: 0 };
+                    addAction('evolution','eggshell');
+
                     evoProgress();
                 }
                 return false;
@@ -321,117 +335,16 @@ export const actions = {
             title: 'Bryophyte',
             desc: 'Evolve Bryophyte',
             cost: {
-                DNA(){ return 275; }
+                DNA(){ return 260; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Continue evolving towards sentience',
             action(){
                 if (payCosts(actions.evolution.bryophyte.cost)){
                     global.evolution['bryophyte'].count++;
                     removeAction(actions.evolution.bryophyte.id);
-                    global.evolution['final'] = 70;
+                    global.evolution['final'] = 100;
                     
-                    if (global.evolution['spores']){
-                        global.evolution['vascular'] = { count: 0 };
-                        addAction('evolution','vascular');
-                    }
-                    else {
-                        var path = Math.floor(Math.seededRandom(0,100));
-                        if (path < 50){
-                            global.evolution['vascular'] = { count: 0 };
-                            addAction('evolution','vascular');
-                        }
-                        else {
-                            global.evolution['homoiohydric'] = { count: 0 };
-                            addAction('evolution','homoiohydric');
-                        }
-                    }
-                    evoProgress();
-                }
-                return false;
-            }
-        },
-        protostomes: {
-            id: 'evo-protostomes',
-            title: 'Protostomes',
-            desc: 'Evolve Protostomes',
-            cost: {
-                DNA(){ return 275; }
-            },
-            effect: 'Unlocks the next step in evolution',
-            action(){
-                if (payCosts(actions.evolution.protostomes.cost)){
-                    global.evolution['protostomes'].count++;
-                    removeAction(actions.evolution.protostomes.id);
-                    global.evolution['athropods'] = { count: 0 };
-                    global.evolution['final'] = 70;
-                    addAction('evolution','athropods');
-                    evoProgress();
-                }
-                return false;
-            }
-        },
-        deuterostome: {
-            id: 'evo-deuterostome',
-            title: 'Deuterostome',
-            desc: 'Evolve Deuterostome',
-            cost: {
-                DNA(){ return 275; }
-            },
-            effect: 'Unlocks the next step in evolution',
-            action(){
-                if (payCosts(actions.evolution.deuterostome.cost)){
-                    global.evolution['deuterostome'].count++;
-                    removeAction(actions.evolution.deuterostome.id);
-                    global.evolution['final'] = 70;
-                    
-                    var path = Math.floor(Math.seededRandom(0,100));
-                    if (path < 67){
-                        global.evolution['mammals'] = { count: 0 };
-                        addAction('evolution','mammals');
-                    }
-                    else {
-                        global.evolution['eggshell'] = { count: 0 };
-                        addAction('evolution','eggshell');
-                    }
-                    evoProgress();
-                }
-                return false;
-            }
-        },
-        vascular: {
-            id: 'evo-vascular',
-            title: 'Vascular',
-            desc: 'Evolve Vascular',
-            cost: {
-                DNA(){ return 300; }
-            },
-            effect: 'Unlocks the next step in evolution',
-            action(){
-                if (payCosts(actions.evolution.vascular.cost)){
-                    global.evolution['vascular'].count++;
-                    removeAction(actions.evolution.vascular.id);
                     global.evolution['sentience'] = { count: 0 };
-                    global.evolution['final'] = 85;
-                    addAction('evolution','sentience');
-                    evoProgress();
-                }
-                return false;
-            }
-        },
-        homoiohydric: {
-            id: 'evo-homoiohydric',
-            title: 'Homoiohydric',
-            desc: 'Evolve Homoiohydric',
-            cost: {
-                DNA(){ return 300; }
-            },
-            effect: 'Unlocks the next step in evolution',
-            action(){
-                if (payCosts(actions.evolution.homoiohydric.cost)){
-                    global.evolution['homoiohydric'].count++;
-                    removeAction(actions.evolution.homoiohydric.id);
-                    global.evolution['sentience'] = { count: 0 };
-                    global.evolution['final'] = 85;
                     addAction('evolution','sentience');
                     evoProgress();
                 }
@@ -443,15 +356,19 @@ export const actions = {
             title: 'Athropods',
             desc: 'Evolve Athropods',
             cost: {
-                DNA(){ return 300; }
+                DNA(){ return 260; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Evolve in the direction of athropods. This is an evolutionary fork.',
             action(){
                 if (payCosts(actions.evolution.athropods.cost)){
                     global.evolution['athropods'].count++;
                     removeAction(actions.evolution.athropods.id);
+                    removeAction(actions.evolution.mammals.id);
+                    removeAction(actions.evolution.eggshell.id);
+                    delete global.evolution.mammals;
+                    delete global.evolution.eggshell;
                     global.evolution['sentience'] = { count: 0 };
-                    global.evolution['final'] = 85;
+                    global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     evoProgress();
                 }
@@ -463,15 +380,19 @@ export const actions = {
             title: 'Mammals',
             desc: 'Evolve Mammals',
             cost: {
-                DNA(){ return 300; }
+                DNA(){ return 260; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Evolve in the direction of mammals. This is an evolutionary fork.',
             action(){
                 if (payCosts(actions.evolution.mammals.cost)){
                     global.evolution['mammals'].count++;
+                    removeAction(actions.evolution.athropods.id);
                     removeAction(actions.evolution.mammals.id);
+                    removeAction(actions.evolution.eggshell.id);
+                    delete global.evolution.athropods;
+                    delete global.evolution.eggshell;
                     global.evolution['sentience'] = { count: 0 };
-                    global.evolution['final'] = 85;
+                    global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     evoProgress();
                 }
@@ -483,15 +404,19 @@ export const actions = {
             title: 'Eggshell',
             desc: 'Evolve Eggshell',
             cost: {
-                DNA(){ return 300; }
+                DNA(){ return 260; }
             },
-            effect: 'Unlocks the next step in evolution',
+            effect: 'Evolve in the direction of reptiles. This is an evolutionary fork.',
             action(){
                 if (payCosts(actions.evolution.eggshell.cost)){
                     global.evolution['eggshell'].count++;
+                    removeAction(actions.evolution.athropods.id);
+                    removeAction(actions.evolution.mammals.id);
                     removeAction(actions.evolution.eggshell.id);
+                    delete global.evolution.athropods;
+                    delete global.evolution.mammals;
                     global.evolution['sentience'] = { count: 0 };
-                    global.evolution['final'] = 85;
+                    global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     evoProgress();
                 }
@@ -503,16 +428,14 @@ export const actions = {
             title: 'Sentience',
             desc: 'Evolve Sentience',
             cost: {
-                RNA(){ return 400; },
-                DNA(){ return 350; }
+                RNA(){ return 300; },
+                DNA(){ return 300; }
             },
-            effect: 'Evolve into a species which has achieved sentience',
+            effect: 'Complete your evolution by evolving into a species which has achieved sentience',
             action(){
                 if (payCosts(actions.evolution.sentience.cost)){
                     global.evolution['sentience'].count++;
                     removeAction(actions.evolution.sentience.id);
-                    global.evolution['final'] = 100;
-                    evoProgress();
                     
                     // Trigger Next Phase of game
                     var path = Math.floor(Math.seededRandom(0,100));
@@ -593,11 +516,13 @@ export const actions = {
                             global.race.species = 'antid';
                         }
                     }
-                    else if (global.evolution['chloroplasts'] && global.evolution['vascular']){
-                        global.race.species = 'entish';
-                    }
-                    else if (global.evolution['chloroplasts'] && global.evolution['homoiohydric']){
-                        global.race.species = 'cacti';
+                    else if (global.evolution['chloroplasts']){
+                        if (path < 50){
+                            global.race.species = 'entish';
+                        }
+                        else {
+                            global.race.species = 'cacti';
+                        }
                     }
 
                     global.resource.RNA.display = false;
@@ -2259,7 +2184,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 1500; }
             },
-            effect: 'Craftsman produce an extra 3% per cycle for each Foundry.',
+            effect: 'Craftsman produce an extra 3% for each Foundry.',
             action(){
                 if (payCosts(actions.tech.artisans.cost)){
                     return true;
@@ -2310,7 +2235,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 12000; }
             },
-            effect: 'Craftsman produce an extra 5% per cycle for each Foundry.',
+            effect: 'Craftsman produce an extra 5% for each Foundry.',
             action(){
                 if (payCosts(actions.tech.master_craftsman.cost)){
                     return true;
@@ -2362,7 +2287,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 1080; }
             },
-            effect: 'Playwrights will increase the quality of entertainment incresing the effectiveness of entertainers.',
+            effect: 'Playwrights will increase the quality of entertainment increasing the effectiveness of entertainers.',
             action(){
                 if (payCosts(actions.tech.playwright.cost)){
                     return true;
