@@ -1585,7 +1585,7 @@ function midLoop(){
             let gain = global.city['wardenclyffe'].count * 1000;
             lCaps['scientist'] += global.city['wardenclyffe'].count;
             let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
-            gain += (global.city['wardenclyffe'].on * powered_gain);
+            gain += (p_on['wardenclyffe'] * powered_gain);
             if (global.tech['supercollider']){
                 let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
@@ -1593,7 +1593,7 @@ function midLoop(){
             caps['Knowledge'] += gain;
         }
         if (global.city['biolab']){
-            caps['Knowledge'] += (global.city['biolab'].on * 3000);
+            caps['Knowledge'] += (p_on['biolab'] * 3000);
         }
         if (global.city['bank']){
             let vault = 1000;
