@@ -783,13 +783,14 @@ function fastLoop(){
         know_bd['Sundial'] = know_base + 'v';
         let professors = global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
         professors *= racialTrait(global.civic.professor.workers,'science');
-        var know_multiplier = professors * tax_multiplier;
+        var professor_multiplier = professors * tax_multiplier;
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-            know_multiplier *= 1 + (global.city.temple.count * 0.05);
+            professor_multiplier *= 1 + (global.city.temple.count * 0.05);
         }
-        know_bd['Professors'] = (global.civic.professor.workers * know_multiplier)  + 'v';
-        know_multiplier *= hunger * time_multiplier * global_multiplier;
-        var delta = (global.civic.professor.workers * know_multiplier) + (know_base * time_multiplier);
+        know_bd['Professors'] = (global.civic.professor.workers * professor_multiplier)  + 'v';
+        professor_multiplier *= hunger * time_multiplier * global_multiplier;
+        let library_bonus = global.city['library'] ? 1 + (global.city.library.count * 0.05) : 1;
+        var delta = (global.civic.professor.workers * professor_multiplier * library_bonus) + (know_base * time_multiplier * library_bonus);
         let adjunct = 1;
         if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
             adjunct = 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
@@ -797,9 +798,8 @@ function fastLoop(){
         let scientist = global.civic.scientist.workers * racialTrait(global.civic.scientist.workers,'science') * adjunct;
         know_bd['Scientist'] = (scientist * tax_multiplier)  + 'v';
         know_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-        let library_bonus = 1;
+        
         if (global.city['library']){
-            library_bonus = 1 + (global.city['library'].count * 0.05);
             know_bd['Library'] = ((library_bonus - 1) * 100) + '%';
         }
         delta += scientist * tax_multiplier * global_multiplier * time_multiplier * hunger * library_bonus;
