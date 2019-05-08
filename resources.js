@@ -214,6 +214,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                             }
                             else {
                                 num -= craftCost[res].a;
+                                vol--;
                                 br = true;
                             }
                         }
