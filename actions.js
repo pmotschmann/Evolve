@@ -2407,6 +2407,7 @@ export const actions = {
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
                     global.resource.Sheet_Metal.display = true;
+                    loadFoundry();
                     return true;
                 }
                 return false;
