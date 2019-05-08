@@ -47,7 +47,7 @@ else {
     global['new'] = true;
 }
 
-global['version'] = '0.2.43';
+global['version'] = '0.2.44';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -231,44 +231,25 @@ export function modRes(res,val){
     return depleted;
 }
 
-// Detect if shift is pressed down
 export var shiftIsPressed = false;
-$(document).keydown(function(event){
-    if(event.which=="16"){
-        shiftIsPressed = true;
-    }
-});
-$(document).keyup(function(event){
-    if(event.which=="16"){
-        shiftIsPressed = false;
-    }
-});
-
-// Detect if control is pressed down
 export var cntrlIsPressed = false;
-$(document).keydown(function(event){
-    if(event.which=="17"){
-        cntrlIsPressed = true;
-    }
+export var altIsPressed = false;
+$(document).keydown(function(e){
+    cntrlIsPressed = e.ctrlKey ? true : false;
+    shiftIsPressed = e.shiftKey ? true : false;
+    altIsPressed = e.altKey ? true : false;
 });
-$(document).keyup(function(event){
-    if(event.which=="17"){
-        cntrlIsPressed = false;
-    }
+$(document).keyup(function(e){
+    cntrlIsPressed = e.ctrlKey ? true : false;
+    shiftIsPressed = e.shiftKey ? true : false;
+    altIsPressed = e.altKey ? true : false;
 });
 
-// Detect if alt is pressed down
-export var altIsPressed = false;
-$(document).keydown(function(event){
-    if(event.which=="18"){
-        altIsPressed = true;
-    }
-});
-$(document).keyup(function(event){
-    if(event.which=="18"){
-        altIsPressed = false;
-    }
-});
+window.onmousemove = function(e){
+    cntrlIsPressed = e.ctrlKey ? true : false;
+    shiftIsPressed = e.shiftKey ? true : false;
+    altIsPressed = e.altKey ? true : false;
+}
 
 export var keyMultiplierNumber = 1;
 export function keyMultiplier(){
