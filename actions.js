@@ -5506,7 +5506,7 @@ function smelterModal(modal){
 }
 
 function factoryModal(modal){
-    let fuel = $('<div><span class="has-text-warning">Opperating:</span> <span class="has-text-info">{{count | on}}/{{ on }}</span></div>');
+    let fuel = $('<div><span class="has-text-warning">Operating:</span> <span class="has-text-info">{{count | on}}/{{ on }}</span></div>');
     modal.append(fuel);
 
     let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>Luxury Goods</span></b-tooltip></div>`);
