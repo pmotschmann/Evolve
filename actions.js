@@ -817,29 +817,6 @@ export const actions = {
             },
             flair(){ return global.tech.agriculture >= 6 ? '100% Inorganic' : '100% Organic'; }
         },
-        silo: {
-            id: 'city-silo',
-            title: 'Grain Silo',
-            desc: 'Increases food storage capacity',
-            reqs: { agriculture: 3 },
-            cost: { 
-                Money(){ return costMultiplier('silo', 85, 1.30); },
-                Lumber(){ return costMultiplier('silo', 65, 1.35) },
-                Stone(){ return costMultiplier('silo', 50, 1.35); }
-            },
-            effect(){ 
-                let food = spatialReasoning(500);
-                return `+${food} Max Food`; 
-            },
-            action(){
-                if (payCosts(actions.city.silo.cost)){
-                    global.city['silo'].count++;
-                    global['resource']['Food'].max += spatialReasoning(500);
-                    return true;
-                }
-                return false;
-            }
-        },
         mill: {
             id: 'city-mill',
             title(){
@@ -877,6 +854,29 @@ export const actions = {
                 else {
                     return false;
                 }
+            }
+        },
+        silo: {
+            id: 'city-silo',
+            title: 'Grain Silo',
+            desc: 'Increases food storage capacity',
+            reqs: { agriculture: 3 },
+            cost: { 
+                Money(){ return costMultiplier('silo', 85, 1.30); },
+                Lumber(){ return costMultiplier('silo', 65, 1.35) },
+                Stone(){ return costMultiplier('silo', 50, 1.35); }
+            },
+            effect(){ 
+                let food = spatialReasoning(500);
+                return `+${food} Max Food`; 
+            },
+            action(){
+                if (payCosts(actions.city.silo.cost)){
+                    global.city['silo'].count++;
+                    global['resource']['Food'].max += spatialReasoning(500);
+                    return true;
+                }
+                return false;
             }
         },
         shed: {
@@ -986,48 +986,6 @@ export const actions = {
                 return false;
             }
         },
-        foundry: {
-            id: 'city-foundry',
-            title: 'Foundry',
-            desc: 'Manufacture building materials from raw materials',
-            reqs: { foundry: 1 },
-            cost: {
-                Money(){ return costMultiplier('foundry', 750, 1.35); },
-                Copper(){ return costMultiplier('foundry', 250, 1.35); },
-                Stone(){ return costMultiplier('foundry', 100, 1.35); }
-            },
-            effect(){
-                let desc = `<div>+1 Craftsman</div>`;
-                if (global.tech['foundry'] >= 2){
-                    let skill = global.tech['foundry'] >= 5 ? 5 : 3;
-                    desc = desc + `<div>+${skill}% Crafted Materials</div>`;
-                }
-                if (global.tech['foundry'] >= 6){
-                    desc = desc + `<div>+2% Brick Crafting</div>`;
-                }
-                return desc;
-            },
-            action(){
-                if (payCosts(actions.city.foundry.cost)){
-                    global.city['foundry'].count++;
-                    global.civic.craftsman.max++;
-                    global.civic.craftsman.display = true;
-                    if (!global.race['kindling_kindred']){
-                        global.resource.Plywood.display = true;
-                    }
-                    global.resource.Brick.display = true;
-                    if (global.resource.Iron.display){
-                        global.resource.Wrought_Iron.display = true;
-                    }
-                    if (global.tech['smelting'] && global.tech['smelting'] >= 2){
-                        global.resource.Sheet_Metal.display = true;
-                    }
-                    loadFoundry();
-                    return true;
-                }
-                return false;
-            }
-        },
         storage_yard: {
             id: 'city-storage_yard',
             title: 'Freight Yard',
@@ -1098,28 +1056,56 @@ export const actions = {
                 return false;
             }
         },
-        trade: {
-            id: 'city-trade',
-            title: 'Trade Post',
-            desc: 'Increases trade route capacity',
-            reqs: { trade: 1 },
-            cost: { 
-                Money(){ return costMultiplier('trade', 500, 1.35); },
-                Lumber(){ return costMultiplier('trade', 125, 1.35); },
-                Stone(){ return costMultiplier('trade', 50, 1.35); },
-                Furs(){ return costMultiplier('trade', 65, 1.35); }
+        bank: {
+            id: 'city-bank',
+            title: 'Bank',
+            desc(){
+                let planet = races[global.race.species].home;
+                return `Bank of ${planet}`;
             },
-            effect(){
-                let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-                return `+${routes} Trade Routes`; 
+            reqs: { banking: 1 },
+            cost: { 
+                Money(){ return costMultiplier('bank', 250, 1.5); },
+                Lumber(){ return costMultiplier('bank', 75, 1.30); },
+                Stone(){ return costMultiplier('bank', 100, 1.45); }
+            },
+            effect(){ 
+                let vault = 1000;
+                if (global.tech['banking'] >= 5){
+                    vault = 5000;
+                }
+                else if (global.tech['banking'] >= 3){
+                    vault = 2500;
+                }
+                if (global.race['paranoid']){
+                    vault *= 0.9;
+                }
+                else if (global.race['hoarder']){
+                    vault *= 1.1;
+                }
+                if (global.tech['banking'] >= 7){
+                    vault *= 1 + (global.civic.banker.workers * 0.05);
+                }
+                if (global.tech['banking'] >= 8){
+                    vault += 25 * global.resource[races[global.race.species].name].amount;
+                }
+                if (global.tech['stock_exchange']){
+                    vault *= 1 + (global.tech['stock_exchange'] * 0.1);
+                }
+                vault = spatialReasoning(vault);
+                vault = +(vault).toFixed(0);
+                if (global.tech['banking'] >= 2){
+                    return `<div>+\$${vault} Max Money</div><div>+1 Max Banker</div>`; 
+                }
+                else {
+                    return `+\$${vault} Max Money.`; 
+                }
             },
             action(){
-                if (payCosts(actions.city.trade.cost)){
-                    global.city['trade'].count++;
-                    global.city.market.mtrade += global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-                    if (global.race['resourceful']){
-                        global.city.market.mtrade++;
-                    }
+                if (payCosts(actions.city.bank.cost)){
+                    global['resource']['Money'].max += 1000;
+                    global.city.bank.count++;
+                    global.civic.banker.max = global.city.bank.count;
                     return true;
                 }
                 return false;
@@ -1257,6 +1243,76 @@ export const actions = {
                 return false;
             }
         },
+        foundry: {
+            id: 'city-foundry',
+            title: 'Foundry',
+            desc: 'Manufacture building materials from raw materials',
+            reqs: { foundry: 1 },
+            cost: {
+                Money(){ return costMultiplier('foundry', 750, 1.35); },
+                Copper(){ return costMultiplier('foundry', 250, 1.35); },
+                Stone(){ return costMultiplier('foundry', 100, 1.35); }
+            },
+            effect(){
+                let desc = `<div>+1 Craftsman</div>`;
+                if (global.tech['foundry'] >= 2){
+                    let skill = global.tech['foundry'] >= 5 ? 5 : 3;
+                    desc = desc + `<div>+${skill}% Crafted Materials</div>`;
+                }
+                if (global.tech['foundry'] >= 6){
+                    desc = desc + `<div>+2% Brick Crafting</div>`;
+                }
+                return desc;
+            },
+            action(){
+                if (payCosts(actions.city.foundry.cost)){
+                    global.city['foundry'].count++;
+                    global.civic.craftsman.max++;
+                    global.civic.craftsman.display = true;
+                    if (!global.race['kindling_kindred']){
+                        global.resource.Plywood.display = true;
+                    }
+                    global.resource.Brick.display = true;
+                    if (global.resource.Iron.display){
+                        global.resource.Wrought_Iron.display = true;
+                    }
+                    if (global.tech['smelting'] && global.tech['smelting'] >= 2){
+                        global.resource.Sheet_Metal.display = true;
+                    }
+                    loadFoundry();
+                    return true;
+                }
+                return false;
+            }
+        },
+        factory: {
+            id: 'city-factory',
+            title: 'Factory',
+            desc: 'Produces manufactured goods',
+            reqs: { high_tech: 3 },
+            cost: { 
+                Money(){ return costMultiplier('factory', 25000, 1.3); },
+                Cement(){ return costMultiplier('factory', 1000, 1.3); },
+                Steel(){ return costMultiplier('factory', 7500, 1.3); },
+                Titanium(){ return costMultiplier('factory', 2500, 1.3); }
+            },
+            effect(){ 
+                return `Factories can be used to produce any number of manufactored goods. Uses 3kW per factory.`;
+            },
+            powered: 3,
+            special: true,
+            action(){
+                if (payCosts(actions.city.factory.cost)){
+                    global.city['factory'].count++;
+                    global.resource.Alloy.display = true;
+                    if (global.city.power > 2){
+                        global.city['factory'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         smelter: {
             id: 'city-smelter',
             title: 'Smelter',
@@ -1294,34 +1350,6 @@ export const actions = {
                 return false;
             },
             flair: '<div>40% Zinc, 40% Titanium, 30% Iron,<div></div>40% Dolomite, 40% Lead, 0.04% Nickel</div>'
-        },
-        factory: {
-            id: 'city-factory',
-            title: 'Factory',
-            desc: 'Produces manufactured goods',
-            reqs: { high_tech: 3 },
-            cost: { 
-                Money(){ return costMultiplier('factory', 25000, 1.3); },
-                Cement(){ return costMultiplier('factory', 1000, 1.3); },
-                Steel(){ return costMultiplier('factory', 7500, 1.3); },
-                Titanium(){ return costMultiplier('factory', 2500, 1.3); }
-            },
-            effect(){ 
-                return `Factories can be used to produce any number of manufactored goods. Uses 3kW per factory.`;
-            },
-            powered: 3,
-            special: true,
-            action(){
-                if (payCosts(actions.city.factory.cost)){
-                    global.city['factory'].count++;
-                    global.resource.Alloy.display = true;
-                    if (global.city.power > 2){
-                        global.city['factory'].on++;
-                    }
-                    return true;
-                }
-                return false;
-            }
         },
         mine: {
             id: 'city-mine',
@@ -1450,6 +1478,33 @@ export const actions = {
                 return false;
             }
         },
+        trade: {
+            id: 'city-trade',
+            title: 'Trade Post',
+            desc: 'Increases trade route capacity',
+            reqs: { trade: 1 },
+            cost: { 
+                Money(){ return costMultiplier('trade', 500, 1.35); },
+                Lumber(){ return costMultiplier('trade', 125, 1.35); },
+                Stone(){ return costMultiplier('trade', 50, 1.35); },
+                Furs(){ return costMultiplier('trade', 65, 1.35); }
+            },
+            effect(){
+                let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+                return `+${routes} Trade Routes`; 
+            },
+            action(){
+                if (payCosts(actions.city.trade.cost)){
+                    global.city['trade'].count++;
+                    global.city.market.mtrade += global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+                    if (global.race['resourceful']){
+                        global.city.market.mtrade++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         amphitheatre: {
             id: 'city-amphitheatre',
             title: 'Amphitheatre',
@@ -1503,61 +1558,6 @@ export const actions = {
             action(){
                 if (payCosts(actions.city.temple.cost)){
                     global.city['temple'].count++;
-                    return true;
-                }
-                return false;
-            }
-        },
-        bank: {
-            id: 'city-bank',
-            title: 'Bank',
-            desc(){
-                let planet = races[global.race.species].home;
-                return `Bank of ${planet}`;
-            },
-            reqs: { banking: 1 },
-            cost: { 
-                Money(){ return costMultiplier('bank', 250, 1.5); },
-                Lumber(){ return costMultiplier('bank', 75, 1.30); },
-                Stone(){ return costMultiplier('bank', 100, 1.45); }
-            },
-            effect(){ 
-                let vault = 1000;
-                if (global.tech['banking'] >= 5){
-                    vault = 5000;
-                }
-                else if (global.tech['banking'] >= 3){
-                    vault = 2500;
-                }
-                if (global.race['paranoid']){
-                    vault *= 0.9;
-                }
-                else if (global.race['hoarder']){
-                    vault *= 1.1;
-                }
-                if (global.tech['banking'] >= 7){
-                    vault *= 1 + (global.civic.banker.workers * 0.05);
-                }
-                if (global.tech['banking'] >= 8){
-                    vault += 25 * global.resource[races[global.race.species].name].amount;
-                }
-                if (global.tech['stock_exchange']){
-                    vault *= 1 + (global.tech['stock_exchange'] * 0.1);
-                }
-                vault = spatialReasoning(vault);
-                vault = +(vault).toFixed(0);
-                if (global.tech['banking'] >= 2){
-                    return `<div>+\$${vault} Max Money</div><div>+1 Max Banker</div>`; 
-                }
-                else {
-                    return `+\$${vault} Max Money.`; 
-                }
-            },
-            action(){
-                if (payCosts(actions.city.bank.cost)){
-                    global['resource']['Money'].max += 1000;
-                    global.city.bank.count++;
-                    global.civic.banker.max = global.city.bank.count;
                     return true;
                 }
                 return false;
