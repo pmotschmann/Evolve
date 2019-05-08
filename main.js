@@ -634,9 +634,9 @@ function fastLoop(){
         // Consumption
         fed = true;
         if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
-            let consume = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.civic.free * 0.5)) * (global.race['gluttony'] ? 1.25 : 1);
+            let consume = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.civic.free * 0.5)) * (global.race['gluttony'] ? 1.1 : 1);
             if (global.race['high_metabolism']){
-                consume *= 1.1;
+                consume *= 1.05;
             }
             if (global.race['photosynth']){
                 switch(global.city.calendar.weather){
