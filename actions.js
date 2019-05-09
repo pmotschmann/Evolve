@@ -2652,7 +2652,7 @@ export const actions = {
                 Money(){ return 90000; },
                 Knowledge(){ return 65000; }
             },
-            effect: 'Security cameras make monitoring large storage spaces easier increaseing storage potential.',
+            effect: 'Security cameras make monitoring large storage spaces easier, increasing storage potential.',
             action(){
                 if (payCosts(actions.tech.cameras.cost)){
                     return true;
@@ -2663,13 +2663,13 @@ export const actions = {
         pocket_dimensions: {
             id: 'tech-pocket_dimensions',
             title: 'Pocket Dimensions',
-            desc: 'Learn to create interior spaces that are larger then exterior spaces.',
+            desc: 'Learn to create interior spaces that are larger than exterior spaces.',
             reqs: { particles: 1, storage: 5 },
             grant: ['storage',6],
             cost: {
                 Knowledge(){ return 108000; }
             },
-            effect: 'The ulitmate upgrade for warehouses. Extra supercollider levels will increase the effectiveness of this technology.',
+            effect: 'The ultimate upgrade for warehouses. Extra supercollider levels will increase the effectiveness of this technology.',
             action(){
                 if (payCosts(actions.tech.pocket_dimensions.cost)){
                     return true;
@@ -2979,7 +2979,7 @@ export const actions = {
             cost: { 
                 Knowledge(){ return 90; }
             },
-            effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money',
+            effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money.',
             action(){
                 if (payCosts(actions.tech.banking.cost)){
                     global.city['bank'] = { count: 0 };
@@ -3167,7 +3167,7 @@ export const actions = {
                 Money(){ return 425000; },
                 Knowledge(){ return 144000; }
             },
-            effect: 'Encourge citizens to establish 401K plans increasing the total amount of wealth available.',
+            effect: 'Encourage citizens to establish 401K plans increasing the total amount of wealth available.',
             action(){
                 if (payCosts(actions.tech.four_oh_one.cost)){
                     return true;
@@ -3203,7 +3203,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 120000; }
             },
-            effect: `Plan the construction of a monument to celebrate your civilization's greatness`,
+            effect: `Plan the construction of a monument to celebrate your civilization's greatness.`,
             action(){
                 if (payCosts(actions.tech.monument.cost)){
                     var tech = actions.tech.monument.grant[0];
@@ -3277,7 +3277,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 3240; }
             },
-            effect: 'Libraries will boost the effect of universities by 2% per library',
+            effect: 'Libraries will boost the effect of universities by 2% per library.',
             action(){
                 if (payCosts(actions.tech.research_grant.cost)){
                     return true;
@@ -3328,7 +3328,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 51750; }
             },
-            effect: 'Upgrade wardenclyffe towers with tesla coils increasing their science potental when powered.',
+            effect: 'Upgrade wardenclyffe towers with tesla coils increasing their science potential when powered.',
             action(){
                 if (payCosts(actions.tech.tesla_coil.cost)){
                     return true;
@@ -3345,7 +3345,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 61200; }
             },
-            effect: 'The internet is a revolution which massively changes how information is exchanged. Increases the base value of Universities and Libraries by 40%',
+            effect: 'The internet is a revolution which massively changes how information is exchanged. Increases the base value of Universities and Libraries by 40%.',
             action(){
                 if (payCosts(actions.tech.internet.cost)){
                     return true;
@@ -4236,7 +4236,7 @@ export const actions = {
                 Knowledge(){ return 5400; },
                 Coal(){ return 750; }
             },
-            effect: 'Outfit your army with firearms, much deadlier then primative bows and arrows.',
+            effect: 'Outfit your army with firearms, much deadlier than primitive bows and arrows.',
             action(){
                 if (payCosts(actions.tech.flintlock_rifle.cost)){
                     return true;
