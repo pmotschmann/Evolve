@@ -353,12 +353,12 @@ export const actions = {
         },
         athropods: {
             id: 'evo-athropods',
-            title: 'Athropods',
-            desc: 'Evolve Athropods',
+            title: 'Arthropods',
+            desc: 'Evolve Arthropods',
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Evolve in the direction of athropods. This is an evolutionary fork.',
+            effect: 'Evolve in the direction of arthropods. This is an evolutionary fork.',
             action(){
                 if (payCosts(actions.evolution.athropods.cost)){
                     global.evolution['athropods'].count++;
@@ -825,10 +825,10 @@ export const actions = {
             desc(){ 
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
-                    return `+${bonus}% Farmer efficency OR +1kW`;
+                    return `+${bonus}% Farmer efficiency OR +1kW`;
                 }
                 else {
-                    return `Increases farmer efficency by ${bonus}%`;
+                    return `Increases farmer efficiency by ${bonus}%`;
                 }
             },
             reqs: { agriculture: 4 },
@@ -1297,7 +1297,7 @@ export const actions = {
                 Titanium(){ return costMultiplier('factory', 2500, 1.3); }
             },
             effect(){ 
-                return `Factories can be used to produce any number of manufactored goods. Uses 3kW per factory.`;
+                return `Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.`;
             },
             powered: 3,
             special: true,
@@ -1678,10 +1678,10 @@ export const actions = {
                     let desc = `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div>If powered uses 2kW but increases it's Knowledge gain to ${pgain} and morale by ${morale}%</div>`
+                        desc = desc + `<div>If powered uses 2kW but increases its Knowledge gain to ${pgain} and morale by ${morale}%</div>`
                     }
                     else {
-                        desc = desc + `<div>If powered uses 2kW but increases it's Knowledge gain to ${pgain}</div>`;
+                        desc = desc + `<div>If powered uses 2kW but increases its Knowledge gain to ${pgain}</div>`;
                     }
                     return desc;
                 }
@@ -2033,7 +2033,7 @@ export const actions = {
                 Money(){ return 50; },
                 Knowledge(){ return 180; }
             },
-            effect: 'learn the joys of a short commute by living at work!',
+            effect: 'Learn the joys of a short commute by living at work!',
             action(){
                 if (payCosts(actions.tech.farm_house.cost)){
                     return true;
@@ -2050,7 +2050,7 @@ export const actions = {
             cost: { 
                 Knowledge(){ return 55; }
             },
-            effect: 'Increase farm efficency by 66% with irrigation.',
+            effect: 'Increase farm efficiency by 66% with irrigation.',
             action(){
                 if (payCosts(actions.tech.irrigation.cost)){
                     global.civic.farmer.impact = 2.5;
@@ -2158,7 +2158,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 650; }
             },
-            effect: 'Design the foundry, a place for crastman to produce manufactured materials.',
+            effect: 'Design the foundry, a place for craftsman to produce manufactured materials.',
             action(){
                 if (payCosts(actions.tech.foundry.cost)){
                     global.city['foundry'] = {
@@ -3203,7 +3203,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 120000; }
             },
-            effect: `Plan the construction of a monument to celebrate your civilization's greatness.`,
+            effect: `Plan the construction of a monument to celebrate your civilizations greatness.`,
             action(){
                 if (payCosts(actions.tech.monument.cost)){
                     var tech = actions.tech.monument.grant[0];
@@ -3851,7 +3851,7 @@ export const actions = {
                 Knowledge(){ return 3375; },
                 Iron(){ return 400; }
             },
-            effect: 'Sawmills increase the lumber yeild of your lumberjacks.',
+            effect: 'Sawmills increase the lumber yield of your lumberjacks.',
             action(){
                 if (payCosts(actions.tech.iron_saw.cost)){
                     global.city['sawmill'] = {
@@ -4218,7 +4218,7 @@ export const actions = {
                 Knowledge(){ return 225; },
                 Lumber(){ return 250; }
             },
-            effect: 'Create the bow and outfit your army with ranged weapons. Sure to give you dominance over the primates.',
+            effect: `Create the bow and outfit your army with ranged weapons. It's sure to give you dominance over the primates.`,
             action(){
                 if (payCosts(actions.tech.bows.cost)){
                     return true;
@@ -4493,7 +4493,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 72000; }
             },
-            effect: 'Screw conveyors can greatly increase the output of cement factories, however they require power to opperate.',
+            effect: 'Screw conveyors can greatly increase the output of cement factories, however they require power to operate.',
             action(){
                 if (payCosts(actions.tech.screw_conveyor.cost)){
                     return true;
@@ -4564,7 +4564,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 100000; }
             },
-            effect: 'Subatomic particals discovered by Dr Hank Pynn using the supercollider. Has applications in dimensional physics.',
+            effect: 'Subatomic particles discovered by Dr Hank Pynn using the supercollider. Has applications in dimensional physics.',
             action(){
                 if (payCosts(actions.tech.pynn_partical.cost)){
                     return true;
