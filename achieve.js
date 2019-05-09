@@ -199,7 +199,7 @@ export function drawAchieve(){
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span></div></b-tooltip>`));
         }
     });
-    achieve.prepend(`<div class="has-text-warning">Achivements Earned: ${earned} of ${total}</div>`);
+    achieve.prepend(`<div class="has-text-warning">Achievements Earned: ${earned} of ${total}</div>`);
 
     let avue = {
         methods: {

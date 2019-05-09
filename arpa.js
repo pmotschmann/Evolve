@@ -164,7 +164,7 @@ const genePool = {
     spatial_reasoning: {
         id: 'genes-spatial_reasoning',
         title: 'Spatial Reasoning',
-        desc: 'Plasmids boost stroage space',
+        desc: 'Plasmids boost storage space',
         reqs: {},
         grant: ['store',1],
         cost: 50,
