@@ -65,6 +65,9 @@ export const events = {
             global.civic.garrison.workers -= killed;
             global.civic.garrison.wounded += wounded;
             global.stats.died += killed;
+            if (global.civic.garrison.wounded > global.civic.garrison.workers){
+                global.civic.garrison.wounded = global.civic.garrison.workers;
+            }
 
             if (army > enemy){
                 return `An attack by a rival city has been repelled, ${killed} soldiers were killed and ${wounded} soldiers were wounded.`;

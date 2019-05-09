@@ -234,10 +234,11 @@ export function loadFoundry(){
             },
             methods: {
                 add(res){
-                    if (global.city.foundry.crafting < global.city.foundry.count){
+                    if (global.city.foundry.crafting < global.city.foundry.count && global.civic.free > 0){
                         global.civic.craftsman.workers++;
                         global.city.foundry.crafting++;
                         global.city.foundry[res]++;
+                        global.civic.free--;
                     }
                 },
                 sub(res){
@@ -245,6 +246,7 @@ export function loadFoundry(){
                         global.city.foundry[res]--;
                         global.civic.craftsman.workers--;
                         global.city.foundry.crafting--;
+                        global.civic.free++;
                     }
                 },
                 hover(res){
