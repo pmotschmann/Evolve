@@ -1668,6 +1668,14 @@ function midLoop(){
             else if (global.resource[res].amount < 0){
                 global.resource[res].amount = 0;
             }
+            if (global.resource[res].amount >= global.resource[res].max * 0.99){
+                if (!$(`#res-${res} .count`).hasClass('has-text-warning')){
+                    $(`#res-${res} .count`).addClass('has-text-warning');
+                }
+            }
+            else if ($(`#res-${res} .count`).hasClass('has-text-warning')){
+                $(`#res-${res} .count`).removeClass('has-text-warning');
+            }
         });
         
         Object.keys(lCaps).forEach(function (job){
