@@ -1,8 +1,13 @@
-#### 0.2.48
+#### 0.2.49
 Added changelog link to version listing<br>
 Added protection against loading a corrupt save string<br>
 Greedy trait is now less greedy<br>
 Spelling error fixes<br>
+
+#### 0.2.48
+Resources that are at greater then 99% capacity now change color to indicate they are at cap.<br>
+Attacks from rival cities should no longer cause more wounded soldiers then you have.<br>
+Assigning craftsman when no citizens are free will no longer take the labor from another job.<br>
 
 #### 0.2.47
 Gluttony trait lowered to 10% from 25% <br>
