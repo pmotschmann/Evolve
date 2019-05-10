@@ -37,14 +37,17 @@ Math.seededRandom = function(min, max) {
 var global_data = save.getItem('evolved') || false;
 if (global_data) {
     // Load pre-existing game data
-    global = JSON.parse(LZString.decompressFromUTF16(global_data));
-    Math.seed = global.seed;
+    let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
+    if (saveState){
+        global = saveState;
+        Math.seed = global.seed;
+    }
+    else {
+        newGameData();
+    }
 }
 else {
-    global['race'] = { species : 'protoplasm', gods: 'none' };
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
-    global['new'] = true;
+    newGameData();
 }
 
 global['version'] = '0.2.48';
@@ -206,6 +209,13 @@ if (global['new']){
     global['new'] = false;
 }
 
+function newGameData(){
+    global['race'] = { species : 'protoplasm', gods: 'none' };
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+    global['new'] = true;
+}
+
 export function messageQueue(msg,color){
     color = color || 'warning';
     var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
@@ -335,9 +345,12 @@ window.exportGame = function exportGame(){
 
 window.importGame = function importGame(){
     if ($('#importExport').val().length > 0){
-        global = JSON.parse(LZString.decompressFromBase64($('#importExport').val()));
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-        window.location.reload();
+        let saveState = JSON.parse(LZString.decompressFromBase64($('#importExport').val()));
+        if (saveState){
+            global = saveState;
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            window.location.reload();
+        }
     }
 }
 
