@@ -1272,7 +1272,7 @@ function fastLoop(){
 
         // Tax Income
         if (global.tech['currency'] >= 1){
-            var income = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] ? 0 : global.civic.free)) * ( global.race['greedy'] ? 1 : 2 );
+            var income = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] ? 0 : global.civic.free)) * ( global.race['greedy'] ? 1.75 : 2 );
             income /= 5;
             var tax_rate;
             switch(Number(global.civic.taxes.tax_rate)){
