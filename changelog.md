@@ -1,5 +1,7 @@
 #### 0.2.48
 Added changelog link to version listing
+Added protection against loading a corrupt save string
+Greedy trait is now less greedy
 Spelling error fixes
 
 #### 0.2.47
