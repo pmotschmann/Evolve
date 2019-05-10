@@ -1508,7 +1508,7 @@ export const actions = {
         amphitheatre: {
             id: 'city-amphitheatre',
             title: 'Amphitheatre',
-            desc: 'A stage for the preforming arts',
+            desc: 'A stage for the performing arts',
             reqs: { theatre: 1 },
             cost: {
                 Money(){ return costMultiplier('amphitheatre', 500, 1.55); },
@@ -1678,10 +1678,10 @@ export const actions = {
                     let desc = `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div>If powered uses 2kW but increases its Knowledge gain to ${pgain} and morale by ${morale}%</div>`
+                        desc = desc + `<div>If powered uses 2kW but increases its Max Knowledge to ${pgain} and morale by ${morale}%</div>`
                     }
                     else {
-                        desc = desc + `<div>If powered uses 2kW but increases its Knowledge gain to ${pgain}</div>`;
+                        desc = desc + `<div>If powered uses 2kW but increases its Max Knowledge to ${pgain}</div>`;
                     }
                     return desc;
                 }
@@ -3294,7 +3294,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 27000; }
             },
-            effect: 'Each scientist will publish their work in a scientific journal. Libraries increased by 12% per scientist.',
+            effect: 'Each scientist will publish their work in a scientific journal. Libraries max knowledge increased by 12% per scientist.',
             action(){
                 if (payCosts(actions.tech.scientific_journal.cost)){
                     return true;

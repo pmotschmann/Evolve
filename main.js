@@ -702,9 +702,9 @@ function fastLoop(){
                 food_bd['Taxes'] = ((food_tax_mult - 1) * 100)  + '%';
             }
 
-            let army_hunting = 0;
+            let hunting = 0;
             if (global.tech['military']){
-                army_hunting = global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
+                hunting = global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
             }
 
             let delta = food_base;
