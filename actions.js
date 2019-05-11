@@ -1573,8 +1573,8 @@ export const actions = {
             reqs: { science: 1 },
             cost: {
                 Money(){ return costMultiplier('university', 900, 1.5) - 500; },
-                Lumber(){ return costMultiplier('university', 500, 1.35) - 100; },
-                Stone(){ return costMultiplier('university', 750, 1.35) - 150; }
+                Lumber(){ return costMultiplier('university', 500, 1.35) - 200; },
+                Stone(){ return costMultiplier('university', 750, 1.35) - 350; }
             },
             effect(){
                 let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;

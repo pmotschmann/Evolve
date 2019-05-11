@@ -473,9 +473,11 @@ function breakdownPopover(id,name,type){
         vues[`res_${id}_temp`].$mount(`#resBreak${id} > div`);
     });
     $(`#${id}`).on('mouseout',function(){
-            if (breakdown[type][name]){
+        if (breakdown[type][name]){
             $(`#resBreak${id}`).hide();
-            poppers[type+name].destroy();
+            if (poppers[type+name]){
+                poppers[type+name].destroy();
+            }
             $(`#resBreak${id}`).remove();
         }
         vues[`res_${id}_temp`].$destroy();

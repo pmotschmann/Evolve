@@ -1,3 +1,6 @@
+#### 0.2.51
+University starts slightly cheaper<br>
+
 #### 0.2.50
 Added new capacity breakdowns for various resources<br>
 
