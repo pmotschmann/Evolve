@@ -127,10 +127,10 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     
     var res_container;
     if (global.resource[name].max === -1){
-        res_container = $(`<div id="res-${name}" class="resource crafted" v-show="display"><span class="res has-text-${color}">{{ name | namespace }}</span><span class="count">{{ amount | diffSize }}</span></div>`);
+        res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><span class="res has-text-${color}">{{ name | namespace }}</span><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div>`);
     }
     else {
-        res_container = $(`<div id="res-${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name | namespace }}</span><span class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
+        res_container = $(`<div id="res${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name | namespace }}</span><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
     }
 
     if (stackable){
@@ -244,7 +244,9 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             }
         }
     });
-    vues[`res_${name}`].$mount(`#res-${name}`);
+    vues[`res_${name}`].$mount(`#res${name}`);
+
+    breakdownPopover(`cnt${name}`,name,'c');
 
     if (stackable){
         $(`#con${name}`).on('mouseover',function(){
@@ -265,74 +267,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     }
 
     if (name !== races[global.race.species].name && name !== 'Crates' && name !== 'Containers'){
-        $(`#inc${name}`).on('mouseover',function(){
-            if (breakdown[name]){
-                var popper = $(`<div id="resBreak${name}" class="popper has-background-light has-text-dark"></div>`);
-                $('#main').append(popper);
-                let bd = $(`<div class="resBreakdown"><div class="has-text-info">${name}</div></div>`);
-
-                let types = [name,'Global'];
-                for (var i = 0; i < types.length; i++){
-                    let t = types[i];
-                    Object.keys(breakdown[t]).forEach(function (mod){
-                        let raw = breakdown[t][mod];
-                        let val = parseFloat(raw.slice(0,-1));
-                        if (val != 0 && !isNaN(val)){
-                            let type = val > 0 ? 'success' : 'danger';
-                            bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ ${t}.${mod} | translate }} </span></div>`);
-                        }
-                    });
-                }
-
-                if (breakdown.consume[name]){
-                    Object.keys(breakdown.consume[name]).forEach(function (mod){
-                        let val = breakdown.consume[name][mod];
-                        if (val != 0 && !isNaN(val)){
-                            let type = val > 0 ? 'success' : 'danger';
-                            bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}.${mod} | fix | translate }} </span></div>`);
-                        }
-                    });
-                }
-
-                popper.append(bd);
-                popper.show();
-                poppers[name] = new Popper($(`#inc${name}`),popper);
-            }
-
-            vues[`res_${name}_temp`] = new Vue({
-                data: {
-                    'Global': breakdown['Global'],
-                    [name]: breakdown[name],
-                    'consume': breakdown['consume']
-                }, 
-                filters: {
-                    translate(raw){
-                        let type = raw[raw.length -1];
-                        let val = parseFloat(raw.slice(0,-1));
-                        val = +(val).toFixed(2);
-                        let suffix = type === '%' ? '%' : '';
-                        if (val > 0){
-                            return '+' + val + suffix;
-                        }
-                        else if (val < 0){
-                            return val + suffix;
-                        }
-                    },
-                    fix(val){
-                        return val + 'v';
-                    }
-                }
-            });
-            vues[`res_${name}_temp`].$mount(`#resBreak${name} > div`);
-        });
-        $(`#inc${name}`).on('mouseout',function(){
-                if (breakdown[name]){
-                $(`#resBreak${name}`).hide();
-                poppers[name].destroy();
-                $(`#resBreak${name}`).remove();
-            }
-            vues[`res_${name}_temp`].$destroy();
-        });
+        breakdownPopover(`inc${name}`,name,'p');
     }
 
     if (tradable){
@@ -343,8 +278,8 @@ function loadResource(name,max,rate,tradable,stackable,color) {
 }
 
 function loadSpecialResource(name,color) {
-    if ($(`#res-${name}`).length){
-        let bind = $(`#res-${name}`);
+    if ($(`#res${name}`).length){
+        let bind = $(`#res${name}`);
         bind.detach;
         $('#resources').append(bind);
         return;
@@ -352,14 +287,14 @@ function loadSpecialResource(name,color) {
 
     color = color || 'special';
     
-    var res_container = $(`<div id="res-${name}" class="resource" v-show="count"><span class="res has-text-${color}">${name}</span><span class="count">{{ count }}</span></div>`);
+    var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${name}</span><span class="count">{{ count }}</span></div>`);
    
     $('#resources').append(res_container);
     
     vues[`res_${name}`] = new Vue({
         data: global.race[name]
     });
-    vues[`res_${name}`].$mount(`#res-${name}`);
+    vues[`res_${name}`].$mount(`#res${name}`);
 }
 
 function marketItem(vue,mount,market_item,name,color,full){
@@ -471,6 +406,80 @@ function marketItem(vue,mount,market_item,name,color,full){
         }
     });
     vues[vue].$mount(mount);
+}
+
+function breakdownPopover(id,name,type){
+    $(`#${id}`).on('mouseover',function(){
+        if (breakdown[type][name]){
+            var popper = $(`<div id="resBreak${id}" class="popper has-background-light has-text-dark"></div>`);
+            $('#main').append(popper);
+            let bd = $(`<div class="resBreakdown"><div class="has-text-info">${name}</div></div>`);
+
+            let types = [name,'Global'];
+            for (var i = 0; i < types.length; i++){
+                let t = types[i];
+                if (breakdown[type][t]){
+                    Object.keys(breakdown[type][t]).forEach(function (mod){
+                        let raw = breakdown[type][t][mod];
+                        let val = parseFloat(raw.slice(0,-1));
+                        if (val != 0 && !isNaN(val)){
+                            let type = val > 0 ? 'success' : 'danger';
+                            let label = mod.replace("_"," ");
+                            bd.append(`<div class="resBD"><span>${label}</span><span class="has-text-${type}">{{ ${t}.${mod} | translate }} </span></div>`);
+                        }
+                    });
+                }
+            }
+
+            if (breakdown[type].consume && breakdown[type].consume[name]){
+                Object.keys(breakdown[type].consume[name]).forEach(function (mod){
+                    let val = breakdown[type].consume[name][mod];
+                    if (val != 0 && !isNaN(val)){
+                        let type = val > 0 ? 'success' : 'danger';
+                        bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}.${mod} | fix | translate }} </span></div>`);
+                    }
+                });
+            }
+
+            popper.append(bd);
+            popper.show();
+            poppers[type+name] = new Popper($(`#${id}`),popper);
+        }
+
+        vues[`res_${id}_temp`] = new Vue({
+            data: {
+                'Global': breakdown[type]['Global'],
+                [name]: breakdown[type][name],
+                'consume': breakdown[type]['consume']
+            }, 
+            filters: {
+                translate(raw){
+                    let type = raw[raw.length -1];
+                    let val = parseFloat(raw.slice(0,-1));
+                    val = +(val).toFixed(2);
+                    let suffix = type === '%' ? '%' : '';
+                    if (val > 0){
+                        return '+' + sizeApproximation(val,2) + suffix;
+                    }
+                    else if (val < 0){
+                        return sizeApproximation(val,2) + suffix;
+                    }
+                },
+                fix(val){
+                    return val + 'v';
+                }
+            }
+        });
+        vues[`res_${id}_temp`].$mount(`#resBreak${id} > div`);
+    });
+    $(`#${id}`).on('mouseout',function(){
+            if (breakdown[type][name]){
+            $(`#resBreak${id}`).hide();
+            poppers[type+name].destroy();
+            $(`#resBreak${id}`).remove();
+        }
+        vues[`res_${id}_temp`].$destroy();
+    });
 }
 
 function loadRouteCounter(){

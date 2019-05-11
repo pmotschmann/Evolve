@@ -5590,7 +5590,7 @@ export function evoProgress(){
     $('#evolution').append(progress);
 }
 
-function basicHousingLabel(){
+export function basicHousingLabel(){
     switch (global.race.species){
         case 'orc':
             return 'Hut';
