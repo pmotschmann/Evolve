@@ -1,5 +1,8 @@
 #### 0.2.51
 University starts slightly cheaper<br>
+Added Spatial Superiority crispr upgrade<br>
+Added Spatial Supremacy crispr upgrade<br>
+Exporting a save string now automatically selects the text and copies it to the clipboard<br>
 
 #### 0.2.50
 Added new capacity breakdowns for various resources<br>

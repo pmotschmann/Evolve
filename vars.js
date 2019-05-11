@@ -344,6 +344,8 @@ resizeGame();
 
 window.exportGame = function exportGame(){
     $('#importExport').val(LZString.compressToBase64(JSON.stringify(global)));
+    $('#importExport').select();
+    document.execCommand('copy');
 }
 
 window.importGame = function importGame(){
