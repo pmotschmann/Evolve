@@ -17,7 +17,10 @@ export var global = {
 };
 export var vues = {};
 export var poppers = {};
-export var breakdown = {};
+export var breakdown = {
+    c: {},
+    p: {}
+};
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -50,7 +53,7 @@ else {
     newGameData();
 }
 
-global['version'] = '0.2.49';
+global['version'] = '0.2.50';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

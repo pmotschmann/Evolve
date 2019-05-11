@@ -1,3 +1,6 @@
+#### 0.2.50
+Added new capacity breakdowns for various resources<br>
+
 #### 0.2.49
 Added changelog link to version listing<br>
 Added protection against loading a corrupt save string<br>
