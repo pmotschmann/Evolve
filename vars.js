@@ -83,11 +83,9 @@ if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
 
-if (!global.settings['res']){
-    global.settings['res'] = {
-        resTabs: 0
-    };
-}
+global.settings['res'] = {
+    resTabs: 0
+};
 
 if (!global.stats['reset']){
     global.stats['reset'] = 0;
