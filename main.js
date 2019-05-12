@@ -4,7 +4,7 @@ import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio } from './resources.js';
 import { defineJobs, job_desc, craftingRatio } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
-import { actions, checkCityRequirements, checkTechRequirements, addAction, checkAffordable, drawTech, evoProgress, basicHousingLabel } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech } from './actions.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -256,6 +256,9 @@ else {
     Object.keys(actions.tech).forEach(function (tech){
         if (checkTechRequirements(tech)){
             addAction('tech',tech);
+        }
+        if (checkOldTech(tech)){
+            oldTech(tech);
         }
     });
     setWeather();

@@ -4926,6 +4926,14 @@ export function checkTechRequirements(tech){
     return false;
 }
 
+export function checkOldTech(tech){
+    let tch = actions.tech[tech].grant[0];
+    if (global.tech[tch] && global.tech[tch] >= actions.tech[tech].grant[1]){
+        return true;
+    }
+    return false;
+}
+
 export function checkPowerRequirements(action,type){
     var isMet = true;
     if (actions[action][type]['power_reqs']){
@@ -4968,6 +4976,9 @@ export function drawTech(){
         if (checkTechRequirements(tech)){
             addAction('tech',tech);
         }
+        if (checkOldTech(tech)){
+            oldTech(tech);
+        }
     });
 }
 
@@ -4988,7 +4999,19 @@ export function evalAffordable(){
     });
 }
 
-export function addAction(action,type){
+export function oldTech(tech){
+    if (tech !== 'fanaticism' && tech !== 'anthropology'){
+        addAction('tech',tech,true);
+    }
+    else if (tech === 'fanaticism' && global.tech['fanaticism']){
+        addAction('tech',tech,true);
+    }
+    else if (tech === 'anthropology' && global.tech['anthropology']){
+        addAction('tech',tech,true);
+    }
+}
+
+export function addAction(action,type,old){
     if (global.race['kindling_kindred'] && action === 'tech' && type === 'stone_axe'){
         return;
     }
@@ -5009,8 +5032,14 @@ export function addAction(action,type){
     if (!checkAffordable(action,type)){
         parent.addClass('cna');
     }
-    var element = $('<a class="button is-dark" v-on:click="action"><span class="aTitle">{{ title }}</span></a>');
-    parent.append(element);
+    if (old){
+        var element = $('<span class="oldTech is-dark"><span class="aTitle">{{ title }}</span></span>');
+        parent.append(element);
+    }
+    else {
+        var element = $('<a class="button is-dark" v-on:click="action"><span class="aTitle">{{ title }}</span></a>');
+        parent.append(element);
+    }
 
     if (actions[action][type]['special']){
         var special = $(`<div class="special" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
@@ -5033,7 +5062,12 @@ export function addAction(action,type){
     if (action !== 'tech' && global[action][type] && global[action][type].count >= 0){
         element.append($('<span class="count">{{ act.count }}</span>'));
     }
-    $('#'+action).append(parent);
+    if (old){
+        $('#oldTech').append(parent);
+    }
+    else {
+        $('#'+action).append(parent);
+    }
     if (action !== 'tech' && global[action][type] && global[action][type].count === 0){
         $(`#${id} .count`).css('display','none');
         $(`#${id} .special`).css('display','none');
@@ -5115,7 +5149,7 @@ export function addAction(action,type){
     $('#'+id).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            actionDesc(popper,action,type);
+            actionDesc(popper,action,type,old);
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
@@ -5126,11 +5160,11 @@ export function addAction(action,type){
         });
 }
 
-function actionDesc(parent,action,type){
+function actionDesc(parent,action,type,old){
     parent.empty();
     var desc = typeof actions[action][type].desc === 'string' ? actions[action][type].desc : actions[action][type].desc();
     parent.append($('<div>'+desc+'</div>'));
-    if (actions[action][type].cost){ 
+    if (actions[action][type].cost && !old){ 
         var cost = $('<div></div>');
         var costs = adjustCosts(actions[action][type].cost);
         Object.keys(costs).forEach(function (res) {
