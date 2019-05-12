@@ -1328,10 +1328,10 @@ export const actions = {
                     iron_yield *= 0.9;
                 }
                 if (global.tech['smelting'] >= 2){
-                    return `Smelters can either increase Iron yield by ${iron_yield}% per smelter or produce Steel by consuming Iron and Coal. Smelters require fuel to opperate.`;
+                    return `Smelters can either increase Iron yield by ${iron_yield}% per smelter or produce Steel by consuming Iron and Coal. Smelters require fuel to operate.`;
                 }
                 else {
-                    return `Smelters increase Iron yield by ${iron_yield}% per smelter but require fuel to opperate.`;
+                    return `Smelters increase Iron yield by ${iron_yield}% per smelter but require fuel to operate.`;
                 }
             },
             special: true,
@@ -2552,10 +2552,10 @@ export const actions = {
             desc: 'Discover Coal',
             reqs: { mining: 3 },
             grant: ['mining',4],
-            cost: { 
+            cost: {
                 Knowledge(){ return 4320; }
             },
-            effect: 'Learn about how coal can be used to as a resource.',
+            effect: 'Learn about how coal can be used as a resource.',
             action(){
                 if (payCosts(actions.tech.coal_mining.cost)){
                     global.city['coal_mine'] = {
