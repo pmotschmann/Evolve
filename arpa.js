@@ -371,6 +371,19 @@ function adjustCosts(costs){
         });
         return newCosts;
     }
+    return kindlingAdjust(costs);
+}
+
+function kindlingAdjust(costs){
+    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res !== 'Lumber' && res !== 'Plywood'){
+                newCosts[res] = function(){ return costs[res](); }
+            }
+        });
+        return newCosts;
+    }
     return costs;
 }
 

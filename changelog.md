@@ -1,5 +1,6 @@
 #### 0.2.52
 Completed research can now be viewed on a seperate tab under research<br>
+Removed Plywood requirement from Stock Exchange for players with Kindling Kindred trait<br>
 Fixed a CSS issue in the A.R.P.A. projects tab<br>
 
 #### 0.2.51
