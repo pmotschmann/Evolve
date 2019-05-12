@@ -808,7 +808,7 @@ function fastLoop(){
             scientist_base *= global.civic.scientist.impact;
             scientist_base *= racialTrait(global.civic.scientist.workers,'science');
             if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
-                scientist_base = 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
+                scientist_base *= 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
             }
             
             let library_mult = global.city['library'] ? 1 + (global.city.library.count * 0.05) : 1;
@@ -824,19 +824,20 @@ function fastLoop(){
                 }
             }
 
-            let delta = sundial_base + professors_base + scientist_base;
-            delta *= library_mult;
+            let delta = professors_base + scientist_base;
             delta *= hunger * tax_multiplier * global_multiplier;
+            delta += sundial_base;
+            delta *= library_mult;
 
             let know_bd = {};
-            know_bd['Sundial'] = sundial_base + 'v';
             know_bd['Professors'] = professors_base + 'v';
             know_bd['Scientist'] = scientist_base + 'v';
+            know_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            know_bd['Taxes'] = ((tax_multiplier - 1) * 100) + '%';
+            know_bd['Sundial'] = sundial_base + 'v';
             if (global.city['library']){
                 know_bd['Library'] = ((library_mult - 1) * 100) + '%';
             }
-            know_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            know_bd['Taxes'] = ((tax_multiplier - 1) * 100) + '%';
             breakdown['Knowledge'] = know_bd;
 
             if (gene_consume > 0) {
@@ -1219,16 +1220,15 @@ function fastLoop(){
             // Iron
             if (global.resource.Iron.display){
                 let iron_mult = 1/4;
-                iron_mult *= (1 + (iron_smelter * 0.1));
-
                 let iron_base = miner_base * iron_mult;
+                let smelter_mult = 1 + (iron_smelter * 0.1);
 
-                let delta = iron_base * power_mult;
+                let delta = iron_base * smelter_mult * power_mult;
                 delta *= hunger * tax_multiplier * global_multiplier;
 
                 let iron_bd = {};
                 iron_bd['Miners'] = (iron_base) + 'v';
-                iron_bd['Smelter'] = (iron_smelter * 10) + '%';
+                iron_bd['Smelter'] = ((smelter_mult - 1) * 10) + '%';
                 iron_bd['Power'] = ((power_mult - 1) * 100) + '%';
                 iron_bd['Hunger'] = ((hunger - 1) * 100) + '%';
                 iron_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
@@ -1273,9 +1273,9 @@ function fastLoop(){
 
             let coal_bd = {};
             coal_bd['Miners'] = coal_base + 'v';
-            stone_bd['Power'] = ((power_mult - 1) * 100) + '%';
+            coal_bd['Power'] = ((power_mult - 1) * 100) + '%';
             coal_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            stone_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
+            coal_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
             breakdown['Coal'] = coal_bd;
             modRes('Coal', delta * time_multiplier);
 
