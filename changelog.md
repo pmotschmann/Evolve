@@ -1,3 +1,7 @@
+#### 0.2.52
+Completed research can now be viewed on a seperate tab under research<br>
+Fixed a CSS issue in the A.R.P.A. projects tab<br>
+
 #### 0.2.51
 University starts slightly cheaper<br>
 Added Spatial Superiority crispr upgrade<br>

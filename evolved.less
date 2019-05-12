@@ -226,7 +226,8 @@ a {
             display: inline-block;
             position: relative;
 
-            a.button {
+            a.button,
+            span.oldTech {
                 width: 12rem;
                 margin: 1rem 1rem 0 0;
                 
@@ -241,6 +242,12 @@ a {
                     border-radius: 0 .25rem 0 .4375rem;
                     overflow: hidden;
                 }
+            }
+
+            span.oldTech {
+                cursor: default;
+                display: inline-flex;
+                margin: 0 1rem 0 0;
             }
 
             div.special,
@@ -574,7 +581,8 @@ a {
     }
 }
 
-.arpa {
+.arpa,
+.resTabs {
     ul {
         margin-top: 0;
     }
@@ -758,6 +766,7 @@ a {
         .button {
             height: 1.5rem;
             width: 4.5625rem;
+            line-height: .75rem;
         }
     }
 }
@@ -945,6 +954,9 @@ html.dark {
                 .off {
                     border-color: #181818;
                 }
+                .oldTech span.aTitle {
+                    color: #fff;
+                }
             }
         }
 
@@ -1116,6 +1128,9 @@ html.light {
                 }
                 span.aTitle {
                     color: #282828;
+                }
+                .oldTech span.aTitle {
+                    color: #000;
                 }
             }
 

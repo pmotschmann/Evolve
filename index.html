@@ -56,7 +56,12 @@
                         <b-tab-item id="city" :visible="showCity" label="Village"></b-tab-item>
                         <b-tab-item id="civic" :visible="showCivic" label="Civics" class="columns"></b-tab-item>
                         <b-tab-item id="industry" :visible="showIndustry" label="Industry" class="columns"></b-tab-item>
-                        <b-tab-item id="tech" :visible="showResearch" label="Research"></b-tab-item>
+                        <b-tab-item id="research" :visible="showResearch" label="Research">
+                            <b-tabs class="resTabs" v-model="res.resTabs" :animated="animated">
+                                <b-tab-item id="tech" label="New"></b-tab-item>
+                                <b-tab-item id="oldTech" label="Completed"></b-tab-item>
+                            </b-tabs>
+                        </b-tab-item>
                         <b-tab-item id="market" :visible="showMarket" label="Market"></b-tab-item>
                         <b-tab-item id="genetics" :visible="showGenetics" label="A.R.P.A.">
                             <div id="apra" class="arpa">
