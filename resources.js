@@ -265,6 +265,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     }
 
     if (name !== races[global.race.species].name && name !== 'Crates' && name !== 'Containers'){
+        let safe_name = name.replace(" ", "_");
         $(`#inc${name}`).on('mouseover',function(){
             if (breakdown[name]){
                 var popper = $(`<div id="resBreak${name}" class="popper has-background-light has-text-dark"></div>`);
@@ -279,7 +280,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                         let val = parseFloat(raw.slice(0,-1));
                         if (val != 0 && !isNaN(val)){
                             let type = val > 0 ? 'success' : 'danger';
-                            bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ ${t}.${mod} | translate }} </span></div>`);
+                            bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ ${t}['${mod}'] | translate }} </span></div>`);
                         }
                     });
                 }
@@ -289,7 +290,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                         let val = breakdown.consume[name][mod];
                         if (val != 0 && !isNaN(val)){
                             let type = val > 0 ? 'success' : 'danger';
-                            bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}.${mod} | fix | translate }} </span></div>`);
+                            bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }} </span></div>`);
                         }
                     });
                 }

@@ -350,8 +350,8 @@ function fastLoop(){
             if (global.evolution['bryophyte'] || global.evolution['protostomes'] || global.evolution['deuterostome']){
                 increment *= 2;
             }
-            modRes('DNA',increment * global_multiplier * time_multiplier);
-            modRes('RNA',-(rna * 2 * time_multiplier));
+            modRes('DNA', increment * global_multiplier * time_multiplier);
+            modRes('RNA', -(rna * 2 * time_multiplier));
         }
         if (global.evolution['organelles']){
             let rna_multiplier = global.race['rapid_mutation'] ? 2 : 1;
@@ -478,7 +478,7 @@ function fastLoop(){
 
                     if (global.resource.Money.amount >= price * time_multiplier){
                         modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
-                        modRes('Money',-(price * time_multiplier));
+                        modRes('Money', -(price * time_multiplier));
                         breakdown.consume.Money['Trade'] -= price;
                         breakdown.consume[res]['Trade'] = global.resource[res].trade * tradeRatio[res];
                     }
@@ -489,7 +489,7 @@ function fastLoop(){
 
                     if (global.resource[res].amount >= time_multiplier){
                         modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
-                        modRes('Money',-(price * time_multiplier));
+                        modRes('Money', -(price * time_multiplier));
                         breakdown.consume.Money['Trade'] -= price;
                         breakdown.consume[res]['Trade'] = global.resource[res].trade * tradeRatio[res];
                     }
@@ -503,46 +503,50 @@ function fastLoop(){
         let uranium_bd = {};
         if (global.city['coal_power']){
             let power = global.city.coal_power.on * actions.city.coal_power.powered;
-            let consume = global.city.coal_power.on * 0.35 * time_multiplier;
-            while (consume > global.resource.Coal.amount && consume > 0){
+            let consume = global.city.coal_power.on * 0.35;
+            while ((consume * time_multiplier) > global.resource.Coal.amount && consume > 0){
                 power += actions.city.coal_power.powered;
-                consume -= 0.35 * time_multiplier;
+                consume -= 0.35;
             }
-            breakdown.consume.Coal['Powerplant'] = -(consume) / time_multiplier;
+            breakdown.consume.Coal['Powerplant'] = -(consume);
+            modRes('Coal', -(consume * time_multiplier));
+
             max_power += power;
             power_grid -= power;
-            modRes('Coal',-(consume));
+
             // Uranium
             if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                modRes('Uranium',consume / 65);
-                breakdown.consume.Uranium['Powerplant'] = (consume / time_multiplier / 65);
+                uranium_bd['Coal Ash'] = (consume / 65);
+                modRes('Uranium', (consume * time_multiplier) / 65);
             }
         }
 
         if (global.city['oil_power']){
             let power = global.city.oil_power.on * actions.city.oil_power.powered;
-            let consume = global.city.oil_power.on * 0.65 * time_multiplier;
-            while (consume > global.resource.Oil.amount && consume > 0){
+            let consume = global.city.oil_power.on * 0.65;
+            while ((consume * time_multiplier) > global.resource.Oil.amount && consume > 0){
                 power += actions.city.oil_power.powered;
-                consume -= 0.65 * time_multiplier;
+                consume -= 0.65;
             }
-            breakdown.consume.Oil['Powerplant'] = -(consume) / time_multiplier;
+            breakdown.consume.Oil['Powerplant'] = -(consume);
+            modRes('Oil', -(consume * time_multiplier));
+
             max_power += power;
             power_grid -= power;
-            modRes('Oil',-(consume));
         }
 
         if (global.city['fission_power']){
             let power = global.city.fission_power.on * actions.city.fission_power.powered;
-            let consume = global.city.fission_power.on * 0.1 * time_multiplier;
-            while (consume > global.resource.Uranium.amount && consume > 0){
+            let consume = global.city.fission_power.on * 0.1;
+            while (consume * time_multiplier > global.resource.Uranium.amount && consume > 0){
                 power += actions.city.fission_power.powered;
-                consume -= 0.1 * time_multiplier;
+                consume -= 0.1;
             }
-            breakdown.consume.Uranium['Reactor'] = -(consume) / time_multiplier;
+            breakdown.consume.Uranium['Reactor'] = -(consume);
+            modRes('Uranium', -(consume * time_multiplier));
+
             max_power += power;
             power_grid -= power;
-            modRes('Uranium',-(consume));
         }
 
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
@@ -634,25 +638,6 @@ function fastLoop(){
         // Consumption
         fed = true;
         if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
-            let consume = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.civic.free * 0.5)) * (global.race['gluttony'] ? 1.1 : 1);
-            if (global.race['high_metabolism']){
-                consume *= 1.05;
-            }
-            if (global.race['photosynth']){
-                switch(global.city.calendar.weather){
-                    case 0:
-                        consume *= global.city.calendar.temp === 0 ? 1 : 0.9;
-                        break;
-                    case 1:
-                        consume *= 0.8;
-                        break;
-                    case 2:
-                        consume *= 0.6;
-                        break;
-                }
-            }
-            breakdown.consume.Food[races[global.race.species].name] = -(consume);
-
             let food_base = 0;
             let food_bd = {};
             if (global.race['carnivore']){
@@ -707,22 +692,44 @@ function fastLoop(){
                 hunting = global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
             }
 
-            let delta = food_base;
-            delta += hunting;
-            delta *= global_multiplier;
-            let f_delta = delta - consume;
+            let generated = food_base + hunting;
+            generated *= global_multiplier;
+
+            let consume = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.civic.free * 0.5));
+            consume *= (global.race['gluttony'] ? 1.1 : 1);
+            if (global.race['high_metabolism']){
+                consume *= 1.05;
+            }
+            if (global.race['photosynth']){
+                switch(global.city.calendar.weather){
+                    case 0:
+                        consume *= global.city.calendar.temp === 0 ? 1 : 0.9;
+                        break;
+                    case 1:
+                        consume *= 0.8;
+                        break;
+                    case 2:
+                        consume *= 0.6;
+                        break;
+                }
+            }
+            breakdown.consume.Food[races[global.race.species].name] = -(consume);
+
+            let delta = generated - consume;
 
             food_bd['Soldiers'] = hunting + 'v';
             breakdown['Food'] = food_bd;
 
-            if (!modRes('Food', f_delta * time_multiplier)){
+            if (!modRes('Food', delta * time_multiplier)){
                 fed = false;
                 let threshold = global.race['slow_digestion'] ? 2.5 : 2;
                 if (global.race['atrophy']){
                     threshold -= 0.5;
                 }
 
-                if (delta * threshold < consume){
+                // threshold can be thought of as the inverse of nutrition ratio per unit of food.
+                // So if the generated food doesn't have enough nutrition for the consuming population, they starve.
+                if (generated < consume / threshold){
                     if (Math.rand(0, 10) === 0){
                         global['resource'][races[global.race.species].name].amount--;
                         global.stats.starved++;
@@ -774,10 +781,7 @@ function fastLoop(){
             let hunting = armyRating(global.civic.garrison.workers,'hunting') / 10;
 
             let delta = hunting;
-
-            delta *= hunger;
-
-            delta *= global_multiplier;
+            delta *= hunger * global_multiplier;
 
             fur_bd['Soldiers'] = hunting  + 'v';
             fur_bd['Hunger'] = ((hunger - 1) * 100) + '%';
@@ -822,11 +826,7 @@ function fastLoop(){
 
             let delta = sundial_base + professors_base + scientist_base;
             delta *= library_mult;
-
-            delta *= hunger;
-            delta *= tax_multiplier;
-
-            delta *= global_multiplier;
+            delta *= hunger * tax_multiplier * global_multiplier;
 
             let know_bd = {};
             know_bd['Sundial'] = sundial_base + 'v';
