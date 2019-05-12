@@ -1,3 +1,17 @@
+#### 0.2.52
+Completed research can now be viewed on a seperate tab under research<br>
+Removed Plywood requirement from Stock Exchange for players with Kindling Kindred trait<br>
+Fixed a CSS issue in the A.R.P.A. projects tab<br>
+
+#### 0.2.51
+University starts slightly cheaper<br>
+Added Spatial Superiority crispr upgrade<br>
+Added Spatial Supremacy crispr upgrade<br>
+Exporting a save string now automatically selects the text and copies it to the clipboard<br>
+
+#### 0.2.50
+Added new capacity breakdowns for various resources<br>
+
 #### 0.2.49
 Added changelog link to version listing<br>
 Added protection against loading a corrupt save string<br>

@@ -176,6 +176,36 @@ const genePool = {
             return false;
         }
     },
+    spatial_superiority: {
+        id: 'genes-spatial_superiority',
+        title: 'Spatial Superiority',
+        desc: 'Plasmid storage effect +50%',
+        reqs: { store: 1 },
+        grant: ['store',2],
+        cost: 125,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>125</span></div>',
+        action: function (){
+            if (payPlasmids('spatial_superiority')){
+                return true;
+            }
+            return false;
+        }
+    },
+    spatial_supremacy: {
+        id: 'genes-spatial_supremacy',
+        title: 'Spatial Supremacy',
+        desc: 'Plasmid storage effect +33%',
+        reqs: { store: 2 },
+        grant: ['store',3],
+        cost: 325,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>325</span></div>',
+        action: function (){
+            if (payPlasmids('spatial_supremacy')){
+                return true;
+            }
+            return false;
+        }
+    },
     morphogenesis: {
         id: 'genes-morphogenesis',
         title: 'Morphogenesis',
@@ -338,6 +368,19 @@ function adjustCosts(costs){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             newCosts[res] = function(){ return Math.round(costs[res]() * 0.98) || 0; }
+        });
+        return newCosts;
+    }
+    return kindlingAdjust(costs);
+}
+
+function kindlingAdjust(costs){
+    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res !== 'Lumber' && res !== 'Plywood'){
+                newCosts[res] = function(){ return costs[res](); }
+            }
         });
         return newCosts;
     }
