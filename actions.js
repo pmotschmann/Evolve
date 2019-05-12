@@ -3649,7 +3649,7 @@ export const actions = {
                 Copper(){ return 2250; },
                 Steel(){ return 1750; }
             },
-            effect: 'Add mining conveyor belts to your mining opperations. Greatly increasing mining excavation rates.',
+            effect: 'Add mining conveyor belts to your mining operations. Greatly increasing mining excavation rates.',
             action(){
                 if (payCosts(actions.tech.mine_conveyor.cost)){
                     return true;
@@ -3666,7 +3666,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 27000; }
             },
-            effect: 'Unlock oil derrecks and begin the age of big oil.',
+            effect: 'Unlock oil derricks and begin the age of big oil.',
             action(){
                 if (payCosts(actions.tech.oil_well.cost)){
                     global.city['oil_well'] = { count: 0 };
