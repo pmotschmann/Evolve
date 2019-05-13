@@ -850,6 +850,7 @@ function fastLoop(){
         }
 
         // Factory
+        let FactoryMoney = 0;
         if (global.city['factory']){
             let operating = 0;
             if (global.city.factory['Lux'] && global.city.factory['Lux'] > 0){
@@ -877,9 +878,9 @@ function fastLoop(){
                 }
 
                 delta *= hunger * tax_multiplier;
-                delta *= global_multiplier;
-                money_bd['Factory'] = delta + 'v'; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
+                FactoryMoney = delta + 'v'; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
 
+                delta *= global_multiplier;
                 modRes('Money', delta * time_multiplier);
             }
 
@@ -1310,7 +1311,7 @@ function fastLoop(){
         // Tax Income
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] ? 0 : global.civic.free);
-            income_base *= ( global.race['greedy'] ? 1 : 2 );
+            income_base *= ( global.race['greedy'] ? 1.75 : 2 );
             income_base /= 5;
 
             let tax_rate;
@@ -1366,8 +1367,10 @@ function fastLoop(){
             
             money_bd['Taxes'] = (income_base) + 'v';
             money_bd['Temple'] = ((temple_mult - 1) * 100) + '%';
-            modRes('Money', +(income_base * time_multiplier).toFixed(2));
+            money_bd['Factory'] = FactoryMoney + 'v';
+            modRes('Money', +(delta * time_multiplier).toFixed(2));
         }
+
         breakdown.p['Money'] = money_bd;
 
         // Detect new unlocks
