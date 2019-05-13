@@ -797,6 +797,7 @@ function fastLoop(){
             if (global.race['ancient_ruins']){
                 sundial_base++;
             }
+            sundial_base *= global_multiplier;
 
             let professors_base = global.civic.professor.workers;
             professors_base *= global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
