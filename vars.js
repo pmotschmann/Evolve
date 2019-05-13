@@ -235,17 +235,17 @@ export function messageQueue(msg,color){
 
 export function modRes(res,val){
     let count = global.resource[res].amount + val;
-    let depleted = false;
+    let success = true;
     if (count > global.resource[res].max && global.resource[res].max != -1){
         count = global.resource[res].max;
     }
     else if (count < 0){
         count = 0;
-        depleted = true;
+        success = false;
     }
     global.resource[res].amount = count;
     global.resource[res].delta += val;
-    return depleted;
+    return success;
 }
 
 export var shiftIsPressed = false;

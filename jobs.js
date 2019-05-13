@@ -210,7 +210,6 @@ export function loadFoundry(){
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
-                let name = res.replace("_", " ");
                 let resource = $(`<div class="job"></div>`);
                 $('#foundry').append(resource);
 
