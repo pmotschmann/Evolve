@@ -645,9 +645,7 @@ function fastLoop(){
             let food_base = 0;
             if (global.race['carnivore']){
                 let strength = global.tech['military'] ? global.tech.military : 1;
-
                 food_base = global.civic.free * strength * 2;
-
                 food_bd['Hunters'] = food_base + 'v';
             }
             else {
@@ -879,7 +877,6 @@ function fastLoop(){
                 }
 
                 delta *= hunger * tax_multiplier;
-
                 delta *= global_multiplier;
                 money_bd['Factory'] = delta + 'v'; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
 
