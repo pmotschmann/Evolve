@@ -1880,12 +1880,13 @@ function midLoop(){
                 global.arpa.sequence.progress = 0;
                 global.arpa.sequence.time = global.arpa.sequence.max;
                 if (global.tech['genetics'] === 2){
+                    messageQueue(`The ${races[global.race.species].name} genome project has been completed.`,'success');
                     global.tech['genetics'] = 3;
                 }
                 else {
                     global.race.mutation++;
                     randomMinorTrait();
-                    messageQueue('Gene therapy has resulted in a permanent improvement to your species.','success');
+                    messageQueue('Gene therapy has resulted in an improvement to your species.','success');
                     global.stats.plasmid++;
                     global.race.Plasmid.count++;
                 }
