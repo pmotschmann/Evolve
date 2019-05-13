@@ -53,7 +53,7 @@ else {
     newGameData();
 }
 
-global['version'] = '0.2.52';
+global['version'] = '0.2.53';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -83,7 +83,9 @@ if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
 
-global.settings['resTabs'] = 0;
+if (!global.settings['resTabs']){
+    global.settings['resTabs'] = 0;
+}
 
 if (!global.stats['reset']){
     global.stats['reset'] = 0;

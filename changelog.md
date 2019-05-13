@@ -1,3 +1,6 @@
+#### 0.2.53
+Fixed some spelling errors
+
 #### 0.2.52
 Completed research can now be viewed on a seperate tab under research<br>
 Removed Plywood requirement from Stock Exchange for players with Kindling Kindred trait<br>
