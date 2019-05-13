@@ -3649,7 +3649,7 @@ export const actions = {
                 Copper(){ return 2250; },
                 Steel(){ return 1750; }
             },
-            effect: 'Add mining conveyor belts to your mining opperations. Greatly increasing mining excavation rates.',
+            effect: 'Add mining conveyor belts to your mining operations. Greatly increasing mining excavation rates.',
             action(){
                 if (payCosts(actions.tech.mine_conveyor.cost)){
                     return true;
