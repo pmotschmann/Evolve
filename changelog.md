@@ -1,5 +1,6 @@
 #### 0.2.53 - 5/13/2019
 Breakdown Accuracy Enchancements<br>
+Some Kindling Kindred costs reduced<br>
 Fixed some spelling errors<br>
 
 #### 0.2.52 - 5/11/2019
