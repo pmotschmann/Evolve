@@ -4734,6 +4734,12 @@ export const actions = {
                             delete global.tech['axe'];
                             delete global.tech['saw'];
                             global.civic.lumberjack.display = false;
+                            if (global.tech['foundry']){
+                                global.civic.craftsman.workers -= global.city.foundry['Plywood'];
+                                global.city.foundry.crafting -= global.city.foundry['Plywood'];
+                                global.city.foundry['Plywood'] = 0;
+                                loadFoundry();
+                            }
                             break;
                         case 'cacti':
                             global.race['hyper'] = 1;

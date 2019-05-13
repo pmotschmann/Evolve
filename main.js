@@ -797,7 +797,6 @@ function fastLoop(){
             if (global.race['ancient_ruins']){
                 sundial_base++;
             }
-            sundial_base *= global_multiplier;
 
             let professors_base = global.civic.professor.workers;
             professors_base *= global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
@@ -828,7 +827,7 @@ function fastLoop(){
 
             let delta = professors_base + scientist_base;
             delta *= hunger * tax_multiplier * global_multiplier;
-            delta += sundial_base;
+            delta += sundial_base * global_multiplier;
             delta *= library_mult;
 
             let know_bd = {};
@@ -1898,6 +1897,11 @@ function midLoop(){
 
         if (global.city['foundry']){
             let fworkers = global.civic.craftsman.workers;
+            if (global.race['kindling_kindred'] && global.city.foundry['Plywood'] > 0){
+                global.civic.craftsman.workers -= global.city.foundry['Plywood'];
+                global.city.foundry.crafting -= global.city.foundry['Plywood'];
+                global.city.foundry['Plywood'] = 0;
+            }
             Object.keys(craftCost).forEach(function (craft){
                 while (global.city.foundry[craft] > fworkers && global.city.foundry[craft] > 0){
                     global.city.foundry[craft]--;
