@@ -523,7 +523,7 @@ function drawModal(name,color){
         methods: {
             buildCrateLabel: function(){
                 if (global.race['kindling_kindred']){
-                    return 'Construct a crate, cost 250 Stone';
+                    return 'Construct a crate, cost 125 Stone';
                 }
                 else {
                     return 'Construct a crate, cost 5 Plywood';
@@ -554,7 +554,7 @@ function drawModal(name,color){
             buildCrate: function(){
                 let keyMutipler = keyMultiplier();
                 let material = global.race['kindling_kindred'] ? 'Stone' : 'Plywood';
-                let cost = global.race['kindling_kindred'] ? 250 : 5;
+                let cost = global.race['kindling_kindred'] ? 125 : 5;
                 if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
                     keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;
                 }

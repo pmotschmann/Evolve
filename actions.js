@@ -5247,7 +5247,7 @@ function kindlingAdjust(costs){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 1.2) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res]() * 1.05) || 0; }
             }
         });
         return newCosts;
