@@ -329,7 +329,7 @@ export const traits = {
         type: 'genus',
     },
     xenophobic: { // Trade posts suffer a -1 penalty per post
-        desc: 'Your races dislike of foreigners reduces the number of trade routes you can opperate.',
+        desc: 'Your races dislike of foreigners reduces the number of trade routes you can operate.',
         type: 'genus',
     },
     beast: { // Hunting improved when it's windy

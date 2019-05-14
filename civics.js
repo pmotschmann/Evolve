@@ -512,15 +512,15 @@ function buildGarrison(garrison){
             strategyLabel(){
                 switch (global.civic.garrison.tactic){
                     case 0:
-                        return 'Attempt to ambush a rival caravan and steal their goods. Low risk opperation, but low reward.';
+                        return 'Attempt to ambush a rival caravan and steal their goods. Low risk operation, but low reward.';
                     case 1:
-                        return 'Attempt to raid a rival camp. Medium risk opperation with average payoff potential.';
+                        return 'Attempt to raid a rival camp. Medium risk operation with average payoff potential.';
                     case 2:
-                        return 'Attempt to pillage a rival settlement. High risk opperation with superior payoff potential.';
+                        return 'Attempt to pillage a rival settlement. High risk operation with superior payoff potential.';
                     case 3:
-                        return 'Attempt to assault a rival town. Very High risk opperation with huge payoff potential.';
+                        return 'Attempt to assault a rival town. Very High risk operation with huge payoff potential.';
                     case 4:
-                        return 'Attempt to seige a rival city. This opperation is suicide for all but the strongest armies, but if sucessful will be glorious.';
+                        return 'Attempt to seige a rival city. This operation is suicide for all but the strongest armies, but if sucessful will be glorious.';
                 }
             },
             hireLabel(){
