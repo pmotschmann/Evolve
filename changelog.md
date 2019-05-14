@@ -1,3 +1,6 @@
+#### 0.2.54 - 5/13/2019
+Uranium Breakdown Fixes<br>
+
 #### 0.2.53 - 5/13/2019
 Breakdown Accuracy Enchancements<br>
 Some Kindling Kindred costs reduced<br>
