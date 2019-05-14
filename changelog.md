@@ -1,5 +1,6 @@
 #### 0.2.55 - 5/14/2019
 Manually crafting resources now gets all the same bonuses as auto crafting<br>
+Fixed Recombination crispr upgrade<br>
 
 #### 0.2.54 - 5/13/2019
 Uranium Breakdown Fixes<br>

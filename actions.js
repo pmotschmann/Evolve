@@ -571,7 +571,7 @@ export const actions = {
                         global.tech['religion'] = 1;
                     }
 
-                    if (global.genes['recombination']){
+                    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
                         randomMinorTrait();
                     }
 
