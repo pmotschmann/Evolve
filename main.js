@@ -519,7 +519,7 @@ function fastLoop(){
 
             // Uranium
             if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                uranium_bd['Coal Ash'] = (consume / 65);
+                uranium_bd['Coal_Ash'] = (consume / 65 / global_multiplier) + 'v';
                 modRes('Uranium', (consume * time_multiplier) / 65);
             }
         }
