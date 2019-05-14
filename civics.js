@@ -153,7 +153,7 @@ function buildGarrison(garrison){
     battalion.append(armysize);
     battalion.append(anext);
 
-    campaign.append($('<div class="column launch"><button class="button campaign" @click="campaign">Launch Campaign</button></div>'));
+    campaign.append($('<div class="column launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">Launch Campaign</button></b-tooltip></div>'));
 
     if (!global.civic['garrison']){
         global.civic['garrison'] = {
@@ -202,9 +202,6 @@ function buildGarrison(garrison){
 
                 let luck = Math.floor(Math.seededRandom(lowLuck,highLuck)) / 10;
                 let army = armyRating(global.civic.garrison.raid,'army') * luck;
-                if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
-                    army *= 1 + (global.city.temple.count * 0.01);
-                }
                 let enemy = 0;
 
                 switch(global.civic.garrison.tactic){
@@ -235,6 +232,9 @@ function buildGarrison(garrison){
                     deathCap += wounded;
                     if (deathCap < 1){
                         deathCap = 1;
+                    }
+                    if (deathCap > looters()){
+                        deathCap = looters();
                     }
                     let death = Math.floor(Math.seededRandom(0,deathCap));
                     if (global.race['frail']){
@@ -461,6 +461,9 @@ function buildGarrison(garrison){
                     if (deathCap < 1){
                         deathCap = 1;
                     }
+                    if (deathCap > looters()){
+                        deathCap = looters();
+                    }
                     let death = Math.floor(Math.seededRandom(1,deathCap));
                     if (global.race['frail']){
                         death += global.civic.garrison.tactic + 1;
@@ -479,8 +482,8 @@ function buildGarrison(garrison){
                         death -= armor;
                     }
 
-                    if (death < 0){
-                        death = 0;
+                    if (death < 1){
+                        death = 1;
                     }
                     if (death > global.civic.garrison.raid){
                         death = global.civic.garrison.raid;
@@ -529,6 +532,48 @@ function buildGarrison(garrison){
                     cost = Math.round(cost / 2);
                 }
                 return `Hire a mercenary: \$${cost}`;
+            },
+            battleAssessment(){
+                let army = armyRating(global.civic.garrison.raid,'army');
+                let enemy = 0;
+                switch(global.civic.garrison.tactic){
+                    case 0:
+                        enemy = 5;
+                        break;
+                    case 1:
+                        enemy = 27.5;
+                        break;
+                    case 2:
+                        enemy = 62.5;
+                        break;
+                    case 3:
+                        enemy = 125;
+                        break;
+                    case 4:
+                        enemy = 300;
+                        break;
+                }
+                if (army * 2 < enemy){
+                    return 'Your advisors think this campaign is suicide.';
+                }
+                else if (army * 1.5 < enemy){
+                    return 'Your advisors think this campaign will be a disaster.';
+                }
+                else if (army * 1.1 < enemy){
+                    return 'You are advised against launching this war campaign.';
+                }
+                else if (army > enemy * 2){
+                    return 'Your generals think you are squandering resources on small targets.';
+                }
+                else if (army > enemy * 1.5){
+                    return 'This battle should be an easy victory.';
+                }
+                else if (army > enemy * 1.1){
+                    return 'Your top military advisors think you have the advantage for this campaign.';
+                }
+                else {
+                    return 'The battle seems evenly matched.';
+                }
             },
             armyLabel(){
                 return `Number of soldiers to commit to millitary campaigns.`;
@@ -594,9 +639,9 @@ function buildGarrison(garrison){
     vues['civ_garrison'].$mount('#garrison');
 }
 
-function lootModify(val){
+function looters(){
     let cap = 0;
-    let looters = global.civic.garrison.raid;
+    let looting = global.civic.garrison.raid;
     switch(global.civic.garrison.tactic){
         case 0:
             cap = 5;
@@ -614,10 +659,15 @@ function lootModify(val){
             cap = 999;
             break;
     }
-    if (looters > cap){
-        looters = cap;
+    if (looting > cap){
+        looting = cap;
     }
-    let loot = val * Math.log(looters + 1);
+    return looting;
+}
+
+function lootModify(val){
+    let looting = looters();
+    let loot = val * Math.log(looting + 1);
     if (global.race['beast_of_burden']){
         loot = loot * 1.1;
     }
@@ -644,6 +694,9 @@ export function armyRating(val,type){
         if (global.race['tactical']){
             let bonus = 1 + (global.race['tactical'] / 20);
             army = Math.floor(army * bonus);
+        }
+        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
+            army *= 1 + (global.city.temple.count * 0.01);
         }
     }
     else if (type === 'hunting'){
