@@ -1,6 +1,6 @@
 import { global, vues, poppers } from './vars.js';
 import { racialTrait } from './races.js';
-import { plasmidBonus } from './resources.js';
+import { craftingRatio } from './resources.js';
 
 export const job_desc = {
     farmer: function(){
@@ -282,31 +282,4 @@ export function loadFoundry(){
             $(`#popFoundry`).remove();
         });
     }
-}
-
-export function craftingRatio(res){
-    let skill = global.tech['foundry'] >= 5 ? 0.05 : 0.03;
-    let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * skill) : 1;
-    if (global.tech['foundry'] >= 3 && global.city.foundry[res] > 1){
-        multiplier += (global.city.foundry[res] - 1) * 0.03;
-    }
-    if (global.tech['foundry'] >= 4 && res === 'Plywood' && global.city['sawmill']){
-        multiplier += global.city['sawmill'].count * 0.02;
-    }
-    if (global.tech['foundry'] >= 6 && res === 'Brick'){
-        multiplier += global.city['foundry'].count * 0.02;
-    }
-    if (global.race['crafty']){
-        multiplier += 0.03;
-    }
-    if (global.race['ambidextrous']){
-        multiplier += (global.race['ambidextrous'] / 100);
-    }
-    if (global.race['rigid']){
-        multiplier -= 0.01;
-    }
-    if (global.race.Plasmid.count > 0){
-        multiplier *= plasmidBonus() / 8 + 1;
-    }
-    return multiplier;
 }

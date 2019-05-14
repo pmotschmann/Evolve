@@ -47,6 +47,33 @@ export const craftCost = {
     Sheet_Metal: { r: 'Steel', a: 60 },
 };
 
+export function craftingRatio(res){
+    let skill = global.tech['foundry'] >= 5 ? 0.05 : 0.03;
+    let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * skill) : 1;
+    if (global.tech['foundry'] >= 3 && global.city.foundry[res] > 1){
+        multiplier += (global.city.foundry[res] - 1) * 0.03;
+    }
+    if (global.tech['foundry'] >= 4 && res === 'Plywood' && global.city['sawmill']){
+        multiplier += global.city['sawmill'].count * 0.02;
+    }
+    if (global.tech['foundry'] >= 6 && res === 'Brick'){
+        multiplier += global.city['foundry'].count * 0.02;
+    }
+    if (global.race['crafty']){
+        multiplier += 0.03;
+    }
+    if (global.race['ambidextrous']){
+        multiplier += (global.race['ambidextrous'] / 100);
+    }
+    if (global.race['rigid']){
+        multiplier -= 0.01;
+    }
+    if (global.race.Plasmid.count > 0){
+        multiplier *= plasmidBonus() / 8 + 1;
+    }
+    return multiplier;
+}
+
 // Sets up resource definitions
 export function defineResources() {
     if (global.race.species === 'protoplasm'){
@@ -194,7 +221,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                 return global.resource.Crates.display;
             },
             craft: function(res,vol){
-                let craft_bonus = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * 0.03) : 1;
+                let craft_bonus = craftingRatio(res);
                 if (vol === 'A'){
                     let volume = Math.floor(global.resource[craftCost[res].r].amount / craftCost[res].a);
                     let num = volume * craftCost[res].a;
