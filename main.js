@@ -1,8 +1,8 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier } from './vars.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio } from './resources.js';
-import { defineJobs, job_desc, craftingRatio } from './jobs.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio } from './resources.js';
+import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech } from './actions.js';
 import { events } from './events.js';
