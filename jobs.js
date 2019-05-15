@@ -1,4 +1,4 @@
-import { global, vues, poppers } from './vars.js';
+import { global, vues, keyMultiplier, poppers } from './vars.js';
 import { racialTrait } from './races.js';
 import { craftingRatio } from './resources.js';
 
@@ -168,15 +168,27 @@ function loadJob(job, name, impact, color){
         data: global.civic[job],
         methods: {
             add(){
-                if (global.civic[job].workers < global['civic'][job].max && global.civic.free > 0){
-                    global.civic[job].workers++;
-                    global.civic.free--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.civic[job].workers < global['civic'][job].max && global.civic.free > 0){
+                        global.civic[job].workers++;
+                        global.civic.free--;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             sub(){
-                if (global.civic[job].workers > 0){
-                    global.civic[job].workers--;
-                    global.civic.free++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.civic[job].workers > 0){
+                        global.civic[job].workers--;
+                        global.civic.free++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             }
         }
@@ -234,19 +246,31 @@ export function loadFoundry(){
             },
             methods: {
                 add(res){
-                    if (global.city.foundry.crafting < global.city.foundry.count && global.civic.free > 0){
-                        global.civic.craftsman.workers++;
-                        global.city.foundry.crafting++;
-                        global.city.foundry[res]++;
-                        global.civic.free--;
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.city.foundry.crafting < global.city.foundry.count && global.civic.free > 0){
+                            global.civic.craftsman.workers++;
+                            global.city.foundry.crafting++;
+                            global.city.foundry[res]++;
+                            global.civic.free--;
+                        }
+                        else {
+                            break;
+                        }
                     }
                 },
                 sub(res){
-                    if (global.city.foundry[res] > 0){
-                        global.city.foundry[res]--;
-                        global.civic.craftsman.workers--;
-                        global.city.foundry.crafting--;
-                        global.civic.free++;
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.city.foundry[res] > 0){
+                            global.city.foundry[res]--;
+                            global.civic.craftsman.workers--;
+                            global.city.foundry.crafting--;
+                            global.civic.free++;
+                        }
+                        else {
+                            break;
+                        }
                     }
                 },
                 hover(res){

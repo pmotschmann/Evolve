@@ -384,28 +384,40 @@ function marketItem(vue,mount,market_item,name,color,full){
                 }
             },
             autoBuy(res){
-                if (global.resource[res].trade >= 0){
-                    if (global.city.market.trade < global.city.market.mtrade){
-                        global.city.market.trade++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.resource[res].trade >= 0){
+                        if (global.city.market.trade < global.city.market.mtrade){
+                            global.city.market.trade++;
+                            global.resource[res].trade++;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    else {
+                        global.city.market.trade--;
                         global.resource[res].trade++;
                     }
-                }
-                else {
-                    global.city.market.trade--;
-                    global.resource[res].trade++;
                 }
                 tradeRouteColor(res);
             },
             autoSell(res){
-                if (global.resource[res].trade <= 0){
-                    if (global.city.market.trade < global.city.market.mtrade){
-                        global.city.market.trade++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.resource[res].trade <= 0){
+                        if (global.city.market.trade < global.city.market.mtrade){
+                            global.city.market.trade++;
+                            global.resource[res].trade--;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    else {
+                        global.city.market.trade--;
                         global.resource[res].trade--;
                     }
-                }
-                else {
-                    global.city.market.trade--;
-                    global.resource[res].trade--;
                 }
                 tradeRouteColor(res);
             }

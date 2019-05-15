@@ -1,5 +1,6 @@
 #### 0.2.57 - 5/15/2019
 Added labor validation to coal miners<br>
+Key Multipliers now work with job and trade route assignment<br>
 
 #### 0.2.56 - 5/15/2019
 Added +- symbols to trade route to distinguish import vs export<br>
