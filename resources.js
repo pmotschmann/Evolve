@@ -424,8 +424,14 @@ function marketItem(vue,mount,market_item,name,color,full){
             trade(val){
                 if (val < 0){
                     val = 0 - val;
+                    return `-${val}`;
                 }
-                return val;
+                else if (val > 0){
+                    return `+${val}`;
+                }
+                else {
+                    return 0;
+                }
             },
             namespace(val){
                 return val.replace("_", " ");

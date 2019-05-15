@@ -1,3 +1,6 @@
+#### 0.2.56 - 5/15/2019
+Added +- symbols to trade route to distinguish import vs export<br>
+
 #### 0.2.55 - 5/14/2019
 Manually crafting resources now gets all the same bonuses as auto crafting<br>
 Fixed Recombination crispr upgrade<br>
