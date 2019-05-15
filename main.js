@@ -1474,6 +1474,7 @@ function midLoop(){
             lumberjack: 0,
             quarry_worker: 0,
             miner: 0,
+            coal_miner: 0,
             cement_worker: 0,
             banker: 0,
             entertainer: 0,
@@ -1549,6 +1550,9 @@ function midLoop(){
         }
         if (global.city['mine']){
             lCaps['miner'] += global.city['mine'].count;
+        }
+        if (global.city['coal_mine']){
+            lCaps['coal_miner'] += global.city['coal_mine'].count;
         }
         if (global.city['bank']){
             lCaps['banker'] += global.city['bank'].count;
