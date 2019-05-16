@@ -694,8 +694,8 @@ export const actions = {
             cost: { 
                 Money(){ return costMultiplier('cottage', 900, 1.15); },
                 Plywood(){ return costMultiplier('cottage', 25, 1.25); },
-                Wrought_Iron(){ return costMultiplier('cottage', 15, 1.25); },
-                Brick(){ return costMultiplier('cottage', 20, 1.25); }
+                Brick(){ return costMultiplier('cottage', 20, 1.25); },
+                Wrought_Iron(){ return costMultiplier('cottage', 15, 1.25); }
             },
             effect(){
                 if (global.tech['home_safe']){
@@ -993,8 +993,8 @@ export const actions = {
             reqs: { container: 1 },
             cost: { 
                 Money(){ return costMultiplier('storage_yard', 10, 1.35); },
-                Wrought_Iron(){ return costMultiplier('storage_yard', 5, 1.35); },
-                Brick(){ return costMultiplier('storage_yard', 3, 1.35); }
+                Brick(){ return costMultiplier('storage_yard', 3, 1.35); },
+                Wrought_Iron(){ return costMultiplier('storage_yard', 5, 1.35); }
             },
             effect(){
                 let cap = global.tech.container >= 3 ? 100 : 50;
@@ -1425,8 +1425,8 @@ export const actions = {
             reqs: { oil: 1 },
             cost: { 
                 Money(){ return costMultiplier('oil_well', 5000, 1.5); },
-                Steel(){ return costMultiplier('oil_well', 6000, 1.5); },
-                Cement(){ return costMultiplier('oil_well', 5250, 1.5); }
+                Cement(){ return costMultiplier('oil_well', 5250, 1.5); },
+                Steel(){ return costMultiplier('oil_well', 6000, 1.5); }
             },
             effect() { 
                 let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;
@@ -1454,8 +1454,8 @@ export const actions = {
             reqs: { oil: 2 },
             cost: { 
                 Money(){ return costMultiplier('oil_depot', 2500, 1.45); },
-                Sheet_Metal(){ return costMultiplier('oil_depot', 100, 1.45); },
-                Cement(){ return costMultiplier('oil_depot', 3750, 1.45); }
+                Cement(){ return costMultiplier('oil_depot', 3750, 1.45); },
+                Sheet_Metal(){ return costMultiplier('oil_depot', 100, 1.45); }
             },
             effect() { 
                 let oil = spatialReasoning(1000);
@@ -1620,8 +1620,8 @@ export const actions = {
             reqs: { science: 2 },
             cost: {
                 Money(){ return costMultiplier('library', 45, 1.2); },
-                Plywood(){ return costMultiplier('library', 20, 1.20); },
                 Furs(){ return costMultiplier('library', 22, 1.20); },
+                Plywood(){ return costMultiplier('library', 20, 1.20); },
                 Brick(){ return costMultiplier('library', 15, 1.20); }
             },
             effect(){
