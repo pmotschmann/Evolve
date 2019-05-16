@@ -1235,7 +1235,7 @@ function fastLoop(){
 
                 let iron_bd = {};
                 iron_bd['Miners'] = (iron_base) + 'v';
-                iron_bd['Smelter'] = ((smelter_mult - 1) * 10) + '%';
+                iron_bd['Smelter'] = ((smelter_mult - 1) * 100) + '%';
                 iron_bd['Power'] = ((power_mult - 1) * 100) + '%';
                 iron_bd['Hunger'] = ((hunger - 1) * 100) + '%';
                 iron_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
