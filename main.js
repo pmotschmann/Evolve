@@ -27,6 +27,12 @@ let settings = {
             global.settings.theme = 'night';
             $('html').removeClass();
             $('html').addClass('night');
+        },
+        keys(){
+            return `Enable Control (10x) / Shift (25x) / Alt (100x) Multiplier keys`;
+        },
+        animation(){
+            return `Enable tab transition animations`;
         }
     },
     filters: {

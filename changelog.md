@@ -1,3 +1,6 @@
+#### 0.2.58 - 5/15/2019
+Settings option to disable multiplier keys<br>
+
 #### 0.2.57 - 5/15/2019
 Added labor validation to coal miners<br>
 Key Multipliers now work with job and trade route assignment<br>
