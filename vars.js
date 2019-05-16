@@ -53,7 +53,7 @@ else {
     newGameData();
 }
 
-global['version'] = '0.2.57';
+global['version'] = '0.2.58';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -82,9 +82,11 @@ if (!global['settings']){
 if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
-
 if (!global.settings['resTabs']){
     global.settings['resTabs'] = 0;
+}
+if (typeof global.settings.mKeys === 'undefined'){
+    global.settings['mKeys'] = true;
 }
 
 if (!global.stats['reset']){
@@ -271,14 +273,16 @@ window.onmousemove = function(e){
 export var keyMultiplierNumber = 1;
 export function keyMultiplier(){
     let number = 1;
-    if (cntrlIsPressed){
-        number *= 10;
-    }
-    if (shiftIsPressed){
-        number *= 25;
-    }
-    if (altIsPressed){
-        number *= 100;
+    if (global.settings['mKeys']){
+        if (cntrlIsPressed){
+            number *= 10;
+        }
+        if (shiftIsPressed){
+            number *= 25;
+        }
+        if (altIsPressed){
+            number *= 100;
+        }
     }
     keyMultiplierNumber = number;
     $('.craft').each(function(e){
