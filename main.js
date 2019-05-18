@@ -324,24 +324,27 @@ function fastLoop(){
         global_multiplier += plasmidBonus();
     }
 
-    breakdown.p['consume'] = {
-        Money: {},
-        Knowledge: {},
-        Food: {},
-        Lumber: {},
-        Stone: {},
-        Furs: {},
-        Copper: {},
-        Iron: {},
-        Cement: {},
-        Coal: {},
-        Oil: {},
-        Uranium: {},
-        Steel: {},
-        Titanium: {},
-        Alloy: {},
-        Polymer: {}
-    };
+    let bd_cats = ['consume','time'];
+    for (let i=0; i<bd_cats.length; i++){
+        breakdown.p[bd_cats[i]] = {
+            Money: {},
+            Knowledge: {},
+            Food: {},
+            Lumber: {},
+            Stone: {},
+            Furs: {},
+            Copper: {},
+            Iron: {},
+            Cement: {},
+            Coal: {},
+            Oil: {},
+            Uranium: {},
+            Steel: {},
+            Titanium: {},
+            Alloy: {},
+            Polymer: {}
+        };
+    }
     
     var time_multiplier = 0.25;
         
