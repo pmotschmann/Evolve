@@ -1070,12 +1070,12 @@ export const actions = {
                 Stone(){ return costMultiplier('bank', 100, 1.45); }
             },
             effect(){ 
-                let vault = 1000;
+                let vault = 1500;
                 if (global.tech['banking'] >= 5){
-                    vault = 5000;
+                    vault = 7500;
                 }
                 else if (global.tech['banking'] >= 3){
-                    vault = 2500;
+                    vault = 3500;
                 }
                 if (global.race['paranoid']){
                     vault *= 0.9;
@@ -4889,8 +4889,8 @@ export const actions = {
     genes: arpa('GeneTech')
 };
 
-function storageMultipler(){
-    var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
+export function storageMultipler(){
+    var multiplier = (global.tech['storage'] - 1) * 0.75 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 2 : 1.5;
     }
