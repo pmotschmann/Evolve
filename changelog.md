@@ -1,3 +1,8 @@
+#### 0.2.59 - 5/17/2019
+Fixed army rating display when rating doens't calculate to a whole number<br>
+Fixed listing order of some resources<br>
+Smelter Iron bonus breakdown fixed<br>
+
 #### 0.2.58 - 5/15/2019
 Settings option to disable multiplier keys<br>
 
