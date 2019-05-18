@@ -632,7 +632,7 @@ function buildGarrison(garrison){
                 }
             },
             rating(val){
-                return armyRating(val,'army');
+                return +armyRating(val,'army').toFixed(1);
             }
         }
     });
