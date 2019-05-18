@@ -997,7 +997,7 @@ export const actions = {
                 Wrought_Iron(){ return costMultiplier('storage_yard', 5, 1.35); }
             },
             effect(){
-                let cap = global.tech.container >= 3 ? 100 : 50;
+                let cap = global.tech.container >= 3 ? 20 : 10;
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
@@ -1010,7 +1010,7 @@ export const actions = {
                     }
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
-                    let cap = global.tech.container >= 3 ? 100 : 50;
+                    let cap = global.tech.container >= 3 ? 20 : 10;
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         cap *= 2;
                     }
@@ -1033,7 +1033,7 @@ export const actions = {
                 Sheet_Metal(){ return costMultiplier('warehouse', 25, 1.25); }
             },
             effect(){
-                let cap = global.tech.steel_container >= 2 ? 100 : 50;
+                let cap = global.tech.steel_container >= 2 ? 20 : 10;
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
@@ -1046,7 +1046,7 @@ export const actions = {
                     }
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
-                    let cap = global.tech['steel_container'] >= 2 ? 100 : 50;
+                    let cap = global.tech['steel_container'] >= 2 ? 20 : 10;
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         cap *= 2;
                     }

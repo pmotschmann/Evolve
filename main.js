@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier } from './vars.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech } from './actions.js';
@@ -1517,7 +1517,7 @@ function midLoop(){
             }
         }
         if (global.city['storage_yard']){
-            let size = global.tech.container >= 3 ? 100 : 50;
+            let size = global.tech.container >= 3 ? 20 : 10;
             if (global.tech['particles'] && global.tech['particles'] >= 2){
                 size *= 2;
             }
@@ -1527,7 +1527,7 @@ function midLoop(){
             });
         }
         if (global.city['warehouse']){
-            let volume = global.tech['steel_container'] >= 2 ? 100 : 50;
+            let volume = global.tech['steel_container'] >= 2 ? 20 : 10;
             if (global.tech['particles'] && global.tech['particles'] >= 2){
                 volume *= 2;
             }
@@ -1805,15 +1805,8 @@ function midLoop(){
             Polymer: bd_Polymer
         };
 
-        let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 30 : 25;
-        let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 75 : 50;
-        if (global.race['pack_rat']){
-            create_value += global.tech.container >= 2 ? 2 : 1;
-            container_value += global.tech.steel_container >= 3 ? 3 : 2;
-        }
-        if (global.tech['container'] && global.tech['container'] >= 4){
-            create_value += 10;
-        }
+        let create_value = crateValue();
+        let container_value = containerValue();
         Object.keys(caps).forEach(function (res){
             let crate = global.resource[res].crates * create_value;
             caps[res] += crate;
