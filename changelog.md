@@ -1,4 +1,5 @@
 #### 0.2.59 - 5/17/2019
+Added additional validation to ensure save strings belong to evolve before importing<br>
 Fixed army rating display when rating doens't calculate to a whole number<br>
 Fixed listing order of some resources<br>
 Smelter Iron bonus breakdown fixed<br>

@@ -359,7 +359,7 @@ window.exportGame = function exportGame(){
 window.importGame = function importGame(){
     if ($('#importExport').val().length > 0){
         let saveState = JSON.parse(LZString.decompressFromBase64($('#importExport').val()));
-        if (saveState){
+        if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
             global = saveState;
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             window.location.reload();
