@@ -522,10 +522,10 @@ function breakdownPopover(id,name,type){
                     let time = 0;
                     if (rate < 0){
                         rate *= -1;
-                        time = +(global['resource'][name].amount / rate).toFixed(0);
+                        time = +(val / rate).toFixed(0);
                     }
                     else {
-                        let gap = global['resource'][name].max - global['resource'][name].amount;
+                        let gap = global['resource'][name].max - val;
                         time = +(gap / rate).toFixed(0);
                     }
 
@@ -773,20 +773,20 @@ function drawModal(name,color){
 }
 
 export function crateValue(){
-    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 150 : 125;
+    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 175 : 125;
     if (global.race['pack_rat']){
-        create_value += global.tech.container >= 2 ? 10 : 5;
+        create_value += global.tech.container >= 2 ? 25 : 10;
     }
     if (global.tech['container'] && global.tech['container'] >= 4){
-        create_value += 50;
+        create_value += 75;
     }
     return spatialReasoning(create_value);
 }
 
 export function containerValue(){
-    let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 375 : 250;
+    let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 600 : 400;
     if (global.race['pack_rat']){
-        container_value += global.tech.steel_container >= 3 ? 15 : 10;
+        container_value += global.tech.steel_container >= 3 ? 40 : 25;
     }
     return spatialReasoning(container_value);
 }

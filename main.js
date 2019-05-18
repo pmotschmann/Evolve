@@ -4,7 +4,7 @@ import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech } from './actions.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -1602,17 +1602,10 @@ function midLoop(){
             caps[races[global.race.species].name] += global.city['lodge'].count;
         }
         if (global.city['shed']){
-            var multiplier = (global.tech['storage'] - 1) * 0.5 + 1;
+            var multiplier = storageMultipler();
             let gain = 0;
             let label = global.tech['storage'] <= 2 ? 'Shed' : (global.tech['storage'] >= 4 ? 'Warehouse' : 'Barn');
-            if (global.race['pack_rat']){
-                multiplier *= 1.05;
-            }
-            if (global.tech['storage'] >= 6){
-                multiplier *= 1 + (global.tech['supercollider'] / 20);
-            }
             if (global.tech['storage'] >= 3){
-                multiplier *= global.tech['storage'] >= 4 ? 2 : 1.5;
                 gain = (global.city['shed'].count * (spatialReasoning(25) * multiplier));
                 caps['Steel'] += gain;
                 bd_Steel[label] = gain+'v';
@@ -1728,12 +1721,12 @@ function midLoop(){
             bd_Knowledge['Bio_Lab'] = (p_on['biolab'] * 3000)+'v';
         }
         if (global.city['bank']){
-            let vault = 1000;
+            let vault = 1500;
             if (global.tech['banking'] >= 5){
-                vault = 5000;
+                vault = 7500;
             }
             else if (global.tech['banking'] >= 3){
-                vault = 2500;
+                vault = 3500;
             }
             if (global.race['paranoid']){
                 vault *= 0.9;
