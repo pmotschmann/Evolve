@@ -585,7 +585,7 @@ function addProject(parent,project){
                         var label = res === 'Money' ? '$' : res+': ';
                         label = label.replace("_", " ");
                         var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
-                        cost.append($(`<div class="${color}">${label}${res_cost}</div>`));
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${res_cost}</div>`));
                     }
                 });
                 var popper = $(`<div id="popArpa${project}" class="popper has-background-light has-text-dark"></div>`);
