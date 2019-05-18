@@ -5309,12 +5309,29 @@ function payCosts(costs){
     return false;
 }
 
-export function checkAffordable(type,action){
+export function checkAffordable(type,action,max){
     if (actions[type][action].cost){
-        return checkCosts(adjustCosts(actions[type][action].cost));
+        if (max){
+            return checkMaxCosts(adjustCosts(actions[type][action].cost));
+        }
+        else {
+            return checkCosts(adjustCosts(actions[type][action].cost));
+        }
     }
     return true;
 } 
+
+function checkMaxCosts(costs){
+    var test = true;
+    Object.keys(costs).forEach(function (res){
+        var testCost = Number(costs[res]()) || 0;
+        if (testCost > Number(global['resource'][res].max) && Number(global['resource'][res].max) !== -1) {
+            test = false;
+            return false;
+        }
+    });
+    return test;
+}
 
 function checkCosts(costs){
     var test = true;
