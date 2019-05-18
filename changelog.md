@@ -1,5 +1,6 @@
 #### 0.2.60 - 5/18/2019
-Added storage timers
+Added storage timers<br>
+A.R.P.A. costs in popover now update their affordability check<br>
 
 #### 0.2.59 - 5/17/2019
 Added additional validation to ensure save strings belong to evolve before importing<br>
