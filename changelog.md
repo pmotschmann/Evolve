@@ -1,3 +1,6 @@
+#### 0.2.60 - 5/18/2019
+Added storage timers
+
 #### 0.2.59 - 5/17/2019
 Added additional validation to ensure save strings belong to evolve before importing<br>
 Fixed army rating display when rating doens't calculate to a whole number<br>

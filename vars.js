@@ -53,7 +53,7 @@ else {
     newGameData();
 }
 
-global['version'] = '0.2.59';
+global['version'] = '0.2.60';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

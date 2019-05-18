@@ -458,7 +458,7 @@ function breakdownPopover(id,name,type){
         if (breakdown[type][name]){
             var popper = $(`<div id="resBreak${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            let bd = $(`<div class="resBreakdown"><div class="has-text-info">${name}</div></div>`);
+            let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name }}</div></div>`);
 
             let types = [name,'Global'];
             for (var i = 0; i < types.length; i++){
@@ -470,7 +470,7 @@ function breakdownPopover(id,name,type){
                         if (val != 0 && !isNaN(val)){
                             let type = val > 0 ? 'success' : 'danger';
                             let label = mod.replace("_"," ");
-                            bd.append(`<div class="resBD"><span>${label}</span><span class="has-text-${type}">{{ ${t}['${mod}'] | translate }} </span></div>`);
+                            bd.append(`<div class="resBD"><span>${label}</span><span class="has-text-${type}">{{ ${t}['${mod}'] | translate }}</span></div>`);
                         }
                     });
                 }
@@ -481,10 +481,13 @@ function breakdownPopover(id,name,type){
                     let val = breakdown[type].consume[name][mod];
                     if (val != 0 && !isNaN(val)){
                         let type = val > 0 ? 'success' : 'danger';
-                        bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }} </span></div>`);
+                        bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
                     }
                 });
             }
+
+            let dir = global['resource'][name].diff > 0 ? 'success' : 'danger';
+            bd.append(`<div class="rate"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
 
             popper.append(bd);
             popper.show();
@@ -495,7 +498,8 @@ function breakdownPopover(id,name,type){
             data: {
                 'Global': breakdown[type]['Global'],
                 [name]: breakdown[type][name],
-                'consume': breakdown[type]['consume']
+                'consume': breakdown[type]['consume'],
+                res: global['resource'][name]
             }, 
             filters: {
                 translate(raw){
@@ -512,6 +516,37 @@ function breakdownPopover(id,name,type){
                 },
                 fix(val){
                     return val + 'v';
+                },
+                counter(val){
+                    let rate = global['resource'][name].diff;
+                    let time = 0;
+                    if (rate < 0){
+                        rate *= -1;
+                        time = +(global['resource'][name].amount / rate).toFixed(0);
+                    }
+                    else {
+                        let gap = global['resource'][name].max - global['resource'][name].amount;
+                        time = +(gap / rate).toFixed(0);
+                    }
+
+                    if (time > 60){
+                        let secs = time % 60;
+                        let mins = (time - secs) / 60;
+                        if (mins >= 60){
+                            let r = mins % 60;
+                            let hours = (mins - r) / 60;
+                            return `${hours}h ${r}m`;
+                        }
+                        else {
+                            return `${mins}m ${secs}s`;
+                        }
+                    }
+                    else {
+                        return `${time}s`;
+                    }
+                },
+                direction(val){
+                    return val >= 0 ? 'To Full' : 'To Empty';
                 }
             }
         });
