@@ -640,6 +640,7 @@ function fastLoop(){
 
         if (global.race['selenophobia']){
             let moon = global.city.calendar.moon > 14 ? 28 - global.city.calendar.moon : global.city.calendar.moon;
+            breakdown.p['Global']['Moon_Phase'] = (-(moon) + 4) + '%';
             moon = 1.04 - (moon / 100);
             global_multiplier *= moon;
         }

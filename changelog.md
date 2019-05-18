@@ -3,6 +3,7 @@ Added additional validation to ensure save strings belong to evolve before impor
 Fixed army rating display when rating doens't calculate to a whole number<br>
 Fixed listing order of some resources<br>
 Smelter Iron bonus breakdown fixed<br>
+Added Selenophobia to breakdown lists<br>
 
 #### 0.2.58 - 5/15/2019
 Settings option to disable multiplier keys<br>
