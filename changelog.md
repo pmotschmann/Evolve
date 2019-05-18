@@ -1,4 +1,6 @@
 #### 0.2.60 - 5/18/2019
+Rescaled crate/container volumes. There are now substantially less crates/containers but they do a lot more per crate/container.<br>
+Spatial Reasoning now correctly applies to crates & containers.
 Added storage timers<br>
 A.R.P.A. costs in popover now update their affordability check<br>
 Buildings and Research that can not be afforded due to low capacity are now marked in red text<br>

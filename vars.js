@@ -53,6 +53,21 @@ else {
     newGameData();
 }
 
+if (!global['version']){
+    global['version'] = '0.2.0';
+}
+
+if (convertVersion(global['version']) < 2060){
+    Object.keys(global.resource).forEach(function (res){
+        if (global.resource[res].crates){
+            global.resource[res].crates = Math.ceil(global.resource[res].crates / 5);
+        }
+        if (global.resource[res].containers){
+            global.resource[res].containers = Math.ceil(global.resource[res].containers / 5);
+        }
+    });
+}
+
 global['version'] = '0.2.60';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -291,6 +306,13 @@ export function keyMultiplier(){
         }
     });
     return number;
+}
+
+function convertVersion(version){
+    let vNum = version.split('.',3);
+    vNum[0] *= 100000;
+    vNum[1] *= 1000;
+    return Number(vNum[0]) + Number(vNum[1]) + Number(vNum[2]);
 }
 
 function resizeGame(){
