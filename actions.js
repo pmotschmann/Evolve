@@ -5038,6 +5038,9 @@ export function addAction(action,type,old){
     if (!checkAffordable(action,type)){
         parent.addClass('cna');
     }
+    if (!checkAffordable(action,type,true)){
+        parent.addClass('cnam');
+    }
     if (old){
         var element = $('<span class="oldTech is-dark"><span class="aTitle">{{ title }}</span></span>');
         parent.append(element);
