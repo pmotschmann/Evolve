@@ -68,7 +68,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.2.61';
+global['version'] = '0.2.62';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

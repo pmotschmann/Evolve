@@ -4780,7 +4780,7 @@ export const actions = {
             id: 'tech-theology',
             title: 'Theology',
             desc: 'Theology',
-            reqs: { theology: 1, housing: 1 },
+            reqs: { theology: 1, housing: 1, cement: 1 },
             grant: ['theology',2],
             cost: {
                 Knowledge(){ return 900; }
