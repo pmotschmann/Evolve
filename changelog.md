@@ -1,3 +1,6 @@
+#### 0.2.61 - 5/19/2019
+Every genus type now has its own evolution path<br>
+
 #### 0.2.60 - 5/18/2019
 Rescaled crate/container volumes. There are now substantially less crates/containers but they do a lot more per crate/container.<br>
 Spatial Reasoning now correctly applies to crates & containers<br>
