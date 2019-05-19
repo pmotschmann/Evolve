@@ -380,7 +380,7 @@ export const actions = {
             title: 'Mammals',
             desc: 'Evolve Mammals',
             cost: {
-                DNA(){ return 260; }
+                DNA(){ return 245; }
             },
             effect: 'Evolve in the direction of mammals. This is an evolutionary fork.',
             action(){
@@ -391,6 +391,116 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.athropods;
                     delete global.evolution.eggshell;
+                    global.evolution['humanoid'] = { count: 0 };
+                    global.evolution['gigantism'] = { count: 0 };
+                    global.evolution['dwarfism'] = { count: 0 };
+                    global.evolution['animalism'] = { count: 0 };
+                    global.evolution['final'] = 90;
+                    addAction('evolution','humanoid');
+                    addAction('evolution','gigantism');
+                    addAction('evolution','dwarfism');
+                    addAction('evolution','animalism');
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        humanoid: {
+            id: 'evo-humanoid',
+            title: 'Humanoid',
+            desc: 'Evolve Humanoid',
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: 'Evolve in the direction of humanoids. This is an evolutionary fork.',
+            action(){
+                if (payCosts(actions.evolution.humanoid.cost)){
+                    global.evolution['humanoid'].count++;
+                    removeAction(actions.evolution.humanoid.id);
+                    removeAction(actions.evolution.gigantism.id);
+                    removeAction(actions.evolution.dwarfism.id);
+                    removeAction(actions.evolution.animalism.id);
+                    delete global.evolution.gigantism;
+                    delete global.evolution.dwarfism;
+                    delete global.evolution.animalism;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        gigantism: {
+            id: 'evo-gigantism',
+            title: 'Gigantism',
+            desc: 'Evolve Gigantism',
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: 'Evolve in the direction of gigantism. This is an evolutionary fork.',
+            action(){
+                if (payCosts(actions.evolution.gigantism.cost)){
+                    global.evolution['gigantism'].count++;
+                    removeAction(actions.evolution.humanoid.id);
+                    removeAction(actions.evolution.gigantism.id);
+                    removeAction(actions.evolution.dwarfism.id);
+                    removeAction(actions.evolution.animalism.id);
+                    delete global.evolution.humanoid;
+                    delete global.evolution.dwarfism;
+                    delete global.evolution.animalism;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        dwarfism: {
+            id: 'evo-dwarfism',
+            title: 'Dwarfism',
+            desc: 'Evolve Dwarfism',
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: 'Evolve in the direction of dwarfism. This is an evolutionary fork.',
+            action(){
+                if (payCosts(actions.evolution.dwarfism.cost)){
+                    global.evolution['dwarfism'].count++;
+                    removeAction(actions.evolution.humanoid.id);
+                    removeAction(actions.evolution.gigantism.id);
+                    removeAction(actions.evolution.dwarfism.id);
+                    removeAction(actions.evolution.animalism.id);
+                    delete global.evolution.humanoid;
+                    delete global.evolution.gigantism;
+                    delete global.evolution.animalism;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        animalism: {
+            id: 'evo-animalism',
+            title: 'Animalism',
+            desc: 'Evolve Animalism',
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: 'Evolve in the direction of animalism. This is an evolutionary fork.',
+            action(){
+                if (payCosts(actions.evolution.animalism.cost)){
+                    global.evolution['animalism'].count++;
+                    removeAction(actions.evolution.humanoid.id);
+                    removeAction(actions.evolution.gigantism.id);
+                    removeAction(actions.evolution.dwarfism.id);
+                    removeAction(actions.evolution.animalism.id);
+                    delete global.evolution.humanoid;
+                    delete global.evolution.gigantism;
+                    delete global.evolution.dwarfism;
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -404,9 +514,9 @@ export const actions = {
             title: 'Eggshell',
             desc: 'Evolve Eggshell',
             cost: {
-                DNA(){ return 260; }
+                DNA(){ return 245; }
             },
-            effect: 'Evolve in the direction of reptiles. This is an evolutionary fork.',
+            effect: 'Evolve in the direction of egg laying reproduction. This is an evolutionary fork.',
             action(){
                 if (payCosts(actions.evolution.eggshell.cost)){
                     global.evolution['eggshell'].count++;
@@ -415,6 +525,52 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.athropods;
                     delete global.evolution.mammals;
+                    global.evolution['endothermic'] = { count: 0 };
+                    global.evolution['ectothermic'] = { count: 0 };
+                    global.evolution['final'] = 90;
+                    addAction('evolution','endothermic');
+                    addAction('evolution','ectothermic');
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        endothermic: {
+            id: 'evo-endothermic',
+            title: 'Endothermic',
+            desc: 'Evolve Endothermic',
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: 'Evolve in the direction of avians. This is an evolutionary fork.',
+            action(){
+                if (payCosts(actions.evolution.endothermic.cost)){
+                    global.evolution['endothermic'].count++;
+                    removeAction(actions.evolution.endothermic.id);
+                    removeAction(actions.evolution.ectothermic.id);
+                    delete global.evolution.ectothermic;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        ectothermic: {
+            id: 'evo-ectothermic',
+            title: 'Ectothermic',
+            desc: 'Evolve Ectothermic',
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: 'Evolve in the direction of reptiles. This is an evolutionary fork.',
+            action(){
+                if (payCosts(actions.evolution.ectothermic.cost)){
+                    global.evolution['ectothermic'].count++;
+                    removeAction(actions.evolution.endothermic.id);
+                    removeAction(actions.evolution.ectothermic.id);
+                    delete global.evolution.endothermic;
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -439,58 +595,66 @@ export const actions = {
                     
                     // Trigger Next Phase of game
                     var path = Math.floor(Math.seededRandom(0,100));
-                    if (global.evolution['mammals']){
-                        if (path < 8){
-                            global.race.species = 'cath';
-                        }
-                        else if (path < 16){
-                            global.race.species = 'wolven';
-                        }
-                        else if (path < 24){
-                            global.race.species = 'centaur';
-                        }
-                        else if (path < 32){
-                            global.race.species = 'kobold';
-                        }
-                        else if (path < 40){
-                            global.race.species = 'goblin';
-                        }
-                        else if (path < 48){
-                            global.race.species = 'gnome';
-                        }
-                        else if (path < 56){
-                            global.race.species = 'troll';
-                        }
-                        else if (path < 64){
-                            global.race.species = 'orge';
-                        }
-                        else if (path < 72){
-                            global.race.species = 'cyclops';
-                        }
-                        else if (path < 81){
+                    if (global.evolution['humanoid']){
+                        if (path < 33){
                             global.race.species = 'elven';
                         }
-                        else if (path < 90){
+                        else if (path < 67){
                             global.race.species = 'orc';
                         }
                         else {
                             global.race.species = 'human';
                         }
                     }
-                    else if (global.evolution['eggshell']){
-                        if (path < 17){
-                            global.race.species = 'tortoisan';
-                        }
-                        else if (path < 34){
-                            global.race.species = 'gecko';
-                        }
-                        else if (path < 50){
-                            global.race.species = 'slitheryn';
+                    else if (global.evolution['gigantism']){
+                        if (path < 33){
+                            global.race.species = 'troll';
                         }
                         else if (path < 67){
+                            global.race.species = 'orge';
+                        }
+                        else {
+                            global.race.species = 'cyclops';
+                        }
+                    }
+                    else if (global.evolution['dwarfism']){
+                        if (path < 33){
+                            global.race.species = 'kobold';
+                        }
+                        else if (path < 67){
+                            global.race.species = 'goblin';
+                        }
+                        else {
+                            global.race.species = 'gnome';
+                        }
+                    }
+                    else if (global.evolution['animalism']){
+                        if (path < 33){
+                            global.race.species = 'cath';
+                        }
+                        else if (path < 67){
+                            global.race.species = 'wolven';
+                        }
+                        else {
+                            global.race.species = 'centaur';
+                        }
+                    }
+                    else if (global.evolution['ectothermic']){
+                        if (path < 33){
+                            global.race.species = 'tortoisan';
+                        }
+                        else if (path < 67){
+                            global.race.species = 'gecko';
+                        }
+                        else {
+                            global.race.species = 'slitheryn';
+                        }
+                    }
+                    else if (global.evolution['endothermic']){
+                        if (path < 33){
                             global.race.species = 'arraak';
                         }
-                        else if (path < 84){
+                        else if (path < 67){
                             global.race.species = 'pterodacti';
                         }
                         else {
@@ -523,6 +687,12 @@ export const actions = {
                         else {
                             global.race.species = 'cacti';
                         }
+                    }
+                    else if (global.evolution['eggshell']){
+                        global.race.species = 'dracnid';
+                    }
+                    else {
+                        global.race.species = 'human';
                     }
 
                     global.resource.RNA.display = false;
