@@ -3976,7 +3976,7 @@ export const actions = {
             id: 'tech-stone_axe',
             title: 'Primitive Axes',
             desc: 'Create the first axe',
-            reqs: { storage: 1 },
+            reqs: { primitive: 3 },
             grant: ['axe',1],
             cost: {
                 Knowledge(){ return 45; },

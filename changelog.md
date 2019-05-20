@@ -1,5 +1,6 @@
 #### 0.2.64 - 5/20/2019
 Currency is now required before unlocking Basic Storage<br>
+Primitive Axes are no longer gated behind Basic Storage<br>
 Research tab now defaults back to new when resetting<br>
 
 #### 0.2.63 - 5/20/2019
