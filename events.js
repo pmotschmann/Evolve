@@ -103,27 +103,22 @@ export const events = {
             return `An ancient cache of resources has been discovered.`;
         }
     },
-    tax_revolt1: {
+    tax_revolt: {
         reqs: { 
-            tax_rate: 4
+            high_tax_rate: 26,
+            low_morale: 99
         },
         effect: function(){
-            return tax_revolt(5);
-        }
-    },
-    tax_revolt2: {
-        reqs: { 
-            tax_rate: 5
-        },
-        effect: function(){
-            return tax_revolt(3);
+            return tax_revolt();
         }
     }
 };
 
-function tax_revolt(divisor){
+function tax_revolt(){
+    global.city.morale.current - 100;
+    let risk = (global.civic.taxes.tax_rate - 25) * 0.04;
     Object.keys(global.resource).forEach(function (res) {
-        let loss = Math.rand(1,Math.round(global.resource[res].amount / divisor));
+        let loss = Math.rand(1,Math.round(global.resource[res].amount * risk));
         let remain = global.resource[res].amount - loss;
         if (remain < 0){ remain = 0; }
         global.resource[res].amount = remain;

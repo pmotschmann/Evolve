@@ -1,5 +1,6 @@
 #### 0.2.62 - 5/19/2019
-Cement is now a requirement for theology since cement is needed for temples<br>
+Tax system revamped. Taxes can now be adjusted more granularly and effect morale.<br>
+Cement is now a requirement for theology since cement is needed for temples.<br>
 
 #### 0.2.61 - 5/19/2019
 Every genus type now has its own evolution path<br>

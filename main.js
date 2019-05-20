@@ -98,7 +98,11 @@ $('#morale').on('mouseover',function(){
         let type = global.city.morale.weather > 0 ? 'success' : 'danger';
         popper.append(`<p>Weather<span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
     }
-    let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather;
+    if (global.city.morale.tax !== 0){
+        let type = global.city.morale.tax > 0 ? 'success' : 'danger';
+        popper.append(`<p>Taxes<span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
+    }
+    let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax;
     if (total > moraleCap || total < 50){
         popper.append(`<div>Current<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
     }
@@ -273,7 +277,6 @@ else {
 setupStats();
 
 var fed = true;
-var tax_multiplier = 1;
 var p_on = {};
 
 var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
@@ -613,8 +616,14 @@ function fastLoop(){
         global.city.morale.stress = stress;
         morale += stress;
 
+        global.city.morale.tax = 20 - global.civic.taxes.tax_rate;
+        morale -= global.civic.taxes.tax_rate - 20;
+
         let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
         moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
+        if (global.civic.taxes.tax_rate < 20){
+            moraleCap += 10 - Math.floor(global.civic.taxes.tax_rate / 2);
+        }
         if (morale < 50){
             morale = 50;
         }
@@ -685,14 +694,11 @@ function fastLoop(){
                     mill_multiplier += (working * mill_bonus);
                 }
 
-                let food_tax_mult = ((tax_multiplier - 1) / 2) + 1;
-
-                food_base = (farmers_base * weather_multiplier * mill_multiplier * food_tax_mult);
+                food_base = (farmers_base * weather_multiplier * mill_multiplier);
 
                 food_bd['Farmers'] = (farmers_base) + 'v';
                 food_bd['Weather'] = ((weather_multiplier - 1) * 100) + '%';
                 food_bd['Mills'] = ((mill_multiplier - 1) * 100) + '%';
-                food_bd['Taxes'] = ((food_tax_mult - 1) * 100)  + '%';
             }
 
             let hunting = 0;
@@ -833,7 +839,7 @@ function fastLoop(){
             }
 
             let delta = professors_base + scientist_base;
-            delta *= hunger * tax_multiplier * global_multiplier;
+            delta *= hunger * global_multiplier;
             delta += sundial_base * global_multiplier;
             delta *= library_mult;
 
@@ -841,7 +847,6 @@ function fastLoop(){
             know_bd['Professors'] = professors_base + 'v';
             know_bd['Scientist'] = scientist_base + 'v';
             know_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            know_bd['Taxes'] = ((tax_multiplier - 1) * 100) + '%';
             know_bd['Sundial'] = sundial_base + 'v';
             if (global.city['library']){
                 know_bd['Library'] = ((library_mult - 1) * 100) + '%';
@@ -884,7 +889,7 @@ function fastLoop(){
                     delta *= 1.08;
                 }
 
-                delta *= hunger * tax_multiplier;
+                delta *= hunger;
                 FactoryMoney = delta + 'v'; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
 
                 delta *= global_multiplier;
@@ -924,12 +929,11 @@ function fastLoop(){
                 }
 
                 let delta = factory_output;
-                delta *= hunger * tax_multiplier * global_multiplier;
+                delta *= hunger * global_multiplier;
 
                 let alloy_bd = {};
                 alloy_bd['Factory'] = factory_output + 'v';
                 alloy_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-                alloy_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
                 breakdown.p['Alloy'] = alloy_bd;
                 modRes('Alloy', delta * time_multiplier);
             }
@@ -972,12 +976,11 @@ function fastLoop(){
                 }
 
                 let delta = factory_output;
-                delta *= hunger * tax_multiplier * global_multiplier;
+                delta *= hunger * global_multiplier;
 
                 let polymer_bd = {};
                 polymer_bd['Factory'] = factory_output + 'v';
                 polymer_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-                polymer_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
                 breakdown.p['Polymer'] = polymer_bd;
                 modRes('Polymer', delta * time_multiplier);
             }
@@ -1010,13 +1013,12 @@ function fastLoop(){
             }
             
             let delta = factory_output * powered_mult;
-            delta *= hunger * tax_multiplier * global_multiplier;
+            delta *= hunger * global_multiplier;
 
             let cement_bd = {};
             cement_bd['Factory'] = factory_output + 'v';
             cement_bd['Power'] = ((powered_mult - 1) * 100) + '%';
             cement_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            cement_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
             breakdown.p['Cement'] = cement_bd;
             modRes('Cement', delta * time_multiplier);
         }
@@ -1112,17 +1114,16 @@ function fastLoop(){
                 }
 
                 let delta = smelter_output;
-                delta *= hunger * tax_multiplier * global_multiplier;
+                delta *= hunger * global_multiplier;
 
                 let steel_bd = {};
                 steel_bd['Smelter'] = smelter_output + 'v';
                 steel_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-                steel_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
                 breakdown.p['Steel'] = steel_bd;
                 modRes('Steel', delta * time_multiplier);
                 
                 if (global.tech['titanium'] && global.tech['titanium'] >= 1){
-                    let titanium = smelter_output * hunger * tax_multiplier;
+                    let titanium = smelter_output * hunger;
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
                     titanium_bd['Steel'] = (titanium / divisor) + 'v';
@@ -1144,13 +1145,12 @@ function fastLoop(){
             }
 
             let delta = lumber_base * power_mult;
-            delta *= hunger * tax_multiplier * global_multiplier;
+            delta *= hunger * global_multiplier;
 
             let lumber_bd = {};
             lumber_bd['Lumberjacks'] = lumber_base + 'v';
             lumber_bd['Sawmill'] = ((power_mult - 1) * 100) + '%';
             lumber_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            lumber_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
             breakdown.p['Lumber'] = lumber_bd;
             modRes('Lumber', delta * time_multiplier);
         }
@@ -1171,13 +1171,12 @@ function fastLoop(){
             }
 
             let delta = stone_base * power_mult;
-            delta *= hunger * tax_multiplier * global_multiplier;
+            delta *= hunger * global_multiplier;
 
             let stone_bd = {};
             stone_bd['Workers'] = stone_base + 'v';
             stone_bd['Power'] = ((power_mult - 1) * 100) + '%';
             stone_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            stone_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
             breakdown.p['Stone'] = stone_bd;
             modRes('Stone', delta * time_multiplier);
         }
@@ -1214,13 +1213,12 @@ function fastLoop(){
                 let copper_base = miner_base * copper_mult;
 
                 let delta = copper_base * power_mult;
-                delta *= hunger * tax_multiplier * global_multiplier;
+                delta *= hunger * global_multiplier;
 
                 let copper_bd = {};
                 copper_bd['Miners'] = (copper_base) + 'v';
                 copper_bd['Power'] = ((power_mult - 1) * 100) + '%';
                 copper_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-                copper_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
                 breakdown.p['Copper'] = copper_bd;
                 modRes('Copper', delta * time_multiplier);
             }
@@ -1232,14 +1230,13 @@ function fastLoop(){
                 let smelter_mult = 1 + (iron_smelter * 0.1);
 
                 let delta = iron_base * smelter_mult * power_mult;
-                delta *= hunger * tax_multiplier * global_multiplier;
+                delta *= hunger * global_multiplier;
 
                 let iron_bd = {};
                 iron_bd['Miners'] = (iron_base) + 'v';
                 iron_bd['Smelter'] = ((smelter_mult - 1) * 100) + '%';
                 iron_bd['Power'] = ((power_mult - 1) * 100) + '%';
                 iron_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-                iron_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
                 breakdown.p['Iron'] = iron_bd;
                 modRes('Iron', delta * time_multiplier);
 
@@ -1277,13 +1274,12 @@ function fastLoop(){
             }
 
             let delta = coal_base * power_mult;
-            delta *= hunger * tax_multiplier * global_multiplier;
+            delta *= hunger * global_multiplier;
 
             let coal_bd = {};
             coal_bd['Miners'] = coal_base + 'v';
             coal_bd['Power'] = ((power_mult - 1) * 100) + '%';
             coal_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            coal_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
             breakdown.p['Coal'] = coal_bd;
             modRes('Coal', delta * time_multiplier);
 
@@ -1305,12 +1301,11 @@ function fastLoop(){
             oil_base *= global.city.oil_well.count;
 
             let delta = oil_base;
-            delta *= hunger * tax_multiplier * global_multiplier;
+            delta *= hunger * global_multiplier;
 
             let oil_bd = {};
             oil_bd['Derrick'] = oil_base + 'v';
             oil_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            oil_bd['Taxes'] = ((tax_multiplier - 1) * 100)  + '%';
             breakdown.p['Oil'] = oil_bd;
             modRes('Oil', delta * time_multiplier);
         }
@@ -1320,34 +1315,6 @@ function fastLoop(){
             let income_base = global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] ? 0 : global.civic.free);
             income_base *= ( global.race['greedy'] ? 1.75 : 2 );
             income_base /= 5;
-
-            let tax_rate;
-            switch(Number(global.civic.taxes.tax_rate)){
-                case 0:
-                    tax_rate = 0;
-                    tax_multiplier = 1.4;
-                    break;
-                case 1:
-                    tax_rate = 0.5;
-                    tax_multiplier = 1.2;
-                    break;
-                case 3:
-                    tax_rate = 1.25;
-                    tax_multiplier = 0.9;
-                    break;
-                case 4:
-                    tax_rate = 1.5;
-                    tax_multiplier = 0.75;
-                    break;
-                case 5:
-                    tax_rate = 1.75;
-                    tax_multiplier = 0.5;
-                    break;
-                default:
-                    tax_rate = 1;
-                    tax_multiplier = 1;
-                    break;
-            }
             
             if (fed){
                 if (global.tech['banking'] && global.tech['banking'] >= 2){
@@ -1362,7 +1329,7 @@ function fastLoop(){
                 income_base = income_base / 2;
             }
             
-            income_base *= tax_rate;
+            income_base *= (global.civic.taxes.tax_rate / 20);
 
             let temple_mult = 1;
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
@@ -2146,8 +2113,13 @@ function longLoop(){
                             isOk = false;
                         }
                         break;
-                    case 'tax_rate':
-                        if (global.civic.taxes.tax_rate !== [events[event].reqs[req]]){
+                    case 'high_tax_rate':
+                        if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
+                            isOk = false;
+                        }
+                        break;
+                    case 'low_morale':
+                        if (global.city.morale.current <= [events[event].reqs[req]]){
                             isOk = false;
                         }
                         break;
