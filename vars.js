@@ -57,7 +57,7 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
-if (convertVersion(global['version']) < 2062){
+if (convertVersion(global['version']) < 2062 && global.civic.taxes !== undefined){
     switch(Number(global.civic.taxes.tax_rate)){
         case 0:
             global.civic.taxes.tax_rate = 0;
