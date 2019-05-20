@@ -2742,7 +2742,7 @@ export const actions = {
             id: 'tech-storage',
             title: 'Basic Storage',
             desc: 'Design a structure to house resources',
-            reqs: { primitive: 3 },
+            reqs: { primitive: 3, currency: 1 },
             grant: ['storage',1],
             cost: { 
                 Knowledge(){ return 20; }
