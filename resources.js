@@ -486,8 +486,10 @@ function breakdownPopover(id,name,type){
                 });
             }
 
-            let dir = global['resource'][name].diff > 0 ? 'success' : 'danger';
-            bd.append(`<div class="rate"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
+            if (type === 'p'){
+                let dir = global['resource'][name].diff > 0 ? 'success' : 'danger';
+                bd.append(`<div class="rate"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
+            }
 
             popper.append(bd);
             popper.show();
