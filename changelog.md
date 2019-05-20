@@ -1,3 +1,6 @@
+#### 0.2.63 - 5/20/2019
+Fixed an issue that accidently set the default tax rate to 2% instead of 20% for new games<br>
+
 #### 0.2.62 - 5/19/2019
 Tax system revamped. Taxes can now be adjusted more granularly and effect morale instead of production.<br>
 Cement is now a requirement for theology since cement is needed for temples.<br>

@@ -57,6 +57,12 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+if (convertVersion(global['version']) === 2062 && global.civic.taxes !== undefined){
+    if (global.civic.taxes.tax_rate == 2){
+        global.civic.taxes.tax_rate = 20;
+    }
+}
+
 if (convertVersion(global['version']) < 2062 && global.civic.taxes !== undefined){
     switch(Number(global.civic.taxes.tax_rate)){
         case 0:
@@ -90,7 +96,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.2.62';
+global['version'] = '0.2.63';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
