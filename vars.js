@@ -57,6 +57,28 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+if (convertVersion(global['version']) < 2062){
+    switch(Number(global.civic.taxes.tax_rate)){
+        case 0:
+            global.civic.taxes.tax_rate = 0;
+            break;
+        case 1:
+            global.civic.taxes.tax_rate = 10;
+            break;
+        case 2:
+            global.civic.taxes.tax_rate = 20;
+            break;
+        case 3:
+            global.civic.taxes.tax_rate = 30;
+            break;
+        case 4:
+            global.civic.taxes.tax_rate = 40;
+            break;
+        case 5:
+            global.civic.taxes.tax_rate = 50;
+            break;
+    }
+}
 if (convertVersion(global['version']) < 2060){
     Object.keys(global.resource).forEach(function (res){
         if (global.resource[res].crates){
@@ -147,6 +169,10 @@ if (!global.city['morale']){
         season: 0,
         weather: 0
     };
+}
+
+if (!global.city.morale['tax']){
+    global.city.morale['tax'] = 0;
 }
 
 if (!global.city['calendar']){

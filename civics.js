@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, modRes, save } from './vars.js';
+import { global, vues, poppers, messageQueue, modRes, save, keyMultiplier } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races, racialTrait } from './races.js';
 
@@ -49,49 +49,39 @@ function taxRates(govern){
     vues['civ_taxes'] = new Vue({
         data: global.civic['taxes'],
         filters: {
-            tax_level: function(rate){
-                var label;
-                switch(Number(rate)){
-                    case 0:
-                        label = 'None';
-                        break;
-                    case 1:
-                        label = 'Low';
-                        break;
-                    case 2:
-                        label = 'Medium';
-                        break;
-                    case 3:
-                        label = 'High';
-                        break;
-                    case 4:
-                        label = 'Oppressive';
-                        break;
-                    case 5:
-                        label = 'Intolerable';
-                        break;
-                    default:
-                        label = 'Severe Audit'
-                        break;
-                }
-                return label;
+            tax_level(rate){
+                return `${rate}%`;
             }
         },
         methods: {
             add(){
-                if (global.tech['currency'] && global.tech['currency'] >= 5 && global.civic.taxes.tax_rate < 5){
-                    global.civic.taxes.tax_rate++;
+                let inc = keyMultiplier();
+                if (global.tech['currency'] && global.tech['currency'] >= 5 && global.civic.taxes.tax_rate < 50){
+                    global.civic.taxes.tax_rate += inc;
+                    if (global.civic.taxes.tax_rate > 50){
+                        global.civic.taxes.tax_rate = 50;
+                    }
                 }
-                else if (global.civic.taxes.tax_rate < 3){
-                    global.civic.taxes.tax_rate++;
+                else if (global.civic.taxes.tax_rate < 30){
+                    global.civic.taxes.tax_rate += inc;
+                    if (global.civic.taxes.tax_rate > 30){
+                        global.civic.taxes.tax_rate = 30;
+                    }
                 }
             },
             sub(){
+                let dec = keyMultiplier();
                 if (global.tech['currency'] && global.tech['currency'] >= 5 && global.civic.taxes.tax_rate > 0){
-                    global.civic.taxes.tax_rate--;
+                    global.civic.taxes.tax_rate -= dec;
+                    if (global.civic.taxes.tax_rate < 0){
+                        global.civic.taxes.tax_rate = 0;
+                    }
                 }
-                else if (global.civic.taxes.tax_rate > 1){
-                    global.civic.taxes.tax_rate--;
+                else if (global.civic.taxes.tax_rate > 10){
+                    global.civic.taxes.tax_rate -= dec;
+                    if (global.civic.taxes.tax_rate < 10){
+                        global.civic.taxes.tax_rate = 10;
+                    }
                 }
             }
         }
@@ -99,7 +89,7 @@ function taxRates(govern){
     vues['civ_taxes'].$mount('#tax_rates');
     
     $('#taxRateLabel').on('mouseover',function(){
-            var popper = $('<div id="popTaxRate" class="popper has-background-light has-text-dark">High tax rates yield more money but reduce worker productivity, low taxes have the inverse effect.</div>');
+            var popper = $('<div id="popTaxRate" class="popper has-background-light has-text-dark">High tax rates yield more money but reduce morale, low taxes have the inverse effect.</div>');
             $('#main').append(popper);
             popper.show();
             poppers['popTaxRate'] = new Popper($('#taxRateLabel'),popper);
@@ -606,13 +596,21 @@ function buildGarrison(garrison){
                 }
             },
             aNext(){
+                let inc = keyMultiplier();
                 if (global.civic.garrison.raid < global.civic.garrison.workers){
-                    global.civic.garrison.raid++; 
+                    global.civic.garrison.raid += inc;
+                    if (global.civic.garrison.raid > global.civic.garrison.workers){
+                        global.civic.garrison.raid = global.civic.garrison.workers;
+                    }
                 }
             },
             aLast(){
+                let dec = keyMultiplier();
                 if (global.civic.garrison.raid > 0){
-                    global.civic.garrison.raid-- 
+                    global.civic.garrison.raid -= dec;
+                    if (global.civic.garrison.raid < 0){
+                        global.civic.garrison.raid = 0;
+                    }
                 }
             }
         },
