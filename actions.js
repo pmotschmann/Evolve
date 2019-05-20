@@ -985,7 +985,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair(){ return global.tech.agriculture >= 6 ? '100% Inorganic' : '100% Organic'; }
+            flair(){ return global.tech.agriculture >= 7 ? '100% Inorganic' : '100% Organic'; }
         },
         mill: {
             id: 'city-mill',
