@@ -1899,7 +1899,7 @@ function midLoop(){
     }
     Object.keys(global.resource).forEach(function (res){
         $(`[data-${res}]`).each(function (i,v){
-            if (global.resource[res].amount < $(this).attr(`data-${res}`)){
+            if (global.resource[res].amount + global.resource[res].diff < $(this).attr(`data-${res}`)){
                 if ($(this).hasClass('has-text-dark')){
                     $(this).removeClass('has-text-dark');
                     $(this).addClass('has-text-danger');
