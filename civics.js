@@ -847,6 +847,7 @@ function warhead(){
     global.settings.showGenetics = false;
     global.settings.showSpace = false;
     global.settings.arpa = false;
+    global.settings.resTabs = 0;
     global.arpa = {};
     if (!new_achieve){
         global.lastMsg = false;

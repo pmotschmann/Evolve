@@ -1,5 +1,6 @@
 #### 0.2.64 - 5/20/2019
 Currency is now required before unlocking Basic Storage<br>
+Research tab now defaults back to new when resetting<br>
 
 #### 0.2.63 - 5/20/2019
 Fixed an issue that accidently set the default tax rate to 2% instead of 20% for new games<br>
