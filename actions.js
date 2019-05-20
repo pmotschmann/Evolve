@@ -2323,7 +2323,7 @@ export const actions = {
             id: 'tech-foundry',
             title: 'Foundry',
             desc: 'Foundry',
-            reqs: { mining: 1, cement: 1 },
+            reqs: { mining: 2 },
             grant: ['foundry',1],
             cost: {
                 Knowledge(){ return 650; }
