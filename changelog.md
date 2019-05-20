@@ -3,6 +3,7 @@ Currency is now required before unlocking Basic Storage<br>
 Primitive Axes are no longer gated behind Basic Storage<br>
 Foundry now requires Metal Working to unlock and no longer requires Cement<br>
 Research tab now defaults back to new when resetting<br>
+Fixed issue with not being able to buy something if you had consumption on a resource and the cost was the same as your max capacity<br>
 
 #### 0.2.63 - 5/20/2019
 Fixed an issue that accidently set the default tax rate to 2% instead of 20% for new games<br>

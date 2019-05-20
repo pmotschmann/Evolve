@@ -5498,7 +5498,7 @@ function checkMaxCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
         var testCost = Number(costs[res]()) || 0;
-        if (testCost > Number(global['resource'][res].max) && Number(global['resource'][res].max) !== -1) {
+        if (testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1) {
             test = false;
             return false;
         }
@@ -5510,7 +5510,7 @@ function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
         var testCost = Number(costs[res]()) || 0;
-        if (testCost > Number(global['resource'][res].amount)) {
+        if (testCost > Number(global.resource[res].amount) + global.resource[res].diff){
             test = false;
             return false;
         }
