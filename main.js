@@ -1416,6 +1416,14 @@ function midLoop(){
                     else if (!element.hasClass('cna')){
                         element.addClass('cna');
                     }
+                    if (checkAffordable('evolution',action,true)){
+                        if (element.hasClass('cnam')){
+                            element.removeClass('cnam');
+                        }
+                    }
+                    else if (!element.hasClass('cnam')){
+                        element.addClass('cnam');
+                    }
                 }
             }
         });
