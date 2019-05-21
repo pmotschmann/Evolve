@@ -28,6 +28,11 @@ let settings = {
             $('html').removeClass();
             $('html').addClass('night');
         },
+        redgreen(){
+            global.settings.theme = 'redgreen';
+            $('html').removeClass();
+            $('html').addClass('redgreen');
+        },
         keys(){
             return `Enable Control (10x) / Shift (25x) / Alt (100x) Multiplier keys`;
         },
@@ -1356,13 +1361,19 @@ function fastLoop(){
         global.city.power_total = -max_power;
         global.city.power = power_grid;
         if (global.city.power < 0){
-            $('#powerMeter').css('color','#cc0000');
+            $('#powerMeter').addClass('low');
+            $('#powerMeter').removeClass('neutral');
+            $('#powerMeter').removeClass('high');
         }
         else if (global.city.power > 0){
-            $('#powerMeter').css('color','#00af0f');
+            $('#powerMeter').removeClass('low');
+            $('#powerMeter').removeClass('neutral');
+            $('#powerMeter').addClass('high');
         }
         else {
-            $('#powerMeter').css('color','#c0ce00');
+            $('#powerMeter').removeClass('low');
+            $('#powerMeter').addClass('neutral');
+            $('#powerMeter').removeClass('high');
         }
     }
     
