@@ -5510,7 +5510,8 @@ function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
         var testCost = Number(costs[res]()) || 0;
-        if (testCost > Number(global.resource[res].amount) + global.resource[res].diff){
+        let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
+        if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
             test = false;
             return false;
         }
