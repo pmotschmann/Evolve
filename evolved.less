@@ -918,6 +918,17 @@ html.dark {
     .promoBar {
         background-color: #3a4344;
     }
+    .meter {
+        &.low {
+            color: #cc0000;
+        }
+        &.high {
+            color: #00af0f;
+        }
+        &.neutral {
+            color: #c0ce00;
+        }
+    }
     .main {
         .content {
             .action {
@@ -1102,6 +1113,17 @@ html.light {
         border-top: #000 solid .0625rem;
         border-bottom: #000 solid .0625rem;
     }
+    .meter {
+        &.low {
+            color: #cc0000;
+        }
+        &.high {
+            color: #00af0f;
+        }
+        &.neutral {
+            color: #c0ce00;
+        }
+    }
     .main {
         .content {
             .action {
@@ -1219,6 +1241,7 @@ html.light {
     }
 }
 
+.nightTheme,
 html.night {
     .darkTheme();
     background-color: #000;
@@ -1244,5 +1267,95 @@ html.night {
                 }
             }
         }
+    }
+}
+
+html.redgreen {
+    .nightTheme();
+    .has-text-success {
+        color: #00ff00 !important;
+    }
+    .has-text-warning {
+        color: #ffcc00 !important;
+    }
+    .has-text-danger {
+        color: #9900cc !important;
+    }
+    .has-text-special {
+        color: #666600;
+    }
+    .meter {
+        &.low {
+            color: #167df0;
+        }
+        &.high {
+            color: #fff;
+        }
+        &.neutral {
+            color: #00af0f;
+        }
+    }
+    .main {
+        .content {
+            .action {
+                div.on {
+                    color: #00ff00;
+                }
+                div.on.warn {
+                    color: #af5d00;
+                }
+                div.off {
+                    color: #9900cc;
+                }
+            }
+        }
+        .popper {
+            .has-text-danger {
+                color: #aa00aa !important;
+            }
+        }
+    }
+    #powerStatus .has-text-warning {
+        color: #9900cc !important;
+    }
+    .tabs li.is-active a {
+        color: #167df0;
+    }
+    .trade {
+        .has-text-danger {
+            color: #167df0  !important;
+            color: #aa00ff  !important;
+        }
+        .has-text-warning {
+            color: #fff  !important;
+        }
+    }
+    .topBar {
+        .calendar {
+            .wi-thermometer-exterior {
+                color: #00e6d2;;
+            }
+            .wi-thermometer {
+                color: #fffb00;
+            }
+        }
+    }
+    .mad {
+        background: repeating-linear-gradient(
+            45deg,
+            #8a8b49,
+            #8a8b49 10px,
+            #000000 10px,
+            #000000 20px
+        );
+    }
+    .armed .mad {
+        background: repeating-linear-gradient(
+            45deg,
+            #fbfd84,
+            #fbfd84 10px,
+            #000000 10px,
+            #000000 20px
+        );
     }
 }
