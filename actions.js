@@ -858,7 +858,9 @@ export const actions = {
         },
         cottage: {
             id: 'city-cottage',
-            title: 'Cottage',
+            title(){
+                return global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottage';
+            },
             desc: 'Cozy housing for 2 citizens',
             reqs: { housing: 2 },
             cost: { 
@@ -887,7 +889,9 @@ export const actions = {
         },
         apartment: {
             id: 'city-apartment',
-            title: 'Apartment',
+            title(){
+                return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartment';
+            },
             desc: '<div>Housing complex for 5 citizens</div><div>Requires power</div>',
             reqs: { housing: 3 },
             cost: { 
@@ -2039,6 +2043,11 @@ export const actions = {
                 if (payCosts(actions.tech.sundial.cost)){
                     global.resource.Knowledge.display = true;
                     global.city.calendar.day++;
+                    if (global.race['infectious']){
+                        global.civic.garrison.display = true;
+                        global.settings.showCivic = true;
+                        global.city['garrison'] = { count: 0 };
+                    }
                     return true;
                 }
                 return false;
@@ -2064,7 +2073,9 @@ export const actions = {
         },
         cottage: {
             id: 'tech-cottage',
-            title: 'Cottages',
+            title(){
+                return global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottages';
+            },
             desc: 'Design a newer housing unit',
             reqs: { housing: 1, cement: 1, mining: 3 },
             grant: ['housing',2],
@@ -2082,8 +2093,12 @@ export const actions = {
         },
         apartment: {
             id: 'tech-apartment',
-            title: 'Apartments',
-            desc: 'Apartments',
+            title(){
+                return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartments';
+            },
+            desc(){
+                return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartments';
+            },
             reqs: { housing: 2, high_tech: 2 },
             grant: ['housing',3],
             cost: { 
@@ -4915,7 +4930,7 @@ export const actions = {
                             global.race['hyper'] = 1;
                             break;
                         case 'sporgar':
-                            global.race['mushy'] = 1;
+                            global.race['infectious'] = 1;
                             break;
                         case 'shroomi':
                             global.race['toxic'] = 1;
@@ -5833,6 +5848,8 @@ export function basicHousingLabel(){
             return 'Nest';
         case 'pterodacti':
             return 'Nest';
+        case 'sporgar':
+            return 'Spore Nest';
         default:
             return 'Cabin';
     }
