@@ -2593,7 +2593,7 @@ export const actions = {
                 Knowledge(){ return 13500; },
                 Coal(){ return 2000; }
             },
-            effect: 'Increases Iron output of smelters by 20%',
+            effect: 'Increases Iron output of smelters by 20%.',
             action(){
                 if (payCosts(actions.tech.blast_furnace.cost)){
                     return true;
@@ -2611,7 +2611,7 @@ export const actions = {
                 Knowledge(){ return 19800; },
                 Coal(){ return 5000; }
             },
-            effect: 'Increases Steel output of smelters by 20%',
+            effect: 'Increases Steel output of smelters by 20%.',
             action(){
                 if (payCosts(actions.tech.bessemer_process.cost)){
                     return true;
@@ -2629,7 +2629,7 @@ export const actions = {
                 Knowledge(){ return 46800; },
                 Coal(){ return 10000; }
             },
-            effect: 'Increases Steel output of smelters by 20%',
+            effect: 'Increases Steel output of smelters by 20%.',
             action(){
                 if (payCosts(actions.tech.oxygen_converter.cost)){
                     return true;
@@ -2786,7 +2786,7 @@ export const actions = {
                 Knowledge(){ return 15750; },
                 Steel(){ return 5000; }
             },
-            effect: 'Replace smaller storage sheds with larger storage barns, a 100% increase in storage capactiy.',
+            effect: 'Replace smaller storage sheds with larger storage barns, a 100% increase in storage capacity.',
             action(){
                 if (payCosts(actions.tech.barns.cost)){
                     return true;
@@ -3911,7 +3911,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 99000; }
             },
-            effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%',
+            effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%.',
             action(){
                 if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
                     return true;
@@ -3964,7 +3964,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 132000; }
             },
-            effect: 'A new oil mining technique, controversial but effective. Improves oil derrick output by 40%',
+            effect: 'A new oil mining technique, controversial but effective. Improves oil derrick output by 40%.',
             action(){
                 if (payCosts(actions.tech.fracking.cost)){
                     return true;
@@ -4646,7 +4646,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 32000; }
             },
-            effect: 'Portland cement is easier to make boosting productivity of cement workers by 20%',
+            effect: 'Portland cement is easier to make boosting productivity of cement workers by 20%.',
             action(){
                 if (payCosts(actions.tech.portland_cement.cost)){
                     return true;
@@ -4944,7 +4944,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 5000; }
             },
-            effect: 'Professors will help spread your ideology. Each professor gives a minor boost to temple effectivenss',
+            effect: 'Professors will help spread your ideology. Each professor gives a minor boost to temple effectiveness.',
             action(){
                 if (payCosts(actions.tech.indoctrination.cost)){
                     return true;
@@ -5013,7 +5013,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 5000; }
             },
-            effect: 'Mythological stories of the creators boost your libraries by 5% per temple',
+            effect: 'Mythological stories of the creators boost your libraries by 5% per temple.',
             action(){
                 if (payCosts(actions.tech.mythology.cost)){
                     return true;
@@ -5030,7 +5030,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 10000; }
             },
-            effect: 'Professors studying the past history of the creators are boosted in effectiveness by 5% per temple',
+            effect: 'Professors studying the past history of the creators are boosted in effectiveness by 5% per temple.',
             action(){
                 if (payCosts(actions.tech.archaeology.cost)){
                     return true;
