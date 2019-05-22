@@ -714,7 +714,15 @@ function fastLoop(){
             let generated = food_base + hunting;
             generated *= global_multiplier;
 
-            let consume = (global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.civic.free * 0.5));
+            let soldiers = global.civic.garrison.workers;
+            if (global.race['parasite']){
+                soldiers -= 2;
+                if (soldiers < 0){
+                    soldiers = 0;
+                }
+            }
+
+            let consume = (global.resource[races[global.race.species].name].amount + soldiers - (global.civic.free * 0.5));
             consume *= (global.race['gluttony'] ? 1.1 : 1);
             if (global.race['high_metabolism']){
                 consume *= 1.05;
@@ -762,6 +770,9 @@ function fastLoop(){
             if (global.race['spongy'] && global.city.calendar.weather === 0){
                 // Do Nothing
             }
+            else if (global.race['parasite'] && global.city.calendar.wind === 0){
+                // Do Nothing
+            }
             else {
                 var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
                 if (global.race['fast_growth']){
@@ -769,8 +780,13 @@ function fastLoop(){
                     lowerBound += 2;
                 }
                 if (global.race['spores'] && global.city.calendar.wind === 1){
-                    lowerBound += 2;
-                    lowerBound *= 2;
+                    if (global.race['parasite']){
+                        lowerBound += 1;
+                    }
+                    else {
+                        lowerBound += 2;
+                        lowerBound *= 2;
+                    }
                 }
                 if (global.genes['birth']){
                     lowerBound += global.genes['birth'];
@@ -796,7 +812,6 @@ function fastLoop(){
         // Furs
         if (global.resource.Furs.display){
             let fur_bd = {};
-            let fur_multiplier = hunger;
             let hunting = armyRating(global.civic.garrison.workers,'hunting') / 10;
 
             let delta = hunting;
@@ -1555,6 +1570,9 @@ function midLoop(){
         }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += global.city['cement_plant'].count * 2;
+        }
+        if (global.race['parasite']){
+            lCaps['garrison'] += 2;
         }
         if (global.city['garrison']){
             lCaps['garrison'] += global.city.garrison.count * (global.tech['military'] >= 5 ? 3 : 2);

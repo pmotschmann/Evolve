@@ -57,6 +57,18 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+if (convertVersion(global['version']) < 2065 && global.race !== undefined && global.race.species === 'sporgar'){
+    delete global.race['crafty'];
+    delete global.race['hydrophilic'];
+    global.race['infectious'] = 1;
+    global.race['parasite'] = 1;
+    if (!global.tech['military'] && global.tech['primitive'] && global.tech['primitive'] >= 3){
+        global.civic['garrison'].display = true;
+        global.settings.showCivic = true;
+        global.city['garrison'] = { count: 0 };
+    }
+}
+
 if (convertVersion(global['version']) === 2062 && global.civic.taxes !== undefined){
     if (global.civic.taxes.tax_rate == 2){
         global.civic.taxes.tax_rate = 20;
@@ -96,7 +108,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.2.64';
+global['version'] = '0.2.65';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

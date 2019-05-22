@@ -441,6 +441,37 @@ function buildGarrison(garrison){
                     loot = loot + '.';
                     messageQueue(loot,'warning');
                     messageQueue(`Your army was victorious! ${death} soldiers died in the conflict.`,'success');
+                    if (global.race['infectious']){
+                        let infected = 0;
+                        switch(global.civic.garrison.tactic){
+                            case 0:
+                                infected = Math.floor(Math.seededRandom(0,2));
+                                break;
+                            case 1:
+                                infected = Math.floor(Math.seededRandom(0,3));
+                                break;
+                            case 2:
+                                infected = Math.floor(Math.seededRandom(0,5));
+                                break;
+                            case 3:
+                                infected = Math.floor(Math.seededRandom(0,10));
+                                break;
+                            case 4:
+                                infected = Math.floor(Math.seededRandom(0,25));
+                                break;
+                        }
+                        let zombies = global.resource[races[global.race.species].name].amount + infected;
+                        if (zombies > global.resource[races[global.race.species].name].max){
+                            zombies = global.resource[races[global.race.species].name].max;
+                        }
+                        global.resource[races[global.race.species].name].amount = zombies;
+                        if (infected === 1){
+                            messageQueue(`${infected} enemy soldier was infected during the battle`,'special');
+                        }
+                        else {
+                            messageQueue(`${infected} enemy soldiers were infected during the battle`,'special');
+                        }
+                    }
                 }
                 else {
                     let deathCap = global.civic.garrison.raid;
@@ -678,7 +709,7 @@ export function armyRating(val,type){
         wounded = val - (global.civic.garrison.workers - global.civic.garrison.wounded);
     }
 
-    let army = (val - (wounded / 2)) * global.tech.military;
+    let army = global.tech['military'] ? (val - (wounded / 2)) * global.tech.military : (val - (wounded / 2));
     if (type === 'army'){
         if (global.race['puny']){
             army = Math.floor(army * 0.9);
@@ -695,6 +726,14 @@ export function armyRating(val,type){
         }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
+        }
+        if (global.race['parasite']){
+            if (val === 1){
+                army += 2;
+            }
+            else if (val > 1){
+                army += 4;
+            }
         }
     }
     else if (type === 'hunting'){

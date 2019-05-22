@@ -1,3 +1,6 @@
+#### 0.2.65 - 5/21/2019
+Sporgar race redesigned into a parasitic race that spreads through infecting victims<br>
+
 #### 0.2.64 - 5/20/2019
 Currency is now required before unlocking Basic Storage<br>
 Primitive Axes are no longer gated behind Basic Storage<br>

@@ -229,13 +229,13 @@ export const races = {
     },
     sporgar: {
         name: 'Sporgar',
-        desc: 'Sporgar are bizarre species that evolved from mold. They like to settle in damp humid places.',
+        desc: 'Sporgar are a parasitic species of sentient mold spores that spread by infecting host bodies and possessing them.',
         type: 'fungi',
         home: 'Zanger',
         entity: 'sentient mold',
         traits: {
-            crafty: 1,
-            hydrophilic: 1
+            infectious: 1,
+            parasite: 1
         } 
     },
     shroomi: {
@@ -552,8 +552,16 @@ export const traits = {
         desc: 'Your race is easily startled and may lose productivity when scared',
         type: 'major',
     },
+    infectious: { // Attacking has a chance to infect other creatures and grow your population
+        desc: 'Your race spreads by infecting other creatures and taking over the host body.',
+        type: 'major',
+    },
+    parasite: { // You can only reproduce by infecting victims, spores sometimes find a victim when it's windy
+        desc: 'Your species is a parasite and must infect host victims to grow.',
+        type: 'major',
+    },
     crafty: { // 3% bonus craft ratio
-        desc: 'Your race has a knack for crafting',
+        desc: 'Your race has a knack for crafting.',
         type: 'major',
     },
     hydrophilic: { // none factory jobs are reduced by 25% when raining
