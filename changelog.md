@@ -1,3 +1,6 @@
+#### 0.2.66 - 5/22/2019
+Added alternate row coloring to the market to help distinguish rows<br>
+
 #### 0.2.65 - 5/21/2019
 Sporgar race redesigned into a parasitic race that spreads through infecting victims<br>
 
