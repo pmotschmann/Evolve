@@ -572,8 +572,8 @@ function fastLoop(){
             power_grid -= power;
         }
 
-        let p_structs = ['apartment','factory','wardenclyffe','biolab','mine','coal_mine','rock_quarry','sawmill','cement_plant'];
-        for (var i = 0; i < p_structs.length; i++) {
+        let p_structs = ['apartment','coal_mine','factory','wardenclyffe','biolab','mine','rock_quarry','cement_plant','sawmill'];
+        for (var i = 0; i < p_structs.length; i++){
             if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
                 let power = global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
                 p_on[p_structs[i]] = global.city[p_structs[i]].on;
@@ -670,14 +670,11 @@ function fastLoop(){
                 food_bd['Hunters'] = food_base + 'v';
             }
             else {
-                let farmers_base = global.civic.farmer.workers;
+                let farmers_base = global.civic.farmer.workers * global.civic.farmer.impact;
                 farmers_base *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
                 farmers_base *= global.city.biome === 'grassland' ? 1.1 : 1;
-                farmers_base *= global.civic.farmer.impact;
                 farmers_base *= racialTrait(global.civic.farmer.workers,'farmer');
-                if (global.tech['agriculture'] >= 7){
-                    farmers_base *= 1.1;
-                }
+                farmers_base *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
 
                 let weather_multiplier = 1;
                 if (global.city.calendar.temp === 0){
@@ -699,9 +696,19 @@ function fastLoop(){
                     mill_multiplier += (working * mill_bonus);
                 }
 
-                food_base = (farmers_base * weather_multiplier * mill_multiplier);
+                let farm = 0;
+                if (global.city['farm']){
+                    farm = global.city['farm'].count * (global.tech['agriculture'] >= 2 ? 1.25 : 0.75);
+                    farm *= global.city.biome === 'grassland' ? 1.1 : 1;
+                    farm *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
+                }
 
+                food_bd['Farms'] = (farm) + 'v';
                 food_bd['Farmers'] = (farmers_base) + 'v';
+
+                food_base = ((farm + farmers_base) * weather_multiplier * mill_multiplier);
+
+                
                 food_bd['Weather'] = ((weather_multiplier - 1) * 100) + '%';
                 food_bd['Mills'] = ((mill_multiplier - 1) * 100) + '%';
             }
@@ -1154,21 +1161,26 @@ function fastLoop(){
         // Lumber
         { //block scope
             let lumber_base = global.civic.lumberjack.workers;
-            lumber_base *= global.city.biome === 'forest' ? (1.1) : 1;
+            lumber_base *= global.city.biome === 'forest' ? 1.1 : 1;
             lumber_base *= global.civic.lumberjack.impact;
             lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
             lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
 
             let power_mult = 1;
             if (global.city.powered && global.city.sawmill && p_on['sawmill']){
-                power_mult += (p_on['sawmill'] * 0.05);
+                power_mult += (p_on['sawmill'] * 0.04);
+            }
+            let lumber_yard = 1;
+            if (global.city['lumber_yard']){
+                lumber_yard += global.city['lumber_yard'].count * 0.02;
             }
 
-            let delta = lumber_base * power_mult;
+            let delta = lumber_base * power_mult * lumber_yard;
             delta *= hunger * global_multiplier;
 
             let lumber_bd = {};
             lumber_bd['Lumberjacks'] = lumber_base + 'v';
+            lumber_bd['Lumber_Yard'] = ((lumber_yard - 1) * 100) + '%';
             lumber_bd['Sawmill'] = ((power_mult - 1) * 100) + '%';
             lumber_bd['Hunger'] = ((hunger - 1) * 100) + '%';
             breakdown.p['Lumber'] = lumber_bd;
@@ -1186,15 +1198,18 @@ function fastLoop(){
             }
 
             let power_mult = 1;
+            let rock_quarry = 1;
             if (global.city['rock_quarry'] && global.city.rock_quarry['on']){
-                power_mult += (p_on['rock_quarry'] * 0.05);
+                power_mult += (p_on['rock_quarry'] * 0.04);
+                rock_quarry += global.city['rock_quarry'].count * 0.02;
             }
 
-            let delta = stone_base * power_mult;
+            let delta = stone_base * power_mult * rock_quarry;
             delta *= hunger * global_multiplier;
 
             let stone_bd = {};
             stone_bd['Workers'] = stone_base + 'v';
+            stone_bd['Rock_Quarry'] = ((rock_quarry - 1) * 100) + '%';
             stone_bd['Power'] = ((power_mult - 1) * 100) + '%';
             stone_bd['Hunger'] = ((hunger - 1) * 100) + '%';
             breakdown.p['Stone'] = stone_bd;
@@ -1478,9 +1493,9 @@ function midLoop(){
         };
         // labor caps
         var lCaps = {
-            farmer: 0,
-            lumberjack: 0,
-            quarry_worker: 0,
+            farmer: -1,
+            lumberjack: -1,
+            quarry_worker: -1,
             miner: 0,
             coal_miner: 0,
             cement_worker: 0,
@@ -1511,7 +1526,6 @@ function midLoop(){
 
         caps[races[global.race.species].name] = 0;
         if (global.city['farm']){
-            lCaps['farmer'] += global.city['farm'].count;
             if (global.tech['farm']){
                 caps[races[global.race.species].name] += global.city['farm'].count;
                 bd_Citizen['Farm'] = global.city['farm'].count + 'v';
@@ -1538,13 +1552,11 @@ function midLoop(){
             });
         }
         if (global.city['rock_quarry']){
-            lCaps['quarry_worker'] += global.city['rock_quarry'].count;
             let gain = (global.city['rock_quarry'].count * spatialReasoning(100));
             caps['Stone'] += gain;
             bd_Stone['Quarry'] = gain+'v';
         }
         if (global.city['lumber_yard']){
-            lCaps['lumberjack'] += global.city['lumber_yard'].count * 2;
             let gain = (global.city['lumber_yard'].count * spatialReasoning(100));
             caps['Lumber'] += gain;
             bd_Lumber['Lumber_Yard'] = gain+'v';
@@ -1832,7 +1844,7 @@ function midLoop(){
         
         Object.keys(lCaps).forEach(function (job){
             global.civic[job].max = lCaps[job];
-            if (global.civic[job].workers > global.civic[job].max){
+            if (global.civic[job].workers > global.civic[job].max && global.civic[job].max !== -1){
                 global.civic[job].workers = global.civic[job].max;
             }
             else if (global.civic[job].workers < 0){

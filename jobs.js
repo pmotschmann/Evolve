@@ -5,7 +5,7 @@ import { craftingRatio } from './resources.js';
 export const job_desc = {
     farmer: function(){
         let multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
-        if (global.tech.agriculture >= 6){
+        if (global.tech.agriculture >= 7){
             multiplier *= 1.1;
         }
         multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
@@ -67,6 +67,9 @@ export const job_desc = {
     },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
+        if (global.tech['science'] && global.tech['science'] >= 3){
+            impact += global.city.library.count * 0.01;
+        }
         impact *= racialTrait(global.civic.professor.workers,'science');
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
             impact *= 1 + (global.city.temple.count * 0.05);
@@ -89,7 +92,7 @@ export const job_desc = {
 export function defineJobs(){
     $('#civics').append($('<div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>'));
     loadUnemployed();
-    loadJob('farmer','Farmer',1.5);
+    loadJob('farmer','Farmer',1.35);
     loadJob('lumberjack','Lumberjack',1);
     loadJob('quarry_worker','Quarry Worker',1);
     loadJob('miner','Miner',1);
@@ -144,6 +147,8 @@ function loadJob(job, name, impact, color){
             impact: impact
         };
     }
+
+    global.civic[job].impact = impact;
     
     if (job === 'craftsman'){
         return;
@@ -153,8 +158,14 @@ function loadJob(job, name, impact, color){
     
     var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
     var controls = $('<div class="controls"></div>');
-    var job_label = $(`<div class="job_label"><span class="has-text-${color}">{{ name }}</span><span class="count">{{ workers }} / {{ max }}</span></div>`);
-    civ_container.append(job_label);
+    if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker'){
+        let job_label = $(`<div class="job_label"><span class="has-text-${color}">{{ name }}</span><span class="count">{{ workers }}</span></div>`);
+        civ_container.append(job_label);
+    }
+    else {
+        let job_label = $(`<div class="job_label"><span class="has-text-${color}">{{ name }}</span><span class="count">{{ workers }} / {{ max }}</span></div>`);
+        civ_container.append(job_label);
+    }
     civ_container.append(controls);
     $('#jobs').append(civ_container);
     
@@ -170,7 +181,7 @@ function loadJob(job, name, impact, color){
             add(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.civic[job].workers < global['civic'][job].max && global.civic.free > 0){
+                    if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && global.civic.free > 0){
                         global.civic[job].workers++;
                         global.civic.free--;
                     }

@@ -1,3 +1,13 @@
+#### 0.2.67 - 5/24/2019
+Revamp of farmer, lumberjack, and quarry worker jobs. These govern the most basic materials produced and can now assign as many workers as you like to these positions.<br>
+Farms now directly produce food instead of determining farmer cap.<br>
+Lumber Yards now increase lumber production instead of governing lumberjack cap<br>
+Rock Quarry now increase stone production instead of governing quarry worker cap<br>
+Sawmill powered on bonus reduced from 5% to 4%<br>
+Rock Quarry powered on bonus reduced from 5% to 4%<br>
+Stock Exchanges no longer cost Knowledge<br>
+Fixed a display bug that could cause farmers to falsely show they produced more food then they actual did<br>
+
 #### 0.2.66 - 5/22/2019
 Added alternate row coloring to the market to help distinguish rows<br>
 

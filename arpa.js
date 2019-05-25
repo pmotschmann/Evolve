@@ -60,7 +60,6 @@ const arpaProjects = {
         },
         cost: {
             Money: function(){ return costMultiplier('stock_exchange', 3000000, 1.06); },
-            Knowledge: function(){ return costMultiplier('stock_exchange', 200000, 1.06); },
             Plywood: function(){ return costMultiplier('stock_exchange', 25000, 1.06); },
             Brick: function(){ return costMultiplier('stock_exchange', 20000, 1.06); },
             Wrought_Iron: function(){ return costMultiplier('stock_exchange', 10000, 1.06); }
@@ -68,7 +67,7 @@ const arpaProjects = {
     },
     launch_facility: {
         title: 'Launch Facility',
-        desc: 'A launch facility allows for construction and firing of rockets.',
+        desc: 'A launch facility allows for construction and firing of rockets, and thus space exploration.',
         reqs: { high_tech: 7, locked: 1 },
         grant: 'launch_facility',
         effect: function() {
