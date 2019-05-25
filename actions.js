@@ -976,12 +976,17 @@ export const actions = {
                 Lumber(){ return costMultiplier('farm', 20, 1.35); },
                 Stone(){ return costMultiplier('farm', 10, 1.35); }
             },
-            effect(){ return global.tech['farm'] ? '+1 Max Farmers. +1 Max Citizen' : '+1 Max Farmers'; },
+            effect(){
+                let farming = global.tech['agriculture'] >= 2 ? 1.25 : 0.75;
+                farming *= global.city.biome === 'grassland' ? 1.1 : 1;
+                farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
+                farming = +farming.toFixed(2);
+                return global.tech['farm'] ? `<div>+${farming} Food Production</div><div>+1 Max Citizen</div>` : `++${farming} Food`; 
+            },
             action(){
                 if (payCosts(actions.city.farm.cost)){
                     global.city['farm'].count++;
                     global.civic.farmer.display = true;
-                    global.civic.farmer.max++;
                     if (global.tech['farm']){
                         global['resource'][races[global.race.species].name].max += 1;
                     }
@@ -1297,13 +1302,12 @@ export const actions = {
             },
             effect:  function(){
                 let lum = spatialReasoning(100);
-                return `<div>+2 Max Lumberjacks</div><div>+${lum} Max Lumber</div>`;
+                return `<div>+2% Lumber Production</div><div>+${lum} Max Lumber</div>`;
             },
             action(){
                 if (payCosts(actions.city.lumber_yard.cost)){
                     global.city['lumber_yard'].count++;
                     global.civic.lumberjack.display = true;
-                    global.civic.lumberjack.max = global.city.lumber_yard.count * 2;
                     global['resource']['Lumber'].max += spatialReasoning(100);
                     return true;
                 }
@@ -1328,7 +1332,7 @@ export const actions = {
                     desc = desc + `<div>+2% Plywood Crafting</div>`; 
                 }
                 if (global.city.powered){
-                    desc = desc + `<div>Each powered sawmill uses 1kW but produces 5% more lumber</div>`; 
+                    desc = desc + `<div>Each powered sawmill uses 1kW but produces 4% more lumber</div>`; 
                 }
                 return desc;
             },
@@ -1360,10 +1364,10 @@ export const actions = {
             effect() {
                 let stone = spatialReasoning(100);
                 if (global.tech['mine_conveyor']){
-                    return `<div>+1 Max Quarry Worker</div><div>+${stone} Max Stone</div><div>If powered consumes 1kW but increases rock yield by 5%</div>`;
+                    return `<div>+2% Quarry Efficiency</div><div>+${stone} Max Stone</div><div>If powered consumes 1kW but increases rock yield by 4%</div>`;
                 }
                 else {
-                    return `<div>+1 Max Quarry Worker</div><div>+${stone} Max Stone</div>`;
+                    return `<div>+2% Quarry Efficiency</div><div>+${stone} Max Stone</div>`;
                 }
             },
             powered: 1,
@@ -1372,7 +1376,6 @@ export const actions = {
                 if (payCosts(actions.city.rock_quarry.cost)){
                     global.city['rock_quarry'].count++;
                     global.civic.quarry_worker.display = true;
-                    global.civic.quarry_worker.max = global.city.rock_quarry.count;
                     global['resource']['Stone'].max += 100;
                     if (global.tech['mine_conveyor'] && global.city.power > 0){
                         global.city['rock_quarry'].on++;
@@ -2238,7 +2241,6 @@ export const actions = {
             effect: 'Increase farm efficiency by 66% with irrigation.',
             action(){
                 if (payCosts(actions.tech.irrigation.cost)){
-                    global.civic.farmer.impact = 2.5;
                     return true;
                 }
                 return false;
