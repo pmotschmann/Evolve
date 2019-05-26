@@ -1,3 +1,6 @@
+#### 0.2.68 - 5/26/2019
+Fixed bug with Rock Quarry that prevented the 2% bonus from working unless you had electricity unlocked<br>
+
 #### 0.2.67 - 5/24/2019
 Revamp of farmer, lumberjack, and quarry worker jobs. These govern the most basic materials produced and can now assign as many workers as you like to these positions.<br>
 Farms now directly produce food instead of determining farmer cap.<br>

@@ -1199,8 +1199,10 @@ function fastLoop(){
 
             let power_mult = 1;
             let rock_quarry = 1;
-            if (global.city['rock_quarry'] && global.city.rock_quarry['on']){
-                power_mult += (p_on['rock_quarry'] * 0.04);
+            if (global.city['rock_quarry']){
+                if (global.city.rock_quarry['on']){
+                    power_mult += (p_on['rock_quarry'] * 0.04);
+                }
                 rock_quarry += global.city['rock_quarry'].count * 0.02;
             }
 
