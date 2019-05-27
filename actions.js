@@ -2815,7 +2815,7 @@ export const actions = {
             id: 'tech-warehouse',
             title: 'Warehouse',
             desc: 'Replace barns with warehouses',
-            reqs: { high_tech: 3, smelting: 2 },
+            reqs: { storage: 3, high_tech: 3, smelting: 2 },
             grant: ['storage',4],
             cost: {
                 Knowledge(){ return 40500; },
@@ -2833,7 +2833,7 @@ export const actions = {
             id: 'tech-cameras',
             title: 'Security Cameras',
             desc: 'Upgrade warehouses with cameras',
-            reqs: { high_tech: 4 },
+            reqs: { storage: 4, high_tech: 4 },
             grant: ['storage',5],
             cost: {
                 Money(){ return 90000; },
