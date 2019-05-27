@@ -83,6 +83,9 @@ export const job_desc = {
         if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
             impact *= 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
         }
+        if (global.space['satellite']){
+            impact *= 1 + (global.space.satellite.count * 0.01);
+        }
         impact = +impact.toFixed(2);
         return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per second.`;
     }

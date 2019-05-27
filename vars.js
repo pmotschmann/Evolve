@@ -5,6 +5,7 @@ export var global = {
     evolution: {},
     tech: {},
     city: {},
+    space: {},
     civic: { free: 0 },
     race: {},
     genes: {},
@@ -132,6 +133,24 @@ if (!global['settings']){
         disableReset: false,
         theme: 'dark'
     }
+}
+if (!global.settings['space']){
+    global.settings['space'] = {
+        home: true,
+        moon: false,
+        red: false,
+        hell: false,
+        sun: false,
+        gas: false,
+        gas_moon: false,
+        belt: false,
+        dwaft: false,
+        blackhole: false
+    }
+}
+
+if (!global['space']){
+    global['space'] = {};
 }
 
 if (!global.settings['showAchieve']){

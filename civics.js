@@ -885,6 +885,16 @@ function warhead(){
     global.settings.showMarket = false;
     global.settings.showGenetics = false;
     global.settings.showSpace = false;
+    global.settings.space.home = true;
+    global.settings.space.moon = false;
+    global.settings.space.red = false;
+    global.settings.space.hell = false;
+    global.settings.space.sun = false;
+    global.settings.space.gas = false;
+    global.settings.space.gas_moon = false;
+    global.settings.space.belt = false;
+    global.settings.space.dwarf = false;
+    global.settings.space.blackhole = false;
     global.settings.arpa = false;
     global.settings.resTabs = 0;
     global.arpa = {};

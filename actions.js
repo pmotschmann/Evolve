@@ -4,6 +4,7 @@ import { races, genus_traits, randomMinorTrait } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison } from './civics.js';
+import { spaceTech, space } from './space.js';
 import { arpa, gainGene } from './arpa.js';
 
 export const actions = {
@@ -1846,8 +1847,14 @@ export const actions = {
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
+                if (global.space['satellite']){
+                    gain *= 1 + (global.space.satellite.count * 0.04);
+                }
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
+                    if (global.space['satellite']){
+                        pgain *= 1 + (global.space.satellite.count * 0.02);
+                    }
                     if (global.tech['supercollider']){
                         let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                         pgain *= (global.tech['supercollider'] / ratio) + 1;
@@ -2815,7 +2822,7 @@ export const actions = {
             id: 'tech-warehouse',
             title: 'Warehouse',
             desc: 'Replace barns with warehouses',
-            reqs: { high_tech: 3, smelting: 2 },
+            reqs: { high_tech: 3, smelting: 2, storage: 3 },
             grant: ['storage',4],
             cost: {
                 Knowledge(){ return 40500; },
@@ -2833,7 +2840,7 @@ export const actions = {
             id: 'tech-cameras',
             title: 'Security Cameras',
             desc: 'Upgrade warehouses with cameras',
-            reqs: { high_tech: 4 },
+            reqs: { high_tech: 4, storage: 4 },
             grant: ['storage',5],
             cost: {
                 Money(){ return 90000; },
@@ -5071,9 +5078,70 @@ export const actions = {
                 }
                 return false;
             }
+        },
+        astrophysics: {
+            id: 'tech-astrophysics',
+            title: 'Astrophysics',
+            desc: 'Astrophysics',
+            reqs: { space: 2 },
+            grant: ['space_explore',1],
+            cost: {
+                Knowledge(){ return 125000; }
+            },
+            effect: 'Navigating space requires research into a new branch of science called astrophysics.',
+            action(){
+                if (payCosts(actions.tech.astrophysics.cost)){
+                    global.space['propellant_depot'] = { count: 0 };
+                    space();
+                    return true;
+                }
+                return false;
+            }
+        },
+        rover: {
+            id: 'tech-rover',
+            title: 'Rovers',
+            desc: 'Rovers',
+            reqs: { space_explore: 1 },
+            grant: ['space_explore',2],
+            cost: {
+                Knowledge(){ return 135000; },
+                Alloy(){ return 22000 },
+                Polymer(){ return 18000 },
+                Uranium(){ return 750 }
+            },
+            effect: 'Design an unmanned vehicle which can be used to explore other planets and determine their potential.',
+            action(){
+                if (payCosts(actions.tech.rover.cost)){
+                    global.settings.space.moon = true;
+                    space();
+                    return true;
+                }
+                return false;
+            }
+        },
+        gps: {
+            id: 'tech-gps',
+            title: 'GPS Constellation',
+            desc: 'GPS Constellation',
+            reqs: { space_explore: 1 },
+            grant: ['satellite',1],
+            cost: {
+                Knowledge(){ return 150000; }
+            },
+            effect: 'Design a network of navigation satellites.',
+            action(){
+                if (payCosts(actions.tech.rover.cost)){
+                    global.space['gps'] = { count: 0 };
+                    space();
+                    return true;
+                }
+                return false;
+            }
         }
     },
-    genes: arpa('GeneTech')
+    genes: arpa('GeneTech'),
+    space: spaceTech()
 };
 
 export function storageMultipler(){
@@ -5205,6 +5273,11 @@ export function oldTech(tech){
 }
 
 export function addAction(action,type,old){
+    let c_action = actions[action][type];
+    setAction(c_action,action,type,old)
+}
+
+export function setAction(c_action,action,type,old){
     if (global.race['kindling_kindred'] && action === 'tech' && type === 'stone_axe'){
         return;
     }
@@ -5217,15 +5290,15 @@ export function addAction(action,type,old){
     if (global.race['herbivore'] && action === 'tech' && type === 'fanaticism'){
         return;
     }
-    if (actions[action][type]['powered'] && !global[action][type]['on']){
+    if (c_action['powered'] && !global[action][type]['on']){
         global[action][type]['on'] = 0;
     }
-    var id = actions[action][type].id;
+    var id = c_action.id;
     var parent = $(`<div id="${id}" class="action"></div>`);
-    if (!checkAffordable(action,type)){
+    if (!checkAffordable(c_action)){
         parent.addClass('cna');
     }
-    if (!checkAffordable(action,type,true)){
+    if (!checkAffordable(c_action,true)){
         parent.addClass('cnam');
     }
     if (old){
@@ -5237,7 +5310,7 @@ export function addAction(action,type,old){
         parent.append(element);
     }
 
-    if (actions[action][type]['special']){
+    if (c_action['special']){
         var special = $(`<div class="special" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
@@ -5249,13 +5322,13 @@ export function addAction(action,type,old){
             </svg></div>`);
         parent.append(special);
     }
-    if (actions[action][type]['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(action,type)){
+    if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(action,type)){
         var powerOn = $('<div class="on" @click="power_on" title="ON">{{ act.on }}</div>');
         var powerOff = $('<div class="off" @click="power_off" title="OFF">{{ act.on | off }}</div>');
         parent.append(powerOn);
         parent.append(powerOff);
     }
-    if (action !== 'tech' && global[action][type] && global[action][type].count >= 0){
+    if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count >= 0){
         element.append($('<span class="count">{{ act.count }}</span>'));
     }
     if (old){
@@ -5264,7 +5337,7 @@ export function addAction(action,type,old){
     else {
         $('#'+action).append(parent);
     }
-    if (action !== 'tech' && global[action][type] && global[action][type].count === 0){
+    if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count === 0){
         $(`#${id} .count`).css('display','none');
         $(`#${id} .special`).css('display','none');
         $(`#${id} .on`).css('display','none');
@@ -5280,34 +5353,45 @@ export function addAction(action,type,old){
     }
     vues[id] = new Vue({
         data: {
-            title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title(),
+            title: typeof c_action.title === 'string' ? c_action.title : c_action.title(),
             act: global[action][type]
         },
         methods: {
             action(){
                 switch (action){
                     case 'tech':
-                        if (actions[action][type].action()){
+                        if (c_action.action()){
                             gainTech(type);
                         }
                         break;
                     case 'genes':
-                        if (actions[action][type].action()){
+                        if (c_action.action()){
                             gainGene(type);
                         }
                         break;
                     default:
-                        var keyMult = keyMultiplier();
+                        let keyMult = keyMultiplier();
+                        if (c_action['grant']){
+                            keyMult = 1;
+                        }
                         for (var i=0; i<keyMult; i++){
-                            if (!actions[action][type].action()){
+                            if (!c_action.action()){
                                 break;
                             }
                         }
-                        updateDesc(action,type);
-                        if (!checkAffordable(action,type)){
-                            let id = actions[action][type].id;
+                        if (!checkAffordable(c_action)){
+                            let id = c_action.id;
                             $(`#${id}`).addClass('cna');
                         }
+                        if (c_action['grant']){
+                            let tech = c_action.grant[0];
+                            global.tech[tech] = c_action.grant[1];
+                            removeAction(c_action.id);
+                            drawCity();
+                            drawTech();
+                            space();
+                        }
+                        updateDesc(c_action,action,type);
                         break;
                 }
             },
@@ -5345,7 +5429,7 @@ export function addAction(action,type,old){
     $('#'+id).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            actionDesc(popper,action,type,old);
+            actionDesc(popper,c_action,old);
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
@@ -5356,13 +5440,13 @@ export function addAction(action,type,old){
         });
 }
 
-function actionDesc(parent,action,type,old){
+function actionDesc(parent,c_action,old){
     parent.empty();
-    var desc = typeof actions[action][type].desc === 'string' ? actions[action][type].desc : actions[action][type].desc();
+    var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     parent.append($('<div>'+desc+'</div>'));
-    if (actions[action][type].cost && !old){ 
+    if (c_action.cost && !old){ 
         var cost = $('<div></div>');
-        var costs = adjustCosts(actions[action][type].cost);
+        var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res) {
             var res_cost = costs[res]();
             if (res_cost > 0){
@@ -5374,14 +5458,14 @@ function actionDesc(parent,action,type,old){
         });
         parent.append(cost);
     }
-    if (actions[action][type].effect){
-        var effect = typeof actions[action][type].effect === 'string' ? actions[action][type].effect : actions[action][type].effect();
+    if (c_action.effect){
+        var effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
         if (effect){
             parent.append($(`<div>${effect}</div>`));
         }
     }
-    if (actions[action][type].flair){
-        var flair = typeof actions[action][type].flair === 'string' ? actions[action][type].flair : actions[action][type].flair();
+    if (c_action.flair){
+        var flair = typeof c_action.flair === 'string' ? c_action.flair : c_action.flair();
         parent.append($(`<div class="flair has-text-special">${flair}</div>`));
         parent.addClass('flair');
     }
@@ -5392,8 +5476,8 @@ export function removeAction(id){
     $('#pop'+id).remove();
 }
 
-function updateDesc(category,action){
-    var id = actions[category][action].id;
+function updateDesc(c_action,category,action){
+    var id = c_action.id;
     if (global[category] && global[category][action] && global[category][action]['count']){
         $(`#${id} .count`).html(global[category][action].count);
         if (global[category][action] && global[category][action].count > 0){
@@ -5403,7 +5487,7 @@ function updateDesc(category,action){
             $(`#${id} .off`).css('display','block');
         }
     }
-    actionDesc($('#pop'+id),category,action);
+    actionDesc($('#pop'+id),c_action);
 }
 
 function adjustCosts(costs){
@@ -5484,7 +5568,7 @@ function rebarAdjust(costs){
     return costs;
 }
 
-function payCosts(costs){
+export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
@@ -5499,13 +5583,13 @@ function payCosts(costs){
     return false;
 }
 
-export function checkAffordable(type,action,max){
-    if (actions[type][action].cost){
+export function checkAffordable(c_action,max){
+    if (c_action.cost){
         if (max){
-            return checkMaxCosts(adjustCosts(actions[type][action].cost));
+            return checkMaxCosts(adjustCosts(c_action.cost));
         }
         else {
-            return checkCosts(adjustCosts(actions[type][action].cost));
+            return checkCosts(adjustCosts(c_action.cost));
         }
     }
     return true;

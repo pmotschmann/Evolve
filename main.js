@@ -5,6 +5,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech } from './actions.js';
+import { space } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -276,6 +277,7 @@ else {
             oldTech(tech);
         }
     });
+    space();
     setWeather();
 }
 
@@ -850,6 +852,9 @@ function fastLoop(){
             scientist_base *= racialTrait(global.civic.scientist.workers,'science');
             if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
                 scientist_base *= 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
+            }
+            if (global.space['satellite']){
+                scientist_base *= 1 + (global.space.satellite.count * 0.01);
             }
             
             let library_mult = global.city['library'] ? 1 + (global.city.library.count * 0.05) : 1;
@@ -1449,9 +1454,10 @@ function midLoop(){
 
         Object.keys(actions.evolution).forEach(function (action){
             if (actions.evolution[action] && actions.evolution[action].cost){
-                let element = $('#'+actions.evolution[action].id);
+                let c_action = actions.evolution[action];
+                let element = $('#'+c_action.id);
                 if (element.length > 0){
-                    if (checkAffordable('evolution',action)){
+                    if (checkAffordable(c_action)){
                         if (element.hasClass('cna')){
                             element.removeClass('cna');
                         }
@@ -1459,7 +1465,7 @@ function midLoop(){
                     else if (!element.hasClass('cna')){
                         element.addClass('cna');
                     }
-                    if (checkAffordable('evolution',action,true)){
+                    if (checkAffordable(c_action,true)){
                         if (element.hasClass('cnam')){
                             element.removeClass('cnam');
                         }
@@ -1686,6 +1692,11 @@ function midLoop(){
                 bd_Uranium['Fuel_Depot'] = gain+'v';
             }
         }
+        if (global.space['propellant_depot']){
+            let gain = (global.space['propellant_depot'].count * spatialReasoning(1250));
+            caps['Oil'] += gain;
+            bd_Oil['Orbit_Depot'] = gain+'v';
+        }
         if (global.city['university']){
             let multiplier = 1;
             let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
@@ -1730,6 +1741,9 @@ function midLoop(){
             if (global.tech['supercollider']){
                 let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
+            }
+            if (global.space['satellite']){
+                gain *= 1 + (global.space.satellite.count * 0.04);
             }
             caps['Knowledge'] += gain;
             bd_Knowledge['Wardenclyffe'] = gain+'v';
@@ -1856,8 +1870,9 @@ function midLoop(){
 
         Object.keys(global.city).forEach(function (action){
             if (actions.city[action] && actions.city[action].cost){
-                let element = $('#'+actions.city[action].id);
-                if (checkAffordable('city',action)){
+                let c_action = actions.city[action];
+                let element = $('#'+c_action.id);
+                if (checkAffordable(c_action)){
                     if (element.hasClass('cna')){
                         element.removeClass('cna');
                     }
@@ -1865,7 +1880,7 @@ function midLoop(){
                 else if (!element.hasClass('cna')){
                     element.addClass('cna');
                 }
-                if (checkAffordable('city',action,true)){
+                if (checkAffordable(c_action,true)){
                     if (element.hasClass('cnam')){
                         element.removeClass('cnam');
                     }
@@ -1878,9 +1893,10 @@ function midLoop(){
 
         Object.keys(actions.tech).forEach(function (action){
             if (actions.tech[action] && actions.tech[action].cost){
-                let element = $('#'+actions.tech[action].id);
+                let c_action = actions.tech[action];
+                let element = $('#'+c_action.id);
                 if (element.length > 0){
-                    if (checkAffordable('tech',action)){
+                    if (checkAffordable(c_action)){
                         if (element.hasClass('cna')){
                             element.removeClass('cna');
                         }
@@ -1888,7 +1904,7 @@ function midLoop(){
                     else if (!element.hasClass('cna')){
                         element.addClass('cna');
                     }
-                    if (checkAffordable('tech',action,true)){
+                    if (checkAffordable(c_action,true)){
                         if (element.hasClass('cnam')){
                             element.removeClass('cnam');
                         }
@@ -1898,6 +1914,31 @@ function midLoop(){
                     }
                 }
             }
+        });
+
+        Object.keys(actions.space).forEach(function (region){
+            Object.keys(actions.space[region]).forEach(function (action){
+                if (global.space[action] && actions.space[region][action] && actions.space[region][action].cost){
+                    let c_action = actions.space[region][action];
+                    let element = $('#'+c_action.id);
+                    if (checkAffordable(c_action)){
+                        if (element.hasClass('cna')){
+                            element.removeClass('cna');
+                        }
+                    }
+                    else if (!element.hasClass('cna')){
+                        element.addClass('cna');
+                    }
+                    if (checkAffordable(c_action,true)){
+                        if (element.hasClass('cnam')){
+                            element.removeClass('cnam');
+                        }
+                    }
+                    else if (!element.hasClass('cnam')){
+                        element.addClass('cnam');
+                    }
+                }
+            });
         });
 
         if (global.arpa['sequence'] && global.arpa.sequence.on){
