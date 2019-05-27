@@ -1,5 +1,6 @@
 #### 0.2.69 - 5/26/2019
 Fixed bug which could let you get free barn or warehouse upgrade by essentially skipping over the tech<br>
+Added aria button roles to many button like elements that were not technically buttons<br>
 
 #### 0.2.68 - 5/26/2019
 Fixed bug with Rock Quarry that prevented the 2% bonus from working unless you had electricity unlocked<br>

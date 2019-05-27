@@ -330,17 +330,17 @@ function marketItem(vue,mount,market_item,name,color,full){
     }
 
     market_item.append($('<span class="buy"><span class="has-text-success">BUY</span></span>'));
-    market_item.append($(`<span class="order" @click="purchase('${name}')">\${{ r.value | buy }}</span>`));
+    market_item.append($(`<span role="button" class="order" @click="purchase('${name}')">\${{ r.value | buy }}</span>`));
     
     market_item.append($('<span class="sell"><span class="has-text-danger">SELL</span></span>'));
-    market_item.append($(`<span class="order" @click="sell('${name}')">\${{ r.value | sell }}</span>`));
+    market_item.append($(`<span role="button" class="order" @click="sell('${name}')">\${{ r.value | sell }}</span>`));
 
     if (full){
         let trade = $('<span class="trade" v-show="m.active"><span class="has-text-warning">Routes</span></span>');
         market_item.append(trade);
-        trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span class="sub has-text-success" @click="autoBuy('${name}')"><span class="route">+</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="import ${name}" class="sub has-text-success" @click="autoBuy('${name}')"><span class="route">+</span></span></b-tooltip>`));
         trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
-        trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span class="add has-text-danger" @click="autoSell('${name}')"><span class="route">-</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="export ${name}" class="add has-text-danger" @click="autoSell('${name}')"><span class="route">-</span></span></b-tooltip>`));
         tradeRouteColor(name);
     }
     

@@ -40,8 +40,8 @@ function taxRates(govern){
     tax_rates.append(label);
     
     var tax_level = $('<span class="current">{{ tax_rate | tax_level }}</span>');
-    var sub = $('<span class="sub" @click="sub">&laquo;</span>');
-    var add = $('<span class="add" @click="add">&raquo;</span>');
+    var sub = $(`<span role="button" aria-label="decrease taxes" class="sub" @click="sub">&laquo;</span>`);
+    var add = $(`<span role="button" aria-label="increase taxes" class="add" @click="add">&raquo;</span>`);
     tax_rates.append(sub);
     tax_rates.append(tax_level);
     tax_rates.append(add);
@@ -127,8 +127,8 @@ function buildGarrison(garrison){
     wrap.append(tactics);
         
     var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ tactic | tactics }}</span></b-tooltip>');
-    var last = $('<span class="sub" @click="last">&laquo;</span>');
-    var next = $('<span class="add" @click="next">&raquo;</span>');
+    var last = $('<span role="button" aria-label="easier campaign" class="sub" @click="last">&laquo;</span>');
+    var next = $('<span role="button" aria-label="harder campaign" class="add" @click="next">&raquo;</span>');
     tactics.append(last);
     tactics.append(strategy);
     tactics.append(next);
@@ -137,8 +137,8 @@ function buildGarrison(garrison){
     wrap.append(battalion);
         
     var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ raid }}</span></b-tooltip>');
-    var alast = $('<span class="sub" @click="aLast">&laquo;</span>');
-    var anext = $('<span class="add" @click="aNext">&raquo;</span>');
+    var alast = $('<span role="button" aria-label="add soldiers to campaign" class="sub" @click="aLast">&laquo;</span>');
+    var anext = $('<span role="button" aria-label="remove soldiers to campaign" class="add" @click="aNext">&raquo;</span>');
     battalion.append(alast);
     battalion.append(armysize);
     battalion.append(anext);
