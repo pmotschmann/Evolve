@@ -169,8 +169,8 @@ function loadJob(job, name, impact, color){
     civ_container.append(controls);
     $('#jobs').append(civ_container);
     
-    var sub = $('<span class="sub" @click="sub">&laquo;</span>');
-    var add = $('<span class="add" @click="add">&raquo;</span>');
+    var sub = $(`<span role="button" aria-label="remove ${job}" class="sub" @click="sub">&laquo;</span>`);
+    var add = $(`<span role="button" aria-label="add ${job}" class="add" @click="add">&raquo;</span>`);
     
     controls.append(sub);
     controls.append(add);
@@ -243,8 +243,8 @@ export function loadFoundry(){
                 resource.append(controls);
                 $('#foundry').append(resource);
                 
-                let sub = $(`<span class="sub" @click="sub('${res}')">&laquo;</span>`);
-                let add = $(`<span class="add" @click="add('${res}')">&raquo;</span>`);
+                let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub" @click="sub('${res}')">&laquo;</span>`);
+                let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add" @click="add('${res}')">&raquo;</span>`);
                 
                 controls.append(sub);
                 controls.append(add);
