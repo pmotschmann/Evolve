@@ -69,7 +69,7 @@ const spaceProjects = {
                     return `You need a minimum of 4 GPS satellites to establish a GPS signal. The first 3 effectively do nothing.`;
                 }
                 else {
-                    'Does Nothing, no seriously this does nothing.'
+                    return 'Does Nothing, no seriously this does nothing.';
                 }
             },
             action(){
@@ -132,6 +132,14 @@ const spaceProjects = {
             effect: 'Launch a mission to survey the moon.',
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_mission.cost)){
+                    global.space['iridium_mine'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    global.space['helium_mine'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -150,9 +158,9 @@ const spaceProjects = {
             },
             effect(){
                 let iridium = spatialReasoning(500);
-                return `<div>+3 Moon Support</div><div>+${iridium} Max Iridium</div><div>-1 Oil/s, -5kW</div>`;
+                return `<div>+2 Moon Support</div><div>+${iridium} Max Iridium</div><div>-2 Oil/s, -5kW</div>`;
             },
-            support: 3,
+            support: 2,
             powered: 5,
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_base.cost)){
@@ -164,6 +172,58 @@ const spaceProjects = {
                     }
                     if (global.space['moon_base'].count === 1){
                         global.tech['moon'] = 1;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        iridium_mine: {
+            id: 'space-iridium_mine',
+            title: 'Iridium Mine',
+            desc: '<div>Mine Iridium from lunar craters</div><div class="has-text-special">Requires Moon Support</div>',
+            reqs: { space: 3 },
+            cost: {
+                Money(){ return costMultiplier('iridium_mine', 42000, 1.35); },
+                Lumber(){ return costMultiplier('iridium_mine', 9000, 1.35); },
+                Titanium(){ return costMultiplier('iridium_mine', 17500, 1.35); }
+            },
+            effect(){
+                return `<div>-1 Moon Support</div><div>+0.035 Iridium Production</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_moon.iridium_mine.cost)){
+                    global.space['iridium_mine'].count++;
+                    if (global.space.moon_base.support < global.space.moon_base.s_max){
+                        global.space['iridium_mine'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        helium_mine: {
+            id: 'space-helium_mine',
+            title: 'Helium 3 Mine',
+            desc: '<div>Extract Helium 3 from</div><div>the lunar surface</div><div class="has-text-special">Requires Moon Support</div>',
+            reqs: { space: 3 },
+            cost: {
+                Money(){ return costMultiplier('helium_mine', 38000, 1.35); },
+                Copper(){ return costMultiplier('helium_mine', 9000, 1.35); },
+                Steel(){ return costMultiplier('helium_mine', 17500, 1.35); }
+            },
+            effect(){
+                return `<div>-1 Moon Support</div><div>+0.02 Helium 3 Production</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_moon.helium_mine.cost)){
+                    global.space['helium_mine'].count++;
+                    if (global.space.moon_base.support < global.space.moon_base.s_max){
+                        global.space['helium_mine'].on++;
                     }
                     return true;
                 }
@@ -205,14 +265,9 @@ export function space(){
             
             if (spaceProjects[region].info['support']){
                 let support = spaceProjects[region].info['support'];
-                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><span class="name has-text-warning">${name}</span> <span>{{ support }}/{{ on | max }}</span></div></div>`);
+                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><span class="name has-text-warning">${name}</span> <span>{{ support }}/{{ s_max }}</span></div></div>`);
                 vues[`sr${region}`] = new Vue({
-                    data: global.space[support],
-                    filters: {
-                        max(ct){
-                            return ct * spaceProjects[region][support].support;
-                        }
-                    }
+                    data: global.space[support]
                 });
                 vues[`sr${region}`].$mount(`#sr${region}`);
             }

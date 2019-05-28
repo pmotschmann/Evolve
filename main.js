@@ -285,6 +285,7 @@ setupStats();
 
 var fed = true;
 var p_on = {};
+var moon_on = {};
 
 var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
 var mid_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
@@ -557,10 +558,11 @@ function fastLoop(){
         }
 
         if (global.city['fission_power']){
-            let power = global.city.fission_power.on * actions.city.fission_power.powered;
+            let output = global.tech['uranium'] >= 4 ? (actions.city.fission_power.powered - 4) : actions.city.fission_power.powered;
+            let power = global.city.fission_power.on * output;
             let consume = global.city.fission_power.on * 0.1;
             while (consume * time_multiplier > global.resource.Uranium.amount && consume > 0){
-                power += actions.city.fission_power.powered;
+                power += output;
                 consume -= 0.1;
             }
             breakdown.p.consume.Uranium['Reactor'] = -(consume);
@@ -602,15 +604,35 @@ function fastLoop(){
         }
 
         if (p_on['moon_base'] > 0){
-            let mb_consume = p_on['moon_base'];
+            let mb_consume = p_on['moon_base'] * 2;
             breakdown.p.consume.Oil['Moon Base'] = -(mb_consume);
             for (let i=0; i<p_on['moon_base']; i++){
-                if (!modRes('Oil', -(time_multiplier))){
-                    mb_consume -= p_on['moon_base'] - i;
+                if (!modRes('Oil', -(time_multiplier * 2))){
+                    mb_consume -= (p_on['moon_base'] * 2) - (i * 2);
                     p_on['moon_base'] -= i;
                     break;
                 }
             }
+            global.space.moon_base.s_max = p_on['moon_base'] * actions.space.spc_moon.moon_base.support;
+        }
+
+        if (global.space['moon_base']){
+            let used_support = 0;
+            let moon_structs = ['helium_mine','iridium_mine'];
+            for (var i = 0; i < moon_structs.length; i++){
+                let operating = global.space[moon_structs[i]].on;
+                let id = actions.space.spc_moon[moon_structs[i]].id;
+                if (used_support + operating > global.space.moon_base.s_max){
+                    operating -=  (used_support + operating) - global.space.moon_base.s_max;
+                    $(`#${id} .on`).addClass('warn');
+                }
+                else {
+                    $(`#${id} .on`).removeClass('warn');
+                }
+                used_support += operating;
+                moon_on[moon_structs[i]] = operating;
+            }
+            global.space.moon_base.support = used_support;
         }
 
         // Detect labor anomalies
@@ -1367,6 +1389,30 @@ function fastLoop(){
             oil_bd['Hunger'] = ((hunger - 1) * 100) + '%';
             breakdown.p['Oil'] = oil_bd;
             modRes('Oil', delta * time_multiplier);
+        }
+
+        // Iridium
+        if (moon_on['iridium_mine']){
+            let iridium_base = moon_on['iridium_mine'] * 0.035;
+            let delta = iridium_base * hunger * global_multiplier;
+
+            let iridium_bd = {};
+            iridium_bd['Iridium Mine'] = iridium_base + 'v';
+            iridium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            breakdown.p['Iridium'] = iridium_bd;
+            modRes('Iridium', delta * time_multiplier);
+        }
+
+        // Helium 3
+        if (moon_on['helium_mine']){
+            let helium_base = moon_on['helium_mine'] * 0.02;
+            let delta = helium_base * hunger * global_multiplier;
+
+            let helium_bd = {};
+            helium_bd['Helium 3 Mine'] = helium_base + 'v';
+            helium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            breakdown.p['Helium_3'] = helium_bd;
+            modRes('Helium_3', delta * time_multiplier);
         }
 
         // Tax Income

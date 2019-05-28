@@ -1,6 +1,6 @@
 import { global, vues, keyMultiplier, poppers } from './vars.js';
 import { racialTrait } from './races.js';
-import { craftingRatio } from './resources.js';
+import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
     farmer: function(){
@@ -59,7 +59,7 @@ export const job_desc = {
         if (global.tech['banking'] >= 10){
             interest += 2 * global.tech['stock_exchange'];
         }
-        return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by ${interest}% per tax cycle.`;
+        return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by ${interest}%.`;
     },
     entertainer: function(){
         let morale = global.tech['theatre'];
@@ -293,7 +293,9 @@ export function loadFoundry(){
                     let name = res.replace("_", " ");
                     let multiplier = craftingRatio(res);
                     let final = +(global.city.foundry[res] * multiplier).toFixed(2);
-                    popper.append($(`<div>+${final} ${name}/cycle</div>`));
+                    let cost = +(craftCost[res].a * global.city.foundry[res]).toFixed(2);
+
+                    popper.append($(`<div>+${final} ${name}/cycle</div><div>-${cost} ${craftCost[res].r}/cycle<div>`));
     
                     popper.show();
                     poppers[`cr${res}`] = new Popper($(`#craft${res}`),popper);

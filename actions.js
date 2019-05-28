@@ -1989,7 +1989,8 @@ export const actions = {
             },
             effect(){
                 let consume = 0.1;
-                return `+14kW. -${consume} Uranium per second.`;
+                let output = global.tech['uranium'] >= 4 ? 18 : 14;
+                return `+${output}kW. -${consume} Uranium per second.`;
             },
             powered: -14,
             action(){
@@ -3833,6 +3834,25 @@ export const actions = {
                 return false;
             }
         },
+        breeder_reactor: {
+            id: 'tech-breeder_reactor',
+            title: 'Breeder Reactor',
+            desc: 'Breeder Reactor',
+            reqs: { high_tech: 5, uranium: 3 },
+            grant: ['uranium',4],
+            cost: {
+                Knowledge(){ return 160000; },
+                Uranium(){ return 250; },
+                Iridium(){ return 1000; }
+            },
+            effect: 'Breeder reactors allow you to more fully consume nuclear fuel which increases the total output of fission reactors.',
+            action(){
+                if (payCosts(actions.tech.breeder_reactor.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mine_conveyor: {
             id: 'tech-mine_conveyor',
             title: 'Mine Conveyor Belts',
@@ -5117,7 +5137,8 @@ export const actions = {
                     global.space['moon_base'] = {
                         count: 0,
                         on: 0,
-                        support: 0
+                        support: 0,
+                        s_max: 0
                     };
                     return true;
                 }
