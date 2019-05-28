@@ -16,9 +16,9 @@ export const resource_values = {
     Titanium: 150,
     Alloy: 275,
     Polymer: 225,
-    //Iridium: 200,
+    Iridium: 380,
     //Deuterium: 450,
-    //'Helium-3': 600,
+    'Helium_3': 620,
     //Neutronium: 1000
 };
 
@@ -37,6 +37,8 @@ export const tradeRatio = {
     Titanium: 0.25,
     Alloy: 0.25,
     Polymer: 0.25,
+    Iridium: 0.25,
+    'Helium_3': 0.25,
 }
 
 export const craftCost = {
@@ -101,9 +103,9 @@ export function defineResources() {
         loadResource('Titanium',50,1,true,true);
         loadResource('Alloy',50,1,true,true);
         loadResource('Polymer',50,1,true,true);
-        //loadResource('Iridium',50,1,true,true);
+        loadResource('Iridium',0,1,true,true);
         //loadResource('Deuterium',0,1,true,false);
-        //loadResource('Helium-3',0,1,true,false);
+        loadResource('Helium_3',0,1,true,false);
         //loadResource('Neutronium',0,1,true,true);
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
@@ -458,7 +460,7 @@ function breakdownPopover(id,name,type){
         if (breakdown[type][name]){
             var popper = $(`<div id="resBreak${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name }}</div></div>`);
+            let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
 
             let types = [name,'Global'];
             for (var i = 0; i < types.length; i++){
@@ -549,6 +551,9 @@ function breakdownPopover(id,name,type){
                 },
                 direction(val){
                     return val >= 0 ? 'To Full' : 'To Empty';
+                },
+                namespace(name){
+                    return name.replace("_"," ");
                 }
             }
         });
@@ -775,7 +780,7 @@ function drawModal(name,color){
 }
 
 export function crateValue(){
-    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 175 : 125;
+    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 225 : 125;
     if (global.race['pack_rat']){
         create_value += global.tech.container >= 2 ? 25 : 10;
     }

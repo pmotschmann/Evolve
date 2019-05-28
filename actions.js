@@ -893,7 +893,7 @@ export const actions = {
             title(){
                 return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartment';
             },
-            desc: '<div>Housing complex for 5 citizens</div><div>Requires power</div>',
+            desc: '<div>Housing complex for 5 citizens</div><div class="has-text-special">Requires Power</div>',
             reqs: { housing: 3 },
             cost: { 
                 Money(){ return costMultiplier('apartment', 1750, 1.25) - 500; },
@@ -1898,7 +1898,7 @@ export const actions = {
         biolab: {
             id: 'city-biolab',
             title: 'Bioscience Lab',
-            desc: '<div>Bioscience Labratory</div><div>Requires Power</div>',
+            desc: '<div>Bioscience Labratory</div><div class="has-text-special">Requires Power</div>',
             reqs: { genetics: 1 },
             cost: { 
                 Money(){ return costMultiplier('biolab', 25000, 1.28); },
@@ -3860,7 +3860,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 27000; }
             },
-            effect: 'Unlock oil derrecks and begin the age of big oil.',
+            effect: 'Unlock oil derricks and begin the age of big oil.',
             action(){
                 if (payCosts(actions.tech.oil_well.cost)){
                     global.city['oil_well'] = { count: 0 };
@@ -5092,7 +5092,6 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.astrophysics.cost)){
                     global.space['propellant_depot'] = { count: 0 };
-                    space();
                     return true;
                 }
                 return false;
@@ -5114,7 +5113,11 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.rover.cost)){
                     global.settings.space.moon = true;
-                    space();
+                    global.space['moon_base'] = {
+                        count: 0,
+                        on: 0,
+                        support: 0
+                    };
                     return true;
                 }
                 return false;
@@ -5131,9 +5134,8 @@ export const actions = {
             },
             effect: 'Design a network of navigation satellites.',
             action(){
-                if (payCosts(actions.tech.rover.cost)){
+                if (payCosts(actions.tech.gps.cost)){
                     global.space['gps'] = { count: 0 };
-                    space();
                     return true;
                 }
                 return false;
@@ -5195,11 +5197,11 @@ export function checkOldTech(tech){
     return false;
 }
 
-export function checkPowerRequirements(action,type){
+function checkPowerRequirements(c_action){
     var isMet = true;
-    if (actions[action][type]['power_reqs']){
-        Object.keys(actions[action][type].power_reqs).forEach(function (req) {
-            if (!global.tech[req] || global.tech[req] < actions[action][type].power_reqs[req]){
+    if (c_action['power_reqs']){
+        Object.keys(c_action.power_reqs).forEach(function (req) {
+            if (!global.tech[req] || global.tech[req] < c_action.power_reqs[req]){
                 isMet = false;
             }
         });
@@ -5220,6 +5222,7 @@ function gainTech(action){
     global.tech[tech] = actions.tech[action].grant[1];
     drawCity();
     drawTech();
+    space();
 }
 
 export function drawCity(){
@@ -5322,7 +5325,7 @@ export function setAction(c_action,action,type,old){
             </svg></div>`);
         parent.append(special);
     }
-    if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(action,type)){
+    if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)){
         var powerOn = $('<div class="on" @click="power_on" title="ON">{{ act.on }}</div>');
         var powerOff = $('<div class="off" @click="power_off" title="OFF">{{ act.on | off }}</div>');
         parent.append(powerOn);

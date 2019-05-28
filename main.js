@@ -350,7 +350,9 @@ function fastLoop(){
         Steel: {},
         Titanium: {},
         Alloy: {},
-        Polymer: {}
+        Polymer: {},
+        Iridium: {},
+        "Helium_3": {}
     };
     
     var time_multiplier = 0.25;
@@ -574,25 +576,40 @@ function fastLoop(){
             power_grid -= power;
         }
 
-        let p_structs = ['apartment','coal_mine','factory','wardenclyffe','biolab','mine','rock_quarry','cement_plant','sawmill'];
+        let p_structs = ['city:apartment','city:coal_mine','spc_moon:moon_base','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill'];
         for (var i = 0; i < p_structs.length; i++){
-            if (global.city[p_structs[i]] && global.city[p_structs[i]]['on']){
-                let power = global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
-                p_on[p_structs[i]] = global.city[p_structs[i]].on;
+            let parts = p_structs[i].split(":");
+            let region = parts[0] === 'city' ? parts[0] : 'space';
+            let c_action = parts[0] === 'city' ? actions.city : actions['space'][parts[0]];
+            if (global[region][parts[1]] && global[region][parts[1]]['on']){
+                let power = global[region][parts[1]].on * c_action[parts[1]].powered;
+                p_on[parts[1]] = global[region][parts[1]].on;
                 while (power > power_grid && power > 0){
-                    power -= actions.city[p_structs[i]].powered;
-                    p_on[p_structs[i]]--;
+                    power -= c_action[parts[1]].powered;
+                    p_on[parts[1]]--;
                 }
-                power_grid -= global.city[p_structs[i]].on * actions.city[p_structs[i]].powered;
-                if (p_on[p_structs[i]] !== global.city[p_structs[i]].on){
-                    $(`#city-${p_structs[i]} .on`).addClass('warn');
+                power_grid -= global[region][parts[1]].on * c_action[parts[1]].powered;
+                if (p_on[parts[1]] !== global[region][parts[1]].on){
+                    $(`#${region}-${parts[1]} .on`).addClass('warn');
                 }
                 else {
-                    $(`#city-${p_structs[i]} .on`).removeClass('warn');
+                    $(`#${region}-${parts[1]} .on`).removeClass('warn');
                 }
             }
             else {
-                p_on[p_structs[i]] = 0;
+                p_on[parts[1]] = 0;
+            }
+        }
+
+        if (p_on['moon_base'] > 0){
+            let mb_consume = p_on['moon_base'];
+            breakdown.p.consume.Oil['Moon Base'] = -(mb_consume);
+            for (let i=0; i<p_on['moon_base']; i++){
+                if (!modRes('Oil', -(time_multiplier))){
+                    mb_consume -= p_on['moon_base'] - i;
+                    p_on['moon_base'] -= i;
+                    break;
+                }
             }
         }
 
@@ -1497,7 +1514,9 @@ function midLoop(){
             Steel: 50,
             Titanium: 50,
             Alloy: 50,
-            Polymer: 50
+            Polymer: 50,
+            Iridium: 0,
+            "Helium_3": 0
         };
         // labor caps
         var lCaps = {
@@ -1531,6 +1550,8 @@ function midLoop(){
         var bd_Titanium = { Base: caps['Titanium']+'v' };
         var bd_Alloy = { Base: caps['Alloy']+'v' };
         var bd_Polymer = { Base: caps['Polymer']+'v' };
+        var bd_Iridium = { Base: caps['Iridium']+'v' };
+        var bd_Helium = { Base: caps['Helium_3']+'v' };
 
         caps[races[global.race.species].name] = 0;
         if (global.city['farm']){
@@ -1696,6 +1717,11 @@ function midLoop(){
             let gain = (global.space['propellant_depot'].count * spatialReasoning(1250));
             caps['Oil'] += gain;
             bd_Oil['Orbit_Depot'] = gain+'v';
+            if (global.resource['Helium_3'].display){
+                gain = (global.space['propellant_depot'].count * spatialReasoning(1000));
+                caps['Helium_3'] += gain;
+                bd_Helium['Orbit_Depot'] = gain+'v';
+            }
         }
         if (global.city['university']){
             let multiplier = 1;
@@ -1748,6 +1774,11 @@ function midLoop(){
             caps['Knowledge'] += gain;
             bd_Knowledge['Wardenclyffe'] = gain+'v';
         }
+        if (global.space['satellite']){
+            let gain = (global.space.satellite.count * 500);
+            caps['Knowledge'] += gain;
+            bd_Knowledge['Satellite'] = gain+'v';
+        }
         if (global.city['biolab']){
             caps['Knowledge'] += (p_on['biolab'] * 3000);
             bd_Knowledge['Bio_Lab'] = (p_on['biolab'] * 3000)+'v';
@@ -1791,6 +1822,11 @@ function midLoop(){
             caps['Money'] += gain;
             bd_Money['Bonds'] = gain+'v';
         }
+        if (p_on['moon_base']){
+            let gain = p_on['moon_base'] * spatialReasoning(500);
+            caps['Iridium'] += gain;
+            bd_Iridium['Moon_Base'] = gain+'v';
+        }
 
         if (global.city['trade']){
             let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
@@ -1827,7 +1863,9 @@ function midLoop(){
             Steel: bd_Steel,
             Titanium: bd_Titanium,
             Alloy: bd_Alloy,
-            Polymer: bd_Polymer
+            Polymer: bd_Polymer,
+            Iridium: bd_Iridium,
+            "Helium_3": bd_Helium
         };
 
         let create_value = crateValue();

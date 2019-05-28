@@ -1,4 +1,4 @@
-import { global, poppers, messageQueue } from './vars.js';
+import { global, vues, poppers, messageQueue } from './vars.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { payCosts, setAction } from './actions.js';
@@ -25,9 +25,7 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_home.test_launch.cost)){
                     messageQueue('You have successfully launched your first rocket into space','success');
-                    global.space['satellite'] = {
-                        count: 0
-                    };
+                    global.space['satellite'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -44,10 +42,11 @@ const spaceProjects = {
                 Oil(){ return costMultiplier('satellite', 5000, 1.35); },
                 Alloy(){ return costMultiplier('satellite', 10000, 1.35); }
             },
-            effect: '<div>+4% Wardenclyffe Knowledge Cap</div><div>+1% Scientist Efficiency</div>',
+            effect: '<div>+500 Max Knowledge</div><div>+4% Wardenclyffe Max Knowledge</div><div>+1% Scientist Efficiency</div>',
             action(){
                 if (payCosts(spaceProjects.spc_home.satellite.cost)){
                     global.space['satellite'].count++;
+                    global['resource']['Knowledge'].max += 500;
                     return true;
                 }
                 return false;
@@ -56,7 +55,7 @@ const spaceProjects = {
         gps: {
             id: 'space-gps',
             title: 'GPS Satellite',
-            desc: 'Launch a GSP satellite',
+            desc: '<div>Launch a GPS satellite</div><div class="has-text-special">Requires minimum 4 satellites</div>',
             reqs: { satellite: 1 },
             cost: {
                 Money(){ return costMultiplier('gps', 75000, 1.3); },
@@ -65,7 +64,14 @@ const spaceProjects = {
                 Oil(){ return costMultiplier('gps', 3500, 1.3); },
                 Titanium(){ return costMultiplier('gps', 8000, 1.3); }
             },
-            effect: 'Does Nothing, no seriously this does nothing.',
+            effect(){
+                if (global.space['gps'].count < 4){
+                    return `You need a minimum of 4 GPS satellites to establish a GPS signal. The first 3 effectively do nothing.`;
+                }
+                else {
+                    'Does Nothing, no seriously this does nothing.'
+                }
+            },
             action(){
                 if (payCosts(spaceProjects.spc_home.gps.cost)){
                     global.space['gps'].count++;
@@ -77,7 +83,7 @@ const spaceProjects = {
         propellant_depot: {
             id: 'space-propellant_depot',
             title: 'Propellant Depot',
-            desc: 'Construct a orbital depot',
+            desc: 'Construct an orbital depot',
             reqs: { space_explore: 1 },
             cost: {
                 Money(){ return costMultiplier('propellant_depot', 55000, 1.35); },
@@ -86,12 +92,19 @@ const spaceProjects = {
             },
             effect(){
                 let oil = spatialReasoning(1250);
+                if (global.resource['Helium_3'].display){
+                    let helium = spatialReasoning(1000);
+                    return `<div>+${oil} Max Oil</div><div>+${helium} Max Helium 3</div>`;
+                }
                 return `<div>+${oil} Max Oil.</div>`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_home.propellant_depot.cost)){
                     global.space['propellant_depot'].count++;
                     global['resource']['Oil'].max += spatialReasoning(1250);
+                    if (global.resource['Helium_3'].display){
+                        global['resource']['Helium_3'].max += spatialReasoning(1000);
+                    }
                     return true;
                 }
                 return false;
@@ -105,12 +118,13 @@ const spaceProjects = {
                 let home = races[global.race.species].home;
                 return `The moon orbiting ${home}`;
             },
+            support: 'moon_base',
         },
         moon_mission: {
             id: 'space-moon_mission',
             title: 'Moon Launch',
             desc: 'Launch the Moon Mission',
-            reqs: { space: 2, space_explore: 2, locked: 1 },
+            reqs: { space: 2, space_explore: 2 },
             grant: ['space',3],
             cost: { 
                 Oil(){ return 12000; }
@@ -118,6 +132,39 @@ const spaceProjects = {
             effect: 'Launch a mission to survey the moon.',
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_mission.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        moon_base: {
+            id: 'space-moon_base',
+            title: 'Moon Base',
+            desc: '<div>Build a moon base</div><div class="has-text-special">Requires Power & Oil</div>',
+            reqs: { space: 3 },
+            cost: {
+                Money(){ return costMultiplier('moon_base', 22000, 1.35); },
+                Cement(){ return costMultiplier('moon_base', 18000, 1.35); },
+                Alloy(){ return costMultiplier('moon_base', 7800, 1.35); },
+                Polymer(){ return costMultiplier('moon_base', 12500, 1.35); }
+            },
+            effect(){
+                let iridium = spatialReasoning(500);
+                return `<div>+3 Moon Support</div><div>+${iridium} Max Iridium</div><div>-1 Oil/s, -5kW</div>`;
+            },
+            support: 3,
+            powered: 5,
+            action(){
+                if (payCosts(spaceProjects.spc_moon.moon_base.cost)){
+                    global.space['moon_base'].count++;
+                    global.resource.Iridium.display = true;
+                    global.resource['Helium_3'].display = true;
+                    if (global.city.power >= 5){
+                        global.space['moon_base'].on++;
+                    }
+                    if (global.space['moon_base'].count === 1){
+                        global.tech['moon'] = 1;
+                    }
                     return true;
                 }
                 return false;
@@ -132,7 +179,7 @@ export function spaceTech(){
 
 function checkRequirements(region,action){
     var isMet = true;
-    Object.keys(spaceProjects[region][action].reqs).forEach(function (req) {
+    Object.keys(spaceProjects[region][action].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < spaceProjects[region][action].reqs[req]){
             isMet = false;
         }
@@ -156,7 +203,22 @@ export function space(){
             let name = typeof spaceProjects[region].info.name === 'string' ? spaceProjects[region].info.name : spaceProjects[region].info.name();
             let desc = typeof spaceProjects[region].info.desc === 'string' ? spaceProjects[region].info.desc : spaceProjects[region].info.desc();
             
-            parent.append(`<div id="${region}" class="space"><div><span class="name has-text-warning">${name}</span></div></div>`);
+            if (spaceProjects[region].info['support']){
+                let support = spaceProjects[region].info['support'];
+                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><span class="name has-text-warning">${name}</span> <span>{{ support }}/{{ on | max }}</span></div></div>`);
+                vues[`sr${region}`] = new Vue({
+                    data: global.space[support],
+                    filters: {
+                        max(ct){
+                            return ct * spaceProjects[region][support].support;
+                        }
+                    }
+                });
+                vues[`sr${region}`].$mount(`#sr${region}`);
+            }
+            else {
+                parent.append(`<div id="${region}" class="space"><div><span class="name has-text-warning">${name}</span></div></div>`);
+            }
             
             $(`#${region} span.name`).on('mouseover',function(){
                 var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);
