@@ -605,9 +605,7 @@ function fastLoop(){
         if (p_on['moon_base'] > 0){
             let oil_cost = 2;
             if (global.city['mass_driver']){
-                for (let i=0; i<p_on['mass_driver']; i++){
-                    oil_cost *= 0.95;
-                }
+                oil_cost *= 0.95 ** p_on['mass_driver'];
             }
             let mb_consume = p_on['moon_base'] * oil_cost;
             breakdown.p.consume.Oil['Moon Base'] = -(mb_consume);

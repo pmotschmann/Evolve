@@ -232,6 +232,58 @@ const spaceProjects = {
             }
         },
     },
+    spc_red: {
+        info: {
+            name: 'Mars',
+            desc(){
+                let red = 'Mars';
+                return `The red planet ${red}`;
+            },
+        },
+        red_mission: {
+            id: 'space-red_mission',
+            title: 'Red Mission',
+            desc: 'Launch the Red Mission',
+            reqs: { space: 3, space_explore: 3, locked: 1 },
+            grant: ['space',4],
+            cost: { 
+                Helium_3(){ return 4500; }
+            },
+            effect: 'Launch a mission to survey the red planet.',
+            action(){
+                if (payCosts(spaceProjects.spc_red.red_mission.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_hell: {
+        info: {
+            name: 'Mercury',
+            desc(){
+                let red = 'Mercury';
+                return `The molten planet ${red} close to the sun`;
+            },
+        },
+        hell_mission: {
+            id: 'space-hell_mission',
+            title: 'Hell Mission',
+            desc: 'Launch the Hell Mission',
+            reqs: { space: 3, space_explore: 3, locked: 1 },
+            grant: ['hell',1],
+            cost: { 
+                Helium_3(){ return 6500; }
+            },
+            effect: 'Launch a mission to survey the hell planet.',
+            action(){
+                if (payCosts(spaceProjects.spc_hell.hell_mission.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    }
 };
 
 export function spaceTech(){
@@ -313,9 +365,7 @@ function costMultiplier(action,base,mutiplier){
 
 function oil_adjust(oil){
     if (global.city['mass_driver']){
-        for (let i=0; i<p_on['mass_driver']; i++){
-            oil *= 0.95;
-        }
+        oil *= 0.95 ** p_on['mass_driver'];
     }
     return oil;
 }

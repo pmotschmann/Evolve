@@ -5236,6 +5236,29 @@ export const actions = {
                 return false;
             }
         },
+        probes: {
+            id: 'tech-probes',
+            title: 'Space Probes',
+            desc: 'Space Probes',
+            reqs: { space_explore: 2 },
+            grant: ['space_explore',3],
+            cost: {
+                Knowledge(){ return 168000; },
+                Steel(){ return 100000 },
+                Iridium(){ return 5000 },
+                Uranium(){ return 2250 },
+                Helium_3(){ return 3500 }
+            },
+            effect: 'Design an unmanned space craft which can be used to survey far away plantoids.',
+            action(){
+                if (payCosts(actions.tech.probes.cost)){
+                    global.settings.space.red = true;
+                    global.settings.space.hell = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         gps: {
             id: 'tech-gps',
             title: 'GPS Constellation',

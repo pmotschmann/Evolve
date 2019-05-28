@@ -16,6 +16,13 @@ export const races = {
         traits: {
             creative: 1,
             diverse: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     elven: {
@@ -27,6 +34,13 @@ export const races = {
         traits: { 
             studious: 1,
             arrogant: 1
+        },
+        solar: {
+            red: 'Aman',
+            hell: 'Eremandu',
+            gas: 'Elenion',
+            gas_moon: 'Tirion',
+            dwarf: 'Ceres',
         }
     },
     orc: {
@@ -38,6 +52,13 @@ export const races = {
         traits: { 
             brute: 1,
             angry: 1
+        },
+        solar: {
+            red: 'Krom',
+            hell: 'Mordor',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     cath: {

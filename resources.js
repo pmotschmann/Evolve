@@ -107,11 +107,13 @@ export function defineResources() {
         //loadResource('Deuterium',0,1,true,false);
         loadResource('Helium_3',0,1,true,false);
         //loadResource('Neutronium',0,1,true,true);
+        //loadResource('Elerium',0,1,true,true);
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');
         loadResource('Wrought_Iron',-1,0,false,false,'danger');
         loadResource('Sheet_Metal',-1,0,false,false,'danger');
+        //loadResource('Mythril',-1,0,false,false,'danger');
         loadRouteCounter();
     }
     loadSpecialResource('Plasmid');
