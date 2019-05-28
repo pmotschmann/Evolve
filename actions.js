@@ -803,7 +803,7 @@ export const actions = {
             reqs: { military: 1, housing: 1 },
             cost: { 
                 Money(){ return costMultiplier('garrison', 240, 1.5); },
-                Stone(){ return costMultiplier('garrison', 260, 1.45); }
+                Stone(){ return costMultiplier('garrison', 260, 1.46); }
             },
             effect() {
                 let bunks = global.tech['military'] >= 5 ? 3 : 2;
@@ -836,14 +836,14 @@ export const actions = {
             cost: { 
                 Money(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ 
-                        return costMultiplier('basic_housing', 20, 1.16);
+                        return costMultiplier('basic_housing', 20, 1.17);
                     } 
                     else { 
                         return 0; 
                     } 
                 },
-                Lumber(){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', 10, 1.22); },
-                Stone(){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', 10, 1.22) : 0; }
+                Lumber(){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', 10, 1.23); },
+                Stone(){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', 10, 1.23) : 0; }
             },
             effect: '+1 Max Citizen',
             action(){
@@ -896,11 +896,11 @@ export const actions = {
             desc: '<div>Housing complex for 5 citizens</div><div class="has-text-special">Requires Power</div>',
             reqs: { housing: 3 },
             cost: { 
-                Money(){ return costMultiplier('apartment', 1750, 1.25) - 500; },
-                Furs(){ return costMultiplier('apartment', 725, 1.30) - 500; },
-                Copper(){ return costMultiplier('apartment', 650, 1.30) - 500; },
-                Cement(){ return costMultiplier('apartment', 700, 1.30) - 500; },
-                Steel(){ return costMultiplier('apartment', 800, 1.30) - 500; }
+                Money(){ return costMultiplier('apartment', 1750, 1.26) - 500; },
+                Furs(){ return costMultiplier('apartment', 725, 1.32) - 500; },
+                Copper(){ return costMultiplier('apartment', 650, 1.32) - 500; },
+                Cement(){ return costMultiplier('apartment', 700, 1.32) - 500; },
+                Steel(){ return costMultiplier('apartment', 800, 1.32) - 500; }
             },
             effect(){
                 if (global.tech['home_safe']){
@@ -930,9 +930,9 @@ export const actions = {
             desc: 'Increases hunter capacity',
             reqs: { hunting: 2 },
             cost: { 
-                Money(){ return costMultiplier('lodge', 50, 1.30); },
-                Lumber(){ return costMultiplier('lodge', 20, 1.35); },
-                Stone(){ return costMultiplier('lodge', 10, 1.35); }
+                Money(){ return costMultiplier('lodge', 50, 1.32); },
+                Lumber(){ return costMultiplier('lodge', 20, 1.36); },
+                Stone(){ return costMultiplier('lodge', 10, 1.36); }
             },
             effect(){ return '+1 Max Citizen'; },
             action(){
@@ -950,9 +950,9 @@ export const actions = {
             desc: 'Increases food storage capacity',
             reqs: { hunting: 1 },
             cost: { 
-                Money(){ return costMultiplier('smokehouse', 85, 1.30); },
-                Lumber(){ return costMultiplier('smokehouse', 65, 1.35) },
-                Stone(){ return costMultiplier('smokehouse', 50, 1.35); }
+                Money(){ return costMultiplier('smokehouse', 85, 1.32); },
+                Lumber(){ return costMultiplier('smokehouse', 65, 1.36) },
+                Stone(){ return costMultiplier('smokehouse', 50, 1.36); }
             },
             effect(){ 
                 let food = spatialReasoning(500);
@@ -973,9 +973,9 @@ export const actions = {
             desc: 'Increases farmer capacity',
             reqs: { agriculture: 1 },
             cost: { 
-                Money(){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', 50, 1.30);} else { return 0; } },
-                Lumber(){ return costMultiplier('farm', 20, 1.35); },
-                Stone(){ return costMultiplier('farm', 10, 1.35); }
+                Money(){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', 50, 1.32);} else { return 0; } },
+                Lumber(){ return costMultiplier('farm', 20, 1.36); },
+                Stone(){ return costMultiplier('farm', 10, 1.36); }
             },
             effect(){
                 let farming = global.tech['agriculture'] >= 2 ? 1.25 : 0.75;
@@ -1013,10 +1013,10 @@ export const actions = {
             },
             reqs: { agriculture: 4 },
             cost: { 
-                Money(){ return costMultiplier('mill', 1000, 1.3); },
-                Lumber(){ return costMultiplier('mill', 600, 1.32); },
-                Iron(){ return costMultiplier('mill', 150, 1.32); },
-                Cement(){ return costMultiplier('mill', 125, 1.32); },
+                Money(){ return costMultiplier('mill', 1000, 1.31); },
+                Lumber(){ return costMultiplier('mill', 600, 1.33); },
+                Iron(){ return costMultiplier('mill', 150, 1.33); },
+                Cement(){ return costMultiplier('mill', 125, 1.33); },
             },
             powered: -1,
             power_reqs: { agriculture: 6 },
@@ -1042,9 +1042,9 @@ export const actions = {
             desc: 'Increases food storage capacity',
             reqs: { agriculture: 3 },
             cost: { 
-                Money(){ return costMultiplier('silo', 85, 1.30); },
-                Lumber(){ return costMultiplier('silo', 65, 1.35) },
-                Stone(){ return costMultiplier('silo', 50, 1.35); }
+                Money(){ return costMultiplier('silo', 85, 1.32); },
+                Lumber(){ return costMultiplier('silo', 65, 1.36) },
+                Stone(){ return costMultiplier('silo', 50, 1.36); }
             },
             effect(){ 
                 let food = spatialReasoning(500);
@@ -1070,10 +1070,10 @@ export const actions = {
             },
             reqs: { storage: 1 },
             cost: { 
-                Money(){ return costMultiplier('shed', 75, 1.2); },
+                Money(){ return costMultiplier('shed', 75, 1.22); },
                 Lumber(){
                     if (global.tech['storage'] && global.tech['storage'] < 4){ 
-                        return costMultiplier('shed', 55, 1.3);
+                        return costMultiplier('shed', 55, 1.32);
                     }
                     else { 
                         return 0; 
@@ -1081,7 +1081,7 @@ export const actions = {
                 },
                 Stone(){
                     if (global.tech['storage'] && global.tech['storage'] < 3){ 
-                        return costMultiplier('shed', 45, 1.3);
+                        return costMultiplier('shed', 45, 1.32);
                     }
                     else { 
                         return 0; 
@@ -1089,7 +1089,7 @@ export const actions = {
                 },
                 Iron(){
                     if (global.tech['storage'] && global.tech['storage'] >= 4){
-                        return costMultiplier('shed', 22, 1.3);
+                        return costMultiplier('shed', 22, 1.32);
                     }
                     else {
                         return 0; 
@@ -1097,7 +1097,7 @@ export const actions = {
                 },
                 Cement(){ 
                     if (global.tech['storage'] && global.tech['storage'] >= 3){
-                        return costMultiplier('shed', 18, 1.3);
+                        return costMultiplier('shed', 18, 1.32);
                     }
                     else {
                         return 0; 
@@ -1108,39 +1108,39 @@ export const actions = {
                 let storage = '';
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
-                    let val = +(spatialReasoning(200) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(300) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Lumber.`;
                 }
                 if (global.resource.Stone.display){
-                    let val = +(spatialReasoning(200) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(300) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Stone.`;
                 }
                 if (global.resource.Furs.display){
-                    let val = +(spatialReasoning(100) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(125) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Furs.`;
                 }
                 if (global.resource.Copper.display){
-                    let val = +(spatialReasoning(75) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(90) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Copper.`;
                 }
                 if (global.resource.Iron.display){
-                    let val = +(spatialReasoning(100) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(125) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Iron.`;
                 }
                 if (global.resource.Cement.display){
-                    let val = +(spatialReasoning(80) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(100) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Cement.`;
                 }
                 if (global.resource.Coal.display){
-                    let val = +(spatialReasoning(50) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(75) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Coal.`;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    let val = +(spatialReasoning(25) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(40) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Steel.`;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    let val = +(spatialReasoning(10) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(20) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Titanium.`;
                 }
                 return storage;
@@ -1148,17 +1148,18 @@ export const actions = {
             action(){
                 if (payCosts(actions.city.shed.cost)){
                     let multiplier = storageMultipler();
-                    global['resource']['Lumber'].max += (spatialReasoning(200) * multiplier);
-                    global['resource']['Stone'].max += (spatialReasoning(200) * multiplier);
-                    global['resource']['Copper'].max += (spatialReasoning(75) * multiplier);
-                    global['resource']['Iron'].max += (spatialReasoning(100) * multiplier);
-                    global['resource']['Cement'].max += (spatialReasoning(80) * multiplier);
-                    global['resource']['Coal'].max += (spatialReasoning(50) * multiplier);
+                    global['resource']['Lumber'].max += (spatialReasoning(300) * multiplier);
+                    global['resource']['Stone'].max += (spatialReasoning(300) * multiplier);
+                    global['resource']['Copper'].max += (spatialReasoning(90) * multiplier);
+                    global['resource']['Iron'].max += (spatialReasoning(125) * multiplier);
+                    global['resource']['Furs'].max += (spatialReasoning(125) * multiplier);
+                    global['resource']['Cement'].max += (spatialReasoning(100) * multiplier);
+                    global['resource']['Coal'].max += (spatialReasoning(75) * multiplier);
                     if (global.tech['storage'] >= 3){
-                        global['resource']['Steel'].max += (global.city['shed'].count * (spatialReasoning(25) * multiplier));
+                        global['resource']['Steel'].max += (global.city['shed'].count * (spatialReasoning(40) * multiplier));
                     }
                     if (global.tech['storage'] >= 4){
-                        global['resource']['Titanium'].max += (global.city['shed'].count * (spatialReasoning(10) * multiplier));
+                        global['resource']['Titanium'].max += (global.city['shed'].count * (spatialReasoning(20) * multiplier));
                     }
                     global.city['shed'].count++;
                     return true;
@@ -1172,7 +1173,7 @@ export const actions = {
             desc: 'Increases crate capacity',
             reqs: { container: 1 },
             cost: { 
-                Money(){ return costMultiplier('storage_yard', 10, 1.35); },
+                Money(){ return costMultiplier('storage_yard', 10, 1.36); },
                 Brick(){ return costMultiplier('storage_yard', 3, 1.35); },
                 Wrought_Iron(){ return costMultiplier('storage_yard', 5, 1.35); }
             },
@@ -1208,8 +1209,8 @@ export const actions = {
             desc: 'Increases container capacity',
             reqs: { steel_container: 1 },
             cost: { 
-                Money(){ return costMultiplier('warehouse', 400, 1.25); },
-                Cement(){ return costMultiplier('warehouse', 75, 1.25); },
+                Money(){ return costMultiplier('warehouse', 400, 1.26); },
+                Cement(){ return costMultiplier('warehouse', 75, 1.26); },
                 Sheet_Metal(){ return costMultiplier('warehouse', 25, 1.25); }
             },
             effect(){
@@ -1245,17 +1246,17 @@ export const actions = {
             },
             reqs: { banking: 1 },
             cost: { 
-                Money(){ return costMultiplier('bank', 250, 1.5); },
-                Lumber(){ return costMultiplier('bank', 75, 1.30); },
+                Money(){ return costMultiplier('bank', 250, 1.45); },
+                Lumber(){ return costMultiplier('bank', 75, 1.32); },
                 Stone(){ return costMultiplier('bank', 100, 1.45); }
             },
             effect(){ 
-                let vault = 1500;
+                let vault = 1800;
                 if (global.tech['banking'] >= 5){
-                    vault = 7500;
+                    vault = 9000;
                 }
                 else if (global.tech['banking'] >= 3){
-                    vault = 3500;
+                    vault = 4000;
                 }
                 if (global.race['paranoid']){
                     vault *= 0.9;
@@ -1283,7 +1284,7 @@ export const actions = {
             },
             action(){
                 if (payCosts(actions.city.bank.cost)){
-                    global['resource']['Money'].max += 1000;
+                    global['resource']['Money'].max += spatialReasoning(1800);
                     global.city.bank.count++;
                     global.civic.banker.max = global.city.bank.count;
                     return true;
@@ -1321,9 +1322,9 @@ export const actions = {
             desc: 'Increases lumber output',
             reqs: { saw: 1 },
             cost: { 
-                Money(){ return costMultiplier('sawmill', 3000, 1.25); },
-                Iron(){ return costMultiplier('sawmill', 400, 1.25); },
-                Cement(){ return costMultiplier('sawmill', 420, 1.25); }
+                Money(){ return costMultiplier('sawmill', 3000, 1.26); },
+                Iron(){ return costMultiplier('sawmill', 400, 1.26); },
+                Cement(){ return costMultiplier('sawmill', 420, 1.26); }
             },
             effect(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
@@ -1359,8 +1360,8 @@ export const actions = {
             reqs: { mining: 1 },
             cost: { 
                 Money(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.45);} else { return 0; } },
-                Lumber(){ return costMultiplier('rock_quarry', 50, 1.35); },
-                Stone(){ return costMultiplier('rock_quarry', 10, 1.35); }
+                Lumber(){ return costMultiplier('rock_quarry', 50, 1.36); },
+                Stone(){ return costMultiplier('rock_quarry', 10, 1.36); }
             },
             effect() {
                 let stone = spatialReasoning(100);
@@ -1393,8 +1394,8 @@ export const actions = {
             reqs: { cement: 1 },
             cost: { 
                 Money(){ return costMultiplier('cement_plant', 3000, 1.5); },
-                Lumber(){ return costMultiplier('cement_plant', 1800, 1.35); },
-                Stone(){ return costMultiplier('cement_plant', 2000, 1.3); }
+                Lumber(){ return costMultiplier('cement_plant', 1800, 1.36); },
+                Stone(){ return costMultiplier('cement_plant', 2000, 1.32); }
             },
             effect: '+2 Max Cement Plant Workers',
             effect() { 
@@ -1427,9 +1428,9 @@ export const actions = {
             desc: 'Manufacture building materials from raw materials',
             reqs: { foundry: 1 },
             cost: {
-                Money(){ return costMultiplier('foundry', 750, 1.35); },
-                Copper(){ return costMultiplier('foundry', 250, 1.35); },
-                Stone(){ return costMultiplier('foundry', 100, 1.35); }
+                Money(){ return costMultiplier('foundry', 750, 1.36); },
+                Copper(){ return costMultiplier('foundry', 250, 1.36); },
+                Stone(){ return costMultiplier('foundry', 100, 1.36); }
             },
             effect(){
                 let desc = `<div>+1 Craftsman</div>`;
@@ -1469,10 +1470,10 @@ export const actions = {
             desc: 'Produces manufactured goods',
             reqs: { high_tech: 3 },
             cost: { 
-                Money(){ return costMultiplier('factory', 25000, 1.3); },
-                Cement(){ return costMultiplier('factory', 1000, 1.3); },
-                Steel(){ return costMultiplier('factory', 7500, 1.3); },
-                Titanium(){ return costMultiplier('factory', 2500, 1.3); }
+                Money(){ return costMultiplier('factory', 25000, 1.32); },
+                Cement(){ return costMultiplier('factory', 1000, 1.32); },
+                Steel(){ return costMultiplier('factory', 7500, 1.32); },
+                Titanium(){ return costMultiplier('factory', 2500, 1.32); }
             },
             effect(){ 
                 return `Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.`;
@@ -1497,8 +1498,8 @@ export const actions = {
             desc: 'Increase iron output',
             reqs: { smelting: 1 },
             cost: { 
-                Money(){ return costMultiplier('smelter', 1000, 1.3); },
-                Iron(){ return costMultiplier('smelter', 500, 1.32); }
+                Money(){ return costMultiplier('smelter', 1000, 1.32); },
+                Iron(){ return costMultiplier('smelter', 500, 1.33); }
             },
             effect(){ 
                 var iron_yield = global.tech['smelting'] >= 3 ? 12 : 10;
@@ -1536,7 +1537,7 @@ export const actions = {
             reqs: { mining: 2 },
             cost: { 
                 Money(){ return costMultiplier('mine', 60, 1.6); },
-                Lumber(){ return costMultiplier('mine', 175, 1.35); }
+                Lumber(){ return costMultiplier('mine', 175, 1.38); }
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
@@ -1569,8 +1570,8 @@ export const actions = {
             reqs: { mining: 4 },
             cost: { 
                 Money(){ return costMultiplier('coal_mine', 480, 1.4); },
-                Lumber(){ return costMultiplier('coal_mine', 250, 1.35); },
-                Wrought_Iron(){ return costMultiplier('coal_mine', 18, 1.35); }
+                Lumber(){ return costMultiplier('coal_mine', 250, 1.36); },
+                Wrought_Iron(){ return costMultiplier('coal_mine', 18, 1.36); }
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
@@ -1631,8 +1632,8 @@ export const actions = {
             desc: 'Special storage for fuels',
             reqs: { oil: 2 },
             cost: { 
-                Money(){ return costMultiplier('oil_depot', 2500, 1.45); },
-                Cement(){ return costMultiplier('oil_depot', 3750, 1.45); },
+                Money(){ return costMultiplier('oil_depot', 2500, 1.46); },
+                Cement(){ return costMultiplier('oil_depot', 3750, 1.46); },
                 Sheet_Metal(){ return costMultiplier('oil_depot', 100, 1.45); }
             },
             effect() { 
@@ -1662,10 +1663,10 @@ export const actions = {
             desc: 'Increases trade route capacity',
             reqs: { trade: 1 },
             cost: { 
-                Money(){ return costMultiplier('trade', 500, 1.35); },
-                Lumber(){ return costMultiplier('trade', 125, 1.35); },
-                Stone(){ return costMultiplier('trade', 50, 1.35); },
-                Furs(){ return costMultiplier('trade', 65, 1.35); }
+                Money(){ return costMultiplier('trade', 500, 1.36); },
+                Lumber(){ return costMultiplier('trade', 125, 1.36); },
+                Stone(){ return costMultiplier('trade', 50, 1.36); },
+                Furs(){ return costMultiplier('trade', 65, 1.36); }
             },
             effect(){
                 let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
@@ -1714,10 +1715,10 @@ export const actions = {
             },
             reqs: { theology: 2 },
             cost: {
-                Money(){ return costMultiplier('temple', 50, 1.35); },
-                Lumber(){ return costMultiplier('temple', 25, 1.35); },
-                Furs(){ return costMultiplier('temple', 15, 1.35); },
-                Cement(){ return costMultiplier('temple', 10, 1.35); }
+                Money(){ return costMultiplier('temple', 50, 1.36); },
+                Lumber(){ return costMultiplier('temple', 25, 1.36); },
+                Furs(){ return costMultiplier('temple', 15, 1.36); },
+                Cement(){ return costMultiplier('temple', 10, 1.36); }
             },
             effect(){
                 let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
@@ -1751,8 +1752,8 @@ export const actions = {
             reqs: { science: 1 },
             cost: {
                 Money(){ return costMultiplier('university', 900, 1.5) - 500; },
-                Lumber(){ return costMultiplier('university', 500, 1.35) - 200; },
-                Stone(){ return costMultiplier('university', 750, 1.35) - 350; }
+                Lumber(){ return costMultiplier('university', 500, 1.36) - 200; },
+                Stone(){ return costMultiplier('university', 750, 1.36) - 350; }
             },
             effect(){
                 let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
@@ -1835,10 +1836,10 @@ export const actions = {
             desc: 'Advanced science facility',
             reqs: { high_tech: 1 },
             cost: { 
-                Money(){ return costMultiplier('wardenclyffe', 5000, 1.2); },
-                Knowledge(){ return costMultiplier('wardenclyffe', 1000, 1.2); },
-                Copper(){ return costMultiplier('wardenclyffe', 500, 1.2); },
-                Cement(){ return costMultiplier('wardenclyffe', 350, 1.2); },
+                Money(){ return costMultiplier('wardenclyffe', 5000, 1.22); },
+                Knowledge(){ return costMultiplier('wardenclyffe', 1000, 1.22); },
+                Copper(){ return costMultiplier('wardenclyffe', 500, 1.22); },
+                Cement(){ return costMultiplier('wardenclyffe', 350, 1.22); },
                 Sheet_Metal(){ return costMultiplier('wardenclyffe', 125, 1.2); }
             },
             effect(){
@@ -1901,10 +1902,10 @@ export const actions = {
             desc: '<div>Bioscience Labratory</div><div class="has-text-special">Requires Power</div>',
             reqs: { genetics: 1 },
             cost: { 
-                Money(){ return costMultiplier('biolab', 25000, 1.28); },
-                Knowledge(){ return costMultiplier('biolab', 5000, 1.28); },
-                Copper(){ return costMultiplier('biolab', 1250, 1.28); },
-                Alloy(){ return costMultiplier('biolab', 350, 1.28); }
+                Money(){ return costMultiplier('biolab', 25000, 1.3); },
+                Knowledge(){ return costMultiplier('biolab', 5000, 1.3); },
+                Copper(){ return costMultiplier('biolab', 1250, 1.3); },
+                Alloy(){ return costMultiplier('biolab', 350, 1.3); }
             },
             effect(){
                 let gain = 3000;
@@ -1929,10 +1930,10 @@ export const actions = {
             desc: 'Generates electricity from coal',
             reqs: { high_tech: 2 },
             cost: { 
-                Money(){ return costMultiplier('coal_power', 10000, 1.2); },
-                Copper(){ return costMultiplier('coal_power', 1800, 1.2) - 1000; },
-                Cement(){ return costMultiplier('coal_power', 600, 1.2); },
-                Steel(){ return costMultiplier('coal_power', 2000, 1.2) - 1000; }
+                Money(){ return costMultiplier('coal_power', 10000, 1.22); },
+                Copper(){ return costMultiplier('coal_power', 1800, 1.22) - 1000; },
+                Cement(){ return costMultiplier('coal_power', 600, 1.22); },
+                Steel(){ return costMultiplier('coal_power', 2000, 1.22) - 1000; }
             },
             effect(){
                 let consume = 0.35;
@@ -1955,10 +1956,10 @@ export const actions = {
             desc: 'Generates electricity from oil',
             reqs: { oil: 3 },
             cost: { 
-                Money(){ return costMultiplier('oil_power', 50000, 1.2); },
-                Copper(){ return costMultiplier('oil_power', 6500, 1.2) + 1000; },
-                Cement(){ return costMultiplier('oil_power', 5600, 1.2) + 1000; },
-                Steel(){ return costMultiplier('oil_power', 9000, 1.2) + 3000; }
+                Money(){ return costMultiplier('oil_power', 50000, 1.22); },
+                Copper(){ return costMultiplier('oil_power', 6500, 1.22) + 1000; },
+                Cement(){ return costMultiplier('oil_power', 5600, 1.22) + 1000; },
+                Steel(){ return costMultiplier('oil_power', 9000, 1.22) + 3000; }
             },
             effect(){
                 let consume = 0.65;
@@ -1981,10 +1982,10 @@ export const actions = {
             desc: 'Uses nuclear fission to generate large amounts of power',
             reqs: { high_tech: 5 },
             cost: { 
-                Money(){ return costMultiplier('fission_power', 250000, 1.35); },
-                Copper(){ return costMultiplier('fission_power', 13500, 1.35); },
-                Cement(){ return costMultiplier('fission_power', 10800, 1.35); },
-                Titanium(){ return costMultiplier('fission_power', 7500, 1.35); }
+                Money(){ return costMultiplier('fission_power', 250000, 1.36); },
+                Copper(){ return costMultiplier('fission_power', 13500, 1.36); },
+                Cement(){ return costMultiplier('fission_power', 10800, 1.36); },
+                Titanium(){ return costMultiplier('fission_power', 7500, 1.36); }
             },
             effect(){
                 let consume = 0.1;
@@ -2810,7 +2811,7 @@ export const actions = {
                 Knowledge(){ return 15750; },
                 Steel(){ return 5000; }
             },
-            effect: 'Replace smaller storage sheds with larger storage barns, a 100% increase in storage capacity.',
+            effect: 'Replace smaller storage sheds with larger storage barns, a significant increase in storage capacity.',
             action(){
                 if (payCosts(actions.tech.barns.cost)){
                     return true;
@@ -5147,7 +5148,7 @@ export const actions = {
 };
 
 export function storageMultipler(){
-    var multiplier = (global.tech['storage'] - 1) * 0.75 + 1;
+    var multiplier = (global.tech['storage'] - 1) * 0.85 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 2 : 1.5;
     }

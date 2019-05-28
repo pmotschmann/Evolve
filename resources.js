@@ -780,18 +780,18 @@ function drawModal(name,color){
 }
 
 export function crateValue(){
-    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 225 : 125;
+    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 400 : 250;
     if (global.race['pack_rat']){
         create_value += global.tech.container >= 2 ? 25 : 10;
     }
     if (global.tech['container'] && global.tech['container'] >= 4){
-        create_value += 75;
+        create_value += 100;
     }
     return spatialReasoning(create_value);
 }
 
 export function containerValue(){
-    let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 600 : 400;
+    let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 800 : 500;
     if (global.race['pack_rat']){
         container_value += global.tech.steel_container >= 3 ? 40 : 25;
     }
