@@ -1706,6 +1706,32 @@ export const actions = {
             },
             flair: `Admission is free, but tomatoes are $9.99 each.`
         },
+        casino: {
+            id: 'city-casino',
+            title: 'Casino',
+            desc: 'Money and Entertainment all in one',
+            reqs: { gambling: 1 },
+            cost: {
+                Money(){ return costMultiplier('casino', 350000, 1.35); },
+                Furs(){ return costMultiplier('casino', 60000, 1.35); },
+                Plywood(){ return costMultiplier('casino', 10000, 1.35); },
+                Brick(){ return costMultiplier('casino', 6000, 1.35); }
+            },
+            effect(){
+                let money = spatialReasoning(40000);
+                return `<div>+${money} Max Money</div><div>+1 Max Entertainer</div><div>+1% Max Morale</div>`;
+            },
+            action(){
+                if (payCosts(actions.city.casino.cost)){
+                    global.city['casino'].count++;
+                    global.civic.entertainer.max++;
+                    global.civic.entertainer.display = true;
+                    return true;
+                }
+                return false;
+            },
+            flair: `The house always wins.`
+        },
         temple: {
             id: 'city-temple',
             title: 'Temple',
@@ -1863,10 +1889,10 @@ export const actions = {
                     let desc = `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div>If powered uses 2kW but increases its Max Knowledge to ${pgain} and morale by ${morale}%</div>`
+                        desc = desc + `<div>If powered uses ${actions.city.wardenclyffe.powered}kW but increases its Max Knowledge to ${pgain} and morale by ${morale}%</div>`
                     }
                     else {
-                        desc = desc + `<div>If powered uses 2kW but increases its Max Knowledge to ${pgain}</div>`;
+                        desc = desc + `<div>If powered uses ${actions.city.wardenclyffe.powered}kW but increases its Max Knowledge to ${pgain}</div>`;
                     }
                     return desc;
                 }
@@ -1909,7 +1935,7 @@ export const actions = {
             },
             effect(){
                 let gain = 3000;
-                return `+${gain} Max Knowledge, -2kW`;
+                return `+${gain} Max Knowledge, -${actions.city.biolab.powered}kW`;
             },
             powered: 2,
             action(){
@@ -1998,6 +2024,32 @@ export const actions = {
                     global.city.fission_power.count++;
                     global.city.fission_power.on++;
                     global.city.power += 14;
+                    return true;
+                }
+                return false;
+            }
+        },
+        mass_driver: {
+            id: 'city-mass_driver',
+            title: 'Mass Driver',
+            desc: '<div>Eletromagnetic launch system</div><div class="has-text-special">Requires Power</div>',
+            reqs: { oil: 7 },
+            cost: { 
+                Money(){ return costMultiplier('mass_driver', 450000, 1.32); },
+                Copper(){ return costMultiplier('mass_driver', 33000, 1.32); },
+                Iron(){ return costMultiplier('mass_driver', 42500, 1.32); },
+                Iridium(){ return costMultiplier('mass_driver', 3500, 1.32); }
+            },
+            effect(){
+                return `-5% space oil costs. -${actions.city.mass_driver.powered}kW.`;
+            },
+            powered: 4,
+            action(){
+                if (payCosts(actions.city.mass_driver.cost)){
+                    global.city.mass_driver.count++;
+                    if (global.city.powered && global.city.power >= actions.city.mass_driver.powered){
+                        global.city.mass_driver.on++;
+                    }
                     return true;
                 }
                 return false;
@@ -2537,6 +2589,24 @@ export const actions = {
             effect: 'New broadcast TV signals double the entertainment value of Wardenclyffe towers.',
             action(){
                 if (payCosts(actions.tech.tv.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        casino: {
+            id: 'tech-casino',
+            title: 'Casino',
+            desc: 'Casino',
+            reqs: { high_tech: 4, currency: 5 },
+            grant: ['gambling',1],
+            cost: {
+                Knowledge(){ return 95000; }
+            },
+            effect: 'Casinos not only offer entertainment for your populace but a new revenue source for you.',
+            action(){
+                if (payCosts(actions.tech.casino.cost)){
+                    global.city['casino'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -4012,6 +4082,27 @@ export const actions = {
             effect: 'A new oil mining technique, controversial but effective. Improves oil derrick output by 40%.',
             action(){
                 if (payCosts(actions.tech.fracking.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mass_driver: {
+            id: 'tech-mass_driver',
+            title: 'Mass Driver',
+            desc: 'Mass Driver',
+            reqs: { oil: 6, space: 3 },
+            grant: ['oil',7],
+            cost: {
+                Knowledge(){ return 170000; }
+            },
+            effect: 'Mass drivers use an electromagnetic rail to launch payloads into orbit and can be used to reduce fuel consumption required by traditional rocket launches.',
+            action(){
+                if (payCosts(actions.tech.mass_driver.cost)){
+                    global.city['mass_driver'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;

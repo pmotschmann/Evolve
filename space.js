@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue } from './vars.js';
+import { global, vues, poppers, messageQueue, p_on } from './vars.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { payCosts, setAction } from './actions.js';
@@ -39,7 +39,7 @@ const spaceProjects = {
             cost: {
                 Money(){ return costMultiplier('satellite', 75000, 1.35); },
                 Knowledge(){ return costMultiplier('satellite', 50000, 1.35); },
-                Oil(){ return costMultiplier('satellite', 5000, 1.35); },
+                Oil(){ return costMultiplier('satellite', oil_adjust(5000), 1.35); },
                 Alloy(){ return costMultiplier('satellite', 10000, 1.35); }
             },
             effect: '<div>+500 Max Knowledge</div><div>+4% Wardenclyffe Max Knowledge</div><div>+1% Scientist Efficiency</div>',
@@ -61,7 +61,7 @@ const spaceProjects = {
                 Money(){ return costMultiplier('gps', 75000, 1.3); },
                 Knowledge(){ return costMultiplier('gps', 50000, 1.3); },
                 Copper(){ return costMultiplier('gps', 6500, 1.3); },
-                Oil(){ return costMultiplier('gps', 3500, 1.3); },
+                Oil(){ return costMultiplier('gps', oil_adjust(3500), 1.3); },
                 Titanium(){ return costMultiplier('gps', 8000, 1.3); }
             },
             effect(){
@@ -87,7 +87,7 @@ const spaceProjects = {
             reqs: { space_explore: 1 },
             cost: {
                 Money(){ return costMultiplier('propellant_depot', 55000, 1.35); },
-                Oil(){ return costMultiplier('propellant_depot', 5500, 1.35); },
+                Oil(){ return costMultiplier('propellant_depot', oil_adjust(5500), 1.35); },
                 Steel(){ return costMultiplier('propellant_depot', 22000, 1.35); }
             },
             effect(){
@@ -158,7 +158,8 @@ const spaceProjects = {
             },
             effect(){
                 let iridium = spatialReasoning(500);
-                return `<div>+2 Moon Support</div><div>+${iridium} Max Iridium</div><div>-2 Oil/s, -5kW</div>`;
+                let oil = +(oil_adjust(2)).toFixed(2);
+                return `<div>+2 Moon Support</div><div>+${iridium} Max Iridium</div><div>-${oil} Oil/s, -5kW</div>`;
             },
             support: 2,
             powered: 5,
@@ -308,4 +309,13 @@ function costMultiplier(action,base,mutiplier){
     }
     var count = global.space[action] ? global.space[action].count : 0;
     return Math.round((mutiplier ** count) * base);
+}
+
+function oil_adjust(oil){
+    if (global.city['mass_driver']){
+        for (let i=0; i<p_on['mass_driver']; i++){
+            oil *= 0.95;
+        }
+    }
+    return oil;
 }

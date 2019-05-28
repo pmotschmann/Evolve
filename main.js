@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on } from './vars.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
@@ -284,7 +284,6 @@ else {
 setupStats();
 
 var fed = true;
-var p_on = {};
 var moon_on = {};
 
 var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
@@ -578,7 +577,7 @@ function fastLoop(){
             power_grid -= power;
         }
 
-        let p_structs = ['city:apartment','city:coal_mine','spc_moon:moon_base','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill'];
+        let p_structs = ['city:apartment','city:coal_mine','spc_moon:moon_base','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -604,11 +603,17 @@ function fastLoop(){
         }
 
         if (p_on['moon_base'] > 0){
-            let mb_consume = p_on['moon_base'] * 2;
+            let oil_cost = 2;
+            if (global.city['mass_driver']){
+                for (let i=0; i<p_on['mass_driver']; i++){
+                    oil_cost *= 0.95;
+                }
+            }
+            let mb_consume = p_on['moon_base'] * oil_cost;
             breakdown.p.consume.Oil['Moon Base'] = -(mb_consume);
             for (let i=0; i<p_on['moon_base']; i++){
-                if (!modRes('Oil', -(time_multiplier * 2))){
-                    mb_consume -= (p_on['moon_base'] * 2) - (i * 2);
+                if (!modRes('Oil', -(time_multiplier * oil_cost))){
+                    mb_consume -= (p_on['moon_base'] * oil_cost) - (i * 2);
                     p_on['moon_base'] -= i;
                     break;
                 }
@@ -666,6 +671,7 @@ function fastLoop(){
         morale -= global.civic.taxes.tax_rate - 20;
 
         let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
+        mBaseCap += global.city['casino'] ? global.city['casino'].count : 0;
         moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
         if (global.civic.taxes.tax_rate < 20){
             moraleCap += 10 - Math.floor(global.civic.taxes.tax_rate / 2);
@@ -1655,6 +1661,9 @@ function midLoop(){
         if (global.city['amphitheatre']){
             lCaps['entertainer'] += global.city['amphitheatre'].count;
         }
+        if (global.city['casino']){
+            lCaps['entertainer'] += global.city['casino'].count;
+        }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += global.city['cement_plant'].count * 2;
         }
@@ -1855,6 +1864,11 @@ function midLoop(){
             let gain = (global.city['bank'].count * spatialReasoning(vault));
             caps['Money'] += gain;
             bd_Money['Bank'] = gain+'v';
+        }
+        if (global.city['casino']){
+            let vault = global.city['casino'].count * spatialReasoning(40000);
+            caps['Money'] += vault;
+            bd_Money['Casino'] = vault+'v';
         }
         if (global.tech['banking'] >= 4){
             let cm = 250;
