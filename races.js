@@ -40,7 +40,7 @@ export const races = {
             hell: 'Eremandu',
             gas: 'Elenion',
             gas_moon: 'Tirion',
-            dwarf: 'Ceres',
+            dwarf: 'Naugrim',
         }
     },
     orc: {
@@ -56,9 +56,9 @@ export const races = {
         solar: {
             red: 'Krom',
             hell: 'Mordor',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Crush',
+            gas_moon: 'Hammerfell',
+            dwarf: 'Mace',
         }
     },
     cath: {
@@ -70,6 +70,13 @@ export const races = {
         traits: { 
             lazy: 1,
             carnivore: 1
+        },
+        solar: {
+            red: 'Tabbi',
+            hell: 'Vac',
+            gas: 'Garth',
+            gas_moon: 'Purrth',
+            dwarf: 'Kith',
         }
     },
     wolven: {
@@ -81,6 +88,13 @@ export const races = {
         traits: { 
             pack_mentality: 1,
             tracker: 1
+        },
+        solar: {
+            red: 'Pack',
+            hell: 'Howl',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Fang',
         }
     },
     centaur: {
@@ -92,6 +106,13 @@ export const races = {
         traits: {
             beast_of_burden: 1,
             herbivore: 1
+        },
+        solar: {
+            red: 'Chiron',
+            hell: 'Hydra',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Pony',
         }
     },
     kobold: {
@@ -103,6 +124,13 @@ export const races = {
         traits: {
             pack_rat: 1,
             paranoid: 1
+        },
+        solar: {
+            red: 'Wick',
+            hell: 'Melt',
+            gas: 'Jupiter',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     goblin: {
@@ -114,6 +142,13 @@ export const races = {
         traits: { 
             greedy: 1,
             merchant: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     gnome: {
@@ -125,6 +160,13 @@ export const races = {
         traits: { 
             smart: 1,
             puny: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     orge: {
@@ -136,6 +178,13 @@ export const races = {
         traits: { 
             dumb: 1,
             tough: 1
+        },
+        solar: {
+            red: 'Latva',
+            hell: 'Maw',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     cyclops: {
@@ -147,7 +196,14 @@ export const races = {
         traits: {
             nearsighted: 1,
             intelligent: 1
-        } 
+        },
+        solar: {
+            red: 'Hesiod',
+            hell: 'Phemus',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     troll: {
         name: 'Troll',
@@ -158,6 +214,13 @@ export const races = {
         traits: {
             regenerative: 1,
             gluttony: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     tortoisan: {
@@ -169,6 +232,13 @@ export const races = {
         traits: { 
             slow: 1,
             armored: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     gecko: {
@@ -180,6 +250,13 @@ export const races = {
         traits: {
             optimistic: 1,
             chameleon: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     slitheryn: {
@@ -191,6 +268,13 @@ export const races = {
         traits: {
             slow_digestion: 1,
             hard_of_hearing: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     arraak: {
@@ -202,7 +286,14 @@ export const races = {
         traits: {
             resourceful: 1,
             selenophobia: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     pterodacti: {
         name: 'Pterodacti',
@@ -213,7 +304,14 @@ export const races = {
         traits: {
             leathery: 1,
             pessimistic: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     dracnid: {
         name: 'Dracnid',
@@ -224,7 +322,14 @@ export const races = {
         traits: {
             hoarder: 1,
             solitary: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     entish: {
         name: 'Ent',
@@ -235,7 +340,14 @@ export const races = {
         traits: {
             kindling_kindred: 1,
             pyrophobia: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     cacti: {
         name: 'Cacti',
@@ -246,6 +358,13 @@ export const races = {
         traits: {
             hyper: 1,
             skittish: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     sporgar: {
@@ -257,7 +376,14 @@ export const races = {
         traits: {
             infectious: 1,
             parasite: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     shroomi: {
         name: 'Shroomi',
@@ -268,7 +394,14 @@ export const races = {
         traits: {
             toxic: 1,
             nyctophilia: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     mantis: {
         name: 'Mantis',
@@ -279,7 +412,14 @@ export const races = {
         traits: {
             fraile: 1,
             malnutrition: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     scorpid: {
         name: 'Scorpid',
@@ -290,7 +430,14 @@ export const races = {
         traits: {
             claws: 1,
             atrophy: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     },
     antid: {
         name: 'Antid',
@@ -301,7 +448,14 @@ export const races = {
         traits: {
             hivemind: 1,
             tunneler: 1
-        } 
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
+        }
     }
 };
 

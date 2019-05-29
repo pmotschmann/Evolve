@@ -116,7 +116,7 @@ const spaceProjects = {
             name: 'Moon',
             desc(){
                 let home = races[global.race.species].home;
-                return `The moon orbiting ${home}`;
+                return `The moon orbiting ${home}. It is about 1/10th the mass of ${home} and has no atmosphere.`;
             },
             support: 'moon_base',
         },
@@ -234,10 +234,11 @@ const spaceProjects = {
     },
     spc_red: {
         info: {
-            name: 'Mars',
+            name(){
+                return races[global.race.species].solar.red;
+            },
             desc(){
-                let red = 'Mars';
-                return `The red planet ${red}`;
+                return `The red planet ${races[global.race.species].solar.red} is about 1.4AU from ${races[global.race.species].home}.`;
             },
         },
         red_mission: {
@@ -260,10 +261,11 @@ const spaceProjects = {
     },
     spc_hell: {
         info: {
-            name: 'Mercury',
+            name(){
+                return races[global.race.species].solar.hell;
+            },
             desc(){
-                let red = 'Mercury';
-                return `The molten planet ${red} close to the sun`;
+                return `The planet ${races[global.race.species].solar.hell} is located about 0.4AU from the sun and is very hot.`;
             },
         },
         hell_mission: {
