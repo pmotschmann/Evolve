@@ -577,7 +577,7 @@ function fastLoop(){
             power_grid -= power;
         }
 
-        let p_structs = ['city:apartment','city:coal_mine','spc_moon:moon_base','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:outpost','city:coal_mine','spc_moon:moon_base','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -1776,6 +1776,11 @@ function midLoop(){
                 bd_Helium['Orbit_Depot'] = gain+'v';
             }
         }
+        if (global.space['helium_mine']){
+            let gain = (global.space['helium_mine'].count * spatialReasoning(100));
+            caps['Helium_3'] += gain;
+            bd_Helium['Helium Mine'] = gain+'v';
+        }
         if (global.city['university']){
             let multiplier = 1;
             let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
@@ -2259,15 +2264,22 @@ function longLoop(){
                 Object.keys(craftCost).forEach(function (craft){
                     let num = global.city.foundry[craft];
                     let craft_ratio = craftingRatio(craft);
-                    if (num > 0){
-                        while (num > 0){
-                            if (global.resource[craftCost[craft].r].amount >= craftCost[craft].a * craft_costs){
-                                global.resource[craftCost[craft].r].amount -= craftCost[craft].a * craft_costs;
-                                global.resource[craft].amount += craft_ratio;
-                            }
-                            num--;
+
+                    let volume = Math.floor(global.resource[craftCost[craft][0].r].amount / (craftCost[craft][0].a * craft_costs));
+                    for (let i=1; i<craftCost[craft].length; i++){
+                        let temp = Math.floor(global.resource[craftCost[craft][i].r].amount / (craftCost[craft][i].a * craft_costs));
+                        if (temp < volume){
+                            volume = temp;
                         }
                     }
+                    if (num < volume){
+                        volume = num;
+                    }
+                    for (let i=0; i<craftCost[craft].length; i++){
+                        let final = volume * craftCost[craft][i].a * craft_costs;
+                        global.resource[craftCost[craft][i].r].amount -= final;
+                    }
+                    global.resource[craft].amount += craft_ratio * volume;
                 });
             }
 

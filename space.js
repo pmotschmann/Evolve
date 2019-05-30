@@ -159,7 +159,7 @@ const spaceProjects = {
             effect(){
                 let iridium = spatialReasoning(500);
                 let oil = +(oil_adjust(2)).toFixed(2);
-                return `<div>+2 Moon Support</div><div>+${iridium} Max Iridium</div><div>-${oil} Oil/s, -5kW</div>`;
+                return `<div>+2 Moon Support</div><div>+${iridium} Max Iridium</div><div>-${oil} Oil/s, -${spaceProjects.spc_moon.moon_base.powered}kW</div>`;
             },
             support: 2,
             powered: 5,
@@ -197,6 +197,7 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_moon.iridium_mine.cost)){
                     global.space['iridium_mine'].count++;
+                    global.resource['Mythril'].display = true;
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['iridium_mine'].on++;
                     }
@@ -216,7 +217,8 @@ const spaceProjects = {
                 Steel(){ return costMultiplier('helium_mine', 17500, 1.35); }
             },
             effect(){
-                return `<div>-1 Moon Support</div><div>+0.02 Helium 3 Production</div>`;
+                let storage = spatialReasoning(100);
+                return `<div>-1 Moon Support</div><div>+0.02 Helium-3 Production</div><div>+${storage} Max Helium-3</div>`;
             },
             support: -1,
             powered: 1,
@@ -240,19 +242,56 @@ const spaceProjects = {
             desc(){
                 return `The red planet ${races[global.race.species].solar.red} is about 1.4AU from ${races[global.race.species].home}.`;
             },
+            support: 'outpost',
         },
         red_mission: {
             id: 'space-red_mission',
-            title: 'Red Mission',
-            desc: 'Launch the Red Mission',
-            reqs: { space: 3, space_explore: 3, locked: 1 },
+            title(){
+                return `${races[global.race.species].solar.red} Mission`;
+            },
+            desc(){
+                return `Launch the ${races[global.race.species].solar.red} Mission`;
+            },
+            reqs: { space: 3, space_explore: 3 },
             grant: ['space',4],
             cost: { 
                 Helium_3(){ return 4500; }
             },
-            effect: 'Launch a mission to survey the red planet.',
+            effect(){
+                return `Launch a mission to survey the red planet ${races[global.race.species].solar.red}.`;
+            },
             action(){
                 if (payCosts(spaceProjects.spc_red.red_mission.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        outpost: {
+            id: 'space-outpost',
+            title: 'Outpost',
+            desc: '<div>Build an Outpost</div><div class="has-text-special">Requires Power & Helium-3</div>',
+            reqs: { space: 4 },
+            cost: {
+                Money(){ return costMultiplier('outpost', 47500, 1.35); },
+                Iridium(){ return costMultiplier('outpost', 2500, 1.35); },
+                Mythril(){ return costMultiplier('outpost', 100, 1.35); },
+                Polymer(){ return costMultiplier('outpost', 22500, 1.35); }
+            },
+            effect(){
+                let helium = 1;
+                return `<div>+3 ${races[global.race.species].solar.red} Support</div><div>-${helium} Helium-3/s, -${spaceProjects.spc_red.outpost.powered}kW</div>`;
+            },
+            support: 2,
+            powered: 5,
+            action(){
+                if (payCosts(spaceProjects.spc_red.outpost.cost)){
+                    global.space['outpost'].count++;
+                    global.resource.Iridium.display = true;
+                    global.resource['Helium_3'].display = true;
+                    if (global.city.power >= 5){
+                        global.space['outpost'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -270,14 +309,20 @@ const spaceProjects = {
         },
         hell_mission: {
             id: 'space-hell_mission',
-            title: 'Hell Mission',
-            desc: 'Launch the Hell Mission',
-            reqs: { space: 3, space_explore: 3, locked: 1 },
+            title(){
+                return `${races[global.race.species].solar.hell} Mission`;
+            },
+            desc(){
+                return `Launch the ${races[global.race.species].solar.hell} Mission`;
+            },
+            reqs: { space: 3, space_explore: 3 },
             grant: ['hell',1],
             cost: { 
                 Helium_3(){ return 6500; }
             },
-            effect: 'Launch a mission to survey the hell planet.',
+            effect(){
+                return `Launch a mission to survey the hellish planet ${races[global.race.species].solar.hell}.`;
+            },
             action(){
                 if (payCosts(spaceProjects.spc_hell.hell_mission.cost)){
                     return true;

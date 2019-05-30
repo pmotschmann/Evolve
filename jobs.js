@@ -232,7 +232,7 @@ export function loadFoundry(){
         var foundry = $('<div class="job"><div class="foundry job_label"><span class="has-text-warning">Craftman Assigned</span><span class="count">{{ f.crafting }} / {{ f.count }}</span></div></div>');
         $('#foundry').append(foundry);
 
-        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal'];
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril'];
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
@@ -293,9 +293,12 @@ export function loadFoundry(){
                     let name = res.replace("_", " ");
                     let multiplier = craftingRatio(res);
                     let final = +(global.city.foundry[res] * multiplier).toFixed(2);
-                    let cost = +(craftCost[res].a * global.city.foundry[res]).toFixed(2);
 
-                    popper.append($(`<div>+${final} ${name}/cycle</div><div>-${cost} ${craftCost[res].r}/cycle<div>`));
+                    popper.append($(`<div>+${final} ${name}/cycle</div>`));
+                    for (let i=0; i<craftCost[res].length; i++){
+                        let cost = +(craftCost[res][i].a * global.city.foundry[res]).toFixed(2);
+                        popper.append($(`<div>-${cost} ${craftCost[res][i].r}/cycle<div>`));
+                    }
     
                     popper.show();
                     poppers[`cr${res}`] = new Popper($(`#craft${res}`),popper);

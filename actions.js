@@ -2416,7 +2416,8 @@ export const actions = {
                         Brick: 0,
                         Bronze: 0,
                         Wrought_Iron: 0,
-                        Sheet_Metal: 0
+                        Sheet_Metal: 0,
+                        Mythril: 0
                     };
                     return true;
                 }
@@ -5254,6 +5255,12 @@ export const actions = {
                 if (payCosts(actions.tech.probes.cost)){
                     global.settings.space.red = true;
                     global.settings.space.hell = true;
+                    global.space['outpost'] = {
+                        count: 0,
+                        on: 0,
+                        support: 0,
+                        s_max: 0
+                    };
                     return true;
                 }
                 return false;

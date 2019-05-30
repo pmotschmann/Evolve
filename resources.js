@@ -42,11 +42,12 @@ export const tradeRatio = {
 }
 
 export const craftCost = {
-    Plywood: { r: 'Lumber', a: 100 },
-    Brick: { r: 'Cement', a: 40 },
-    Bronze: { r: 'Copper', a: 80 },
-    Wrought_Iron: { r: 'Iron', a: 80 },
-    Sheet_Metal: { r: 'Steel', a: 60 },
+    Plywood: [{ r: 'Lumber', a: 100 }],
+    Brick: [{ r: 'Cement', a: 40 }],
+    Bronze: [{ r: 'Copper', a: 80 }],
+    Wrought_Iron: [{ r: 'Iron', a: 80 }],
+    Sheet_Metal: [{ r: 'Steel', a: 60 }],
+    Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
 };
 
 export function craftingRatio(res){
@@ -113,7 +114,7 @@ export function defineResources() {
         loadResource('Bronze',-1,0,false,false,'danger');
         loadResource('Wrought_Iron',-1,0,false,false,'danger');
         loadResource('Sheet_Metal',-1,0,false,false,'danger');
-        //loadResource('Mythril',-1,0,false,false,'danger');
+        loadResource('Mythril',-1,0,false,false,'danger');
         loadRouteCounter();
     }
     loadSpecialResource('Plasmid');
@@ -226,44 +227,40 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             },
             craft: function(res,vol){
                 let craft_bonus = craftingRatio(res);
-                if (vol === 'A'){
-                    let volume = Math.floor(global.resource[craftCost[res].r].amount / craftCost[res].a);
-                    let num = volume * craftCost[res].a;
-                    global.resource[craftCost[res].r].amount -= num;
-                    global.resource[res].amount += volume * craft_bonus;
-                }
-                else {
-                    var keyMult = keyMultiplier();
-                    for (var i=0; i<keyMult; i++){
-                        let num = vol * craftCost[res].a;
-                        let br = false;
-                        while (num > 0){
-                            if (global.resource[craftCost[res].r].amount >= num){
-                                global.resource[craftCost[res].r].amount -= num;
-                                global.resource[res].amount += vol * craft_bonus;
-                                num = 0;
-                            }
-                            else {
-                                num -= craftCost[res].a;
-                                vol--;
-                                br = true;
-                            }
-                        }
-                        if (br){
-                            break;
-                        }
+                let volume = Math.floor(global.resource[craftCost[res][0].r].amount / craftCost[res][0].a);
+                for (let i=1; i<craftCost[res].length; i++){
+                    let temp = Math.floor(global.resource[craftCost[res][i].r].amount / craftCost[res][i].a);
+                    if (temp < volume){
+                        volume = temp;
                     }
                 }
+                if (vol !== 'A'){
+                    let total = vol * keyMultiplier();
+                    if (total < volume){
+                        volume = total;
+                    }
+                }
+                for (let i=0; i<craftCost[res].length; i++){
+                    let num = volume * craftCost[res][i].a;
+                    global.resource[craftCost[res][i].r].amount -= num;
+                }
+                global.resource[res].amount += volume * craft_bonus;
             },
             craftCost: function(res,vol){
-                let num = vol * craftCost[res].a * keyMultiplier();
-                return `${craftCost[res].r} ${num}`;
+                let costs = '';
+                for (let i=0; i<craftCost[res].length; i++){
+                    let num = vol * craftCost[res][i].a * keyMultiplier();
+                    costs = costs + `<div>${craftCost[res][i].r} ${num}</div>`;
+                }
+                return costs;
             },
             hover(res,vol){
                 var popper = $(`<div id="popRes${res}${vol}" class="popper has-background-light has-text-dark"></div>`);
                 $('#main').append(popper);
-                let num = typeof vol === 'number' ? vol * craftCost[res].a : vol;
-                popper.append($(`<div>${craftCost[res].r} <span class="craft" data-val="${num}">${num}</span></div>`));
+                for (let i=0; i<craftCost[res].length; i++){
+                    let num = typeof vol === 'number' ? vol * craftCost[res][i].a : vol;
+                    popper.append($(`<div>${craftCost[res][i].r} <span class="craft" data-val="${num}">${num}</span></div>`));
+                }
 
                 popper.show();
                 poppers[`r${res}${vol}`] = new Popper($(`#inc${res}${vol}`),popper);
