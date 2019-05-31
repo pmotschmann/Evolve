@@ -914,9 +914,9 @@ export const actions = {
             powered: 1,
             action(){
                 if (payCosts(actions.city.apartment.cost)){
-                    global['resource'][races[global.race.species].name].max += 5;
                     global.city['apartment'].count++;
                     if (global.city.power > 0){
+                        global['resource'][races[global.race.species].name].max += 5;
                         global.city['apartment'].on++;
                     }
                     return true;
@@ -1246,9 +1246,9 @@ export const actions = {
             },
             reqs: { banking: 1 },
             cost: { 
-                Money(){ return costMultiplier('bank', 250, 1.45); },
+                Money(){ return costMultiplier('bank', 250, 1.35); },
                 Lumber(){ return costMultiplier('bank', 75, 1.32); },
-                Stone(){ return costMultiplier('bank', 100, 1.45); }
+                Stone(){ return costMultiplier('bank', 100, 1.35); }
             },
             effect(){ 
                 let vault = 1800;
@@ -1475,8 +1475,12 @@ export const actions = {
                 Steel(){ return costMultiplier('factory', 7500, 1.32); },
                 Titanium(){ return costMultiplier('factory', 2500, 1.32); }
             },
-            effect(){ 
-                return `Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.`;
+            effect(){
+                let desc = `<div>Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.</div>`;
+                if (global.tech['foundry'] >= 7){
+                    desc = desc + `<div>+5% Crafted Materials</div>`;
+                }
+                return desc;
             },
             powered: 3,
             special: true,
@@ -1709,7 +1713,7 @@ export const actions = {
         casino: {
             id: 'city-casino',
             title: 'Casino',
-            desc: 'Money and Entertainment all in one',
+            desc: 'A new form of entertainment for your population',
             reqs: { gambling: 1 },
             cost: {
                 Money(){ return costMultiplier('casino', 350000, 1.35); },
@@ -2504,6 +2508,23 @@ export const actions = {
             effect: 'New specialied brickmaking equipment adds an extra 2% bonus to brick crafting per foundry.',
             action(){
                 if (payCosts(actions.tech.brickworks.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        automation: {
+            id: 'tech-automation',
+            title: 'Automation',
+            desc: 'Automation',
+            reqs: { foundry: 6, high_tech: 4 },
+            grant: ['foundry',7],
+            cost: {
+                Knowledge(){ return 66000; }
+            },
+            effect: 'Automated manufacturing machines add a crafting bonus to factories.',
+            action(){
+                if (payCosts(actions.tech.automation.cost)){
                     return true;
                 }
                 return false;
@@ -3839,10 +3860,11 @@ export const actions = {
             id: 'tech-lasers',
             title: 'Lasers',
             desc: 'Light Amplification by Stimulated Emission of Radiation',
-            reqs: { high_tech: 7, supercollider: 1, locked: 1 },
+            reqs: { high_tech: 7, space: 3, supercollider: 1, locked: 1 },
             grant: ['high_tech',8],
             cost: {
-                Knowledge(){ return 160000; }
+                Knowledge(){ return 180000; },
+                Iridium(){ return 500; }
             },
             effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
             action(){
@@ -5255,7 +5277,7 @@ export const actions = {
                 if (payCosts(actions.tech.probes.cost)){
                     global.settings.space.red = true;
                     global.settings.space.hell = true;
-                    global.space['outpost'] = {
+                    global.space['spaceport'] = {
                         count: 0,
                         on: 0,
                         support: 0,
@@ -5290,9 +5312,9 @@ export const actions = {
 };
 
 export function storageMultipler(){
-    var multiplier = (global.tech['storage'] - 1) * 0.85 + 1;
+    var multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
-        multiplier *= global.tech['storage'] >= 4 ? 2 : 1.5;
+        multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
     }
     if (global.race['pack_rat']){
         multiplier *= 1.05;

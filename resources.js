@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation } from './vars.js';
+import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -61,6 +61,9 @@ export function craftingRatio(res){
     }
     if (global.tech['foundry'] >= 6 && res === 'Brick'){
         multiplier += global.city['foundry'].count * 0.02;
+    }
+    if (global.tech['foundry'] >= 7){
+        multiplier += p_on['factory'] * 0.05;
     }
     if (global.race['crafty']){
         multiplier += 0.03;
@@ -779,20 +782,20 @@ function drawModal(name,color){
 }
 
 export function crateValue(){
-    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 400 : 250;
+    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 500 : 350;
     if (global.race['pack_rat']){
-        create_value += global.tech.container >= 2 ? 25 : 10;
+        create_value += global.tech.container >= 2 ? 50 : 25;
     }
     if (global.tech['container'] && global.tech['container'] >= 4){
-        create_value += 100;
+        create_value += 250;
     }
     return spatialReasoning(create_value);
 }
 
 export function containerValue(){
-    let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 800 : 500;
+    let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 1200 : 800;
     if (global.race['pack_rat']){
-        container_value += global.tech.steel_container >= 3 ? 40 : 25;
+        container_value += global.tech.steel_container >= 3 ? 100 : 50;
     }
     return spatialReasoning(container_value);
 }

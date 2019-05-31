@@ -162,7 +162,7 @@ const spaceProjects = {
                 return `<div>+2 Moon Support</div><div>+${iridium} Max Iridium</div><div>-${oil} Oil/s, -${spaceProjects.spc_moon.moon_base.powered}kW</div>`;
             },
             support: 2,
-            powered: 5,
+            powered: 4,
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_base.cost)){
                     global.space['moon_base'].count++;
@@ -218,7 +218,7 @@ const spaceProjects = {
             },
             effect(){
                 let storage = spatialReasoning(100);
-                return `<div>-1 Moon Support</div><div>+0.02 Helium-3 Production</div><div>+${storage} Max Helium-3</div>`;
+                return `<div>-1 Moon Support</div><div>+0.15 Helium-3 Production</div><div>+${storage} Max Helium-3</div>`;
             },
             support: -1,
             powered: 1,
@@ -242,7 +242,7 @@ const spaceProjects = {
             desc(){
                 return `The red planet ${races[global.race.species].solar.red} is about 1.4AU from ${races[global.race.species].home}.`;
             },
-            support: 'outpost',
+            support: 'spaceport',
         },
         red_mission: {
             id: 'space-red_mission',
@@ -262,35 +262,115 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_red.red_mission.cost)){
+                    global.space['living_quarters'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    global.space['garage'] = { count: 0 };
+                    global.space['red_mine'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    global.space['greenhouse'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    global.space['fabrication'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    global.space['laboratory'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
             }
         },
-        outpost: {
-            id: 'space-outpost',
-            title: 'Outpost',
-            desc: '<div>Build an Outpost</div><div class="has-text-special">Requires Power & Helium-3</div>',
+        spaceport: {
+            id: 'space-spaceport',
+            title: 'Spaceport',
+            desc: '<div>Build an Spaceport</div><div class="has-text-special">Requires Power & Helium-3</div>',
             reqs: { space: 4 },
             cost: {
-                Money(){ return costMultiplier('outpost', 47500, 1.35); },
-                Iridium(){ return costMultiplier('outpost', 2500, 1.35); },
-                Mythril(){ return costMultiplier('outpost', 100, 1.35); },
-                Polymer(){ return costMultiplier('outpost', 22500, 1.35); }
+                Money(){ return costMultiplier('spaceport', 47500, 1.35); },
+                Iridium(){ return costMultiplier('spaceport', 1750, 1.35); },
+                Mythril(){ return costMultiplier('spaceport', 25, 1.35); },
+                Titanium(){ return costMultiplier('spaceport', 22500, 1.35); }
             },
             effect(){
                 let helium = 1;
-                return `<div>+3 ${races[global.race.species].solar.red} Support</div><div>-${helium} Helium-3/s, -${spaceProjects.spc_red.outpost.powered}kW</div>`;
+                return `<div>+3 ${races[global.race.species].solar.red} Support</div><div>-${helium} Helium-3/s, -${spaceProjects.spc_red.spaceport.powered}kW</div>`;
             },
-            support: 2,
+            support: 3,
             powered: 5,
             action(){
-                if (payCosts(spaceProjects.spc_red.outpost.cost)){
-                    global.space['outpost'].count++;
+                if (payCosts(spaceProjects.spc_red.spaceport.cost)){
+                    global.space['spaceport'].count++;
                     global.resource.Iridium.display = true;
                     global.resource['Helium_3'].display = true;
                     if (global.city.power >= 5){
-                        global.space['outpost'].on++;
+                        global.space['spaceport'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        living_quarters: {
+            id: 'space-living_quarters',
+            title: 'Living Quarters',
+            desc(){
+                return `<div>Provides living space for colonists</div><div class="has-text-special">Requires ${races[global.race.species].solar.red} Support</div>`;
+            },
+            reqs: { space: 4 },
+            cost: {
+                Money(){ return costMultiplier('living_quarters', 38000, 1.35); },
+                Steel(){ return costMultiplier('living_quarters', 15000, 1.35); },
+                Polymer(){ return costMultiplier('living_quarters', 9500, 1.35); }
+            },
+            effect(){
+                return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+1 Max Colonist</div><div>+1 Max Citizen</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_red.living_quarters.cost)){
+                    global.space['living_quarters'].count++;
+                    global.civic.colonist.display = true;
+                    if (global.space.spaceport.support < global.space.spaceport.s_max){
+                        global.space['living_quarters'].on++;
+                        global['resource'][races[global.race.species].name].max += 1;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        garage: {
+            id: 'space-garage',
+            title: 'Garage',
+            desc(){
+                return `<div>Provides storage for the colony</div>`;
+            },
+            reqs: { space: 4 },
+            cost: {
+                Money(){ return costMultiplier('garage', 75000, 1.35); },
+                Brick(){ return costMultiplier('garage', 8000, 1.35); },
+                Sheet_Metal(){ return costMultiplier('garage', 6500, 1.35); }
+            },
+            effect(){
+                let storage = '';
+                let multiplier = 1;
+                let titanium = +(spatialReasoning(2000) * multiplier).toFixed(0);
+                return `<div>+20 Max Containers</div><div>+${titanium} Max Titanium</div>`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_red.garage.cost)){
+                    global.space['garage'].count++;
+                    if (global.space.spaceport.support < global.space.spaceport.s_max){
+                        global.space['garage'].on++;
                     }
                     return true;
                 }

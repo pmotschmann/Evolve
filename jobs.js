@@ -88,6 +88,9 @@ export const job_desc = {
         }
         impact = +impact.toFixed(2);
         return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per second.`;
+    },
+    colonist(){
+        return `Colonists occupy space`;
     }
 }
 
@@ -106,6 +109,7 @@ export function defineJobs(){
     loadJob('professor','Professor',0.5);
     loadJob('scientist','Scientist',1);
     loadJob('banker','Banker',0.1);
+    loadJob('colonist','Colonist',1);
     loadFoundry();
 }
 

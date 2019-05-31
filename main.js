@@ -285,6 +285,7 @@ setupStats();
 
 var fed = true;
 var moon_on = {};
+var red_on = {};
 
 var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
 var mid_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
@@ -577,7 +578,8 @@ function fastLoop(){
             power_grid -= power;
         }
 
-        let p_structs = ['city:apartment','spc_red:outpost','city:coal_mine','spc_moon:moon_base','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        // Power usage
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -602,7 +604,8 @@ function fastLoop(){
             }
         }
 
-        if (p_on['moon_base'] > 0){
+        // Moon Bases
+        if (global.space['moon_base'] && global.space['moon_base'].count > 0){
             let oil_cost = 2;
             if (global.city['mass_driver']){
                 oil_cost *= 0.95 ** p_on['mass_driver'];
@@ -611,7 +614,7 @@ function fastLoop(){
             breakdown.p.consume.Oil['Moon Base'] = -(mb_consume);
             for (let i=0; i<p_on['moon_base']; i++){
                 if (!modRes('Oil', -(time_multiplier * oil_cost))){
-                    mb_consume -= (p_on['moon_base'] * oil_cost) - (i * 2);
+                    mb_consume -= (p_on['moon_base'] * oil_cost) - (i * oil_cost);
                     p_on['moon_base'] -= i;
                     break;
                 }
@@ -636,6 +639,40 @@ function fastLoop(){
                 moon_on[moon_structs[i]] = operating;
             }
             global.space.moon_base.support = used_support;
+        }
+
+        // spaceports
+        if (global.space['spaceport'] && global.space['spaceport'].count > 0){
+            let fuel_cost = 1;
+            let mb_consume = p_on['spaceport'] * fuel_cost;
+            breakdown.p.consume.Helium_3['Spaceport'] = -(mb_consume);
+            for (let i=0; i<p_on['spaceport']; i++){
+                if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
+                    mb_consume -= (p_on['spaceport'] * fuel_cost) - (i * fuel_cost);
+                    p_on['spaceport'] -= i;
+                    break;
+                }
+            }
+            global.space.spaceport.s_max = p_on['spaceport'] * actions.space.spc_red.spaceport.support;
+        }
+
+        if (global.space['spaceport']){
+            let used_support = 0;
+            let red_structs = ['living_quarters'];//,'red_mine','greenhouse','fabrication','laboratory'];
+            for (var i = 0; i < red_structs.length; i++){
+                let operating = global.space[red_structs[i]].on;
+                let id = actions.space.spc_red[red_structs[i]].id;
+                if (used_support + operating > global.space.spaceport.s_max){
+                    operating -=  (used_support + operating) - global.space.spaceport.s_max;
+                    $(`#${id} .on`).addClass('warn');
+                }
+                else {
+                    $(`#${id} .on`).removeClass('warn');
+                }
+                used_support += operating;
+                red_on[red_structs[i]] = operating;
+            }
+            global.space.spaceport.support = used_support;
         }
 
         // Detect labor anomalies
@@ -1409,7 +1446,7 @@ function fastLoop(){
 
         // Helium 3
         if (moon_on['helium_mine']){
-            let helium_base = moon_on['helium_mine'] * 0.02;
+            let helium_base = moon_on['helium_mine'] * 0.15;
             let delta = helium_base * hunger * global_multiplier;
 
             let helium_bd = {};
@@ -1580,7 +1617,8 @@ function midLoop(){
             entertainer: 0,
             professor: 0,
             scientist: 0,
-            garrison: 0
+            garrison: 0,
+            colonist: 0
         };
 
         var bd_Money = { Base: caps['Money']+'v' };
@@ -1695,6 +1733,10 @@ function midLoop(){
                 caps['Money'] += gain;
                 bd_Money['Apartment'] = gain+'v';
             }
+        }
+        if (global.space['living_quarters']){
+            caps[races[global.race.species].name] += red_on['living_quarters'];
+            lCaps['colonist'] += red_on['living_quarters'];
         }
         if (global.city['lodge']){
             caps[races[global.race.species].name] += global.city['lodge'].count;

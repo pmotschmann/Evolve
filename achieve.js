@@ -82,7 +82,7 @@ var achievements = {
     },
     extinct_orge: {
         name: `Too stupid to live`,
-        desc: `Led an orge civilization to destruction`,
+        desc: `Led an ogre civilization to destruction`,
         flair: `Darwin would be proud`
     },
     extinct_cyclops: {
