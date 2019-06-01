@@ -270,9 +270,9 @@ export const races = {
             hard_of_hearing: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
-            gas: 'Juptier',
+            red: 'Cobra',
+            hell: 'Ecdysis',
+            gas: 'Serpens',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
         }
@@ -288,8 +288,8 @@ export const races = {
             selenophobia: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Hitch',
+            hell: 'Flock',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -306,11 +306,11 @@ export const races = {
             pessimistic: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            red: 'Jurassic',
+            hell: 'Prey',
+            gas: 'Andromeda',
+            gas_moon: 'Sphere',
+            dwarf: 'Micro',
         }
     },
     dracnid: {
@@ -324,8 +324,8 @@ export const races = {
             solitary: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Onyx',
+            hell: 'Slayer',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -342,8 +342,8 @@ export const races = {
             pyrophobia: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Entmoot',
+            hell: 'Orthanc',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -360,8 +360,8 @@ export const races = {
             skittish: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Corel',
+            hell: 'Ruin',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -378,8 +378,8 @@ export const races = {
             parasite: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Ophio',
+            hell: 'Cymbo',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -396,8 +396,8 @@ export const races = {
             nyctophilia: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Bloom',
+            hell: 'Polypore',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -414,8 +414,8 @@ export const races = {
             malnutrition: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Nineveh',
+            hell: 'Molt',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -432,8 +432,8 @@ export const races = {
             atrophy: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Pincer',
+            hell: 'Boil',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -450,8 +450,8 @@ export const races = {
             tunneler: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Hill',
+            hell: 'Fluva',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
