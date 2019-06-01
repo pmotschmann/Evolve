@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, moon_on } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
@@ -1692,6 +1692,30 @@ export const actions = {
                 return false;
             }
         },
+        tourist_center: {
+            id: 'city-tourist_center',
+            title: 'Tourist Center',
+            desc: 'Generates tourism revenue',
+            reqs: { monument: 2 },
+            cost: { 
+                Money(){ return costMultiplier('tourist_center', 100000, 1.36); },
+                Stone(){ return costMultiplier('tourist_center', 25000, 1.36); },
+                Furs(){ return costMultiplier('tourist_center', 7500, 1.36); },
+                Plywood(){ return costMultiplier('tourist_center', 5000, 1.36); },
+            },
+            effect(){
+                return `<div>-50 Food per Tourist Center</div><div>+$1 per Amphitheatre</div><div>+$5 per Casino</div><div>+$2 per Monument</div>`; 
+            },
+            powered: 1,
+            action(){
+                if (payCosts(actions.city.tourist_center.cost)){
+                    global.city['tourist_center'].count++;
+                    global.city['tourist_center'].on++;
+                    return true;
+                }
+                return false;
+            }
+        },
         amphitheatre: {
             id: 'city-amphitheatre',
             title: 'Amphitheatre',
@@ -1790,13 +1814,18 @@ export const actions = {
                 Stone(){ return costMultiplier('university', 750, 1.36) - 350; }
             },
             effect(){
+                let multiplier = 1;
                 let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                 if (global.tech['science'] >= 4){
-                    gain *= 1 + (global.city['library'].count * 0.02);
+                    multiplier += (global.city['library'].count * 0.02);
+                }
+                if (global.space['observatory'] && global.space.observatory.count > 0){
+                    multiplier += (moon_on['observatory'] * 0.05);
                 }
                 if (global.race['hard_of_hearing']){
-                    gain *= 0.95;
+                    multiplier *= 0.95;
                 }
+                gain *= multiplier;
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
@@ -3507,6 +3536,24 @@ export const actions = {
                 return false;
             }
         },
+        tourism: {
+            id: 'tech-tourism',
+            title: 'Tourism',
+            desc: 'Tourism',
+            reqs: { monuments: 4 },
+            grant: ['monument',2],
+            cost: {
+                Knowledge(){ return 150000; }
+            },
+            effect: `Promote tourism of your city.`,
+            action(){
+                if (payCosts(actions.tech.tourism.cost)){
+                    global.city['tourist_center'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         science: {
             id: 'tech-science',
             title: 'Scientific Method',
@@ -3640,6 +3687,27 @@ export const actions = {
             effect: 'The internet is a revolution which massively changes how information is exchanged. Increases the base value of Universities and Libraries by 40%.',
             action(){
                 if (payCosts(actions.tech.internet.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        observatory: {
+            id: 'tech-observatory',
+            title: 'Space Observatory',
+            desc: 'Space Observatory',
+            reqs: { science: 8, space_explore: 2 },
+            grant: ['science',9],
+            cost: {
+                Knowledge(){ return 148000; }
+            },
+            effect: 'Create plans for a moon based observatory, the lack of atmosphere makes this an ideal location for observing the stars.',
+            action(){
+                if (payCosts(actions.tech.observatory.cost)){
+                    global.space['observatory'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;

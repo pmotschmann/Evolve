@@ -24,6 +24,7 @@ export var breakdown = {
 };
 export var p_on = {};
 export var red_on = {};
+export var moon_on = {};
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;

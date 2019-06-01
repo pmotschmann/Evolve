@@ -158,10 +158,10 @@ const spaceProjects = {
             desc: '<div>Build a moon base</div><div class="has-text-special">Requires Power & Oil</div>',
             reqs: { space: 3 },
             cost: {
-                Money(){ return costMultiplier('moon_base', 22000, 1.35); },
-                Cement(){ return costMultiplier('moon_base', 18000, 1.35); },
-                Alloy(){ return costMultiplier('moon_base', 7800, 1.35); },
-                Polymer(){ return costMultiplier('moon_base', 12500, 1.35); }
+                Money(){ return costMultiplier('moon_base', 22000, 1.32); },
+                Cement(){ return costMultiplier('moon_base', 18000, 1.32); },
+                Alloy(){ return costMultiplier('moon_base', 7800, 1.32); },
+                Polymer(){ return costMultiplier('moon_base', 12500, 1.32); }
             },
             effect(){
                 let iridium = spatialReasoning(500);
@@ -234,6 +234,34 @@ const spaceProjects = {
                     global.space['helium_mine'].count++;
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['helium_mine'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        observatory: {
+            id: 'space-observatory',
+            title: 'Observatory',
+            desc: '<div>Moon based Observatory</div><div class="has-text-special">Requires Moon Support</div>',
+            reqs: { science: 9 },
+            cost: {
+                Money(){ return costMultiplier('observatory', 200000, 1.35); },
+                Knowledge(){ return costMultiplier('observatory', 72000, 1.35); },
+                Stone(){ return costMultiplier('observatory', 125000, 1.35); },
+                Iron(){ return costMultiplier('observatory', 65000, 1.35); },
+                Iridium(){ return costMultiplier('observatory', 1250, 1.35); }
+            },
+            effect(){
+                return `<div>-1 Moon Support</div><div>+5000 Max Knowledge</div><div>+5% University Max Knowledge</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_moon.observatory.cost)){
+                    global.space['observatory'].count++;
+                    if (global.space.moon_base.support < global.space.moon_base.s_max){
+                        global.space['observatory'].on++;
                     }
                     return true;
                 }
@@ -406,7 +434,7 @@ const spaceProjects = {
                 Iron(){ return costMultiplier('red_mine', 33000, 1.35); }
             },
             effect(){
-                return `<div>+0.45 Copper per colonist</div><div>+0.02 Titanium per colonist</div>`;
+                return `<div>+0.25 Copper per colonist</div><div>+0.02 Titanium per colonist</div>`;
             },
             support: -1,
             powered: 1,

@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, red_on } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on } from './vars.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
@@ -284,7 +284,6 @@ else {
 setupStats();
 
 var fed = true;
-var moon_on = {};
 
 var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
 var mid_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
@@ -643,19 +642,24 @@ function fastLoop(){
 
         if (global.space['moon_base']){
             let used_support = 0;
-            let moon_structs = ['helium_mine','iridium_mine'];
+            let moon_structs = ['helium_mine','iridium_mine','observatory'];
             for (var i = 0; i < moon_structs.length; i++){
-                let operating = global.space[moon_structs[i]].on;
-                let id = actions.space.spc_moon[moon_structs[i]].id;
-                if (used_support + operating > global.space.moon_base.s_max){
-                    operating -=  (used_support + operating) - global.space.moon_base.s_max;
-                    $(`#${id} .on`).addClass('warn');
+                if (global.space[moon_structs[i]]){
+                    let operating = global.space[moon_structs[i]].on;
+                    let id = actions.space.spc_moon[moon_structs[i]].id;
+                    if (used_support + operating > global.space.moon_base.s_max){
+                        operating -=  (used_support + operating) - global.space.moon_base.s_max;
+                        $(`#${id} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${id} .on`).removeClass('warn');
+                    }
+                    used_support += operating;
+                    moon_on[moon_structs[i]] = operating;
                 }
                 else {
-                    $(`#${id} .on`).removeClass('warn');
+                    moon_on[moon_structs[i]] = 0;
                 }
-                used_support += operating;
-                moon_on[moon_structs[i]] = operating;
             }
             global.space.moon_base.support = used_support;
         }
@@ -679,17 +683,22 @@ function fastLoop(){
             let used_support = 0;
             let red_structs = ['living_quarters','fabrication','red_mine'];//'greenhouse','laboratory';
             for (var i = 0; i < red_structs.length; i++){
-                let operating = global.space[red_structs[i]].on;
-                let id = actions.space.spc_red[red_structs[i]].id;
-                if (used_support + operating > global.space.spaceport.s_max){
-                    operating -=  (used_support + operating) - global.space.spaceport.s_max;
-                    $(`#${id} .on`).addClass('warn');
+                if (global.space[red_structs[i]]){
+                    let operating = global.space[red_structs[i]].on;
+                    let id = actions.space.spc_red[red_structs[i]].id;
+                    if (used_support + operating > global.space.spaceport.s_max){
+                        operating -=  (used_support + operating) - global.space.spaceport.s_max;
+                        $(`#${id} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${id} .on`).removeClass('warn');
+                    }
+                    used_support += operating;
+                    red_on[red_structs[i]] = operating;
                 }
                 else {
-                    $(`#${id} .on`).removeClass('warn');
+                    red_on[red_structs[i]] = 0;
                 }
-                used_support += operating;
-                red_on[red_structs[i]] = operating;
             }
             global.space.spaceport.support = used_support;
         }
@@ -762,7 +771,7 @@ function fastLoop(){
 
         // Consumption
         fed = true;
-        if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm']){
+        if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm'] || global.city['tourist_center']){
             let food_bd = {};
             let food_base = 0;
             if (global.race['carnivore']){
@@ -850,7 +859,13 @@ function fastLoop(){
             }
             breakdown.p.consume.Food[races[global.race.species].name] = -(consume);
 
-            let delta = generated - consume;
+            let tourism = 0;
+            if (global.city['tourist_center']){
+                tourism = global.city['tourist_center'].on * 50;
+                breakdown.p.consume.Food['Tourism'] = -(tourism);
+            }
+
+            let delta = generated - consume - tourism;
 
             food_bd['Soldiers'] = hunting + 'v';
             breakdown.p['Food'] = food_bd;
@@ -1391,7 +1406,7 @@ function fastLoop(){
 
         // Mars Mining
         if (red_on['red_mine'] && red_on['red_mine'] > 0){
-            let copper_base = red_on['red_mine'] * 0.45 * global.civic.colonist.workers;
+            let copper_base = red_on['red_mine'] * 0.25 * global.civic.colonist.workers;
             copper_bd[`${races[global.race.species].solar.hell}_Mining`] = (copper_base) + 'v';
             modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger);
 
@@ -1519,6 +1534,21 @@ function fastLoop(){
             money_bd['Temple'] = ((temple_mult - 1) * 100) + '%';
             money_bd['Factory'] = FactoryMoney + 'v';
             modRes('Money', +(delta * time_multiplier).toFixed(2));
+        }
+
+        if (global.city['tourist_center']){
+            let tourism = 0;
+            if (global.city['amphitheatre']){
+                tourism += global.city['tourist_center'].on * global.city['amphitheatre'].count;
+            }
+            if (global.city['casino']){
+                tourism += global.city['tourist_center'].on * global.city['casino'].count * 5;
+            }
+            if (global.tech['monuments']){
+                tourism += global.city['tourist_center'].on * global.tech['monuments'] * 2;
+            }
+            money_bd['Tourism'] = tourism + 'v';
+            modRes('Money', +(tourism * time_multiplier * global_multiplier * hunger).toFixed(2));
         }
 
         breakdown.p['Money'] = money_bd;
@@ -1893,6 +1923,9 @@ function midLoop(){
             if (global.tech['science'] >= 4){
                 multiplier += global.city['library'].count * 0.02;
             }
+            if (global.space['observatory'] && global.space.observatory.count > 0){
+                multiplier += (moon_on['observatory'] * 0.05);
+            }
             if (global.race['hard_of_hearing']){
                 multiplier *= 0.95;
             }
@@ -1942,6 +1975,11 @@ function midLoop(){
             let gain = (global.space.satellite.count * 500);
             caps['Knowledge'] += gain;
             bd_Knowledge['Satellite'] = gain+'v';
+        }
+        if (global.space['observatory'] && global.space.observatory.count > 0){
+            let gain = (moon_on['observatory'] * 5000);
+            caps['Knowledge'] += gain;
+            bd_Knowledge['Observatory'] = gain+'v';
         }
         if (global.city['biolab']){
             caps['Knowledge'] += (p_on['biolab'] * 3000);
