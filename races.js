@@ -144,8 +144,8 @@ export const races = {
             merchant: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Bling',
+            hell: 'Aurum',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -162,8 +162,8 @@ export const races = {
             puny: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Shire',
+            hell: 'Boot',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -216,8 +216,8 @@ export const races = {
             gluttony: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Mojo',
+            hell: 'Sulfide',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -234,8 +234,8 @@ export const races = {
             armored: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Rock',
+            hell: 'Shade',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
@@ -252,8 +252,8 @@ export const races = {
             chameleon: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
+            red: 'Setae',
+            hell: 'Claim',
             gas: 'Juptier',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',

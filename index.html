@@ -54,6 +54,7 @@
                     <b-tabs v-model="civTabs" :animated="animated">
                         <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
                         <b-tab-item id="city" :visible="showCity" label="Village"></b-tab-item>
+                        <b-tab-item id="space" :visible="showSpace" label="Space"></b-tab-item>
                         <b-tab-item id="civic" :visible="showCivic" label="Civics" class="columns"></b-tab-item>
                         <b-tab-item id="industry" :visible="showIndustry" label="Industry" class="columns"></b-tab-item>
                         <b-tab-item id="research" :visible="showResearch" label="Research">
@@ -72,7 +73,6 @@
                                 </b-tabs>
                             </div>
                         </b-tab-item>
-                        <b-tab-item id="space" :visible="showSpace" label="Space"></b-tab-item>
                         <b-tab-item id="achieve" :visible="showAchieve" label="Stats"></b-tab-item>
                         <b-tab-item id="settings" label="Settings">
                             <div class="theme">

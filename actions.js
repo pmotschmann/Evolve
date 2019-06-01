@@ -970,7 +970,7 @@ export const actions = {
         farm: {
             id: 'city-farm',
             title: 'Farm',
-            desc: 'Increases farmer capacity',
+            desc: 'Produces food',
             reqs: { agriculture: 1 },
             cost: { 
                 Money(){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', 50, 1.32);} else { return 0; } },
@@ -1643,6 +1643,10 @@ export const actions = {
             effect() { 
                 let oil = spatialReasoning(1000);
                 let effect = `<div>+${oil} Max Oil.</div>`;
+                if (global.resource['Helium_3'].display){
+                    let val = spatialReasoning(400);
+                    effect = effect + `<div>+${val} Max Helium-3.</div>`;
+                }
                 if (global.tech['uranium'] >= 2){
                     let val = spatialReasoning(250);
                     effect = effect + `<div>+${val} Max Uranium.</div>`;
@@ -2039,13 +2043,13 @@ export const actions = {
             desc: '<div>Eletromagnetic launch system</div><div class="has-text-special">Requires Power</div>',
             reqs: { oil: 7 },
             cost: { 
-                Money(){ return costMultiplier('mass_driver', 450000, 1.32); },
+                Money(){ return costMultiplier('mass_driver', 375000, 1.32); },
                 Copper(){ return costMultiplier('mass_driver', 33000, 1.32); },
                 Iron(){ return costMultiplier('mass_driver', 42500, 1.32); },
                 Iridium(){ return costMultiplier('mass_driver', 3500, 1.32); }
             },
             effect(){
-                return `-5% space oil costs. -${actions.city.mass_driver.powered}kW.`;
+                return `-5% space fuel costs. -${actions.city.mass_driver.powered}kW.`;
             },
             powered: 4,
             action(){

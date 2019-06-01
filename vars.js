@@ -23,6 +23,7 @@ export var breakdown = {
     p: {}
 };
 export var p_on = {};
+export var red_on = {};
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;

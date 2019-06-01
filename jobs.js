@@ -1,5 +1,5 @@
 import { global, vues, keyMultiplier, poppers } from './vars.js';
-import { racialTrait } from './races.js';
+import { racialTrait, races } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
@@ -90,7 +90,7 @@ export const job_desc = {
         return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per second.`;
     },
     colonist(){
-        return `Colonists occupy space`;
+        return `Colonists work hard to keep your ${races[global.race.species].solar.red} colony running smoothly and enhance various aspects of the colony.`;
     }
 }
 

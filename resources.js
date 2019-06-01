@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on } from './vars.js';
+import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -64,6 +64,9 @@ export function craftingRatio(res){
     }
     if (global.tech['foundry'] >= 7){
         multiplier += p_on['factory'] * 0.05;
+    }
+    if (global.space['fabrication']){
+        multiplier += red_on['fabrication'] * global.civic.colonist.workers * 0.02;
     }
     if (global.race['crafty']){
         multiplier += 0.03;
