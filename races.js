@@ -92,9 +92,9 @@ export const races = {
         solar: {
             red: 'Pack',
             hell: 'Howl',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Fang',
+            gas: 'Rayet',
+            gas_moon: 'Fang',
+            dwarf: 'Runt',
         }
     },
     centaur: {
@@ -110,8 +110,8 @@ export const races = {
         solar: {
             red: 'Chiron',
             hell: 'Hydra',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
+            gas: 'Barnard',
+            gas_moon: 'Hay',
             dwarf: 'Pony',
         }
     },
@@ -128,9 +128,9 @@ export const races = {
         solar: {
             red: 'Wick',
             hell: 'Melt',
-            gas: 'Jupiter',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Horde',
+            gas_moon: 'Task',
+            dwarf: 'Satchel',
         }
     },
     goblin: {
@@ -144,11 +144,11 @@ export const races = {
             merchant: 1
         },
         solar: {
-            red: 'Bling',
-            hell: 'Aurum',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            red: 'Cixi',
+            hell: 'Sixtus',
+            gas: 'Ponzi',
+            gas_moon: 'Tweed',
+            dwarf: 'Marcos',
         }
     },
     gnome: {
@@ -164,9 +164,9 @@ export const races = {
         solar: {
             red: 'Shire',
             hell: 'Boot',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Dwarf',
+            gas_moon: 'Trogg',
+            dwarf: 'Napoleon',
         }
     },
     orge: {
@@ -182,9 +182,9 @@ export const races = {
         solar: {
             red: 'Latva',
             hell: 'Maw',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Tanoth',
+            gas_moon: 'Goria',
+            dwarf: 'Grok',
         }
     },
     cyclops: {
@@ -200,9 +200,9 @@ export const races = {
         solar: {
             red: 'Hesiod',
             hell: 'Phemus',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Balor',
+            gas_moon: 'Jian',
+            dwarf: 'Sokhor',
         }
     },
     troll: {
@@ -218,9 +218,9 @@ export const races = {
         solar: {
             red: 'Mojo',
             hell: 'Sulfide',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Voodoo',
+            gas_moon: 'Hex',
+            dwarf: 'Shadow',
         }
     },
     tortoisan: {
@@ -236,9 +236,9 @@ export const races = {
         solar: {
             red: 'Rock',
             hell: 'Shade',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Ooze',
+            gas_moon: 'Shred',
+            dwarf: 'Shell',
         }
     },
     gecko: {
@@ -254,9 +254,9 @@ export const races = {
         solar: {
             red: 'Setae',
             hell: 'Claim',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Godzilla',
+            gas_moon: 'Gekkota',
+            dwarf: 'Ackie',
         }
     },
     slitheryn: {
@@ -273,8 +273,8 @@ export const races = {
             red: 'Cobra',
             hell: 'Ecdysis',
             gas: 'Serpens',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas_moon: 'Python',
+            dwarf: 'Boa',
         }
     },
     arraak: {
@@ -290,9 +290,9 @@ export const races = {
         solar: {
             red: 'Hitch',
             hell: 'Flock',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Down',
+            gas_moon: 'Peck',
+            dwarf: 'Chick',
         }
     },
     pterodacti: {
@@ -326,9 +326,9 @@ export const races = {
         solar: {
             red: 'Onyx',
             hell: 'Slayer',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Ancalagon',
+            gas_moon: 'Wyrm',
+            dwarf: 'Drake',
         }
     },
     entish: {
@@ -344,9 +344,9 @@ export const races = {
         solar: {
             red: 'Entmoot',
             hell: 'Orthanc',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Yavanna',
+            gas_moon: 'Onodrim',
+            dwarf: 'Branch',
         }
     },
     cacti: {
@@ -362,9 +362,9 @@ export const races = {
         solar: {
             red: 'Corel',
             hell: 'Ruin',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Saguaro',
+            gas_moon: 'Cholla',
+            dwarf: 'Thorn',
         }
     },
     sporgar: {
@@ -380,9 +380,9 @@ export const races = {
         solar: {
             red: 'Ophio',
             hell: 'Cymbo',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Tyrant',
+            gas_moon: 'Nemesis',
+            dwarf: 'Whesker',
         }
     },
     shroomi: {
@@ -398,9 +398,9 @@ export const races = {
         solar: {
             red: 'Bloom',
             hell: 'Polypore',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Psilocybin',
+            gas_moon: 'Skullcap',
+            dwarf: 'Crimini',
         }
     },
     mantis: {
@@ -416,9 +416,9 @@ export const races = {
         solar: {
             red: 'Nineveh',
             hell: 'Molt',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Devil',
+            gas_moon: 'Ghost',
+            dwarf: 'Empusa',
         }
     },
     scorpid: {
@@ -434,9 +434,9 @@ export const races = {
         solar: {
             red: 'Pincer',
             hell: 'Boil',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Emperor',
+            gas_moon: 'Utescorpio',
+            dwarf: 'Leiurus',
         }
     },
     antid: {
@@ -452,9 +452,9 @@ export const races = {
         solar: {
             red: 'Hill',
             hell: 'Fluva',
-            gas: 'Juptier',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            gas: 'Thorax',
+            gas_moon: 'Pharaoh',
+            dwarf: 'Odorous',
         }
     }
 };

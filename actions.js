@@ -4811,7 +4811,11 @@ export const actions = {
             },
             effect: 'New more powerful weaponry for your army.',
             action(){
-                if (payCosts(actions.tech.bunk_beds.cost)){
+                if (payCosts(actions.tech.rail_guns.cost)){
+                    var tech = actions.tech.rail_guns.grant[0];
+                    global.tech[tech] = actions.tech.rail_guns.grant[1];
+                    global.civic['garrison'].workers--;
+                    global.civic['garrison'].workers++;
                     return true;
                 }
                 return false;
