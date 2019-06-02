@@ -593,6 +593,16 @@ function fastLoop(){
             power_grid -= power;
         }
 
+        if (global.space['swarm_satellite'] && global.space['swarm_control']){
+            let active = global.space.swarm_satellite.count;
+            if (active > global.space.swarm_control.s_max){
+                active = global.space.swarm_control.s_max;
+            }
+            global.space.swarm_control.support = active;
+            max_power -= active;
+            power_grid += active;
+        }
+
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
             let power = global.city.mill.on * actions.city.mill.powered;
             max_power += power;
@@ -2185,6 +2195,10 @@ function midLoop(){
                 }
             });
         });
+
+        if (global.space['swarm_control']){
+            global.space.swarm_control.s_max = global.space.swarm_control.count * 4;
+        }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on){
             global.arpa.sequence.time -= global.city.biolab.on;

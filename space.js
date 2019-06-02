@@ -130,7 +130,7 @@ const spaceProjects = {
         moon_mission: {
             id: 'space-moon_mission',
             title: 'Moon Launch',
-            desc: 'Launch the Moon Mission',
+            desc: 'Launch the Moon mission',
             reqs: { space: 2, space_explore: 2 },
             grant: ['space',3],
             cost: { 
@@ -285,7 +285,7 @@ const spaceProjects = {
                 return `${races[global.race.species].solar.red} Mission`;
             },
             desc(){
-                return `Launch the ${races[global.race.species].solar.red} Mission`;
+                return `Launch the ${races[global.race.species].solar.red} mission`;
             },
             reqs: { space: 3, space_explore: 3 },
             grant: ['space',4],
@@ -494,7 +494,7 @@ const spaceProjects = {
                 return `${races[global.race.species].solar.hell} Mission`;
             },
             desc(){
-                return `Launch the ${races[global.race.species].solar.hell} Mission`;
+                return `Launch the ${races[global.race.species].solar.hell} mission`;
             },
             reqs: { space: 3, space_explore: 3 },
             grant: ['hell',1],
@@ -541,6 +541,125 @@ const spaceProjects = {
                 return false;
             }
         },
+    },
+    spc_sun: {
+        info: {
+            name(){
+                return `Sun`;
+            },
+            desc(){
+                return `The star at the heart of the ${races[global.race.species].home} system.`;
+            },
+            support: 'swarm_control',
+        },
+        sun_mission: {
+            id: 'space-sun_mission',
+            title(){
+                return `Sun Mission`;
+            },
+            desc(){
+                return `Launch the sun mission`;
+            },
+            reqs: { space_explore: 4 },
+            grant: ['solar',1],
+            cost: { 
+                Helium_3(){ return +fuel_adjust(15000).toFixed(0); }
+            },
+            effect(){
+                return `Launch a mission to study the sun.`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_sun.sun_mission.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        swarm_control: {
+            id: 'space-swarm_control',
+            title: 'Control Station',
+            desc(){
+                return `<div>Swarm Control Station</div>`;
+            },
+            reqs: { solar: 3 },
+            cost: {
+                Money(){ return costMultiplier('swarm_control', 100000, 1.3); },
+                Alloy(){ return costMultiplier('swarm_control', 7500, 1.3); },
+                Helium_3(){ return costMultiplier('swarm_control', 2000, 1.3); },
+                Mythril(){ return costMultiplier('swarm_control', 250, 1.3); }
+            },
+            effect(){
+                return `Controls upto 4 Swarm Satellites and transmits their power back to civilization.`;
+            },
+            support: 6,
+            action(){
+                if (payCosts(spaceProjects.spc_sun.swarm_control.cost)){
+                    global.space['swarm_control'].count++;
+                    global.space['swarm_control'].s_max += 4;
+                    return true;
+                }
+                return false;
+            }
+        },
+        swarm_satellite: {
+            id: 'space-swarm_satellite',
+            title: 'Swarm Satellite',
+            desc(){
+                return `<div>Solar Swarm Satellite<div><div class="has-text-special">Requires Control Station</div>`;
+            },
+            reqs: { solar: 3 },
+            cost: {
+                Money(){ return costMultiplier('swarm_satellite', 50000, 1.2); },
+                Copper(){ return costMultiplier('swarm_satellite', 25000, 1.2); },
+                Iridium(){ return costMultiplier('swarm_satellite', 1500, 1.2); },
+                Helium_3(){ return costMultiplier('swarm_control', 500, 1.2); }
+            },
+            effect(){
+                return `+1kW, -1 Swarm Support`;
+            },
+            support: -1,
+            action(){
+                if (payCosts(spaceProjects.spc_sun.swarm_satellite.cost)){
+                    global.space['swarm_satellite'].count++;
+                    global.space['swarm_control'].support++;
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_gas: {
+        info: {
+            name(){
+                return races[global.race.species].solar.gas;
+            },
+            desc(){
+                return `The planet ${races[global.race.species].solar.gas} is a gas giant located about 5.2AU from the sun. It is the largest planet in the ${races[global.race.species].home} system.`;
+            },
+        },
+        gas_mission: {
+            id: 'space-gas_mission',
+            title(){
+                return `${races[global.race.species].solar.gas} Mission`;
+            },
+            desc(){
+                return `Launch the ${races[global.race.species].solar.gas} mission`;
+            },
+            reqs: { space: 4, space_explore: 4, locked: 1 },
+            grant: ['space',5],
+            cost: { 
+                Helium_3(){ return +fuel_adjust(12500).toFixed(0); }
+            },
+            effect(){
+                return `Launch a mission to study ${races[global.race.species].solar.gas}.`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_gas.gas_mission.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     }
 };
 
@@ -576,7 +695,7 @@ export function space(){
             
             if (spaceProjects[region].info['support']){
                 let support = spaceProjects[region].info['support'];
-                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><span class="name has-text-warning">${name}</span> <span>{{ support }}/{{ s_max }}</span></div></div>`);
+                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><span class="name has-text-warning">${name}</span> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
                 vues[`sr${region}`] = new Vue({
                     data: global.space[support]
                 });

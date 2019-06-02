@@ -1005,10 +1005,10 @@ export const actions = {
             desc(){ 
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
-                    return `+${bonus}% Farmer efficiency OR +1kW`;
+                    return `+${bonus}% Farming efficiency OR +1kW`;
                 }
                 else {
-                    return `Increases farmer efficiency by ${bonus}%`;
+                    return `Increases farming efficiency by ${bonus}%`;
                 }
             },
             reqs: { agriculture: 4 },
@@ -5355,6 +5355,61 @@ export const actions = {
                         support: 0,
                         s_max: 0
                     };
+                    return true;
+                }
+                return false;
+            }
+        },
+        starcharts: {
+            id: 'tech-starcharts',
+            title: 'Star Charts',
+            desc: 'Star Charts',
+            reqs: { space_explore: 3, science: 9 },
+            grant: ['space_explore',4],
+            cost: {
+                Knowledge(){ return 185000; }
+            },
+            effect: 'Map the planets orbits to determine the best routes for visiting further away destinations.',
+            action(){
+                if (payCosts(actions.tech.starcharts.cost)){
+                    global.settings.space.gas = true;
+                    global.settings.space.sun = true;
+                    global.space['swarm_control'] = { count: 0, support: 0, s_max: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        dyson_sphere: {
+            id: 'tech-dyson_sphere',
+            title: 'Dyson Sphere',
+            desc: 'Dyson Sphere',
+            reqs: { solar: 1 },
+            grant: ['solar',2],
+            cost: {
+                Knowledge(){ return 195000; }
+            },
+            effect: 'Science fiction has popularized the idea of a Dyson Sphere, try to figure out how to make one.',
+            action(){
+                if (payCosts(actions.tech.dyson_sphere.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        dyson_swarm: {
+            id: 'tech-dyson_swarm',
+            title: 'Dyson Swarm',
+            desc: 'Dyson Swarm',
+            reqs: { solar: 2 },
+            grant: ['solar',3],
+            cost: {
+                Knowledge(){ return 210000; }
+            },
+            effect: 'A Dyson Sphere turns out to be completely impractical, if not impossible. Instead design a network of solar satellites known as a Dyson Swarm.',
+            action(){
+                if (payCosts(actions.tech.dyson_swarm.cost)){
+                    global.space['swarm_satellite'] = { count: 0 };
                     return true;
                 }
                 return false;
