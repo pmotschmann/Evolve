@@ -343,8 +343,6 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_red.spaceport.cost)){
                     global.space['spaceport'].count++;
-                    global.resource.Iridium.display = true;
-                    global.resource['Helium_3'].display = true;
                     if (global.city.power >= 5){
                         global.space['spaceport'].on++;
                     }
@@ -528,7 +526,7 @@ const spaceProjects = {
                 Polymer(){ return costMultiplier('geothermal', 9500, 1.35); }
             },
             effect(){
-                let helium = +(fuel_adjust(0.75)).toFixed(2);
+                let helium = +(fuel_adjust(0.5)).toFixed(2);
                 return `+8kW, -${helium} Helium-3/s`;
             },
             powered: -8,
@@ -584,6 +582,7 @@ const spaceProjects = {
             reqs: { solar: 3 },
             cost: {
                 Money(){ return costMultiplier('swarm_control', 100000, 1.3); },
+                Knowledge(){ return costMultiplier('swarm_control', 60000, 1.3); },
                 Alloy(){ return costMultiplier('swarm_control', 7500, 1.3); },
                 Helium_3(){ return costMultiplier('swarm_control', 2000, 1.3); },
                 Mythril(){ return costMultiplier('swarm_control', 250, 1.3); }

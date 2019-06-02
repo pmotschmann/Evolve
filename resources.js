@@ -790,7 +790,7 @@ export function crateValue(){
         create_value += global.tech.container >= 2 ? 50 : 25;
     }
     if (global.tech['container'] && global.tech['container'] >= 4){
-        create_value += 250;
+        create_value += global.tech['container'] >= 5 ? 500 : 250;
     }
     return spatialReasoning(create_value);
 }
@@ -799,6 +799,9 @@ export function containerValue(){
     let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 1200 : 800;
     if (global.race['pack_rat']){
         container_value += global.tech.steel_container >= 3 ? 100 : 50;
+    }
+    if (global.tech['steel_container'] && global.tech['steel_container'] >= 4){
+        container_value += 400;
     }
     return spatialReasoning(container_value);
 }

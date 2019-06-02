@@ -709,7 +709,8 @@ export function armyRating(val,type){
         wounded = val - (global.civic.garrison.workers - global.civic.garrison.wounded);
     }
 
-    let army = global.tech['military'] ? (val - (wounded / 2)) * global.tech.military : (val - (wounded / 2));
+    let weapon_tech = global.tech['military'] && global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military;
+    let army = global.tech['military'] ? (val - (wounded / 2)) * weapon_tech : (val - (wounded / 2));
     if (type === 'army'){
         if (global.race['puny']){
             army = Math.floor(army * 0.9);

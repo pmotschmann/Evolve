@@ -578,7 +578,7 @@ function fastLoop(){
         
         if (global.space['geothermal'] && global.space.geothermal.on > 0){
             let output = actions.space.spc_hell.geothermal.powered;
-            let increment = fuel_adjust(0.75);
+            let increment = fuel_adjust(0.5);
             let power = global.space.geothermal.on * output;
             let consume = (global.space.geothermal.on * increment);
             while (consume * time_multiplier > global.resource['Helium_3'].amount && consume > 0){
@@ -1472,7 +1472,10 @@ function fastLoop(){
         // Oil
         if (global.city['oil_well']){
             let oil_base = global.tech['oil'] >= 4 ? 0.48 : 0.4;
-            if (global.tech['oil'] >= 5){
+            if (global.tech['oil'] >= 7){
+                oil_base *= 2;
+            }
+            else if (global.tech['oil'] >= 5){
                 oil_base *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
             }
             oil_base *= global.city.oil_well.count;
@@ -1793,7 +1796,7 @@ function midLoop(){
             caps[races[global.race.species].name] += global.city['cottage'].count * 2;
             bd_Citizen['Cottage'] = (global.city['cottage'].count * 2) + 'v';
             if (global.tech['home_safe']){
-                let gain = (global.city['cottage'].count * spatialReasoning(1000));
+                let gain = (global.city['cottage'].count * spatialReasoning(global.tech.home_safe > 1 ? 2000 : 1000));
                 caps['Money'] += gain;
                 bd_Money['Cottage'] = gain+'v';
             }
@@ -1802,7 +1805,7 @@ function midLoop(){
             caps[races[global.race.species].name] += global.city['apartment'].on * 5;
             bd_Citizen['Apartment'] = (global.city['apartment'].on * 5)+'v';
             if (global.tech['home_safe']){
-                let gain = (global.city['apartment'].on * spatialReasoning(2000));
+                let gain = (global.city['apartment'].on * spatialReasoning(global.tech.home_safe > 1 ? 5000 : 2000));
                 caps['Money'] += gain;
                 bd_Money['Apartment'] = gain+'v';
             }
@@ -1997,7 +2000,10 @@ function midLoop(){
         }
         if (global.city['bank']){
             let vault = 1800;
-            if (global.tech['banking'] >= 5){
+            if (global.tech['vault'] >= 1){
+                vault = 15000;
+            }
+            else if (global.tech['banking'] >= 5){
                 vault = 9000;
             }
             else if (global.tech['banking'] >= 3){
@@ -2023,7 +2029,7 @@ function midLoop(){
             bd_Money['Bank'] = gain+'v';
         }
         if (global.city['casino']){
-            let vault = global.city['casino'].count * spatialReasoning(40000);
+            let vault = global.city['casino'].count * spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
             caps['Money'] += vault;
             bd_Money['Casino'] = vault+'v';
         }

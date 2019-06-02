@@ -872,7 +872,7 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(1000);
+                    let safe = spatialReasoning(global.tech.home_safe > 1 ? 2000 : 1000);
                     return `<div>+2 Max Citizens</div><div>+${safe} Max Money</div>`;
                 }
                 else {
@@ -904,7 +904,7 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(2000);
+                    let safe = spatialReasoning(global.tech.home_safe > 1 ? 5000 : 2000);
                     return `<div>+5 Max Citizens. -1kW.</div><div>+${safe} Max Money</div>`;
                 }
                 else {
@@ -1252,7 +1252,10 @@ export const actions = {
             },
             effect(){ 
                 let vault = 1800;
-                if (global.tech['banking'] >= 5){
+                if (global.tech['vault'] >= 1){
+                    vault = 15000;
+                } 
+                else if (global.tech['banking'] >= 5){
                     vault = 9000;
                 }
                 else if (global.tech['banking'] >= 3){
@@ -1613,9 +1616,13 @@ export const actions = {
             },
             effect() { 
                 let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;
-                if (global.tech['oil'] >= 5){
+                if (global.tech['oil'] >= 7){
+                    oil *= 2;
+                }
+                else if (global.tech['oil'] >= 5){
                     oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
                 }
+                oil = +oil.toFixed(2);
                 let oc = spatialReasoning(500);
                 return `+${oil} oil per second. +${oc} Max Oil.`;
             },
@@ -1750,7 +1757,7 @@ export const actions = {
                 Brick(){ return costMultiplier('casino', 6000, 1.35); }
             },
             effect(){
-                let money = spatialReasoning(40000);
+                let money = spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
                 return `<div>+${money} Max Money</div><div>+1 Max Entertainer</div><div>+1% Max Morale</div>`;
             },
             action(){
@@ -2070,7 +2077,7 @@ export const actions = {
             id: 'city-mass_driver',
             title: 'Mass Driver',
             desc: '<div>Eletromagnetic launch system</div><div class="has-text-special">Requires Power</div>',
-            reqs: { oil: 7 },
+            reqs: { mass: 1 },
             cost: { 
                 Money(){ return costMultiplier('mass_driver', 375000, 1.32); },
                 Copper(){ return costMultiplier('mass_driver', 33000, 1.32); },
@@ -2080,7 +2087,7 @@ export const actions = {
             effect(){
                 return `-5% space fuel costs. -${actions.city.mass_driver.powered}kW.`;
             },
-            powered: 4,
+            powered: 5,
             action(){
                 if (payCosts(actions.city.mass_driver.cost)){
                     global.city.mass_driver.count++;
@@ -2667,6 +2674,24 @@ export const actions = {
                 return false;
             }
         },
+        casino_vault: {
+            id: 'tech-casino_vault',
+            title: 'Casino Vault',
+            desc: 'Casino Vault',
+            reqs: { gambling: 1, space: 3 },
+            grant: ['gambling',2],
+            cost: {
+                Knowledge(){ return 145000; },
+                Iridium(){ return 2500; }
+            },
+            effect: 'Upgrade your casino vaults to store 50% more money.',
+            action(){
+                if (payCosts(actions.tech.casino_vault.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mining: {
             id: 'tech-mining',
             title: 'Mining',
@@ -3004,7 +3029,7 @@ export const actions = {
             desc: 'Research scalable new storage solutions',
             reqs: { cement: 1 },
             grant: ['container',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 2700; }
             },
             effect: 'Designs a scalable storage solution for all your storage needs.',
@@ -3022,7 +3047,7 @@ export const actions = {
             desc: 'Reinforced Crates',
             reqs: { container: 1, smelting: 2 },
             grant: ['container',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 6750; },
                 Sheet_Metal(){ return 100; }
             },
@@ -3040,7 +3065,7 @@ export const actions = {
             desc: 'Freight Cranes',
             reqs: { container: 2, high_tech: 2 },
             grant: ['container',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 18000; },
                 Copper(){ return 1000; },
                 Steel(){ return 2500; }
@@ -3059,7 +3084,7 @@ export const actions = {
             desc: 'Titanium Banded Crates',
             reqs: { container: 3, titanium: 1 },
             grant: ['container',4],
-            cost: { 
+            cost: {
                 Knowledge(){ return 67500; },
                 Titanium(){ return 1000; }
             },
@@ -3071,13 +3096,31 @@ export const actions = {
                 return false;
             }
         },
+        mythril_crates: {
+            id: 'tech-mythril_crates',
+            title: 'Mythril Plated Crates',
+            desc: 'Mythril Plated Crates',
+            reqs: { container: 4, space: 3 },
+            grant: ['container',5],
+            cost: {
+                Knowledge(){ return 145000; },
+                Mythril(){ return 350; }
+            },
+            effect: 'Increase the maximum load of crates by plating them with Mythril',
+            action(){
+                if (payCosts(actions.tech.mythril_crates.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         steel_containers: {
             id: 'tech-steel_containers',
             title: 'Steel Containers',
             desc: 'Design better steel containers',
             reqs: { smelting: 2, container: 1 },
             grant: ['steel_container',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 9000; },
                 Sheet_Metal(){ return 200; }
             },
@@ -3096,7 +3139,7 @@ export const actions = {
             desc: 'Add gantry cranes to container ports',
             reqs: { steel_container: 1, high_tech: 2 },
             grant: ['steel_container',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 22500; },
                 Steel(){ return 5000; }
             },
@@ -3114,7 +3157,7 @@ export const actions = {
             desc: 'New larger containers made from alloy',
             reqs: { steel_container: 2, storage: 4 },
             grant: ['steel_container',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 49500; },
                 Alloy(){ return 2500; }
             },
@@ -3126,13 +3169,31 @@ export const actions = {
                 return false;
             }
         },
+        mythril_containers: {
+            id: 'tech-mythril_containers',
+            title: 'Mythril Containers',
+            desc: 'Reinforce containers with mythril struts',
+            reqs: { steel_container: 3, space: 3 },
+            grant: ['steel_container',4],
+            cost: {
+                Knowledge(){ return 165000; },
+                Mythril(){ return 500; }
+            },
+            effect: 'Increase container capacity by adding mythril struts.',
+            action(){
+                if (payCosts(actions.tech.mythril_containers.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: 'Currency',
             desc: 'Invent the concept of currency',
             reqs: { housing: 1 },
             grant: ['currency',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 22; },
                 Lumber(){ return 10; } 
             },
@@ -3151,7 +3212,7 @@ export const actions = {
             desc: 'Open a commodities market',
             reqs: { banking: 1, currency: 1 },
             grant: ['currency',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 1800; }
             },
             effect: 'Opens a commodities market where you can buy and sell resources.',
@@ -3169,7 +3230,7 @@ export const actions = {
             desc: 'Enables tax rates',
             reqs: { banking: 2, currency: 2 },
             grant: ['currency',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 3375; }
             },
             effect: 'Allows government to adjust the tax rate.',
@@ -3187,7 +3248,7 @@ export const actions = {
             desc: 'Upgrades marketplace for large orders',
             reqs: { currency: 3 },
             grant: ['currency',4],
-            cost: { 
+            cost: {
                 Knowledge(){ return 6750; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at higher volumes.',
@@ -3207,7 +3268,7 @@ export const actions = {
             desc: 'Enable Extreme Taxes',
             reqs: { currency: 4, high_tech: 3 },
             grant: ['currency',5],
-            cost: { 
+            cost: {
                 Knowledge(){ return 36000; }
             },
             effect: 'Corrupt politicians enable the setting of extreme tax strategies.',
@@ -3224,7 +3285,7 @@ export const actions = {
             desc: 'Upgrades marketplace for massive orders',
             reqs: { currency: 5, high_tech: 4 },
             grant: ['currency',6],
-            cost: { 
+            cost: {
                 Knowledge(){ return 108000; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at very high volumes.',
@@ -3244,7 +3305,7 @@ export const actions = {
             desc: 'Establish trade routes',
             reqs: { currency: 2, military: 1 },
             grant: ['trade',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 4500; }
             },
             effect: 'Create trade routes with your neighbors.',
@@ -3263,7 +3324,7 @@ export const actions = {
             desc: 'Negotiate new trade routes',
             reqs: { trade: 1, high_tech: 1 },
             grant: ['trade',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 16200; }
             },
             effect: 'Increase the effectiveness of each trade post by 1.',
@@ -3280,7 +3341,7 @@ export const actions = {
             desc: 'Increase trade volume with trains',
             reqs: { trade: 2, high_tech: 3 },
             grant: ['trade',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 37800; }
             },
             effect: 'Increase the effectiveness of each trade post by 1.',
@@ -3297,7 +3358,7 @@ export const actions = {
             desc: 'Invent Banking',
             reqs: { currency: 1 },
             grant: ['banking',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 90; }
             },
             effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money.',
@@ -3315,7 +3376,7 @@ export const actions = {
             desc: 'Invent Investing',
             reqs: { banking: 1 },
             grant: ['banking',2],
-            cost: { 
+            cost: {
                 Money(){ return 2500; },
                 Knowledge(){ return 900; }
             },
@@ -3496,6 +3557,25 @@ export const actions = {
                 return false;
             }
         },
+        mythril_vault: {
+            id: 'tech-mythril_vault',
+            title: 'Mythril Vault',
+            desc: 'Mythril Vault',
+            reqs: { banking: 5, space: 3 },
+            grant: ['vault',1],
+            cost: {
+                Money(){ return 500000; },
+                Knowledge(){ return 150000; },
+                Mythril(){ return 750; }
+            },
+            effect: 'Upgrade banks with impenetrable mythil plated vaults.',
+            action(){
+                if (payCosts(actions.tech.mythril_vault.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         home_safe: {
             id: 'tech-home_safe',
             title: 'House Safe',
@@ -3510,6 +3590,25 @@ export const actions = {
             effect: 'Install a safe in every cottage and apartment to store valuables.',
             action(){
                 if (payCosts(actions.tech.home_safe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        fire_proof_safe: {
+            id: 'tech-fire_proof_safe',
+            title: 'Fire Proof Safe',
+            desc: 'Fire Proof Safe',
+            reqs: { home_safe: 1, space: 3 },
+            grant: ['home_safe',2],
+            cost: {
+                Money(){ return 250000; },
+                Knowledge(){ return 120000; },
+                Iridium(){ return 1000; }
+            },
+            effect: 'Upgrade house safes with newer fire resistant materials.',
+            action(){
+                if (payCosts(actions.tech.fire_proof_safe.cost)){
                     return true;
                 }
                 return false;
@@ -4091,44 +4190,6 @@ export const actions = {
                 return false;
             }
         },
-        polymer: {
-            id: 'tech-polymer',
-            title: 'Polymer',
-            desc: 'Polymer',
-            reqs: { genetics: 1 },
-            grant: ['polymer',1],
-            cost: {
-                Knowledge(){ return 80000; },
-                Oil(){ return 5000; },
-                Alloy(){ return 450; }
-            },
-            effect: 'Create a new high tech polymer material that can be used for a wide variety of applications.',
-            action(){
-                if (payCosts(actions.tech.polymer.cost)){
-                    global.resource.Polymer.display = true;
-                    messageQueue('Polymer is now available for manufacture');
-                    return true;
-                }
-                return false;
-            }
-        },
-        fluidized_bed_reactor: {
-            id: 'tech-fluidized_bed_reactor',
-            title: 'Fluidized Bed Reactor',
-            desc: 'Fluidized Bed Reactor',
-            reqs: { polymer: 1, high_tech: 6 },
-            grant: ['polymer',2],
-            cost: {
-                Knowledge(){ return 99000; }
-            },
-            effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%.',
-            action(){
-                if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
-                    return true;
-                }
-                return false;
-            }
-        },
         titanium_drills: {
             id: 'tech-titanium_drills',
             title: 'Titanium Drills',
@@ -4182,12 +4243,30 @@ export const actions = {
                 return false;
             }
         },
+        mythril_drills: {
+            id: 'tech-mythril_drills',
+            title: 'Mythril Drills',
+            desc: 'Mythril Drills',
+            reqs: { oil: 6, space: 3 },
+            grant: ['oil',7],
+            cost: {
+                Knowledge(){ return 165000; },
+                Mythril(){ return 100; }
+            },
+            effect: 'New mythril drills that will improve the efficency of your oil derricks.',
+            action(){
+                if (payCosts(actions.tech.mythril_drills.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mass_driver: {
             id: 'tech-mass_driver',
             title: 'Mass Driver',
             desc: 'Mass Driver',
             reqs: { oil: 6, space: 3 },
-            grant: ['oil',7],
+            grant: ['mass',1],
             cost: {
                 Knowledge(){ return 170000; }
             },
@@ -4198,6 +4277,44 @@ export const actions = {
                         count: 0,
                         on: 0
                     };
+                    return true;
+                }
+                return false;
+            }
+        },
+        polymer: {
+            id: 'tech-polymer',
+            title: 'Polymer',
+            desc: 'Polymer',
+            reqs: { genetics: 1 },
+            grant: ['polymer',1],
+            cost: {
+                Knowledge(){ return 80000; },
+                Oil(){ return 5000; },
+                Alloy(){ return 450; }
+            },
+            effect: 'Create a new high tech polymer material that can be used for a wide variety of applications.',
+            action(){
+                if (payCosts(actions.tech.polymer.cost)){
+                    global.resource.Polymer.display = true;
+                    messageQueue('Polymer is now available for manufacture');
+                    return true;
+                }
+                return false;
+            }
+        },
+        fluidized_bed_reactor: {
+            id: 'tech-fluidized_bed_reactor',
+            title: 'Fluidized Bed Reactor',
+            desc: 'Fluidized Bed Reactor',
+            reqs: { polymer: 1, high_tech: 6 },
+            grant: ['polymer',2],
+            cost: {
+                Knowledge(){ return 99000; }
+            },
+            effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%.',
+            action(){
+                if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
                     return true;
                 }
                 return false;
@@ -4675,6 +4792,24 @@ export const actions = {
                 Alloy(){ return 3000; }
             },
             effect: 'Upgrade your garrisons to house additional soldiers.',
+            action(){
+                if (payCosts(actions.tech.bunk_beds.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        rail_guns: {
+            id: 'tech-rail_guns',
+            title: 'Rail Guns',
+            desc: 'Rail Guns',
+            reqs: { military: 5, mass: 1 },
+            grant: ['military',6],
+            cost: {
+                Knowledge(){ return 200000; },
+                Iridium(){ return 2500; }
+            },
+            effect: 'New more powerful weaponry for your army.',
             action(){
                 if (payCosts(actions.tech.bunk_beds.cost)){
                     return true;
