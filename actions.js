@@ -4408,6 +4408,10 @@ export const actions = {
             effect: `Create the bow and outfit your army with ranged weapons. It's sure to give you dominance over the primates.`,
             action(){
                 if (payCosts(actions.tech.bows.cost)){
+                    var tech = actions.tech.bows.grant[0];
+                    global.tech[tech] = actions.tech.bows.grant[1];
+                    global.civic['garrison'].workers--;
+                    global.civic['garrison'].workers++;
                     return true;
                 }
                 return false;
@@ -4426,6 +4430,10 @@ export const actions = {
             effect: 'Outfit your army with firearms, much deadlier than primitive bows and arrows.',
             action(){
                 if (payCosts(actions.tech.flintlock_rifle.cost)){
+                    var tech = actions.tech.flintlock_rifle.grant[0];
+                    global.tech[tech] = actions.tech.flintlock_rifle.grant[1];
+                    global.civic['garrison'].workers--;
+                    global.civic['garrison'].workers++;
                     return true;
                 }
                 return false;
@@ -4444,6 +4452,10 @@ export const actions = {
             effect: 'Decimate your foes with rapid fire weaponary.',
             action(){
                 if (payCosts(actions.tech.machine_gun.cost)){
+                    var tech = actions.tech.machine_gun.grant[0];
+                    global.tech[tech] = actions.tech.machine_gun.grant[1];
+                    global.civic['garrison'].workers--;
+                    global.civic['garrison'].workers++;
                     return true;
                 }
                 return false;
@@ -4860,6 +4872,8 @@ export const actions = {
                             }
                             delete global.tech['agriculture'];
                             delete global.tech['farm'];
+                            global.civic.farmer.workers = 0;
+                            global.civic.farmer.max = 0;
                             global.civic.farmer.display = false;
                             if (global.race.species === 'entish'){
                                 unlockAchieve(`madagascar_tree`);

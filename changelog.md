@@ -1,3 +1,7 @@
+#### 0.2.70 - 6/2/2019
+Fixed bug when picking Fanatism with cath gods that wouldn't release your farmers<br>
+Fixed bug when upgrading weapon technology that wouldn't immediately show the increase in army rating<br>
+
 #### 0.2.69 - 5/26/2019
 Fixed bug which could let you get free barn or warehouse upgrade by essentially skipping over the tech<br>
 Added aria button roles to many button like elements that were not technically buttons<br>

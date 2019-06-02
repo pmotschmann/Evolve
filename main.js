@@ -1946,6 +1946,11 @@ function midLoop(){
             global.tech['foundry'] = 4;
         }
 
+        if (global.race['carnivore'] && global.civic.farmer.workers > 0){
+            global.civic.farmer.workers = 0;
+            global.civic.farmer.max = 0;
+        }
+
         checkAchievements();
     }
     Object.keys(global.resource).forEach(function (res){
