@@ -30,6 +30,11 @@ var achievements = {
         desc: `Have 100 citizens starve to death in a single game`,
         flair: `Was Mao your mentor?`
     },
+    colonist: {
+        name: `Space Colonist`,
+        desc: `Colonize another planet`,
+        flair: `That's one small step for a ${global.race.species}...`
+    },
     mass_extinction: {
         name: `Mass Extinction`,
         desc: `Led all civilizations to destruction`,
@@ -82,7 +87,7 @@ var achievements = {
     },
     extinct_orge: {
         name: `Too stupid to live`,
-        desc: `Led an orge civilization to destruction`,
+        desc: `Led an ogre civilization to destruction`,
         flair: `Darwin would be proud`
     },
     extinct_cyclops: {

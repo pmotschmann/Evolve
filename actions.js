@@ -1,9 +1,10 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, moon_on } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison } from './civics.js';
+import { spaceTech, space } from './space.js';
 import { arpa, gainGene } from './arpa.js';
 
 export const actions = {
@@ -802,7 +803,7 @@ export const actions = {
             reqs: { military: 1, housing: 1 },
             cost: { 
                 Money(){ return costMultiplier('garrison', 240, 1.5); },
-                Stone(){ return costMultiplier('garrison', 260, 1.45); }
+                Stone(){ return costMultiplier('garrison', 260, 1.46); }
             },
             effect() {
                 let bunks = global.tech['military'] >= 5 ? 3 : 2;
@@ -835,14 +836,14 @@ export const actions = {
             cost: { 
                 Money(){ 
                     if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ 
-                        return costMultiplier('basic_housing', 20, 1.16);
+                        return costMultiplier('basic_housing', 20, 1.17);
                     } 
                     else { 
                         return 0; 
                     } 
                 },
-                Lumber(){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', 10, 1.22); },
-                Stone(){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', 10, 1.22) : 0; }
+                Lumber(){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', 10, 1.23); },
+                Stone(){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', 10, 1.23) : 0; }
             },
             effect: '+1 Max Citizen',
             action(){
@@ -871,7 +872,7 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(1000);
+                    let safe = spatialReasoning(global.tech.home_safe > 1 ? 2000 : 1000);
                     return `<div>+2 Max Citizens</div><div>+${safe} Max Money</div>`;
                 }
                 else {
@@ -892,18 +893,18 @@ export const actions = {
             title(){
                 return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartment';
             },
-            desc: '<div>Housing complex for 5 citizens</div><div>Requires power</div>',
+            desc: '<div>Housing complex for 5 citizens</div><div class="has-text-special">Requires Power</div>',
             reqs: { housing: 3 },
             cost: { 
-                Money(){ return costMultiplier('apartment', 1750, 1.25) - 500; },
-                Furs(){ return costMultiplier('apartment', 725, 1.30) - 500; },
-                Copper(){ return costMultiplier('apartment', 650, 1.30) - 500; },
-                Cement(){ return costMultiplier('apartment', 700, 1.30) - 500; },
-                Steel(){ return costMultiplier('apartment', 800, 1.30) - 500; }
+                Money(){ return costMultiplier('apartment', 1750, 1.26) - 500; },
+                Furs(){ return costMultiplier('apartment', 725, 1.32) - 500; },
+                Copper(){ return costMultiplier('apartment', 650, 1.32) - 500; },
+                Cement(){ return costMultiplier('apartment', 700, 1.32) - 500; },
+                Steel(){ return costMultiplier('apartment', 800, 1.32) - 500; }
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(2000);
+                    let safe = spatialReasoning(global.tech.home_safe > 1 ? 5000 : 2000);
                     return `<div>+5 Max Citizens. -1kW.</div><div>+${safe} Max Money</div>`;
                 }
                 else {
@@ -913,9 +914,9 @@ export const actions = {
             powered: 1,
             action(){
                 if (payCosts(actions.city.apartment.cost)){
-                    global['resource'][races[global.race.species].name].max += 5;
                     global.city['apartment'].count++;
                     if (global.city.power > 0){
+                        global['resource'][races[global.race.species].name].max += 5;
                         global.city['apartment'].on++;
                     }
                     return true;
@@ -929,9 +930,9 @@ export const actions = {
             desc: 'Increases hunter capacity',
             reqs: { hunting: 2 },
             cost: { 
-                Money(){ return costMultiplier('lodge', 50, 1.30); },
-                Lumber(){ return costMultiplier('lodge', 20, 1.35); },
-                Stone(){ return costMultiplier('lodge', 10, 1.35); }
+                Money(){ return costMultiplier('lodge', 50, 1.32); },
+                Lumber(){ return costMultiplier('lodge', 20, 1.36); },
+                Stone(){ return costMultiplier('lodge', 10, 1.36); }
             },
             effect(){ return '+1 Max Citizen'; },
             action(){
@@ -949,9 +950,9 @@ export const actions = {
             desc: 'Increases food storage capacity',
             reqs: { hunting: 1 },
             cost: { 
-                Money(){ return costMultiplier('smokehouse', 85, 1.30); },
-                Lumber(){ return costMultiplier('smokehouse', 65, 1.35) },
-                Stone(){ return costMultiplier('smokehouse', 50, 1.35); }
+                Money(){ return costMultiplier('smokehouse', 85, 1.32); },
+                Lumber(){ return costMultiplier('smokehouse', 65, 1.36) },
+                Stone(){ return costMultiplier('smokehouse', 50, 1.36); }
             },
             effect(){ 
                 let food = spatialReasoning(500);
@@ -969,12 +970,12 @@ export const actions = {
         farm: {
             id: 'city-farm',
             title: 'Farm',
-            desc: 'Increases farmer capacity',
+            desc: 'Produces food',
             reqs: { agriculture: 1 },
             cost: { 
-                Money(){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', 50, 1.30);} else { return 0; } },
-                Lumber(){ return costMultiplier('farm', 20, 1.35); },
-                Stone(){ return costMultiplier('farm', 10, 1.35); }
+                Money(){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', 50, 1.32);} else { return 0; } },
+                Lumber(){ return costMultiplier('farm', 20, 1.36); },
+                Stone(){ return costMultiplier('farm', 10, 1.36); }
             },
             effect(){
                 let farming = global.tech['agriculture'] >= 2 ? 1.25 : 0.75;
@@ -1004,18 +1005,18 @@ export const actions = {
             desc(){ 
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
-                    return `+${bonus}% Farmer efficiency OR +1kW`;
+                    return `+${bonus}% Farming efficiency OR +1kW`;
                 }
                 else {
-                    return `Increases farmer efficiency by ${bonus}%`;
+                    return `Increases farming efficiency by ${bonus}%`;
                 }
             },
             reqs: { agriculture: 4 },
             cost: { 
-                Money(){ return costMultiplier('mill', 1000, 1.3); },
-                Lumber(){ return costMultiplier('mill', 600, 1.32); },
-                Iron(){ return costMultiplier('mill', 150, 1.32); },
-                Cement(){ return costMultiplier('mill', 125, 1.32); },
+                Money(){ return costMultiplier('mill', 1000, 1.31); },
+                Lumber(){ return costMultiplier('mill', 600, 1.33); },
+                Iron(){ return costMultiplier('mill', 150, 1.33); },
+                Cement(){ return costMultiplier('mill', 125, 1.33); },
             },
             powered: -1,
             power_reqs: { agriculture: 6 },
@@ -1041,9 +1042,9 @@ export const actions = {
             desc: 'Increases food storage capacity',
             reqs: { agriculture: 3 },
             cost: { 
-                Money(){ return costMultiplier('silo', 85, 1.30); },
-                Lumber(){ return costMultiplier('silo', 65, 1.35) },
-                Stone(){ return costMultiplier('silo', 50, 1.35); }
+                Money(){ return costMultiplier('silo', 85, 1.32); },
+                Lumber(){ return costMultiplier('silo', 65, 1.36) },
+                Stone(){ return costMultiplier('silo', 50, 1.36); }
             },
             effect(){ 
                 let food = spatialReasoning(500);
@@ -1069,10 +1070,10 @@ export const actions = {
             },
             reqs: { storage: 1 },
             cost: { 
-                Money(){ return costMultiplier('shed', 75, 1.2); },
+                Money(){ return costMultiplier('shed', 75, 1.22); },
                 Lumber(){
                     if (global.tech['storage'] && global.tech['storage'] < 4){ 
-                        return costMultiplier('shed', 55, 1.3);
+                        return costMultiplier('shed', 55, 1.32);
                     }
                     else { 
                         return 0; 
@@ -1080,7 +1081,7 @@ export const actions = {
                 },
                 Stone(){
                     if (global.tech['storage'] && global.tech['storage'] < 3){ 
-                        return costMultiplier('shed', 45, 1.3);
+                        return costMultiplier('shed', 45, 1.32);
                     }
                     else { 
                         return 0; 
@@ -1088,7 +1089,7 @@ export const actions = {
                 },
                 Iron(){
                     if (global.tech['storage'] && global.tech['storage'] >= 4){
-                        return costMultiplier('shed', 22, 1.3);
+                        return costMultiplier('shed', 22, 1.32);
                     }
                     else {
                         return 0; 
@@ -1096,7 +1097,7 @@ export const actions = {
                 },
                 Cement(){ 
                     if (global.tech['storage'] && global.tech['storage'] >= 3){
-                        return costMultiplier('shed', 18, 1.3);
+                        return costMultiplier('shed', 18, 1.32);
                     }
                     else {
                         return 0; 
@@ -1107,39 +1108,39 @@ export const actions = {
                 let storage = '';
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
-                    let val = +(spatialReasoning(200) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(300) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Lumber.`;
                 }
                 if (global.resource.Stone.display){
-                    let val = +(spatialReasoning(200) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(300) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Stone.`;
                 }
                 if (global.resource.Furs.display){
-                    let val = +(spatialReasoning(100) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(125) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Furs.`;
                 }
                 if (global.resource.Copper.display){
-                    let val = +(spatialReasoning(75) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(90) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Copper.`;
                 }
                 if (global.resource.Iron.display){
-                    let val = +(spatialReasoning(100) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(125) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Iron.`;
                 }
                 if (global.resource.Cement.display){
-                    let val = +(spatialReasoning(80) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(100) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Cement.`;
                 }
                 if (global.resource.Coal.display){
-                    let val = +(spatialReasoning(50) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(75) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Coal.`;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    let val = +(spatialReasoning(25) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(40) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Steel.`;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    let val = +(spatialReasoning(10) * multiplier).toFixed(1);
+                    let val = +(spatialReasoning(20) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Titanium.`;
                 }
                 return storage;
@@ -1147,17 +1148,18 @@ export const actions = {
             action(){
                 if (payCosts(actions.city.shed.cost)){
                     let multiplier = storageMultipler();
-                    global['resource']['Lumber'].max += (spatialReasoning(200) * multiplier);
-                    global['resource']['Stone'].max += (spatialReasoning(200) * multiplier);
-                    global['resource']['Copper'].max += (spatialReasoning(75) * multiplier);
-                    global['resource']['Iron'].max += (spatialReasoning(100) * multiplier);
-                    global['resource']['Cement'].max += (spatialReasoning(80) * multiplier);
-                    global['resource']['Coal'].max += (spatialReasoning(50) * multiplier);
+                    global['resource']['Lumber'].max += (spatialReasoning(300) * multiplier);
+                    global['resource']['Stone'].max += (spatialReasoning(300) * multiplier);
+                    global['resource']['Copper'].max += (spatialReasoning(90) * multiplier);
+                    global['resource']['Iron'].max += (spatialReasoning(125) * multiplier);
+                    global['resource']['Furs'].max += (spatialReasoning(125) * multiplier);
+                    global['resource']['Cement'].max += (spatialReasoning(100) * multiplier);
+                    global['resource']['Coal'].max += (spatialReasoning(75) * multiplier);
                     if (global.tech['storage'] >= 3){
-                        global['resource']['Steel'].max += (global.city['shed'].count * (spatialReasoning(25) * multiplier));
+                        global['resource']['Steel'].max += (global.city['shed'].count * (spatialReasoning(40) * multiplier));
                     }
                     if (global.tech['storage'] >= 4){
-                        global['resource']['Titanium'].max += (global.city['shed'].count * (spatialReasoning(10) * multiplier));
+                        global['resource']['Titanium'].max += (global.city['shed'].count * (spatialReasoning(20) * multiplier));
                     }
                     global.city['shed'].count++;
                     return true;
@@ -1171,7 +1173,7 @@ export const actions = {
             desc: 'Increases crate capacity',
             reqs: { container: 1 },
             cost: { 
-                Money(){ return costMultiplier('storage_yard', 10, 1.35); },
+                Money(){ return costMultiplier('storage_yard', 10, 1.36); },
                 Brick(){ return costMultiplier('storage_yard', 3, 1.35); },
                 Wrought_Iron(){ return costMultiplier('storage_yard', 5, 1.35); }
             },
@@ -1207,8 +1209,8 @@ export const actions = {
             desc: 'Increases container capacity',
             reqs: { steel_container: 1 },
             cost: { 
-                Money(){ return costMultiplier('warehouse', 400, 1.25); },
-                Cement(){ return costMultiplier('warehouse', 75, 1.25); },
+                Money(){ return costMultiplier('warehouse', 400, 1.26); },
+                Cement(){ return costMultiplier('warehouse', 75, 1.26); },
                 Sheet_Metal(){ return costMultiplier('warehouse', 25, 1.25); }
             },
             effect(){
@@ -1244,17 +1246,20 @@ export const actions = {
             },
             reqs: { banking: 1 },
             cost: { 
-                Money(){ return costMultiplier('bank', 250, 1.5); },
-                Lumber(){ return costMultiplier('bank', 75, 1.30); },
-                Stone(){ return costMultiplier('bank', 100, 1.45); }
+                Money(){ return costMultiplier('bank', 250, 1.35); },
+                Lumber(){ return costMultiplier('bank', 75, 1.32); },
+                Stone(){ return costMultiplier('bank', 100, 1.35); }
             },
             effect(){ 
-                let vault = 1500;
-                if (global.tech['banking'] >= 5){
-                    vault = 7500;
+                let vault = 1800;
+                if (global.tech['vault'] >= 1){
+                    vault = 15000;
+                } 
+                else if (global.tech['banking'] >= 5){
+                    vault = 9000;
                 }
                 else if (global.tech['banking'] >= 3){
-                    vault = 3500;
+                    vault = 4000;
                 }
                 if (global.race['paranoid']){
                     vault *= 0.9;
@@ -1282,7 +1287,7 @@ export const actions = {
             },
             action(){
                 if (payCosts(actions.city.bank.cost)){
-                    global['resource']['Money'].max += 1000;
+                    global['resource']['Money'].max += spatialReasoning(1800);
                     global.city.bank.count++;
                     global.civic.banker.max = global.city.bank.count;
                     return true;
@@ -1320,9 +1325,9 @@ export const actions = {
             desc: 'Increases lumber output',
             reqs: { saw: 1 },
             cost: { 
-                Money(){ return costMultiplier('sawmill', 3000, 1.25); },
-                Iron(){ return costMultiplier('sawmill', 400, 1.25); },
-                Cement(){ return costMultiplier('sawmill', 420, 1.25); }
+                Money(){ return costMultiplier('sawmill', 3000, 1.26); },
+                Iron(){ return costMultiplier('sawmill', 400, 1.26); },
+                Cement(){ return costMultiplier('sawmill', 420, 1.26); }
             },
             effect(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
@@ -1358,8 +1363,8 @@ export const actions = {
             reqs: { mining: 1 },
             cost: { 
                 Money(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.45);} else { return 0; } },
-                Lumber(){ return costMultiplier('rock_quarry', 50, 1.35); },
-                Stone(){ return costMultiplier('rock_quarry', 10, 1.35); }
+                Lumber(){ return costMultiplier('rock_quarry', 50, 1.36); },
+                Stone(){ return costMultiplier('rock_quarry', 10, 1.36); }
             },
             effect() {
                 let stone = spatialReasoning(100);
@@ -1392,8 +1397,8 @@ export const actions = {
             reqs: { cement: 1 },
             cost: { 
                 Money(){ return costMultiplier('cement_plant', 3000, 1.5); },
-                Lumber(){ return costMultiplier('cement_plant', 1800, 1.35); },
-                Stone(){ return costMultiplier('cement_plant', 2000, 1.3); }
+                Lumber(){ return costMultiplier('cement_plant', 1800, 1.36); },
+                Stone(){ return costMultiplier('cement_plant', 2000, 1.32); }
             },
             effect: '+2 Max Cement Plant Workers',
             effect() { 
@@ -1426,9 +1431,9 @@ export const actions = {
             desc: 'Manufacture building materials from raw materials',
             reqs: { foundry: 1 },
             cost: {
-                Money(){ return costMultiplier('foundry', 750, 1.35); },
-                Copper(){ return costMultiplier('foundry', 250, 1.35); },
-                Stone(){ return costMultiplier('foundry', 100, 1.35); }
+                Money(){ return costMultiplier('foundry', 750, 1.36); },
+                Copper(){ return costMultiplier('foundry', 250, 1.36); },
+                Stone(){ return costMultiplier('foundry', 100, 1.36); }
             },
             effect(){
                 let desc = `<div>+1 Craftsman</div>`;
@@ -1468,13 +1473,17 @@ export const actions = {
             desc: 'Produces manufactured goods',
             reqs: { high_tech: 3 },
             cost: { 
-                Money(){ return costMultiplier('factory', 25000, 1.3); },
-                Cement(){ return costMultiplier('factory', 1000, 1.3); },
-                Steel(){ return costMultiplier('factory', 7500, 1.3); },
-                Titanium(){ return costMultiplier('factory', 2500, 1.3); }
+                Money(){ return costMultiplier('factory', 25000, 1.32); },
+                Cement(){ return costMultiplier('factory', 1000, 1.32); },
+                Steel(){ return costMultiplier('factory', 7500, 1.32); },
+                Titanium(){ return costMultiplier('factory', 2500, 1.32); }
             },
-            effect(){ 
-                return `Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.`;
+            effect(){
+                let desc = `<div>Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.</div>`;
+                if (global.tech['foundry'] >= 7){
+                    desc = desc + `<div>+5% Crafted Materials</div>`;
+                }
+                return desc;
             },
             powered: 3,
             special: true,
@@ -1496,8 +1505,8 @@ export const actions = {
             desc: 'Increase iron output',
             reqs: { smelting: 1 },
             cost: { 
-                Money(){ return costMultiplier('smelter', 1000, 1.3); },
-                Iron(){ return costMultiplier('smelter', 500, 1.32); }
+                Money(){ return costMultiplier('smelter', 1000, 1.32); },
+                Iron(){ return costMultiplier('smelter', 500, 1.33); }
             },
             effect(){ 
                 var iron_yield = global.tech['smelting'] >= 3 ? 12 : 10;
@@ -1535,7 +1544,7 @@ export const actions = {
             reqs: { mining: 2 },
             cost: { 
                 Money(){ return costMultiplier('mine', 60, 1.6); },
-                Lumber(){ return costMultiplier('mine', 175, 1.35); }
+                Lumber(){ return costMultiplier('mine', 175, 1.38); }
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
@@ -1568,8 +1577,8 @@ export const actions = {
             reqs: { mining: 4 },
             cost: { 
                 Money(){ return costMultiplier('coal_mine', 480, 1.4); },
-                Lumber(){ return costMultiplier('coal_mine', 250, 1.35); },
-                Wrought_Iron(){ return costMultiplier('coal_mine', 18, 1.35); }
+                Lumber(){ return costMultiplier('coal_mine', 250, 1.36); },
+                Wrought_Iron(){ return costMultiplier('coal_mine', 18, 1.36); }
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
@@ -1607,9 +1616,13 @@ export const actions = {
             },
             effect() { 
                 let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;
-                if (global.tech['oil'] >= 5){
+                if (global.tech['oil'] >= 7){
+                    oil *= 2;
+                }
+                else if (global.tech['oil'] >= 5){
                     oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
                 }
+                oil = +oil.toFixed(2);
                 let oc = spatialReasoning(500);
                 return `+${oil} oil per second. +${oc} Max Oil.`;
             },
@@ -1630,13 +1643,17 @@ export const actions = {
             desc: 'Special storage for fuels',
             reqs: { oil: 2 },
             cost: { 
-                Money(){ return costMultiplier('oil_depot', 2500, 1.45); },
-                Cement(){ return costMultiplier('oil_depot', 3750, 1.45); },
+                Money(){ return costMultiplier('oil_depot', 2500, 1.46); },
+                Cement(){ return costMultiplier('oil_depot', 3750, 1.46); },
                 Sheet_Metal(){ return costMultiplier('oil_depot', 100, 1.45); }
             },
             effect() { 
                 let oil = spatialReasoning(1000);
                 let effect = `<div>+${oil} Max Oil.</div>`;
+                if (global.resource['Helium_3'].display){
+                    let val = spatialReasoning(400);
+                    effect = effect + `<div>+${val} Max Helium-3.</div>`;
+                }
                 if (global.tech['uranium'] >= 2){
                     let val = spatialReasoning(250);
                     effect = effect + `<div>+${val} Max Uranium.</div>`;
@@ -1661,10 +1678,10 @@ export const actions = {
             desc: 'Increases trade route capacity',
             reqs: { trade: 1 },
             cost: { 
-                Money(){ return costMultiplier('trade', 500, 1.35); },
-                Lumber(){ return costMultiplier('trade', 125, 1.35); },
-                Stone(){ return costMultiplier('trade', 50, 1.35); },
-                Furs(){ return costMultiplier('trade', 65, 1.35); }
+                Money(){ return costMultiplier('trade', 500, 1.36); },
+                Lumber(){ return costMultiplier('trade', 125, 1.36); },
+                Stone(){ return costMultiplier('trade', 50, 1.36); },
+                Furs(){ return costMultiplier('trade', 65, 1.36); }
             },
             effect(){
                 let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
@@ -1677,6 +1694,30 @@ export const actions = {
                     if (global.race['resourceful']){
                         global.city.market.mtrade++;
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        tourist_center: {
+            id: 'city-tourist_center',
+            title: 'Tourist Center',
+            desc: 'Generates tourism revenue',
+            reqs: { monument: 2 },
+            cost: { 
+                Money(){ return costMultiplier('tourist_center', 100000, 1.36); },
+                Stone(){ return costMultiplier('tourist_center', 25000, 1.36); },
+                Furs(){ return costMultiplier('tourist_center', 7500, 1.36); },
+                Plywood(){ return costMultiplier('tourist_center', 5000, 1.36); },
+            },
+            effect(){
+                return `<div>-50 Food per Tourist Center</div><div>+$1 per Amphitheatre</div><div>+$5 per Casino</div><div>+$2 per Monument</div>`; 
+            },
+            powered: 1,
+            action(){
+                if (payCosts(actions.city.tourist_center.cost)){
+                    global.city['tourist_center'].count++;
+                    global.city['tourist_center'].on++;
                     return true;
                 }
                 return false;
@@ -1704,6 +1745,32 @@ export const actions = {
             },
             flair: `Admission is free, but tomatoes are $9.99 each.`
         },
+        casino: {
+            id: 'city-casino',
+            title: 'Casino',
+            desc: 'A new form of entertainment for your population',
+            reqs: { gambling: 1 },
+            cost: {
+                Money(){ return costMultiplier('casino', 350000, 1.35); },
+                Furs(){ return costMultiplier('casino', 60000, 1.35); },
+                Plywood(){ return costMultiplier('casino', 10000, 1.35); },
+                Brick(){ return costMultiplier('casino', 6000, 1.35); }
+            },
+            effect(){
+                let money = spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
+                return `<div>+${money} Max Money</div><div>+1 Max Entertainer</div><div>+1% Max Morale</div>`;
+            },
+            action(){
+                if (payCosts(actions.city.casino.cost)){
+                    global.city['casino'].count++;
+                    global.civic.entertainer.max++;
+                    global.civic.entertainer.display = true;
+                    return true;
+                }
+                return false;
+            },
+            flair: `The house always wins.`
+        },
         temple: {
             id: 'city-temple',
             title: 'Temple',
@@ -1713,10 +1780,10 @@ export const actions = {
             },
             reqs: { theology: 2 },
             cost: {
-                Money(){ return costMultiplier('temple', 50, 1.35); },
-                Lumber(){ return costMultiplier('temple', 25, 1.35); },
-                Furs(){ return costMultiplier('temple', 15, 1.35); },
-                Cement(){ return costMultiplier('temple', 10, 1.35); }
+                Money(){ return costMultiplier('temple', 50, 1.36); },
+                Lumber(){ return costMultiplier('temple', 25, 1.36); },
+                Furs(){ return costMultiplier('temple', 15, 1.36); },
+                Cement(){ return costMultiplier('temple', 10, 1.36); }
             },
             effect(){
                 let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
@@ -1750,17 +1817,22 @@ export const actions = {
             reqs: { science: 1 },
             cost: {
                 Money(){ return costMultiplier('university', 900, 1.5) - 500; },
-                Lumber(){ return costMultiplier('university', 500, 1.35) - 200; },
-                Stone(){ return costMultiplier('university', 750, 1.35) - 350; }
+                Lumber(){ return costMultiplier('university', 500, 1.36) - 200; },
+                Stone(){ return costMultiplier('university', 750, 1.36) - 350; }
             },
             effect(){
+                let multiplier = 1;
                 let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                 if (global.tech['science'] >= 4){
-                    gain *= 1 + (global.city['library'].count * 0.02);
+                    multiplier += (global.city['library'].count * 0.02);
+                }
+                if (global.space['observatory'] && global.space.observatory.count > 0){
+                    multiplier += (moon_on['observatory'] * 0.05);
                 }
                 if (global.race['hard_of_hearing']){
-                    gain *= 0.95;
+                    multiplier *= 0.95;
                 }
+                gain *= multiplier;
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
@@ -1834,10 +1906,10 @@ export const actions = {
             desc: 'Advanced science facility',
             reqs: { high_tech: 1 },
             cost: { 
-                Money(){ return costMultiplier('wardenclyffe', 5000, 1.2); },
-                Knowledge(){ return costMultiplier('wardenclyffe', 1000, 1.2); },
-                Copper(){ return costMultiplier('wardenclyffe', 500, 1.2); },
-                Cement(){ return costMultiplier('wardenclyffe', 350, 1.2); },
+                Money(){ return costMultiplier('wardenclyffe', 5000, 1.22); },
+                Knowledge(){ return costMultiplier('wardenclyffe', 1000, 1.22); },
+                Copper(){ return costMultiplier('wardenclyffe', 500, 1.22); },
+                Cement(){ return costMultiplier('wardenclyffe', 350, 1.22); },
                 Sheet_Metal(){ return costMultiplier('wardenclyffe', 125, 1.2); }
             },
             effect(){
@@ -1846,19 +1918,27 @@ export const actions = {
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
+                if (global.space['satellite']){
+                    gain *= 1 + (global.space.satellite.count * 0.04);
+                }
+                gain = +(gain).toFixed(1);
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
+                    if (global.space['satellite']){
+                        pgain *= 1 + (global.space.satellite.count * 0.02);
+                    }
                     if (global.tech['supercollider']){
                         let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                         pgain *= (global.tech['supercollider'] / ratio) + 1;
                     }
+                    pgain = +(pgain).toFixed(1);
                     let desc = `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div>If powered uses 2kW but increases its Max Knowledge to ${pgain} and morale by ${morale}%</div>`
+                        desc = desc + `<div>If powered uses ${actions.city.wardenclyffe.powered}kW but increases its Max Knowledge to ${pgain} and morale by ${morale}%</div>`
                     }
                     else {
-                        desc = desc + `<div>If powered uses 2kW but increases its Max Knowledge to ${pgain}</div>`;
+                        desc = desc + `<div>If powered uses ${actions.city.wardenclyffe.powered}kW but increases its Max Knowledge to ${pgain}</div>`;
                     }
                     return desc;
                 }
@@ -1891,17 +1971,17 @@ export const actions = {
         biolab: {
             id: 'city-biolab',
             title: 'Bioscience Lab',
-            desc: '<div>Bioscience Labratory</div><div>Requires Power</div>',
+            desc: '<div>Bioscience Labratory</div><div class="has-text-special">Requires Power</div>',
             reqs: { genetics: 1 },
             cost: { 
-                Money(){ return costMultiplier('biolab', 25000, 1.28); },
-                Knowledge(){ return costMultiplier('biolab', 5000, 1.28); },
-                Copper(){ return costMultiplier('biolab', 1250, 1.28); },
-                Alloy(){ return costMultiplier('biolab', 350, 1.28); }
+                Money(){ return costMultiplier('biolab', 25000, 1.3); },
+                Knowledge(){ return costMultiplier('biolab', 5000, 1.3); },
+                Copper(){ return costMultiplier('biolab', 1250, 1.3); },
+                Alloy(){ return costMultiplier('biolab', 350, 1.3); }
             },
             effect(){
                 let gain = 3000;
-                return `+${gain} Max Knowledge, -2kW`;
+                return `+${gain} Max Knowledge, -${actions.city.biolab.powered}kW`;
             },
             powered: 2,
             action(){
@@ -1922,10 +2002,10 @@ export const actions = {
             desc: 'Generates electricity from coal',
             reqs: { high_tech: 2 },
             cost: { 
-                Money(){ return costMultiplier('coal_power', 10000, 1.2); },
-                Copper(){ return costMultiplier('coal_power', 1800, 1.2) - 1000; },
-                Cement(){ return costMultiplier('coal_power', 600, 1.2); },
-                Steel(){ return costMultiplier('coal_power', 2000, 1.2) - 1000; }
+                Money(){ return costMultiplier('coal_power', 10000, 1.22); },
+                Copper(){ return costMultiplier('coal_power', 1800, 1.22) - 1000; },
+                Cement(){ return costMultiplier('coal_power', 600, 1.22); },
+                Steel(){ return costMultiplier('coal_power', 2000, 1.22) - 1000; }
             },
             effect(){
                 let consume = 0.35;
@@ -1948,10 +2028,10 @@ export const actions = {
             desc: 'Generates electricity from oil',
             reqs: { oil: 3 },
             cost: { 
-                Money(){ return costMultiplier('oil_power', 50000, 1.2); },
-                Copper(){ return costMultiplier('oil_power', 6500, 1.2) + 1000; },
-                Cement(){ return costMultiplier('oil_power', 5600, 1.2) + 1000; },
-                Steel(){ return costMultiplier('oil_power', 9000, 1.2) + 3000; }
+                Money(){ return costMultiplier('oil_power', 50000, 1.22); },
+                Copper(){ return costMultiplier('oil_power', 6500, 1.22) + 1000; },
+                Cement(){ return costMultiplier('oil_power', 5600, 1.22) + 1000; },
+                Steel(){ return costMultiplier('oil_power', 9000, 1.22) + 3000; }
             },
             effect(){
                 let consume = 0.65;
@@ -1974,14 +2054,15 @@ export const actions = {
             desc: 'Uses nuclear fission to generate large amounts of power',
             reqs: { high_tech: 5 },
             cost: { 
-                Money(){ return costMultiplier('fission_power', 250000, 1.35); },
-                Copper(){ return costMultiplier('fission_power', 13500, 1.35); },
-                Cement(){ return costMultiplier('fission_power', 10800, 1.35); },
-                Titanium(){ return costMultiplier('fission_power', 7500, 1.35); }
+                Money(){ return costMultiplier('fission_power', 250000, 1.36); },
+                Copper(){ return costMultiplier('fission_power', 13500, 1.36); },
+                Cement(){ return costMultiplier('fission_power', 10800, 1.36); },
+                Titanium(){ return costMultiplier('fission_power', 7500, 1.36); }
             },
             effect(){
                 let consume = 0.1;
-                return `+14kW. -${consume} Uranium per second.`;
+                let output = global.tech['uranium'] >= 4 ? 18 : 14;
+                return `+${output}kW. -${consume} Uranium per second.`;
             },
             powered: -14,
             action(){
@@ -1989,6 +2070,32 @@ export const actions = {
                     global.city.fission_power.count++;
                     global.city.fission_power.on++;
                     global.city.power += 14;
+                    return true;
+                }
+                return false;
+            }
+        },
+        mass_driver: {
+            id: 'city-mass_driver',
+            title: 'Mass Driver',
+            desc: '<div>Eletromagnetic launch system</div><div class="has-text-special">Requires Power</div>',
+            reqs: { mass: 1 },
+            cost: { 
+                Money(){ return costMultiplier('mass_driver', 375000, 1.32); },
+                Copper(){ return costMultiplier('mass_driver', 33000, 1.32); },
+                Iron(){ return costMultiplier('mass_driver', 42500, 1.32); },
+                Iridium(){ return costMultiplier('mass_driver', 3500, 1.32); }
+            },
+            effect(){
+                return `-5% space fuel costs. -${actions.city.mass_driver.powered}kW.`;
+            },
+            powered: 5,
+            action(){
+                if (payCosts(actions.city.mass_driver.cost)){
+                    global.city.mass_driver.count++;
+                    if (global.city.powered && global.city.power >= actions.city.mass_driver.powered){
+                        global.city.mass_driver.on++;
+                    }
                     return true;
                 }
                 return false;
@@ -2355,7 +2462,8 @@ export const actions = {
                         Brick: 0,
                         Bronze: 0,
                         Wrought_Iron: 0,
-                        Sheet_Metal: 0
+                        Sheet_Metal: 0,
+                        Mythril: 0
                     };
                     return true;
                 }
@@ -2447,6 +2555,23 @@ export const actions = {
                 return false;
             }
         },
+        automation: {
+            id: 'tech-automation',
+            title: 'Automation',
+            desc: 'Automation',
+            reqs: { foundry: 6, high_tech: 4 },
+            grant: ['foundry',7],
+            cost: {
+                Knowledge(){ return 66000; }
+            },
+            effect: 'Automated manufacturing machines add a crafting bonus to factories.',
+            action(){
+                if (payCosts(actions.tech.automation.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         theatre: {
             id: 'tech-theatre',
             title: 'Theatre',
@@ -2528,6 +2653,42 @@ export const actions = {
             effect: 'New broadcast TV signals double the entertainment value of Wardenclyffe towers.',
             action(){
                 if (payCosts(actions.tech.tv.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        casino: {
+            id: 'tech-casino',
+            title: 'Casino',
+            desc: 'Casino',
+            reqs: { high_tech: 4, currency: 5 },
+            grant: ['gambling',1],
+            cost: {
+                Knowledge(){ return 95000; }
+            },
+            effect: 'Casinos not only offer entertainment for your populace but a new revenue source for you.',
+            action(){
+                if (payCosts(actions.tech.casino.cost)){
+                    global.city['casino'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        casino_vault: {
+            id: 'tech-casino_vault',
+            title: 'Casino Vault',
+            desc: 'Casino Vault',
+            reqs: { gambling: 1, space: 3 },
+            grant: ['gambling',2],
+            cost: {
+                Knowledge(){ return 145000; },
+                Iridium(){ return 2500; }
+            },
+            effect: 'Upgrade your casino vaults to store 50% more money.',
+            action(){
+                if (payCosts(actions.tech.casino_vault.cost)){
                     return true;
                 }
                 return false;
@@ -2803,7 +2964,7 @@ export const actions = {
                 Knowledge(){ return 15750; },
                 Steel(){ return 5000; }
             },
-            effect: 'Replace smaller storage sheds with larger storage barns, a 100% increase in storage capacity.',
+            effect: 'Replace smaller storage sheds with larger storage barns, a significant increase in storage capacity.',
             action(){
                 if (payCosts(actions.tech.barns.cost)){
                     return true;
@@ -2870,7 +3031,7 @@ export const actions = {
             desc: 'Research scalable new storage solutions',
             reqs: { cement: 1 },
             grant: ['container',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 2700; }
             },
             effect: 'Designs a scalable storage solution for all your storage needs.',
@@ -2888,7 +3049,7 @@ export const actions = {
             desc: 'Reinforced Crates',
             reqs: { container: 1, smelting: 2 },
             grant: ['container',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 6750; },
                 Sheet_Metal(){ return 100; }
             },
@@ -2906,7 +3067,7 @@ export const actions = {
             desc: 'Freight Cranes',
             reqs: { container: 2, high_tech: 2 },
             grant: ['container',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 18000; },
                 Copper(){ return 1000; },
                 Steel(){ return 2500; }
@@ -2925,7 +3086,7 @@ export const actions = {
             desc: 'Titanium Banded Crates',
             reqs: { container: 3, titanium: 1 },
             grant: ['container',4],
-            cost: { 
+            cost: {
                 Knowledge(){ return 67500; },
                 Titanium(){ return 1000; }
             },
@@ -2937,13 +3098,31 @@ export const actions = {
                 return false;
             }
         },
+        mythril_crates: {
+            id: 'tech-mythril_crates',
+            title: 'Mythril Plated Crates',
+            desc: 'Mythril Plated Crates',
+            reqs: { container: 4, space: 3 },
+            grant: ['container',5],
+            cost: {
+                Knowledge(){ return 145000; },
+                Mythril(){ return 350; }
+            },
+            effect: 'Increase the maximum load of crates by plating them with Mythril',
+            action(){
+                if (payCosts(actions.tech.mythril_crates.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         steel_containers: {
             id: 'tech-steel_containers',
             title: 'Steel Containers',
             desc: 'Design better steel containers',
             reqs: { smelting: 2, container: 1 },
             grant: ['steel_container',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 9000; },
                 Sheet_Metal(){ return 200; }
             },
@@ -2962,7 +3141,7 @@ export const actions = {
             desc: 'Add gantry cranes to container ports',
             reqs: { steel_container: 1, high_tech: 2 },
             grant: ['steel_container',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 22500; },
                 Steel(){ return 5000; }
             },
@@ -2980,7 +3159,7 @@ export const actions = {
             desc: 'New larger containers made from alloy',
             reqs: { steel_container: 2, storage: 4 },
             grant: ['steel_container',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 49500; },
                 Alloy(){ return 2500; }
             },
@@ -2992,13 +3171,31 @@ export const actions = {
                 return false;
             }
         },
+        mythril_containers: {
+            id: 'tech-mythril_containers',
+            title: 'Mythril Containers',
+            desc: 'Reinforce containers with mythril struts',
+            reqs: { steel_container: 3, space: 3 },
+            grant: ['steel_container',4],
+            cost: {
+                Knowledge(){ return 165000; },
+                Mythril(){ return 500; }
+            },
+            effect: 'Increase container capacity by adding mythril struts.',
+            action(){
+                if (payCosts(actions.tech.mythril_containers.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: 'Currency',
             desc: 'Invent the concept of currency',
             reqs: { housing: 1 },
             grant: ['currency',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 22; },
                 Lumber(){ return 10; } 
             },
@@ -3017,7 +3214,7 @@ export const actions = {
             desc: 'Open a commodities market',
             reqs: { banking: 1, currency: 1 },
             grant: ['currency',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 1800; }
             },
             effect: 'Opens a commodities market where you can buy and sell resources.',
@@ -3035,7 +3232,7 @@ export const actions = {
             desc: 'Enables tax rates',
             reqs: { banking: 2, currency: 2 },
             grant: ['currency',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 3375; }
             },
             effect: 'Allows government to adjust the tax rate.',
@@ -3053,7 +3250,7 @@ export const actions = {
             desc: 'Upgrades marketplace for large orders',
             reqs: { currency: 3 },
             grant: ['currency',4],
-            cost: { 
+            cost: {
                 Knowledge(){ return 6750; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at higher volumes.',
@@ -3073,7 +3270,7 @@ export const actions = {
             desc: 'Enable Extreme Taxes',
             reqs: { currency: 4, high_tech: 3 },
             grant: ['currency',5],
-            cost: { 
+            cost: {
                 Knowledge(){ return 36000; }
             },
             effect: 'Corrupt politicians enable the setting of extreme tax strategies.',
@@ -3090,7 +3287,7 @@ export const actions = {
             desc: 'Upgrades marketplace for massive orders',
             reqs: { currency: 5, high_tech: 4 },
             grant: ['currency',6],
-            cost: { 
+            cost: {
                 Knowledge(){ return 108000; }
             },
             effect: 'Upgrades the commodities market to allow for buying and selling at very high volumes.',
@@ -3110,7 +3307,7 @@ export const actions = {
             desc: 'Establish trade routes',
             reqs: { currency: 2, military: 1 },
             grant: ['trade',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 4500; }
             },
             effect: 'Create trade routes with your neighbors.',
@@ -3129,7 +3326,7 @@ export const actions = {
             desc: 'Negotiate new trade routes',
             reqs: { trade: 1, high_tech: 1 },
             grant: ['trade',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 16200; }
             },
             effect: 'Increase the effectiveness of each trade post by 1.',
@@ -3146,7 +3343,7 @@ export const actions = {
             desc: 'Increase trade volume with trains',
             reqs: { trade: 2, high_tech: 3 },
             grant: ['trade',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 37800; }
             },
             effect: 'Increase the effectiveness of each trade post by 1.',
@@ -3163,7 +3360,7 @@ export const actions = {
             desc: 'Invent Banking',
             reqs: { currency: 1 },
             grant: ['banking',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 90; }
             },
             effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money.',
@@ -3181,7 +3378,7 @@ export const actions = {
             desc: 'Invent Investing',
             reqs: { banking: 1 },
             grant: ['banking',2],
-            cost: { 
+            cost: {
                 Money(){ return 2500; },
                 Knowledge(){ return 900; }
             },
@@ -3362,6 +3559,25 @@ export const actions = {
                 return false;
             }
         },
+        mythril_vault: {
+            id: 'tech-mythril_vault',
+            title: 'Mythril Vault',
+            desc: 'Mythril Vault',
+            reqs: { banking: 5, space: 3 },
+            grant: ['vault',1],
+            cost: {
+                Money(){ return 500000; },
+                Knowledge(){ return 150000; },
+                Mythril(){ return 750; }
+            },
+            effect: 'Upgrade banks with impenetrable mythil plated vaults.',
+            action(){
+                if (payCosts(actions.tech.mythril_vault.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         home_safe: {
             id: 'tech-home_safe',
             title: 'House Safe',
@@ -3376,6 +3592,25 @@ export const actions = {
             effect: 'Install a safe in every cottage and apartment to store valuables.',
             action(){
                 if (payCosts(actions.tech.home_safe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        fire_proof_safe: {
+            id: 'tech-fire_proof_safe',
+            title: 'Fire Proof Safe',
+            desc: 'Fire Proof Safe',
+            reqs: { home_safe: 1, space: 3 },
+            grant: ['home_safe',2],
+            cost: {
+                Money(){ return 250000; },
+                Knowledge(){ return 120000; },
+                Iridium(){ return 1000; }
+            },
+            effect: 'Upgrade house safes with newer fire resistant materials.',
+            action(){
+                if (payCosts(actions.tech.fire_proof_safe.cost)){
                     return true;
                 }
                 return false;
@@ -3397,6 +3632,24 @@ export const actions = {
                     global.tech[tech] = actions.tech.monument.grant[1];
                     global.arpa['m_type'] = arpa('Monument');
                     arpa('Physics');
+                    return true;
+                }
+                return false;
+            }
+        },
+        tourism: {
+            id: 'tech-tourism',
+            title: 'Tourism',
+            desc: 'Tourism',
+            reqs: { monuments: 4 },
+            grant: ['monument',2],
+            cost: {
+                Knowledge(){ return 150000; }
+            },
+            effect: `Promote tourism of your city.`,
+            action(){
+                if (payCosts(actions.tech.tourism.cost)){
+                    global.city['tourist_center'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -3535,6 +3788,27 @@ export const actions = {
             effect: 'The internet is a revolution which massively changes how information is exchanged. Increases the base value of Universities and Libraries by 40%.',
             action(){
                 if (payCosts(actions.tech.internet.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        observatory: {
+            id: 'tech-observatory',
+            title: 'Space Observatory',
+            desc: 'Space Observatory',
+            reqs: { science: 8, space: 3, luna: 1 },
+            grant: ['science',9],
+            cost: {
+                Knowledge(){ return 148000; }
+            },
+            effect: 'Create plans for a moon based observatory, the lack of atmosphere makes this an ideal location for observing the stars.',
+            action(){
+                if (payCosts(actions.tech.observatory.cost)){
+                    global.space['observatory'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
@@ -3759,10 +4033,11 @@ export const actions = {
             id: 'tech-lasers',
             title: 'Lasers',
             desc: 'Light Amplification by Stimulated Emission of Radiation',
-            reqs: { high_tech: 7, supercollider: 1, locked: 1 },
+            reqs: { high_tech: 7, space: 3, supercollider: 1, locked: 1 },
             grant: ['high_tech',8],
             cost: {
-                Knowledge(){ return 160000; }
+                Knowledge(){ return 180000; },
+                Iridium(){ return 500; }
             },
             effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
             action(){
@@ -3825,6 +4100,25 @@ export const actions = {
                 return false;
             }
         },
+        breeder_reactor: {
+            id: 'tech-breeder_reactor',
+            title: 'Breeder Reactor',
+            desc: 'Breeder Reactor',
+            reqs: { high_tech: 5, uranium: 3, space: 3 },
+            grant: ['uranium',4],
+            cost: {
+                Knowledge(){ return 160000; },
+                Uranium(){ return 250; },
+                Iridium(){ return 1000; }
+            },
+            effect: 'Breeder reactors allow you to more fully consume nuclear fuel which increases the total output of fission reactors.',
+            action(){
+                if (payCosts(actions.tech.breeder_reactor.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mine_conveyor: {
             id: 'tech-mine_conveyor',
             title: 'Mine Conveyor Belts',
@@ -3853,7 +4147,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 27000; }
             },
-            effect: 'Unlock oil derrecks and begin the age of big oil.',
+            effect: 'Unlock oil derricks and begin the age of big oil.',
             action(){
                 if (payCosts(actions.tech.oil_well.cost)){
                     global.city['oil_well'] = { count: 0 };
@@ -3893,44 +4187,6 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.oil_power.cost)){
                     global.city['oil_power'] = { count: 0 };
-                    return true;
-                }
-                return false;
-            }
-        },
-        polymer: {
-            id: 'tech-polymer',
-            title: 'Polymer',
-            desc: 'Polymer',
-            reqs: { genetics: 1 },
-            grant: ['polymer',1],
-            cost: {
-                Knowledge(){ return 80000; },
-                Oil(){ return 5000; },
-                Alloy(){ return 450; }
-            },
-            effect: 'Create a new high tech polymer material that can be used for a wide variety of applications.',
-            action(){
-                if (payCosts(actions.tech.polymer.cost)){
-                    global.resource.Polymer.display = true;
-                    messageQueue('Polymer is now available for manufacture');
-                    return true;
-                }
-                return false;
-            }
-        },
-        fluidized_bed_reactor: {
-            id: 'tech-fluidized_bed_reactor',
-            title: 'Fluidized Bed Reactor',
-            desc: 'Fluidized Bed Reactor',
-            reqs: { polymer: 1, high_tech: 6 },
-            grant: ['polymer',2],
-            cost: {
-                Knowledge(){ return 99000; }
-            },
-            effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%.',
-            action(){
-                if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
                     return true;
                 }
                 return false;
@@ -3984,6 +4240,83 @@ export const actions = {
             effect: 'A new oil mining technique, controversial but effective. Improves oil derrick output by 40%.',
             action(){
                 if (payCosts(actions.tech.fracking.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mythril_drills: {
+            id: 'tech-mythril_drills',
+            title: 'Mythril Drills',
+            desc: 'Mythril Drills',
+            reqs: { oil: 6, space: 3 },
+            grant: ['oil',7],
+            cost: {
+                Knowledge(){ return 165000; },
+                Mythril(){ return 100; }
+            },
+            effect: 'New mythril drills that will improve the efficency of your oil derricks.',
+            action(){
+                if (payCosts(actions.tech.mythril_drills.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mass_driver: {
+            id: 'tech-mass_driver',
+            title: 'Mass Driver',
+            desc: 'Mass Driver',
+            reqs: { oil: 6, space: 3 },
+            grant: ['mass',1],
+            cost: {
+                Knowledge(){ return 170000; }
+            },
+            effect: 'Mass drivers use an electromagnetic rail to launch payloads into orbit and can be used to reduce fuel consumption required by traditional rocket launches.',
+            action(){
+                if (payCosts(actions.tech.mass_driver.cost)){
+                    global.city['mass_driver'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        polymer: {
+            id: 'tech-polymer',
+            title: 'Polymer',
+            desc: 'Polymer',
+            reqs: { genetics: 1 },
+            grant: ['polymer',1],
+            cost: {
+                Knowledge(){ return 80000; },
+                Oil(){ return 5000; },
+                Alloy(){ return 450; }
+            },
+            effect: 'Create a new high tech polymer material that can be used for a wide variety of applications.',
+            action(){
+                if (payCosts(actions.tech.polymer.cost)){
+                    global.resource.Polymer.display = true;
+                    messageQueue('Polymer is now available for manufacture');
+                    return true;
+                }
+                return false;
+            }
+        },
+        fluidized_bed_reactor: {
+            id: 'tech-fluidized_bed_reactor',
+            title: 'Fluidized Bed Reactor',
+            desc: 'Fluidized Bed Reactor',
+            reqs: { polymer: 1, high_tech: 6 },
+            grant: ['polymer',2],
+            cost: {
+                Knowledge(){ return 99000; }
+            },
+            effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%.',
+            action(){
+                if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
                     return true;
                 }
                 return false;
@@ -4475,6 +4808,28 @@ export const actions = {
             effect: 'Upgrade your garrisons to house additional soldiers.',
             action(){
                 if (payCosts(actions.tech.bunk_beds.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        rail_guns: {
+            id: 'tech-rail_guns',
+            title: 'Rail Guns',
+            desc: 'Rail Guns',
+            reqs: { military: 5, mass: 1 },
+            grant: ['military',6],
+            cost: {
+                Knowledge(){ return 200000; },
+                Iridium(){ return 2500; }
+            },
+            effect: 'New more powerful weaponry for your army.',
+            action(){
+                if (payCosts(actions.tech.rail_guns.cost)){
+                    var tech = actions.tech.rail_guns.grant[0];
+                    global.tech[tech] = actions.tech.rail_guns.grant[1];
+                    global.civic['garrison'].workers--;
+                    global.civic['garrison'].workers++;
                     return true;
                 }
                 return false;
@@ -5085,15 +5440,200 @@ export const actions = {
                 }
                 return false;
             }
-        }
+        },
+        astrophysics: {
+            id: 'tech-astrophysics',
+            title: 'Astrophysics',
+            desc: 'Astrophysics',
+            reqs: { space: 2 },
+            grant: ['space_explore',1],
+            cost: {
+                Knowledge(){ return 125000; }
+            },
+            effect: 'Navigating space requires research into a new branch of science called astrophysics.',
+            action(){
+                if (payCosts(actions.tech.astrophysics.cost)){
+                    global.space['propellant_depot'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        rover: {
+            id: 'tech-rover',
+            title: 'Rovers',
+            desc: 'Rovers',
+            reqs: { space_explore: 1 },
+            grant: ['space_explore',2],
+            cost: {
+                Knowledge(){ return 135000; },
+                Alloy(){ return 22000 },
+                Polymer(){ return 18000 },
+                Uranium(){ return 750 }
+            },
+            effect: 'Design an unmanned vehicle which can be used to explore other planets and determine their potential.',
+            action(){
+                if (payCosts(actions.tech.rover.cost)){
+                    global.settings.space.moon = true;
+                    global.space['moon_base'] = {
+                        count: 0,
+                        on: 0,
+                        support: 0,
+                        s_max: 0
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        probes: {
+            id: 'tech-probes',
+            title: 'Space Probes',
+            desc: 'Space Probes',
+            reqs: { space_explore: 2 },
+            grant: ['space_explore',3],
+            cost: {
+                Knowledge(){ return 168000; },
+                Steel(){ return 100000 },
+                Iridium(){ return 5000 },
+                Uranium(){ return 2250 },
+                Helium_3(){ return 3500 }
+            },
+            effect: 'Design an unmanned space craft which can be used to survey far away plantoids.',
+            action(){
+                if (payCosts(actions.tech.probes.cost)){
+                    global.settings.space.red = true;
+                    global.settings.space.hell = true;
+                    global.space['spaceport'] = {
+                        count: 0,
+                        on: 0,
+                        support: 0,
+                        s_max: 0
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        starcharts: {
+            id: 'tech-starcharts',
+            title: 'Star Charts',
+            desc: 'Star Charts',
+            reqs: { space_explore: 3, science: 9 },
+            grant: ['space_explore',4],
+            cost: {
+                Knowledge(){ return 185000; }
+            },
+            effect: 'Map the planets orbits to determine the best routes for visiting further away destinations.',
+            action(){
+                if (payCosts(actions.tech.starcharts.cost)){
+                    global.settings.space.gas = true;
+                    global.settings.space.sun = true;
+                    global.space['swarm_control'] = { count: 0, support: 0, s_max: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        colonization: {
+            id: 'tech-colonization',
+            title: 'Colonization',
+            desc(){ return `${races[global.race.species].solar.red} Colonization`; },
+            reqs: { space: 4 },
+            grant: ['mars',2],
+            cost: {
+                Knowledge(){ return 172000; }
+            },
+            effect(){ return `They say you technically haven't colonized a place until you grow crops there. "Colonize" ${races[global.race.species].solar.red} by designing a biodome.`; },
+            action(){
+                if (payCosts(actions.tech.colonization.cost)){
+                    global.space['biodome'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        dyson_sphere: {
+            id: 'tech-dyson_sphere',
+            title: 'Dyson Sphere',
+            desc: 'Dyson Sphere',
+            reqs: { solar: 1 },
+            grant: ['solar',2],
+            cost: {
+                Knowledge(){ return 195000; }
+            },
+            effect: 'Science fiction has popularized the idea of a Dyson Sphere, try to figure out how to make one.',
+            action(){
+                if (payCosts(actions.tech.dyson_sphere.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        dyson_swarm: {
+            id: 'tech-dyson_swarm',
+            title: 'Dyson Swarm',
+            desc: 'Dyson Swarm',
+            reqs: { solar: 2 },
+            grant: ['solar',3],
+            cost: {
+                Knowledge(){ return 210000; }
+            },
+            effect: 'A Dyson Sphere turns out to be completely impractical, if not impossible. Instead design a network of solar satellites known as a Dyson Swarm.',
+            action(){
+                if (payCosts(actions.tech.dyson_swarm.cost)){
+                    global.space['swarm_satellite'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        gps: {
+            id: 'tech-gps',
+            title: 'GPS Constellation',
+            desc: 'GPS Constellation',
+            reqs: { space_explore: 1 },
+            grant: ['satellite',1],
+            cost: {
+                Knowledge(){ return 150000; }
+            },
+            effect: 'Design a network of navigation satellites.',
+            action(){
+                if (payCosts(actions.tech.gps.cost)){
+                    global.space['gps'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        atmospheric_mining: {
+            id: 'tech-atmospheric_mining',
+            title: 'Atmospheric Mining',
+            desc: 'Atmospheric Mining',
+            reqs: { space: 5 },
+            grant: ['gas_giant',1],
+            cost: {
+                Knowledge(){ return 190000; }
+            },
+            effect: 'Learn the physics of operating a gas giant orbital mining platform.',
+            action(){
+                if (payCosts(actions.tech.atmospheric_mining.cost)){
+                    global.space['gas_mining'] = { count: 0, on: 0 };
+                    global.space['gas_storage'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
     },
-    genes: arpa('GeneTech')
+    genes: arpa('GeneTech'),
+    space: spaceTech()
 };
 
 export function storageMultipler(){
-    var multiplier = (global.tech['storage'] - 1) * 0.75 + 1;
+    var multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
-        multiplier *= global.tech['storage'] >= 4 ? 2 : 1.5;
+        multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
     }
     if (global.race['pack_rat']){
         multiplier *= 1.05;
@@ -5141,11 +5681,11 @@ export function checkOldTech(tech){
     return false;
 }
 
-export function checkPowerRequirements(action,type){
+function checkPowerRequirements(c_action){
     var isMet = true;
-    if (actions[action][type]['power_reqs']){
-        Object.keys(actions[action][type].power_reqs).forEach(function (req) {
-            if (!global.tech[req] || global.tech[req] < actions[action][type].power_reqs[req]){
+    if (c_action['power_reqs']){
+        Object.keys(c_action.power_reqs).forEach(function (req) {
+            if (!global.tech[req] || global.tech[req] < c_action.power_reqs[req]){
                 isMet = false;
             }
         });
@@ -5166,6 +5706,7 @@ function gainTech(action){
     global.tech[tech] = actions.tech[action].grant[1];
     drawCity();
     drawTech();
+    space();
 }
 
 export function drawCity(){
@@ -5219,6 +5760,11 @@ export function oldTech(tech){
 }
 
 export function addAction(action,type,old){
+    let c_action = actions[action][type];
+    setAction(c_action,action,type,old)
+}
+
+export function setAction(c_action,action,type,old){
     if (global.race['kindling_kindred'] && action === 'tech' && type === 'stone_axe'){
         return;
     }
@@ -5231,15 +5777,15 @@ export function addAction(action,type,old){
     if (global.race['herbivore'] && action === 'tech' && type === 'fanaticism'){
         return;
     }
-    if (actions[action][type]['powered'] && !global[action][type]['on']){
+    if (c_action['powered'] && !global[action][type]['on']){
         global[action][type]['on'] = 0;
     }
-    var id = actions[action][type].id;
+    var id = c_action.id;
     var parent = $(`<div id="${id}" class="action"></div>`);
-    if (!checkAffordable(action,type)){
+    if (!checkAffordable(c_action)){
         parent.addClass('cna');
     }
-    if (!checkAffordable(action,type,true)){
+    if (!checkAffordable(c_action,true)){
         parent.addClass('cnam');
     }
     if (old){
@@ -5251,7 +5797,7 @@ export function addAction(action,type,old){
         parent.append(element);
     }
 
-    if (actions[action][type]['special']){
+    if (c_action['special']){
         var special = $(`<div class="special" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
@@ -5263,13 +5809,13 @@ export function addAction(action,type,old){
             </svg></div>`);
         parent.append(special);
     }
-    if (actions[action][type]['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(action,type)){
+    if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)){
         var powerOn = $('<div class="on" @click="power_on" title="ON">{{ act.on }}</div>');
         var powerOff = $('<div class="off" @click="power_off" title="OFF">{{ act.on | off }}</div>');
         parent.append(powerOn);
         parent.append(powerOff);
     }
-    if (action !== 'tech' && global[action][type] && global[action][type].count >= 0){
+    if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count >= 0){
         element.append($('<span class="count">{{ act.count }}</span>'));
     }
     if (old){
@@ -5278,7 +5824,7 @@ export function addAction(action,type,old){
     else {
         $('#'+action).append(parent);
     }
-    if (action !== 'tech' && global[action][type] && global[action][type].count === 0){
+    if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count === 0){
         $(`#${id} .count`).css('display','none');
         $(`#${id} .special`).css('display','none');
         $(`#${id} .on`).css('display','none');
@@ -5294,34 +5840,51 @@ export function addAction(action,type,old){
     }
     vues[id] = new Vue({
         data: {
-            title: typeof actions[action][type].title === 'string' ? actions[action][type].title : actions[action][type].title(),
+            title: typeof c_action.title === 'string' ? c_action.title : c_action.title(),
             act: global[action][type]
         },
         methods: {
             action(){
                 switch (action){
                     case 'tech':
-                        if (actions[action][type].action()){
+                        if (c_action.action()){
                             gainTech(type);
                         }
                         break;
                     case 'genes':
-                        if (actions[action][type].action()){
+                        if (c_action.action()){
                             gainGene(type);
                         }
                         break;
                     default:
-                        var keyMult = keyMultiplier();
+                        let keyMult = keyMultiplier();
+                        if (c_action['grant']){
+                            keyMult = 1;
+                        }
                         for (var i=0; i<keyMult; i++){
-                            if (!actions[action][type].action()){
+                            if (!c_action.action()){
                                 break;
                             }
                         }
-                        updateDesc(action,type);
-                        if (!checkAffordable(action,type)){
-                            let id = actions[action][type].id;
+                        if (!checkAffordable(c_action)){
+                            let id = c_action.id;
                             $(`#${id}`).addClass('cna');
                         }
+                        if (c_action['grant']){
+                            let tech = c_action.grant[0];
+                            global.tech[tech] = c_action.grant[1];
+                            removeAction(c_action.id);
+                            drawCity();
+                            drawTech();
+                            space();
+                        }
+                        else if (c_action['refresh']){
+                            removeAction(c_action.id);
+                            drawCity();
+                            drawTech();
+                            space();
+                        }
+                        updateDesc(c_action,action,type);
                         break;
                 }
             },
@@ -5359,7 +5922,7 @@ export function addAction(action,type,old){
     $('#'+id).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            actionDesc(popper,action,type,old);
+            actionDesc(popper,c_action,old);
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
@@ -5370,13 +5933,13 @@ export function addAction(action,type,old){
         });
 }
 
-function actionDesc(parent,action,type,old){
+function actionDesc(parent,c_action,old){
     parent.empty();
-    var desc = typeof actions[action][type].desc === 'string' ? actions[action][type].desc : actions[action][type].desc();
+    var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     parent.append($('<div>'+desc+'</div>'));
-    if (actions[action][type].cost && !old){ 
+    if (c_action.cost && !old){ 
         var cost = $('<div></div>');
-        var costs = adjustCosts(actions[action][type].cost);
+        var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res) {
             var res_cost = costs[res]();
             if (res_cost > 0){
@@ -5388,14 +5951,14 @@ function actionDesc(parent,action,type,old){
         });
         parent.append(cost);
     }
-    if (actions[action][type].effect){
-        var effect = typeof actions[action][type].effect === 'string' ? actions[action][type].effect : actions[action][type].effect();
+    if (c_action.effect){
+        var effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
         if (effect){
             parent.append($(`<div>${effect}</div>`));
         }
     }
-    if (actions[action][type].flair){
-        var flair = typeof actions[action][type].flair === 'string' ? actions[action][type].flair : actions[action][type].flair();
+    if (c_action.flair){
+        var flair = typeof c_action.flair === 'string' ? c_action.flair : c_action.flair();
         parent.append($(`<div class="flair has-text-special">${flair}</div>`));
         parent.addClass('flair');
     }
@@ -5406,8 +5969,8 @@ export function removeAction(id){
     $('#pop'+id).remove();
 }
 
-function updateDesc(category,action){
-    var id = actions[category][action].id;
+function updateDesc(c_action,category,action){
+    var id = c_action.id;
     if (global[category] && global[category][action] && global[category][action]['count']){
         $(`#${id} .count`).html(global[category][action].count);
         if (global[category][action] && global[category][action].count > 0){
@@ -5417,7 +5980,7 @@ function updateDesc(category,action){
             $(`#${id} .off`).css('display','block');
         }
     }
-    actionDesc($('#pop'+id),category,action);
+    actionDesc($('#pop'+id),c_action);
 }
 
 function adjustCosts(costs){
@@ -5498,7 +6061,7 @@ function rebarAdjust(costs){
     return costs;
 }
 
-function payCosts(costs){
+export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
@@ -5513,13 +6076,13 @@ function payCosts(costs){
     return false;
 }
 
-export function checkAffordable(type,action,max){
-    if (actions[type][action].cost){
+export function checkAffordable(c_action,max){
+    if (c_action.cost){
         if (max){
-            return checkMaxCosts(adjustCosts(actions[type][action].cost));
+            return checkMaxCosts(adjustCosts(c_action.cost));
         }
         else {
-            return checkCosts(adjustCosts(actions[type][action].cost));
+            return checkCosts(adjustCosts(c_action.cost));
         }
     }
     return true;

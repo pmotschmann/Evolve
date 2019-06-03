@@ -1,3 +1,8 @@
+#### 0.3.0 - 6/2/2019
+Space V1 Update<br>
+This opens the first steps into space exploration, more to come... this is not the end<br>
+Rebalanced storage caps to help the game feel more idle friendly<br>
+
 #### 0.2.70 - 6/2/2019
 Fixed bug when picking Fanatism with cath gods that wouldn't release your farmers<br>
 Fixed bug when upgrading weapon technology that wouldn't immediately show the increase in army rating<br>

@@ -1,6 +1,6 @@
 import { global, vues, keyMultiplier, poppers } from './vars.js';
-import { racialTrait } from './races.js';
-import { craftingRatio } from './resources.js';
+import { racialTrait, races } from './races.js';
+import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
     farmer: function(){
@@ -59,7 +59,7 @@ export const job_desc = {
         if (global.tech['banking'] >= 10){
             interest += 2 * global.tech['stock_exchange'];
         }
-        return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by ${interest}% per tax cycle.`;
+        return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by ${interest}%.`;
     },
     entertainer: function(){
         let morale = global.tech['theatre'];
@@ -83,8 +83,14 @@ export const job_desc = {
         if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
             impact *= 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
         }
+        if (global.space['satellite']){
+            impact *= 1 + (global.space.satellite.count * 0.01);
+        }
         impact = +impact.toFixed(2);
         return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per second.`;
+    },
+    colonist(){
+        return `Colonists work hard to keep your ${races[global.race.species].solar.red} colony running smoothly and enhance various aspects of the colony.`;
     }
 }
 
@@ -103,6 +109,7 @@ export function defineJobs(){
     loadJob('professor','Professor',0.5);
     loadJob('scientist','Scientist',1);
     loadJob('banker','Banker',0.1);
+    loadJob('colonist','Colonist',1);
     loadFoundry();
 }
 
@@ -229,7 +236,7 @@ export function loadFoundry(){
         var foundry = $('<div class="job"><div class="foundry job_label"><span class="has-text-warning">Craftman Assigned</span><span class="count">{{ f.crafting }} / {{ f.count }}</span></div></div>');
         $('#foundry').append(foundry);
 
-        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal'];
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril'];
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
@@ -290,7 +297,12 @@ export function loadFoundry(){
                     let name = res.replace("_", " ");
                     let multiplier = craftingRatio(res);
                     let final = +(global.city.foundry[res] * multiplier).toFixed(2);
+
                     popper.append($(`<div>+${final} ${name}/cycle</div>`));
+                    for (let i=0; i<craftCost[res].length; i++){
+                        let cost = +(craftCost[res][i].a * global.city.foundry[res]).toFixed(2);
+                        popper.append($(`<div>-${cost} ${craftCost[res][i].r}/cycle<div>`));
+                    }
     
                     popper.show();
                     poppers[`cr${res}`] = new Popper($(`#craft${res}`),popper);

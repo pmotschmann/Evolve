@@ -5,6 +5,7 @@ export var global = {
     evolution: {},
     tech: {},
     city: {},
+    space: {},
     civic: { free: 0 },
     race: {},
     genes: {},
@@ -21,6 +22,9 @@ export var breakdown = {
     c: {},
     p: {}
 };
+export var p_on = {};
+export var red_on = {};
+export var moon_on = {};
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -108,7 +112,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.2.70';
+global['version'] = '0.3.0';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -132,6 +136,24 @@ if (!global['settings']){
         disableReset: false,
         theme: 'dark'
     }
+}
+if (!global.settings['space']){
+    global.settings['space'] = {
+        home: true,
+        moon: false,
+        red: false,
+        hell: false,
+        sun: false,
+        gas: false,
+        gas_moon: false,
+        belt: false,
+        dwarf: false,
+        blackhole: false
+    }
+}
+
+if (!global['space']){
+    global['space'] = {};
 }
 
 if (!global.settings['showAchieve']){
@@ -234,6 +256,10 @@ if (!global.city['market']){
         trade: 0,
         active: false
     };
+}
+
+if (global.city['foundry'] && !global.city.foundry['Mythril']){
+    global.city.foundry['Mythril'] = 0;
 }
 
 if (!global.settings['arpa']){

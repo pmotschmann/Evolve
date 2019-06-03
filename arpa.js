@@ -1,6 +1,7 @@
 import { global, vues, poppers, messageQueue, modRes } from './vars.js';
 import { actions, drawCity, drawTech, addAction, removeAction } from './actions.js';
 import { races, traits } from './races.js';
+import { space } from './space.js';
 
 export function arpa(type) {
     switch(type){
@@ -26,7 +27,7 @@ const arpaProjects = {
         desc: 'A supercollider will help expand your understanding of theoretical sciences',
         reqs: { high_tech: 6 },
         grant: 'supercollider',
-        effect: function() {
+        effect() {
             let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? 8 : 4;
             if (global.tech['storage'] >= 6){
                 return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacity by 5%.`;
@@ -50,7 +51,7 @@ const arpaProjects = {
         desc: 'The stock exchange will boost the amount of money your banks can trade in.',
         reqs: { banking: 9 },
         grant: 'stock_exchange',
-        effect: function() {
+        effect() {
             if (global.tech['banking'] >= 10){
                 return 'Each level of stock exchange will boost bank capacity by 10% and banker effectiveness by 2%.';
             }
@@ -68,26 +69,27 @@ const arpaProjects = {
     launch_facility: {
         title: 'Launch Facility',
         desc: 'A launch facility allows for construction and firing of rockets, and thus space exploration.',
-        reqs: { high_tech: 7, locked: 1 },
+        reqs: { high_tech: 7 },
         grant: 'launch_facility',
-        effect: function() {
-            return 'Each launch facility will do something really awesome.';
+        rank: 1,
+        effect(){
+            return `Enables the space tab, does this description matter? it shouldn't because no one should be reading it.`;
         },
         cost: {
-            Money: function(){ return costMultiplier('launch_facility', 4000000, 1.1); },
+            Money: function(){ return costMultiplier('launch_facility', 2000000, 1.1); },
             Knowledge: function(){ return costMultiplier('launch_facility', 500000, 1.1); },
             Cement: function(){ return costMultiplier('launch_facility', 150000, 1.1); },
             Oil: function(){ return costMultiplier('launch_facility', 20000, 1.1); },
-            Sheet_Metal: function(){ return costMultiplier('launch_facility', 25000, 1.1); },
+            Sheet_Metal: function(){ return costMultiplier('launch_facility', 15000, 1.1); },
             Alloy: function(){ return costMultiplier('launch_facility', 25000, 1.1); }
         }
     },
     monument: {
-        title: function(){ return global.arpa.m_type },
+        title(){ return global.arpa.m_type },
         desc: `Construct a monument to your civilization's greatness.`,
         reqs: { monument: 1 },
         grant: 'monuments',
-        effect: function() {
+        effect(){
             return 'Each monument increases maximum morale by 2%';
         },
         cost: {
@@ -108,7 +110,7 @@ const genePool = {
         grant: ['creep',1],
         cost: 25,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>25</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('genetic_memory')){
                 return true;
             }
@@ -123,7 +125,7 @@ const genePool = {
         grant: ['creep',2],
         cost: 75,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>75</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('animus')){
                 return true;
             }
@@ -138,7 +140,7 @@ const genePool = {
         grant: ['creep',3],
         cost: 225,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>225</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('divine_remembrance')){
                 return true;
             }
@@ -153,7 +155,7 @@ const genePool = {
         grant: ['creep',4],
         cost: 618,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>618</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('divine_proportion')){
                 return true;
             }
@@ -168,7 +170,7 @@ const genePool = {
         grant: ['store',1],
         cost: 50,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>50</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('spatial_reasoning')){
                 return true;
             }
@@ -183,7 +185,7 @@ const genePool = {
         grant: ['store',2],
         cost: 125,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>125</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('spatial_superiority')){
                 return true;
             }
@@ -198,7 +200,7 @@ const genePool = {
         grant: ['store',3],
         cost: 325,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>325</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('spatial_supremacy')){
                 return true;
             }
@@ -213,7 +215,7 @@ const genePool = {
         grant: ['evolve',1],
         cost: 10,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>10</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('morphogenesis')){
                 return true;
             }
@@ -228,7 +230,7 @@ const genePool = {
         grant: ['evolve',2],
         cost: 35,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>35</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('recombination')){
                 return true;
             }
@@ -243,7 +245,7 @@ const genePool = {
         grant: ['birth',1],
         cost: 65,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>65</span></div>',
-        action: function (){
+        action(){
             if (payPlasmids('replication')){
                 return true;
             }
@@ -256,9 +258,9 @@ const genePool = {
         desc: 'Can unlock both fanaticism and anthropology',
         reqs: { creep: 1, birth: 1, store: 1, locked: 1 },
         grant: ['transcendence',1],
-        cost: 500,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>500</span></div>',
-        action: function (){
+        cost: 5000,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>5000</span></div>',
+        action(){
             if (payPlasmids('transcendence')){
                 return true;
             }
@@ -505,6 +507,9 @@ function addProject(parent,project){
                 rank: 0
             };
         }
+        if (arpaProjects[project]['rank'] && global.arpa[project].rank >= arpaProjects[project].rank){
+            return;
+        }
         let current = $(`<div id="arpa${project}" class="arpaProject"></div>`);
         parent.append(current);
 
@@ -537,6 +542,15 @@ function addProject(parent,project){
                                 if (pro === 'monument'){
                                     global.arpa['m_type'] = pick_monument();
                                     $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
+                                }
+                                if (pro === 'launch_facility'){
+                                    global.settings.showSpace = true;
+                                    physics();
+                                    $(`#popArpa${pro}`).hide();
+                                    poppers[`popArpa${pro}`].destroy();
+                                    $(`#popArpa${pro}`).remove();
+                                    global.tech['space'] = 1;
+                                    space();
                                 }
                                 drawTech();
                             }
