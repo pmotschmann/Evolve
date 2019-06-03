@@ -5538,13 +5538,13 @@ export const actions = {
         colonization: {
             id: 'tech-colonization',
             title: 'Colonization',
-            desc: `${races[global.race.species].solar.red} Colonization`,
+            desc(){ return `${races[global.race.species].solar.red} Colonization`; },
             reqs: { space: 4 },
             grant: ['mars',2],
             cost: {
                 Knowledge(){ return 172000; }
             },
-            effect: `They say you technically haven't colonized a place until you grow crops there. "Colonize" ${races[global.race.species].solar.red} by designing a biodome.`,
+            effect(){ return `They say you technically haven't colonized a place until you grow crops there. "Colonize" ${races[global.race.species].solar.red} by designing a biodome.`; },
             action(){
                 if (payCosts(actions.tech.colonization.cost)){
                     global.space['biodome'] = { count: 0, on: 0 };

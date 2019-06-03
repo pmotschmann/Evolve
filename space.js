@@ -740,7 +740,7 @@ const spaceProjects = {
         },
         gas_storage: {
             id: 'space-gas_storage',
-            title: `${races[global.race.species].solar.gas} Fuel Depot`,
+            title(){ return `${races[global.race.species].solar.gas} Fuel Depot`; },
             desc(){
                 return `<div>Orbital depot used to store fuels<div>`;
             },

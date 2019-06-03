@@ -872,6 +872,7 @@ function warhead(){
         },
         biome: biome
     };
+    global.space = {};
     global.civic = { free: 0 };
     global.resource = {};
     global.evolution = {};
