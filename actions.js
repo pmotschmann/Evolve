@@ -5539,7 +5539,7 @@ export const actions = {
             id: 'tech-colonization',
             title: 'Colonization',
             desc(){ return `${races[global.race.species].solar.red} Colonization`; },
-            reqs: { space: 4 },
+            reqs: { space: 4, mars: 1 },
             grant: ['mars',2],
             cost: {
                 Knowledge(){ return 172000; }
@@ -5861,16 +5861,18 @@ export function setAction(c_action,action,type,old){
                         if (c_action['grant']){
                             keyMult = 1;
                         }
+                        let grant = false;
                         for (var i=0; i<keyMult; i++){
                             if (!c_action.action()){
                                 break;
                             }
+                            grant = true;
                         }
                         if (!checkAffordable(c_action)){
                             let id = c_action.id;
                             $(`#${id}`).addClass('cna');
                         }
-                        if (c_action['grant']){
+                        if (c_action['grant'] && grant){
                             let tech = c_action.grant[0];
                             global.tech[tech] = c_action.grant[1];
                             removeAction(c_action.id);
