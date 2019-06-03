@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation } from './vars.js';
+import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -16,9 +16,9 @@ export const resource_values = {
     Titanium: 150,
     Alloy: 275,
     Polymer: 225,
-    //Iridium: 200,
+    Iridium: 380,
     //Deuterium: 450,
-    //'Helium-3': 600,
+    'Helium_3': 620,
     //Neutronium: 1000
 };
 
@@ -37,14 +37,17 @@ export const tradeRatio = {
     Titanium: 0.25,
     Alloy: 0.25,
     Polymer: 0.25,
+    Iridium: 0.25,
+    'Helium_3': 0.25,
 }
 
 export const craftCost = {
-    Plywood: { r: 'Lumber', a: 100 },
-    Brick: { r: 'Cement', a: 40 },
-    Bronze: { r: 'Copper', a: 80 },
-    Wrought_Iron: { r: 'Iron', a: 80 },
-    Sheet_Metal: { r: 'Steel', a: 60 },
+    Plywood: [{ r: 'Lumber', a: 100 }],
+    Brick: [{ r: 'Cement', a: 40 }],
+    Bronze: [{ r: 'Copper', a: 80 }],
+    Wrought_Iron: [{ r: 'Iron', a: 80 }],
+    Sheet_Metal: [{ r: 'Steel', a: 60 }],
+    Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
 };
 
 export function craftingRatio(res){
@@ -58,6 +61,12 @@ export function craftingRatio(res){
     }
     if (global.tech['foundry'] >= 6 && res === 'Brick'){
         multiplier += global.city['foundry'].count * 0.02;
+    }
+    if (global.tech['foundry'] >= 7){
+        multiplier += p_on['factory'] * 0.05;
+    }
+    if (global.space['fabrication']){
+        multiplier += red_on['fabrication'] * global.civic.colonist.workers * 0.02;
     }
     if (global.race['crafty']){
         multiplier += 0.03;
@@ -101,15 +110,17 @@ export function defineResources() {
         loadResource('Titanium',50,1,true,true);
         loadResource('Alloy',50,1,true,true);
         loadResource('Polymer',50,1,true,true);
-        //loadResource('Iridium',50,1,true,true);
+        loadResource('Iridium',0,1,true,true);
         //loadResource('Deuterium',0,1,true,false);
-        //loadResource('Helium-3',0,1,true,false);
+        loadResource('Helium_3',0,1,true,false);
         //loadResource('Neutronium',0,1,true,true);
+        //loadResource('Elerium',0,1,true,true);
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');
         loadResource('Wrought_Iron',-1,0,false,false,'danger');
         loadResource('Sheet_Metal',-1,0,false,false,'danger');
+        loadResource('Mythril',-1,0,false,false,'danger');
         loadRouteCounter();
     }
     loadSpecialResource('Plasmid');
@@ -222,44 +233,40 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             },
             craft: function(res,vol){
                 let craft_bonus = craftingRatio(res);
-                if (vol === 'A'){
-                    let volume = Math.floor(global.resource[craftCost[res].r].amount / craftCost[res].a);
-                    let num = volume * craftCost[res].a;
-                    global.resource[craftCost[res].r].amount -= num;
-                    global.resource[res].amount += volume * craft_bonus;
-                }
-                else {
-                    var keyMult = keyMultiplier();
-                    for (var i=0; i<keyMult; i++){
-                        let num = vol * craftCost[res].a;
-                        let br = false;
-                        while (num > 0){
-                            if (global.resource[craftCost[res].r].amount >= num){
-                                global.resource[craftCost[res].r].amount -= num;
-                                global.resource[res].amount += vol * craft_bonus;
-                                num = 0;
-                            }
-                            else {
-                                num -= craftCost[res].a;
-                                vol--;
-                                br = true;
-                            }
-                        }
-                        if (br){
-                            break;
-                        }
+                let volume = Math.floor(global.resource[craftCost[res][0].r].amount / craftCost[res][0].a);
+                for (let i=1; i<craftCost[res].length; i++){
+                    let temp = Math.floor(global.resource[craftCost[res][i].r].amount / craftCost[res][i].a);
+                    if (temp < volume){
+                        volume = temp;
                     }
                 }
+                if (vol !== 'A'){
+                    let total = vol * keyMultiplier();
+                    if (total < volume){
+                        volume = total;
+                    }
+                }
+                for (let i=0; i<craftCost[res].length; i++){
+                    let num = volume * craftCost[res][i].a;
+                    global.resource[craftCost[res][i].r].amount -= num;
+                }
+                global.resource[res].amount += volume * craft_bonus;
             },
             craftCost: function(res,vol){
-                let num = vol * craftCost[res].a * keyMultiplier();
-                return `${craftCost[res].r} ${num}`;
+                let costs = '';
+                for (let i=0; i<craftCost[res].length; i++){
+                    let num = vol * craftCost[res][i].a * keyMultiplier();
+                    costs = costs + `<div>${craftCost[res][i].r} ${num}</div>`;
+                }
+                return costs;
             },
             hover(res,vol){
                 var popper = $(`<div id="popRes${res}${vol}" class="popper has-background-light has-text-dark"></div>`);
                 $('#main').append(popper);
-                let num = typeof vol === 'number' ? vol * craftCost[res].a : vol;
-                popper.append($(`<div>${craftCost[res].r} <span class="craft" data-val="${num}">${num}</span></div>`));
+                for (let i=0; i<craftCost[res].length; i++){
+                    let num = typeof vol === 'number' ? vol * craftCost[res][i].a : vol;
+                    popper.append($(`<div>${craftCost[res][i].r} <span class="craft" data-val="${num}">${num}</span></div>`));
+                }
 
                 popper.show();
                 poppers[`r${res}${vol}`] = new Popper($(`#inc${res}${vol}`),popper);
@@ -458,7 +465,7 @@ function breakdownPopover(id,name,type){
         if (breakdown[type][name]){
             var popper = $(`<div id="resBreak${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name }}</div></div>`);
+            let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
 
             let types = [name,'Global'];
             for (var i = 0; i < types.length; i++){
@@ -549,6 +556,9 @@ function breakdownPopover(id,name,type){
                 },
                 direction(val){
                     return val >= 0 ? 'To Full' : 'To Empty';
+                },
+                namespace(name){
+                    return name.replace("_"," ");
                 }
             }
         });
@@ -775,20 +785,23 @@ function drawModal(name,color){
 }
 
 export function crateValue(){
-    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 175 : 125;
+    let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 500 : 350;
     if (global.race['pack_rat']){
-        create_value += global.tech.container >= 2 ? 25 : 10;
+        create_value += global.tech.container >= 2 ? 50 : 25;
     }
     if (global.tech['container'] && global.tech['container'] >= 4){
-        create_value += 75;
+        create_value += global.tech['container'] >= 5 ? 500 : 250;
     }
     return spatialReasoning(create_value);
 }
 
 export function containerValue(){
-    let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 600 : 400;
+    let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 1200 : 800;
     if (global.race['pack_rat']){
-        container_value += global.tech.steel_container >= 3 ? 40 : 25;
+        container_value += global.tech.steel_container >= 3 ? 100 : 50;
+    }
+    if (global.tech['steel_container'] && global.tech['steel_container'] >= 4){
+        container_value += 400;
     }
     return spatialReasoning(container_value);
 }

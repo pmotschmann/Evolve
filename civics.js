@@ -709,7 +709,8 @@ export function armyRating(val,type){
         wounded = val - (global.civic.garrison.workers - global.civic.garrison.wounded);
     }
 
-    let army = global.tech['military'] ? (val - (wounded / 2)) * global.tech.military : (val - (wounded / 2));
+    let weapon_tech = global.tech['military'] && global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military;
+    let army = global.tech['military'] ? (val - (wounded / 2)) * weapon_tech : (val - (wounded / 2));
     if (type === 'army'){
         if (global.race['puny']){
             army = Math.floor(army * 0.9);
@@ -885,6 +886,16 @@ function warhead(){
     global.settings.showMarket = false;
     global.settings.showGenetics = false;
     global.settings.showSpace = false;
+    global.settings.space.home = true;
+    global.settings.space.moon = false;
+    global.settings.space.red = false;
+    global.settings.space.hell = false;
+    global.settings.space.sun = false;
+    global.settings.space.gas = false;
+    global.settings.space.gas_moon = false;
+    global.settings.space.belt = false;
+    global.settings.space.dwarf = false;
+    global.settings.space.blackhole = false;
     global.settings.arpa = false;
     global.settings.resTabs = 0;
     global.arpa = {};

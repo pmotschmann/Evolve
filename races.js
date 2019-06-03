@@ -16,6 +16,13 @@ export const races = {
         traits: {
             creative: 1,
             diverse: 1
+        },
+        solar: {
+            red: 'Mars',
+            hell: 'Mercury',
+            gas: 'Juptier',
+            gas_moon: 'Ganymede',
+            dwarf: 'Ceres',
         }
     },
     elven: {
@@ -27,6 +34,13 @@ export const races = {
         traits: { 
             studious: 1,
             arrogant: 1
+        },
+        solar: {
+            red: 'Aman',
+            hell: 'Eremandu',
+            gas: 'Elenion',
+            gas_moon: 'Tirion',
+            dwarf: 'Naugrim',
         }
     },
     orc: {
@@ -38,6 +52,13 @@ export const races = {
         traits: { 
             brute: 1,
             angry: 1
+        },
+        solar: {
+            red: 'Krom',
+            hell: 'Mordor',
+            gas: 'Crush',
+            gas_moon: 'Hammerfell',
+            dwarf: 'Mace',
         }
     },
     cath: {
@@ -49,6 +70,13 @@ export const races = {
         traits: { 
             lazy: 1,
             carnivore: 1
+        },
+        solar: {
+            red: 'Tabbi',
+            hell: 'Vac',
+            gas: 'Garth',
+            gas_moon: 'Purrth',
+            dwarf: 'Kith',
         }
     },
     wolven: {
@@ -60,6 +88,13 @@ export const races = {
         traits: { 
             pack_mentality: 1,
             tracker: 1
+        },
+        solar: {
+            red: 'Pack',
+            hell: 'Howl',
+            gas: 'Rayet',
+            gas_moon: 'Fang',
+            dwarf: 'Runt',
         }
     },
     centaur: {
@@ -71,6 +106,13 @@ export const races = {
         traits: {
             beast_of_burden: 1,
             herbivore: 1
+        },
+        solar: {
+            red: 'Chiron',
+            hell: 'Hydra',
+            gas: 'Barnard',
+            gas_moon: 'Hay',
+            dwarf: 'Pony',
         }
     },
     kobold: {
@@ -82,6 +124,13 @@ export const races = {
         traits: {
             pack_rat: 1,
             paranoid: 1
+        },
+        solar: {
+            red: 'Wick',
+            hell: 'Melt',
+            gas: 'Horde',
+            gas_moon: 'Task',
+            dwarf: 'Satchel',
         }
     },
     goblin: {
@@ -93,6 +142,13 @@ export const races = {
         traits: { 
             greedy: 1,
             merchant: 1
+        },
+        solar: {
+            red: 'Cixi',
+            hell: 'Sixtus',
+            gas: 'Ponzi',
+            gas_moon: 'Tweed',
+            dwarf: 'Marcos',
         }
     },
     gnome: {
@@ -104,6 +160,13 @@ export const races = {
         traits: { 
             smart: 1,
             puny: 1
+        },
+        solar: {
+            red: 'Shire',
+            hell: 'Boot',
+            gas: 'Dwarf',
+            gas_moon: 'Trogg',
+            dwarf: 'Napoleon',
         }
     },
     orge: {
@@ -115,6 +178,13 @@ export const races = {
         traits: { 
             dumb: 1,
             tough: 1
+        },
+        solar: {
+            red: 'Latva',
+            hell: 'Maw',
+            gas: 'Tanoth',
+            gas_moon: 'Goria',
+            dwarf: 'Grok',
         }
     },
     cyclops: {
@@ -126,7 +196,14 @@ export const races = {
         traits: {
             nearsighted: 1,
             intelligent: 1
-        } 
+        },
+        solar: {
+            red: 'Hesiod',
+            hell: 'Phemus',
+            gas: 'Balor',
+            gas_moon: 'Jian',
+            dwarf: 'Sokhor',
+        }
     },
     troll: {
         name: 'Troll',
@@ -137,6 +214,13 @@ export const races = {
         traits: {
             regenerative: 1,
             gluttony: 1
+        },
+        solar: {
+            red: 'Mojo',
+            hell: 'Sulfide',
+            gas: 'Voodoo',
+            gas_moon: 'Hex',
+            dwarf: 'Shadow',
         }
     },
     tortoisan: {
@@ -148,6 +232,13 @@ export const races = {
         traits: { 
             slow: 1,
             armored: 1
+        },
+        solar: {
+            red: 'Rock',
+            hell: 'Shade',
+            gas: 'Ooze',
+            gas_moon: 'Shred',
+            dwarf: 'Shell',
         }
     },
     gecko: {
@@ -159,6 +250,13 @@ export const races = {
         traits: {
             optimistic: 1,
             chameleon: 1
+        },
+        solar: {
+            red: 'Setae',
+            hell: 'Claim',
+            gas: 'Godzilla',
+            gas_moon: 'Gekkota',
+            dwarf: 'Ackie',
         }
     },
     slitheryn: {
@@ -170,6 +268,13 @@ export const races = {
         traits: {
             slow_digestion: 1,
             hard_of_hearing: 1
+        },
+        solar: {
+            red: 'Cobra',
+            hell: 'Ecdysis',
+            gas: 'Serpens',
+            gas_moon: 'Python',
+            dwarf: 'Boa',
         }
     },
     arraak: {
@@ -181,7 +286,14 @@ export const races = {
         traits: {
             resourceful: 1,
             selenophobia: 1
-        } 
+        },
+        solar: {
+            red: 'Hitch',
+            hell: 'Flock',
+            gas: 'Down',
+            gas_moon: 'Peck',
+            dwarf: 'Chick',
+        }
     },
     pterodacti: {
         name: 'Pterodacti',
@@ -192,7 +304,14 @@ export const races = {
         traits: {
             leathery: 1,
             pessimistic: 1
-        } 
+        },
+        solar: {
+            red: 'Jurassic',
+            hell: 'Prey',
+            gas: 'Andromeda',
+            gas_moon: 'Sphere',
+            dwarf: 'Micro',
+        }
     },
     dracnid: {
         name: 'Dracnid',
@@ -203,7 +322,14 @@ export const races = {
         traits: {
             hoarder: 1,
             solitary: 1
-        } 
+        },
+        solar: {
+            red: 'Onyx',
+            hell: 'Slayer',
+            gas: 'Ancalagon',
+            gas_moon: 'Wyrm',
+            dwarf: 'Drake',
+        }
     },
     entish: {
         name: 'Ent',
@@ -214,7 +340,14 @@ export const races = {
         traits: {
             kindling_kindred: 1,
             pyrophobia: 1
-        } 
+        },
+        solar: {
+            red: 'Entmoot',
+            hell: 'Orthanc',
+            gas: 'Yavanna',
+            gas_moon: 'Onodrim',
+            dwarf: 'Branch',
+        }
     },
     cacti: {
         name: 'Cacti',
@@ -225,6 +358,13 @@ export const races = {
         traits: {
             hyper: 1,
             skittish: 1
+        },
+        solar: {
+            red: 'Corel',
+            hell: 'Ruin',
+            gas: 'Saguaro',
+            gas_moon: 'Cholla',
+            dwarf: 'Thorn',
         }
     },
     sporgar: {
@@ -236,7 +376,14 @@ export const races = {
         traits: {
             infectious: 1,
             parasite: 1
-        } 
+        },
+        solar: {
+            red: 'Ophio',
+            hell: 'Cymbo',
+            gas: 'Tyrant',
+            gas_moon: 'Nemesis',
+            dwarf: 'Whesker',
+        }
     },
     shroomi: {
         name: 'Shroomi',
@@ -247,7 +394,14 @@ export const races = {
         traits: {
             toxic: 1,
             nyctophilia: 1
-        } 
+        },
+        solar: {
+            red: 'Bloom',
+            hell: 'Polypore',
+            gas: 'Psilocybin',
+            gas_moon: 'Skullcap',
+            dwarf: 'Crimini',
+        }
     },
     mantis: {
         name: 'Mantis',
@@ -258,7 +412,14 @@ export const races = {
         traits: {
             fraile: 1,
             malnutrition: 1
-        } 
+        },
+        solar: {
+            red: 'Nineveh',
+            hell: 'Molt',
+            gas: 'Devil',
+            gas_moon: 'Ghost',
+            dwarf: 'Empusa',
+        }
     },
     scorpid: {
         name: 'Scorpid',
@@ -269,7 +430,14 @@ export const races = {
         traits: {
             claws: 1,
             atrophy: 1
-        } 
+        },
+        solar: {
+            red: 'Pincer',
+            hell: 'Boil',
+            gas: 'Emperor',
+            gas_moon: 'Utescorpio',
+            dwarf: 'Leiurus',
+        }
     },
     antid: {
         name: 'Antid',
@@ -280,7 +448,14 @@ export const races = {
         traits: {
             hivemind: 1,
             tunneler: 1
-        } 
+        },
+        solar: {
+            red: 'Hill',
+            hell: 'Fluva',
+            gas: 'Thorax',
+            gas_moon: 'Pharaoh',
+            dwarf: 'Odorous',
+        }
     }
 };
 
