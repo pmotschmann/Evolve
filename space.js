@@ -511,6 +511,9 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            flair(){
+                return global.race['carnivore'] ? `Delicious cattle grazed in 38% gravity` : `All it took was growing a potato`;
             }
         },
     },

@@ -1921,6 +1921,7 @@ export const actions = {
                 if (global.space['satellite']){
                     gain *= 1 + (global.space.satellite.count * 0.04);
                 }
+                gain = +(gain).toFixed(1);
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.space['satellite']){
@@ -1930,6 +1931,7 @@ export const actions = {
                         let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                         pgain *= (global.tech['supercollider'] / ratio) + 1;
                     }
+                    pgain = +(pgain).toFixed(1);
                     let desc = `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
