@@ -5571,7 +5571,25 @@ export const actions = {
                 }
                 return false;
             }
-        }
+        },
+        atmospheric_mining: {
+            id: 'tech-atmospheric_mining',
+            title: 'Atmospheric Mining',
+            desc: 'Atmospheric Mining',
+            reqs: { space: 5 },
+            grant: ['gas_giant',1],
+            cost: {
+                Knowledge(){ return 190000; }
+            },
+            effect: 'Learn the physics of operating a gas giant orbital mining platform.',
+            action(){
+                if (payCosts(actions.tech.atmospheric_mining.cost)){
+                    global.space['gas_mining'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech()

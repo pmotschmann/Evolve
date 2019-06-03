@@ -336,7 +336,7 @@ const spaceProjects = {
             },
             effect(){
                 let helium = +(fuel_adjust(1.25)).toFixed(2);
-                return `<div>+3 ${races[global.race.species].solar.red} Support</div><div>-${helium} Helium-3/s, -${spaceProjects.spc_red.spaceport.powered}kW</div>`;
+                return `<div>+3 ${races[global.race.species].solar.red} Support</div><div>-${helium} Helium-3/s, -${spaceProjects.spc_red.spaceport.powered}kW</div><div>-25 Food/s</div>`;
             },
             support: 3,
             powered: 5,
@@ -611,7 +611,7 @@ const spaceProjects = {
                 Money(){ return costMultiplier('swarm_satellite', 50000, 1.2); },
                 Copper(){ return costMultiplier('swarm_satellite', 25000, 1.2); },
                 Iridium(){ return costMultiplier('swarm_satellite', 1500, 1.2); },
-                Helium_3(){ return costMultiplier('swarm_control', 500, 1.2); }
+                Helium_3(){ return costMultiplier('swarm_satellite', 500, 1.2); }
             },
             effect(){
                 return `+1kW, -1 Swarm Support`;
@@ -644,16 +644,146 @@ const spaceProjects = {
             desc(){
                 return `Launch the ${races[global.race.species].solar.gas} mission`;
             },
-            reqs: { space: 4, space_explore: 4, locked: 1 },
+            reqs: { space: 4, space_explore: 4 },
             grant: ['space',5],
             cost: { 
                 Helium_3(){ return +fuel_adjust(12500).toFixed(0); }
             },
             effect(){
-                return `Launch a mission to study ${races[global.race.species].solar.gas}.`;
+                return `<div>Launch a mission to study</div><div>the gas giant ${races[global.race.species].solar.gas}.</div>`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_gas.gas_mission.cost)){
+                    global.settings.space.gas_moon = true;
+                    global.settings.space.belt = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        gas_mining: {
+            id: 'space-gas_mining',
+            title: 'Helium-3 Collector',
+            desc(){
+                return `<div>Helium-3 atmospheric collector<div><div class="has-text-special">Requires Power</div>`;
+            },
+            reqs: { gas_giant: 1 },
+            cost: {
+                Money(){ return costMultiplier('gas_mining', 250000, 1.32); },
+                Uranium(){ return costMultiplier('gas_mining', 500, 1.32); },
+                Alloy(){ return costMultiplier('gas_mining', 10000, 1.32); },
+                Helium_3(){ return costMultiplier('gas_mining', 2500, 1.32); },
+                Mythril(){ return costMultiplier('gas_mining', 25, 1.32); }
+            },
+            effect(){
+                return `<div>+0.5 Helium-3 Production</div><div>-${spaceProjects.spc_gas.gas_mining.powered}kW</div>`;
+            },
+            powered: 2,
+            action(){
+                if (payCosts(spaceProjects.spc_gas.gas_mining.cost)){
+                    global.space.gas_mining.count++;
+                    if (global.city.powered && global.city.power >= 2){
+                        global.space.gas_mining.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_gas_moon: {
+        info: {
+            name(){
+                return races[global.race.species].solar.gas_moon;
+            },
+            desc(){
+                return `${races[global.race.species].solar.gas_moon} is the largest moon orbiting the gas giant ${races[global.race.species].solar.gas}.`;
+            },
+        },
+        gas_moon_mission: {
+            id: 'space-gas_moon_mission',
+            title(){
+                return `${races[global.race.species].solar.gas_moon} Mission`;
+            },
+            desc(){
+                return `Launch the ${races[global.race.species].solar.gas_moon} mission`;
+            },
+            reqs: { space: 5 },
+            grant: ['space',6],
+            cost: { 
+                Helium_3(){ return +fuel_adjust(40000).toFixed(0); }
+            },
+            effect(){
+                return `Launch a mission to study ${races[global.race.species].solar.gas_moon}.`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_gas_moon.gas_moon_mission.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_belt: {
+        info: {
+            name(){
+                return `Asteroid Belt`;
+            },
+            desc(){
+                return `The asteroid belt is located between ${races[global.race.species].solar.red} and ${races[global.race.species].solar.gas}, it is a potentially rich source of resources.`;
+            },
+        },
+        belt_mission: {
+            id: 'space-belt_mission',
+            title(){
+                return `Asteroid Belt Mission`;
+            },
+            desc(){
+                return `Launch a survey of the Asteroid Belt`;
+            },
+            reqs: { space: 5 },
+            grant: ['asteroid',1],
+            cost: { 
+                Helium_3(){ return +fuel_adjust(25000).toFixed(0); }
+            },
+            effect(){
+                return `Launch a mission to study asteroid belt for potential mining opportunities.`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_belt.belt_mission.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_dwarf: {
+        info: {
+            name(){
+                return races[global.race.species].solar.dwarf;
+            },
+            desc(){
+                return `${races[global.race.species].solar.dwarf} is dwarf planet located about 2.8AU from the sun. It is the only known dwarf planet in the inner solar system.`;
+            },
+        },
+        dwarf_mission: {
+            id: 'space-dwarf_mission',
+            title(){
+                return `${races[global.race.species].solar.dwarf} Mission`;
+            },
+            desc(){
+                return `Launch the ${races[global.race.species].solar.dwarf} mission`;
+            },
+            reqs: { space: 6 },
+            grant: ['space',7],
+            cost: { 
+                Helium_3(){ return +fuel_adjust(65000).toFixed(0); }
+            },
+            effect(){
+                return `Launch a mission to study ${races[global.race.species].solar.dwarf}.`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_dwarf.dwarf_mission.cost)){
                     return true;
                 }
                 return false;

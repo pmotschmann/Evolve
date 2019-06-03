@@ -147,7 +147,7 @@ if (!global.settings['space']){
         gas: false,
         gas_moon: false,
         belt: false,
-        dwaft: false,
+        dwarf: false,
         blackhole: false
     }
 }

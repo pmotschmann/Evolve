@@ -610,7 +610,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_gas:gas_mining','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -875,7 +875,13 @@ function fastLoop(){
                 breakdown.p.consume.Food['Tourism'] = -(tourism);
             }
 
-            let delta = generated - consume - tourism;
+            let spaceport = 0;
+            if (global.space['spaceport']){
+                spaceport = p_on['spaceport'] * 25;
+                breakdown.p.consume.Food['Spaceport'] = -(spaceport);
+            }
+
+            let delta = generated - consume - tourism - spaceport;
 
             food_bd['Soldiers'] = hunting + 'v';
             breakdown.p['Food'] = food_bd;
@@ -1503,16 +1509,25 @@ function fastLoop(){
         }
 
         // Helium 3
-        if (moon_on['helium_mine']){
+        let helium_bd = {};
+        if (global.space['moon_base'] && moon_on['helium_mine']){
             let helium_base = moon_on['helium_mine'] * 0.15;
             let delta = helium_base * hunger * global_multiplier;
 
-            let helium_bd = {};
-            helium_bd['Helium 3 Mine'] = helium_base + 'v';
-            helium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            breakdown.p['Helium_3'] = helium_bd;
+            helium_bd['Helium_Mine'] = helium_base + 'v';
             modRes('Helium_3', delta * time_multiplier);
         }
+
+        if (global.space['gas_mining'] && p_on['gas_mining']){
+            let gas_mining = p_on['gas_mining'] * 0.5;
+            let delta = gas_mining * hunger * global_multiplier;
+
+            helium_bd['Gas_Collector'] = gas_mining + 'v';
+            modRes('Helium_3', delta * time_multiplier);
+        }
+        
+        helium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        breakdown.p['Helium_3'] = helium_bd;
 
         // Tax Income
         if (global.tech['currency'] >= 1){
