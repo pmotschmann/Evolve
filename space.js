@@ -171,6 +171,7 @@ const spaceProjects = {
             },
             support: 2,
             powered: 4,
+            refresh: true,
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_base.cost)){
                     global.space['moon_base'].count++;
@@ -182,6 +183,9 @@ const spaceProjects = {
                     if (global.space['moon_base'].count === 1){
                         global.tech['moon'] = 1;
                     }
+                    if (!global.tech['luna']){
+                        global.tech['luna'] = 1;
+                    }
                     return true;
                 }
                 return false;
@@ -191,7 +195,7 @@ const spaceProjects = {
             id: 'space-iridium_mine',
             title: 'Iridium Mine',
             desc: '<div>Mine Iridium from lunar craters</div><div class="has-text-special">Requires Moon Support</div>',
-            reqs: { space: 3 },
+            reqs: { space: 3, luna: 1 },
             cost: {
                 Money(){ return costMultiplier('iridium_mine', 42000, 1.35); },
                 Lumber(){ return costMultiplier('iridium_mine', 9000, 1.35); },
@@ -218,7 +222,7 @@ const spaceProjects = {
             id: 'space-helium_mine',
             title: 'Helium 3 Mine',
             desc: '<div>Extract Helium 3 from</div><div>the lunar surface</div><div class="has-text-special">Requires Moon Support</div>',
-            reqs: { space: 3 },
+            reqs: { space: 3, luna: 1 },
             cost: {
                 Money(){ return costMultiplier('helium_mine', 38000, 1.35); },
                 Copper(){ return costMultiplier('helium_mine', 9000, 1.35); },
@@ -245,7 +249,7 @@ const spaceProjects = {
             id: 'space-observatory',
             title: 'Observatory',
             desc: '<div>Moon based Observatory</div><div class="has-text-special">Requires Moon Support</div>',
-            reqs: { science: 9 },
+            reqs: { science: 9, luna: 1 },
             cost: {
                 Money(){ return costMultiplier('observatory', 200000, 1.35); },
                 Knowledge(){ return costMultiplier('observatory', 72000, 1.35); },
@@ -341,11 +345,15 @@ const spaceProjects = {
             },
             support: 3,
             powered: 5,
+            refresh: true,
             action(){
                 if (payCosts(spaceProjects.spc_red.spaceport.cost)){
                     global.space['spaceport'].count++;
                     if (global.city.power >= 5){
                         global.space['spaceport'].on++;
+                    }
+                    if (!global.tech['mars']){
+                        global.tech['mars'] = 1;
                     }
                     return true;
                 }
@@ -358,7 +366,7 @@ const spaceProjects = {
             desc(){
                 return `<div>Provides living space for colonists</div><div class="has-text-special">Requires ${races[global.race.species].solar.red} Support</div>`;
             },
-            reqs: { space: 4 },
+            reqs: { mars: 1 },
             cost: {
                 Money(){ return costMultiplier('living_quarters', 38000, 1.35); },
                 Steel(){ return costMultiplier('living_quarters', 15000, 1.35); },
@@ -388,7 +396,7 @@ const spaceProjects = {
             desc(){
                 return `<div>Provides storage for the colony</div>`;
             },
-            reqs: { space: 4 },
+            reqs: { mars: 1 },
             cost: {
                 Money(){ return costMultiplier('garage', 75000, 1.35); },
                 Iron(){ return costMultiplier('garage', 12000, 1.35); },
@@ -426,7 +434,7 @@ const spaceProjects = {
             desc(){
                 return `<div>Mining Facility</div><div class="has-text-special">Requires ${races[global.race.species].solar.red} Support</div>`;
             },
-            reqs: { space: 4 },
+            reqs: { mars: 1 },
             cost: {
                 Money(){ return costMultiplier('red_mine', 50000, 1.35); },
                 Lumber(){ return costMultiplier('red_mine', 65000, 1.35); },
@@ -454,7 +462,7 @@ const spaceProjects = {
             desc(){
                 return `<div>Fabrication Plant</div><div class="has-text-special">Requires ${races[global.race.species].solar.red} Support</div>`;
             },
-            reqs: { space: 4 },
+            reqs: { mars: 1 },
             cost: {
                 Money(){ return costMultiplier('fabrication', 90000, 1.35); },
                 Copper(){ return costMultiplier('fabrication', 25000, 1.35); },
@@ -490,7 +498,7 @@ const spaceProjects = {
                 }
                 return `<div>${desc}</div><div class="has-text-special">Requires ${races[global.race.species].solar.red} Support</div>`;
             },
-            reqs: { mars: 1 },
+            reqs: { mars: 2 },
             cost: {
                 Money(){ return costMultiplier('biodome', 45000, 1.35); },
                 Lumber(){ return costMultiplier('biodome', 65000, 1.35); },

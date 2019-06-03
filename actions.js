@@ -3797,7 +3797,7 @@ export const actions = {
             id: 'tech-observatory',
             title: 'Space Observatory',
             desc: 'Space Observatory',
-            reqs: { science: 8, space_explore: 2 },
+            reqs: { science: 8, space: 3, luna: 1 },
             grant: ['science',9],
             cost: {
                 Knowledge(){ return 148000; }
@@ -4104,7 +4104,7 @@ export const actions = {
             id: 'tech-breeder_reactor',
             title: 'Breeder Reactor',
             desc: 'Breeder Reactor',
-            reqs: { high_tech: 5, uranium: 3 },
+            reqs: { high_tech: 5, uranium: 3, space: 3 },
             grant: ['uranium',4],
             cost: {
                 Knowledge(){ return 160000; },
@@ -5540,7 +5540,7 @@ export const actions = {
             title: 'Colonization',
             desc: `${races[global.race.species].solar.red} Colonization`,
             reqs: { space: 4 },
-            grant: ['mars',1],
+            grant: ['mars',2],
             cost: {
                 Knowledge(){ return 172000; }
             },
@@ -5873,6 +5873,12 @@ export function setAction(c_action,action,type,old){
                         if (c_action['grant']){
                             let tech = c_action.grant[0];
                             global.tech[tech] = c_action.grant[1];
+                            removeAction(c_action.id);
+                            drawCity();
+                            drawTech();
+                            space();
+                        }
+                        else if (c_action['refresh']){
                             removeAction(c_action.id);
                             drawCity();
                             drawTech();
