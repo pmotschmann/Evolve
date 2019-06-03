@@ -38,7 +38,7 @@ const spaceProjects = {
             reqs: { space: 2 },
             cost: {
                 Money(){ return costMultiplier('satellite', 75000, 1.35); },
-                Knowledge(){ return costMultiplier('satellite', 50000, 1.35); },
+                Knowledge(){ return costMultiplier('satellite', 50000, 1.32); },
                 Oil(){ return costMultiplier('satellite', fuel_adjust(5000), 1.35); },
                 Alloy(){ return costMultiplier('satellite', 10000, 1.35); }
             },
@@ -66,7 +66,7 @@ const spaceProjects = {
             reqs: { satellite: 1 },
             cost: {
                 Money(){ return costMultiplier('gps', 75000, 1.3); },
-                Knowledge(){ return costMultiplier('gps', 50000, 1.3); },
+                Knowledge(){ return costMultiplier('gps', 50000, 1.28); },
                 Copper(){ return costMultiplier('gps', 6500, 1.3); },
                 Oil(){ return costMultiplier('gps', fuel_adjust(3500), 1.3); },
                 Titanium(){ return costMultiplier('gps', 8000, 1.3); }
@@ -584,7 +584,7 @@ const spaceProjects = {
                 Money(){ return costMultiplier('swarm_control', 100000, 1.3); },
                 Knowledge(){ return costMultiplier('swarm_control', 60000, 1.3); },
                 Alloy(){ return costMultiplier('swarm_control', 7500, 1.3); },
-                Helium_3(){ return costMultiplier('swarm_control', 2000, 1.3); },
+                Helium_3(){ return costMultiplier('swarm_control', fuel_adjust(2000), 1.3); },
                 Mythril(){ return costMultiplier('swarm_control', 250, 1.3); }
             },
             effect(){
@@ -611,7 +611,7 @@ const spaceProjects = {
                 Money(){ return costMultiplier('swarm_satellite', 50000, 1.2); },
                 Copper(){ return costMultiplier('swarm_satellite', 25000, 1.2); },
                 Iridium(){ return costMultiplier('swarm_satellite', 1500, 1.2); },
-                Helium_3(){ return costMultiplier('swarm_satellite', 500, 1.2); }
+                Helium_3(){ return costMultiplier('swarm_satellite', fuel_adjust(500), 1.2); }
             },
             effect(){
                 return `+1kW, -1 Swarm Support`;
@@ -672,7 +672,7 @@ const spaceProjects = {
                 Money(){ return costMultiplier('gas_mining', 250000, 1.32); },
                 Uranium(){ return costMultiplier('gas_mining', 500, 1.32); },
                 Alloy(){ return costMultiplier('gas_mining', 10000, 1.32); },
-                Helium_3(){ return costMultiplier('gas_mining', 2500, 1.32); },
+                Helium_3(){ return costMultiplier('gas_mining', fuel_adjust(2500), 1.32); },
                 Mythril(){ return costMultiplier('gas_mining', 25, 1.32); }
             },
             effect(){
@@ -685,6 +685,33 @@ const spaceProjects = {
                     if (global.city.powered && global.city.power >= 2){
                         global.space.gas_mining.on++;
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        gas_storage: {
+            id: 'space-gas_storage',
+            title: `${races[global.race.species].solar.gas} Fuel Depot`,
+            desc(){
+                return `<div>Orbital depot used to store fuels<div>`;
+            },
+            reqs: { gas_giant: 1 },
+            cost: {
+                Money(){ return costMultiplier('gas_storage', 125000, 1.32); },
+                Iridium(){ return costMultiplier('gas_storage', 3000, 1.32); },
+                Sheet_Metal(){ return costMultiplier('gas_storage', 2000, 1.32); },
+                Helium_3(){ return costMultiplier('gas_storage', fuel_adjust(1000), 1.32); },
+            },
+            effect(){
+                let oil = spatialReasoning(3500);
+                let helium = spatialReasoning(2500);
+                let uranium = spatialReasoning(1000);
+                return `<div>+${oil} Max Oil</div><div>+${helium} Max Helium-3</div><div>+${uranium} Max Uranium</div>`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_gas.gas_storage.cost)){
+                    global.space.gas_storage.count++;
                     return true;
                 }
                 return false;
@@ -708,7 +735,7 @@ const spaceProjects = {
             desc(){
                 return `Launch the ${races[global.race.species].solar.gas_moon} mission`;
             },
-            reqs: { space: 5 },
+            reqs: { space: 5, locked: 1 },
             grant: ['space',6],
             cost: { 
                 Helium_3(){ return +fuel_adjust(40000).toFixed(0); }
@@ -741,7 +768,7 @@ const spaceProjects = {
             desc(){
                 return `Launch a survey of the Asteroid Belt`;
             },
-            reqs: { space: 5 },
+            reqs: { space: 5, locked: 1 },
             grant: ['asteroid',1],
             cost: { 
                 Helium_3(){ return +fuel_adjust(25000).toFixed(0); }
@@ -774,7 +801,7 @@ const spaceProjects = {
             desc(){
                 return `Launch the ${races[global.race.species].solar.dwarf} mission`;
             },
-            reqs: { space: 6 },
+            reqs: { space: 6, locked: 1 },
             grant: ['space',7],
             cost: { 
                 Helium_3(){ return +fuel_adjust(65000).toFixed(0); }

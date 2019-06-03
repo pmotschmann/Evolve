@@ -1940,6 +1940,19 @@ function midLoop(){
                 bd_Helium['Orbit_Depot'] = gain+'v';
             }
         }
+        if (global.space['gas_storage']){
+            let gain = (global.space['gas_storage'].count * spatialReasoning(3500));
+            caps['Oil'] += gain;
+            bd_Oil[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
+
+            gain = (global.space['gas_storage'].count * spatialReasoning(2500));
+            caps['Helium_3'] += gain;
+            bd_Helium[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
+
+            gain = (global.space['gas_storage'].count * spatialReasoning(1000));
+            caps['Uranium'] += gain;
+            bd_Uranium[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
+        }
         if (global.space['helium_mine']){
             let gain = (global.space['helium_mine'].count * spatialReasoning(100));
             caps['Helium_3'] += gain;

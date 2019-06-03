@@ -5585,6 +5585,7 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.atmospheric_mining.cost)){
                     global.space['gas_mining'] = { count: 0, on: 0 };
+                    global.space['gas_storage'] = { count: 0 };
                     return true;
                 }
                 return false;
