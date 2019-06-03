@@ -691,7 +691,7 @@ function fastLoop(){
 
         if (global.space['spaceport']){
             let used_support = 0;
-            let red_structs = ['living_quarters','fabrication','red_mine'];//'greenhouse','laboratory';
+            let red_structs = ['living_quarters','fabrication','red_mine','biodome'];
             for (var i = 0; i < red_structs.length; i++){
                 if (global.space[red_structs[i]]){
                     let operating = global.space[red_structs[i]].on;
@@ -838,7 +838,12 @@ function fastLoop(){
                 hunting = global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
             }
 
-            let generated = food_base + hunting;
+            let biodome = 0;
+            if (global.tech['mars']){
+                biodome = red_on['biodome'] * 2 * global.civic.colonist.workers;
+            }
+
+            let generated = food_base + hunting + biodome;
             generated *= global_multiplier;
 
             let soldiers = global.civic.garrison.workers;
@@ -883,6 +888,7 @@ function fastLoop(){
 
             let delta = generated - consume - tourism - spaceport;
 
+            food_bd['Biodome'] = biodome + 'v';
             food_bd['Soldiers'] = hunting + 'v';
             breakdown.p['Food'] = food_bd;
 

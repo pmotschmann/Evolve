@@ -1,4 +1,5 @@
 import { global, vues, poppers, messageQueue, p_on } from './vars.js';
+import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { payCosts, setAction } from './actions.js';
@@ -432,7 +433,7 @@ const spaceProjects = {
                 Iron(){ return costMultiplier('red_mine', 33000, 1.35); }
             },
             effect(){
-                return `<div>+0.25 Copper per colonist</div><div>+0.02 Titanium per colonist</div>`;
+                return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+0.25 Copper per colonist</div><div>+0.02 Titanium per colonist</div>`;
             },
             support: -1,
             powered: 1,
@@ -461,7 +462,7 @@ const spaceProjects = {
                 Wrought_Iron(){ return costMultiplier('fabrication', 1200, 1.35); }
             },
             effect(){
-                return `<div>+2% Crafted Materials per colonist</div>`;
+                return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+2% Crafted Materials per colonist</div>`;
             },
             support: -1,
             powered: 1,
@@ -470,6 +471,42 @@ const spaceProjects = {
                     global.space['fabrication'].count++;
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['fabrication'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        biodome: {
+            id: 'space-biodome',
+            title: 'Biodome',
+            desc(){
+                let desc;
+                if (global.race['carnivore']){
+                    desc = `<div>Raise cattle to produce food</div>`;
+                }
+                else {
+                    desc = `<div>Grow food locally on ${races[global.race.species].solar.red}</div>`;
+                }
+                return `<div>${desc}</div><div class="has-text-special">Requires ${races[global.race.species].solar.red} Support</div>`;
+            },
+            reqs: { mars: 1 },
+            cost: {
+                Money(){ return costMultiplier('biodome', 45000, 1.35); },
+                Lumber(){ return costMultiplier('biodome', 65000, 1.35); },
+                Brick(){ return costMultiplier('biodome', 1000, 1.35); }
+            },
+            effect(){
+                return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+2 Food Production per colonist</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_red.biodome.cost)){
+                    global.space['biodome'].count++;
+                    unlockAchieve('colonist');
+                    if (global.space.spaceport.support < global.space.spaceport.s_max){
+                        global.space['biodome'].on++;
                     }
                     return true;
                 }
