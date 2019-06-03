@@ -61,6 +61,41 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+if (convertVersion(global['version']) < 3002){
+    if (global.tech['space'] && global.tech['space'] >= 4){
+        if (!global.space['living_quarters']){
+            global.space['living_quarters'] = { count: 0, on: 0 };
+        }
+        if (!global.space['garage']){
+            global.space['garage'] = { count: 0 };
+        }
+        if (!global.space['red_mine']){
+            global.space['red_mine'] = { count: 0, on: 0 };
+        }
+        if (!global.space['fabrication']){
+            global.space['fabrication'] = { count: 0, on: 0 };
+        }
+        if (!global.space['laboratory']){
+            global.space['laboratory'] = { count: 0, on: 0 };
+        }
+    }
+    
+    if (global.tech['space'] && global.tech['space'] >= 3){
+        if (!global.space['iridium_mine']){
+            global.space['iridium_mine'] = { count: 0, on: 0 };
+        }
+        if (!global.space['helium_mine']){
+            global.space['helium_mine'] = { count: 0, on: 0 };
+        }
+    }
+
+    if (global.tech['hell']){
+        if (!global.space['geothermal']){
+            global.space['geothermal'] = { count: 0, on: 0 };
+        }
+    }
+}
+
 if (convertVersion(global['version']) < 2065 && global.race !== undefined && global.race.species === 'sporgar'){
     delete global.race['crafty'];
     delete global.race['hydrophilic'];
@@ -112,7 +147,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.3.1';
+global['version'] = '0.3.2';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
