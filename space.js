@@ -25,8 +25,8 @@ const spaceProjects = {
             effect: 'Launch an experimental test rocket into space.',
             action(){
                 if (payCosts(spaceProjects.spc_home.test_launch.cost)){
-                    messageQueue('You have successfully launched your first rocket into space','success');
                     global.space['satellite'] = { count: 0 };
+                    messageQueue('You have successfully launched your first rocket into space','success');
                     return true;
                 }
                 return false;
@@ -46,7 +46,7 @@ const spaceProjects = {
             effect: '<div>+500 Max Knowledge</div><div>+4% Wardenclyffe Max Knowledge</div><div>+1% Scientist Efficiency</div>',
             action(){
                 if (payCosts(spaceProjects.spc_home.satellite.cost)){
-                    global.space['satellite'].count++;
+                    incrementStruct('satellite');
                     global['resource']['Knowledge'].max += 500;
                     return true;
                 }
@@ -82,7 +82,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_home.gps.cost)){
-                    global.space['gps'].count++;
+                    incrementStruct('gps');
                     return true;
                 }
                 return false;
@@ -108,7 +108,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_home.propellant_depot.cost)){
-                    global.space['propellant_depot'].count++;
+                    incrementStruct('propellant_depot');
                     global['resource']['Oil'].max += spatialReasoning(1250);
                     if (global.resource['Helium_3'].display){
                         global['resource']['Helium_3'].max += spatialReasoning(1000);
@@ -174,7 +174,7 @@ const spaceProjects = {
             refresh: true,
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_base.cost)){
-                    global.space['moon_base'].count++;
+                    incrementStruct('moon_base');
                     global.resource.Iridium.display = true;
                     global.resource['Helium_3'].display = true;
                     if (global.city.power >= 5){
@@ -208,7 +208,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_moon.iridium_mine.cost)){
-                    global.space['iridium_mine'].count++;
+                    incrementStruct('iridium_mine');
                     global.resource['Mythril'].display = true;
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['iridium_mine'].on++;
@@ -236,7 +236,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_moon.helium_mine.cost)){
-                    global.space['helium_mine'].count++;
+                    incrementStruct('helium_mine');
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['helium_mine'].on++;
                     }
@@ -264,7 +264,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_moon.observatory.cost)){
-                    global.space['observatory'].count++;
+                    incrementStruct('observatory');
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['observatory'].on++;
                     }
@@ -311,10 +311,6 @@ const spaceProjects = {
                         count: 0,
                         on: 0
                     };
-                    global.space['greenhouse'] = {
-                        count: 0,
-                        on: 0
-                    };
                     global.space['fabrication'] = {
                         count: 0,
                         on: 0
@@ -348,7 +344,7 @@ const spaceProjects = {
             refresh: true,
             action(){
                 if (payCosts(spaceProjects.spc_red.spaceport.cost)){
-                    global.space['spaceport'].count++;
+                    incrementStruct('spaceport');
                     if (global.city.power >= 5){
                         global.space['spaceport'].on++;
                     }
@@ -379,7 +375,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_red.living_quarters.cost)){
-                    global.space['living_quarters'].count++;
+                    incrementStruct('living_quarters');
                     global.civic.colonist.display = true;
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['living_quarters'].on++;
@@ -415,7 +411,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_red.garage.cost)){
-                    global.space['garage'].count++;
+                    incrementStruct('garage');
                     let multiplier = 1;
                     global['resource']['Copper'].max += (spatialReasoning(6500) * multiplier);
                     global['resource']['Iron'].max += (spatialReasoning(5500) * multiplier);
@@ -447,7 +443,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_red.red_mine.cost)){
-                    global.space['red_mine'].count++;
+                    incrementStruct('red_mine');
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['red_mine'].on++;
                     }
@@ -476,7 +472,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_red.fabrication.cost)){
-                    global.space['fabrication'].count++;
+                    incrementStruct('fabrication');
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['fabrication'].on++;
                     }
@@ -511,7 +507,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_red.biodome.cost)){
-                    global.space['biodome'].count++;
+                    incrementStruct('biodome');
                     unlockAchieve('colonist');
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['biodome'].on++;
@@ -580,7 +576,7 @@ const spaceProjects = {
             powered: -8,
             action(){
                 if (payCosts(spaceProjects.spc_hell.geothermal.cost)){
-                    global.space['geothermal'].count++;
+                    incrementStruct('geothermal');
                     global.space['geothermal'].on++;
                     return true;
                 }
@@ -641,7 +637,7 @@ const spaceProjects = {
             support: 6,
             action(){
                 if (payCosts(spaceProjects.spc_sun.swarm_control.cost)){
-                    global.space['swarm_control'].count++;
+                    incrementStruct('swarm_control');
                     global.space['swarm_control'].s_max += 4;
                     return true;
                 }
@@ -667,7 +663,7 @@ const spaceProjects = {
             support: -1,
             action(){
                 if (payCosts(spaceProjects.spc_sun.swarm_satellite.cost)){
-                    global.space['swarm_satellite'].count++;
+                    incrementStruct('swarm_satellite');
                     global.space['swarm_control'].support++;
                     return true;
                 }
@@ -729,7 +725,7 @@ const spaceProjects = {
             powered: 2,
             action(){
                 if (payCosts(spaceProjects.spc_gas.gas_mining.cost)){
-                    global.space.gas_mining.count++;
+                    incrementStruct('gas_mining');
                     if (global.city.powered && global.city.power >= 2){
                         global.space.gas_mining.on++;
                     }
@@ -759,7 +755,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_gas.gas_storage.cost)){
-                    global.space.gas_storage.count++;
+                    incrementStruct('gas_storage');
                     return true;
                 }
                 return false;
@@ -866,6 +862,35 @@ const spaceProjects = {
         },
     }
 };
+
+const structDefinitions = {
+    satellite: { count: 0 },
+    propellant_depot: { count: 0 },
+    gps: { count: 0 },
+    moon_base: { count: 0, on: 0, support: 0, s_max: 0 },
+    iridium_mine: { count: 0, on: 0 },
+    helium_mine: { count: 0, on: 0 },
+    observatory: { count: 0, on: 0 },
+    spaceport: { count: 0, on: 0, support: 0, s_max: 0 },
+    living_quarters: { count: 0, on: 0 },
+    garage: { count: 0 },
+    red_mine: { count: 0, on: 0 },
+    fabrication: { count: 0, on: 0 },
+    biodome: { count: 0, on: 0 },
+    laboratory: { count: 0, on: 0 },
+    geothermal: { count: 0, on: 0 },
+    swarm_control: { count: 0, support: 0, s_max: 0 },
+    swarm_satellite: { count: 0 },
+    gas_mining: { count: 0, on: 0 },
+    gas_storage: { count: 0 },
+};
+
+function incrementStruct(struct){
+    if (!global.space[struct]){
+        global.space[struct] = structDefinitions[struct];
+    }
+    global.space[struct].count++;
+}
 
 export function spaceTech(){
     return spaceProjects;

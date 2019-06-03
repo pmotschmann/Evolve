@@ -1,3 +1,6 @@
+#### 0.3.1 - 6/3/2019
+Added building check redundancy to auto correct game states that shouldn't occur anyway<br>
+
 #### 0.3.0 - 6/2/2019
 Space V1 Update<br>
 This opens the first steps into space exploration, more to come... this is not the end<br>
