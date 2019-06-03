@@ -1,6 +1,7 @@
 #### 0.3.2 - 6/3/2019
 Fixed bug that would let you launch the space missions without the proper resources, this would corrupt your game file and break the game.<br>
 Added code to detect games corrupted by the previous bug and fix them<br>
+Fixed Fanatism bug that wouldn't release lumberjacks when you have ent gods<br>
 
 #### 0.3.1 - 6/3/2019
 Added building check redundancy to auto correct game states that shouldn't occur anyway<br>

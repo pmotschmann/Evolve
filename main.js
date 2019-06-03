@@ -2291,6 +2291,13 @@ function midLoop(){
             global.civic.farmer.max = 0;
         }
 
+        if (global.race['kindling_kindred'] && global.civic.lumberjack.workers > 0){
+            global.civic.lumberjack.workers = 0;
+        }
+        if (global.race['kindling_kindred'] && global.city.foundry['Plywood'] > 0){
+            global.city.foundry['Plywood'] = 0;
+        }
+
         checkAchievements();
     }
     Object.keys(global.resource).forEach(function (res){

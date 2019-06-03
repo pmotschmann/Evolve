@@ -5290,6 +5290,7 @@ export const actions = {
                             delete global.tech['axe'];
                             delete global.tech['saw'];
                             global.civic.lumberjack.display = false;
+                            global.civic.lumberjack.workers = 0;
                             if (global.tech['foundry']){
                                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
