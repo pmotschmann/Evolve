@@ -910,6 +910,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_belt.belt_mission.cost)){
+                    global.settings.space.dwarf = true;
                     return true;
                 }
                 return false;
@@ -933,8 +934,8 @@ const spaceProjects = {
             desc(){
                 return `Launch the ${races[global.race.species].solar.dwarf} mission`;
             },
-            reqs: { space: 6, locked: 1 },
-            grant: ['space',7],
+            reqs: { asteroid: 1, locked: 1 },
+            grant: ['dwarf',1],
             cost: { 
                 Helium_3(){ return +fuel_adjust(65000).toFixed(0); }
             },

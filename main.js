@@ -1439,11 +1439,11 @@ function fastLoop(){
         // Mars Mining
         if (red_on['red_mine'] && red_on['red_mine'] > 0){
             let copper_base = red_on['red_mine'] * 0.25 * global.civic.colonist.workers;
-            copper_bd[`${races[global.race.species].solar.hell}_Mining`] = (copper_base) + 'v';
+            copper_bd[`${races[global.race.species].solar.red}_Mining`] = (copper_base) + 'v';
             modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger);
 
             let titanium_base = red_on['red_mine'] * 0.02 * global.civic.colonist.workers * hunger;
-            titanium_bd[`${races[global.race.species].solar.hell}_Mining`] = (titanium_base) + 'v';
+            titanium_bd[`${races[global.race.species].solar.red}_Mining`] = (titanium_base) + 'v';
             modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
         }
         copper_bd['Hunger'] = ((hunger - 1) * 100) + '%';

@@ -3,6 +3,7 @@ New Orbit Structure: Navigation Beacon.<br>
 New Red Planet Structures: Space Control Tower and Space Factory.<br>
 Reduced number of monumnets required to unlock tourism from 4 to 2.<br>
 Cement plant workers now round their contribution to 2 decimal places.<br>
+Red planet mining now correctly attributes to the red planet in breakdowns<br>
 
 #### 0.3.2 - 6/3/2019
 Fixed bug that would let you launch the space missions without the proper resources, this would corrupt your game file and break the game.<br>
