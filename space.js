@@ -38,16 +38,16 @@ const spaceProjects = {
             desc: 'Launch a scientific satellite',
             reqs: { space: 2 },
             cost: {
-                Money(){ return costMultiplier('satellite', 75000, 1.35); },
-                Knowledge(){ return costMultiplier('satellite', 50000, 1.32); },
-                Oil(){ return costMultiplier('satellite', fuel_adjust(5000), 1.35); },
-                Alloy(){ return costMultiplier('satellite', 10000, 1.35); }
+                Money(){ return costMultiplier('satellite', 75000, 1.3); },
+                Knowledge(){ return costMultiplier('satellite', 40000, 1.3); },
+                Oil(){ return costMultiplier('satellite', fuel_adjust(3200), 1.3); },
+                Alloy(){ return costMultiplier('satellite', 10000, 1.3); }
             },
-            effect: '<div>+500 Max Knowledge</div><div>+4% Wardenclyffe Max Knowledge</div><div>+1% Scientist Efficiency</div>',
+            effect: '<div>+750 Max Knowledge</div><div>+4% Wardenclyffe Max Knowledge</div><div>+1% Scientist Efficiency</div>',
             action(){
                 if (payCosts(spaceProjects.spc_home.satellite.cost)){
                     incrementStruct('satellite');
-                    global['resource']['Knowledge'].max += 500;
+                    global['resource']['Knowledge'].max += 750;
                     return true;
                 }
                 return false;
@@ -112,6 +112,33 @@ const spaceProjects = {
                     global['resource']['Oil'].max += spatialReasoning(1250);
                     if (global.resource['Helium_3'].display){
                         global['resource']['Helium_3'].max += spatialReasoning(1000);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        nav_beacon: {
+            id: 'space-nav_beacon',
+            title: 'Navigation Beacon',
+            desc: '<div>Guides space traffic</div><div class="has-text-special">Requires Power</div>',
+            reqs: { luna: 2 },
+            cost: {
+                Money(){ return costMultiplier('nav_beacon', 75000, 1.32); },
+                Copper(){ return costMultiplier('nav_beacon', 38000, 1.32); },
+                Iron(){ return costMultiplier('nav_beacon', 44000, 1.32); },
+                Oil(){ return costMultiplier('nav_beacon', fuel_adjust(12500), 1.32); },
+                Iridium(){ return costMultiplier('nav_beacon', 1200, 1.32); }
+            },
+            powered: 2,
+            effect(){
+                return `<div>+1 Moon Support</div><div>-2kW</div>`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_home.nav_beacon.cost)){
+                    incrementStruct('nav_beacon');
+                    if (global.city.powered && global.city.power >= spaceProjects.spc_home.nav_beacon.powered){
+                        global.space.nav_beacon.on++;
                     }
                     return true;
                 }
@@ -350,6 +377,34 @@ const spaceProjects = {
                     }
                     if (!global.tech['mars']){
                         global.tech['mars'] = 1;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        red_tower: {
+            id: 'space-red_tower',
+            title: 'Space Control Tower',
+            desc(){
+                return `<div>Space traffic control</div><div class="has-text-special">Requires Power</div>`;
+            },
+            reqs: { mars: 3 },
+            cost: {
+                Money(){ return costMultiplier('red_tower', 225000, 1.28); },
+                Iron(){ return costMultiplier('red_tower', 22000, 1.28); },
+                Cement(){ return costMultiplier('red_tower', 15000, 1.28); },
+                Alloy(){ return costMultiplier('red_tower', 8000, 1.28); },
+            },
+            effect(){
+                return `<div>+1 ${races[global.race.species].solar.red} Support</div><div>-2kW</div>`;
+            },
+            powered: 2,
+            action(){
+                if (payCosts(spaceProjects.spc_red.red_tower.cost)){
+                    incrementStruct('red_tower');
+                    if (global.city.power >= 2){
+                        global.space['red_tower'].on++;
                     }
                     return true;
                 }
@@ -867,6 +922,7 @@ const structDefinitions = {
     satellite: { count: 0 },
     propellant_depot: { count: 0 },
     gps: { count: 0 },
+    nav_beacon: { count: 0, on: 0 },
     moon_base: { count: 0, on: 0, support: 0, s_max: 0 },
     iridium_mine: { count: 0, on: 0 },
     helium_mine: { count: 0, on: 0 },

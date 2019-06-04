@@ -610,7 +610,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_gas:gas_mining','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_gas:gas_mining','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -648,6 +648,7 @@ function fastLoop(){
                 }
             }
             global.space.moon_base.s_max = p_on['moon_base'] * actions.space.spc_moon.moon_base.support;
+            global.space.moon_base.s_max += global.tech['luna'] && global.tech['luna'] >= 2 ? p_on['nav_beacon'] : 0;
         }
 
         if (global.space['moon_base']){
@@ -687,6 +688,7 @@ function fastLoop(){
                 }
             }
             global.space.spaceport.s_max = p_on['spaceport'] * actions.space.spc_red.spaceport.support;
+            global.space.spaceport.s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? p_on['red_tower'] : 0;
         }
 
         if (global.space['spaceport']){
@@ -2019,7 +2021,7 @@ function midLoop(){
             bd_Knowledge['Wardenclyffe'] = gain+'v';
         }
         if (global.space['satellite']){
-            let gain = (global.space.satellite.count * 500);
+            let gain = (global.space.satellite.count * 750);
             caps['Knowledge'] += gain;
             bd_Knowledge['Satellite'] = gain+'v';
         }

@@ -52,6 +52,7 @@ export const job_desc = {
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
         let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
+        gain = +(gain).toFixed(2);
         return `Cement plant workers turn stone into cement, each worker produces ${gain} cement and consumes 3 stone per second.`;
     },
     banker: function(){

@@ -3641,7 +3641,7 @@ export const actions = {
             id: 'tech-tourism',
             title: 'Tourism',
             desc: 'Tourism',
-            reqs: { monuments: 4 },
+            reqs: { monuments: 2 },
             grant: ['monument',2],
             cost: {
                 Knowledge(){ return 150000; }
@@ -5554,6 +5554,24 @@ export const actions = {
                 return false;
             }
         },
+        red_tower: {
+            id: 'tech-red_tower',
+            title(){ return `${races[global.race.species].solar.red} Control Tower`; },
+            desc(){ return `${races[global.race.species].solar.red} Control Tower`; },
+            reqs: { mars: 2 },
+            grant: ['mars',3],
+            cost: {
+                Knowledge(){ return 195000; }
+            },
+            effect(){ return `Space traffic control towers can help regulate the traffic coming in and out of ${races[global.race.species].solar.red}.`; },
+            action(){
+                if (payCosts(actions.tech.red_tower.cost)){
+                    global.space['red_tower'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson_sphere: {
             id: 'tech-dyson_sphere',
             title: 'Dyson Sphere',
@@ -5602,6 +5620,27 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.gps.cost)){
                     global.space['gps'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        nav_beacon: {
+            id: 'tech-nav_beacon',
+            title: 'Navigation Beacon',
+            desc: 'Navigation Beacon',
+            reqs: { luna: 1 },
+            grant: ['luna',2],
+            cost: {
+                Knowledge(){ return 180000; }
+            },
+            effect: 'Navigation assist beacons will help guide space traffic',
+            action(){
+                if (payCosts(actions.tech.nav_beacon.cost)){
+                    global.space['nav_beacon'] = {
+                        count: 0,
+                        on: 0
+                    };
                     return true;
                 }
                 return false;
