@@ -1470,7 +1470,7 @@ export const actions = {
         factory: {
             id: 'city-factory',
             title: 'Factory',
-            desc: 'Produces manufactured goods',
+            desc: '<div>Produces manufactured goods</div><div class="has-text-special">Requires Power</div>',
             reqs: { high_tech: 3 },
             cost: { 
                 Money(){ return costMultiplier('factory', 25000, 1.32); },
@@ -1999,7 +1999,7 @@ export const actions = {
         coal_power: {
             id: 'city-coal_power',
             title: 'Coal Powerplant',
-            desc: 'Generates electricity from coal',
+            desc: '<div>Generates electricity from coal</div><div class="has-text-special">Requires Coal</div>',
             reqs: { high_tech: 2 },
             cost: { 
                 Money(){ return costMultiplier('coal_power', 10000, 1.22); },
@@ -2025,7 +2025,7 @@ export const actions = {
         oil_power: {
             id: 'city-oil_power',
             title: 'Oil Powerplant',
-            desc: 'Generates electricity from oil',
+            desc: '<div>Generates electricity from oil</div><div class="has-text-special">Requires Oil</div>',
             reqs: { oil: 3 },
             cost: { 
                 Money(){ return costMultiplier('oil_power', 50000, 1.22); },
@@ -2051,7 +2051,7 @@ export const actions = {
         fission_power: {
             id: 'city-fission_power',
             title: 'Fission Reactor',
-            desc: 'Uses nuclear fission to generate large amounts of power',
+            desc: '<div>Uses nuclear fission to generate large amounts of power</div><div class="has-text-special">Requires Uranium</div>',
             reqs: { high_tech: 5 },
             cost: { 
                 Money(){ return costMultiplier('fission_power', 250000, 1.36); },
@@ -5572,6 +5572,24 @@ export const actions = {
                 return false;
             }
         },
+        space_manufacturing: {
+            id: 'tech-space_manufacturing',
+            title: 'Space Manufacturing',
+            desc: 'Space Manufacturing',
+            reqs: { mars: 3 },
+            grant: ['mars',4],
+            cost: {
+                Knowledge(){ return 220000; }
+            },
+            effect(){ return `Research the logistics of manufacturing on ${races[global.race.species].solar.red}`; },
+            action(){
+                if (payCosts(actions.tech.space_manufacturing.cost)){
+                    global.space['red_factory'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson_sphere: {
             id: 'tech-dyson_sphere',
             title: 'Dyson Sphere',
@@ -6189,6 +6207,10 @@ function costMultiplier(structure,base,mutiplier){
 }
 
 function drawModal(action,type){
+    if (action === 'space' && type === 'red_factory'){
+        action = 'city';
+        type = 'factory';
+    }
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${actions[action][type].title}</p>`));
     
     var body = $('<div id="specialModal" class="modalBody"></div>');
@@ -6373,7 +6395,7 @@ function smelterModal(modal){
 }
 
 function factoryModal(modal){
-    let fuel = $('<div><span class="has-text-warning">Operating:</span> <span class="has-text-info">{{count | on}}/{{ on }}</span></div>');
+    let fuel = $('<div><span class="has-text-warning">Operating:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>');
     modal.append(fuel);
 
     let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>Luxury Goods</span></b-tooltip></div>`);
@@ -6417,7 +6439,8 @@ function factoryModal(modal){
                 }
             },
             addItem: function(item){
-                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer < global.city.factory.on){
+                let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer < max){
                     global.city.factory[item]++;
                 }
             },
@@ -6442,8 +6465,11 @@ function factoryModal(modal){
             }
         },
         filters: {
-            on: function(count){
+            on(){
                 return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer;
+            },
+            max(){
+                return global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
             }
         }
     });

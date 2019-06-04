@@ -610,7 +610,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_gas:gas_mining','city:factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_gas:gas_mining','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -673,6 +673,12 @@ function fastLoop(){
                 }
             }
             global.space.moon_base.support = used_support;
+        }
+
+        if (p_on['red_factory'] && p_on['red_factory'] > 0){
+            let h_consume = p_on['red_factory'] * fuel_adjust(1);
+            modRes('Helium_3',-(h_consume * time_multiplier));
+            breakdown.p.consume.Helium_3['Factory'] = -(h_consume);
         }
 
         // spaceports
@@ -1035,9 +1041,11 @@ function fastLoop(){
         let FactoryMoney = 0;
         if (global.city['factory']){
             let operating = 0;
+            let on_factories = global.space['red_factory'] ? p_on['factory'] + p_on['red_factory'] : p_on['factory'];
+
             if (global.city.factory['Lux'] && global.city.factory['Lux'] > 0){
                 operating += global.city.factory.Lux;
-                while (operating > global.city.factory.on && operating > 0){
+                while (operating > on_factories && operating > 0){
                     operating--;
                     global.city.factory.Lux--;
                 }
@@ -1068,7 +1076,7 @@ function fastLoop(){
 
             if (global.city.factory['Alloy'] && global.city.factory['Alloy'] > 0){
                 operating += global.city.factory.Alloy;
-                while (operating > global.city.factory.on && operating > 0){
+                while (operating > on_factories && operating > 0){
                     operating--;
                     global.city.factory.Alloy--;
                 }
@@ -1110,7 +1118,7 @@ function fastLoop(){
 
             if (global.city.factory['Polymer'] && global.city.factory['Polymer'] > 0){
                 operating += global.city.factory.Polymer;
-                while (operating > global.city.factory.on && operating > 0){
+                while (operating > on_factories && operating > 0){
                     operating--;
                     global.city.factory.Polymer--;
                 }

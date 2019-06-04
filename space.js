@@ -536,6 +536,39 @@ const spaceProjects = {
                 return false;
             }
         },
+        red_factory: {
+            id: 'space-red_factory',
+            title: 'Factory',
+            desc: '<div>Produces manufactured goods</div><div class="has-text-special">Requires Power & Helium-3</div>',
+            reqs: { mars: 4 },
+            cost: { 
+                Money(){ return costMultiplier('red_factory', 75000, 1.32); },
+                Brick(){ return costMultiplier('red_factory', 10000, 1.32); },
+                Coal(){ return costMultiplier('red_factory', 7500, 1.32); },
+                Mythril(){ return costMultiplier('red_factory', 100, 1.32); }
+            },
+            effect(){
+                let desc = `<div>Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.</div>`;
+                if (global.tech['foundry'] >= 7){
+                    desc = desc + `<div>+5% Crafted Materials</div>`;
+                }
+                let helium = +(fuel_adjust(1)).toFixed(2);
+                desc = desc + `<div>-${helium} Helium-3/s</div>`;
+                return desc;
+            },
+            powered: 3,
+            special: true,
+            action(){
+                if (payCosts(spaceProjects.spc_red.red_factory.cost)){
+                    global.space['red_factory'].count++;
+                    if (global.city.power > 2){
+                        global.space['red_factory'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         biodome: {
             id: 'space-biodome',
             title: 'Biodome',
@@ -928,10 +961,12 @@ const structDefinitions = {
     helium_mine: { count: 0, on: 0 },
     observatory: { count: 0, on: 0 },
     spaceport: { count: 0, on: 0, support: 0, s_max: 0 },
+    red_tower: { count: 0, on: 0 },
     living_quarters: { count: 0, on: 0 },
     garage: { count: 0 },
     red_mine: { count: 0, on: 0 },
     fabrication: { count: 0, on: 0 },
+    red_factory: { count: 0, on: 0 },
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     geothermal: { count: 0, on: 0 },

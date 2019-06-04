@@ -1,13 +1,13 @@
 #### 0.3.3 - 6/3/2019
-New Orbit Structure: Navigation Beacon<br>
-New Red Planet Structure: Space Control Tower<br>
+New Orbit Structure: Navigation Beacon.<br>
+New Red Planet Structures: Space Control Tower and Space Factory.<br>
 Reduced number of monumnets required to unlock tourism from 4 to 2.<br>
 Cement plant workers now round their contribution to 2 decimal places.<br>
 
 #### 0.3.2 - 6/3/2019
 Fixed bug that would let you launch the space missions without the proper resources, this would corrupt your game file and break the game.<br>
 Added code to detect games corrupted by the previous bug and fix them<br>
-Fixed Fanatism bug that wouldn't release lumberjacks when you have ent gods<br>
+Fixed Fanaticism bug that wouldn't release lumberjacks when you have ent gods<br>
 
 #### 0.3.1 - 6/3/2019
 Added building check redundancy to auto correct game states that shouldn't occur anyway<br>
@@ -18,7 +18,7 @@ This opens the first steps into space exploration, more to come... this is not t
 Rebalanced storage caps to help the game feel more idle friendly<br>
 
 #### 0.2.70 - 6/2/2019
-Fixed bug when picking Fanatism with cath gods that wouldn't release your farmers<br>
+Fixed bug when picking Fanaticism with cath gods that wouldn't release your farmers<br>
 Fixed bug when upgrading weapon technology that wouldn't immediately show the increase in army rating<br>
 
 #### 0.2.69 - 5/26/2019
