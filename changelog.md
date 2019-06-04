@@ -1,7 +1,11 @@
+#### 0.3.4 - 6/4/2019
+Automation renamed to Machinery.<br>
+Assembly Line upgrade for factory.<br>
+
 #### 0.3.3 - 6/3/2019
 New Orbit Structure: Navigation Beacon.<br>
 New Red Planet Structures: Space Control Tower and Space Factory.<br>
-Reduced number of monumnets required to unlock tourism from 4 to 2.<br>
+Reduced number of monuments required to unlock tourism from 4 to 2.<br>
 Cement plant workers now round their contribution to 2 decimal places.<br>
 Red planet mining now correctly attributes to the red planet in breakdowns<br>
 

@@ -2555,16 +2555,68 @@ export const actions = {
                 return false;
             }
         },
-        automation: {
-            id: 'tech-automation',
-            title: 'Automation',
-            desc: 'Automation',
+        machinery: {
+            id: 'tech-machinery',
+            title: 'Machinery',
+            desc: 'Machinery',
             reqs: { foundry: 6, high_tech: 4 },
             grant: ['foundry',7],
             cost: {
                 Knowledge(){ return 66000; }
             },
-            effect: 'Automated manufacturing machines add a crafting bonus to factories.',
+            effect: 'New manufacturing machines add a crafting bonus to factories.',
+            action(){
+                if (payCosts(actions.tech.machinery.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        cnc_machine: {
+            id: 'tech-cnc_machine',
+            title: 'CNC Machine',
+            desc: 'CNC Machine',
+            reqs: { foundry: 7, high_tech: 8 },
+            grant: ['foundry',8],
+            cost: {
+                Knowledge(){ return 132000; }
+            },
+            effect: 'CNC machines are a new high tech tool for craftsman.',
+            action(){
+                if (payCosts(actions.tech.cnc_machine.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        assembly_line: {
+            id: 'tech-assembly_line',
+            title: 'Assembly Line',
+            desc: 'Assembly Line',
+            reqs: { high_tech: 4 },
+            grant: ['factory',1],
+            cost: {
+                Knowledge(){ return 72000; },
+                Copper(){ return 125000; }
+            },
+            effect: '<span>The assembly line revolutionizes manufacturing speeding up factory production by 50%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            action(){
+                if (payCosts(actions.tech.assembly_line.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        automation: {
+            id: 'tech-automation',
+            title: 'Factory Automation',
+            desc: 'Factory Automation',
+            reqs: { high_tech: 8, factory: 1 },
+            grant: ['factory',2],
+            cost: {
+                Knowledge(){ return 140000; }
+            },
+            effect: 'High tech robotic machinary can booot the production of factories.',
             action(){
                 if (payCosts(actions.tech.automation.cost)){
                     return true;
@@ -4029,12 +4081,29 @@ export const actions = {
                 return false;
             }
         },
+        robotics: {
+            id: 'tech-robotics',
+            title: 'Advanced Robotics',
+            desc: 'Advanced Robotics',
+            reqs: { high_tech: 7, locked: 1 },
+            grant: ['high_tech',8],
+            cost: {
+                Knowledge(){ return 125000; }
+            },
+            effect: 'New breakthroughs in robotics could lead to new technologies that increase productivity.',
+            action(){
+                if (payCosts(actions.tech.robotics.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         lasers: {
             id: 'tech-lasers',
             title: 'Lasers',
             desc: 'Light Amplification by Stimulated Emission of Radiation',
-            reqs: { high_tech: 7, space: 3, supercollider: 1, locked: 1 },
-            grant: ['high_tech',8],
+            reqs: { high_tech: 8, space: 3, supercollider: 1, locked: 1 },
+            grant: ['high_tech',9],
             cost: {
                 Knowledge(){ return 180000; },
                 Iridium(){ return 500; }
@@ -6445,20 +6514,27 @@ function factoryModal(modal){
                 }
             },
             buildLabel: function(type){
+                let assembly = global.tech['factory'] ? true : false;
                 switch(type){
                     case 'Lux':
-                        let demand = +(global.resource[races[global.race.species].name].amount * 0.14).toFixed(2);
-                        return `Consume 2 Furs/s to produce luxury goods worth \$${demand}`;
+                        let demand = +(global.resource[races[global.race.species].name].amount * (assembly ? 0.21 : 0.14)).toFixed(2);
+                        let consume = assembly ? 3 : 2;
+                        return `Consume ${consume} Furs/s to produce luxury goods worth \$${demand}`;
                         break;
                     case 'Alloy':
-                        return 'Consume 0.75 Copper and 0.15 Titanium/s to produce Alloy';
+                        let copper = assembly ? 1.12 : 0.75;
+                        let titanium = assembly ? 0.22 : 0.15;
+                        return `Consume ${copper} Copper and ${titanium} Titanium/s to produce Alloy`;
                         break;
                     case 'Polymer':
                         if (global.race['kindling_kindred']){
-                            return 'Consume 0.22 Oil/s to produce Polymer';
+                            let oil = assembly ? 0.33 : 0.22;
+                            return `Consume ${oil} Oil/s to produce Polymer`;
                         }
                         else {
-                            return 'Consume 0.18 Oil and 15 Lumber/s to produce Polymer';
+                            let oil = assembly ? 0.27 : 0.18;
+                            let lumber = assembly ? 22 :15;
+                            return `Consume ${oil} Oil and ${lumber} Lumber/s to produce Polymer`;
                         }
                         break;
                 }

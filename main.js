@@ -1042,6 +1042,7 @@ function fastLoop(){
         if (global.city['factory']){
             let operating = 0;
             let on_factories = global.space['red_factory'] ? p_on['factory'] + p_on['red_factory'] : p_on['factory'];
+            let assembly = global.tech['factory'] ? true : false;
 
             if (global.city.factory['Lux'] && global.city.factory['Lux'] > 0){
                 operating += global.city.factory.Lux;
@@ -1050,18 +1051,18 @@ function fastLoop(){
                     global.city.factory.Lux--;
                 }
 
-                let fur_cost = global.city.factory.Lux * 2;
+                let fur_cost = global.city.factory.Lux * (assembly ? 3 : 2);
                 let workDone = global.city.factory.Lux;
                 
                 while (fur_cost * time_multiplier > global.resource.Furs.amount && fur_cost > 0){
-                    fur_cost -= 2;
+                    fur_cost -= (assembly ? 3 : 2);
                     workDone--;
                 }
 
                 breakdown.p.consume.Furs['Factory'] = -(fur_cost);
                 modRes('Furs', -(fur_cost * time_multiplier));
 
-                let demand = global.resource[races[global.race.species].name].amount * 0.14;
+                let demand = global.resource[races[global.race.species].name].amount * (assembly ? 0.21 : 0.14);
                 let delta = workDone * demand;
                 if (global.race['toxic']){
                     delta *= 1.08;
@@ -1081,18 +1082,18 @@ function fastLoop(){
                     global.city.factory.Alloy--;
                 }
 
-                let copper_cost = global.city.factory.Alloy * 0.75;
-                let titanium_cost = global.city.factory.Alloy * 0.15;
+                let copper_cost = global.city.factory.Alloy * (assembly ? 1.12 : 0.75);
+                let titanium_cost = global.city.factory.Alloy * (assembly ? 0.22 : 0.15);
                 let workDone = global.city.factory.Alloy;
                 
                 while (copper_cost * time_multiplier > global.resource.Copper.amount && copper_cost > 0){
-                    copper_cost -= 0.75;
-                    titanium_cost -= 0.15;
+                    copper_cost -= (assembly ? 1.12 : 0.75);
+                    titanium_cost -= (assembly ? 0.22 : 0.15);
                     workDone--;
                 }
                 while (titanium_cost * time_multiplier > global.resource.Titanium.amount && titanium_cost > 0){
-                    copper_cost -= 0.75;
-                    titanium_cost -= 0.15;
+                    copper_cost -= (assembly ? 1.12 : 0.75);
+                    titanium_cost -= 0(assembly ? 0.22 : 0.15);
                     workDone--;
                 }
 
@@ -1101,7 +1102,7 @@ function fastLoop(){
                 modRes('Copper', -(copper_cost * time_multiplier));
                 modRes('Titanium', -(titanium_cost * time_multiplier));
 
-                let factory_output = workDone * 0.075;
+                let factory_output = workDone * (assembly ? 0.112 : 0.075);
                 if (global.race['toxic']){
                     factory_output *= 1.08;
                 }
@@ -1123,8 +1124,8 @@ function fastLoop(){
                     global.city.factory.Polymer--;
                 }
 
-                let oilIncrement = global.race['kindling_kindred'] ? 0.22 : 0.18;
-                let lumberIncrement = global.race['kindling_kindred'] ? 0 : 15;
+                let oilIncrement = global.race['kindling_kindred'] ? (assembly ? 0.33 : 0.22) : (assembly ? 0.27 : 0.18);
+                let lumberIncrement = global.race['kindling_kindred'] ? 0 : (assembly ? 22 : 15);
                 let oil_cost = global.city.factory.Polymer * oilIncrement;
                 let lumber_cost = global.city.factory.Polymer * lumberIncrement;
                 let workDone = global.city.factory.Polymer;
@@ -1145,7 +1146,7 @@ function fastLoop(){
                 modRes('Lumber', -(lumber_cost * time_multiplier));
                 modRes('Oil', -(oil_cost * time_multiplier));
 
-                let factory_output = workDone * 0.125;
+                let factory_output = workDone * (assembly ? 0.187 : 0.125);
                 if (global.race['toxic']) {
                     factory_output *= 1.08;
                 }
