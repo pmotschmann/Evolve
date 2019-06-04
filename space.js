@@ -545,7 +545,7 @@ const spaceProjects = {
                 Money(){ return costMultiplier('red_factory', 75000, 1.32); },
                 Brick(){ return costMultiplier('red_factory', 10000, 1.32); },
                 Coal(){ return costMultiplier('red_factory', 7500, 1.32); },
-                Mythril(){ return costMultiplier('red_factory', 100, 1.32); }
+                Mythril(){ return costMultiplier('red_factory', 50, 1.32); }
             },
             effect(){
                 let desc = `<div>Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.</div>`;
