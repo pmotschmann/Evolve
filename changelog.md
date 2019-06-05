@@ -1,3 +1,7 @@
+#### 0.3.5 - 6/5/2019
+Mythril Craftman now unlock correctly<br>
+Fixed a bug that could pause the game if you ran out of Titanium<br>
+
 #### 0.3.4 - 6/4/2019
 The Asteroid Belt is now open for business<br>
 Robotics Upgrades<br>
