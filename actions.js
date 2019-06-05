@@ -2418,7 +2418,7 @@ export const actions = {
             cost: { 
                 Knowledge(){ return 66000; }
             },
-            effect: 'Add a turbine to your windmills allowing you to use them for power instead of milling.',
+            effect: 'Add a turbine to your windmills, allowing you to use them for power instead of milling.',
             action(){
                 if (payCosts(actions.tech.windturbine.cost)){
                     return true;
@@ -2877,7 +2877,7 @@ export const actions = {
                 Knowledge(){ return 85500; },
                 Copper(){ return 25000; }
             },
-            effect: 'Increases Steel output of smelters by 20%',
+            effect: 'Increases Steel output of smelters by 20%.',
             action(){
                 if (payCosts(actions.tech.electric_arc_furnace.cost)){
                     return true;
@@ -2895,7 +2895,7 @@ export const actions = {
                 Knowledge(){ return 57600; },
                 Coal(){ return 8000; }
             },
-            effect: 'Advanced smelting processes improve copper refinement by 20%',
+            effect: 'Advanced smelting processes improve copper refinement by 20%.',
             action(){
                 if (payCosts(actions.tech.rotary_kiln.cost)){
                     return true;
@@ -2977,7 +2977,7 @@ export const actions = {
             cost: { 
                 Knowledge(){ return 20; }
             },
-            effect: 'Designs a small storage shed.',
+            effect: 'Design a small storage shed.',
             action(){
                 if (payCosts(actions.tech.storage.cost)){
                     global.city['shed'] = { count: 0 };
@@ -3160,7 +3160,7 @@ export const actions = {
                 Knowledge(){ return 145000; },
                 Mythril(){ return 350; }
             },
-            effect: 'Increase the maximum load of crates by plating them with Mythril',
+            effect: 'Increase the maximum load of crates by plating them with mythril.',
             action(){
                 if (payCosts(actions.tech.mythril_crates.cost)){
                     return true;
@@ -5594,7 +5594,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 185000; }
             },
-            effect: 'Map the planets orbits to determine the best routes for visiting further away destinations.',
+            effect: 'Map the planets\' orbits to determine the best routes for visiting further away destinations.',
             action(){
                 if (payCosts(actions.tech.starcharts.cost)){
                     global.settings.space.gas = true;
@@ -5721,7 +5721,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 180000; }
             },
-            effect: 'Navigation assist beacons will help guide space traffic',
+            effect: 'Navigation assist beacons will help guide space traffic.',
             action(){
                 if (payCosts(actions.tech.nav_beacon.cost)){
                     global.space['nav_beacon'] = {
