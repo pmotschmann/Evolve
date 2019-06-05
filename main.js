@@ -1137,7 +1137,7 @@ function fastLoop(){
                 }
                 while (titanium_cost * time_multiplier > global.resource.Titanium.amount && titanium_cost > 0){
                     copper_cost -= (assembly ? 1.12 : 0.75);
-                    titanium_cost -= 0(assembly ? 0.22 : 0.15);
+                    titanium_cost -= (assembly ? 0.22 : 0.15);
                     workDone--;
                 }
 
