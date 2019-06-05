@@ -1438,7 +1438,7 @@ export const actions = {
             effect(){
                 let desc = `<div>+1 Craftsman</div>`;
                 if (global.tech['foundry'] >= 2){
-                    let skill = global.tech['foundry'] >= 5 ? 5 : 3;
+                    let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 8 : 5) : 3;
                     desc = desc + `<div>+${skill}% Crafted Materials</div>`;
                 }
                 if (global.tech['foundry'] >= 6){
@@ -2611,7 +2611,7 @@ export const actions = {
             id: 'tech-automation',
             title: 'Factory Automation',
             desc: 'Factory Automation',
-            reqs: { high_tech: 8, factory: 1 },
+            reqs: { high_tech: 8, factory: 1, locked: 1 },
             grant: ['factory',2],
             cost: {
                 Knowledge(){ return 140000; }
@@ -4085,7 +4085,7 @@ export const actions = {
             id: 'tech-robotics',
             title: 'Advanced Robotics',
             desc: 'Advanced Robotics',
-            reqs: { high_tech: 7, locked: 1 },
+            reqs: { high_tech: 7 },
             grant: ['high_tech',8],
             cost: {
                 Knowledge(){ return 125000; }
@@ -5747,6 +5747,44 @@ export const actions = {
                 if (payCosts(actions.tech.atmospheric_mining.cost)){
                     global.space['gas_mining'] = { count: 0, on: 0 };
                     global.space['gas_storage'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        zero_g_mining: {
+            id: 'tech-zero_g_mining',
+            title: 'Zero G Mining',
+            desc: 'Zero G Mining',
+            reqs: { asteroid: 1, high_tech: 8 },
+            grant: ['asteroid',2],
+            cost: {
+                Knowledge(){ return 210000; }
+            },
+            effect: 'Asteroid mining in Zero G presents new challenges that must be studied before this resource can be developed.',
+            action(){
+                if (payCosts(actions.tech.zero_g_mining.cost)){
+                    global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                    global.space['iridium_ship'] = { count: 0, on: 0 };
+                    global.space['iron_ship'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_mining: {
+            id: 'tech-elerium_mining',
+            title: 'Elerium Mining',
+            desc: 'Elerium Mining',
+            reqs: { asteroid: 3, locked: 1 },
+            grant: ['asteroid',4],
+            cost: {
+                Knowledge(){ return 300000; }
+            },
+            effect: 'Elerium is a rare new highly energetic element discovered in the asteroid belt, mining this element safely will require specialized harvesting equipment and containment vessels.',
+            action(){
+                if (payCosts(actions.tech.elerium_mining.cost)){
+                    global.space['elerium_ship'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;

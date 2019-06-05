@@ -167,14 +167,8 @@ const spaceProjects = {
             effect: 'Launch a mission to survey the moon.',
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_mission.cost)){
-                    global.space['iridium_mine'] = {
-                        count: 0,
-                        on: 0
-                    };
-                    global.space['helium_mine'] = {
-                        count: 0,
-                        on: 0
-                    };
+                    global.space['iridium_mine'] = { count: 0, on: 0 };
+                    global.space['helium_mine'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -329,23 +323,11 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_red.red_mission.cost)){
-                    global.space['living_quarters'] = {
-                        count: 0,
-                        on: 0
-                    };
+                    global.space['living_quarters'] = { count: 0, on: 0 };
                     global.space['garage'] = { count: 0 };
-                    global.space['red_mine'] = {
-                        count: 0,
-                        on: 0
-                    };
-                    global.space['fabrication'] = {
-                        count: 0,
-                        on: 0
-                    };
-                    global.space['laboratory'] = {
-                        count: 0,
-                        on: 0
-                    };
+                    global.space['red_mine'] = { count: 0, on: 0 };
+                    global.space['fabrication'] = { count: 0, on: 0 };
+                    global.space['laboratory'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -636,10 +618,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_hell.hell_mission.cost)){
-                    global.space['geothermal'] = {
-                        count: 0,
-                        on: 0
-                    };
+                    global.space['geothermal'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -788,6 +767,7 @@ const spaceProjects = {
                 if (payCosts(spaceProjects.spc_gas.gas_mission.cost)){
                     global.settings.space.gas_moon = true;
                     global.settings.space.belt = true;
+                    global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
                     return true;
                 }
                 return false;
@@ -891,6 +871,7 @@ const spaceProjects = {
             desc(){
                 return `The asteroid belt is located between ${races[global.race.species].solar.red} and ${races[global.race.species].solar.gas}, it is a potentially rich source of resources.`;
             },
+            support: 'space_station'
         },
         belt_mission: {
             id: 'space-belt_mission',
@@ -900,17 +881,148 @@ const spaceProjects = {
             desc(){
                 return `Launch a survey of the Asteroid Belt`;
             },
-            reqs: { space: 5, locked: 1 },
+            reqs: { space: 5 },
             grant: ['asteroid',1],
             cost: { 
                 Helium_3(){ return +fuel_adjust(25000).toFixed(0); }
             },
             effect(){
-                return `Launch a mission to study asteroid belt for potential mining opportunities.`;
+                return `Launch a mission to study the asteroid belt for potential mining opportunities.`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_belt.belt_mission.cost)){
                     global.settings.space.dwarf = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        space_station: {
+            id: 'space-space_station',
+            title: `Space Station`,
+            desc(){
+                return `<div>Deep Space Mining Station<div><div class="has-text-special">Requires Power & Helium-3</div>`;
+            },
+            reqs: { asteroid: 2 },
+            cost: {
+                Money(){ return costMultiplier('space_station', 250000, 1.3); },
+                Iron(){ return costMultiplier('space_station', 85000, 1.3); },
+                Polymer(){ return costMultiplier('space_station', 18000, 1.3); },
+                Iridium(){ return costMultiplier('space_station', 2800, 1.28); },
+                Helium_3(){ return costMultiplier('space_station', fuel_adjust(2000), 1.3); },
+                Mythril(){ return costMultiplier('space_station', 75, 1.25); }
+            },
+            effect(){
+                let helium = +(fuel_adjust(2.5)).toFixed(2);
+                let food = 10;
+                return `<div>+3 Max Space Miners</div><div>-${helium} Helium-3/s</div><div>-${food} Food/s, -${spaceProjects.spc_belt.space_station.powered}kW/s</div>`;
+            },
+            support: 3,
+            powered: 3,
+            refresh: true,
+            action(){
+                if (payCosts(spaceProjects.spc_belt.space_station.cost)){
+                    incrementStruct('space_station');
+                    global.civic.space_miner.display = true;
+                    if (global.tech['asteroid'] < 3){
+                        global.tech['asteroid'] = 3;
+                    }
+                    if (global.city.power >= 3){
+                        global.space.space_station.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_ship: {
+            id: 'space-elerium_ship',
+            title: `Elerium Mining Ship`,
+            desc(){
+                return `Elerium Mining Ship`;
+            },
+            reqs: { asteroid: 4 },
+            cost: {
+                Money(){ return costMultiplier('elerium_ship', 500000, 1.3); },
+                Uranium(){ return costMultiplier('elerium_ship', 2500, 1.3); },
+                Iridium(){ return costMultiplier('elerium_ship', 10000, 1.3); },
+                Mythril(){ return costMultiplier('elerium_ship', 500, 1.3); },
+                Helium_3(){ return costMultiplier('elerium_ship', fuel_adjust(5000), 1.3); }
+            },
+            effect(){
+                let elerium = 0.005;
+                return `<div>Requires 1 Space Miner</div><div>+${elerium} Elerium/s</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_belt.elerium_ship.cost)){
+                    incrementStruct('elerium_ship');
+                    if (global.space.space_station.support < global.space.space_station.s_max){
+                        global.space['elerium_ship'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        iridium_ship: {
+            id: 'space-iridium_ship',
+            title: `Iridium Mining Ship`,
+            desc(){
+                return `Iridium Mining Ship`;
+            },
+            reqs: { asteroid: 3 },
+            cost: {
+                Money(){ return costMultiplier('iridium_ship', 120000, 1.3); },
+                Uranium(){ return costMultiplier('iridium_ship', 1000, 1.3); },
+                Alloy(){ return costMultiplier('iridium_ship', 48000, 1.3); },
+                Iridium(){ return costMultiplier('iridium_ship', 2800, 1.3); },
+                Helium_3(){ return costMultiplier('iridium_ship', fuel_adjust(1800), 1.3); }
+            },
+            effect(){
+                let iridium = 0.055;
+                return `<div>Requires 1 Space Miner</div><div>+${iridium} Iridium/s</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_belt.iridium_ship.cost)){
+                    incrementStruct('iridium_ship');
+                    if (global.space.space_station.support < global.space.space_station.s_max){
+                        global.space['iridium_ship'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        iron_ship: {
+            id: 'space-iron_ship',
+            title: `Iron Mining Ship`,
+            desc(){
+                return `Iron Mining Ship`;
+            },
+            reqs: { asteroid: 3 },
+            cost: {
+                Money(){ return costMultiplier('iron_ship', 80000, 1.3); },
+                Steel(){ return costMultiplier('iron_ship', 42000, 1.3); },
+                Titanium(){ return costMultiplier('iron_ship', 38000, 1.3); },
+                Polymer(){ return costMultiplier('iron_ship', 16000, 1.3); },
+                Helium_3(){ return costMultiplier('iron_ship', fuel_adjust(1200), 1.3); }
+            },
+            effect(){
+                let iron = 2;
+                return `<div>Requires 1 Space Miner</div><div>+${iron} Iron/s</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_belt.iron_ship.cost)){
+                    incrementStruct('iron_ship');
+                    if (global.space.space_station.support < global.space.space_station.s_max){
+                        global.space['iron_ship'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -975,6 +1087,10 @@ const structDefinitions = {
     swarm_satellite: { count: 0 },
     gas_mining: { count: 0, on: 0 },
     gas_storage: { count: 0 },
+    space_station: { count: 0, on: 0, support: 0, s_max: 0 },
+    iridium_ship: { count: 0, on: 0 },
+    elerium_ship: { count: 0, on: 0 },
+    iron_ship: { count: 0, on: 0 },
 };
 
 function incrementStruct(struct){

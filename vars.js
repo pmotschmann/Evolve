@@ -25,6 +25,7 @@ export var breakdown = {
 export var p_on = {};
 export var red_on = {};
 export var moon_on = {};
+export var belt_on = {};
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -59,6 +60,10 @@ else {
 
 if (!global['version']){
     global['version'] = '0.2.0';
+}
+
+if (convertVersion(global['version']) < 3004 && global.settings.space.belt){
+    global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
 }
 
 if (convertVersion(global['version']) < 3002){
@@ -365,8 +370,10 @@ export function modRes(res,val){
         count = 0;
         success = false;
     }
-    global.resource[res].amount = count;
-    global.resource[res].delta += val;
+    if (!Number.isNaN(count)){
+        global.resource[res].amount = count;
+        global.resource[res].delta += val;
+    }
     return success;
 }
 

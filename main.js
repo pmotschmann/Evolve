@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on } from './vars.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
@@ -610,7 +610,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_gas:gas_mining','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_gas:gas_mining','spc_belt:space_station','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -719,6 +719,44 @@ function fastLoop(){
                 }
             }
             global.space.spaceport.support = used_support;
+        }
+
+        // Space Station
+        if (global.space['space_station'] && global.space['space_station'].count > 0){
+            let fuel_cost = +fuel_adjust(2.5);
+            let ss_consume = p_on['space_station'] * fuel_cost;
+            breakdown.p.consume.Helium_3['Space_Station'] = -(ss_consume);
+            for (let i=0; i<p_on['space_station']; i++){
+                if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
+                    ss_consume -= (p_on['space_station'] * fuel_cost) - (i * fuel_cost);
+                    p_on['space_station'] -= i;
+                    break;
+                }
+            }
+        }
+
+        if (global.space['space_station']){
+            let used_support = 0;
+            let belt_structs = ['elerium_ship','iridium_ship','iron_ship'];
+            for (var i = 0; i < belt_structs.length; i++){
+                if (global.space[belt_structs[i]]){
+                    let operating = global.space[belt_structs[i]].on;
+                    let id = actions.space.spc_belt[belt_structs[i]].id;
+                    if (used_support + operating > global.space.space_station.s_max){
+                        operating -=  (used_support + operating) - global.space.space_station.s_max;
+                        $(`#${id} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${id} .on`).removeClass('warn');
+                    }
+                    used_support += operating;
+                    belt_on[belt_structs[i]] = operating;
+                }
+                else {
+                    belt_on[belt_structs[i]] = 0;
+                }
+            }
+            global.space.space_station.support = used_support;
         }
 
         // Detect labor anomalies
@@ -894,7 +932,13 @@ function fastLoop(){
                 breakdown.p.consume.Food['Spaceport'] = -(spaceport);
             }
 
-            let delta = generated - consume - tourism - spaceport;
+            let space_station = 0;
+            if (global.space['space_station']){
+                space_station = p_on['space_station'] * 10;
+                breakdown.p.consume.Food['Space_Staion'] = -(space_station);
+            }
+
+            let delta = generated - consume - tourism - spaceport - space_station;
 
             food_bd['Biodome'] = biodome + 'v';
             food_bd['Soldiers'] = hunting + 'v';
@@ -1412,15 +1456,22 @@ function fastLoop(){
             
             // Iron
             if (global.resource.Iron.display){
+                let iron_bd = {};
                 let iron_mult = 1/4;
                 let iron_base = miner_base * iron_mult;
                 let smelter_mult = 1 + (iron_smelter * 0.1);
-
-                let delta = iron_base * smelter_mult * power_mult;
+                
+                let space_iron = 0;
+                
+                if (belt_on['iron_ship']){
+                    space_iron = belt_on['iron_ship'] * 2;
+                    
+                }
+                let delta = (iron_base + space_iron) * smelter_mult * power_mult;
                 delta *= hunger * global_multiplier;
-
-                let iron_bd = {};
+                
                 iron_bd['Miners'] = (iron_base) + 'v';
+                iron_bd['Space_Miners'] = space_iron + 'v';
                 iron_bd['Smelter'] = ((smelter_mult - 1) * 100) + '%';
                 iron_bd['Power'] = ((power_mult - 1) * 100) + '%';
                 iron_bd['Hunger'] = ((hunger - 1) * 100) + '%';
@@ -1428,7 +1479,8 @@ function fastLoop(){
                 modRes('Iron', delta * time_multiplier);
 
                 if (global.tech['titanium'] && global.tech['titanium'] >= 2){
-                    let iron = (global.civic.miner.workers / 4) * iron_smelter * 0.1;
+                    let labor_base = belt_on['iron_ship'] ? (global.civic.miner.workers / 4) + (belt_on['iron_ship'] / 2) : (global.civic.miner.workers / 4); 
+                    let iron = labor_base * iron_smelter * 0.1;
                     delta = iron * global_multiplier;
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
@@ -1514,16 +1566,22 @@ function fastLoop(){
         }
 
         // Iridium
+        let iridium_bd = {};
         if (moon_on['iridium_mine']){
             let iridium_base = moon_on['iridium_mine'] * 0.035;
             let delta = iridium_base * hunger * global_multiplier;
-
-            let iridium_bd = {};
-            iridium_bd['Iridium Mine'] = iridium_base + 'v';
-            iridium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            breakdown.p['Iridium'] = iridium_bd;
+            iridium_bd['Iridium_Mine'] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
         }
+
+        if (belt_on['iridium_ship']){
+            let iridium_base = belt_on['iridium_ship'] * 0.055;
+            let delta = iridium_base * hunger * global_multiplier;
+            iridium_bd['Iridium_Ship'] = iridium_base + 'v';
+            modRes('Iridium', delta * time_multiplier);
+        }
+        iridium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        breakdown.p['Iridium'] = iridium_bd;
 
         // Helium 3
         let helium_bd = {};
@@ -1723,7 +1781,8 @@ function midLoop(){
             professor: 0,
             scientist: 0,
             garrison: 0,
-            colonist: 0
+            colonist: 0,
+            space_miner: 0
         };
 
         var bd_Money = { Base: caps['Money']+'v' };
@@ -2095,6 +2154,9 @@ function midLoop(){
             caps['Iridium'] += gain;
             bd_Iridium['Moon_Base'] = gain+'v';
         }
+        if (p_on['space_station']){
+            lCaps['space_miner'] += p_on['space_station'] * 3;
+        }
 
         if (global.city['trade']){
             let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
@@ -2173,6 +2235,10 @@ function midLoop(){
                 global.civic[job].workers = 0;
             }
         });
+
+        if (global.civic.space_miner.display && global.space['space_station']){
+            global.space.space_station.s_max = global.civic.space_miner.workers;
+        }
 
         Object.keys(global.city).forEach(function (action){
             if (actions.city[action] && actions.city[action].cost){

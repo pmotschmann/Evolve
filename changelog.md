@@ -1,4 +1,6 @@
 #### 0.3.4 - 6/4/2019
+The Asteroid Belt is now open for business<br>
+Robotics Upgrades<br>
 Automation renamed to Machinery.<br>
 Assembly Line upgrade for factory.<br>
 

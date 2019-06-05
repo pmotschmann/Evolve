@@ -19,6 +19,7 @@ export const resource_values = {
     Iridium: 380,
     //Deuterium: 450,
     'Helium_3': 620,
+    Elerium: 2000,
     //Neutronium: 1000
 };
 
@@ -39,6 +40,7 @@ export const tradeRatio = {
     Polymer: 0.25,
     Iridium: 0.25,
     'Helium_3': 0.25,
+    Elerium: 0.1,
 }
 
 export const craftCost = {
@@ -51,7 +53,7 @@ export const craftCost = {
 };
 
 export function craftingRatio(res){
-    let skill = global.tech['foundry'] >= 5 ? 0.05 : 0.03;
+    let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
     let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * skill) : 1;
     if (global.tech['foundry'] >= 3 && global.city.foundry[res] > 1){
         multiplier += (global.city.foundry[res] - 1) * 0.03;
@@ -117,7 +119,7 @@ export function defineResources() {
         //loadResource('Deuterium',0,1,true,false);
         loadResource('Helium_3',0,1,true,false);
         //loadResource('Neutronium',0,1,true,true);
-        //loadResource('Elerium',0,1,true,true);
+        loadResource('Elerium',0,1,false,false);
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');

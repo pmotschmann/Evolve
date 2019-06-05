@@ -92,6 +92,9 @@ export const job_desc = {
     },
     colonist(){
         return `Colonists work hard to keep your ${races[global.race.species].solar.red} colony running smoothly and enhance various aspects of the colony.`;
+    },
+    space_miner(){
+        return `Space miners work in zero G mining asteroids. Each Space Miner increases the maximum number of mining ships that can be opperated by one.`;
     }
 }
 
@@ -111,6 +114,7 @@ export function defineJobs(){
     loadJob('scientist','Scientist',1);
     loadJob('banker','Banker',0.1);
     loadJob('colonist','Colonist',1);
+    loadJob('space_miner','Space Miner',1);
     loadFoundry();
 }
 
