@@ -2290,7 +2290,7 @@ function midLoop(){
 
         Object.keys(actions.space).forEach(function (region){
             Object.keys(actions.space[region]).forEach(function (action){
-                if (global.space[action] && actions.space[region][action] && actions.space[region][action].cost){
+                if ((global.space[action] || actions.space[region][action].grant) && actions.space[region][action] && actions.space[region][action].cost){
                     let c_action = actions.space[region][action];
                     let element = $('#'+c_action.id);
                     if (checkAffordable(c_action)){
