@@ -5594,7 +5594,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 185000; }
             },
-            effect: 'Map the planets\' orbits to determine the best routes for visiting further away destinations.',
+            effect: `Map the planets' orbits to determine the best routes for visiting further away destinations.`,
             action(){
                 if (payCosts(actions.tech.starcharts.cost)){
                     global.settings.space.gas = true;
