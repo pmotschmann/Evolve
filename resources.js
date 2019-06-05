@@ -467,11 +467,12 @@ function marketItem(vue,mount,market_item,name,color,full){
 
 function breakdownPopover(id,name,type){
     $(`#${id}`).on('mouseover',function(){
-        if (breakdown[type][name]){
-            var popper = $(`<div id="resBreak${id}" class="popper has-background-light has-text-dark"></div>`);
-            $('#main').append(popper);
-            let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
+        
+        var popper = $(`<div id="resBreak${id}" class="popper has-background-light has-text-dark"></div>`);
+        $('#main').append(popper);
+        let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
 
+        if (breakdown[type][name]){
             let types = [name,'Global'];
             for (var i = 0; i < types.length; i++){
                 let t = types[i];
@@ -487,26 +488,26 @@ function breakdownPopover(id,name,type){
                     });
                 }
             }
-
-            if (breakdown[type].consume && breakdown[type].consume[name]){
-                Object.keys(breakdown[type].consume[name]).forEach(function (mod){
-                    let val = breakdown[type].consume[name][mod];
-                    if (val != 0 && !isNaN(val)){
-                        let type = val > 0 ? 'success' : 'danger';
-                        bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
-                    }
-                });
-            }
-
-            if (type === 'p'){
-                let dir = global['resource'][name].diff > 0 ? 'success' : 'danger';
-                bd.append(`<div class="rate"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
-            }
-
-            popper.append(bd);
-            popper.show();
-            poppers[type+name] = new Popper($(`#${id}`),popper);
         }
+
+        if (breakdown[type].consume && breakdown[type].consume[name]){
+            Object.keys(breakdown[type].consume[name]).forEach(function (mod){
+                let val = breakdown[type].consume[name][mod];
+                if (val != 0 && !isNaN(val)){
+                    let type = val > 0 ? 'success' : 'danger';
+                    bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
+                }
+            });
+        }
+
+        if (type === 'p'){
+            let dir = global['resource'][name].diff > 0 ? 'success' : 'danger';
+            bd.append(`<div class="rate"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
+        }
+
+        popper.append(bd);
+        popper.show();
+        poppers[type+name] = new Popper($(`#${id}`),popper);
 
         vues[`res_${id}_temp`] = new Vue({
             data: {
@@ -543,6 +544,10 @@ function breakdownPopover(id,name,type){
                         time = +(gap / rate).toFixed(0);
                     }
 
+                    if (time === Infinity){
+                        return 'Never';
+                    }
+                    
                     if (time > 60){
                         let secs = time % 60;
                         let mins = (time - secs) / 60;
@@ -570,13 +575,11 @@ function breakdownPopover(id,name,type){
         vues[`res_${id}_temp`].$mount(`#resBreak${id} > div`);
     });
     $(`#${id}`).on('mouseout',function(){
-        if (breakdown[type][name]){
-            $(`#resBreak${id}`).hide();
-            if (poppers[type+name]){
-                poppers[type+name].destroy();
-            }
-            $(`#resBreak${id}`).remove();
+        $(`#resBreak${id}`).hide();
+        if (poppers[type+name]){
+            poppers[type+name].destroy();
         }
+        $(`#resBreak${id}`).remove();
         vues[`res_${id}_temp`].$destroy();
     });
 }
