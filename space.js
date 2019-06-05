@@ -2,6 +2,7 @@ import { global, vues, poppers, messageQueue, p_on } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
+import { loadFoundry } from './jobs.js';
 import { payCosts, setAction } from './actions.js';
 
 const spaceProjects = {
@@ -230,7 +231,10 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_moon.iridium_mine.cost)){
                     incrementStruct('iridium_mine');
-                    global.resource['Mythril'].display = true;
+                    if (!global.resource['Mythril'].display){
+                        global.resource['Mythril'].display = true;
+                        loadFoundry();
+                    }
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['iridium_mine'].on++;
                     }
