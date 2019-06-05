@@ -62,11 +62,11 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
-if (convertVersion(global['version']) < 3004 && global.settings.space.belt){
+if (convertVersion(global['version']) < 3004 && global['settings'] && global.settings['space'] && global.settings.space.belt){
     global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
 }
 
-if (convertVersion(global['version']) < 3002){
+if (convertVersion(global['version']) < 3002 && global['space']){
     if (global.tech['space'] && global.tech['space'] >= 4){
         if (!global.space['living_quarters']){
             global.space['living_quarters'] = { count: 0, on: 0 };
