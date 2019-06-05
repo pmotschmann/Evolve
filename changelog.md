@@ -1,5 +1,6 @@
 #### 0.3.6 - 6/5/2019
 Fixed issue with production breakdowns not showing when income was only produced by trade.<br>
+Fixed issue that prevented affordability check from refreshing on space missions.<br>
 
 #### 0.3.5 - 6/5/2019
 Mythril Craftman now unlock correctly<br>
