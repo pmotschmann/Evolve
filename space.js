@@ -945,7 +945,7 @@ const spaceProjects = {
             desc(){
                 return `Elerium Mining Ship`;
             },
-            reqs: { asteroid: 4 },
+            reqs: { asteroid: 5 },
             cost: {
                 Money(){ return costMultiplier('elerium_ship', 500000, 1.3); },
                 Uranium(){ return costMultiplier('elerium_ship', 2500, 1.3); },
@@ -955,14 +955,14 @@ const spaceProjects = {
             },
             effect(){
                 let elerium = 0.005;
-                return `<div>Requires 1 Space Miner</div><div>+${elerium} Elerium/s</div>`;
+                return `<div>Requires 2 Space Miners</div><div>+${elerium} Elerium/s</div>`;
             },
-            support: -1,
+            support: -2,
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_belt.elerium_ship.cost)){
                     incrementStruct('elerium_ship');
-                    if (global.space.space_station.support < global.space.space_station.s_max){
+                    if (global.space.space_station.support + 1 < global.space.space_station.s_max){
                         global.space['elerium_ship'].on++;
                     }
                     return true;

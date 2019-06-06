@@ -5776,15 +5776,34 @@ export const actions = {
             id: 'tech-elerium_mining',
             title: 'Elerium Mining',
             desc: 'Elerium Mining',
-            reqs: { asteroid: 3, locked: 1 },
-            grant: ['asteroid',4],
+            reqs: { asteroid: 4 },
+            grant: ['asteroid',5],
             cost: {
-                Knowledge(){ return 300000; }
+                Knowledge(){ return 280000; },
+                Elerium(){ return 1; }
             },
             effect: 'Elerium is a rare new highly energetic element discovered in the asteroid belt, mining this element safely will require specialized harvesting equipment and containment vessels.',
             action(){
                 if (payCosts(actions.tech.elerium_mining.cost)){
                     global.space['elerium_ship'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_tech: {
+            id: 'tech-elerium_tech',
+            title: 'Elerium Theory',
+            desc: 'Elerium Theory',
+            reqs: { asteroid: 5 },
+            grant: ['elerium',1],
+            cost: {
+                Knowledge(){ return 300000; },
+                Elerium(){ return 10; }
+            },
+            effect: `Study the elerium to unlock it's mysteries.`,
+            action(){
+                if (payCosts(actions.tech.elerium_tech.cost)){
                     return true;
                 }
                 return false;

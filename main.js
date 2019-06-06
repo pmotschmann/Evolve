@@ -1465,8 +1465,8 @@ function fastLoop(){
                 
                 if (belt_on['iron_ship']){
                     space_iron = belt_on['iron_ship'] * 2;
-                    
                 }
+
                 let delta = (iron_base + space_iron) * smelter_mult * power_mult;
                 delta *= hunger * global_multiplier;
                 
@@ -1766,7 +1766,8 @@ function midLoop(){
             Alloy: 50,
             Polymer: 50,
             Iridium: 0,
-            "Helium_3": 0
+            "Helium_3": 0,
+            Elerium: 1
         };
         // labor caps
         var lCaps = {
@@ -2373,6 +2374,17 @@ function midLoop(){
         }
         if (global.race['kindling_kindred'] && global.city.foundry['Plywood'] > 0){
             global.city.foundry['Plywood'] = 0;
+        }
+
+        let belt_mining = belt_on['iron_ship'] + belt_on['iridium_ship'];
+        if (belt_mining > 0 && global.tech['asteroid'] && global.tech['asteroid'] === 3){
+            if (Math.rand(0,250) <= belt_mining){
+                global.tech['asteroid'] = 4;
+                global.resource.Elerium.display = true;
+                modRes('Elerium',1);
+                drawTech();
+                messageQueue(`Your asteroid miners have discovered an unknown rare element in the belt, a sample has been retreived for analysis.`);
+            }
         }
 
         checkAchievements();
