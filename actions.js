@@ -2547,7 +2547,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 18500; }
             },
-            effect: 'New specialied brickmaking equipment adds an extra 2% bonus to brick crafting per foundry.',
+            effect: 'New specialized brickmaking equipment adds an extra 2% bonus to brick crafting per foundry.',
             action(){
                 if (payCosts(actions.tech.brickworks.cost)){
                     return true;
@@ -2668,7 +2668,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 7920; }
             },
-            effect: 'Techno Wizards are a new type of stage performer that uses technology to preform "Magic". Increases effectiveness of entertainers.',
+            effect: 'Techno Wizards are a new type of stage performer that uses technology to perform "Magic". Increases effectiveness of entertainers.',
             action(){
                 if (payCosts(actions.tech.magic.cost)){
                     return true;
@@ -3677,7 +3677,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 120000; }
             },
-            effect: `Plan the construction of a monument to celebrate your civilizations greatness.`,
+            effect: `Plan the construction of a monument to celebrate your civilization's greatness.`,
             action(){
                 if (payCosts(actions.tech.monument.cost)){
                     var tech = actions.tech.monument.grant[0];
@@ -4788,7 +4788,7 @@ export const actions = {
                 Money(){ return 10000 },
                 Knowledge(){ return 4500; }
             },
-            effect: 'Unlocks the ability to hire mercenaries. You can pay a man to die for you afterall.',
+            effect: 'Unlocks the ability to hire mercenaries. You can pay a man to die for you after all.',
             action(){
                 if (payCosts(actions.tech.mercs.cost)){
                     global.civic.garrison['mercs'] = true;
@@ -4800,7 +4800,7 @@ export const actions = {
         bows: {
             id: 'tech-bows',
             title: 'Bows',
-            desc: 'Discover Ranged Weaponary',
+            desc: 'Discover Ranged Weaponry',
             reqs: { military: 1 },
             grant: ['military',2],
             cost: {
@@ -4851,7 +4851,7 @@ export const actions = {
                 Knowledge(){ return 33750; },
                 Oil(){ return 1500; }
             },
-            effect: 'Decimate your foes with rapid fire weaponary.',
+            effect: 'Decimate your foes with rapid fire weaponry.',
             action(){
                 if (payCosts(actions.tech.machine_gun.cost)){
                     var tech = actions.tech.machine_gun.grant[0];
@@ -5569,7 +5569,7 @@ export const actions = {
                 Uranium(){ return 2250 },
                 Helium_3(){ return 3500 }
             },
-            effect: 'Design an unmanned space craft which can be used to survey far away plantoids.',
+            effect: 'Design an unmanned space craft which can be used to survey far away planetoids.',
             action(){
                 if (payCosts(actions.tech.probes.cost)){
                     global.settings.space.red = true;
