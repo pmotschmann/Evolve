@@ -20,6 +20,21 @@ var achievements = {
         desc: `Didn't destroy your planet with an artifical blackhole`,
         flair: `Science 1, Fearmongers 0`
     },
+    warmonger: {
+        name: `Heir of Genghis Khan`,
+        desc: `Have a warmonger penalty of 10% or more.`,
+        flair: `What is best in life? to see your enemies fall before you.`
+    },
+    red_tactics: {
+        name: `Red Tactician`,
+        desc: `Lose 250 soldiers in a single game`,
+        flair: `Not one step backwards.`
+    },
+    pacifist: {
+        name: `Pacifist`,
+        desc: `Reset the game without losing any soliders in your current game`,
+        flair: `Make love not war.`
+    },
     madagascar_tree: {
         name: `Madagascar Tree`,
         desc: `Evolved nightmarish flesh eating trees`,
@@ -239,6 +254,12 @@ export function checkAchievements(){
     }
     if (!global.stats.achieve['mass_starvation'] && global.stats.starved >= 100){
         unlockAchieve('mass_starvation');
+    }
+    if (!global.stats.achieve['warmonger'] && Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue) >= 10)){
+        unlockAchieve('warmonger');
+    }
+    if (!global.stats.achieve['red_tactics'] && global.stats.died >= 250){
+        unlockAchieve('red_tactics');
     }
 }
 

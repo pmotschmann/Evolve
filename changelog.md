@@ -1,3 +1,8 @@
+#### 0.3.7 - 6/5/2019
+Warmongering is now tracked and high casualties may impact morale<br>
+Deplating the mercenary pool will temporarily increase their cost<br>
+Three new achievements related to war<br>
+
 #### 0.3.6 - 6/5/2019
 Fixed issue with production breakdowns not showing when income was only produced by trade.<br>
 Fixed issue that prevented affordability check from refreshing on space missions.<br>

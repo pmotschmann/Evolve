@@ -152,7 +152,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.3.6';
+global['version'] = '0.3.7';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -247,8 +247,13 @@ if (!global.city['morale']){
         stress: 0,
         entertain: 0,
         season: 0,
-        weather: 0
+        weather: 0,
+        warmonger: 0,
     };
+}
+
+if (!global.city.morale['warmonger']){
+    global.city.morale['warmonger'] = 0;
 }
 
 if (!global.city.morale['tax']){

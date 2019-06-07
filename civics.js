@@ -161,6 +161,15 @@ function buildGarrison(garrison){
     if (!global.civic.garrison['mercs']){
         global.civic.garrison['mercs'] = false;
     }
+    if (!global.civic.garrison['fatigue']){
+        global.civic.garrison['fatigue'] = 0;
+    }
+    if (!global.civic.garrison['protest']){
+        global.civic.garrison['protest'] = 0;
+    }
+    if (!global.civic.garrison['m_use']){
+        global.civic.garrison['m_use'] = 0;
+    }
 
     vues['civ_garrison'] = new Vue({
         data: global.civic['garrison'],
@@ -170,12 +179,17 @@ function buildGarrison(garrison){
                 if (cost > 25000){
                     cost = 25000;
                 }
-                if (global.race['brute']){
-                    cost = Math.round(cost / 2);
+                if (global.civic.garrison.m_use > 0){
+                    cost *= 1.1 ** global.civic.garrison.m_use;
                 }
+                if (global.race['brute']){
+                    cost = cost / 2;
+                }
+                cost = Math.round(cost);
                 if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
                     global.resource.Money.amount -= cost;
                     global.civic['garrison'].workers++;
+                    global.civic.garrison.m_use++;
                 }
             },
             campaign(){
@@ -217,6 +231,8 @@ function buildGarrison(garrison){
                     wounded = global.civic.garrison.raid - (global.civic.garrison.workers - global.civic.garrison.wounded);
                 }
 
+                global.civic.garrison.fatigue++;
+
                 if (army > enemy){
                     let deathCap = Math.floor(global.civic.garrison.raid / (5 - global.civic.garrison.tactic));
                     deathCap += wounded;
@@ -252,6 +268,7 @@ function buildGarrison(garrison){
                     }
                     global.civic.garrison.workers -= death;
                     global.stats.died += death;
+                    global.civic.garrison.protest += death;
                     if (death > wounded){
                         global.civic.garrison.wounded -= wounded;
                         wounded = 0;
@@ -511,6 +528,7 @@ function buildGarrison(garrison){
                     }
                     global.civic.garrison.workers -= death;
                     global.stats.died += death;
+                    global.civic.garrison.protest += death;
                     if (death > wounded){
                         global.civic.garrison.wounded -= wounded;
                         wounded = 0;
@@ -549,9 +567,13 @@ function buildGarrison(garrison){
                 if (cost > 25000){
                     cost = 25000;
                 }
-                if (global.race['brute']){
-                    cost = Math.round(cost / 2);
+                if (global.civic.garrison.m_use > 0){
+                    cost *= 1.1 ** global.civic.garrison.m_use;
                 }
+                if (global.race['brute']){
+                    cost = cost / 2;
+                }
+                cost = Math.round(cost);
                 return `Hire a mercenary: \$${cost}`;
             },
             battleAssessment(){
@@ -839,6 +861,9 @@ function warhead(){
         new_plasmid++;
         k_base -= k_inc;
         k_inc *= 1.1;
+    }
+    if (global.stats.died === 0){
+        unlockAchieve(`pacifist`);
     }
     plasmid += new_plasmid;
     global.stats.reset++;

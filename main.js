@@ -91,6 +91,10 @@ $('#morale').on('mouseover',function(){
         let type = global.city.morale.stress > 0 ? 'success' : 'danger';
         popper.append(`<p>Stress<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
     }
+    if (global.city.morale.warmonger !== 0){
+        let type = global.city.morale.warmonger > 0 ? 'success' : 'danger';
+        popper.append(`<p>Warmonger<span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
+    }
     if (global.city.morale.entertain !== 0){
         let type = global.city.morale.entertain > 0 ? 'success' : 'danger';
         popper.append(`<p>Entertainment<span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
@@ -788,6 +792,14 @@ function fastLoop(){
 
         global.city.morale.tax = 20 - global.civic.taxes.tax_rate;
         morale -= global.civic.taxes.tax_rate - 20;
+
+        if (global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
+            global.city.morale.warmonger = -(Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue)));
+            morale += global.city.morale.warmonger;
+        }
+        else {
+            global.city.morale.warmonger = 0;
+        }
 
         let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
         mBaseCap += global.city['casino'] ? global.city['casino'].count : 0;
@@ -2431,6 +2443,18 @@ function longLoop(){
             if (global.civic.garrison.wounded < 0){
                 global.civic.garrison.wounded = 0;
             }
+        }
+
+        if (global.civic.garrison['fatigue'] && global.civic.garrison.fatigue > 0){
+            global.civic.garrison.fatigue--;
+        }
+
+        if (global.civic.garrison['protest'] && global.civic.garrison.protest > 0){
+            global.civic.garrison.protest--;
+        }
+
+        if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0 && Math.rand(0,4) === 0){
+            global.civic.garrison.m_use--;
         }
 
         if (global.city.calendar.day > 0){
