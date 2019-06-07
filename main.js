@@ -1787,6 +1787,7 @@ function midLoop(){
             quarry_worker: -1,
             miner: 0,
             coal_miner: 0,
+            craftsman: 0,
             cement_worker: 0,
             banker: 0,
             entertainer: 0,
@@ -2168,6 +2169,9 @@ function midLoop(){
         }
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
+        }
+        if (global.city['foundry']){
+            lCaps['craftsman'] += global.city['foundry'].count;
         }
 
         if (global.city['trade']){
