@@ -699,7 +699,7 @@ function fastLoop(){
 
         if (global.space['spaceport']){
             let used_support = 0;
-            let red_structs = ['living_quarters','fabrication','red_mine','biodome'];
+            let red_structs = ['living_quarters','exotic_lab','red_mine','fabrication','biodome'];
             for (var i = 0; i < red_structs.length; i++){
                 if (global.space[red_structs[i]]){
                     let operating = global.space[red_structs[i]].on;
@@ -742,14 +742,14 @@ function fastLoop(){
                 if (global.space[belt_structs[i]]){
                     let operating = global.space[belt_structs[i]].on;
                     let id = actions.space.spc_belt[belt_structs[i]].id;
-                    if (used_support + operating > global.space.space_station.s_max){
-                        operating -=  (used_support + operating) - global.space.space_station.s_max;
+                    if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support)) > global.space.space_station.s_max){
+                        operating -=  (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support))) - global.space.space_station.s_max;
                         $(`#${id} .on`).addClass('warn');
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
                     }
-                    used_support += operating;
+                    used_support += (operating * -(actions.space.spc_belt[belt_structs[i]].support));
                     belt_on[belt_structs[i]] = operating;
                 }
                 else {
@@ -1604,6 +1604,17 @@ function fastLoop(){
         helium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
         breakdown.p['Helium_3'] = helium_bd;
 
+        // Elerium
+        let elerium_bd = {};
+        if (belt_on['elerium_ship']){
+            let elerium_base = belt_on['elerium_ship'] * 0.005;
+            let delta = elerium_base * hunger * global_multiplier;
+            elerium_bd['Elerium_Ship'] = elerium_base + 'v';
+            modRes('Elerium', delta * time_multiplier);
+        }
+        elerium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        breakdown.p['Elerium'] = elerium_bd;
+
         // Tax Income
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] ? 0 : global.civic.free);
@@ -2157,6 +2168,15 @@ function midLoop(){
         }
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
+            if (global.tech['asteroid'] >= 5){
+                caps['Elerium'] += p_on['space_station'] * 2;
+            }
+        }
+        if (red_on['exotic_lab']){
+            caps['Elerium'] += red_on['exotic_lab'] * 5;
+            let gain = red_on['exotic_lab'] * global.civic.colonist.workers * 500;
+            caps['Knowledge'] += gain;
+            bd_Knowledge['Exotic_Lab'] = gain+'v'
         }
 
         if (global.city['trade']){

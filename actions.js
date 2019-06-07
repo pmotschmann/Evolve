@@ -5659,6 +5659,24 @@ export const actions = {
                 return false;
             }
         },
+        exotic_lab: {
+            id: 'tech-energy_lab',
+            title: 'Exotic Materials Lab',
+            desc: 'Exotic Materials Laboratory',
+            reqs: { mars: 4, asteroid: 5 },
+            grant: ['mars',5],
+            cost: {
+                Knowledge(){ return 250000; }
+            },
+            effect(){ return `Design a special high tech laboratory to study exotic materials.`; },
+            action(){
+                if (payCosts(actions.tech.exotic_lab.cost)){
+                    global.space['exotic_lab'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson_sphere: {
             id: 'tech-dyson_sphere',
             title: 'Dyson Sphere',
@@ -5779,7 +5797,7 @@ export const actions = {
             reqs: { asteroid: 4 },
             grant: ['asteroid',5],
             cost: {
-                Knowledge(){ return 280000; },
+                Knowledge(){ return 235000; },
                 Elerium(){ return 1; }
             },
             effect: 'Elerium is a rare new highly energetic element discovered in the asteroid belt, mining this element safely will require specialized harvesting equipment and containment vessels.',
