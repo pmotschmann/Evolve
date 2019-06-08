@@ -610,7 +610,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_gas:gas_mining','spc_belt:space_station','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_red:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -1816,6 +1816,7 @@ function midLoop(){
         var bd_Polymer = { Base: caps['Polymer']+'v' };
         var bd_Iridium = { Base: caps['Iridium']+'v' };
         var bd_Helium = { Base: caps['Helium_3']+'v' };
+        var bd_Elerium = { Base: caps['Elerium']+'v' };
 
         caps[races[global.race.species].name] = 0;
         if (global.city['farm']){
@@ -2169,14 +2170,23 @@ function midLoop(){
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
             if (global.tech['asteroid'] >= 5){
-                caps['Elerium'] += p_on['space_station'] * spatialReasoning(2);
+                let gain = p_on['space_station'] * spatialReasoning(2);
+                caps['Elerium'] += gain;
+                bd_Elerium['Space_Station'] = gain+'v';
             }
         }
         if (red_on['exotic_lab']){
-            caps['Elerium'] += red_on['exotic_lab'] * spatialReasoning(5);
+            let el_gain = red_on['exotic_lab'] * spatialReasoning(5);
+            caps['Elerium'] += el_gain;
+            bd_Elerium['Exotic_Lab'] = el_gain+'v';
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * 500;
             caps['Knowledge'] += gain;
-            bd_Knowledge['Exotic_Lab'] = gain+'v'
+            bd_Knowledge['Exotic_Lab'] = gain+'v';
+        }
+        if (p_on['elerium_contain']){
+            let el_gain = p_on['elerium_contain'] * spatialReasoning(50);
+            caps['Elerium'] += el_gain;
+            bd_Elerium['Containment'] = el_gain+'v';
         }
 
         if (global.city['trade']){
@@ -2216,7 +2226,8 @@ function midLoop(){
             Alloy: bd_Alloy,
             Polymer: bd_Polymer,
             Iridium: bd_Iridium,
-            "Helium_3": bd_Helium
+            "Helium_3": bd_Helium,
+            Elerium: bd_Elerium,
         };
 
         let create_value = crateValue();

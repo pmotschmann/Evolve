@@ -612,6 +612,7 @@ const spaceProjects = {
             },
             support: -1,
             powered: 1,
+            refresh: true,
             action(){
                 if (payCosts(spaceProjects.spc_red.exotic_lab.cost)){
                     incrementStruct('exotic_lab');
@@ -641,7 +642,8 @@ const spaceProjects = {
                 Iridium(){ return costMultiplier('elerium_contain', 50000, 1.28); }
             },
             effect(){
-                return `<div>+50 Max Elerium</div><div>-5kW</div>`;
+                let elerium = spatialReasoning(50);
+                return `<div>+${elerium} Max Elerium</div><div>-${spaceProjects.spc_red.elerium_contain.powered}kW</div>`;
             },
             powered: 6,
             action(){
