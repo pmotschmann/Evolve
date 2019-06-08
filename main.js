@@ -4,7 +4,7 @@ import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate } from './actions.js';
 import { space, fuel_adjust } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -614,7 +614,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_gas:gas_mining','spc_belt:space_station','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_red:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -703,7 +703,7 @@ function fastLoop(){
 
         if (global.space['spaceport']){
             let used_support = 0;
-            let red_structs = ['living_quarters','fabrication','red_mine','biodome'];
+            let red_structs = ['living_quarters','exotic_lab','red_mine','fabrication','biodome'];
             for (var i = 0; i < red_structs.length; i++){
                 if (global.space[red_structs[i]]){
                     let operating = global.space[red_structs[i]].on;
@@ -746,14 +746,14 @@ function fastLoop(){
                 if (global.space[belt_structs[i]]){
                     let operating = global.space[belt_structs[i]].on;
                     let id = actions.space.spc_belt[belt_structs[i]].id;
-                    if (used_support + operating > global.space.space_station.s_max){
-                        operating -=  (used_support + operating) - global.space.space_station.s_max;
+                    if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support)) > global.space.space_station.s_max){
+                        operating -=  (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support))) - global.space.space_station.s_max;
                         $(`#${id} .on`).addClass('warn');
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
                     }
-                    used_support += operating;
+                    used_support += (operating * -(actions.space.spc_belt[belt_structs[i]].support));
                     belt_on[belt_structs[i]] = operating;
                 }
                 else {
@@ -1107,18 +1107,18 @@ function fastLoop(){
                     global.city.factory.Lux--;
                 }
 
-                let fur_cost = global.city.factory.Lux * (assembly ? 3 : 2);
+                let fur_cost = global.city.factory.Lux * (assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0]);
                 let workDone = global.city.factory.Lux;
                 
                 while (fur_cost * time_multiplier > global.resource.Furs.amount && fur_cost > 0){
-                    fur_cost -= (assembly ? 3 : 2);
+                    fur_cost -= (assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0]);
                     workDone--;
                 }
 
                 breakdown.p.consume.Furs['Factory'] = -(fur_cost);
                 modRes('Furs', -(fur_cost * time_multiplier));
 
-                let demand = global.resource[races[global.race.species].name].amount * (assembly ? 0.21 : 0.14);
+                let demand = global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]);
                 let delta = workDone * demand;
                 if (global.race['toxic']){
                     delta *= 1.08;
@@ -1138,18 +1138,18 @@ function fastLoop(){
                     global.city.factory.Alloy--;
                 }
 
-                let copper_cost = global.city.factory.Alloy * (assembly ? 1.12 : 0.75);
-                let titanium_cost = global.city.factory.Alloy * (assembly ? 0.22 : 0.15);
+                let copper_cost = global.city.factory.Alloy * (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
+                let titanium_cost = global.city.factory.Alloy * (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
                 let workDone = global.city.factory.Alloy;
                 
                 while (copper_cost * time_multiplier > global.resource.Copper.amount && copper_cost > 0){
-                    copper_cost -= (assembly ? 1.12 : 0.75);
-                    titanium_cost -= (assembly ? 0.22 : 0.15);
+                    copper_cost -= (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
+                    titanium_cost -= (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
                     workDone--;
                 }
                 while (titanium_cost * time_multiplier > global.resource.Titanium.amount && titanium_cost > 0){
-                    copper_cost -= (assembly ? 1.12 : 0.75);
-                    titanium_cost -= (assembly ? 0.22 : 0.15);
+                    copper_cost -= (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
+                    titanium_cost -= (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
                     workDone--;
                 }
 
@@ -1158,7 +1158,7 @@ function fastLoop(){
                 modRes('Copper', -(copper_cost * time_multiplier));
                 modRes('Titanium', -(titanium_cost * time_multiplier));
 
-                let factory_output = workDone * (assembly ? 0.112 : 0.075);
+                let factory_output = workDone * (assembly ? f_rate.Alloy.output[global.tech['factory']] : f_rate.Alloy.output[0]);
                 if (global.race['toxic']){
                     factory_output *= 1.08;
                 }
@@ -1180,8 +1180,8 @@ function fastLoop(){
                     global.city.factory.Polymer--;
                 }
 
-                let oilIncrement = global.race['kindling_kindred'] ? (assembly ? 0.33 : 0.22) : (assembly ? 0.27 : 0.18);
-                let lumberIncrement = global.race['kindling_kindred'] ? 0 : (assembly ? 22 : 15);
+                let oilIncrement = global.race['kindling_kindred'] ? (assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0]) : (assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0]);
+                let lumberIncrement = global.race['kindling_kindred'] ? 0 : (assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0]);
                 let oil_cost = global.city.factory.Polymer * oilIncrement;
                 let lumber_cost = global.city.factory.Polymer * lumberIncrement;
                 let workDone = global.city.factory.Polymer;
@@ -1202,7 +1202,7 @@ function fastLoop(){
                 modRes('Lumber', -(lumber_cost * time_multiplier));
                 modRes('Oil', -(oil_cost * time_multiplier));
 
-                let factory_output = workDone * (assembly ? 0.187 : 0.125);
+                let factory_output = workDone * (assembly ? f_rate.Polymer.output[global.tech['factory']] : f_rate.Polymer.output[0]);
                 if (global.race['toxic']) {
                     factory_output *= 1.08;
                 }
@@ -1477,8 +1477,8 @@ function fastLoop(){
                 
                 if (belt_on['iron_ship']){
                     space_iron = belt_on['iron_ship'] * 2;
-                    
                 }
+
                 let delta = (iron_base + space_iron) * smelter_mult * power_mult;
                 delta *= hunger * global_multiplier;
                 
@@ -1615,6 +1615,17 @@ function fastLoop(){
         
         helium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
         breakdown.p['Helium_3'] = helium_bd;
+
+        // Elerium
+        let elerium_bd = {};
+        if (belt_on['elerium_ship']){
+            let elerium_base = belt_on['elerium_ship'] * 0.002;
+            let delta = elerium_base * hunger * global_multiplier;
+            elerium_bd['Elerium_Ship'] = elerium_base + 'v';
+            modRes('Elerium', delta * time_multiplier);
+        }
+        elerium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        breakdown.p['Elerium'] = elerium_bd;
 
         // Tax Income
         if (global.tech['currency'] >= 1){
@@ -1778,7 +1789,8 @@ function midLoop(){
             Alloy: 50,
             Polymer: 50,
             Iridium: 0,
-            "Helium_3": 0
+            "Helium_3": 0,
+            Elerium: 1
         };
         // labor caps
         var lCaps = {
@@ -1817,6 +1829,7 @@ function midLoop(){
         var bd_Polymer = { Base: caps['Polymer']+'v' };
         var bd_Iridium = { Base: caps['Iridium']+'v' };
         var bd_Helium = { Base: caps['Helium_3']+'v' };
+        var bd_Elerium = { Base: caps['Elerium']+'v' };
 
         caps[races[global.race.species].name] = 0;
         if (global.city['farm']){
@@ -2169,6 +2182,24 @@ function midLoop(){
         }
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
+            if (global.tech['asteroid'] >= 5){
+                let gain = p_on['space_station'] * spatialReasoning(2);
+                caps['Elerium'] += gain;
+                bd_Elerium['Space_Station'] = gain+'v';
+            }
+        }
+        if (red_on['exotic_lab']){
+            let el_gain = red_on['exotic_lab'] * spatialReasoning(5);
+            caps['Elerium'] += el_gain;
+            bd_Elerium['Exotic_Lab'] = el_gain+'v';
+            let gain = red_on['exotic_lab'] * global.civic.colonist.workers * 500;
+            caps['Knowledge'] += gain;
+            bd_Knowledge['Exotic_Lab'] = gain+'v';
+        }
+        if (p_on['elerium_contain']){
+            let el_gain = p_on['elerium_contain'] * spatialReasoning(50);
+            caps['Elerium'] += el_gain;
+            bd_Elerium['Containment'] = el_gain+'v';
         }
         if (global.city['foundry']){
             lCaps['craftsman'] += global.city['foundry'].count;
@@ -2211,7 +2242,8 @@ function midLoop(){
             Alloy: bd_Alloy,
             Polymer: bd_Polymer,
             Iridium: bd_Iridium,
-            "Helium_3": bd_Helium
+            "Helium_3": bd_Helium,
+            Elerium: bd_Elerium,
         };
 
         let create_value = crateValue();
@@ -2389,6 +2421,17 @@ function midLoop(){
         }
         if (global.race['kindling_kindred'] && global.city.foundry['Plywood'] > 0){
             global.city.foundry['Plywood'] = 0;
+        }
+
+        let belt_mining = belt_on['iron_ship'] + belt_on['iridium_ship'];
+        if (belt_mining > 0 && global.tech['asteroid'] && global.tech['asteroid'] === 3){
+            if (Math.rand(0,250) <= belt_mining){
+                global.tech['asteroid'] = 4;
+                global.resource.Elerium.display = true;
+                modRes('Elerium',1);
+                drawTech();
+                messageQueue(`Your asteroid miners have discovered an unknown rare element in the belt, a sample has been retreived for analysis.`);
+            }
         }
 
         checkAchievements();

@@ -119,7 +119,7 @@ export function defineResources() {
         //loadResource('Deuterium',0,1,true,false);
         loadResource('Helium_3',0,1,true,false);
         //loadResource('Neutronium',0,1,true,true);
-        loadResource('Elerium',0,1,false,false);
+        loadResource('Elerium',1,1,false,false,'special');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');
@@ -544,7 +544,7 @@ function breakdownPopover(id,name,type){
                         time = +(gap / rate).toFixed(0);
                     }
 
-                    if (time === Infinity){
+                    if (time === Infinity || Number.isNaN(time)){
                         return 'Never';
                     }
                     
