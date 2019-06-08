@@ -4,7 +4,7 @@ import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate } from './actions.js';
 import { space, fuel_adjust } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -1095,18 +1095,18 @@ function fastLoop(){
                     global.city.factory.Lux--;
                 }
 
-                let fur_cost = global.city.factory.Lux * (assembly ? 3 : 2);
+                let fur_cost = global.city.factory.Lux * (assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0]);
                 let workDone = global.city.factory.Lux;
                 
                 while (fur_cost * time_multiplier > global.resource.Furs.amount && fur_cost > 0){
-                    fur_cost -= (assembly ? 3 : 2);
+                    fur_cost -= (assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0]);
                     workDone--;
                 }
 
                 breakdown.p.consume.Furs['Factory'] = -(fur_cost);
                 modRes('Furs', -(fur_cost * time_multiplier));
 
-                let demand = global.resource[races[global.race.species].name].amount * (assembly ? 0.21 : 0.14);
+                let demand = global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]);
                 let delta = workDone * demand;
                 if (global.race['toxic']){
                     delta *= 1.08;
@@ -1126,18 +1126,18 @@ function fastLoop(){
                     global.city.factory.Alloy--;
                 }
 
-                let copper_cost = global.city.factory.Alloy * (assembly ? 1.12 : 0.75);
-                let titanium_cost = global.city.factory.Alloy * (assembly ? 0.22 : 0.15);
+                let copper_cost = global.city.factory.Alloy * (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
+                let titanium_cost = global.city.factory.Alloy * (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
                 let workDone = global.city.factory.Alloy;
                 
                 while (copper_cost * time_multiplier > global.resource.Copper.amount && copper_cost > 0){
-                    copper_cost -= (assembly ? 1.12 : 0.75);
-                    titanium_cost -= (assembly ? 0.22 : 0.15);
+                    copper_cost -= (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
+                    titanium_cost -= (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
                     workDone--;
                 }
                 while (titanium_cost * time_multiplier > global.resource.Titanium.amount && titanium_cost > 0){
-                    copper_cost -= (assembly ? 1.12 : 0.75);
-                    titanium_cost -= (assembly ? 0.22 : 0.15);
+                    copper_cost -= (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
+                    titanium_cost -= (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
                     workDone--;
                 }
 
@@ -1146,7 +1146,7 @@ function fastLoop(){
                 modRes('Copper', -(copper_cost * time_multiplier));
                 modRes('Titanium', -(titanium_cost * time_multiplier));
 
-                let factory_output = workDone * (assembly ? 0.112 : 0.075);
+                let factory_output = workDone * (assembly ? f_rate.Alloy.output[global.tech['factory']] : f_rate.Alloy.output[0]);
                 if (global.race['toxic']){
                     factory_output *= 1.08;
                 }
@@ -1168,8 +1168,8 @@ function fastLoop(){
                     global.city.factory.Polymer--;
                 }
 
-                let oilIncrement = global.race['kindling_kindred'] ? (assembly ? 0.33 : 0.22) : (assembly ? 0.27 : 0.18);
-                let lumberIncrement = global.race['kindling_kindred'] ? 0 : (assembly ? 22 : 15);
+                let oilIncrement = global.race['kindling_kindred'] ? (assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0]) : (assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0]);
+                let lumberIncrement = global.race['kindling_kindred'] ? 0 : (assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0]);
                 let oil_cost = global.city.factory.Polymer * oilIncrement;
                 let lumber_cost = global.city.factory.Polymer * lumberIncrement;
                 let workDone = global.city.factory.Polymer;
@@ -1190,7 +1190,7 @@ function fastLoop(){
                 modRes('Lumber', -(lumber_cost * time_multiplier));
                 modRes('Oil', -(oil_cost * time_multiplier));
 
-                let factory_output = workDone * (assembly ? 0.187 : 0.125);
+                let factory_output = workDone * (assembly ? f_rate.Polymer.output[global.tech['factory']] : f_rate.Polymer.output[0]);
                 if (global.race['toxic']) {
                     factory_output *= 1.08;
                 }
@@ -1607,7 +1607,7 @@ function fastLoop(){
         // Elerium
         let elerium_bd = {};
         if (belt_on['elerium_ship']){
-            let elerium_base = belt_on['elerium_ship'] * 0.005;
+            let elerium_base = belt_on['elerium_ship'] * 0.002;
             let delta = elerium_base * hunger * global_multiplier;
             elerium_bd['Elerium_Ship'] = elerium_base + 'v';
             modRes('Elerium', delta * time_multiplier);
@@ -2169,11 +2169,11 @@ function midLoop(){
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
             if (global.tech['asteroid'] >= 5){
-                caps['Elerium'] += p_on['space_station'] * 2;
+                caps['Elerium'] += p_on['space_station'] * spatialReasoning(2);
             }
         }
         if (red_on['exotic_lab']){
-            caps['Elerium'] += red_on['exotic_lab'] * 5;
+            caps['Elerium'] += red_on['exotic_lab'] * spatialReasoning(5);
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * 500;
             caps['Knowledge'] += gain;
             bd_Knowledge['Exotic_Lab'] = gain+'v'

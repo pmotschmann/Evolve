@@ -2611,14 +2611,32 @@ export const actions = {
             id: 'tech-automation',
             title: 'Factory Automation',
             desc: 'Factory Automation',
-            reqs: { high_tech: 8, factory: 1, locked: 1 },
+            reqs: { high_tech: 8, factory: 1},
             grant: ['factory',2],
             cost: {
-                Knowledge(){ return 140000; }
+                Knowledge(){ return 165000; }
             },
-            effect: 'High tech robotic machinary can booot the production of factories.',
+            effect: '<span>High tech robotic machinary can booot the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
             action(){
                 if (payCosts(actions.tech.automation.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        laser_cutters: {
+            id: 'tech-laser_cutters',
+            title: 'Factory Automation',
+            desc: 'Factory Automation',
+            reqs: { high_tech: 9, factory: 2 },
+            grant: ['factory',3],
+            cost: {
+                Knowledge(){ return 300000; },
+                Elerium(){ return 100; }
+            },
+            effect: '<span>Laser cutters provide a 25% boost to manufacturing speed.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            action(){
+                if (payCosts(actions.tech.laser_cutters.cost)){
                     return true;
                 }
                 return false;
@@ -4102,11 +4120,11 @@ export const actions = {
             id: 'tech-lasers',
             title: 'Lasers',
             desc: 'Light Amplification by Stimulated Emission of Radiation',
-            reqs: { high_tech: 8, space: 3, supercollider: 1, locked: 1 },
+            reqs: { high_tech: 8, space: 3, supercollider: 1, elerium: 1 },
             grant: ['high_tech',9],
             cost: {
-                Knowledge(){ return 180000; },
-                Iridium(){ return 500; }
+                Knowledge(){ return 280000; },
+                Elerium(){ return 50; }
             },
             effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
             action(){
@@ -4897,6 +4915,28 @@ export const actions = {
                 if (payCosts(actions.tech.rail_guns.cost)){
                     var tech = actions.tech.rail_guns.grant[0];
                     global.tech[tech] = actions.tech.rail_guns.grant[1];
+                    global.civic['garrison'].workers--;
+                    global.civic['garrison'].workers++;
+                    return true;
+                }
+                return false;
+            }
+        },
+        laser_rifles: {
+            id: 'tech-laser_rifles',
+            title: 'Laser Rifles',
+            desc: 'Laser Rifles',
+            reqs: { military: 6, high_tech: 9, elerium: 1 },
+            grant: ['military',7],
+            cost: {
+                Knowledge(){ return 325000; },
+                Elerium(){ return 125; }
+            },
+            effect: 'High tech weapons for the future.',
+            action(){
+                if (payCosts(actions.tech.laser_rifles.cost)){
+                    var tech = actions.tech.laser_rifles.grant[0];
+                    global.tech[tech] = actions.tech.laser_rifles.grant[1];
                     global.civic['garrison'].workers--;
                     global.civic['garrison'].workers++;
                     return true;
@@ -5816,7 +5856,7 @@ export const actions = {
             reqs: { asteroid: 5 },
             grant: ['elerium',1],
             cost: {
-                Knowledge(){ return 300000; },
+                Knowledge(){ return 275000; },
                 Elerium(){ return 10; }
             },
             effect: `Study the elerium to unlock it's mysteries.`,
@@ -6538,6 +6578,24 @@ function smelterModal(modal){
     vues['specialModal'].$mount('#specialModal');
 }
 
+export const f_rate = {
+    Lux: {
+        demand: [0.14,0.21,0.28,0.35],
+        fur: [2,3,4,5]
+    },
+    Alloy: {
+        copper: [0.75,1.12,1.49,1.86],
+        titanium: [0.15,0.22,0.29,0.36],
+        output: [0.075,0.112,0.149,0.186]
+    },
+    Polymer: {
+        oil_kk: [0.22,0.33,0.44,0.55],
+        oil: [0.18,0.27,0.36,0.45],
+        lumber: [15,22,29,36],
+        output: [0.125,0.187,0.249,0.311],
+    }
+};
+
 function factoryModal(modal){
     let fuel = $('<div><span class="has-text-warning">Operating:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>');
     modal.append(fuel);
@@ -6592,26 +6650,23 @@ function factoryModal(modal){
                 let assembly = global.tech['factory'] ? true : false;
                 switch(type){
                     case 'Lux':
-                        let demand = +(global.resource[races[global.race.species].name].amount * (assembly ? 0.21 : 0.14)).toFixed(2);
-                        let consume = assembly ? 3 : 2;
-                        return `Consume ${consume} Furs/s to produce luxury goods worth \$${demand}`;
-                        break;
+                        let demand = +(global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
+                        let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
+                        return `Consume ${fur} Furs/s to produce luxury goods worth \$${demand}`;
                     case 'Alloy':
-                        let copper = assembly ? 1.12 : 0.75;
-                        let titanium = assembly ? 0.22 : 0.15;
+                        let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
+                        let titanium = assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0];
                         return `Consume ${copper} Copper and ${titanium} Titanium/s to produce Alloy`;
-                        break;
                     case 'Polymer':
                         if (global.race['kindling_kindred']){
-                            let oil = assembly ? 0.33 : 0.22;
+                            let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
                             return `Consume ${oil} Oil/s to produce Polymer`;
                         }
                         else {
-                            let oil = assembly ? 0.27 : 0.18;
-                            let lumber = assembly ? 22 :15;
+                            let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
+                            let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
                             return `Consume ${oil} Oil and ${lumber} Lumber/s to produce Polymer`;
                         }
-                        break;
                 }
             }
         },

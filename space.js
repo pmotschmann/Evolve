@@ -370,7 +370,7 @@ const spaceProjects = {
         },
         red_tower: {
             id: 'space-red_tower',
-            title: 'Space Control Tower',
+            title: 'Space Control',
             desc(){
                 return `<div>Space traffic control</div><div class="has-text-special">Requires Power</div>`;
             },
@@ -607,15 +607,48 @@ const spaceProjects = {
                 Elerium(){ return costMultiplier('exotic_lab', 10, 1.28); }
             },
             effect(){
-                return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+500 Max Knowledge per colonist</div><div>+5 Max Elerium</div>`;
+                let elerium = spatialReasoning(5);
+                return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+500 Max Knowledge per colonist</div><div>+${elerium} Max Elerium</div>`;
             },
             support: -1,
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_red.exotic_lab.cost)){
                     incrementStruct('exotic_lab');
+                    if (global.tech['mars'] === 5){
+                        global.tech['mars'] = 6;
+                        global.space['elerium_contain'] = { count: 0, on: 0 };
+                    }
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['exotic_lab'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_contain: {
+            id: 'space-elerium_contain',
+            title: 'Elerium Containment',
+            desc(){
+                return `<div>Elerium Containment</div><div class="has-text-special">Requires Power</div>`;
+            },
+            reqs: { mars: 6 },
+            cost: {
+                Money(){ return costMultiplier('elerium_contain', 800000, 1.28); },
+                Titanium(){ return costMultiplier('elerium_contain', 85000, 1.28); },
+                Cement(){ return costMultiplier('elerium_contain', 120000, 1.28); },
+                Iridium(){ return costMultiplier('elerium_contain', 50000, 1.28); }
+            },
+            effect(){
+                return `<div>+50 Max Elerium</div><div>-5kW</div>`;
+            },
+            powered: 6,
+            action(){
+                if (payCosts(spaceProjects.spc_red.elerium_contain.cost)){
+                    incrementStruct('elerium_contain');
+                    if (global.space.spaceport.support < global.space.spaceport.s_max){
+                        global.space['elerium_contain'].on++;
                     }
                     return true;
                 }
@@ -947,7 +980,8 @@ const spaceProjects = {
             effect(){
                 let helium = +(fuel_adjust(2.5)).toFixed(2);
                 let food = 10;
-                let elerium = global.tech['asteroid'] >= 5 ? `<div>+2 Max Elerium</div>` : '';
+                let elerium_cap = spatialReasoning(2);
+                let elerium = global.tech['asteroid'] >= 5 ? `<div>+${elerium_cap} Max Elerium</div>` : '';
                 return `<div>+3 Max Space Miners</div>${elerium}<div>-${helium} Helium-3/s</div><div>-${food} Food/s, -${spaceProjects.spc_belt.space_station.powered}kW/s</div>`;
             },
             support: 3,
@@ -983,7 +1017,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('elerium_ship', fuel_adjust(5000), 1.3); }
             },
             effect(){
-                let elerium = 0.005;
+                let elerium = 0.002;
                 return `<div>Requires 2 Space Miners</div><div>+${elerium} Elerium/s</div>`;
             },
             support: -2,
@@ -1114,6 +1148,7 @@ const structDefinitions = {
     fabrication: { count: 0, on: 0 },
     red_factory: { count: 0, on: 0 },
     exotic_lab: { count: 0, on: 0 },
+    elerium_contain: { count: 0, on: 0 },
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     geothermal: { count: 0, on: 0 },
