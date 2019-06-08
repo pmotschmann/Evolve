@@ -3415,7 +3415,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 90; }
             },
-            effect: 'Creates the concept of banking, allowing govenment to accumulate massive wealth. Also gives the plebs somewhere to store their money.',
+            effect: 'Creates the concept of banking, allowing government to accumulate massive wealth. Also gives the plebs somewhere to store their money.',
             action(){
                 if (payCosts(actions.tech.banking.cost)){
                     global.city['bank'] = { count: 0 };

@@ -1,7 +1,10 @@
-#### 0.3.8 - 6/5/2019
+#### 0.3.9 - 6/8/2019
+New offical Evolve [Discord](https://discordapp.com/invite/dcwdQEr)<br>
+
+#### 0.3.8 - 6/7/2019
 Fixed a problem with negative craftsman counts that could result from craftsman dying<br>
 
-#### 0.3.7 - 6/5/2019
+#### 0.3.7 - 6/6/2019
 Warmongering is now tracked and high casualties may impact morale<br>
 Deplating the mercenary pool will temporarily increase their cost<br>
 Three new achievements related to war<br>
