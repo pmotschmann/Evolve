@@ -717,6 +717,31 @@ const spaceProjects = {
                 return false;
             }
         },
+        swarm_plant: {
+            id: 'space-swarm_plant',
+            title: 'Swarm Plant',
+            desc(){
+                return `<div>Swarm Satellite production plant</div>`;
+            },
+            reqs: { solar: 4 },
+            cost: {
+                Money(){ return costMultiplier('swarm_plant', 75000, 1.28); },
+                Iron(){ return costMultiplier('swarm_plant', 95000, 1.28); },
+                Uranium(){ return costMultiplier('swarm_plant', 250, 1.28); },
+                Brick(){ return costMultiplier('swarm_plant', 2500, 1.28); },
+                Mythril(){ return costMultiplier('swarm_plant', 100, 1.28); }
+            },
+            effect(){
+                return `Reduces the cost of swarm satellites by 5%`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_hell.swarm_plant.cost)){
+                    incrementStruct('swarm_plant');
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     spc_sun: {
         info: {
@@ -786,10 +811,10 @@ const spaceProjects = {
             },
             reqs: { solar: 3 },
             cost: {
-                Money(){ return costMultiplier('swarm_satellite', 50000, 1.2); },
-                Copper(){ return costMultiplier('swarm_satellite', 25000, 1.2); },
-                Iridium(){ return costMultiplier('swarm_satellite', 1500, 1.2); },
-                Helium_3(){ return costMultiplier('swarm_satellite', fuel_adjust(500), 1.2); }
+                Money(){ return costMultiplier('swarm_satellite', swarm_adjust(50000), 1.2); },
+                Copper(){ return costMultiplier('swarm_satellite', swarm_adjust(25000), 1.2); },
+                Iridium(){ return costMultiplier('swarm_satellite', swarm_adjust(1500), 1.2); },
+                Helium_3(){ return costMultiplier('swarm_satellite', swarm_adjust(fuel_adjust(500)), 1.2); }
             },
             effect(){
                 return `+1kW, -1 Swarm Support`;
@@ -1154,6 +1179,7 @@ const structDefinitions = {
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     geothermal: { count: 0, on: 0 },
+    swarm_plant: { count: 0 },
     swarm_control: { count: 0, support: 0, s_max: 0 },
     swarm_satellite: { count: 0 },
     gas_mining: { count: 0, on: 0 },
@@ -1246,6 +1272,13 @@ function costMultiplier(action,base,mutiplier){
     }
     var count = global.space[action] ? global.space[action].count : 0;
     return Math.round((mutiplier ** count) * base);
+}
+
+export function swarm_adjust(res){
+    if (global.space['swarm_plant']){
+        res *= 0.95 ** global.space.swarm_plant.count;
+    }
+    return res;
 }
 
 export function fuel_adjust(fuel){

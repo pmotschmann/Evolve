@@ -324,7 +324,12 @@ export function loadFoundry(){
         $(`#foundry .foundry`).on('mouseover',function(){
             var popper = $(`<div id="popFoundry" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            popper.html('Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon each month.');
+            if (global.genes['crafty']){
+                popper.html('Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon and full moon each month.');
+            }
+            else {
+                popper.html('Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon each month.');
+            }
             popper.show();
             poppers['popFoundry'] = new Popper($(`#foundry .foundry`),popper);
         });

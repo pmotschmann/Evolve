@@ -1699,6 +1699,32 @@ export const actions = {
                 return false;
             }
         },
+        wharf: {
+            id: 'city-wharf',
+            title: 'Wharf',
+            desc: 'Wharfs offer a place for ships to dock',
+            reqs: { wharf: 1 },
+            cost: { 
+                Money(){ return costMultiplier('wharf', 62000, 1.32); },
+                Lumber(){ return costMultiplier('wharf', 44000, 1.32); },
+                Cement(){ return costMultiplier('wharf', 3000, 1.32); },
+                Oil(){ return costMultiplier('wharf', 750, 1.32); }
+            },
+            effect(){
+                let routes = 2;
+                return `<div>+${routes} Trade Routes</div><div>+1% Trade Route Profitability</div><div>+10 Max Crates</div><div>+10 Max Containers</div>`; 
+            },
+            action(){
+                if (payCosts(actions.city.wharf.cost)){
+                    global.city['wharf'].count++;
+                    global.city.market.mtrade += 2;
+                    global.resource.Crates.max += 10;
+                    global.resource.Containers.max += 10;
+                    return true;
+                }
+                return false;
+            }
+        },
         tourist_center: {
             id: 'city-tourist_center',
             title: 'Tourist Center',
@@ -3447,16 +3473,17 @@ export const actions = {
         },
         wharf: {
             id: 'tech-wharf',
-            title: 'wharfs',
+            title: 'Wharfs',
             desc: 'Establish sea routes with wharfs',
-            reqs: { trade: 1, high_tech: 3 },
+            reqs: { trade: 1, high_tech: 3, oil: 1 },
             grant: ['wharf',1],
             cost: {
                 Knowledge(){ return 44000; }
             },
-            effect: 'Zone costal areas of your city for contructing wharfs.',
+            effect: 'Zone coastal areas of your city for contructing wharfs.',
             action(){
                 if (payCosts(actions.tech.wharf.cost)){
+                    global.city['wharf'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -5803,6 +5830,24 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.dyson_swarm.cost)){
                     global.space['swarm_satellite'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        swarm_plant: {
+            id: 'tech-swarm_plant',
+            title: 'Swarm Plant',
+            desc: 'Swarm Plant',
+            reqs: { solar: 3, hell: 1 },
+            grant: ['solar',4],
+            cost: {
+                Knowledge(){ return 250000; }
+            },
+            effect(){ return `Manufactoring and deploying swarm satellites are expensive because of the distance from ${races[global.race.species].home}. By establishing automated facilities on ${races[global.race.species].solar.hell} which is much closer to the sun you can lower the costs.` },
+            action(){
+                if (payCosts(actions.tech.swarm_plant.cost)){
+                    global.space['swarm_plant'] = { count: 0 };
                     return true;
                 }
                 return false;

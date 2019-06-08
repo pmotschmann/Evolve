@@ -499,6 +499,10 @@ function fastLoop(){
                 if (global.resource[res].trade > 0){
                     let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
                     let price = Math.round(global.resource[res].trade * rate * tradeRatio[res]);
+
+                    if (global.city['wharf']){
+                        price = Math.round(price * (0.99 ** global.city['wharf'].count));
+                    }
                     if (global.space['gps'] && global.space['gps'].count > 3){
                         price = Math.round(price * (0.99 ** global.space['gps'].count));
                     }
@@ -513,6 +517,10 @@ function fastLoop(){
                 else if (global.resource[res].trade < 0){
                     let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
                     let price = Math.round(global.resource[res].value * global.resource[res].trade * tradeRatio[res] / divide);
+                    
+                    if (global.city['wharf']){
+                        price = Math.round(price * (1 + (global.city['wharf'].count * 0.01)));
+                    }
                     if (global.space['gps'] && global.space['gps'].count > 3){
                         price = Math.round(price * (1 + (global.space['gps'].count * 0.01)));
                     }
@@ -1838,6 +1846,10 @@ function midLoop(){
                 bd_Citizen['Farm'] = global.city['farm'].count + 'v';
             }
         }
+        if (global.city['wharf']){
+            caps['Crates'] += (global.city['wharf'].count * 10);
+            caps['Containers'] += (global.city['wharf'].count * 10);
+        }
         if (global.city['storage_yard']){
             let size = global.tech.container >= 3 ? 20 : 10;
             if (global.tech['particles'] && global.tech['particles'] >= 2){
@@ -2212,6 +2224,10 @@ function midLoop(){
                 global.city.market.mtrade += global.city.temple.count;
             }
         }
+
+        if (global.city['wharf']){
+            global.city.market.mtrade += global.city.wharf.count * 2;
+        }
         
         let pop_loss = global.resource[races[global.race.species].name].amount - caps[races[global.race.species].name];
         if (pop_loss > 0){
@@ -2500,7 +2516,8 @@ function longLoop(){
             global.civic.garrison.protest--;
         }
 
-        if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0 && Math.rand(0,4) === 0){
+        let merc_bound = global.tech['mercs'] && global.tech['mercs'] >= 2 ? 3 : 4;
+        if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0 && Math.rand(0,merc_bound) === 0){
             global.civic.garrison.m_use--;
         }
 
@@ -2617,11 +2634,14 @@ function longLoop(){
             }
 
             // Crafting
-            if (global.city.calendar.moon === 0 && global.tech['foundry']){
+            if (global.tech['foundry'] && (global.city.calendar.moon === 0 || (global.city.calendar.moon === 14 && global.genes['crafty']))){
                 let craft_costs = global.race['resourceful'] ? 0.95 : 1;
                 Object.keys(craftCost).forEach(function (craft){
                     let num = global.city.foundry[craft];
                     let craft_ratio = craftingRatio(craft);
+                    if (global.genes['crafty']){
+                        craft_ratio *= 1 + ((global.genes.crafty - 1) * 0.33);
+                    }
 
                     let volume = Math.floor(global.resource[craftCost[craft][0].r].amount / (craftCost[craft][0].a * craft_costs));
                     for (let i=1; i<craftCost[craft].length; i++){
