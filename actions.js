@@ -2247,6 +2247,27 @@ export const actions = {
                 return false;
             }
         },
+        mythril_beams: {
+            id: 'tech-mythril_beams',
+            title: 'Mythril Beams',
+            desc: 'Reduce cost of housing',
+            reqs: { housing_reduction: 1, space: 3 },
+            grant: ['housing_reduction',2],
+            cost: { 
+                Knowledge(){ return 175000; },
+                Mythril(){ return 1000; }
+            },
+            effect(){
+                let label = basicHousingLabel();
+                return `Reduce material costs of ${label}s and Cottages by introducing unbreakble mythril beams.`;
+            },
+            action(){
+                if (payCosts(actions.tech.mythril_beams.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         aphrodisiac: {
             id: 'tech-aphrodisiac',
             title: 'Aphrodisiac',
@@ -2626,8 +2647,8 @@ export const actions = {
         },
         laser_cutters: {
             id: 'tech-laser_cutters',
-            title: 'Factory Automation',
-            desc: 'Factory Automation',
+            title: 'Laser Cutters',
+            desc: 'Laser Cutters',
             reqs: { high_tech: 9, factory: 2 },
             grant: ['factory',3],
             cost: {
@@ -3419,6 +3440,23 @@ export const actions = {
             effect: 'Increase the effectiveness of each trade post by 1.',
             action(){
                 if (payCosts(actions.tech.freight.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        wharf: {
+            id: 'tech-wharf',
+            title: 'wharfs',
+            desc: 'Establish sea routes with wharfs',
+            reqs: { trade: 1, high_tech: 3 },
+            grant: ['wharf',1],
+            cost: {
+                Knowledge(){ return 44000; }
+            },
+            effect: 'Zone costal areas of your city for contructing wharfs.',
+            action(){
+                if (payCosts(actions.tech.wharf.cost)){
                     return true;
                 }
                 return false;
@@ -4810,6 +4848,24 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.mercs.cost)){
                     global.civic.garrison['mercs'] = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        signing_bonus: {
+            id: 'tech-signing_bonus',
+            title: 'Signing Bonus',
+            desc: 'Signing Bonus',
+            reqs: { mercs: 1, high_tech: 3 },
+            grant: ['mercs',2],
+            cost: {
+                Money(){ return 50000 },
+                Knowledge(){ return 32000; }
+            },
+            effect: 'Regererate the mercenary pool faster by offering signing bonuses.',
+            action(){
+                if (payCosts(actions.tech.signing_bonus.cost)){
                     return true;
                 }
                 return false;
@@ -6362,7 +6418,7 @@ function costMultiplier(structure,base,mutiplier){
     else if (global.race['large']){ mutiplier += 0.01; }
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
-        mutiplier -= 0.02;
+        mutiplier -= global.tech['housing_reduction'] * 0.02;
     }
     if (structure === 'basic_housing'){
         if (global.race['solitary']){
