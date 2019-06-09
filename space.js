@@ -618,10 +618,6 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_red.exotic_lab.cost)){
                     incrementStruct('exotic_lab');
-                    if (global.tech['mars'] === 5){
-                        global.tech['mars'] = 6;
-                        global.space['elerium_contain'] = { count: 0, on: 0 };
-                    }
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['exotic_lab'].on++;
                     }
@@ -630,36 +626,7 @@ const spaceProjects = {
                 return false;
             },
             flair(){
-                return `<div>we're throwing science at</div><div>the wall here to see what sticks.</div>`;
-            }
-        },
-        elerium_contain: {
-            id: 'space-elerium_contain',
-            title: 'Elerium Containment',
-            desc(){
-                return `<div>Elerium Containment</div><div class="has-text-special">Requires Power</div>`;
-            },
-            reqs: { mars: 6 },
-            cost: {
-                Money(){ return costMultiplier('elerium_contain', 800000, 1.28); },
-                Titanium(){ return costMultiplier('elerium_contain', 85000, 1.28); },
-                Cement(){ return costMultiplier('elerium_contain', 120000, 1.28); },
-                Iridium(){ return costMultiplier('elerium_contain', 50000, 1.28); }
-            },
-            effect(){
-                let elerium = spatialReasoning(50);
-                return `<div>+${elerium} Max Elerium</div><div>-${spaceProjects.spc_red.elerium_contain.powered}kW</div>`;
-            },
-            powered: 6,
-            action(){
-                if (payCosts(spaceProjects.spc_red.elerium_contain.cost)){
-                    incrementStruct('elerium_contain');
-                    if (global.space.spaceport.support < global.space.spaceport.s_max){
-                        global.space['elerium_contain'].on++;
-                    }
-                    return true;
-                }
-                return false;
+                return `<div>We're throwing science at</div><div>the wall here to see what sticks.</div>`;
             }
         },
         space_barracks: {
@@ -974,16 +941,52 @@ const spaceProjects = {
             desc(){
                 return `Launch the ${races[global.race.species].solar.gas_moon} mission`;
             },
-            reqs: { space: 5, locked: 1 },
+            reqs: { space: 5 },
             grant: ['space',6],
             cost: { 
-                Helium_3(){ return +fuel_adjust(40000).toFixed(0); }
+                Helium_3(){ return +fuel_adjust(30000).toFixed(0); }
             },
             effect(){
                 return `Launch a mission to study ${races[global.race.species].solar.gas_moon}.`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_gas_moon.gas_moon_mission.cost)){
+                    messageQueue(`A super dense material composed entirely of neutrons has been discoverd on ${races[global.race.species].solar.gas_moon}.`,'success');
+                    global.space['outpost'] = { count: 0, on: 0 };
+                    global.tech['gas_moon'] = 1;
+                    return true;
+                }
+                return false;
+            }
+        },
+        outpost: {
+            id: 'space-outpost',
+            title: `Mining Outpost`,
+            desc(){
+                return `<div>Neutronium Mining Outpost</div><div class="has-text-special">Requires Power & Oil</div>`;
+            },
+            reqs: { gas_moon: 1 },
+            cost: {
+                Money(){ return costMultiplier('outpost', 666000, 1.3); },
+                Titanium(){ return costMultiplier('outpost', 18000, 1.3); },
+                Iridium(){ return costMultiplier('outpost', 2500, 1.3); },
+                Mythril(){ return costMultiplier('outpost', 300, 1.3); },
+                Helium_3(){ return costMultiplier('outpost', fuel_adjust(6000), 1.3); }
+            },
+            effect(){
+                let neutronium = 0.025;
+                let max = spatialReasoning(500);
+                let oil = +(fuel_adjust(2)).toFixed(2);
+                return `<div>+${neutronium} Neutronium/s</div><div>+${max} Max Neutronium</div><div>-${oil} Oil/s, -${spaceProjects.spc_gas_moon.outpost.powered}kW/s</div>`;
+            },
+            powered: 3,
+            action(){
+                if (payCosts(spaceProjects.spc_gas_moon.outpost.cost)){
+                    incrementStruct('outpost');
+                    global.resource['Neutronium'].display = true;
+                    if (global.city.power >= 3){
+                        global.space['outpost'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1176,16 +1179,47 @@ const spaceProjects = {
             desc(){
                 return `Launch the ${races[global.race.species].solar.dwarf} mission`;
             },
-            reqs: { asteroid: 1, locked: 1 },
+            reqs: { asteroid: 1, elerium: 1 },
             grant: ['dwarf',1],
             cost: { 
-                Helium_3(){ return +fuel_adjust(65000).toFixed(0); }
+                Helium_3(){ return +fuel_adjust(45000).toFixed(0); }
             },
             effect(){
                 return `Launch a mission to study ${races[global.race.species].solar.dwarf}.`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_dwarf.dwarf_mission.cost)){
+                    messageQueue(`${races[global.race.species].solar.dwarf} appears to be a lifeless rock with little resources of value, it's the perfect place to store hazardous materials.`,'success');
+                    global.space['elerium_contain'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_contain: {
+            id: 'space-elerium_contain',
+            title: 'Elerium Storage',
+            desc(){
+                return `<div>Elerium Storage</div><div class="has-text-special">Requires Power</div>`;
+            },
+            reqs: { dwarf: 1 },
+            cost: {
+                Money(){ return costMultiplier('elerium_contain', 800000, 1.28); },
+                Cement(){ return costMultiplier('elerium_contain', 120000, 1.28); },
+                Iridium(){ return costMultiplier('elerium_contain', 50000, 1.28); },
+                Neutronium(){ return costMultiplier('elerium_contain', 250, 1.28); }
+            },
+            effect(){
+                let elerium = spatialReasoning(50);
+                return `<div>+${elerium} Max Elerium</div><div>-${spaceProjects.spc_dwarf.elerium_contain.powered}kW</div>`;
+            },
+            powered: 6,
+            action(){
+                if (payCosts(spaceProjects.spc_dwarf.elerium_contain.cost)){
+                    incrementStruct('elerium_contain');
+                    if (global.city.power >= 6){
+                        global.space['elerium_contain'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1211,7 +1245,6 @@ const structDefinitions = {
     fabrication: { count: 0, on: 0 },
     red_factory: { count: 0, on: 0 },
     exotic_lab: { count: 0, on: 0 },
-    elerium_contain: { count: 0, on: 0 },
     space_barracks: { count: 0, on: 0 },
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
@@ -1221,10 +1254,12 @@ const structDefinitions = {
     swarm_satellite: { count: 0 },
     gas_mining: { count: 0, on: 0 },
     gas_storage: { count: 0 },
+    outpost: { count: 0, on: 0 },
     space_station: { count: 0, on: 0, support: 0, s_max: 0 },
     iridium_ship: { count: 0, on: 0 },
     elerium_ship: { count: 0, on: 0 },
     iron_ship: { count: 0, on: 0 },
+    elerium_contain: { count: 0, on: 0 },
 };
 
 function incrementStruct(struct){

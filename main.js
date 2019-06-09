@@ -622,7 +622,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_red:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -783,6 +783,20 @@ function fastLoop(){
                 }
             }
             global.space.space_station.support = used_support;
+        }
+
+        // Outpost
+        if (p_on['outpost'] && p_on['outpost'] > 0){
+            let fuel_cost = +fuel_adjust(2);
+            let out_consume = p_on['outpost'] * fuel_cost;
+            breakdown.p.consume.Oil['Outpost'] = -(out_consume);
+            for (let i=0; i<p_on['outpost']; i++){
+                if (!modRes('Oil', -(time_multiplier * fuel_cost))){
+                    out_consume -= (p_on['outpost'] * fuel_cost) - (i * fuel_cost);
+                    p_on['outpost'] -= i;
+                    break;
+                }
+            }
         }
 
         // Detect labor anomalies
@@ -1644,6 +1658,17 @@ function fastLoop(){
         helium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
         breakdown.p['Helium_3'] = helium_bd;
 
+        // Neutronium
+        let neutronium_bd = {};
+        if (p_on['outpost']){
+            let n_base = p_on['outpost'] * 0.025;
+            let delta = n_base * hunger * global_multiplier;
+            neutronium_bd['Outpost'] = n_base + 'v';
+            modRes('Neutronium', delta * time_multiplier);
+        }
+        neutronium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        breakdown.p['Neutronium'] = neutronium_bd;
+
         // Elerium
         let elerium_bd = {};
         if (belt_on['elerium_ship']){
@@ -1818,6 +1843,7 @@ function midLoop(){
             Polymer: 50,
             Iridium: 0,
             "Helium_3": 0,
+            Neutronium: 0,
             Elerium: 1
         };
         // labor caps
@@ -1857,6 +1883,7 @@ function midLoop(){
         var bd_Polymer = { Base: caps['Polymer']+'v' };
         var bd_Iridium = { Base: caps['Iridium']+'v' };
         var bd_Helium = { Base: caps['Helium_3']+'v' };
+        var bd_Neutronium = { Base: caps['Neutronium']+'v' };
         var bd_Elerium = { Base: caps['Elerium']+'v' };
 
         caps[races[global.race.species].name] = 0;
@@ -1968,6 +1995,11 @@ function midLoop(){
         }
         if (global.city['lodge']){
             caps[races[global.race.species].name] += global.city['lodge'].count;
+        }
+        if (global.space['outpost']){
+            let gain = global.space['outpost'].count * spatialReasoning(500);
+            caps['Neutronium'] += gain;
+            bd_Neutronium['Outpost'] = gain+'v';
         }
         if (global.city['shed']){
             var multiplier = storageMultipler();
@@ -2282,6 +2314,7 @@ function midLoop(){
             Polymer: bd_Polymer,
             Iridium: bd_Iridium,
             "Helium_3": bd_Helium,
+            Neutronium: bd_Neutronium,
             Elerium: bd_Elerium,
         };
 

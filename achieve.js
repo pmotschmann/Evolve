@@ -12,7 +12,7 @@ var achievements = {
     },
     second_evolution: {
         name: `Second Evolution`,
-        desc: `Evolve the same species twice in a row and then worship your anscestors.`,
+        desc: `Evolve the same species twice in a row and then worship your ancestors.`,
         flair: `Coincidence or ancient hubris?`
     },
     blackhole: {
