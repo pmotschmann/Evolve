@@ -545,11 +545,11 @@ function addProject(parent,project){
                                 }
                                 if (pro === 'launch_facility'){
                                     global.settings.showSpace = true;
-                                    physics();
+                                    global.tech['space'] = 1;
                                     $(`#popArpa${pro}`).hide();
                                     poppers[`popArpa${pro}`].destroy();
                                     $(`#popArpa${pro}`).remove();
-                                    global.tech['space'] = 1;
+                                    physics();
                                     space();
                                 }
                                 drawTech();

@@ -152,7 +152,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.3.9';
+global['version'] = '0.3.10';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -346,6 +346,10 @@ if (global.lastMsg){
 if (global['new']){
     messageQueue('You are protoplasm in the primordial ooze', 'warning');
     global['new'] = false;
+}
+
+if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facility.rank > 0 && !global.tech['space']){
+    global.tech['space'] = 1;
 }
 
 function newGameData(){

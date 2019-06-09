@@ -1,3 +1,6 @@
+#### 0.3.10 - 6/9/2019
+Added code to fix peculiar failed space launch game state<br>
+
 #### 0.3.9 - 6/8/2019
 New offical Evolve [Discord](https://discordapp.com/invite/dcwdQEr)<br>
 
