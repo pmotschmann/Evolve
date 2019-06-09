@@ -355,7 +355,9 @@ function fastLoop(){
         Alloy: {},
         Polymer: {},
         Iridium: {},
-        "Helium_3": {}
+        "Helium_3": {},
+        Neutronium: {},
+        Elerium: {}
     };
     
     var time_multiplier = 0.25;
@@ -605,6 +607,23 @@ function fastLoop(){
             power_grid -= power;
         }
 
+        if (global.space['e_reactor'] && global.space.e_reactor.on > 0){
+            let output = actions.space.spc_dwarf.e_reactor.powered;
+            let increment = 0.05;
+            let power = global.space.e_reactor.on * output;
+            let consume = (global.space.e_reactor.on * increment);
+            while (consume * time_multiplier > global.resource['Elerium'].amount && consume > 0){
+                power += output;
+                consume -= increment;
+            }
+            breakdown.p.consume.Elerium['Reactor'] = -(consume);
+            let number = consume * time_multiplier;
+            modRes('Elerium', -(number));
+
+            max_power += power;
+            power_grid -= power;
+        }
+
         if (global.space['swarm_satellite'] && global.space['swarm_control']){
             let active = global.space.swarm_satellite.count;
             if (active > global.space.swarm_control.s_max){
@@ -622,7 +641,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -1607,13 +1626,15 @@ function fastLoop(){
             else if (global.tech['oil'] >= 5){
                 oil_base *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
             }
-            oil_base *= global.city.oil_well.count;
+            let oil_well = oil_base * global.city.oil_well.count;
+            let oil_extractor = oil_base * p_on['oil_extractor'];
 
-            let delta = oil_base;
+            let delta = oil_well + oil_extractor;
             delta *= hunger * global_multiplier;
 
             let oil_bd = {};
-            oil_bd['Derrick'] = oil_base + 'v';
+            oil_bd['Derrick'] = oil_well + 'v';
+            oil_bd['Extractor'] = oil_extractor + 'v';
             oil_bd['Hunger'] = ((hunger - 1) * 100) + '%';
             breakdown.p['Oil'] = oil_bd;
             modRes('Oil', delta * time_multiplier);
@@ -1672,7 +1693,7 @@ function fastLoop(){
         // Elerium
         let elerium_bd = {};
         if (belt_on['elerium_ship']){
-            let elerium_base = belt_on['elerium_ship'] * 0.002;
+            let elerium_base = belt_on['elerium_ship'] * 0.005;
             let delta = elerium_base * hunger * global_multiplier;
             elerium_bd['Elerium_Ship'] = elerium_base + 'v';
             modRes('Elerium', delta * time_multiplier);
@@ -2250,13 +2271,13 @@ function midLoop(){
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
             if (global.tech['asteroid'] >= 5){
-                let gain = p_on['space_station'] * spatialReasoning(2);
+                let gain = p_on['space_station'] * spatialReasoning(4);
                 caps['Elerium'] += gain;
                 bd_Elerium['Space_Station'] = gain+'v';
             }
         }
         if (red_on['exotic_lab']){
-            let el_gain = red_on['exotic_lab'] * spatialReasoning(5);
+            let el_gain = red_on['exotic_lab'] * spatialReasoning(10);
             caps['Elerium'] += el_gain;
             bd_Elerium['Exotic_Lab'] = el_gain+'v';
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * 500;
@@ -2264,7 +2285,7 @@ function midLoop(){
             bd_Knowledge['Exotic_Lab'] = gain+'v';
         }
         if (p_on['elerium_contain']){
-            let el_gain = p_on['elerium_contain'] * spatialReasoning(50);
+            let el_gain = p_on['elerium_contain'] * spatialReasoning(100);
             caps['Elerium'] += el_gain;
             bd_Elerium['Containment'] = el_gain+'v';
         }
@@ -2503,6 +2524,15 @@ function midLoop(){
                 modRes('Elerium',1);
                 drawTech();
                 messageQueue(`Your asteroid miners have discovered an unknown rare element in the belt, a sample has been retreived for analysis.`);
+            }
+        }
+
+        if (p_on['outpost'] > 0 && global.tech['gas_moon'] && global.tech['gas_moon'] === 1){
+            if (Math.rand(0,100) <= p_on['outpost']){
+                global.space['oil_extractor'] = { count: 0, on: 0 };
+                global.tech['gas_moon'] = 2;
+                messageQueue(`Oil has unexpectedly been discovered on ${races[global.race.species].solar.gas_moon}.`);
+                space();
             }
         }
 

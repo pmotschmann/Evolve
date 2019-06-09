@@ -606,10 +606,10 @@ const spaceProjects = {
                 Money(){ return costMultiplier('exotic_lab', 750000, 1.28); },
                 Steel(){ return costMultiplier('exotic_lab', 100000, 1.28); },
                 Mythril(){ return costMultiplier('exotic_lab', 1000, 1.28); },
-                Elerium(){ return costMultiplier('exotic_lab', 10, 1.28); }
+                Elerium(){ return costMultiplier('exotic_lab', 20, 1.28); }
             },
             effect(){
-                let elerium = spatialReasoning(5);
+                let elerium = spatialReasoning(10);
                 return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+500 Max Knowledge per colonist</div><div>+${elerium} Max Elerium</div>`;
             },
             support: -1,
@@ -970,8 +970,8 @@ const spaceProjects = {
                 Money(){ return costMultiplier('outpost', 666000, 1.3); },
                 Titanium(){ return costMultiplier('outpost', 18000, 1.3); },
                 Iridium(){ return costMultiplier('outpost', 2500, 1.3); },
-                Mythril(){ return costMultiplier('outpost', 300, 1.3); },
-                Helium_3(){ return costMultiplier('outpost', fuel_adjust(6000), 1.3); }
+                Helium_3(){ return costMultiplier('outpost', fuel_adjust(6000), 1.3); },
+                Mythril(){ return costMultiplier('outpost', 300, 1.3); }
             },
             effect(){
                 let neutronium = 0.025;
@@ -986,6 +986,42 @@ const spaceProjects = {
                     global.resource['Neutronium'].display = true;
                     if (global.city.power >= 3){
                         global.space['outpost'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        oil_extractor: {
+            id: 'space-oil_extractor',
+            title: `Oil Extractor`,
+            desc(){
+                return `<div>Oil Extractor</div><div class="has-text-special">Requires Power</div>`;
+            },
+            reqs: { gas_moon: 2 },
+            cost: {
+                Money(){ return costMultiplier('oil_extractor', 666000, 1.3); },
+                Polymer(){ return costMultiplier('oil_extractor', 7500, 1.3); },
+                Helium_3(){ return costMultiplier('oil_extractor', fuel_adjust(2500), 1.3); },
+                Wrought_Iron(){ return costMultiplier('oil_extractor', 5000, 1.3); },
+            },
+            effect(){
+                let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;
+                if (global.tech['oil'] >= 7){
+                    oil *= 2;
+                }
+                else if (global.tech['oil'] >= 5){
+                    oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
+                }
+                oil = +oil.toFixed(2);
+                return `+${oil} Oil/s, -${spaceProjects.spc_gas_moon.oil_extractor.powered} kW.`;
+            },
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_gas_moon.oil_extractor.cost)){
+                    incrementStruct('oil_extractor');
+                    if (global.city.power >= 1){
+                        global.space['oil_extractor'].on++;
                     }
                     return true;
                 }
@@ -1046,7 +1082,7 @@ const spaceProjects = {
             effect(){
                 let helium = +(fuel_adjust(2.5)).toFixed(2);
                 let food = 10;
-                let elerium_cap = spatialReasoning(2);
+                let elerium_cap = spatialReasoning(4);
                 let elerium = global.tech['asteroid'] >= 5 ? `<div>+${elerium_cap} Max Elerium</div>` : '';
                 return `<div>+3 Max Space Miners</div>${elerium}<div>-${helium} Helium-3/s</div><div>-${food} Food/s, -${spaceProjects.spc_belt.space_station.powered}kW/s</div>`;
             },
@@ -1083,7 +1119,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('elerium_ship', fuel_adjust(5000), 1.3); }
             },
             effect(){
-                let elerium = 0.002;
+                let elerium = 0.005;
                 return `<div>Requires 2 Space Miners</div><div>+${elerium} Elerium/s</div>`;
             },
             support: -2,
@@ -1210,7 +1246,7 @@ const spaceProjects = {
                 Neutronium(){ return costMultiplier('elerium_contain', 250, 1.28); }
             },
             effect(){
-                let elerium = spatialReasoning(50);
+                let elerium = spatialReasoning(100);
                 return `<div>+${elerium} Max Elerium</div><div>-${spaceProjects.spc_dwarf.elerium_contain.powered}kW</div>`;
             },
             powered: 6,
@@ -1220,6 +1256,34 @@ const spaceProjects = {
                     if (global.city.power >= 6){
                         global.space['elerium_contain'].on++;
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        e_reactor: {
+            id: 'space-e_reactor',
+            title: 'Elerium Reactor',
+            desc(){
+                return `<div>Elerium Reactor</div><div class="has-text-special">Requires Elerium</div>`;
+            },
+            reqs: { elerium: 2 },
+            cost: {
+                Money(){ return costMultiplier('e_reactor', 1250000, 1.28); },
+                Steel(){ return costMultiplier('e_reactor', 350000, 1.28); },
+                Neutronium(){ return costMultiplier('e_reactor', 1250, 1.28); },
+                Mythril(){ return costMultiplier('e_reactor', 2500, 1.28); }
+            },
+            effect(){
+                let elerium = 0.05;
+                let power = spaceProjects.spc_dwarf.e_reactor.powered * -1;
+                return `<div>+${power}kW</div><div>-${elerium} Elerium/s</div>`;
+            },
+            powered: -25,
+            action(){
+                if (payCosts(spaceProjects.spc_dwarf.e_reactor.cost)){
+                    incrementStruct('e_reactor');
+                    global.space['e_reactor'].on++;
                     return true;
                 }
                 return false;
@@ -1255,11 +1319,13 @@ const structDefinitions = {
     gas_mining: { count: 0, on: 0 },
     gas_storage: { count: 0 },
     outpost: { count: 0, on: 0 },
+    oil_extractor: { count: 0, on: 0 },
     space_station: { count: 0, on: 0, support: 0, s_max: 0 },
     iridium_ship: { count: 0, on: 0 },
     elerium_ship: { count: 0, on: 0 },
     iron_ship: { count: 0, on: 0 },
     elerium_contain: { count: 0, on: 0 },
+    e_reactor: { count: 0, on: 0 },
 };
 
 function incrementStruct(struct){

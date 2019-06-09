@@ -2701,7 +2701,7 @@ export const actions = {
             grant: ['factory',3],
             cost: {
                 Knowledge(){ return 300000; },
-                Elerium(){ return 100; }
+                Elerium(){ return 200; }
             },
             effect: '<span>Laser cutters provide a 25% boost to manufacturing speed.</span> <span class="has-text-special">This increases both consumption and production.</span>',
             action(){
@@ -4232,7 +4232,7 @@ export const actions = {
             grant: ['high_tech',9],
             cost: {
                 Knowledge(){ return 280000; },
-                Elerium(){ return 50; }
+                Elerium(){ return 100; }
             },
             effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
             action(){
@@ -5076,7 +5076,7 @@ export const actions = {
             grant: ['military',7],
             cost: {
                 Knowledge(){ return 325000; },
-                Elerium(){ return 125; }
+                Elerium(){ return 250; }
             },
             effect: 'High tech weapons for the future.',
             action(){
@@ -5921,7 +5921,7 @@ export const actions = {
             id: 'tech-swarm_plant',
             title: 'Swarm Plant',
             desc: 'Swarm Plant',
-            reqs: { solar: 3, hell: 1, dwarf: 1 },
+            reqs: { solar: 3, hell: 1, gas_moon: 1 },
             grant: ['solar',4],
             cost: {
                 Knowledge(){ return 250000; }
@@ -6001,7 +6001,7 @@ export const actions = {
             grant: ['helium',1],
             cost: {
                 Knowledge(){ return 290000; },
-                Elerium(){ return 125; }
+                Elerium(){ return 250; }
             },
             effect(){ return `Increase efficency of ${races[global.race.species].solar.gas} Helium-3 collectors.` },
             action(){
@@ -6058,11 +6058,30 @@ export const actions = {
             grant: ['elerium',1],
             cost: {
                 Knowledge(){ return 275000; },
-                Elerium(){ return 10; }
+                Elerium(){ return 20; }
             },
             effect: `Study the elerium to unlock it's mysteries.`,
             action(){
                 if (payCosts(actions.tech.elerium_tech.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_reactor: {
+            id: 'tech-elerium_reactor',
+            title: 'Elerium Reactor',
+            desc: 'Elerium Reactor',
+            reqs: { dwarf: 1, elerium: 1 },
+            grant: ['elerium',2],
+            cost: {
+                Knowledge(){ return 325000; },
+                Elerium(){ return 180; }
+            },
+            effect(){ return `Elerium is highly energetic and the prospect of making a power source of it is too good to ignore.` },
+            action(){
+                if (payCosts(actions.tech.elerium_reactor.cost)){
+                    global.space['e_reactor'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
