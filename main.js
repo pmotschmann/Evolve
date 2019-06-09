@@ -651,7 +651,7 @@ function fastLoop(){
         if (global.space['moon_base'] && global.space['moon_base'].count > 0){
             let oil_cost = +fuel_adjust(2);
             let mb_consume = p_on['moon_base'] * oil_cost;
-            breakdown.p.consume.Oil['Moon Base'] = -(mb_consume);
+            breakdown.p.consume.Oil['Moon_Base'] = -(mb_consume);
             for (let i=0; i<p_on['moon_base']; i++){
                 if (!modRes('Oil', -(time_multiplier * oil_cost))){
                     mb_consume -= (p_on['moon_base'] * oil_cost) - (i * oil_cost);
@@ -685,6 +685,20 @@ function fastLoop(){
                 }
             }
             global.space.moon_base.support = used_support;
+        }
+
+        // Space Marines
+        if (global.space['space_barracks']){
+            let oil_cost = +fuel_adjust(2);
+            let sm_consume = global.space.space_barracks.on * oil_cost;
+            breakdown.p.consume.Oil['Marines'] = -(sm_consume);
+            for (let i=0; i<global.space.space_barracks.on; i++){
+                if (!modRes('Oil', -(time_multiplier * oil_cost))){
+                    sm_consume -= (global.space.space_barracks.on * oil_cost) - (i * oil_cost);
+                    global.space.space_barracks.on -= i;
+                    break;
+                }
+            }
         }
 
         if (p_on['red_factory'] && p_on['red_factory'] > 0){
@@ -955,10 +969,16 @@ function fastLoop(){
             let space_station = 0;
             if (global.space['space_station']){
                 space_station = p_on['space_station'] * 10;
-                breakdown.p.consume.Food['Space_Staion'] = -(space_station);
+                breakdown.p.consume.Food['Space_Station'] = -(space_station);
             }
 
-            let delta = generated - consume - tourism - spaceport - space_station;
+            let space_marines = 0;
+            if (global.space['space_barracks']){
+                space_marines = global.space.space_barracks.on * 10;
+                breakdown.p.consume.Food['Marines'] = -(space_marines);
+            }
+
+            let delta = generated - consume - tourism - spaceport - space_station - space_marines;
 
             food_bd['Biodome'] = biodome + 'v';
             food_bd['Soldiers'] = hunting + 'v';
@@ -1614,7 +1634,7 @@ function fastLoop(){
         }
 
         if (global.space['gas_mining'] && p_on['gas_mining']){
-            let gas_mining = p_on['gas_mining'] * 0.5;
+            let gas_mining = p_on['gas_mining'] * (global.tech['helium'] ? 0.65 : 0.5);
             let delta = gas_mining * hunger * global_multiplier;
 
             helium_bd['Gas_Collector'] = gas_mining + 'v';
@@ -1916,6 +1936,9 @@ function midLoop(){
             if (global.race['chameleon']){
                 lCaps['garrison'] -= global.city.garrison.count;
             }
+        }
+        if (global.space['space_barracks']){
+            lCaps['garrison'] += global.space.space_barracks.on * 2;
         }
         if (global.city['basic_housing']){
             caps[races[global.race.species].name] += global.city['basic_housing'].count;

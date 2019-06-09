@@ -4199,6 +4199,26 @@ export const actions = {
                 return false;
             }
         },
+        artifical_intelligence: {
+            id: 'tech-artifical_intelligence',
+            title: 'Artifical Intelligence',
+            desc: 'Artifical Intelligence',
+            reqs: { high_tech: 9, locked: 1 },
+            grant: ['high_tech',10],
+            cost: {
+                Knowledge(){ return 325000; }
+            },
+            effect: `SciFi says this isn't a good idea, but what do a bunch of self important SciFi writers know?`,
+            action(){
+                if (payCosts(actions.tech.artifical_intelligence.cost)){
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return `When the testing is over, you will be missed.`;
+            }
+        },
         uranium: {
             id: 'tech-uranium',
             title: 'Uranium Extraction',
@@ -5026,6 +5046,25 @@ export const actions = {
                 }
                 return false;
             }
+        },
+        space_marines: {
+            id: 'tech-space_marines',
+            title: 'Space Marines',
+            desc: 'Space Marines',
+            reqs: { space: 3, mars: 2 },
+            grant: ['marines',1],
+            cost: {
+                Knowledge(){ return 210000; }
+            },
+            effect(){ return `<div>Militarize space with</div><div>a ${races[global.race.species].solar.red} garrison.</div>` },
+            action(){
+                if (payCosts(actions.tech.space_marines.cost)){
+                    global.space['space_barracks'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            },
+            flair: 'Outer space treaty be damned.'
         },
         armor: {
             id: 'tech-armor',
@@ -5906,6 +5945,24 @@ export const actions = {
                 if (payCosts(actions.tech.atmospheric_mining.cost)){
                     global.space['gas_mining'] = { count: 0, on: 0 };
                     global.space['gas_storage'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        helium_attractor: {
+            id: 'tech-helium_attractor',
+            title: 'Helium Attractor',
+            desc: 'Helium Attractor',
+            reqs: { gas_giant: 1, elerium: 1 },
+            grant: ['helium',1],
+            cost: {
+                Knowledge(){ return 290000; },
+                Elerium(){ return 125; }
+            },
+            effect(){ return `Increase efficency of ${races[global.race.species].solar.gas} Helium-3 collectors.` },
+            action(){
+                if (payCosts(actions.tech.helium_attractor.cost)){
                     return true;
                 }
                 return false;

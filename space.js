@@ -168,6 +168,7 @@ const spaceProjects = {
             effect: 'Launch a mission to survey the moon.',
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_mission.cost)){
+                    messageQueue('Your lunar rovers have detected significant stores of iridium and helium-3.','success');
                     global.space['iridium_mine'] = { count: 0, on: 0 };
                     global.space['helium_mine'] = { count: 0, on: 0 };
                     return true;
@@ -327,6 +328,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_red.red_mission.cost)){
+                    messageQueue(`${races[global.race.species].solar.red} doesn't offer much in the way of rare resources but you're scientists consider it to be the best prospect for an off world colony.`,'success');
                     global.space['living_quarters'] = { count: 0, on: 0 };
                     global.space['garage'] = { count: 0 };
                     global.space['red_mine'] = { count: 0, on: 0 };
@@ -342,10 +344,10 @@ const spaceProjects = {
             desc: '<div>Build an Spaceport</div><div class="has-text-special">Requires Power & Helium-3</div>',
             reqs: { space: 4 },
             cost: {
-                Money(){ return costMultiplier('spaceport', 47500, 1.35); },
-                Iridium(){ return costMultiplier('spaceport', 1750, 1.35); },
-                Mythril(){ return costMultiplier('spaceport', 25, 1.35); },
-                Titanium(){ return costMultiplier('spaceport', 22500, 1.35); }
+                Money(){ return costMultiplier('spaceport', 47500, 1.32); },
+                Iridium(){ return costMultiplier('spaceport', 1750, 1.32); },
+                Mythril(){ return costMultiplier('spaceport', 25, 1.32); },
+                Titanium(){ return costMultiplier('spaceport', 22500, 1.32); }
             },
             effect(){
                 let helium = +(fuel_adjust(1.25)).toFixed(2);
@@ -404,9 +406,9 @@ const spaceProjects = {
             },
             reqs: { mars: 1 },
             cost: {
-                Money(){ return costMultiplier('living_quarters', 38000, 1.35); },
-                Steel(){ return costMultiplier('living_quarters', 15000, 1.35); },
-                Polymer(){ return costMultiplier('living_quarters', 9500, 1.35); }
+                Money(){ return costMultiplier('living_quarters', 38000, 1.28); },
+                Steel(){ return costMultiplier('living_quarters', 15000, 1.28); },
+                Polymer(){ return costMultiplier('living_quarters', 9500, 1.28); }
             },
             effect(){
                 return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+1 Max Colonist</div><div>+1 Max Citizen</div>`;
@@ -434,10 +436,10 @@ const spaceProjects = {
             },
             reqs: { mars: 1 },
             cost: {
-                Money(){ return costMultiplier('garage', 75000, 1.35); },
-                Iron(){ return costMultiplier('garage', 12000, 1.35); },
-                Brick(){ return costMultiplier('garage', 3000, 1.35); },
-                Sheet_Metal(){ return costMultiplier('garage', 1500, 1.35); }
+                Money(){ return costMultiplier('garage', 75000, 1.28); },
+                Iron(){ return costMultiplier('garage', 12000, 1.28); },
+                Brick(){ return costMultiplier('garage', 3000, 1.28); },
+                Sheet_Metal(){ return costMultiplier('garage', 1500, 1.28); }
             },
             effect(){
                 let multiplier = 1;
@@ -472,9 +474,9 @@ const spaceProjects = {
             },
             reqs: { mars: 1 },
             cost: {
-                Money(){ return costMultiplier('red_mine', 50000, 1.35); },
-                Lumber(){ return costMultiplier('red_mine', 65000, 1.35); },
-                Iron(){ return costMultiplier('red_mine', 33000, 1.35); }
+                Money(){ return costMultiplier('red_mine', 50000, 1.32); },
+                Lumber(){ return costMultiplier('red_mine', 65000, 1.32); },
+                Iron(){ return costMultiplier('red_mine', 33000, 1.32); }
             },
             effect(){
                 return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+0.25 Copper per colonist</div><div>+0.02 Titanium per colonist</div>`;
@@ -500,10 +502,10 @@ const spaceProjects = {
             },
             reqs: { mars: 1 },
             cost: {
-                Money(){ return costMultiplier('fabrication', 90000, 1.35); },
-                Copper(){ return costMultiplier('fabrication', 25000, 1.35); },
-                Cement(){ return costMultiplier('fabrication', 12000, 1.35); },
-                Wrought_Iron(){ return costMultiplier('fabrication', 1200, 1.35); }
+                Money(){ return costMultiplier('fabrication', 90000, 1.32); },
+                Copper(){ return costMultiplier('fabrication', 25000, 1.32); },
+                Cement(){ return costMultiplier('fabrication', 12000, 1.32); },
+                Wrought_Iron(){ return costMultiplier('fabrication', 1200, 1.32); }
             },
             effect(){
                 return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+2% Crafted Materials per colonist</div>`;
@@ -569,9 +571,9 @@ const spaceProjects = {
             },
             reqs: { mars: 2 },
             cost: {
-                Money(){ return costMultiplier('biodome', 45000, 1.35); },
-                Lumber(){ return costMultiplier('biodome', 65000, 1.35); },
-                Brick(){ return costMultiplier('biodome', 1000, 1.35); }
+                Money(){ return costMultiplier('biodome', 45000, 1.28); },
+                Lumber(){ return costMultiplier('biodome', 65000, 1.28); },
+                Brick(){ return costMultiplier('biodome', 1000, 1.28); }
             },
             effect(){
                 return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+2 Food Production per colonist</div>`;
@@ -626,6 +628,9 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            flair(){
+                return `<div>we're throwing science at</div><div>the wall here to see what sticks.</div>`;
             }
         },
         elerium_contain: {
@@ -652,6 +657,33 @@ const spaceProjects = {
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['elerium_contain'].on++;
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        space_barracks: {
+            id: 'space-space_barracks',
+            title: 'Marine Garrison',
+            desc(){
+                return `<div>Space Marine Garrison</div><div class="has-text-special">Requires Oil</div>`;
+            },
+            reqs: { marines: 1 },
+            cost: {
+                Money(){ return costMultiplier('space_barracks', 350000, 1.28); },
+                Alloy(){ return costMultiplier('space_barracks', 65000, 1.28); },
+                Iridium(){ return costMultiplier('space_barracks', 22500, 1.28); },
+                Wrought_Iron(){ return costMultiplier('space_barracks', 12500, 1.28); }
+            },
+            effect(){
+                let oil = +fuel_adjust(2).toFixed(2);
+                return `<div>+2 Max Soldiers</div><div>-${oil} Oil/s</div><div>-10 Food/s</div>`;
+            },
+            powered: 1,
+            action(){
+                if (payCosts(spaceProjects.spc_red.space_barracks.cost)){
+                    incrementStruct('space_barracks');
+                    global.space['space_barracks'].on++;
                     return true;
                 }
                 return false;
@@ -685,6 +717,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_hell.hell_mission.cost)){
+                    messageQueue(`${races[global.race.species].solar.hell} is a hot planet close to the sun, its prospects for development are poor.`,'success');
                     global.space['geothermal'] = { count: 0, on: 0 };
                     return true;
                 }
@@ -857,6 +890,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_gas.gas_mission.cost)){
+                    messageQueue(`${races[global.race.species].solar.gas} is truely massive, its atomosphere is rich in Helium-3.`,'success');
                     global.settings.space.gas_moon = true;
                     global.settings.space.belt = true;
                     global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
@@ -880,7 +914,8 @@ const spaceProjects = {
                 Mythril(){ return costMultiplier('gas_mining', 25, 1.32); }
             },
             effect(){
-                return `<div>+0.5 Helium-3 Production</div><div>-${spaceProjects.spc_gas.gas_mining.powered}kW</div>`;
+                let helium = (global.tech['helium'] ? 0.65 : 0.5);
+                return `<div>+${helium} Helium-3 Production</div><div>-${spaceProjects.spc_gas.gas_mining.powered}kW</div>`;
             },
             powered: 2,
             action(){
@@ -983,6 +1018,7 @@ const spaceProjects = {
             },
             action(){
                 if (payCosts(spaceProjects.spc_belt.belt_mission.cost)){
+                    messageQueue(`The asteroid belt is extremely hazardous but contains immense mineral wealth.`,'success');
                     global.settings.space.dwarf = true;
                     return true;
                 }
@@ -1129,7 +1165,7 @@ const spaceProjects = {
                 return races[global.race.species].solar.dwarf;
             },
             desc(){
-                return `${races[global.race.species].solar.dwarf} is dwarf planet located about 2.8AU from the sun. It is the only known dwarf planet in the inner solar system.`;
+                return `${races[global.race.species].solar.dwarf} is a dwarf planet located about 2.8AU from the sun. It is the only known dwarf planet in the inner solar system.`;
             },
         },
         dwarf_mission: {
@@ -1176,6 +1212,7 @@ const structDefinitions = {
     red_factory: { count: 0, on: 0 },
     exotic_lab: { count: 0, on: 0 },
     elerium_contain: { count: 0, on: 0 },
+    space_barracks: { count: 0, on: 0 },
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     geothermal: { count: 0, on: 0 },

@@ -523,7 +523,8 @@ function breakdownPopover(id,name,type){
                 let val = breakdown[type].consume[name][mod];
                 if (val != 0 && !isNaN(val)){
                     let type = val > 0 ? 'success' : 'danger';
-                    bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
+                    let label = mod.replace("_"," ");
+                    bd.append(`<div class="resBD"><span>${label}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
                 }
             });
         }
