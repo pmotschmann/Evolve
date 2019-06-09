@@ -273,7 +273,7 @@ const genePool = {
         desc: 'Craftsman trigger twice a month',
         reqs: { evolve: 1 },
         grant: ['crafty',1],
-        cost: 75,
+        cost: 45,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>75</span></div>',
         action(){
             if (payPlasmids('artificer')){
@@ -288,7 +288,7 @@ const genePool = {
         desc: 'Auto crafting produces 33% more product',
         reqs: { crafty: 1 },
         grant: ['crafty',2],
-        cost: 150,
+        cost: 90,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>150</span></div>',
         action(){
             if (payPlasmids('detail_oriented')){
@@ -303,7 +303,7 @@ const genePool = {
         desc: 'Auto crafting produces 66% more product',
         reqs: { crafty: 2 },
         grant: ['crafty',3],
-        cost: 225,
+        cost: 135,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>225</span></div>',
         action(){
             if (payPlasmids('rigorous')){
