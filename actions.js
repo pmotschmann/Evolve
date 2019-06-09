@@ -1253,7 +1253,7 @@ export const actions = {
             effect(){ 
                 let vault = 1800;
                 if (global.tech['vault'] >= 1){
-                    vault = 15000;
+                    vault = global.tech['vault'] >= 2 ? 22500 : 15000;
                 } 
                 else if (global.tech['banking'] >= 5){
                     vault = 9000;
@@ -2177,6 +2177,7 @@ export const actions = {
             effect: 'Start tracking the days and begin building a settlement.',
             action(){
                 if (payCosts(actions.tech.sundial.cost)){
+                    messageQueue('You have founded a settlement.','success');
                     global.resource.Knowledge.display = true;
                     global.city.calendar.day++;
                     if (global.race['infectious']){
@@ -2289,6 +2290,27 @@ export const actions = {
             },
             action(){
                 if (payCosts(actions.tech.mythril_beams.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        neutronium_walls: {
+            id: 'tech-neutronium_walls',
+            title: 'Neutronium Walls',
+            desc: 'Reduce cost of housing',
+            reqs: { housing_reduction: 2, gas_moon: 1 },
+            grant: ['housing_reduction',3],
+            cost: { 
+                Knowledge(){ return 300000; },
+                Neutronium(){ return 850; }
+            },
+            effect(){
+                let label = basicHousingLabel();
+                return `Reduce material costs of ${label}s and Cottages by adding load bearing walls made out of Neutronium.`;
+            },
+            action(){
+                if (payCosts(actions.tech.neutronium_walls.cost)){
                     return true;
                 }
                 return false;
@@ -3713,6 +3735,25 @@ export const actions = {
                 return false;
             }
         },
+        neutronium_vault: {
+            id: 'tech-neutronium_vault',
+            title: 'Neutronium Vault',
+            desc: 'Neutronium Vault',
+            reqs: { vault: 1, gas_moon: 1 },
+            grant: ['vault',2],
+            cost: {
+                Money(){ return 750000; },
+                Knowledge(){ return 280000; },
+                Neutronium(){ return 650; }
+            },
+            effect: 'Upgrade your bank vault doors with neutronium.',
+            action(){
+                if (payCosts(actions.tech.neutronium_vault.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         home_safe: {
             id: 'tech-home_safe',
             title: 'House Safe',
@@ -4047,6 +4088,7 @@ export const actions = {
             effect: 'Discover electricity, no kites required.',
             action(){
                 if (payCosts(actions.tech.electricity.cost)){
+                    messageQueue('Electricity is a major advancement for your people, the future possibilities are endless.','success');
                     global.city['power'] = 0;
                     global.city['powered'] = true;
                     global.city['coal_power'] = {
@@ -4113,6 +4155,7 @@ export const actions = {
             effect: 'Learn to split the atom, a powerful but terrifying new development.',
             action(){
                 if (payCosts(actions.tech.fission.cost)){
+                    messageQueue('Your scientists have unlocked the secrets of the atom, the atomic age has begun.','success');
                     global.city['fission_power'] = {
                         count: 0,
                         on: 0
@@ -5878,7 +5921,7 @@ export const actions = {
             id: 'tech-swarm_plant',
             title: 'Swarm Plant',
             desc: 'Swarm Plant',
-            reqs: { solar: 3, hell: 1 },
+            reqs: { solar: 3, hell: 1, dwarf: 1 },
             grant: ['solar',4],
             cost: {
                 Knowledge(){ return 250000; }
@@ -6020,6 +6063,24 @@ export const actions = {
             effect: `Study the elerium to unlock it's mysteries.`,
             action(){
                 if (payCosts(actions.tech.elerium_tech.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        neutronium_housing: {
+            id: 'tech-neutronium_housing',
+            title: 'Neutronium Housing',
+            desc: 'Neutronium Housing',
+            reqs: { gas_moon: 1 },
+            grant: ['space_housing',1],
+            cost: {
+                Knowledge(){ return 275000; },
+                Neutronium(){ return 350; }
+            },
+            effect(){ return `Neutronium supports make Living Quarters cheaper to produce on ${races[global.race.species].solar.red}.` },
+            action(){
+                if (payCosts(actions.tech.neutronium_housing.cost)){
                     return true;
                 }
                 return false;

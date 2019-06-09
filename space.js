@@ -406,9 +406,9 @@ const spaceProjects = {
             },
             reqs: { mars: 1 },
             cost: {
-                Money(){ return costMultiplier('living_quarters', 38000, 1.28); },
-                Steel(){ return costMultiplier('living_quarters', 15000, 1.28); },
-                Polymer(){ return costMultiplier('living_quarters', 9500, 1.28); }
+                Money(){ return costMultiplier('living_quarters', house_adjust(38000), 1.28); },
+                Steel(){ return costMultiplier('living_quarters', house_adjust(15000), 1.28); },
+                Polymer(){ return costMultiplier('living_quarters', house_adjust(9500), 1.28); }
             },
             effect(){
                 return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+1 Max Colonist</div><div>+1 Max Citizen</div>`;
@@ -723,11 +723,11 @@ const spaceProjects = {
             desc(){
                 return `<div>Swarm Satellite production plant</div>`;
             },
-            reqs: { solar: 4 },
+            reqs: { solar: 4, dwarf: 1 },
             cost: {
                 Money(){ return costMultiplier('swarm_plant', 75000, 1.28); },
                 Iron(){ return costMultiplier('swarm_plant', 95000, 1.28); },
-                Uranium(){ return costMultiplier('swarm_plant', 250, 1.28); },
+                Neutronium(){ return costMultiplier('swarm_plant', 75, 1.28); },
                 Brick(){ return costMultiplier('swarm_plant', 2500, 1.28); },
                 Mythril(){ return costMultiplier('swarm_plant', 100, 1.28); }
             },
@@ -1344,6 +1344,13 @@ function costMultiplier(action,base,mutiplier){
     }
     var count = global.space[action] ? global.space[action].count : 0;
     return Math.round((mutiplier ** count) * base);
+}
+
+function house_adjust(res){
+    if (global.tech['space_housing']){
+        res *= 0.8 ** global.tech['space_housing'];
+    }
+    return res;
 }
 
 export function swarm_adjust(res){

@@ -2198,7 +2198,7 @@ function midLoop(){
         if (global.city['bank']){
             let vault = 1800;
             if (global.tech['vault'] >= 1){
-                vault = 15000;
+                vault = global.tech['vault'] >= 2 ? 22500 : 15000;
             }
             else if (global.tech['banking'] >= 5){
                 vault = 9000;
