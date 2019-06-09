@@ -299,10 +299,10 @@ const genePool = {
     },
     rigorous: {
         id: 'genes-rigorous',
-        title: 'rigorous',
+        title: 'Rigorous',
         desc: 'Auto crafting produces 66% more product',
-        reqs: { crafty: 1 },
-        grant: ['crafty',2],
+        reqs: { crafty: 2 },
+        grant: ['crafty',3],
         cost: 225,
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>225</span></div>',
         action(){

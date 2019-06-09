@@ -364,11 +364,13 @@ function marketItem(vue,mount,market_item,name,color,full){
         methods: {
             aSell(res){
                 let unit = tradeRatio[res] === 1 ? 'unit' : 'units';
-                return `Auto-sell ${tradeRatio[res]} ${unit} per second at market value`;
+                let price = tradeSellPrice(res);
+                return `Auto-sell ${tradeRatio[res]} ${unit} per second for \$${price}`;
             },
             aBuy(res){
                 let unit = tradeRatio[res] === 1 ? 'unit' : 'units';
-                return `Auto-buy ${tradeRatio[res]} ${unit} per second at market value`;
+                let price = tradeBuyPrice(res);
+                return `Auto-buy ${tradeRatio[res]} ${unit} per second for \$${price}`;
             },
             purchase(res){
                 let qty = Number(vues['market_qty'].qty);
@@ -463,6 +465,32 @@ function marketItem(vue,mount,market_item,name,color,full){
         }
     });
     vues[vue].$mount(mount);
+}
+
+function tradeSellPrice(res){
+    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+    let price = Math.round(global.resource[res].value * tradeRatio[res] / divide);
+    
+    if (global.city['wharf']){
+        price = Math.round(price * (1 + (global.city['wharf'].count * 0.01)));
+    }
+    if (global.space['gps'] && global.space['gps'].count > 3){
+        price = Math.round(price * (1 + (global.space['gps'].count * 0.01)));
+    }
+    return price;
+}
+
+function tradeBuyPrice(res){
+    let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+    let price = Math.round(rate * tradeRatio[res]);
+
+    if (global.city['wharf']){
+        price = Math.round(price * (0.99 ** global.city['wharf'].count));
+    }
+    if (global.space['gps'] && global.space['gps'].count > 3){
+        price = Math.round(price * (0.99 ** global.space['gps'].count));
+    }
+    return price;
 }
 
 function breakdownPopover(id,name,type){
