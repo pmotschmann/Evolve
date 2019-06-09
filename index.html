@@ -12,17 +12,6 @@
     <script src="https://unpkg.com/buefy@0.7.2/dist/buefy.min.js"></script>
     <script src="https://unpkg.com/popper.js@1.14.6/dist/umd/popper.min.js"></script>
     <script src="lib/lz-string.min.js"></script>
-    <script src="vars.js" type="module"></script>
-    <script src="achieve.js" type="module"></script>
-    <script src="races.js" type="module"></script>
-    <script src="resources.js" type="module"></script>
-    <script src="jobs.js" type="module"></script>
-    <script src="civics.js" type="module"></script>
-    <script src="actions.js" type="module"></script>
-    <script src="space.js" type="module"></script>
-    <script src="arpa.js" type="module"></script>
-    <script src="events.js" type="module"></script>
-    <script src="main.js" type="module"></script>
 </head>
 <body>
     <div id="topBar" class="topBar">
@@ -120,5 +109,13 @@
         </div>
     </div>
     <div class="promoBar"><span class="left"><span class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</span></span><span class="right"><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a><span>|</span><a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a></span></div>
+    <script>
+        var version = '0.3.8';
+        let modules = ['vars','achieve','races','resources','jobs','civics','actions','space','arpa','events','main'];
+        for (let i=0; i<modules.length; i++){
+            let elm = $(`<script src="${modules[i]}.js?v=${version}" type="module"><\/script>`);
+            $('body').append(elm);
+        }
+    </script>
 </body>
 </html>
