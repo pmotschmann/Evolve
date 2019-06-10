@@ -274,7 +274,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['crafty',1],
         cost: 45,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>75</span></div>',
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>45</span></div>',
         action(){
             if (payPlasmids('artificer')){
                 return true;
@@ -289,7 +289,7 @@ const genePool = {
         reqs: { crafty: 1 },
         grant: ['crafty',2],
         cost: 90,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>150</span></div>',
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>90</span></div>',
         action(){
             if (payPlasmids('detail_oriented')){
                 return true;
@@ -304,7 +304,7 @@ const genePool = {
         reqs: { crafty: 2 },
         grant: ['crafty',3],
         cost: 135,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>225</span></div>',
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>135</span></div>',
         action(){
             if (payPlasmids('rigorous')){
                 return true;
