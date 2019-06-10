@@ -12,7 +12,7 @@ var achievements = {
     },
     second_evolution: {
         name: `Second Evolution`,
-        desc: `Evolve the same species twice in a row and then worship your anscestors.`,
+        desc: `Evolve the same species twice in a row and then worship your ancestors.`,
         flair: `Coincidence or ancient hubris?`
     },
     blackhole: {
@@ -22,7 +22,7 @@ var achievements = {
     },
     warmonger: {
         name: `Heir of Genghis Khan`,
-        desc: `Have a warmonger penalty of 10% or more.`,
+        desc: `Have a warmonger penalty of 8% or more.`,
         flair: `What is best in life? to see your enemies fall before you.`
     },
     red_tactics: {
@@ -255,7 +255,7 @@ export function checkAchievements(){
     if (!global.stats.achieve['mass_starvation'] && global.stats.starved >= 100){
         unlockAchieve('mass_starvation');
     }
-    if (!global.stats.achieve['warmonger'] && Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue) >= 10)){
+    if (!global.stats.achieve['warmonger'] && Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue) >= 8)){
         unlockAchieve('warmonger');
     }
     if (!global.stats.achieve['red_tactics'] && global.stats.died >= 250){

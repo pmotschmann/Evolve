@@ -1253,6 +1253,10 @@ html.light {
             border-top: #4e4e4e solid .0625rem;
         }
     }
+    .progress::-webkit-progress-value,
+    .progress::-moz-progress-bar {
+        background-color: #898989;
+    }
 }
 
 .nightTheme,
@@ -1281,9 +1285,36 @@ html.night {
                 }
             }
         }
+        > div.popper {
+            background-color: #0f0f0f !important;
+            color: #fff !important;
+            border: .0625rem solid #999;
+
+            > div:nth-child(2),
+            > div:nth-child(3) {
+                border-top: solid .0625rem #999;
+            }
+            .has-text-dark {
+                color: #fff !important;
+            }
+        }
     }
     .market-item:nth-child(odd){
         background-color: #222222;
+    }
+    .b-tooltip.is-right:before {
+        border-right: 5px solid #999;
+    }
+    .b-tooltip.is-left:before {
+        border-left: 5px solid #999;
+    }
+    .b-tooltip.is-bottom:before {
+        border-bottom: 5px solid #999;
+    }
+    .b-tooltip:after {
+        background: #0f0f0f;
+        color: #fff;
+        border: .0625rem solid #999;
     }
 }
 

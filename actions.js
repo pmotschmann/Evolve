@@ -1253,7 +1253,7 @@ export const actions = {
             effect(){ 
                 let vault = 1800;
                 if (global.tech['vault'] >= 1){
-                    vault = 15000;
+                    vault = global.tech['vault'] >= 2 ? 22500 : 15000;
                 } 
                 else if (global.tech['banking'] >= 5){
                     vault = 9000;
@@ -1694,6 +1694,32 @@ export const actions = {
                     if (global.race['resourceful']){
                         global.city.market.mtrade++;
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        wharf: {
+            id: 'city-wharf',
+            title: 'Wharf',
+            desc: 'Wharfs offer a place for ships to dock',
+            reqs: { wharf: 1 },
+            cost: { 
+                Money(){ return costMultiplier('wharf', 62000, 1.32); },
+                Lumber(){ return costMultiplier('wharf', 44000, 1.32); },
+                Cement(){ return costMultiplier('wharf', 3000, 1.32); },
+                Oil(){ return costMultiplier('wharf', 750, 1.32); }
+            },
+            effect(){
+                let routes = 2;
+                return `<div>+${routes} Trade Routes</div><div>+1% Trade Route Profitability</div><div>+10 Max Crates</div><div>+10 Max Containers</div>`; 
+            },
+            action(){
+                if (payCosts(actions.city.wharf.cost)){
+                    global.city['wharf'].count++;
+                    global.city.market.mtrade += 2;
+                    global.resource.Crates.max += 10;
+                    global.resource.Containers.max += 10;
                     return true;
                 }
                 return false;
@@ -2151,6 +2177,7 @@ export const actions = {
             effect: 'Start tracking the days and begin building a settlement.',
             action(){
                 if (payCosts(actions.tech.sundial.cost)){
+                    messageQueue('You have founded a settlement.','success');
                     global.resource.Knowledge.display = true;
                     global.city.calendar.day++;
                     if (global.race['infectious']){
@@ -2242,6 +2269,48 @@ export const actions = {
             },
             action(){
                 if (payCosts(actions.tech.steel_beams.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mythril_beams: {
+            id: 'tech-mythril_beams',
+            title: 'Mythril Beams',
+            desc: 'Reduce cost of housing',
+            reqs: { housing_reduction: 1, space: 3 },
+            grant: ['housing_reduction',2],
+            cost: { 
+                Knowledge(){ return 175000; },
+                Mythril(){ return 1000; }
+            },
+            effect(){
+                let label = basicHousingLabel();
+                return `Reduce material costs of ${label}s and Cottages by introducing unbreakble mythril beams.`;
+            },
+            action(){
+                if (payCosts(actions.tech.mythril_beams.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        neutronium_walls: {
+            id: 'tech-neutronium_walls',
+            title: 'Neutronium Walls',
+            desc: 'Reduce cost of housing',
+            reqs: { housing_reduction: 2, gas_moon: 1 },
+            grant: ['housing_reduction',3],
+            cost: { 
+                Knowledge(){ return 300000; },
+                Neutronium(){ return 850; }
+            },
+            effect(){
+                let label = basicHousingLabel();
+                return `Reduce material costs of ${label}s and Cottages by adding load bearing walls made out of Neutronium.`;
+            },
+            action(){
+                if (payCosts(actions.tech.neutronium_walls.cost)){
                     return true;
                 }
                 return false;
@@ -2611,14 +2680,32 @@ export const actions = {
             id: 'tech-automation',
             title: 'Factory Automation',
             desc: 'Factory Automation',
-            reqs: { high_tech: 8, factory: 1, locked: 1 },
+            reqs: { high_tech: 8, factory: 1},
             grant: ['factory',2],
             cost: {
-                Knowledge(){ return 140000; }
+                Knowledge(){ return 165000; }
             },
-            effect: 'High tech robotic machinary can booot the production of factories.',
+            effect: '<span>High tech robotic machinary can booot the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
             action(){
                 if (payCosts(actions.tech.automation.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        laser_cutters: {
+            id: 'tech-laser_cutters',
+            title: 'Laser Cutters',
+            desc: 'Laser Cutters',
+            reqs: { high_tech: 9, factory: 2 },
+            grant: ['factory',3],
+            cost: {
+                Knowledge(){ return 300000; },
+                Elerium(){ return 200; }
+            },
+            effect: '<span>Laser cutters provide a 25% boost to manufacturing speed.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            action(){
+                if (payCosts(actions.tech.laser_cutters.cost)){
                     return true;
                 }
                 return false;
@@ -3406,6 +3493,24 @@ export const actions = {
                 return false;
             }
         },
+        wharf: {
+            id: 'tech-wharf',
+            title: 'Wharfs',
+            desc: 'Establish sea routes with wharfs',
+            reqs: { trade: 1, high_tech: 3, oil: 1 },
+            grant: ['wharf',1],
+            cost: {
+                Knowledge(){ return 44000; }
+            },
+            effect: 'Zone coastal areas of your city for contructing wharfs.',
+            action(){
+                if (payCosts(actions.tech.wharf.cost)){
+                    global.city['wharf'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         banking: {
             id: 'tech-banking',
             title: 'Banking',
@@ -3625,6 +3730,25 @@ export const actions = {
             effect: 'Upgrade banks with impenetrable mythil plated vaults.',
             action(){
                 if (payCosts(actions.tech.mythril_vault.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        neutronium_vault: {
+            id: 'tech-neutronium_vault',
+            title: 'Neutronium Vault',
+            desc: 'Neutronium Vault',
+            reqs: { vault: 1, gas_moon: 1 },
+            grant: ['vault',2],
+            cost: {
+                Money(){ return 750000; },
+                Knowledge(){ return 280000; },
+                Neutronium(){ return 650; }
+            },
+            effect: 'Upgrade your bank vault doors with neutronium.',
+            action(){
+                if (payCosts(actions.tech.neutronium_vault.cost)){
                     return true;
                 }
                 return false;
@@ -3964,6 +4088,7 @@ export const actions = {
             effect: 'Discover electricity, no kites required.',
             action(){
                 if (payCosts(actions.tech.electricity.cost)){
+                    messageQueue('Electricity is a major advancement for your people, the future possibilities are endless.','success');
                     global.city['power'] = 0;
                     global.city['powered'] = true;
                     global.city['coal_power'] = {
@@ -4030,6 +4155,7 @@ export const actions = {
             effect: 'Learn to split the atom, a powerful but terrifying new development.',
             action(){
                 if (payCosts(actions.tech.fission.cost)){
+                    messageQueue('Your scientists have unlocked the secrets of the atom, the atomic age has begun.','success');
                     global.city['fission_power'] = {
                         count: 0,
                         on: 0
@@ -4102,11 +4228,11 @@ export const actions = {
             id: 'tech-lasers',
             title: 'Lasers',
             desc: 'Light Amplification by Stimulated Emission of Radiation',
-            reqs: { high_tech: 8, space: 3, supercollider: 1, locked: 1 },
+            reqs: { high_tech: 8, space: 3, supercollider: 1, elerium: 1 },
             grant: ['high_tech',9],
             cost: {
-                Knowledge(){ return 180000; },
-                Iridium(){ return 500; }
+                Knowledge(){ return 280000; },
+                Elerium(){ return 100; }
             },
             effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
             action(){
@@ -4114,6 +4240,26 @@ export const actions = {
                     return true;
                 }
                 return false;
+            }
+        },
+        artifical_intelligence: {
+            id: 'tech-artifical_intelligence',
+            title: 'Artifical Intelligence',
+            desc: 'Artifical Intelligence',
+            reqs: { high_tech: 9, locked: 1 },
+            grant: ['high_tech',10],
+            cost: {
+                Knowledge(){ return 325000; }
+            },
+            effect: `SciFi says this isn't a good idea, but what do a bunch of self important SciFi writers know?`,
+            action(){
+                if (payCosts(actions.tech.artifical_intelligence.cost)){
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return `When the testing is over, you will be missed.`;
             }
         },
         uranium: {
@@ -4797,6 +4943,24 @@ export const actions = {
                 return false;
             }
         },
+        signing_bonus: {
+            id: 'tech-signing_bonus',
+            title: 'Signing Bonus',
+            desc: 'Signing Bonus',
+            reqs: { mercs: 1, high_tech: 3 },
+            grant: ['mercs',2],
+            cost: {
+                Money(){ return 50000 },
+                Knowledge(){ return 32000; }
+            },
+            effect: 'Regererate the mercenary pool faster by offering signing bonuses.',
+            action(){
+                if (payCosts(actions.tech.signing_bonus.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         bows: {
             id: 'tech-bows',
             title: 'Bows',
@@ -4903,6 +5067,47 @@ export const actions = {
                 }
                 return false;
             }
+        },
+        laser_rifles: {
+            id: 'tech-laser_rifles',
+            title: 'Laser Rifles',
+            desc: 'Laser Rifles',
+            reqs: { military: 6, high_tech: 9, elerium: 1 },
+            grant: ['military',7],
+            cost: {
+                Knowledge(){ return 325000; },
+                Elerium(){ return 250; }
+            },
+            effect: 'High tech weapons for the future.',
+            action(){
+                if (payCosts(actions.tech.laser_rifles.cost)){
+                    var tech = actions.tech.laser_rifles.grant[0];
+                    global.tech[tech] = actions.tech.laser_rifles.grant[1];
+                    global.civic['garrison'].workers--;
+                    global.civic['garrison'].workers++;
+                    return true;
+                }
+                return false;
+            }
+        },
+        space_marines: {
+            id: 'tech-space_marines',
+            title: 'Space Marines',
+            desc: 'Space Marines',
+            reqs: { space: 3, mars: 2 },
+            grant: ['marines',1],
+            cost: {
+                Knowledge(){ return 210000; }
+            },
+            effect(){ return `<div>Militarize space with</div><div>a ${races[global.race.species].solar.red} garrison.</div>` },
+            action(){
+                if (payCosts(actions.tech.space_marines.cost)){
+                    global.space['space_barracks'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            },
+            flair: 'Outer space treaty be damned.'
         },
         armor: {
             id: 'tech-armor',
@@ -5659,6 +5864,24 @@ export const actions = {
                 return false;
             }
         },
+        exotic_lab: {
+            id: 'tech-energy_lab',
+            title: 'Exotic Materials Lab',
+            desc: 'Exotic Materials Laboratory',
+            reqs: { mars: 4, asteroid: 5 },
+            grant: ['mars',5],
+            cost: {
+                Knowledge(){ return 250000; }
+            },
+            effect(){ return `Design a special high tech laboratory to study exotic materials.`; },
+            action(){
+                if (payCosts(actions.tech.exotic_lab.cost)){
+                    global.space['exotic_lab'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson_sphere: {
             id: 'tech-dyson_sphere',
             title: 'Dyson Sphere',
@@ -5689,6 +5912,24 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.dyson_swarm.cost)){
                     global.space['swarm_satellite'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        swarm_plant: {
+            id: 'tech-swarm_plant',
+            title: 'Swarm Plant',
+            desc: 'Swarm Plant',
+            reqs: { solar: 3, hell: 1, gas_moon: 1 },
+            grant: ['solar',4],
+            cost: {
+                Knowledge(){ return 250000; }
+            },
+            effect(){ return `Manufactoring and deploying swarm satellites are expensive because of the distance from ${races[global.race.species].home}. By establishing automated facilities on ${races[global.race.species].solar.hell} which is much closer to the sun you can lower the costs.` },
+            action(){
+                if (payCosts(actions.tech.swarm_plant.cost)){
+                    global.space['swarm_plant'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -5752,6 +5993,24 @@ export const actions = {
                 return false;
             }
         },
+        helium_attractor: {
+            id: 'tech-helium_attractor',
+            title: 'Helium Attractor',
+            desc: 'Helium Attractor',
+            reqs: { gas_giant: 1, elerium: 1 },
+            grant: ['helium',1],
+            cost: {
+                Knowledge(){ return 290000; },
+                Elerium(){ return 250; }
+            },
+            effect(){ return `Increase efficency of ${races[global.race.species].solar.gas} Helium-3 collectors.` },
+            action(){
+                if (payCosts(actions.tech.helium_attractor.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         zero_g_mining: {
             id: 'tech-zero_g_mining',
             title: 'Zero G Mining',
@@ -5776,15 +6035,71 @@ export const actions = {
             id: 'tech-elerium_mining',
             title: 'Elerium Mining',
             desc: 'Elerium Mining',
-            reqs: { asteroid: 3, locked: 1 },
-            grant: ['asteroid',4],
+            reqs: { asteroid: 4 },
+            grant: ['asteroid',5],
             cost: {
-                Knowledge(){ return 300000; }
+                Knowledge(){ return 235000; },
+                Elerium(){ return 1; }
             },
             effect: 'Elerium is a rare new highly energetic element discovered in the asteroid belt, mining this element safely will require specialized harvesting equipment and containment vessels.',
             action(){
                 if (payCosts(actions.tech.elerium_mining.cost)){
                     global.space['elerium_ship'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_tech: {
+            id: 'tech-elerium_tech',
+            title: 'Elerium Theory',
+            desc: 'Elerium Theory',
+            reqs: { asteroid: 5 },
+            grant: ['elerium',1],
+            cost: {
+                Knowledge(){ return 275000; },
+                Elerium(){ return 20; }
+            },
+            effect: `Study the elerium to unlock it's mysteries.`,
+            action(){
+                if (payCosts(actions.tech.elerium_tech.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_reactor: {
+            id: 'tech-elerium_reactor',
+            title: 'Elerium Reactor',
+            desc: 'Elerium Reactor',
+            reqs: { dwarf: 1, elerium: 1 },
+            grant: ['elerium',2],
+            cost: {
+                Knowledge(){ return 325000; },
+                Elerium(){ return 180; }
+            },
+            effect(){ return `Elerium is highly energetic and the prospect of making a power source of it is too good to ignore.` },
+            action(){
+                if (payCosts(actions.tech.elerium_reactor.cost)){
+                    global.space['e_reactor'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        neutronium_housing: {
+            id: 'tech-neutronium_housing',
+            title: 'Neutronium Housing',
+            desc: 'Neutronium Housing',
+            reqs: { gas_moon: 1 },
+            grant: ['space_housing',1],
+            cost: {
+                Knowledge(){ return 275000; },
+                Neutronium(){ return 350; }
+            },
+            effect(){ return `Neutronium supports make Living Quarters cheaper to produce on ${races[global.race.species].solar.red}.` },
+            action(){
+                if (payCosts(actions.tech.neutronium_housing.cost)){
                     return true;
                 }
                 return false;
@@ -6285,7 +6600,7 @@ function costMultiplier(structure,base,mutiplier){
     else if (global.race['large']){ mutiplier += 0.01; }
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
-        mutiplier -= 0.02;
+        mutiplier -= global.tech['housing_reduction'] * 0.02;
     }
     if (structure === 'basic_housing'){
         if (global.race['solitary']){
@@ -6501,6 +6816,24 @@ function smelterModal(modal){
     vues['specialModal'].$mount('#specialModal');
 }
 
+export const f_rate = {
+    Lux: {
+        demand: [0.14,0.21,0.28,0.35],
+        fur: [2,3,4,5]
+    },
+    Alloy: {
+        copper: [0.75,1.12,1.49,1.86],
+        titanium: [0.15,0.22,0.29,0.36],
+        output: [0.075,0.112,0.149,0.186]
+    },
+    Polymer: {
+        oil_kk: [0.22,0.33,0.44,0.55],
+        oil: [0.18,0.27,0.36,0.45],
+        lumber: [15,22,29,36],
+        output: [0.125,0.187,0.249,0.311],
+    }
+};
+
 function factoryModal(modal){
     let fuel = $('<div><span class="has-text-warning">Operating:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>');
     modal.append(fuel);
@@ -6555,26 +6888,23 @@ function factoryModal(modal){
                 let assembly = global.tech['factory'] ? true : false;
                 switch(type){
                     case 'Lux':
-                        let demand = +(global.resource[races[global.race.species].name].amount * (assembly ? 0.21 : 0.14)).toFixed(2);
-                        let consume = assembly ? 3 : 2;
-                        return `Consume ${consume} Furs/s to produce luxury goods worth \$${demand}`;
-                        break;
+                        let demand = +(global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
+                        let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
+                        return `Consume ${fur} Furs/s to produce luxury goods worth \$${demand}`;
                     case 'Alloy':
-                        let copper = assembly ? 1.12 : 0.75;
-                        let titanium = assembly ? 0.22 : 0.15;
+                        let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
+                        let titanium = assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0];
                         return `Consume ${copper} Copper and ${titanium} Titanium/s to produce Alloy`;
-                        break;
                     case 'Polymer':
                         if (global.race['kindling_kindred']){
-                            let oil = assembly ? 0.33 : 0.22;
+                            let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
                             return `Consume ${oil} Oil/s to produce Polymer`;
                         }
                         else {
-                            let oil = assembly ? 0.27 : 0.18;
-                            let lumber = assembly ? 22 :15;
+                            let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
+                            let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
                             return `Consume ${oil} Oil and ${lumber} Lumber/s to produce Polymer`;
                         }
-                        break;
                 }
             }
         },
