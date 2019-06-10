@@ -1,3 +1,13 @@
+#### 0.3.11 - 6/9/2019
+The Gas Moon and the Dwarf planets are now accessable<br>
+New technologies based on new discoveries made in deep space<br>
+Wharfs can now be unlocked after discovering oil<br>
+There is now an alternative method of unlocking steel<br>
+Night Theme updated, popovers are no longer bright<br>
+Trade route tooltips now include money being imported or exported<br>
+New crisper upgrades for crafting<br>
+Warmonger achievement requirement lowered from 10% to 8%<br>
+
 #### 0.3.10 - 6/9/2019
 Added code to fix peculiar failed space launch game state<br>
 
