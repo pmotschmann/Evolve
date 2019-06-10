@@ -20,7 +20,7 @@ export const resource_values = {
     //Deuterium: 450,
     'Helium_3': 620,
     Elerium: 2000,
-    //Neutronium: 1000
+    Neutronium: 1000
 };
 
 export const tradeRatio = {
@@ -41,6 +41,7 @@ export const tradeRatio = {
     Iridium: 0.25,
     'Helium_3': 0.25,
     Elerium: 0.1,
+    Neutronium: 0.1,
 }
 
 export const craftCost = {
@@ -118,8 +119,8 @@ export function defineResources() {
         loadResource('Iridium',0,1,true,true);
         //loadResource('Deuterium',0,1,true,false);
         loadResource('Helium_3',0,1,true,false);
-        //loadResource('Neutronium',0,1,true,true);
-        loadResource('Elerium',0,1,false,false);
+        loadResource('Neutronium',0,1,false,false,'special');
+        loadResource('Elerium',1,1,false,false,'special');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');
@@ -364,11 +365,13 @@ function marketItem(vue,mount,market_item,name,color,full){
         methods: {
             aSell(res){
                 let unit = tradeRatio[res] === 1 ? 'unit' : 'units';
-                return `Auto-sell ${tradeRatio[res]} ${unit} per second at market value`;
+                let price = tradeSellPrice(res);
+                return `Auto-sell ${tradeRatio[res]} ${unit} per second for \$${price}`;
             },
             aBuy(res){
                 let unit = tradeRatio[res] === 1 ? 'unit' : 'units';
-                return `Auto-buy ${tradeRatio[res]} ${unit} per second at market value`;
+                let price = tradeBuyPrice(res);
+                return `Auto-buy ${tradeRatio[res]} ${unit} per second for \$${price}`;
             },
             purchase(res){
                 let qty = Number(vues['market_qty'].qty);
@@ -465,6 +468,32 @@ function marketItem(vue,mount,market_item,name,color,full){
     vues[vue].$mount(mount);
 }
 
+function tradeSellPrice(res){
+    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+    let price = Math.round(global.resource[res].value * tradeRatio[res] / divide);
+    
+    if (global.city['wharf']){
+        price = Math.round(price * (1 + (global.city['wharf'].count * 0.01)));
+    }
+    if (global.space['gps'] && global.space['gps'].count > 3){
+        price = Math.round(price * (1 + (global.space['gps'].count * 0.01)));
+    }
+    return price;
+}
+
+function tradeBuyPrice(res){
+    let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+    let price = Math.round(rate * tradeRatio[res]);
+
+    if (global.city['wharf']){
+        price = Math.round(price * (0.99 ** global.city['wharf'].count));
+    }
+    if (global.space['gps'] && global.space['gps'].count > 3){
+        price = Math.round(price * (0.99 ** global.space['gps'].count));
+    }
+    return price;
+}
+
 function breakdownPopover(id,name,type){
     $(`#${id}`).on('mouseover',function(){
         
@@ -495,7 +524,8 @@ function breakdownPopover(id,name,type){
                 let val = breakdown[type].consume[name][mod];
                 if (val != 0 && !isNaN(val)){
                     let type = val > 0 ? 'success' : 'danger';
-                    bd.append(`<div class="resBD"><span>${mod}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
+                    let label = mod.replace("_"," ");
+                    bd.append(`<div class="resBD"><span>${label}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
                 }
             });
         }
@@ -544,7 +574,7 @@ function breakdownPopover(id,name,type){
                         time = +(gap / rate).toFixed(0);
                     }
 
-                    if (time === Infinity){
+                    if (time === Infinity || Number.isNaN(time)){
                         return 'Never';
                     }
                     

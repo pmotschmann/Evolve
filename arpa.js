@@ -162,6 +162,21 @@ const genePool = {
             return false;
         }
     },
+    genetic_repository: {
+        id: 'genes-genetic_repository',
+        title: 'Genetic Repository',
+        desc: 'Reduces cost creep by 0.05',
+        reqs: { creep: 4 },
+        grant: ['creep',5],
+        cost: 999,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>999</span></div>',
+        action(){
+            if (payPlasmids('genetic_repository')){
+                return true;
+            }
+            return false;
+        }
+    },
     spatial_reasoning: {
         id: 'genes-spatial_reasoning',
         title: 'Spatial Reasoning',
@@ -247,6 +262,51 @@ const genePool = {
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>65</span></div>',
         action(){
             if (payPlasmids('replication')){
+                return true;
+            }
+            return false;
+        }
+    },
+    artificer: {
+        id: 'genes-artificer',
+        title: 'Artificer',
+        desc: 'Craftsman trigger twice a month',
+        reqs: { evolve: 1 },
+        grant: ['crafty',1],
+        cost: 45,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>75</span></div>',
+        action(){
+            if (payPlasmids('artificer')){
+                return true;
+            }
+            return false;
+        }
+    },
+    detail_oriented: {
+        id: 'genes-detail_oriented',
+        title: 'Detail Oriented',
+        desc: 'Auto crafting produces 33% more product',
+        reqs: { crafty: 1 },
+        grant: ['crafty',2],
+        cost: 90,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>150</span></div>',
+        action(){
+            if (payPlasmids('detail_oriented')){
+                return true;
+            }
+            return false;
+        }
+    },
+    rigorous: {
+        id: 'genes-rigorous',
+        title: 'Rigorous',
+        desc: 'Auto crafting produces 66% more product',
+        reqs: { crafty: 2 },
+        grant: ['crafty',3],
+        cost: 135,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>225</span></div>',
+        action(){
+            if (payPlasmids('rigorous')){
                 return true;
             }
             return false;
