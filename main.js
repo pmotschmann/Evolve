@@ -515,6 +515,7 @@ function fastLoop(){
                         breakdown.p.consume.Money['Trade'] -= price;
                         breakdown.p.consume[res]['Trade'] = global.resource[res].trade * tradeRatio[res];
                     }
+                    steelCheck();
                 }
                 else if (global.resource[res].trade < 0){
                     let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
@@ -533,6 +534,7 @@ function fastLoop(){
                         breakdown.p.consume.Money['Trade'] -= price;
                         breakdown.p.consume[res]['Trade'] = global.resource[res].trade * tradeRatio[res];
                     }
+                    steelCheck();
                 }
             });
         }
@@ -2820,6 +2822,14 @@ function diffCalc(res,period){
     }
     else if (global.resource[res].diff >= 0 && $(`#res${res} .diff`).hasClass('has-text-danger')){
         $(`#res${res} .diff`).removeClass('has-text-danger');
+    }
+}
+
+function steelCheck(){
+    if (global.resource.Steel.display === false && Math.rand(0,1250) === 0){
+        global.resource.Steel.display = true;
+        modRes('Steel',1);
+        messageQueue('Your traders have bought back a sample of a metal they call "Steel"','success');
     }
 }
 
