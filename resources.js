@@ -890,6 +890,9 @@ export function spatialReasoning(value){
 export function plasmidBonus(){
     let plasmids = global.race.Plasmid.count;
     let plasmid_bonus = 0;
+    if (global.race['decayed']){
+        plasmid -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
+    }
     if (plasmids > 250){
         let divisor = 500 - plasmids;
         if (divisor < 250){

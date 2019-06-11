@@ -4246,7 +4246,7 @@ export const actions = {
             id: 'tech-artifical_intelligence',
             title: 'Artifical Intelligence',
             desc: 'Artifical Intelligence',
-            reqs: { high_tech: 9, locked: 1 },
+            reqs: { high_tech: 9 },
             grant: ['high_tech',10],
             cost: {
                 Knowledge(){ return 325000; }
@@ -6100,6 +6100,40 @@ export const actions = {
             effect(){ return `Neutronium supports make Living Quarters cheaper to produce on ${races[global.race.species].solar.red}.` },
             action(){
                 if (payCosts(actions.tech.neutronium_housing.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        genesis: {
+            id: 'tech-genesis',
+            title: 'Genesis Project',
+            desc: 'Genesis Project',
+            reqs: { genesis: 1 },
+            grant: ['genesis',2],
+            cost: {
+                Knowledge(){ return 350000; }
+            },
+            effect(){ return `Our species appears to be doomed, research the possibly of leaving behind a lasting legacy by bioseeding a planet in other star system with life of our design.` },
+            action(){
+                if (payCosts(actions.tech.genesis.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        genetic_decay: {
+            id: 'tech-genetic_decay',
+            title: 'Gene Therapy',
+            desc: 'Gene Therapy',
+            reqs: { decay: 1 },
+            grant: ['decay',2],
+            cost: {
+                Knowledge(){ return 200000; }
+            },
+            effect(){ return `Research the genetic decay problem and try to find a solution.` },
+            action(){
+                if (payCosts(actions.tech.genetic_decay.cost)){
                     return true;
                 }
                 return false;

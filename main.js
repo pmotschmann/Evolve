@@ -2751,6 +2751,41 @@ function longLoop(){
 
             setWeather();
         }
+
+        let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
+        if (global.race.deterioration === 0 && deterioration < 40000000){
+            global.race.deterioration = 1;
+            let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+            messageQueue(`Scientists have discovered that the ${races[global.race.species].name} genome is deteriorating, they think the species has about ${death_clock} years remaining before genetic decay becomes a problem.`,'danger');
+        }
+        else if (global.race.deterioration === 1 && deterioration < 20000000){
+            global.race.deterioration = 2;
+            let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+            messageQueue(`Some alarmists now claim that the ${races[global.race.species].name} genome decay is accelerating and there is as little as ${death_clock} years remaining.`,'danger');
+        }
+        else if (global.race.deterioration === 2 && deterioration < 5000000){
+            global.race.deterioration = 3;
+            let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+            messageQueue(`There is now a concensus about the alarming ${races[global.race.species].name} genome decay. If it doesn't accelerate any further there might be ${death_clock} years remaining.`,'danger');
+        }
+        else if (global.race.deterioration === 3 && deterioration < 1000000){
+            global.race.deterioration = 4;
+            let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+            messageQueue(`If a solution can not be found genetic damage will begain to weaken the ${races[global.race.species].name} race in at most ${death_clock} years.`,'danger');
+        }
+        else if (global.race.deterioration === 4 && deterioration <= 0){
+            global.race.deterioration = 5;
+            global.race['decayed'] = global.stats.days;
+            global.tech['decay'] = 1;
+            messageQueue(`Genetic decay has started to weaken the ${races[global.race.species].name} race.`,'danger');
+            drawTech();
+        }
+
+        if (!global.tech['genesis'] && global.race.deterioration >= 1 && global.tech['high_tech'] && global.tech['high_tech'] >= 10){
+            global.tech['genesis'] = 1;
+            messageQueue(`A group of scientists have proposed a new initiative they call the "Genesis Project".`,'special');
+            drawTech();
+        }
     }
 
     // Event triggered

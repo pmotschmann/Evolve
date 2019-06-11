@@ -238,6 +238,12 @@ if (!global['lastMsg']){
 if (!global.race['Plasmid']){
     global.race['Plasmid'] = { count: 0 };
 }
+if (!global.race['deterioration']){
+    global.race['deterioration'] = 0;
+}
+if (!global.race['gene_fortify']){
+    global.race['gene_fortify'] = 0;
+}
 
 $('html').addClass(global.settings.theme);
 
