@@ -1,3 +1,6 @@
+#### 0.3.12 - 6/11/2019
+Fixed bug with riot event that caused it to trigger on high morale instead of low morale<br>
+
 #### 0.3.11 - 6/10/2019
 The Gas Moon and the Dwarf planets are now accessible<br>
 New technologies based on new discoveries made in deep space<br>

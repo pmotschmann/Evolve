@@ -2786,7 +2786,7 @@ function longLoop(){
                         }
                         break;
                     case 'low_morale':
-                        if (global.city.morale.current <= [events[event].reqs[req]]){
+                        if (global.city.morale.current >= [events[event].reqs[req]]){
                             isOk = false;
                         }
                         break;
