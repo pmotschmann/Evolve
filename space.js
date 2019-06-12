@@ -1308,7 +1308,12 @@ const spaceProjects = {
             id: 'space-world_collider',
             title: 'World Collider',
             desc(){
-                return `<div>World Supercollider</div><div class="has-text-special">Requires 1859 Segments</div>`;
+                if (global.space.world_collider.count < 1859){
+                    return `<div>World Supercollider</div><div class="has-text-special">Requires 1859 Segments</div>`;
+                }
+                else {
+                    return `<div>World Supercollider</div>`;
+                }
             },
             reqs: { science: 10 },
             cost: {
@@ -1322,19 +1327,42 @@ const spaceProjects = {
             effect(){
                 if (global.space.world_collider.count < 1859){
                     let remain = 1859 - global.space.world_collider.count;
-                    return `<div>Construct a 1 mile segment of the world collider</div><div class="has-text-special">${remain} segments remaining</div>`;
+                    return `<div>Construct a 1 mile segment of the world supercollider</div><div class="has-text-special">${remain} segments remaining</div>`;
                 }
                 else {
                     return `The world supercollider is complete`;
                 }
             },
+            refresh: true,
             action(){
                 if (global.space.world_collider.count < 1859 && payCosts(spaceProjects.spc_dwarf.world_collider.cost)){
                     incrementStruct('world_collider');
+                    if (global.space.world_collider.count >= 1859){
+                        global.tech['science'] = 11;
+                        global.space['world_controller'] = { count: 1, on: 0 };
+                    }
                     return true;
                 }
                 return false;
-            }
+            },
+            flair: `What's the worst that could happen?`
+        },
+        world_controller: {
+            id: 'space-world_controller',
+            title: 'WSC Control',
+            desc(){
+                return `<div>WSC Control Station</div><div class="has-text-special">Requires Power</div>`;
+            },
+            reqs: { science: 11 },
+            cost: {},
+            effect(){
+                return `<div>Controls the world supercollider</div><div>+25% Max Knowledge</div><div>Unknown Side Effects</div><div>-${spaceProjects.spc_dwarf.world_controller.powered}kW</div>`;
+            },
+            powered: 20,
+            action(){
+                return false;
+            },
+            flair: `Might destroy the universe`
         },
     }
 };

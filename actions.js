@@ -6009,7 +6009,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 360000; }
             },
-            effect(){ return `With AI controlling your solar swarm you can opperate upto 6 satellites per control station.` },
+            effect(){ return `With AI controlling your solar swarm you can operate upto 6 satellites per control station.` },
             action(){
                 if (payCosts(actions.tech.swarm_control_ai.cost)){
                     return true;

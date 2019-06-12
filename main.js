@@ -644,7 +644,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
+        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let region = parts[0] === 'city' ? parts[0] : 'space';
@@ -2364,7 +2364,6 @@ function midLoop(){
                 global.city.market.mtrade += global.city.temple.count;
             }
         }
-
         if (global.city['wharf']){
             global.city.market.mtrade += global.city.wharf.count * 2;
         }
@@ -2377,6 +2376,12 @@ function midLoop(){
             else {
                 messageQueue(`${pop_loss} citizens have abandoned your settlement due to homelessness.`,'danger');
             }
+        }
+
+        if (p_on['world_controller']){
+            let gain = Math.round(caps['Knowledge'] * 0.25);
+            caps['Knowledge'] += gain;
+            bd_Knowledge['WS_Collider'] = gain+'v';
         }
 
         breakdown.c = {
