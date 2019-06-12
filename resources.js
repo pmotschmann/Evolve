@@ -20,7 +20,8 @@ export const resource_values = {
     //Deuterium: 450,
     'Helium_3': 620,
     Elerium: 2000,
-    Neutronium: 1000
+    Neutronium: 1000,
+    Nano_Tube: 1500,
 };
 
 export const tradeRatio = {
@@ -42,6 +43,7 @@ export const tradeRatio = {
     'Helium_3': 0.25,
     Elerium: 0.1,
     Neutronium: 0.1,
+    Nano_Tube: 0.1,
 }
 
 export const craftCost = {
@@ -121,6 +123,7 @@ export function defineResources() {
         loadResource('Helium_3',0,1,true,false);
         loadResource('Neutronium',0,1,false,false,'special');
         loadResource('Elerium',1,1,false,false,'special');
+        loadResource('Nano_Tube',0,1,false,false,'special');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');

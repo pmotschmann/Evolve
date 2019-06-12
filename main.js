@@ -355,9 +355,10 @@ function fastLoop(){
         Alloy: {},
         Polymer: {},
         Iridium: {},
-        "Helium_3": {},
+        Helium_3: {},
         Neutronium: {},
-        Elerium: {}
+        Elerium: {},
+        Nano_Tube: {}
     };
     
     var time_multiplier = 0.25;
@@ -1282,6 +1283,53 @@ function fastLoop(){
                 breakdown.p['Polymer'] = polymer_bd;
                 modRes('Polymer', delta * time_multiplier);
             }
+
+            if (global.city.factory['Nano'] && global.city.factory['Nano'] > 0){
+                operating += global.city.factory.Nano;
+                while (operating > on_factories && operating > 0){
+                    operating--;
+                    global.city.factory.Nano--;
+                }
+
+                let coalIncrement = (assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0]);
+                let neutroniumIncrement = (assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0]);
+                let coal_cost = global.city.factory.Nano * coalIncrement;
+                let neutronium_cost = global.city.factory.Nano * neutroniumIncrement;
+                let workDone = global.city.factory.Nano;
+                
+                while (neutronium_cost * time_multiplier > global.resource.Neutronium.amount && neutronium_cost > 0){
+                    neutronium_cost -= neutroniumIncrement;
+                    coal_cost -= coalIncrement;
+                    workDone--;
+                }
+                while (coal_cost * time_multiplier > global.resource.Coal.amount && coal_cost > 0){
+                    neutronium_cost -= neutroniumIncrement;
+                    coal_cost -= coalIncrement;
+                    workDone--;
+                }
+
+                breakdown.p.consume.Coal['Factory'] = -(coalIncrement);
+                breakdown.p.consume.Neutronium['Factory'] = -(neutroniumIncrement);
+                modRes('Neutronium', -(neutronium_cost * time_multiplier));
+                modRes('Coal', -(coal_cost * time_multiplier));
+
+                let factory_output = workDone * (assembly ? f_rate.Nano_Tube.output[global.tech['factory']] : f_rate.Nano_Tube.output[0]);
+                if (global.race['toxic']) {
+                    factory_output *= 1.08;
+                }
+                if (global.tech['polymer'] >= 2){
+                    factory_output *= 1.42;
+                }
+
+                let delta = factory_output;
+                delta *= hunger * global_multiplier;
+
+                let nano_bd = {};
+                nano_bd['Factory'] = factory_output + 'v';
+                nano_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Nano_Tube'] = nano_bd;
+                modRes('Nano_Tube', delta * time_multiplier);
+            }
         }
 
         // Cement
@@ -1867,7 +1915,8 @@ function midLoop(){
             Iridium: 0,
             "Helium_3": 0,
             Neutronium: 0,
-            Elerium: 1
+            Elerium: 1,
+            Nano_Tube: 0
         };
         // labor caps
         var lCaps = {
@@ -1908,6 +1957,7 @@ function midLoop(){
         var bd_Helium = { Base: caps['Helium_3']+'v' };
         var bd_Neutronium = { Base: caps['Neutronium']+'v' };
         var bd_Elerium = { Base: caps['Elerium']+'v' };
+        var bd_Nano_Tube = { Base: caps['Nano_Tube']+'v' };
 
         caps[races[global.race.species].name] = 0;
         if (global.city['farm']){
@@ -2091,6 +2141,18 @@ function midLoop(){
             gain = (global.space.garage.count * (spatialReasoning(2500) * multiplier));
             caps['Alloy'] += gain;
             bd_Alloy['Garage'] = gain+'v';
+
+            if (global.resource.Nano_Tube.display){
+                gain = (global.space.garage.count * (spatialReasoning(25000) * multiplier));
+                caps['Nano_Tube'] += gain;
+                bd_Nano_Tube['Garage'] = gain+'v';
+            }
+
+            if (global.resource.Neutronium.display){
+                gain = (global.space.garage.count * (spatialReasoning(125) * multiplier));
+                caps['Neutronium'] += gain;
+                bd_Neutronium['Garage'] = gain+'v';
+            }
         }
         if (global.city['silo']){
             let gain = (global.city['silo'].count * spatialReasoning(500));
@@ -2339,6 +2401,7 @@ function midLoop(){
             "Helium_3": bd_Helium,
             Neutronium: bd_Neutronium,
             Elerium: bd_Elerium,
+            Nano_Tube: bd_Nano_Tube,
         };
 
         let create_value = crateValue();
@@ -2457,7 +2520,7 @@ function midLoop(){
         });
 
         if (global.space['swarm_control']){
-            global.space.swarm_control.s_max = global.space.swarm_control.count * 4;
+            global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 6 : 4);
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on){

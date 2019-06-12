@@ -2685,7 +2685,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 165000; }
             },
-            effect: '<span>High tech robotic machinary can booot the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            effect: '<span>High tech robotic machinary can boost the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
             action(){
                 if (payCosts(actions.tech.automation.cost)){
                     return true;
@@ -3990,6 +3990,31 @@ export const actions = {
                 return false;
             }
         },
+        world_collider: {
+            id: 'tech-world_collider',
+            title: 'World Collider',
+            desc: 'World Collider',
+            reqs: { science: 9, elerium: 2 },
+            grant: ['science',10],
+            cost: {
+                Knowledge(){ return 350000; }
+            },
+            effect(){ return `Design the largest supercollider ever conceived, a massive 1859 mile track that spans the entire circumference of ${races[global.race.species].solar.dwarf}.` },
+            action(){
+                if (payCosts(actions.tech.world_collider.cost)){
+                    global.space['world_collider'] = {
+                        count: 0
+                    };
+                    global.space['world_controller'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    return true;
+                }
+                return false;
+            },
+            flair: `<div>despite its dramatic name,</div><div>this does not smash actual worlds together.</div>`
+        },
         bioscience: {
             id: 'tech-bioscience',
             title: 'Bioscience',
@@ -4118,7 +4143,8 @@ export const actions = {
                         on: 0,
                         Lux: 0,
                         Alloy: 0,
-                        Polymer: 0
+                        Polymer: 0,
+                        Nano: 0
                     };
                     return true;
                 }
@@ -4532,6 +4558,28 @@ export const actions = {
             effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%.',
             action(){
                 if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        nano_tubes: {
+            id: 'tech-nano_tubes',
+            title: 'Nano Tubes',
+            desc: 'Nano Tubes',
+            reqs: { high_tech: 10 },
+            grant: ['nano',1],
+            cost: {
+                Knowledge(){ return 375000; },
+                Coal(){ return 100000; },
+                Neutronium(){ return 1000; }
+            },
+            effect: 'Advanced computer models could help design a super material known as carbon nano tubes.',
+            action(){
+                if (payCosts(actions.tech.polymer.cost)){
+                    global.resource.Nano_Tube.display = true;
+                    global.city.factory['Nano'] = 0;
+                    messageQueue('Nano Tubes are now available for manufacture');
                     return true;
                 }
                 return false;
@@ -5935,6 +5983,40 @@ export const actions = {
                 return false;
             }
         },
+        swarm_plant_ai: {
+            id: 'tech-swarm_plant_ai',
+            title: 'Swarm Plant AI',
+            desc: 'Swarm Plant AI',
+            reqs: { solar: 4, high_tech: 10 },
+            grant: ['swarm',1],
+            cost: {
+                Knowledge(){ return 335000; }
+            },
+            effect(){ return `Advanced AI controlling the production at swarm facilities could boost their productivity.` },
+            action(){
+                if (payCosts(actions.tech.swarm_plant_ai.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        swarm_control_ai: {
+            id: 'tech-swarm_control_ai',
+            title: 'Swarm Control AI',
+            desc: 'Swarm Control AI',
+            reqs: { swarm: 1 },
+            grant: ['swarm',2],
+            cost: {
+                Knowledge(){ return 360000; }
+            },
+            effect(){ return `With AI controlling your solar swarm you can opperate upto 6 satellites per control station.` },
+            action(){
+                if (payCosts(actions.tech.swarm_control_ai.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         gps: {
             id: 'tech-gps',
             title: 'GPS Constellation',
@@ -6114,9 +6196,29 @@ export const actions = {
             cost: {
                 Knowledge(){ return 350000; }
             },
-            effect(){ return `Our species appears to be doomed, research the possibly of leaving behind a lasting legacy by bioseeding a planet in other star system with life of our design.` },
+            effect(){ return `Our species appears to be doomed, research the possibly of leaving behind a lasting legacy by bioseeding a planet in another star system with life of our design.` },
             action(){
                 if (payCosts(actions.tech.genesis.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        interstellar: {
+            id: 'tech-interstellar',
+            title: 'Interstellar Probes',
+            desc: 'Interstellar Probes',
+            reqs: { genesis: 2 },
+            grant: ['genesis',3],
+            cost: {
+                Knowledge(){ return 365000; },
+                Mythril(){ return 10000; },
+                Neutronium(){ return 2500; },
+                Elerium(){ return 250; },
+            },
+            effect(){ return `Scouting outside the solar system will require much more advanced probe designs then what is currently employed.` },
+            action(){
+                if (payCosts(actions.tech.interstellar.cost)){
                     return true;
                 }
                 return false;
@@ -6865,6 +6967,11 @@ export const f_rate = {
         oil: [0.18,0.27,0.36,0.45],
         lumber: [15,22,29,36],
         output: [0.125,0.187,0.249,0.311],
+    },
+    Nano_Tube: {
+        coal: [10,15,20,25],
+        neutronium: [0.05,0.075,0.1,0.125],
+        output: [0.2,0.3,0.4,0.5],
     }
 };
 
@@ -6904,6 +7011,18 @@ function factoryModal(modal){
         polymer.append(addPolymer);
     }
 
+    if (global.tech['nano']){
+        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" position="is-left" size="is-small" multilined animated><span>Nano Tube</span></b-tooltip></div>`);
+        modal.append(nano);
+
+        let nanoCount = $(`<span class="current">{{ Nano }}</span>`);
+        let subNano= $(`<span class="sub" @click="subItem('Nano')">&laquo;</span>`);
+        let addNano = $(`<span class="add" @click="addItem('Nano')">&raquo;</span>`);
+        nano.append(subNano);
+        nano.append(nanoCount);
+        nano.append(addNano);
+    }
+
     vues['specialModal'] = new Vue({
         data: global.city['factory'],
         methods: {
@@ -6939,6 +7058,10 @@ function factoryModal(modal){
                             let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
                             return `Consume ${oil} Oil and ${lumber} Lumber/s to produce Polymer`;
                         }
+                    case 'Nano':
+                        let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
+                        let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
+                        return `Consume ${coal} Coal and ${neutronium} Neutronium/s to produce Nano Tubes`;
                 }
             }
         },
