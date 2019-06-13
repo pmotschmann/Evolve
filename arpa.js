@@ -312,6 +312,21 @@ const genePool = {
             return false;
         }
     },
+    hardened_genes: {
+        id: 'genes-hardened_genes',
+        title: 'Hardened Genes',
+        desc: 'Unlocks challenge traits',
+        reqs: {},
+        grant: ['challenge',1],
+        cost: 5,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>5</span></div>',
+        action(){
+            if (payPlasmids('hardened_genes')){
+                return true;
+            }
+            return false;
+        }
+    },
     transcendence: {
         id: 'genes-transcendence',
         title: 'Transcendence',

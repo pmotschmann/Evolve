@@ -347,6 +347,10 @@ export const actions = {
                     
                     global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -371,6 +375,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -427,6 +435,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -453,6 +465,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -479,6 +495,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -505,6 +525,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -553,6 +577,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -575,6 +603,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -757,7 +789,104 @@ export const actions = {
                 }
                 return false;
             }
-        }
+        },
+        bunker: {
+            id: 'evo-bunker',
+            title: 'Bunker Gene',
+            desc: '<div>Bunker Gene</div><div class="has-text-special">Opens the challenge mode gene pool</div>',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'Evolve the bunker gene',
+            action(){
+                if (payCosts(actions.evolution.bunker.cost)){
+                    global.evolution['bunker'] = { count: 1 };
+                    removeAction(actions.evolution.bunker.id);
+                    global.evolution['plasmid'] = { count: 0 };
+                    global.evolution['trade'] = { count: 0 };
+                    global.evolution['craft'] = { count: 0 };
+                    global.evolution['crispr'] = { count: 0 };
+                    addAction('evolution','plasmid');
+                    addAction('evolution','trade');
+                    addAction('evolution','craft');
+                    addAction('evolution','crispr');
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        plasmid: {
+            id: 'evo-plasmid',
+            title: 'No Plasmids',
+            desc: 'No Plasmids',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'Plasmid effects are disabled',
+            action(){
+                if (payCosts(actions.evolution.plasmid.cost)){
+                    global.race['no_plasmid'] = 1;
+                    global.evolution['plasmid'] = { count: 1 };
+                    removeAction(actions.evolution.plasmid.id);
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        trade: {
+            id: 'evo-trade',
+            title: 'No Free Trade',
+            desc: 'No Free Trade',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'No marketplace trading (Trade routes Enabled)',
+            action(){
+                if (payCosts(actions.evolution.trade.cost)){
+                    global.race['no_trade'] = 1;
+                    global.evolution['trade'] = { count: 1 };
+                    removeAction(actions.evolution.trade.id);
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        craft: {
+            id: 'evo-craft',
+            title: 'No Manual Crafting',
+            desc: 'No Manual Crafting',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'No manual resource crafting',
+            action(){
+                if (payCosts(actions.evolution.craft.cost)){
+                    global.race['no_craft'] = 1;
+                    global.evolution['craft'] = { count: 1 };
+                    removeAction(actions.evolution.craft.id);
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        crispr: {
+            id: 'evo-crispr',
+            title: 'No Crispr Discounts',
+            desc: 'No Crispr Cost Creep Discounts',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'Crispr cost creep discounts disabled',
+            action(){
+                if (payCosts(actions.evolution.crispr.cost)){
+                    global.race['no_crispr'] = 1;
+                    global.evolution['crispr'] = { count: 1 };
+                    removeAction(actions.evolution.crispr.id);
+                    evoProgress();
+                }
+                return false;
+            }
+        },
     },
     city: {
         food: {
@@ -1812,11 +1941,21 @@ export const actions = {
                 Cement(){ return costMultiplier('temple', 10, 1.36); }
             },
             effect(){
-                let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
-                if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                    plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
+                let desc;
+                if (global.race['no_plasmid']){
+                    let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
+                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                        faith += +(global.civic.professor.workers * 0.04).toFixed(1);
+                    }
+                    desc = `<div>Increases production by ${faith}%.</div>`;
                 }
-                let desc = `<div>Increases the production effect of Plasmids by ${plasmid}%.</div>`;
+                else {
+                    let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
+                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                        plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
+                    }
+                    desc = `<div>Increases the production effect of Plasmids by ${plasmid}%.</div>`;
+                }
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
                     desc = desc + '<div>+1 Trade Route</div>';
                 }
@@ -6754,7 +6893,7 @@ function costMultiplier(structure,base,mutiplier){
             mutiplier -= 0.02;
         }
     }
-    if (global.genes['creep']){
+    if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }
     if (mutiplier < 0.01){

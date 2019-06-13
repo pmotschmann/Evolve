@@ -39,6 +39,12 @@ let settings = {
         },
         animation(){
             return `Enable tab transition animations`;
+        },
+        hard(){
+            return `A hard reset will erase all your game progress`;
+        },
+        soft(){
+            return `A soft reset will reset your current run back to the evolution stage, you will not gain any bonuses.`;
         }
     },
     filters: {
@@ -256,7 +262,7 @@ if (global.race.species === 'protoplasm'){
         addAction('evolution','chitin');
     }
     else {
-        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','sentience'];
+        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','sentience','bunker','plasmid','trade','craft','crispr'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -333,7 +339,7 @@ function fastLoop(){
     breakdown.p['Global'] = {};
     var global_multiplier = 1;
     if (global.race.Plasmid.count > 0){
-        breakdown.p['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
+        breakdown.p['Global'][global.race['no_plasmid'] ? 'Faith' : 'Plasmid'] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();
     }
 
