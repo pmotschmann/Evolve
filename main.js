@@ -1389,7 +1389,7 @@ function fastLoop(){
             let consume_oil = global.city['smelter'].Oil * 0.35;
             iron_smelter = global.city['smelter'].Iron;
             let steel_smelter = global.city['smelter'].Steel;
-            while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal ){
+            while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil ){
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }

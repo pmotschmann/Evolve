@@ -341,7 +341,7 @@ const spaceProjects = {
         spaceport: {
             id: 'space-spaceport',
             title: 'Spaceport',
-            desc: '<div>Build an Spaceport</div><div class="has-text-special">Requires Power & Helium-3</div>',
+            desc: '<div>Build a Spaceport</div><div class="has-text-special">Requires Power & Helium-3</div>',
             reqs: { space: 4 },
             cost: {
                 Money(){ return costMultiplier('spaceport', 47500, 1.32); },
