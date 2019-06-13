@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, p_on } from './vars.js';
+import { global, vues, poppers, messageQueue, p_on, quantium_level } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -745,7 +745,11 @@ const spaceProjects = {
                 Mythril(){ return costMultiplier('swarm_plant', 100, 1.28); }
             },
             effect(){
-                let reduce = global.tech['swarm'] ? 8 : 5;
+                let reduce = global.tech['swarm'] ? 0.92 : 0.95;
+                if (global.tech['swarm'] >= 3){
+                    reduce -= quantium_level / 100;
+                }
+                reduce = +((1 - reduce) * 100).toFixed(2);
                 return `Reduces the cost of swarm satellites by ${reduce}%`;
             },
             action(){
@@ -1499,6 +1503,9 @@ function house_adjust(res){
 export function swarm_adjust(res){
     if (global.space['swarm_plant']){
         let reduce = global.tech['swarm'] ? 0.92 : 0.95;
+        if (global.tech['swarm'] >= 3){
+            reduce -= quantium_level / 100;
+        }
         res *= reduce ** global.space.swarm_plant.count;
     }
     return res;

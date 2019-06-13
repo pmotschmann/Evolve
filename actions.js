@@ -1427,7 +1427,7 @@ export const actions = {
         lumber_yard: {
             id: 'city-lumber_yard',
             title: 'Lumber Yard',
-            desc: 'Increases lumberjack capacity',
+            desc: 'Increases lumber production',
             reqs: { axe: 1 },
             cost: { 
                 Money(){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', 5, 1.85);} else { return 0; } },
@@ -2824,7 +2824,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 165000; }
             },
-            effect: '<span>High tech robotic machinary can boost the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            effect: '<span>High tech robotic machinery can boost the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
             action(){
                 if (payCosts(actions.tech.automation.cost)){
                     return true;
@@ -4425,6 +4425,28 @@ export const actions = {
             },
             flair(){
                 return `When the testing is over, you will be missed.`;
+            }
+        },
+        quantum_computing: {
+            id: 'tech-quantum_computing',
+            title: 'Quantum Computing',
+            desc: 'Quantum Computing',
+            reqs: { high_tech: 10, nano: 1 },
+            grant: ['high_tech',11],
+            cost: {
+                Knowledge(){ return 435000; },
+                Elerium(){ return 250 },
+                Nano_Tube(){ return 100000 }
+            },
+            effect: `Quantium computing is a greap leap fowards in processing power.`,
+            action(){
+                if (payCosts(actions.tech.quantum_computing.cost)){
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return `It's as cool as it sounds.`;
             }
         },
         uranium: {
@@ -6151,6 +6173,23 @@ export const actions = {
             effect(){ return `With AI controlling your solar swarm you can operate upto 6 satellites per control station.` },
             action(){
                 if (payCosts(actions.tech.swarm_control_ai.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        quantium_swarm: {
+            id: 'tech-quantium_swarm',
+            title: 'Quantium Swarm',
+            desc: 'Quantium Swarm',
+            reqs: { swarm: 2, high_tech: 11 },
+            grant: ['swarm',3],
+            cost: {
+                Knowledge(){ return 465000; }
+            },
+            effect(){ return `By upgrading your swarm plant AI with quantium processors the efficency of the plants are limited only by your capacity for knowledge.` },
+            action(){
+                if (payCosts(actions.tech.quantium_swarm.cost)){
                     return true;
                 }
                 return false;

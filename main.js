@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel } from './vars.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
@@ -292,6 +292,7 @@ else {
 }
 
 setupStats();
+q_check();
 
 var fed = true;
 
@@ -2592,6 +2593,8 @@ function midLoop(){
             global.city.foundry['Plywood'] = 0;
         }
 
+        q_check();
+
         let belt_mining = belt_on['iron_ship'] + belt_on['iridium_ship'];
         if (belt_mining > 0 && global.tech['asteroid'] && global.tech['asteroid'] === 3){
             if (Math.rand(0,250) <= belt_mining){
@@ -2920,6 +2923,21 @@ function longLoop(){
 
     // Save game state
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+}
+
+function q_check(){
+    if (global.tech['high_tech'] && global.tech['high_tech'] >= 11){
+        let k_base = global.resource.Knowledge.max;
+        let k_inc = 250000;
+        let qbits = 0;
+        while (k_base > k_inc){
+            k_base -= k_inc;
+            k_inc *= 1.1;
+            qbits++;
+        }
+        qbits += +(k_base / k_inc).toFixed(2);
+        set_qlevel(qbits);
+    }
 }
 
 function diffCalc(res,period){

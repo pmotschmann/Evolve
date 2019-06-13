@@ -26,6 +26,10 @@ export var p_on = {};
 export var red_on = {};
 export var moon_on = {};
 export var belt_on = {};
+export var quantium_level = 0;
+export function set_qlevel(q_level){
+    quantium_level = q_level;
+} 
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
