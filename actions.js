@@ -4152,7 +4152,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: `<div>despite its dramatic name,</div><div>this does not smash actual worlds together.</div>`
+            flair: `<div>Despite its dramatic name,</div><div>this does not smash actual worlds together.</div>`
         },
         bioscience: {
             id: 'tech-bioscience',
@@ -4491,7 +4491,7 @@ export const actions = {
                 Uranium(){ return 250; },
                 Iridium(){ return 1000; }
             },
-            effect: 'Breeder reactors allow you to more fully consume nuclear fuel which increases the total output of fission reactors.',
+            effect: 'Breeder reactors allow you to more fully consume nuclear fuel, which increases the total output of fission reactors.',
             action(){
                 if (payCosts(actions.tech.breeder_reactor.cost)){
                     return true;
@@ -4652,7 +4652,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 170000; }
             },
-            effect: 'Mass drivers use an electromagnetic rail to launch payloads into orbit and can be used to reduce fuel consumption required by traditional rocket launches.',
+            effect: 'Mass drivers use an electromagnetic rail to launch payloads into orbit, and can be used to reduce fuel consumption required by traditional rocket launches.',
             action(){
                 if (payCosts(actions.tech.mass_driver.cost)){
                     global.city['mass_driver'] = {
@@ -6113,7 +6113,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 250000; }
             },
-            effect(){ return `Manufactoring and deploying swarm satellites are expensive because of the distance from ${races[global.race.species].home}. By establishing automated facilities on ${races[global.race.species].solar.hell} which is much closer to the sun you can lower the costs.` },
+            effect(){ return `Manufacturing and deploying swarm satellites is expensive because of the distance from ${races[global.race.species].home}. By establishing automated facilities on ${races[global.race.species].solar.hell}, which is much closer to the sun, you can lower the costs.` },
             action(){
                 if (payCosts(actions.tech.swarm_plant.cost)){
                     global.space['swarm_plant'] = { count: 0 };
@@ -6148,7 +6148,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 360000; }
             },
-            effect(){ return `With AI controlling your solar swarm you can operate upto 6 satellites per control station.` },
+            effect(){ return `With AI controlling your solar swarm, you can operate up to 6 satellites per control station.` },
             action(){
                 if (payCosts(actions.tech.swarm_control_ai.cost)){
                     return true;
@@ -6281,7 +6281,7 @@ export const actions = {
                 Knowledge(){ return 275000; },
                 Elerium(){ return 20; }
             },
-            effect: `Study the elerium to unlock it's mysteries.`,
+            effect: `Study the elerium to unlock its mysteries.`,
             action(){
                 if (payCosts(actions.tech.elerium_tech.cost)){
                     return true;
@@ -6299,7 +6299,7 @@ export const actions = {
                 Knowledge(){ return 325000; },
                 Elerium(){ return 180; }
             },
-            effect(){ return `Elerium is highly energetic and the prospect of making a power source of it is too good to ignore.` },
+            effect(){ return `Elerium is highly energetic, and the prospect of making a power source out of it is too good to ignore.` },
             action(){
                 if (payCosts(actions.tech.elerium_reactor.cost)){
                     global.space['e_reactor'] = { count: 0, on: 0 };
@@ -6355,7 +6355,7 @@ export const actions = {
                 Neutronium(){ return 2500; },
                 Elerium(){ return 250; },
             },
-            effect(){ return `Scouting outside the solar system will require much more advanced probe designs then what is currently employed.` },
+            effect(){ return `Scouting outside the solar system will require much more advanced probe designs than what is currently employed.` },
             action(){
                 if (payCosts(actions.tech.interstellar.cost)){
                     return true;
