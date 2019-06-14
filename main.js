@@ -566,7 +566,7 @@ function fastLoop(){
 
             // Uranium
             if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                uranium_bd['Coal_Ash'] = (consume / 65 / global_multiplier) + 'v';
+                uranium_bd['Coal_Ash'] = (consume / 65 / global_multiplier);
                 modRes('Uranium', (consume * time_multiplier) / 65);
             }
         }
@@ -1389,6 +1389,7 @@ function fastLoop(){
             let consume_oil = global.city['smelter'].Oil * 0.35;
             iron_smelter = global.city['smelter'].Iron;
             let steel_smelter = global.city['smelter'].Steel;
+            let oil_bonus = global.city['smelter'].Oil;
             while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil ){
                 if (steel_smelter > 0){
                     steel_smelter--;
@@ -1417,6 +1418,7 @@ function fastLoop(){
             }
             while (consume_oil * time_multiplier > global.resource.Oil.amount && consume_oil > 0){
                 consume_oil -= 0.35;
+                oil_bonus--;
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
@@ -1431,6 +1433,10 @@ function fastLoop(){
                 iron_smelter *= 0.9;
             }
 
+            if (oil_bonus > 0){
+                iron_smelter *= 1 + (oil_bonus / 200);
+            }
+
             breakdown.p.consume.Lumber['Smelter'] = -(consume_wood);
             breakdown.p.consume.Coal['Smelter'] = -(consume_coal);
             breakdown.p.consume.Oil['Smelter'] = -(consume_oil);
@@ -1438,6 +1444,12 @@ function fastLoop(){
             modRes('Lumber', -(consume_wood * time_multiplier));
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
+
+            // Uranium
+            if (consume_coal > 0 && global.tech['uranium'] && global.tech['uranium'] >= 3){
+                uranium_bd['Coal_Ash'] = uranium_bd['Coal_Ash'] + (consume_coal / 65 / global_multiplier);
+                modRes('Uranium', (consume_coal * time_multiplier) / 65);
+            }
 
             //Steel Production
             if (global.resource.Steel.display){
@@ -1459,6 +1471,10 @@ function fastLoop(){
                     if (global.tech['smelting'] >= i) {
                         steel_base *= 1.2;
                     }
+                }
+
+                if (oil_bonus > 0){
+                    steel_smelter *= 1 + (oil_bonus / 200);
                 }
 
                 let smelter_output = steel_smelter * steel_base;
@@ -1633,6 +1649,10 @@ function fastLoop(){
         breakdown.p['Copper'] = copper_bd;
         breakdown.p['Titanium'] = titanium_bd;
         
+        if (uranium_bd['Coal_Ash']){
+            uranium_bd['Coal_Ash'] = uranium_bd['Coal_Ash'] + 'v';
+        }
+
         // Coal
         if (global.resource.Coal.display){
             let coal_base = global.civic.coal_miner.workers;

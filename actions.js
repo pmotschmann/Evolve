@@ -6390,13 +6390,31 @@ export const actions = {
             grant: ['genesis',3],
             cost: {
                 Knowledge(){ return 365000; },
-                Mythril(){ return 10000; },
-                Neutronium(){ return 2500; },
+                Titanium(){ return 250000; },
                 Elerium(){ return 250; },
+                Nano_Tube(){ return 200000; },
+                Mythril(){ return 10000; },
             },
             effect(){ return `Scouting outside the solar system will require much more advanced probe designs than what is currently employed.` },
             action(){
                 if (payCosts(actions.tech.interstellar.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        star_dock: {
+            id: 'tech-star_dock',
+            title: 'Star Dock',
+            desc: 'Star Dock',
+            reqs: { genesis: 2 },
+            grant: ['shipyard',1],
+            cost: {
+                Knowledge(){ return 400000; },
+            },
+            effect(){ return `Design space based ship yard which can be used to construct advanced ships.` },
+            action(){
+                if (payCosts(actions.tech.star_dock.cost)){
                     return true;
                 }
                 return false;
@@ -6988,7 +7006,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated><span class="current">Oil {{ Oil }}</span></b-tooltip>`);
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">Oil {{ Oil }}</span></b-tooltip>`);
         let subOil = $('<span class="sub" @click="subOil">&laquo;</span>');
         let addOil = $('<span class="add" @click="addOil">&raquo;</span>');
         fuelTypes.append(subOil);
@@ -7009,60 +7027,96 @@ function smelterModal(modal){
         data: global.city['smelter'],
         methods: {
             subWood(){
-                if (global.city.smelter.Wood > 0){
-                    global.city.smelter.Wood--;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
-                        if (global.city.smelter.Steel > 0){
-                            global.city.smelter.Steel--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Wood > 0){
+                        global.city.smelter.Wood--;
+                        if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                            if (global.city.smelter.Steel > 0){
+                                global.city.smelter.Steel--;
+                            }
+                            else {
+                                global.city.smelter.Iron--;
+                            }
                         }
-                        else {
-                            global.city.smelter.Iron--;
-                        }
+                    }
+                    else {
+                        break;
                     }
                 }
             },
             addWood(){
-                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
-                    global.city.smelter.Wood++;
-                    global.city.smelter.Iron++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                        global.city.smelter.Wood++;
+                        global.city.smelter.Iron++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             subCoal(){
-                if (global.city.smelter.Coal > 0){
-                    global.city.smelter.Coal--;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
-                        if (global.city.smelter.Steel > 0){
-                            global.city.smelter.Steel--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Coal > 0){
+                        global.city.smelter.Coal--;
+                        if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                            if (global.city.smelter.Steel > 0){
+                                global.city.smelter.Steel--;
+                            }
+                            else {
+                                global.city.smelter.Iron--;
+                            }
                         }
-                        else {
-                            global.city.smelter.Iron--;
-                        }
+                    }
+                    else {
+                        break;
                     }
                 }
             },
             addCoal(){
-                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
-                    global.city.smelter.Coal++;
-                    global.city.smelter.Iron++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                        global.city.smelter.Coal++;
+                        global.city.smelter.Iron++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             subOil(){
-                if (global.city.smelter.Oil > 0){
-                    global.city.smelter.Oil--;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
-                        if (global.city.smelter.Steel > 0){
-                            global.city.smelter.Steel--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Oil > 0){
+                        global.city.smelter.Oil--;
+                        if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                            if (global.city.smelter.Steel > 0){
+                                global.city.smelter.Steel--;
+                            }
+                            else {
+                                global.city.smelter.Iron--;
+                            }
                         }
-                        else {
-                            global.city.smelter.Iron--;
-                        }
+                    }
+                    else {
+                        break;
                     }
                 }
             },
             addOil(){
-                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
-                    global.city.smelter.Oil++;
-                    global.city.smelter.Iron++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                        global.city.smelter.Oil++;
+                        global.city.smelter.Iron++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             ironLabel(){
@@ -7086,23 +7140,35 @@ function smelterModal(modal){
                 return `Smelt Steel, consumes 0.25 Coal and 2 Iron per second but produces ${boost} Steel`;
             },
             ironSmelting(){
-                let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
-                if (global.city.smelter.Iron + global.city.smelter.Steel < count){
-                    global.city.smelter.Iron++;
-                }
-                else if (global.city.smelter.Iron < count && global.city.smelter.Steel > 0){
-                    global.city.smelter.Iron++;
-                    global.city.smelter.Steel--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+                    if (global.city.smelter.Iron + global.city.smelter.Steel < count){
+                        global.city.smelter.Iron++;
+                    }
+                    else if (global.city.smelter.Iron < count && global.city.smelter.Steel > 0){
+                        global.city.smelter.Iron++;
+                        global.city.smelter.Steel--;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             steelSmelting(){
-                let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
-                if (global.city.smelter.Iron + global.city.smelter.Steel < count){
-                    global.city.smelter.Steel++;
-                }
-                else if (global.city.smelter.Steel < count && global.city.smelter.Iron > 0){
-                    global.city.smelter.Steel++;
-                    global.city.smelter.Iron--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+                    if (global.city.smelter.Iron + global.city.smelter.Steel < count){
+                        global.city.smelter.Steel++;
+                    }
+                    else if (global.city.smelter.Steel < count && global.city.smelter.Iron > 0){
+                        global.city.smelter.Steel++;
+                        global.city.smelter.Iron--;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             buildLabel: function(type){
@@ -7112,10 +7178,15 @@ function smelterModal(modal){
                         break;
                     case 'coal':
                         let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
-                        return `Consume ${coal_fuel} Coal/s to fuel a smelter`;
+                        if (global.tech['uranium'] && global.tech['uranium'] >= 3){
+                            return `Burn ${coal_fuel} Coal/s to fuel a smelter and produce trace amounts of uranium.`;
+                        }
+                        else {
+                            return `Burn ${coal_fuel} Coal/s to fuel a smelter`;
+                        }
                         break;
                     case 'oil':
-                        return 'Consume 0.35 Oil/s to fuel a smelter';
+                        return 'Burn 0.35 Oil/s to fuel a smelter. Provides a minor output boost.';
                         break;
                 }
             }
