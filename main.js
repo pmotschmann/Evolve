@@ -2007,15 +2007,16 @@ function midLoop(){
                 caps['Crates'] -= global.resource[res].crates;
             });
         }
+        if (global.space['garage']){
+            let g_vol = global.tech['supercollider'] ? 20 + global.tech['supercollider'] : 20;
+            caps['Containers'] += (global.space['garage'].count * g_vol);
+        }
         if (global.city['warehouse']){
             let volume = global.tech['steel_container'] >= 2 ? 20 : 10;
             if (global.tech['particles'] && global.tech['particles'] >= 2){
                 volume *= 2;
             }
             caps['Containers'] += (global.city['warehouse'].count * volume);
-            if (global.space['garage']){
-                caps['Containers'] += (global.space['garage'].count * 20);
-            }
             Object.keys(caps).forEach(function (res){
                 caps['Containers'] -= global.resource[res].containers;
             });
@@ -2144,7 +2145,7 @@ function midLoop(){
             bd_Coal[label] = gain+'v';
         }
         if (global.space['garage']){
-            let multiplier = 1;
+            let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
             let gain = (global.space.garage.count * (spatialReasoning(6500) * multiplier));
             caps['Copper'] += gain;
             bd_Copper['Garage'] = gain+'v';
@@ -2673,12 +2674,15 @@ function longLoop(){
                     }
                 }
                 if (global.resource[res].display && Math.rand(0,10) === 0){
-                    let max = r_val * 2;
+                    let max = r_val * 3;
                     let min = r_val / 2;
                     let variance = (Math.rand(0,200) - 100) / 100;
                     let new_value = global.resource[res].value + variance;
-                    if (new_value < min || new_value > max){
+                    if (new_value < min){
                         new_value = r_val;
+                    }
+                    else if (new_value > max){
+                        new_value = max - r_val;
                     }
                     global.resource[res].value = new_value;
                 }

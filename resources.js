@@ -14,14 +14,14 @@ export const resource_values = {
     Uranium: 550,
     Steel: 100,
     Titanium: 150,
-    Alloy: 275,
-    Polymer: 225,
-    Iridium: 380,
+    Alloy: 350,
+    Polymer: 250,
+    Iridium: 420,
     //Deuterium: 450,
     'Helium_3': 620,
     Elerium: 2000,
-    Neutronium: 1000,
-    Nano_Tube: 1500,
+    Neutronium: 1500,
+    Nano_Tube: 750,
 };
 
 export const tradeRatio = {

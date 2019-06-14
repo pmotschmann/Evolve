@@ -30,7 +30,12 @@ const arpaProjects = {
         effect() {
             let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? 8 : 4;
             if (global.tech['storage'] >= 6){
-                return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacity by 5%.`;
+                if (global.tech['particles'] && global.tech['particles'] >= 4){
+                    return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse and garage capacity by 5%.`;
+                }
+                else {
+                    return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacity by 5%.`;
+                }
             }
             else {
                 return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%.`;

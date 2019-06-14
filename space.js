@@ -442,7 +442,8 @@ const spaceProjects = {
                 Sheet_Metal(){ return costMultiplier('garage', 1500, 1.28); }
             },
             effect(){
-                let multiplier = 1;
+                let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
+                let containers = global.tech['supercollider'] ? 20 + global.tech['supercollider'] : 20;
                 let copper = +(spatialReasoning(6500) * multiplier).toFixed(0);
                 let iron = +(spatialReasoning(5500) * multiplier).toFixed(0);
                 let cement = +(spatialReasoning(6000) * multiplier).toFixed(0);
@@ -450,7 +451,7 @@ const spaceProjects = {
                 let titanium = +(spatialReasoning(3500) * multiplier).toFixed(0);
                 let alloy = +(spatialReasoning(2500) * multiplier).toFixed(0);
                 
-                let desc = `<div>+20 Max Containers</div><div>+${copper} Max Copper</div><div>+${iron} Max Iron</div><div>+${cement} Max Cement</div><div>+${steel} Max Steel</div><div>+${titanium} Max Titanium</div><div>+${alloy} Max Alloy</div>`;
+                let desc = `<div>+${containers} Max Containers</div><div>+${copper} Max Copper</div><div>+${iron} Max Iron</div><div>+${cement} Max Cement</div><div>+${steel} Max Steel</div><div>+${titanium} Max Titanium</div><div>+${alloy} Max Alloy</div>`;
                 if (global.resource.Nano_Tube.display){
                     let nano = +(spatialReasoning(25000) * multiplier).toFixed(0);
                     desc = desc + `<div>+${nano} Max Nano Tubes</div>`

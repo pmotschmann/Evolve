@@ -5643,6 +5643,23 @@ export const actions = {
                 return false;
             }
         },
+        dimensional_compression: {
+            id: 'tech-dimensional_compression',
+            title: 'Dimension Compression',
+            desc: 'Dimensional Compression',
+            reqs: { particles: 3, science: 11, supercollider: 3 },
+            grant: ['particles',4],
+            cost: {
+                Knowledge(){ return 425000; }
+            },
+            effect: 'Supercollider space compression effect now applies to garages.',
+            action(){
+                if (payCosts(actions.tech.higgs_boson.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         theology: {
             id: 'tech-theology',
             title: 'Theology',
