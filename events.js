@@ -1,5 +1,6 @@
 import { global } from './vars.js';
 import { races } from './races.js';
+import { unlockAchieve } from './achieve.js';
 
 export const events = {
     dna_replication: {
@@ -102,6 +103,15 @@ export const events = {
             else {
                 return `${wounded} soldiers were wounded and ${killed} soldiers were killed by a terrorist attack against your security forces.`;
             }
+        }
+    },
+    doom: {
+        reqs: {
+            tech: 'wsc'
+        },
+        effect: function(){
+            unlockAchieve('doomed');
+            return `A portal to hell was accidently opened on ${races[global.race.species].solar.dwarf}, a lone space marine wearing green armor somehow managed to stop the demonic invasion.`;
         }
     },
     ruins: {

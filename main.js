@@ -1876,6 +1876,13 @@ function fastLoop(){
             $('#powerMeter').addClass('neutral');
             $('#powerMeter').removeClass('high');
         }
+
+        if (p_on['world_controller'] && p_on['world_controller'] > 0){
+            global.tech['wsc'] = 1;
+        }
+        else {
+            global.tech['wsc'] = 0;
+        }
     }
     
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
@@ -2126,6 +2133,7 @@ function midLoop(){
         if (global.space['living_quarters']){
             caps[races[global.race.species].name] += red_on['living_quarters'];
             lCaps['colonist'] += red_on['living_quarters'];
+            bd_Citizen[`${races[global.race.species].solar.red}`] = red_on['living_quarters'] + 'v';
         }
         if (global.city['lodge']){
             caps[races[global.race.species].name] += global.city['lodge'].count;

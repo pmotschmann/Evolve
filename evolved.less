@@ -290,54 +290,6 @@ a {
         }
     }
     
-    > div.popper {
-        margin-top: .125rem;
-        text-align: center;
-        padding: 1rem;
-        max-width: 18rem;
-        border-radius: .25rem;
-        line-height: 1.3125rem;
-
-        .resBD {
-            span {
-                display: inline-block;
-            }
-            :first-child {
-                width: 6rem;
-                text-align: left;
-            }
-            :nth-child(2) {
-                width: 4rem;
-                text-align: center;
-            }
-        }
-        .rate {
-            border-top: 1px solid;
-            span {
-                display: inline-block;
-            }
-            :first-child {
-                width: 4rem;
-                text-align: left;
-                margin-left: .5rem;
-            }
-            :nth-child(2) {
-                width: 6rem;
-                text-align: right;
-                margin-right: .5rem;
-            }
-        }
-        > .flair {
-            margin-top: .5rem;
-            font-size: .75rem;
-            text-align: right;
-            line-height: .75rem;
-        }
-        &.flair {
-            padding-bottom: .25rem;
-        }
-    }
-    
     .job {
         margin-left: 1rem;
         display: flex;
@@ -604,6 +556,68 @@ a {
     }
     .tradeTotal.nt {
         margin-left: 12rem;
+    }
+}
+
+.modal .action {
+    .main .content .action();
+}
+
+.modal .actionSpace {
+    .action a.button {
+        margin: 1rem .5rem 0;
+    }
+    min-width: 38rem;
+    min-height: 4.5rem;
+    border-radius: 1rem;
+}
+
+.main > div.popper,
+body .modal > div.popper {
+    margin-top: .125rem;
+    text-align: center;
+    padding: 1rem;
+    max-width: 18rem;
+    border-radius: .25rem;
+    line-height: 1.3125rem;
+
+    .resBD {
+        span {
+            display: inline-block;
+        }
+        :first-child {
+            width: 6rem;
+            text-align: left;
+        }
+        :nth-child(2) {
+            width: 4rem;
+            text-align: center;
+        }
+    }
+    .rate {
+        border-top: 1px solid;
+        span {
+            display: inline-block;
+        }
+        :first-child {
+            width: 4rem;
+            text-align: left;
+            margin-left: .5rem;
+        }
+        :nth-child(2) {
+            width: 6rem;
+            text-align: right;
+            margin-right: .5rem;
+        }
+    }
+    > .flair {
+        margin-top: .5rem;
+        font-size: .75rem;
+        text-align: right;
+        line-height: .75rem;
+    }
+    &.flair {
+        padding-bottom: .25rem;
     }
 }
 
@@ -998,13 +1012,6 @@ html.dark {
                 }
             }
         }
-
-        > div.popper {
-            > div:nth-child(2),
-            > div:nth-child(3) {
-                border-top: solid .0625rem black;
-            }
-        }
     
         .government {
             .header {
@@ -1020,6 +1027,14 @@ html.dark {
 
         .market-header {
             border-bottom: #ccc solid 1px;
+        }
+    }
+
+    .main > div.popper,
+    body .modal > div.popper {
+        > div:nth-child(2),
+        > div:nth-child(3) {
+            border-top: solid .0625rem black;
         }
     }
 
@@ -1052,8 +1067,16 @@ html.dark {
             border-top: #ccc solid .0625rem;
         }
     }
+    .modal .actionSpace {
+        background-color: #1f2424;
+    }
 }
 
+.dark .modal .action {
+    .darkTheme .main .content .action();
+}
+
+.lightTheme,
 html.light {
     body {
         color: #000000;
@@ -1260,6 +1283,13 @@ html.light {
     .progress::-moz-progress-bar {
         background-color: #898989;
     }
+    .modal .actionSpace {
+        background-color: #fff;
+    }
+}
+
+.light .modal .action {
+    .lightTheme .main .content .action();
 }
 
 .nightTheme,
@@ -1288,18 +1318,19 @@ html.night {
                 }
             }
         }
-        > div.popper {
-            background-color: #0f0f0f !important;
-            color: #fff !important;
-            border: .0625rem solid #999;
+    }
+    .main > div.popper,
+    body .modal > div.popper {
+        background-color: #0f0f0f !important;
+        color: #fff !important;
+        border: .0625rem solid #999;
 
-            > div:nth-child(2),
-            > div:nth-child(3) {
-                border-top: solid .0625rem #999;
-            }
-            .has-text-dark {
-                color: #fff !important;
-            }
+        > div:nth-child(2),
+        > div:nth-child(3) {
+            border-top: solid .0625rem #999;
+        }
+        .has-text-dark {
+            color: #fff !important;
         }
     }
     .market-item:nth-child(odd){
@@ -1319,8 +1350,16 @@ html.night {
         color: #fff;
         border: .0625rem solid #999;
     }
+    .modal .actionSpace {
+        background-color: #000;
+    }
 }
 
+.night .modal .action {
+    .nightTheme .main .content .action();
+}
+
+.redgreenTheme,
 html.redgreen {
     .nightTheme();
     .has-text-success {
@@ -1360,10 +1399,11 @@ html.redgreen {
                 }
             }
         }
-        .popper {
-            .has-text-danger {
-                color: #aa00aa !important;
-            }
+    }
+    .main > div.popper,
+    body .modal > div.popper {
+        .has-text-danger {
+            color: #aa00aa !important;
         }
     }
     #powerStatus .has-text-warning {
@@ -1409,4 +1449,8 @@ html.redgreen {
             #000000 20px
         );
     }
+}
+
+.redgreen .modal .action {
+    .redgreenTheme .main .content .action();
 }

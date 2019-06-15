@@ -70,6 +70,11 @@ var achievements = {
         desc: `Inspired your people with your leadership abilities`,
         flair: `What is steel compared to the hand that wields it?`
     },
+    doomed: {
+        name: `Doomed`,
+        desc: `Stopped an invasion from hell`,
+        flair: `Shoot it until it dies`
+    },
     mass_extinction: {
         name: `Mass Extinction`,
         desc: `Led all civilizations to destruction`,

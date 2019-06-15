@@ -948,6 +948,32 @@ const spaceProjects = {
                 return false;
             }
         },
+        star_dock: {
+            id: 'space-star_dock',
+            title(){ return `Space Dock`; },
+            desc(){
+                return `<div>Space Dock<div>`;
+            },
+            reqs: { genesis: 3 },
+            cost: {
+                Money(){ return global.space.star_dock.count === 0 ? 1500000 : 0; },
+                Steel(){ return global.space.star_dock.count === 0 ? 500000 : 0; },
+                Helium_3(){ return global.space.star_dock.count === 0 ? Math.round(fuel_adjust(10000)) : 0; },
+                Nano_Tube(){ return global.space.star_dock.count === 0 ? 250000 : 0; },
+                Mythril(){ return global.space.star_dock.count === 0 ? 10000 : 0; },
+            },
+            effect(){
+                return `<div>Constructs the Genesis Ship</div>`;
+            },
+            special: true,
+            action(){
+                if (global.space.star_dock.count === 0 && payCosts(spaceProjects.spc_gas.star_dock.cost)){
+                    incrementStruct('star_dock');
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     spc_gas_moon: {
         info: {
@@ -1408,6 +1434,7 @@ const structDefinitions = {
     swarm_satellite: { count: 0 },
     gas_mining: { count: 0, on: 0 },
     gas_storage: { count: 0 },
+    star_dock: { count: 0, ship: 0, probe: 0, template: 'human' },
     outpost: { count: 0, on: 0 },
     oil_extractor: { count: 0, on: 0 },
     space_station: { count: 0, on: 0, support: 0, s_max: 0 },

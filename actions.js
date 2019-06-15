@@ -5051,7 +5051,7 @@ export const actions = {
         jackhammer_mk2: {
             id: 'tech-jackhammer_mk2',
             title: 'Electric Jackhammer',
-            desc: 'Modern Jackhammers',
+            desc: 'Electric Jackhammers',
             reqs: { pickaxe: 4, high_tech: 4},
             grant: ['pickaxe',5],
             cost: {
@@ -6589,39 +6589,60 @@ export const actions = {
                 return false;
             }
         },
-        interstellar: {
-            id: 'tech-interstellar',
-            title: 'Interstellar Probes',
-            desc: 'Interstellar Probes',
-            reqs: { genesis: 2 },
+        star_dock: {
+            id: 'tech-star_dock',
+            title: 'Star Dock',
+            desc: 'Star Dock',
+            reqs: { genesis: 2, space: 5 },
             grant: ['genesis',3],
             cost: {
-                Knowledge(){ return 365000; },
-                Titanium(){ return 250000; },
-                Elerium(){ return 250; },
-                Nano_Tube(){ return 200000; },
-                Mythril(){ return 10000; },
+                Knowledge(){ return 380000; },
             },
-            effect(){ return `Scouting outside the solar system will require much more advanced probe designs than what is currently employed.` },
+            effect(){ return `Design a space based ship yard which can be used to construct advanced ships.` },
             action(){
-                if (payCosts(actions.tech.interstellar.cost)){
+                if (payCosts(actions.tech.star_dock.cost)){
+                    global.space['star_dock'] = {
+                        count: 0,
+                        ship: 0,
+                        probe: 0,
+                        template: global.race.species
+                    };
                     return true;
                 }
                 return false;
             }
         },
-        star_dock: {
-            id: 'tech-star_dock',
-            title: 'Star Dock',
-            desc: 'Star Dock',
-            reqs: { genesis: 2 },
-            grant: ['shipyard',1],
+        interstellar: {
+            id: 'tech-interstellar',
+            title: 'Interstellar Probes',
+            desc: 'Interstellar Probes',
+            reqs: { genesis: 3 },
+            grant: ['genesis',4],
             cost: {
                 Knowledge(){ return 400000; },
             },
-            effect(){ return `Design space based ship yard which can be used to construct advanced ships.` },
+            effect(){ return `Scouting outside the solar system will require much more advanced probe designs than what is currently employed.` },
             action(){
-                if (payCosts(actions.tech.star_dock.cost)){
+                if (payCosts(actions.tech.interstellar.cost)){
+                    global.starDock['probes'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        genesis_ship: {
+            id: 'tech-genesis_ship',
+            title: 'Genesis Ship',
+            desc: 'Genesis Ship',
+            reqs: { genesis: 4 },
+            grant: ['genesis',5],
+            cost: {
+                Knowledge(){ return 425000; },
+            },
+            effect(){ return `Design the genesis ship which will be used to bioseed a far away planet.` },
+            action(){
+                if (payCosts(actions.tech.genesis_ship.cost)){
+                    global.starDock['seeder'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -6646,7 +6667,65 @@ export const actions = {
         },
     },
     genes: arpa('GeneTech'),
-    space: spaceTech()
+    space: spaceTech(),
+    starDock: {
+        probes: {
+            id: 'spcdock-probes',
+            title: 'Space Probe',
+            desc(){
+                return `<div>Interstellar Probe</div>`;
+            },
+            reqs: { genesis: 4 },
+            cost: {
+                Money(){ return costMultiplier('probes', 500000, 1.25,'starDock'); },
+                Alloy(){ return costMultiplier('probes', 125000, 1.25,'starDock'); },
+                Polymer(){ return costMultiplier('probes', 150000, 1.25,'starDock'); },
+                Iridium(){ return costMultiplier('probes', 20000, 1.25,'starDock'); },
+                Mythril(){ return costMultiplier('probes', 10000, 1.25,'starDock'); },
+            },
+            effect(){
+                return `<div>Each interstellar probe increases the number of target worlds your bioseeder ship can scout by one.</div>`;
+            },
+            action(){
+                if (payCosts(actions.starDock.probes.cost)){
+                    global.starDock.probes.count++;
+                    return true;
+                }
+                return false;
+            },
+        },
+        seeder: {
+            id: 'spcdock-seeder',
+            title: 'Bioseeder Ship',
+            desc(){
+                if (global.starDock.seeder.count >= 100){
+                    return `<div>Bioseeder Ship</div><div class="has-text-special">Status: Complete</div>`;
+                }
+                else {
+                    return `<div>Bioseeder Ship</div><div class="has-text-special">Requires 100 segments</div>`;
+                }
+            },
+            reqs: { genesis: 5 },
+            cost: {
+                Money(){ return global.starDock.seeder.count < 100 ? 100000 : 0; },
+                Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
+                Neutronium(){ return global.starDock.seeder.count < 100 ? 300 : 0; },
+                Elerium(){ return global.starDock.seeder.count < 100 ? 10 : 0; },
+                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
+            },
+            effect(){
+                let remain = global.starDock.seeder.count < 100 ? `${100 - global.starDock.seeder.count} segments remaining`: `The ship is complete`;
+                return `<div>The "Genesis" ship. This is an automated ship that will travel for hundreds of years to reach a target and bioseed it with new life.</div><div class="has-text-special">${remain}</div>`;
+            },
+            action(){
+                if (global.starDock.seeder.count < 100 && payCosts(actions.starDock.seeder.cost)){
+                    global.starDock.seeder.count++;
+                    return true;
+                }
+                return false;
+            },
+        },
+    }
 };
 
 export function storageMultipler(){
@@ -6919,7 +6998,7 @@ export function setAction(c_action,action,type,old){
                 var checkExist = setInterval(function() {
                    if ($('#modalBox').length > 0) {
                       clearInterval(checkExist);
-                      drawModal(action,type);
+                      drawModal(c_action,type);
                    }
                 }, 50);
             },
@@ -6941,9 +7020,10 @@ export function setAction(c_action,action,type,old){
         }
     });
     vues[id].$mount('#'+id);
+    let pop_target = action === 'starDock' ? 'body .modal' : '#main';
     $('#'+id).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
-            $('#main').append(popper);
+            $(pop_target).append(popper);
             actionDesc(popper,c_action,old);
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
@@ -7135,7 +7215,10 @@ function checkCosts(costs){
     return test;
 }
 
-function costMultiplier(structure,base,mutiplier){
+function costMultiplier(structure,base,mutiplier,cat){
+    if (!cat){
+        cat = 'city';
+    }
     if (global.race['small']){ mutiplier -= 0.01; }
     else if (global.race['large']){ mutiplier += 0.01; }
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
@@ -7164,16 +7247,17 @@ function costMultiplier(structure,base,mutiplier){
     if (mutiplier < 0.01){
         mutiplier = 0.01;
     }
-    var count = global.city[structure] ? global.city[structure].count : 0;
+    var count = global[cat][structure] ? global[cat][structure].count : 0;
     return Math.round((mutiplier ** count) * base);
 }
 
-function drawModal(action,type){
-    if (action === 'space' && type === 'red_factory'){
-        action = 'city';
+function drawModal(c_action,type){
+    if (type === 'red_factory'){
         type = 'factory';
     }
-    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${actions[action][type].title}</p>`));
+
+    let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}</p>`));
     
     var body = $('<div id="specialModal" class="modalBody"></div>');
     $('#modalBox').append(body);
@@ -7185,6 +7269,28 @@ function drawModal(action,type){
         case 'factory':
             factoryModal(body);
             break;
+        case 'star_dock':
+            starDockmodal(body);
+            break;
+    }
+}
+
+function starDockmodal(modal){
+    if (global.tech['genesis'] < 4){
+        let warn = $('<div><span class="has-text-warning">You must complete plans for your interstellar craft first</span></div>');
+        modal.append(warn);
+        return;
+    }
+
+    let dock = $(`<div id="starDock" class="actionSpace"></div>`);
+    modal.append(dock);
+
+    let c_action = actions.starDock.probes;
+    setAction(c_action,'starDock','probes');
+    
+    if (global.tech['genesis'] >= 5){
+        let c_action = actions.starDock.seeder;
+        setAction(c_action,'starDock','seeder');
     }
 }
 

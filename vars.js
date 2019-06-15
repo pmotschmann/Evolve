@@ -200,6 +200,10 @@ if (!global['space']){
     global['space'] = {};
 }
 
+if (!global['starDock']){
+    global['starDock'] = {};
+}
+
 if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
