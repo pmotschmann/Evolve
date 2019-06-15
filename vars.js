@@ -262,6 +262,10 @@ if (!global.city['morale']){
     };
 }
 
+if (!global.city.morale['leadership']){
+    global.city.morale['leadership'] = 0;
+}
+
 if (!global.city.morale['warmonger']){
     global.city.morale['warmonger'] = 0;
 }

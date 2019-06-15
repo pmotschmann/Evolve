@@ -50,6 +50,26 @@ var achievements = {
         desc: `Colonize another planet`,
         flair: `That's one small step for a ${global.race.species}...`
     },
+    world_domination: {
+        name: `World Domination`,
+        desc: `Conquered the world through military force`,
+        flair: `All those games of RISK finally paid off`
+    },
+    illuminati: {
+        name: `Illuminati`,
+        desc: `Seized control of the world through influential dominance`,
+        flair: `To rule from the shadows`
+    },
+    syndicate: {
+        name: `Syndicate`,
+        desc: `Used your wealth to execute a hostile takeover of the world`,
+        flair: `Caveat emptor`
+    },
+    cult_of_personality: {
+        name: `Cult of Personality`,
+        desc: `Inspired your people with your leadership abilities`,
+        flair: `What is steel compared to the hand that wields it?`
+    },
     mass_extinction: {
         name: `Mass Extinction`,
         desc: `Led all civilizations to destruction`,

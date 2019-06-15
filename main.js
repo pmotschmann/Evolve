@@ -97,6 +97,10 @@ $('#morale').on('mouseover',function(){
         let type = global.city.morale.stress > 0 ? 'success' : 'danger';
         popper.append(`<p>Stress<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
     }
+    if (global.city.morale.leadership !== 0){
+        let type = global.city.morale.leadership > 0 ? 'success' : 'danger';
+        popper.append(`<p>Leadership<span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
+    }
     if (global.city.morale.warmonger !== 0){
         let type = global.city.morale.warmonger > 0 ? 'success' : 'danger';
         popper.append(`<p>Warmonger<span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
@@ -118,7 +122,7 @@ $('#morale').on('mouseover',function(){
         let type = global.city.morale.tax > 0 ? 'success' : 'danger';
         popper.append(`<p>Taxes<span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
     }
-    let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax;
+    let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership;
     if (total > moraleCap || total < 50){
         popper.append(`<div>Current<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
     }
@@ -343,6 +347,10 @@ function fastLoop(){
         breakdown.p['Global'][global.race['no_plasmid'] ? 'Faith' : 'Plasmid'] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();
     }
+    if (global.tech['world_control']){
+        breakdown.p['Global']['Unification'] = '25%';
+        global_multiplier += 0.25;
+    }
 
     breakdown.p['consume'] = {
         Money: {},
@@ -439,6 +447,14 @@ function fastLoop(){
         }
         else {
             global.city.morale.season = 0;
+        }
+
+        if (global.tech['m_boost']){
+            global.city.morale.leadership = 20;
+            morale += 20;
+        }
+        else {
+            global.city.morale.leadership = 0;
         }
 
         let weather_morale = 0;
@@ -872,6 +888,7 @@ function fastLoop(){
         if (global.civic.taxes.tax_rate < 20){
             moraleCap += 10 - Math.floor(global.civic.taxes.tax_rate / 2);
         }
+
         if (morale < 50){
             morale = 50;
         }
@@ -1610,7 +1627,7 @@ function fastLoop(){
                 let space_iron = 0;
                 
                 if (belt_on['iron_ship']){
-                    space_iron = belt_on['iron_ship'] * 2;
+                    space_iron = belt_on['iron_ship'] * (global.tech.asteroid >= 6 ? 3 : 2);
                 }
 
                 let delta = (iron_base + space_iron) * smelter_mult * power_mult;
@@ -1727,7 +1744,7 @@ function fastLoop(){
         }
 
         if (belt_on['iridium_ship']){
-            let iridium_base = belt_on['iridium_ship'] * 0.055;
+            let iridium_base = belt_on['iridium_ship'] * (global.tech.asteroid >= 6 ? 0.08 : 0.055);
             let delta = iridium_base * hunger * global_multiplier;
             iridium_bd['Iridium_Ship'] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
@@ -1770,7 +1787,7 @@ function fastLoop(){
         // Elerium
         let elerium_bd = {};
         if (belt_on['elerium_ship']){
-            let elerium_base = belt_on['elerium_ship'] * 0.005;
+            let elerium_base = belt_on['elerium_ship'] * (global.tech.asteroid >= 6 ? 0.0075 : 0.005);
             let delta = elerium_base * hunger * global_multiplier;
             elerium_bd['Elerium_Ship'] = elerium_base + 'v';
             modRes('Elerium', delta * time_multiplier);
@@ -1994,11 +2011,15 @@ function midLoop(){
             }
         }
         if (global.city['wharf']){
-            caps['Crates'] += (global.city['wharf'].count * 10);
-            caps['Containers'] += (global.city['wharf'].count * 10);
+            let vol = global.tech['world_control'] ? 15 : 10
+            caps['Crates'] += (global.city['wharf'].count * vol);
+            caps['Containers'] += (global.city['wharf'].count * vol);
         }
         if (global.city['storage_yard']){
             let size = global.tech.container >= 3 ? 20 : 10;
+            if (global.tech['world_control']){
+                size += 10;
+            }
             if (global.tech['particles'] && global.tech['particles'] >= 2){
                 size *= 2;
             }
@@ -2009,10 +2030,16 @@ function midLoop(){
         }
         if (global.space['garage']){
             let g_vol = global.tech['supercollider'] ? 20 + global.tech['supercollider'] : 20;
+            if (global.tech['world_control']){
+                g_vol += 10;
+            }
             caps['Containers'] += (global.space['garage'].count * g_vol);
         }
         if (global.city['warehouse']){
             let volume = global.tech['steel_container'] >= 2 ? 20 : 10;
+            if (global.tech['world_control']){
+                volume += 10;
+            }
             if (global.tech['particles'] && global.tech['particles'] >= 2){
                 volume *= 2;
             }
@@ -2146,6 +2173,8 @@ function midLoop(){
         }
         if (global.space['garage']){
             let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
+            multiplier *= global.tech['world_control'] ? 2 : 1;
+
             let gain = (global.space.garage.count * (spatialReasoning(6500) * multiplier));
             caps['Copper'] += gain;
             bd_Copper['Garage'] = gain+'v';
@@ -2199,39 +2228,47 @@ function midLoop(){
         }
         if (global.city['oil_depot']){
             let gain = (global.city['oil_depot'].count * spatialReasoning(1000));
+            gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Oil'] += gain;
             bd_Oil['Fuel_Depot'] = gain+'v';
             if (global.tech['uranium'] >= 2){
                 gain = (global.city['oil_depot'].count * spatialReasoning(250));
+                gain *= global.tech['world_control'] ? 1.5 : 1;
                 caps['Uranium'] += gain;
                 bd_Uranium['Fuel_Depot'] = gain+'v';
             }
             if (global.resource['Helium_3'].display){
                 gain = (global.city['oil_depot'].count * spatialReasoning(400));
+                gain *= global.tech['world_control'] ? 1.5 : 1;
                 caps['Helium_3'] += gain;
                 bd_Helium['Fuel_Depot'] = gain+'v';
             }
         }
         if (global.space['propellant_depot']){
             let gain = (global.space['propellant_depot'].count * spatialReasoning(1250));
+            gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Oil'] += gain;
             bd_Oil['Orbit_Depot'] = gain+'v';
             if (global.resource['Helium_3'].display){
                 gain = (global.space['propellant_depot'].count * spatialReasoning(1000));
+                gain *= global.tech['world_control'] ? 1.5 : 1;
                 caps['Helium_3'] += gain;
                 bd_Helium['Orbit_Depot'] = gain+'v';
             }
         }
         if (global.space['gas_storage']){
             let gain = (global.space['gas_storage'].count * spatialReasoning(3500));
+            gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Oil'] += gain;
             bd_Oil[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
 
             gain = (global.space['gas_storage'].count * spatialReasoning(2500));
+            gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Helium_3'] += gain;
             bd_Helium[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
 
             gain = (global.space['gas_storage'].count * spatialReasoning(1000));
+            gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Uranium'] += gain;
             bd_Uranium[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
         }

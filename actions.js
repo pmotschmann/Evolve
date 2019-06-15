@@ -3,7 +3,7 @@ import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineGarrison } from './civics.js';
+import { defineGarrison, buildGarrison, armyRating } from './civics.js';
 import { spaceTech, space } from './space.js';
 import { arpa, gainGene } from './arpa.js';
 
@@ -1308,6 +1308,9 @@ export const actions = {
             },
             effect(){
                 let cap = global.tech.container >= 3 ? 20 : 10;
+                if (global.tech['world_control']){
+                    cap += 10;
+                }
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
@@ -1321,6 +1324,9 @@ export const actions = {
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
                     let cap = global.tech.container >= 3 ? 20 : 10;
+                    if (global.tech['world_control']){
+                        cap += 10;
+                    }
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         cap *= 2;
                     }
@@ -1344,6 +1350,9 @@ export const actions = {
             },
             effect(){
                 let cap = global.tech.steel_container >= 2 ? 20 : 10;
+                if (global.tech['world_control']){
+                    cap += 10;
+                }
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
@@ -1357,6 +1366,9 @@ export const actions = {
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
                     let cap = global.tech['steel_container'] >= 2 ? 20 : 10;
+                    if (global.tech['world_control']){
+                        cap += 10;
+                    }
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         cap *= 2;
                     }
@@ -1778,13 +1790,16 @@ export const actions = {
             },
             effect() { 
                 let oil = spatialReasoning(1000);
+                oil *= global.tech['world_control'] ? 1.5 : 1;
                 let effect = `<div>+${oil} Max Oil.</div>`;
                 if (global.resource['Helium_3'].display){
                     let val = spatialReasoning(400);
+                    val *= global.tech['world_control'] ? 1.5 : 1;
                     effect = effect + `<div>+${val} Max Helium-3.</div>`;
                 }
                 if (global.tech['uranium'] >= 2){
                     let val = spatialReasoning(250);
+                    val *= global.tech['world_control'] ? 1.5 : 1;
                     effect = effect + `<div>+${val} Max Uranium.</div>`;
                 }
                 return effect;
@@ -1792,9 +1807,12 @@ export const actions = {
             action(){
                 if (payCosts(actions.city.oil_depot.cost)){
                     global.city['oil_depot'].count++;
-                    global['resource']['Oil'].max += spatialReasoning(1000);
+                    global['resource']['Oil'].max += spatialReasoning(1000) * (global.tech['world_control'] ? 1.5 : 1);
+                    if (global.resource['Helium_3'].display){
+                        global['resource']['Helium_3'].max += spatialReasoning(400) * (global.tech['world_control'] ? 1.5 : 1);
+                    }
                     if (global.tech['uranium'] >= 2){
-                        global['resource']['Uranium'].max += spatialReasoning(250);
+                        global['resource']['Uranium'].max += spatialReasoning(250) * (global.tech['world_control'] ? 1.5 : 1);
                     }
                     return true;
                 }
@@ -1841,14 +1859,15 @@ export const actions = {
             },
             effect(){
                 let routes = 2;
-                return `<div>+${routes} Trade Routes</div><div>+1% Trade Route Profitability</div><div>+10 Max Crates</div><div>+10 Max Containers</div>`; 
+                let containers = global.tech['world_control'] ? 15 : 10;
+                return `<div>+${routes} Trade Routes</div><div>+1% Trade Route Profitability</div><div>+${containers} Max Crates</div><div>+${containers} Max Containers</div>`; 
             },
             action(){
                 if (payCosts(actions.city.wharf.cost)){
                     global.city['wharf'].count++;
                     global.city.market.mtrade += 2;
-                    global.resource.Crates.max += 10;
-                    global.resource.Containers.max += 10;
+                    global.resource.Crates.max += global.tech['world_control'] ? 15 : 10;
+                    global.resource.Containers.max += global.tech['world_control'] ? 15 : 10;
                     return true;
                 }
                 return false;
@@ -6327,6 +6346,23 @@ export const actions = {
                 return false;
             }
         },
+        laser_mining: {
+            id: 'tech-laser_mining',
+            title: 'Laser Mining',
+            desc: 'Laser Mining',
+            reqs: { asteroid: 5, elerium: 1, high_tech: 9 },
+            grant: ['asteroid',6],
+            cost: {
+                Knowledge(){ return 350000; },
+            },
+            effect: 'Laser mining drills can cut through asteroids quicker then traditional drills.',
+            action(){
+                if (payCosts(actions.tech.laser_mining.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         elerium_tech: {
             id: 'tech-elerium_tech',
             title: 'Elerium Theory',
@@ -6377,6 +6413,137 @@ export const actions = {
             effect(){ return `Neutronium supports make Living Quarters cheaper to produce on ${races[global.race.species].solar.red}.` },
             action(){
                 if (payCosts(actions.tech.neutronium_housing.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        unification: {
+            id: 'tech-unification',
+            title: 'Unification',
+            desc(){ return `${races[global.race.species].home} Unification`; },
+            reqs: { mars: 2 },
+            grant: ['unify',1],
+            cost: {
+                Knowledge(){ return 200000; }
+            },
+            effect(){ return `Come up with a plan to unify the world under your control.`; },
+            action(){
+                if (payCosts(actions.tech.unification.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        wc_conquest: {
+            id: 'tech-wc_conquest',
+            title: 'Conquest',
+            desc(){
+                let military = global.race['no_plasmid'] ? 525 : 600;
+                if (global.race['no_crispr']){
+                    military -= 75;
+                }
+                return `<div>${races[global.race.species].home} Conquest</div><div class="has-text-special">Requires ${military} Army Rating</div>`;
+            },
+            reqs: { unify: 1 },
+            grant: ['unify',2],
+            cost: {},
+            effect(){
+                return `<div>Attempt to conquer the world with your superior military might.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
+            },
+            action(){
+                let rating = global.race['no_plasmid'] ? 525 : 600;
+                if (global.race['no_crispr']){
+                    rating -= 75;
+                }
+                if (armyRating(global.civic.garrison.raid,'army') >= rating){
+                    global.tech['world_control'] = 1;
+                    $('#garrison').empty();
+                    $('#mad').empty();
+                    buildGarrison($('#garrison'));
+                    unlockAchieve(`world_domination`);
+                    return true;
+                }
+                return false;
+            }
+        },
+        wc_morale: {
+            id: 'tech-wc_morale',
+            title: 'Cultural Supremacy',
+            desc(){
+                let morale = global.race['no_plasmid'] ? 140 : 150;
+                if (global.race['no_crispr']){
+                    morale -= 10;
+                }
+                return `<div>${races[global.race.species].home} Cultural Supremacy</div><div class="has-text-special">Requires ${morale}% Morale</div>`;
+            },
+            reqs: { unify: 1 },
+            grant: ['unify',2],
+            cost: {},
+            effect(){
+                return `<div>Use your superior culture to try and take over ${races[global.race.species].home}.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
+            },
+            action(){
+                let morale = global.race['no_plasmid'] ? 140 : 150;
+                if (global.race['no_crispr']){
+                    morale -= 10;
+                }
+                if (global.city.morale.current >= morale){
+                    global.tech['world_control'] = 1;
+                    $('#garrison').empty();
+                    $('#mad').empty();
+                    buildGarrison($('#garrison'));
+                    unlockAchieve(`illuminati`);
+                    return true;
+                }
+                return false;
+            }
+        },
+        wc_money: {
+            id: 'tech-wc_money',
+            title: 'Buy the World',
+            desc(){
+                let price = global.race['no_plasmid'] ? 3 : 5;
+                if (global.race['no_crispr']){
+                    price -= 1;
+                }
+                return `<div>${races[global.race.species].home} Subversion</div><div class="has-text-special">Requires \$${price} Million</div>`;
+            },
+            reqs: { unify: 1 },
+            grant: ['unify',2],
+            cost: {},
+            effect(){
+                return `<div>Attempt to seize control of ${races[global.race.species].home} by funding subversive activities.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
+            },
+            action(){
+                let price = global.race['no_plasmid'] ? 3000000 : 5000000;
+                if (global.race['no_crispr']){
+                    price -= 1000000;
+                }
+                if (global.resource.Money.amount >= price){
+                    global.resource.Money.amount -= price;
+                    global.tech['world_control'] = 1;
+                    $('#garrison').empty();
+                    $('#mad').empty();
+                    buildGarrison($('#garrison'));
+                    unlockAchieve(`syndicate`);
+                    return true;
+                }
+                return false;
+            }
+        },
+        wc_reject: {
+            id: 'tech-wc_reject',
+            title: 'Reject Unity',
+            desc(){ return `Reject Unity`; },
+            reqs: { unify: 1 },
+            grant: ['unify',2],
+            cost: {},
+            effect(){ return `<div>Give up on your plans for world domination. Instead focus on improving your own society</div><div class="has-text-special">Game stays the same, gain a 10% morale bonus.</div>`; },
+            action(){
+                if (payCosts(actions.tech.wc_reject.cost)){
+                    global.tech['m_boost'] = 1;
+                    unlockAchieve(`cult_of_personality`);
                     return true;
                 }
                 return false;
@@ -6470,6 +6637,7 @@ export function storageMultipler(){
     if (global.tech['storage'] >= 6){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
     }
+    multiplier *= global.tech['world_control'] ? 3 : 1;
     return multiplier;
 }
 
