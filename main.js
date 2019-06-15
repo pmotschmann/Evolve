@@ -2953,6 +2953,11 @@ function longLoop(){
                             isOk = false;
                         }
                         break;
+                    case 'notech':
+                        if (global.tech[events[event].reqs[req]]){
+                            isOk = false;
+                        }
+                        break;
                     case 'high_tax_rate':
                         if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
                             isOk = false;

@@ -7467,7 +7467,7 @@ function factoryModal(modal){
             },
             addItem: function(item){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
-                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer < max){
+                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano < max){
                     global.city.factory[item]++;
                 }
             },
@@ -7501,7 +7501,7 @@ function factoryModal(modal){
         },
         filters: {
             on(){
-                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer;
+                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano;
             },
             max(){
                 return global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;

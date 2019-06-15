@@ -54,7 +54,8 @@ export const events = {
     },
     raid: {
         reqs: { 
-            tech: 'military'
+            tech: 'military',
+            notech: 'world_control'
         },
         effect: function(){
             let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
@@ -78,6 +79,28 @@ export const events = {
                 if (res < 0){ res = 0; }
                 global.resource.Money.amount = res;
                 return `Your city was raided, \$${loss} was stolen, ${killed} soldiers were killed and ${wounded} soldiers were wounded.`;
+            }
+        }
+    },
+    terrorist: {
+        reqs: {
+            tech: 'world_control'
+        },
+        effect: function(){            
+            let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
+            let wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+            global.civic.garrison.workers -= killed;
+            global.civic.garrison.wounded += wounded;
+            global.stats.died += killed;
+            if (global.civic.garrison.wounded > global.civic.garrison.workers){
+                global.civic.garrison.wounded = global.civic.garrison.workers;
+            }
+
+            if (killed === 0){
+                return `${wounded} soldiers were wounded by a terrorist attack against your security forces.`;
+            }
+            else {
+                return `${wounded} soldiers were wounded and ${killed} soldiers were killed by a terrorist attack against your security forces.`;
             }
         }
     },

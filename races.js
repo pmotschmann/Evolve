@@ -655,6 +655,10 @@ export const traits = {
         desc: 'Your species is nearsighted and requires bigger font sizes to read.',
         type: 'major',
     },
+    intelligent: { // 
+        desc: '.',
+        type: 'major',
+    },
     regenerative: { // Wounded soldiers heal twice as fast
         desc: 'Your race inherently heals quickly.',
         type: 'major',
