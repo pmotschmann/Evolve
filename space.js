@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, p_on, quantium_level } from './vars.js';
+import { global, vues, poppers, messageQueue, p_on, belt_on, quantium_level } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -744,8 +744,8 @@ const spaceProjects = {
             },
             reqs: { solar: 4, hell: 1 },
             cost: {
-                Money(){ return costMultiplier('swarm_plant', 75000, 1.28); },
-                Iron(){ return costMultiplier('swarm_plant', 65000, 1.28); },
+                Money(){ return costMultiplier('swarm_plant', iron_adjust(75000), 1.28); },
+                Iron(){ return costMultiplier('swarm_plant', iron_adjust(65000), 1.28); },
                 Neutronium(){ return costMultiplier('swarm_plant', 75, 1.28); },
                 Brick(){ return costMultiplier('swarm_plant', 2500, 1.28); },
                 Mythril(){ return costMultiplier('swarm_plant', 100, 1.28); }
@@ -1207,7 +1207,12 @@ const spaceProjects = {
             },
             effect(){
                 let iron = global.tech.asteroid >= 6 ? 3 : 2;
-                return `<div>Requires 1 Space Miner</div><div>+${iron} Iron/s</div>`;
+                if (global.tech['solar'] && global.tech['solar'] >= 5){
+                    return `<div>Requires 1 Space Miner</div><div>+${iron} Iron/s</div><div>Reduces Swarm Plant Iron and Money Costs</div>`;
+                }
+                else {
+                    return `<div>Requires 1 Space Miner</div><div>+${iron} Iron/s</div>`;
+                }
             },
             support: -1,
             powered: 1,
@@ -1502,6 +1507,13 @@ function costMultiplier(action,base,mutiplier){
 function house_adjust(res){
     if (global.tech['space_housing']){
         res *= 0.8 ** global.tech['space_housing'];
+    }
+    return res;
+}
+
+export function iron_adjust(res){
+    if (global.tech['solar'] && global.tech['solar'] >= 5 && belt_on['iron_ship']){
+        res *= 0.95 ** belt_on['iron_ship'];
     }
     return res;
 }

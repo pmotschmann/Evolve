@@ -6186,6 +6186,23 @@ export const actions = {
                 return false;
             }
         },
+        space_sourced: {
+            id: 'tech-space_sourced',
+            title: 'Space Sourced',
+            desc: 'Space Sourced Iron',
+            reqs: { solar: 4, asteroid: 3 },
+            grant: ['solar',5],
+            cost: {
+                Knowledge(){ return 300000; }
+            },
+            effect(){ return `Space sourced iron can reduce the volume needed to construct swarm plants.` },
+            action(){
+                if (payCosts(actions.tech.space_sourced.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         swarm_plant_ai: {
             id: 'tech-swarm_plant_ai',
             title: 'Swarm Plant AI',
