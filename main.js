@@ -1783,6 +1783,9 @@ function fastLoop(){
         let neutronium_bd = {};
         if (p_on['outpost']){
             let n_base = p_on['outpost'] * 0.025;
+            if (global.tech['drone']){
+                n_base *= 1 + (global.space.drone.count / 25);
+            }
             let delta = n_base * hunger * global_multiplier;
             neutronium_bd['Outpost'] = n_base + 'v';
             modRes('Neutronium', delta * time_multiplier);

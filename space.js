@@ -1026,6 +1026,10 @@ const spaceProjects = {
             },
             effect(){
                 let neutronium = 0.025;
+                if (global.tech['drone']){
+                    neutronium *= 1 + (global.space.drone.count / 25);
+                }
+                neutronium = +neutronium.toFixed(3);
                 let max = spatialReasoning(500);
                 let oil = +(fuel_adjust(2)).toFixed(2);
                 return `<div>+${neutronium} Neutronium/s</div><div>+${max} Max Neutronium</div><div>-${oil} Oil/s, -${spaceProjects.spc_gas_moon.outpost.powered}kW/s</div>`;
@@ -1038,6 +1042,31 @@ const spaceProjects = {
                     if (global.city.power >= 3){
                         global.space['outpost'].on++;
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        drone: {
+            id: 'space-drone',
+            title: `Mining Drone`,
+            desc(){
+                return `<div>Neutronium Mining Drone</div>`;
+            },
+            reqs: { gas_moon: 1, drone: 1 },
+            cost: {
+                Money(){ return costMultiplier('drone', 250000, 1.3); },
+                Steel(){ return costMultiplier('drone', 20000, 1.3); },
+                Neutronium(){ return costMultiplier('drone', 500, 1.3); },
+                Elerium(){ return costMultiplier('drone', 25, 1.3); },
+                Nano_Tube(){ return costMultiplier('drone', 100000, 1.3); }
+            },
+            effect(){
+                return `<div>Increase the output of mining outposts by 4%</div>`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_gas_moon.drone.cost)){
+                    incrementStruct('drone');
                     return true;
                 }
                 return false;
@@ -1436,6 +1465,7 @@ const structDefinitions = {
     gas_storage: { count: 0 },
     star_dock: { count: 0, ship: 0, probe: 0, template: 'human' },
     outpost: { count: 0, on: 0 },
+    drone: { count: 0 },
     oil_extractor: { count: 0, on: 0 },
     space_station: { count: 0, on: 0, support: 0, s_max: 0 },
     iridium_ship: { count: 0, on: 0 },

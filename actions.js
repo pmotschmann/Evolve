@@ -4474,6 +4474,24 @@ export const actions = {
                 return `It's as cool as it sounds.`;
             }
         },
+        worker_drone: {
+            id: 'tech-worker_drone',
+            title: 'Worker Drones',
+            desc: 'Worker Drones',
+            reqs: { nano: 1 },
+            grant: ['drone',1],
+            cost: {
+                Knowledge(){ return 400000; },
+            },
+            effect: 'Advanced computer models could help design a super material known as carbon nano tubes.',
+            action(){
+                if (payCosts(actions.tech.polymer.cost)){
+                    global.space['drone'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         uranium: {
             id: 'tech-uranium',
             title: 'Uranium Extraction',
