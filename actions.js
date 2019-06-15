@@ -1417,6 +1417,9 @@ export const actions = {
                 if (global.tech['stock_exchange']){
                     vault *= 1 + (global.tech['stock_exchange'] * 0.1);
                 }
+                if (global.tech['world_control']){
+                    vault *= 1.25;
+                }
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
                 if (global.tech['banking'] >= 2){
@@ -1932,6 +1935,9 @@ export const actions = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
+                if (global.tech['world_control']){
+                    money *= 1.25;
+                }
                 return `<div>+${money} Max Money</div><div>+1 Max Entertainer</div><div>+1% Max Morale</div>`;
             },
             action(){

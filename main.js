@@ -352,6 +352,12 @@ function fastLoop(){
         global_multiplier += 0.25;
     }
 
+    if (global.race['intelligent']){
+        let bonus = (global.civic.scientist.workers * 0.25) + (global.civic.professor.workers * 0.125);
+        breakdown.p['Global']['Intelligence'] = bonus+'%';
+        global_multiplier += (bonus / 100);
+    }
+
     breakdown.p['consume'] = {
         Money: {},
         Knowledge: {},
@@ -2371,12 +2377,18 @@ function midLoop(){
             if (global.tech['stock_exchange']){
                 vault *= 1 + (global.tech['stock_exchange'] * 0.1);
             }
+            if (global.tech['world_control']){
+                vault *= 1.25;
+            }
             let gain = (global.city['bank'].count * spatialReasoning(vault));
             caps['Money'] += gain;
             bd_Money['Bank'] = gain+'v';
         }
         if (global.city['casino']){
             let vault = global.city['casino'].count * spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
+            if (global.tech['world_control']){
+                vault *= 1.25;
+            }
             caps['Money'] += vault;
             bd_Money['Casino'] = vault+'v';
         }

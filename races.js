@@ -655,8 +655,8 @@ export const traits = {
         desc: 'Your species is nearsighted and requires bigger font sizes to read.',
         type: 'major',
     },
-    intelligent: { // 
-        desc: '.',
+    intelligent: { // Professors and Scientists add a global production bonus
+        desc: `Your species always leverages the latest advancements in science to it's full benefit.`,
         type: 'major',
     },
     regenerative: { // Wounded soldiers heal twice as fast
@@ -827,7 +827,7 @@ export function racialTrait(workers,type){
             modifier *= (workers * 0.05) + 0.5;
         }
         else {
-            modifier *= 1 + (1 - (0.95 ** (workers - 10)));
+            modifier *= 1 + (1 - (0.98 ** (workers - 10)));
         }
     }
     if(global.race['cold_blooded'] && type !== 'army' && type !== 'factory' && type !== 'science'){
