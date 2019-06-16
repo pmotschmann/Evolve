@@ -789,10 +789,6 @@ function defineMad(){
         };
     }
 
-    if (global.tech['world_control']){
-        return;
-    }
-
     var mad_command = $('<div id="mad" v-show="display" class="tile is-child"></div>');
     $('#r_civics').append(mad_command);
     var mad = $('<div class="mad"></div>');
@@ -838,7 +834,10 @@ function defineMad(){
                 }
             },
             defcon(){
-                return `Enable or Disable the launch button. Launching a nuclear strike will trigger a retalitory strike which will result in the end of all life as we know it.`;
+                
+                return global.tech['world_control']
+                    ? `Enable or Disable the launch button. Scour the world clean with nuclear fire, wby? because you can.`
+                    : `Enable or Disable the launch button. Launching a nuclear strike will trigger a retalitory strike which will result in the end of all life as we know it.`;
             },
             warning(){
                 let plasma = Math.round((global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers) / 3);
@@ -894,7 +893,8 @@ function warhead(){
         gods: god, 
         rapid_mutation: 1,
         ancient_ruins: 1,
-        Plasmid: { count: plasmid }
+        Plasmid: { count: plasmid },
+        seeded: false,
     };
     global.city = {
         calendar: {
@@ -909,6 +909,7 @@ function warhead(){
         biome: biome
     };
     global.space = {};
+    global.starDock = {};
     global.civic = { free: 0 };
     global.resource = {};
     global.evolution = {};

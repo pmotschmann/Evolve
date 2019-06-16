@@ -4,7 +4,7 @@ import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate, setPlanet } from './actions.js';
 import { space, fuel_adjust } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -250,7 +250,20 @@ $('#topBar .planet').on('mouseout',function(){
 
 if (global.race.species === 'protoplasm'){
     global.resource.RNA.display = true;
-    addAction('evolution','rna');
+    if (global.race.seeded && !global.race['chose']){
+        Math.seed = global.race.seed;
+        if (global.race.probes === 0){
+            setPlanet();
+        }
+        else {
+            for (let i=0; i<global.race.probes; i++){
+                setPlanet();
+            }
+        }
+    }
+    else {
+        addAction('evolution','rna');
+    }
     var evolve_actions = ['dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
     for (var i = 0; i < evolve_actions.length; i++) {
         if (global.evolution[evolve_actions[i]]){
@@ -2950,64 +2963,66 @@ function longLoop(){
     }
 
     // Event triggered
-    if (Math.rand(0,global.event) === 0){
-        var event_pool = [];
-        Object.keys(events).forEach(function (event) {
-            var isOk = true;
-            Object.keys(events[event].reqs).forEach(function (req) {
-                switch(req){
-                    case 'race':
-                        if (events[event].reqs[req] !== global.race.species){
+    if (!global.race.seeded && !global.race['chose']){
+        if (Math.rand(0,global.event) === 0){
+            var event_pool = [];
+            Object.keys(events).forEach(function (event) {
+                var isOk = true;
+                Object.keys(events[event].reqs).forEach(function (req) {
+                    switch(req){
+                        case 'race':
+                            if (events[event].reqs[req] !== global.race.species){
+                                isOk = false;
+                            }
+                            break;
+                        case 'resource':
+                            if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
+                                isOk = false;
+                            }
+                            break;
+                        case 'trait':
+                            if (!global.race[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'tech':
+                            if (!global.tech[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'notech':
+                            if (global.tech[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'high_tax_rate':
+                            if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'low_morale':
+                            if (global.city.morale.current <= [events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        default:
                             isOk = false;
-                        }
-                        break;
-                    case 'resource':
-                        if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
-                            isOk = false;
-                        }
-                        break;
-                    case 'trait':
-                        if (!global.race[events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'tech':
-                        if (!global.tech[events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'notech':
-                        if (global.tech[events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'high_tax_rate':
-                        if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'low_morale':
-                        if (global.city.morale.current <= [events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-                    default:
-                        isOk = false;
-                        break;
+                            break;
+                    }
+                });
+                if (isOk){
+                    event_pool.push(event);
                 }
             });
-            if (isOk){
-                event_pool.push(event);
+            if (event_pool.length > 0){
+                var msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
+                messageQueue(msg);
             }
-        });
-        if (event_pool.length > 0){
-            var msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
-            messageQueue(msg);
+            global.event = 999;
         }
-        global.event = 999;
-    }
-    else {
-        global.event--;
+        else {
+            global.event--;
+        }
     }
 
     // Save game state

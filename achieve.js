@@ -75,6 +75,11 @@ var achievements = {
         desc: `Stopped an invasion from hell`,
         flair: `Shoot it until it dies`
     },
+    seeder: {
+        name: `Seeder`,
+        desc: `Bioseed an alien world`,
+        flair: `What is god if not us?`
+    },
     mass_extinction: {
         name: `Mass Extinction`,
         desc: `Led all civilizations to destruction`,

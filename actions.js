@@ -6738,8 +6738,40 @@ export const actions = {
             action(){
                 if (global.starDock.seeder.count < 100 && payCosts(actions.starDock.seeder.cost)){
                     global.starDock.seeder.count++;
+                    if (global.starDock.seeder.count >= 100){
+                        global.tech.genesis = 6;
+                        $('#popspcdock-seeder').remove();
+                        $('#modalBox').empty();
+                        let c_action = actions.space.spc_gas.star_dock;
+                        drawModal(c_action,'star_dock');
+                    }
                     return true;
                 }
+                return false;
+            },
+        },
+        launch_ship: {
+            id: 'spcdock-launch_ship',
+            title: 'Launch Ship',
+            desc(){
+                return `<div>Launch the Bioseeder Ship</div><div class="has-text-danger">Resets the game</div>`;
+            },
+            reqs: { genesis: 6 },
+            cost: {},
+            effect(){
+                let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
+                let plasmid = Math.round(pop / 3);
+                let k_base = global.stats.know;
+                let k_inc = 50000;
+                while (k_base > k_inc){
+                    plasmid++;
+                    k_base -= k_inc;
+                    k_inc *= 1.015;
+                }
+                return `<div>Launch the "Genesis" ship. You will seed life in a far away star system and take over as the species that evoles there.</div><div class="has-text-special">You will gain ${plasmid} Plasmids</div>`;
+            },
+            action(){
+                bioseed();
                 return false;
             },
         },
@@ -6962,49 +6994,54 @@ export function setAction(c_action,action,type,old){
         },
         methods: {
             action(){
-                switch (action){
-                    case 'tech':
-                        if (c_action.action()){
-                            gainTech(type);
-                        }
-                        break;
-                    case 'genes':
-                        if (c_action.action()){
-                            gainGene(type);
-                        }
-                        break;
-                    default:
-                        let keyMult = keyMultiplier();
-                        if (c_action['grant']){
-                            keyMult = 1;
-                        }
-                        let grant = false;
-                        for (var i=0; i<keyMult; i++){
-                            if (!c_action.action()){
-                                break;
+                if (c_action.id === 'spcdock-launch_ship'){
+                    c_action.action();
+                }
+                else {
+                    switch (action){
+                        case 'tech':
+                            if (c_action.action()){
+                                gainTech(type);
                             }
-                            grant = true;
-                        }
-                        if (!checkAffordable(c_action)){
-                            let id = c_action.id;
-                            $(`#${id}`).addClass('cna');
-                        }
-                        if (c_action['grant'] && grant){
-                            let tech = c_action.grant[0];
-                            global.tech[tech] = c_action.grant[1];
-                            removeAction(c_action.id);
-                            drawCity();
-                            drawTech();
-                            space();
-                        }
-                        else if (c_action['refresh']){
-                            removeAction(c_action.id);
-                            drawCity();
-                            drawTech();
-                            space();
-                        }
-                        updateDesc(c_action,action,type);
-                        break;
+                            break;
+                        case 'genes':
+                            if (c_action.action()){
+                                gainGene(type);
+                            }
+                            break;
+                        default:
+                            let keyMult = keyMultiplier();
+                            if (c_action['grant']){
+                                keyMult = 1;
+                            }
+                            let grant = false;
+                            for (var i=0; i<keyMult; i++){
+                                if (!c_action.action()){
+                                    break;
+                                }
+                                grant = true;
+                            }
+                            if (!checkAffordable(c_action)){
+                                let id = c_action.id;
+                                $(`#${id}`).addClass('cna');
+                            }
+                            if (c_action['grant'] && grant){
+                                let tech = c_action.grant[0];
+                                global.tech[tech] = c_action.grant[1];
+                                removeAction(c_action.id);
+                                drawCity();
+                                drawTech();
+                                space();
+                            }
+                            else if (c_action['refresh']){
+                                removeAction(c_action.id);
+                                drawCity();
+                                drawTech();
+                                space();
+                            }
+                            updateDesc(c_action,action,type);
+                            break;
+                    }
                 }
             },
             trigModal(){
@@ -7043,6 +7080,29 @@ export function setAction(c_action,action,type,old){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $(pop_target).append(popper);
             actionDesc(popper,c_action,old);
+            popper.show();
+            poppers[id] = new Popper($('#'+id),popper);
+        });
+    $('#'+id).on('mouseout',function(){
+            $(`#pop${id}`).hide();
+            poppers[id].destroy();
+            $(`#pop${id}`).remove();
+        });
+}
+
+export function setPlanet(){
+    var id = 'Planet'+Math.floor(Math.seededRandom(0,10000));
+    var parent = $(`<div id="${id}" class="action"></div>`);
+
+    var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${id}</span></a>`);
+    parent.append(element)
+
+    $('#evolution').append(parent);
+
+    $('#'+id).on('mouseover',function(){
+            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
+            $('#main').append(popper);
+            //actionDesc(popper,c_action,old);
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
@@ -7288,12 +7348,12 @@ function drawModal(c_action,type){
             factoryModal(body);
             break;
         case 'star_dock':
-            starDockmodal(body);
+            starDockModal(body);
             break;
     }
 }
 
-function starDockmodal(modal){
+function starDockModal(modal){
     if (global.tech['genesis'] < 4){
         let warn = $('<div><span class="has-text-warning">You must complete plans for your interstellar craft first</span></div>');
         modal.append(warn);
@@ -7312,8 +7372,8 @@ function starDockmodal(modal){
     }
 
     if (global.tech['genesis'] >= 6){
-        let warn = $('<div><span class="has-text-warning">You must complete plans for your interstellar craft first</span></div>');
-        modal.append(warn);
+        let c_action = actions.starDock.launch_ship;
+        setAction(c_action,'starDock','launch_ship');
     }
 }
 
@@ -7687,4 +7747,96 @@ export function basicHousingLabel(){
         default:
             return 'Cabin';
     }
+}
+
+function bioseed(){
+    Object.keys(vues).forEach(function (v){
+        vues[v].$destroy();
+    });
+    let god = global.race.species;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let plasmid = global.race.Plasmid.count;
+    let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
+    let new_plasmid = Math.round(pop / 3);
+    let k_base = global.stats.know;
+    let k_inc = 50000;
+    while (k_base > k_inc){
+        new_plasmid++;
+        k_base -= k_inc;
+        k_inc *= 1.015;
+    }
+    if (global.stats.died === 0){
+        unlockAchieve(`pacifist`);
+    }
+    plasmid += new_plasmid;
+    global.stats.reset++;
+    global.stats.tdays += global.stats.days;
+    global.stats.days = 0;
+    global.stats.tknow += global.stats.know;
+    global.stats.know = 0;
+    global.stats.tstarved += global.stats.starved;
+    global.stats.starved = 0;
+    global.stats.tdied += global.stats.died;
+    global.stats.died = 0;
+    global.stats.plasmid += new_plasmid;
+    let new_achieve = unlockAchieve(`seeder`);
+    global['race'] = { 
+        species : 'protoplasm', 
+        gods: god,
+        Plasmid: { count: plasmid },
+        seeded: true,
+        probes: global.starDock.probes.count,
+        seed: Math.floor(Math.random(0,10000)),
+    };
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome
+    };
+    global.space = {};
+    global.starDock = {};
+    global.civic = { free: 0 };
+    global.resource = {};
+    global.evolution = {};
+    global.tech = { theology: 1 };
+    global.event = 100;
+    global.settings.civTabs = 0;
+    global.settings.showEvolve = true;
+    global.settings.showCity = false;
+    global.settings.showIndustry = false;
+    global.settings.showResearch = false;
+    global.settings.showCivic = false;
+    global.settings.showMarket = false;
+    global.settings.showGenetics = false;
+    global.settings.showSpace = false;
+    global.settings.space.home = true;
+    global.settings.space.moon = false;
+    global.settings.space.red = false;
+    global.settings.space.hell = false;
+    global.settings.space.sun = false;
+    global.settings.space.gas = false;
+    global.settings.space.gas_moon = false;
+    global.settings.space.belt = false;
+    global.settings.space.dwarf = false;
+    global.settings.space.blackhole = false;
+    global.settings.arpa = false;
+    global.settings.resTabs = 0;
+    global.arpa = {};
+    if (!new_achieve){
+        global.lastMsg = false;
+    }
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+    
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
 }

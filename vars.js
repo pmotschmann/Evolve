@@ -243,6 +243,9 @@ if (!global['lastMsg']){
     global['lastMsg'] = false;
 }
 
+if (!global.race['seeded']){
+    global.race['seeded'] = false;
+}
 if (!global.race['Plasmid']){
     global.race['Plasmid'] = { count: 0 };
 }
@@ -371,7 +374,7 @@ if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facil
 }
 
 function newGameData(){
-    global['race'] = { species : 'protoplasm', gods: 'none' };
+    global['race'] = { species : 'protoplasm', gods: 'none', seeded: false };
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
     global['new'] = true;
@@ -544,7 +547,8 @@ window.soft_reset = function reset(){
     global.space = {};
     let replace = {
         species : 'protoplasm', 
-        Plasmid: { count: global.race.Plasmid.count }
+        Plasmid: { count: global.race.Plasmid.count },
+        seeded: global.race.seeded
     }
     if (global.race['gods']){
         replace['gods'] = global.race.gods;
