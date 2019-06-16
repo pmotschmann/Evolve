@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, p_on } from './vars.js';
+import { global, vues, poppers, messageQueue, p_on, belt_on, quantium_level } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -100,9 +100,9 @@ const spaceProjects = {
                 Steel(){ return costMultiplier('propellant_depot', 22000, 1.35); }
             },
             effect(){
-                let oil = spatialReasoning(1250);
+                let oil = spatialReasoning(1250) * (global.tech['world_control'] ? 1.5 : 1);
                 if (global.resource['Helium_3'].display){
-                    let helium = spatialReasoning(1000);
+                    let helium = spatialReasoning(1000) * (global.tech['world_control'] ? 1.5 : 1);
                     return `<div>+${oil} Max Oil</div><div>+${helium} Max Helium 3</div>`;
                 }
                 return `<div>+${oil} Max Oil.</div>`;
@@ -110,9 +110,9 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_home.propellant_depot.cost)){
                     incrementStruct('propellant_depot');
-                    global['resource']['Oil'].max += spatialReasoning(1250);
+                    global['resource']['Oil'].max += spatialReasoning(1250) * (global.tech['world_control'] ? 1.5 : 1);
                     if (global.resource['Helium_3'].display){
-                        global['resource']['Helium_3'].max += spatialReasoning(1000);
+                        global['resource']['Helium_3'].max += spatialReasoning(1000) * (global.tech['world_control'] ? 1.5 : 1);
                     }
                     return true;
                 }
@@ -256,7 +256,7 @@ const spaceProjects = {
             },
             effect(){
                 let storage = spatialReasoning(100);
-                return `<div>-1 Moon Support</div><div>+0.15 Helium-3 Production</div><div>+${storage} Max Helium-3</div>`;
+                return `<div>-1 Moon Support</div><div>+0.18 Helium-3 Production</div><div>+${storage} Max Helium-3</div>`;
             },
             support: -1,
             powered: 1,
@@ -341,7 +341,7 @@ const spaceProjects = {
         spaceport: {
             id: 'space-spaceport',
             title: 'Spaceport',
-            desc: '<div>Build an Spaceport</div><div class="has-text-special">Requires Power & Helium-3</div>',
+            desc: '<div>Build a Spaceport</div><div class="has-text-special">Requires Power & Helium-3</div>',
             reqs: { space: 4 },
             cost: {
                 Money(){ return costMultiplier('spaceport', 47500, 1.32); },
@@ -442,25 +442,44 @@ const spaceProjects = {
                 Sheet_Metal(){ return costMultiplier('garage', 1500, 1.28); }
             },
             effect(){
-                let multiplier = 1;
+                let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
+                let containers = global.tech['supercollider'] ? 20 + global.tech['supercollider'] : 20;
+                if (global.tech['world_control']){
+                    multiplier *= global.tech['world_control'] ? 2 : 1;
+                    containers += 10;
+                }
                 let copper = +(spatialReasoning(6500) * multiplier).toFixed(0);
                 let iron = +(spatialReasoning(5500) * multiplier).toFixed(0);
                 let cement = +(spatialReasoning(6000) * multiplier).toFixed(0);
                 let steel = +(spatialReasoning(4500) * multiplier).toFixed(0);
                 let titanium = +(spatialReasoning(3500) * multiplier).toFixed(0);
                 let alloy = +(spatialReasoning(2500) * multiplier).toFixed(0);
-                return `<div>+20 Max Containers</div><div>+${copper} Max Copper</div><div>+${iron} Max Iron</div><div>+${cement} Max Cement</div><div>+${steel} Max Steel</div><div>+${titanium} Max Titanium</div><div>+${alloy} Max Alloy</div>`;
+                
+                let desc = `<div>+${containers} Max Containers</div><div>+${copper} Max Copper</div><div>+${iron} Max Iron</div><div>+${cement} Max Cement</div><div>+${steel} Max Steel</div><div>+${titanium} Max Titanium</div><div>+${alloy} Max Alloy</div>`;
+                if (global.resource.Nano_Tube.display){
+                    let nano = +(spatialReasoning(25000) * multiplier).toFixed(0);
+                    desc = desc + `<div>+${nano} Max Nano Tubes</div>`
+                }
+                if (global.resource.Neutronium.display){
+                    let neutronium = +(spatialReasoning(125) * multiplier).toFixed(0);
+                    desc = desc + `<div>+${neutronium} Max Neutronium</div>`
+                }
+                return desc;
             },
             action(){
                 if (payCosts(spaceProjects.spc_red.garage.cost)){
                     incrementStruct('garage');
-                    let multiplier = 1;
+                    let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
+                    multiplier *= global.tech['world_control'] ? 2 : 1;
                     global['resource']['Copper'].max += (spatialReasoning(6500) * multiplier);
                     global['resource']['Iron'].max += (spatialReasoning(5500) * multiplier);
                     global['resource']['Cement'].max += (spatialReasoning(6000) * multiplier);
                     global['resource']['Steel'].max += (spatialReasoning(4500) * multiplier);
                     global['resource']['Titanium'].max += (spatialReasoning(3500) * multiplier);
                     global['resource']['Alloy'].max += (spatialReasoning(2500) * multiplier);
+                    if (global.resource.Neutronium.display){
+                        global['resource']['Neutronium'].max += (spatialReasoning(125) * multiplier);
+                    }
                     return true;
                 }
                 return false;
@@ -723,16 +742,21 @@ const spaceProjects = {
             desc(){
                 return `<div>Swarm Satellite production plant</div>`;
             },
-            reqs: { solar: 4, dwarf: 1 },
+            reqs: { solar: 4, hell: 1 },
             cost: {
-                Money(){ return costMultiplier('swarm_plant', 75000, 1.28); },
-                Iron(){ return costMultiplier('swarm_plant', 95000, 1.28); },
+                Money(){ return costMultiplier('swarm_plant', iron_adjust(75000), 1.28); },
+                Iron(){ return costMultiplier('swarm_plant', iron_adjust(65000), 1.28); },
                 Neutronium(){ return costMultiplier('swarm_plant', 75, 1.28); },
                 Brick(){ return costMultiplier('swarm_plant', 2500, 1.28); },
                 Mythril(){ return costMultiplier('swarm_plant', 100, 1.28); }
             },
             effect(){
-                return `Reduces the cost of swarm satellites by 5%`;
+                let reduce = global.tech['swarm'] ? 0.92 : 0.95;
+                if (global.tech['swarm'] >= 3){
+                    reduce -= quantium_level / 100;
+                }
+                reduce = +((1 - reduce) * 100).toFixed(2);
+                return `Reduces the cost of swarm satellites by ${reduce}%`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_hell.swarm_plant.cost)){
@@ -791,13 +815,14 @@ const spaceProjects = {
                 Mythril(){ return costMultiplier('swarm_control', 250, 1.3); }
             },
             effect(){
-                return `Controls upto 4 Swarm Satellites and transmits their power back to civilization.`;
+                let control = global.tech['swarm'] && global.tech['swarm'] >= 2 ? 6 : 4;
+                return `Controls upto ${control} Swarm Satellites and transmits their power back to civilization.`;
             },
             support: 6,
             action(){
                 if (payCosts(spaceProjects.spc_sun.swarm_control.cost)){
                     incrementStruct('swarm_control');
-                    global.space['swarm_control'].s_max += 4;
+                    global.space['swarm_control'].s_max += global.tech['swarm'] && global.tech['swarm'] >= 2 ? 6 : 4;
                     return true;
                 }
                 return false;
@@ -811,10 +836,10 @@ const spaceProjects = {
             },
             reqs: { solar: 3 },
             cost: {
-                Money(){ return costMultiplier('swarm_satellite', swarm_adjust(50000), 1.2); },
-                Copper(){ return costMultiplier('swarm_satellite', swarm_adjust(25000), 1.2); },
-                Iridium(){ return costMultiplier('swarm_satellite', swarm_adjust(1500), 1.2); },
-                Helium_3(){ return costMultiplier('swarm_satellite', swarm_adjust(fuel_adjust(500)), 1.2); }
+                Money(){ return costMultiplier('swarm_satellite', swarm_adjust(50000), 1.18); },
+                Copper(){ return costMultiplier('swarm_satellite', swarm_adjust(25000), 1.18); },
+                Iridium(){ return costMultiplier('swarm_satellite', swarm_adjust(1500), 1.18); },
+                Helium_3(){ return costMultiplier('swarm_satellite', swarm_adjust(fuel_adjust(500)), 1.18); }
             },
             effect(){
                 return `+1kW, -1 Swarm Support`;
@@ -910,14 +935,40 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('gas_storage', fuel_adjust(1000), 1.32); },
             },
             effect(){
-                let oil = spatialReasoning(3500);
-                let helium = spatialReasoning(2500);
-                let uranium = spatialReasoning(1000);
+                let oil = spatialReasoning(3500) * (global.tech['world_control'] ? 1.5 : 1);
+                let helium = spatialReasoning(2500) * (global.tech['world_control'] ? 1.5 : 1);
+                let uranium = spatialReasoning(1000) * (global.tech['world_control'] ? 1.5 : 1);
                 return `<div>+${oil} Max Oil</div><div>+${helium} Max Helium-3</div><div>+${uranium} Max Uranium</div>`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_gas.gas_storage.cost)){
                     incrementStruct('gas_storage');
+                    return true;
+                }
+                return false;
+            }
+        },
+        star_dock: {
+            id: 'space-star_dock',
+            title(){ return `Space Dock`; },
+            desc(){
+                return `<div>Space Dock<div><div class="has-text-special">Limit One</div>`;
+            },
+            reqs: { genesis: 3 },
+            cost: {
+                Money(){ return global.space.star_dock.count === 0 ? 1500000 : 0; },
+                Steel(){ return global.space.star_dock.count === 0 ? 500000 : 0; },
+                Helium_3(){ return global.space.star_dock.count === 0 ? Math.round(fuel_adjust(10000)) : 0; },
+                Nano_Tube(){ return global.space.star_dock.count === 0 ? 250000 : 0; },
+                Mythril(){ return global.space.star_dock.count === 0 ? 10000 : 0; },
+            },
+            effect(){
+                return `<div>Constructs the Genesis Ship</div>`;
+            },
+            special: true,
+            action(){
+                if (global.space.star_dock.count === 0 && payCosts(spaceProjects.spc_gas.star_dock.cost)){
+                    incrementStruct('star_dock');
                     return true;
                 }
                 return false;
@@ -975,6 +1026,10 @@ const spaceProjects = {
             },
             effect(){
                 let neutronium = 0.025;
+                if (global.tech['drone']){
+                    neutronium *= 1 + (global.space.drone.count * 0.06);
+                }
+                neutronium = +neutronium.toFixed(3);
                 let max = spatialReasoning(500);
                 let oil = +(fuel_adjust(2)).toFixed(2);
                 return `<div>+${neutronium} Neutronium/s</div><div>+${max} Max Neutronium</div><div>-${oil} Oil/s, -${spaceProjects.spc_gas_moon.outpost.powered}kW/s</div>`;
@@ -987,6 +1042,31 @@ const spaceProjects = {
                     if (global.city.power >= 3){
                         global.space['outpost'].on++;
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        drone: {
+            id: 'space-drone',
+            title: `Mining Drone`,
+            desc(){
+                return `<div>Neutronium Mining Drone</div>`;
+            },
+            reqs: { gas_moon: 1, drone: 1 },
+            cost: {
+                Money(){ return costMultiplier('drone', 250000, 1.3); },
+                Steel(){ return costMultiplier('drone', 20000, 1.3); },
+                Neutronium(){ return costMultiplier('drone', 500, 1.3); },
+                Elerium(){ return costMultiplier('drone', 25, 1.3); },
+                Nano_Tube(){ return costMultiplier('drone', 75000, 1.3); }
+            },
+            effect(){
+                return `<div>Increase the output of mining outposts by 6%</div>`;
+            },
+            action(){
+                if (payCosts(spaceProjects.spc_gas_moon.drone.cost)){
+                    incrementStruct('drone');
                     return true;
                 }
                 return false;
@@ -1119,7 +1199,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('elerium_ship', fuel_adjust(5000), 1.3); }
             },
             effect(){
-                let elerium = 0.005;
+                let elerium = global.tech.asteroid >= 6 ? 0.0075 : 0.005;
                 return `<div>Requires 2 Space Miners</div><div>+${elerium} Elerium/s</div>`;
             },
             support: -2,
@@ -1150,7 +1230,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('iridium_ship', fuel_adjust(1800), 1.3); }
             },
             effect(){
-                let iridium = 0.055;
+                let iridium = global.tech.asteroid >= 6 ? 0.08 : 0.055;
                 return `<div>Requires 1 Space Miner</div><div>+${iridium} Iridium/s</div>`;
             },
             support: -1,
@@ -1181,8 +1261,13 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('iron_ship', fuel_adjust(1200), 1.3); }
             },
             effect(){
-                let iron = 2;
-                return `<div>Requires 1 Space Miner</div><div>+${iron} Iron/s</div>`;
+                let iron = global.tech.asteroid >= 6 ? 3 : 2;
+                if (global.tech['solar'] && global.tech['solar'] >= 5){
+                    return `<div>Requires 1 Space Miner</div><div>+${iron} Iron/s</div><div>Reduces Swarm Plant Iron and Money Costs</div>`;
+                }
+                else {
+                    return `<div>Requires 1 Space Miner</div><div>+${iron} Iron/s</div>`;
+                }
             },
             support: -1,
             powered: 1,
@@ -1289,6 +1374,66 @@ const spaceProjects = {
                 return false;
             }
         },
+        world_collider: {
+            id: 'space-world_collider',
+            title: 'World Collider',
+            desc(){
+                if (global.space.world_collider.count < 1859){
+                    return `<div>World Supercollider</div><div class="has-text-special">Requires 1859 Segments</div>`;
+                }
+                else {
+                    return `<div>World Supercollider</div>`;
+                }
+            },
+            reqs: { science: 10 },
+            cost: {
+                Money(){ return global.space.world_collider.count < 1859 ? 25000 : 0; },
+                Copper(){ return global.space.world_collider.count < 1859 ? 750 : 0; },
+                Alloy(){ return global.space.world_collider.count < 1859 ? 125 : 0; },
+                Neutronium(){ return global.space.world_collider.count < 1859 ? 12 : 0; },
+                Elerium(){ return global.space.world_collider.count < 1859 ? 1 : 0; },
+                Mythril(){ return global.space.world_collider.count < 1859 ? 10 : 0; }
+            },
+            effect(){
+                if (global.space.world_collider.count < 1859){
+                    let remain = 1859 - global.space.world_collider.count;
+                    return `<div>Construct a 1 mile segment of the world supercollider</div><div class="has-text-special">${remain} segments remaining</div>`;
+                }
+                else {
+                    return `The world supercollider is complete`;
+                }
+            },
+            refresh: true,
+            action(){
+                if (global.space.world_collider.count < 1859 && payCosts(spaceProjects.spc_dwarf.world_collider.cost)){
+                    incrementStruct('world_collider');
+                    if (global.space.world_collider.count >= 1859){
+                        global.tech['science'] = 11;
+                        global.space['world_controller'] = { count: 1, on: 0 };
+                    }
+                    return true;
+                }
+                return false;
+            },
+            flair: `What's the worst that could happen?`
+        },
+        world_controller: {
+            id: 'space-world_controller',
+            title: 'WSC Control',
+            desc(){
+                return `<div>WSC Control Station</div><div class="has-text-special">Requires Power</div>`;
+            },
+            reqs: { science: 11 },
+            cost: {},
+            effect(){
+                return `<div>Controls the world supercollider</div><div>+25% Max Knowledge</div><div>Unknown Side Effects</div><div>-${spaceProjects.spc_dwarf.world_controller.powered}kW</div>`;
+            },
+            powered: 20,
+            action(){
+                return false;
+            },
+            flair: `Might destroy the universe`
+        },
     }
 };
 
@@ -1318,7 +1463,9 @@ const structDefinitions = {
     swarm_satellite: { count: 0 },
     gas_mining: { count: 0, on: 0 },
     gas_storage: { count: 0 },
+    star_dock: { count: 0, ship: 0, probe: 0, template: 'human' },
     outpost: { count: 0, on: 0 },
+    drone: { count: 0 },
     oil_extractor: { count: 0, on: 0 },
     space_station: { count: 0, on: 0, support: 0, s_max: 0 },
     iridium_ship: { count: 0, on: 0 },
@@ -1326,6 +1473,8 @@ const structDefinitions = {
     iron_ship: { count: 0, on: 0 },
     elerium_contain: { count: 0, on: 0 },
     e_reactor: { count: 0, on: 0 },
+    world_collider: { count: 0 },
+    world_controller: { count: 0, on: 0 },
 };
 
 function incrementStruct(struct){
@@ -1419,9 +1568,20 @@ function house_adjust(res){
     return res;
 }
 
+export function iron_adjust(res){
+    if (global.tech['solar'] && global.tech['solar'] >= 5 && belt_on['iron_ship']){
+        res *= 0.95 ** belt_on['iron_ship'];
+    }
+    return res;
+}
+
 export function swarm_adjust(res){
     if (global.space['swarm_plant']){
-        res *= 0.95 ** global.space.swarm_plant.count;
+        let reduce = global.tech['swarm'] ? 0.92 : 0.95;
+        if (global.tech['swarm'] >= 3){
+            reduce -= quantium_level / 100;
+        }
+        res *= reduce ** global.space.swarm_plant.count;
     }
     return res;
 }

@@ -14,19 +14,20 @@ export const resource_values = {
     Uranium: 550,
     Steel: 100,
     Titanium: 150,
-    Alloy: 275,
-    Polymer: 225,
-    Iridium: 380,
+    Alloy: 350,
+    Polymer: 250,
+    Iridium: 420,
     //Deuterium: 450,
-    'Helium_3': 620,
+    Helium_3: 620,
     Elerium: 2000,
-    Neutronium: 1000
+    Neutronium: 1500,
+    Nano_Tube: 750,
 };
 
 export const tradeRatio = {
-    Food: 1,
-    Lumber: 1,
-    Stone: 1,
+    Food: 2,
+    Lumber: 2,
+    Stone: 2,
     Furs: 1,
     Copper: 1,
     Iron: 1,
@@ -38,10 +39,11 @@ export const tradeRatio = {
     Titanium: 0.25,
     Alloy: 0.25,
     Polymer: 0.25,
-    Iridium: 0.25,
-    'Helium_3': 0.25,
+    Iridium: 0.1,
+    Helium_3: 0.1,
     Elerium: 0.1,
     Neutronium: 0.1,
+    Nano_Tube: 0.1,
 }
 
 export const craftCost = {
@@ -121,6 +123,7 @@ export function defineResources() {
         loadResource('Helium_3',0,1,true,false);
         loadResource('Neutronium',0,1,false,false,'special');
         loadResource('Elerium',1,1,false,false,'special');
+        loadResource('Nano_Tube',0,1,false,false,'special');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');
@@ -187,7 +190,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     if (rate !== 0){
         res_container.append($(`<span id="inc${name}" class="diff">{{ diff | diffSize }} /s</span>`));
     }
-    else if (max === -1){
+    else if (max === -1 && !global.race['no_craft']){
         let craft = $('<span class="craftable"></span>');
         res_container.append(craft);
 
@@ -342,11 +345,13 @@ function marketItem(vue,mount,market_item,name,color,full){
         market_item.append($(`<span class="res has-text-${color}">{{ r.name | namespace }}</span>`));
     }
 
-    market_item.append($('<span class="buy"><span class="has-text-success">BUY</span></span>'));
-    market_item.append($(`<span role="button" class="order" @click="purchase('${name}')">\${{ r.value | buy }}</span>`));
-    
-    market_item.append($('<span class="sell"><span class="has-text-danger">SELL</span></span>'));
-    market_item.append($(`<span role="button" class="order" @click="sell('${name}')">\${{ r.value | sell }}</span>`));
+    if (!global.race['no_trade']){
+        market_item.append($('<span class="buy"><span class="has-text-success">BUY</span></span>'));
+        market_item.append($(`<span role="button" class="order" @click="purchase('${name}')">\${{ r.value | buy }}</span>`));
+        
+        market_item.append($('<span class="sell"><span class="has-text-danger">SELL</span></span>'));
+        market_item.append($(`<span role="button" class="order" @click="sell('${name}')">\${{ r.value | sell }}</span>`));
+    }
 
     if (full){
         let trade = $('<span class="trade" v-show="m.active"><span class="has-text-warning">Routes</span></span>');
@@ -374,27 +379,31 @@ function marketItem(vue,mount,market_item,name,color,full){
                 return `Auto-buy ${tradeRatio[res]} ${unit} per second for \$${price}`;
             },
             purchase(res){
-                let qty = Number(vues['market_qty'].qty);
-                let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
-                var price = Math.round(value * qty);
-                if (global.resource.Money.amount >= price){
-                    global.resource[res].amount += qty;
-                    global.resource.Money.amount -= price;
-                    
-                    global.resource[res].value += Number((qty / Math.rand(1000,10000)).toFixed(2));
+                if (!global.race['no_trade']){
+                    let qty = Number(vues['market_qty'].qty);
+                    let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+                    var price = Math.round(value * qty);
+                    if (global.resource.Money.amount >= price){
+                        global.resource[res].amount += qty;
+                        global.resource.Money.amount -= price;
+                        
+                        global.resource[res].value += Number((qty / Math.rand(1000,10000)).toFixed(2));
+                    }
                 }
             },
             sell(res){
-                var qty = Number(vues['market_qty'].qty);
-                if (global.resource[res].amount >= qty){
-                    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
-                    let price = Math.round(global.resource[res].value * qty / divide);
-                    global.resource[res].amount -= qty;
-                    global.resource.Money.amount += price;
-                    
-                    global.resource[res].value -= Number((qty / Math.rand(1000,10000)).toFixed(2));
-                    if (global.resource[res].value < Number(resource_values[res] / 2)){
-                        global.resource[res].value = Number(resource_values[res] / 2);
+                if (!global.race['no_trade']){
+                    var qty = Number(vues['market_qty'].qty);
+                    if (global.resource[res].amount >= qty){
+                        let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                        let price = Math.round(global.resource[res].value * qty / divide);
+                        global.resource[res].amount -= qty;
+                        global.resource.Money.amount += price;
+                        
+                        global.resource[res].value -= Number((qty / Math.rand(1000,10000)).toFixed(2));
+                        if (global.resource[res].value < Number(resource_values[res] / 2)){
+                            global.resource[res].value = Number(resource_values[res] / 2);
+                        }
                     }
                 }
             },
@@ -615,7 +624,8 @@ function breakdownPopover(id,name,type){
 }
 
 function loadRouteCounter(){
-    var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><span class="tradeTotal"><span class="has-text-warning">Trade Routes</span> {{ trade }} / {{ mtrade }}</span></div>`);
+    let no_market = global.race['no_trade'] ? ' nt' : '';
+    var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><span class="tradeTotal${no_market}"><span class="has-text-warning">Trade Routes</span> {{ trade }} / {{ mtrade }}</span></div>`);
     $('#market').append(market_item);
 
     vues['market_totals'] = new Vue({
@@ -859,17 +869,19 @@ export function loadMarket(){
         vues['market_qty'].$destroy();
     }
 
-    market.append($('<b-radio v-model="qty" native-value="10">10x</b-radio>'));
-    market.append($('<b-radio v-model="qty" native-value="25">25x</b-radio>'));
-    market.append($('<b-radio v-model="qty" native-value="100">100x</b-radio>'));
-    if (global.tech['currency'] >= 4){
-        market.append($('<b-radio v-model="qty" native-value="250">250x</b-radio>'));
-        market.append($('<b-radio v-model="qty" native-value="1000">1000x</b-radio>'));
-        market.append($('<b-radio v-model="qty" native-value="2500">2500x</b-radio>'));
-    }
-    if (global.tech['currency'] >= 6){
-        market.append($('<b-radio v-model="qty" native-value="10000">10000x</b-radio>'));
-        market.append($('<b-radio v-model="qty" native-value="25000">25000x</b-radio>'));
+    if (!global.race['no_trade']){
+        market.append($('<b-radio v-model="qty" native-value="10">10x</b-radio>'));
+        market.append($('<b-radio v-model="qty" native-value="25">25x</b-radio>'));
+        market.append($('<b-radio v-model="qty" native-value="100">100x</b-radio>'));
+        if (global.tech['currency'] >= 4){
+            market.append($('<b-radio v-model="qty" native-value="250">250x</b-radio>'));
+            market.append($('<b-radio v-model="qty" native-value="1000">1000x</b-radio>'));
+            market.append($('<b-radio v-model="qty" native-value="2500">2500x</b-radio>'));
+        }
+        if (global.tech['currency'] >= 6){
+            market.append($('<b-radio v-model="qty" native-value="10000">10000x</b-radio>'));
+            market.append($('<b-radio v-model="qty" native-value="25000">25000x</b-radio>'));
+        }
     }
 
     vues['market_qty'] = new Vue({
@@ -879,7 +891,7 @@ export function loadMarket(){
 }
 
 export function spatialReasoning(value){
-    if (global.genes['store']){
+    if (global.genes['store'] && !global.race['no_plasmid']){
         let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
         value *= 1 + (global.race.Plasmid.count / divisor);
         value = Math.round(value);
@@ -888,14 +900,23 @@ export function spatialReasoning(value){
 }
 
 export function plasmidBonus(){
-    let plasmids = global.race.Plasmid.count;
     let plasmid_bonus = 0;
-    if (plasmids > 250){
-        let divisor = 500 - plasmids;
-        if (divisor < 250){
-            divisor = 250;
+    if (global.race['no_plasmid']){
+        if (global.city['temple'] && global.city['temple'].count){
+            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
+            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                temple_bonus += global.civic.professor.workers * 0.0004;
+            }
+            plasmid_bonus = global.city.temple.count * temple_bonus;
         }
-        plasmid_bonus = 0.625 + (Math.log(plasmids - 249) / Math.LN2 / divisor);
+        return plasmid_bonus;
+    }
+    let plasmids = global.race.Plasmid.count;
+    if (global.race['decayed']){
+        plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
+    }
+    if (plasmids > 250){
+        plasmid_bonus = 0.625 + (Math.log(plasmids - 249) / Math.LN2 / 250);
     }
     else {
         plasmid_bonus = plasmids / 400;
