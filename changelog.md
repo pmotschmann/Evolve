@@ -5,6 +5,7 @@ New Stuff to discover<br>
 New Achievements to unlock<br>
 Added missing Cyclops racial trait<br>
 World Domination, maybe<br>
+Added soft reset option<br>
 
 #### 0.3.12 - 6/11/2019
 Fixed bug with riot event that caused it to trigger on high morale instead of low morale<br>
