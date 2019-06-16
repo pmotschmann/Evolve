@@ -655,6 +655,10 @@ export const traits = {
         desc: 'Your species is nearsighted and requires bigger font sizes to read.',
         type: 'major',
     },
+    intelligent: { // Professors and Scientists add a global production bonus
+        desc: `Your species always leverages the latest advancements in science to it's full benefit.`,
+        type: 'major',
+    },
     regenerative: { // Wounded soldiers heal twice as fast
         desc: 'Your race inherently heals quickly.',
         type: 'major',
@@ -823,7 +827,7 @@ export function racialTrait(workers,type){
             modifier *= (workers * 0.05) + 0.5;
         }
         else {
-            modifier *= 1 + (1 - (0.95 ** (workers - 10)));
+            modifier *= 1 + (1 - (0.98 ** (workers - 10)));
         }
     }
     if(global.race['cold_blooded'] && type !== 'army' && type !== 'factory' && type !== 'science'){
@@ -885,10 +889,10 @@ export function randomMinorTrait(){
 }
 
 export const biomes = {
-    grassland: '',
-    oceanic: '',
-    forest: '',
-    desert: '',
-    volcanic: '',
-    tundra: ''
+    grassland: 'Grassland worlds are covered in plains and are ideal worlds for farming. They are characterized by easier growing of crops.',
+    oceanic: 'Oceanic worlds are mostly covered by water with same land masses scattered around. They are characterized by increased rainfall.',
+    forest: 'Forest worlds are almost entirely covered with vegetation. They are characterized by an abundance of lumber.',
+    desert: 'Desert worlds are mostly dusty rocks covered in sand. They are characterized by being very sunny.',
+    volcanic: `Volcanic worlds are typically younger planets who haven't yet cooled off. They are characterized by being hot.`,
+    tundra: 'Tundra planets are largely covered in ice and are almost never warm. They are characterized by being cold.'
 };

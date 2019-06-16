@@ -1,9 +1,9 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, moon_on } from './vars.js';
 import { unlockAchieve } from './achieve.js';
-import { races, genus_traits, randomMinorTrait } from './races.js';
+import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineGarrison } from './civics.js';
+import { defineGarrison, buildGarrison, armyRating } from './civics.js';
 import { spaceTech, space } from './space.js';
 import { arpa, gainGene } from './arpa.js';
 
@@ -344,9 +344,26 @@ export const actions = {
                     global.evolution['bryophyte'].count++;
                     removeAction(actions.evolution.bryophyte.id);
                     global.evolution['final'] = 100;
-                    
                     global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        if (global.evolution['chitin']){
+                            global.evolution['sporgar'] = { count: 0 };
+                            global.evolution['shroomi'] = { count: 0 };
+                            addAction('evolution','sporgar');
+                            addAction('evolution','shroomi');
+                        }
+                        else {
+                            global.evolution['entish'] = { count: 0 };
+                            global.evolution['cacti'] = { count: 0 };
+                            addAction('evolution','entish');
+                            addAction('evolution','cacti');
+                        }
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -371,6 +388,18 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['mantis'] = { count: 0 };
+                        global.evolution['scorpid'] = { count: 0 };
+                        global.evolution['antid'] = { count: 0 };
+                        addAction('evolution','mantis');
+                        addAction('evolution','scorpid');
+                        addAction('evolution','antid');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -427,6 +456,18 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['human'] = { count: 0 };
+                        global.evolution['orc'] = { count: 0 };
+                        global.evolution['elven'] = { count: 0 };
+                        addAction('evolution','human');
+                        addAction('evolution','orc');
+                        addAction('evolution','elven');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -453,6 +494,18 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['troll'] = { count: 0 };
+                        global.evolution['orge'] = { count: 0 };
+                        global.evolution['cyclops'] = { count: 0 };
+                        addAction('evolution','troll');
+                        addAction('evolution','orge');
+                        addAction('evolution','cyclops');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -479,6 +532,18 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['kobold'] = { count: 0 };
+                        global.evolution['goblin'] = { count: 0 };
+                        global.evolution['gnome'] = { count: 0 };
+                        addAction('evolution','kobold');
+                        addAction('evolution','goblin');
+                        addAction('evolution','gnome');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -505,6 +570,18 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['cath'] = { count: 0 };
+                        global.evolution['wolven'] = { count: 0 };
+                        global.evolution['centaur'] = { count: 0 };
+                        addAction('evolution','cath');
+                        addAction('evolution','wolven');
+                        addAction('evolution','centaur');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -553,6 +630,18 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['arraak'] = { count: 0 };
+                        global.evolution['pterodacti'] = { count: 0 };
+                        global.evolution['dracnid'] = { count: 0 };
+                        addAction('evolution','arraak');
+                        addAction('evolution','pterodacti');
+                        addAction('evolution','dracnid');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -575,6 +664,18 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['tortoisan'] = { count: 0 };
+                        global.evolution['gecko'] = { count: 0 };
+                        global.evolution['slitheryn'] = { count: 0 };
+                        addAction('evolution','tortoisan');
+                        addAction('evolution','gecko');
+                        addAction('evolution','slitheryn');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -696,68 +797,545 @@ export const actions = {
                         global.race.species = 'human';
                     }
 
-                    global.resource.RNA.display = false;
-                    global.resource.DNA.display = false;
-                    
-                    var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
-                    for (var i = 0; i < evolve_actions.length; i++) {
-                        if (global.race[evolve_actions[i]]){
-                            $('#'+actions.evolution[evolve_actions[i]].id).remove();
-                            $('#pop'+actions.evolution[evolve_actions[i]].id).remove();
-                        }
-                    }
-
-                    Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
-                        global.race[trait] = genus_traits[races[global.race.species].type][trait];
-                    });
-                    Object.keys(races[global.race.species].traits).forEach(function (trait) {
-                        global.race[trait] = races[global.race.species].traits[trait];
-                    });
-                    
-                    defineResources();
-                    if (!global.race['kindling_kindred']){
-                        global.resource.Lumber.display = true;
-                        global.city['lumber'] = 1;
-                    }
-                    else {
-                        global.resource.Stone.display = true;
-                        global.city['stone'] = 1;
-                    }
-                    registerTech('club');
-                    
-                    global.city.calendar.day = 0;
-                    
-                    var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
-                    for (var i = 0; i < city_actions.length; i++) {
-                        if (global.city[city_actions[i]]){
-                            addAction('city',city_actions[i]);
-                        }
-                    }
-                    
-                    global.settings.civTabs = 1;
-                    global.settings.showEvolve = false;
-                    global.settings.showCity = true;
-                    
-                    if (global.race.gods !== 'none'){
-                        global.tech['religion'] = 1;
-                    }
-
-                    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
-                        randomMinorTrait();
-                    }
-
-                    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
-
-                    if (global.race['slow'] || global.race['hyper']){
-                        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-                        window.location.reload();
-                    }
-
-                    defineGarrison();
+                    sentience();
+                }
+                return false;
+            },
+        },
+        human: {
+            id: 'evo-human',
+            title(){ return races.human.name; },
+            desc(){ return `Evolve ${races.human.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.human.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.human.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'human';
+                    sentience();
                 }
                 return false;
             }
-        }
+        },
+        orc: {
+            id: 'evo-orc',
+            title(){ return races.orc.name; },
+            desc(){ return `Evolve ${races.orc.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.orc.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.orc.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'orc';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        elven: {
+            id: 'evo-elven',
+            title(){ return races.elven.name; },
+            desc(){ return `Evolve ${races.elven.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.elven.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.elven.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'elven';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        troll: {
+            id: 'evo-troll',
+            title(){ return races.troll.name; },
+            desc(){ return `Evolve ${races.troll.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.troll.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.troll.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'troll';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        orge: {
+            id: 'evo-orge',
+            title(){ return races.orge.name; },
+            desc(){ return `Evolve ${races.orge.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.orge.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.orge.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'orge';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        cyclops: {
+            id: 'evo-cyclops',
+            title(){ return races.cyclops.name; },
+            desc(){ return `Evolve ${races.cyclops.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.cyclops.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.cyclops.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'cyclops';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        kobold: {
+            id: 'evo-kobold',
+            title(){ return races.kobold.name; },
+            desc(){ return `Evolve ${races.kobold.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.kobold.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.kobold.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'kobold';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        goblin: {
+            id: 'evo-goblin',
+            title(){ return races.goblin.name; },
+            desc(){ return `Evolve ${races.goblin.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.goblin.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.goblin.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'goblin';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        gnome: {
+            id: 'evo-gnome',
+            title(){ return races.gnome.name; },
+            desc(){ return `Evolve ${races.gnome.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.gnome.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.gnome.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'gnome';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        cath: {
+            id: 'evo-cath',
+            title(){ return races.cath.name; },
+            desc(){ return `Evolve ${races.cath.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.cath.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.cath.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'cath';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        wolven: {
+            id: 'evo-wolven',
+            title(){ return races.wolven.name; },
+            desc(){ return `Evolve ${races.wolven.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.wolven.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.wolven.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'wolven';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        centaur: {
+            id: 'evo-centaur',
+            title(){ return races.centaur.name; },
+            desc(){ return `Evolve ${races.centaur.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.centaur.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.centaur.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'centaur';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        tortoisan: {
+            id: 'evo-tortoisan',
+            title(){ return races.tortoisan.name; },
+            desc(){ return `Evolve ${races.tortoisan.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.tortoisan.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.tortoisan.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'tortoisan';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        gecko: {
+            id: 'evo-gecko',
+            title(){ return races.gecko.name; },
+            desc(){ return `Evolve ${races.gecko.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.gecko.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.gecko.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'gecko';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        slitheryn: {
+            id: 'evo-slitheryn',
+            title(){ return races.slitheryn.name; },
+            desc(){ return `Evolve ${races.slitheryn.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.slitheryn.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.slitheryn.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'slitheryn';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        arraak: {
+            id: 'evo-arraak',
+            title(){ return races.arraak.name; },
+            desc(){ return `Evolve ${races.arraak.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.arraak.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.arraak.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'arraak';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        sporgar: {
+            id: 'evo-sporgar',
+            title(){ return races.sporgar.name; },
+            desc(){ return `Evolve ${races.sporgar.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.sporgar.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.sporgar.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'sporgar';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        shroomi: {
+            id: 'evo-shroomi',
+            title(){ return races.shroomi.name; },
+            desc(){ return `Evolve ${races.shroomi.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.shroomi.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.shroomi.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'shroomi';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        mantis: {
+            id: 'evo-mantis',
+            title(){ return races.mantis.name; },
+            desc(){ return `Evolve ${races.mantis.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.mantis.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.mantis.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'mantis';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        scorpid: {
+            id: 'evo-scorpid',
+            title(){ return races.scorpid.name; },
+            desc(){ return `Evolve ${races.scorpid.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.scorpid.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.scorpid.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'scorpid';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        antid: {
+            id: 'evo-antid',
+            title(){ return races.antid.name; },
+            desc(){ return `Evolve ${races.antid.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.antid.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.antid.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'antid';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        entish: {
+            id: 'evo-entish',
+            title(){ return races.entish.name; },
+            desc(){ return `Evolve ${races.entish.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.entish.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.entish.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'entish';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        cacti: {
+            id: 'evo-cacti',
+            title(){ return races.cacti.name; },
+            desc(){ return `Evolve ${races.cacti.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.cacti.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.cacti.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'cacti';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        bunker: {
+            id: 'evo-bunker',
+            title: 'Bunker Gene',
+            desc: '<div>Bunker Gene</div><div class="has-text-special">Opens the challenge mode gene pool</div>',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'Evolve the bunker gene',
+            action(){
+                if (payCosts(actions.evolution.bunker.cost)){
+                    global.evolution['bunker'] = { count: 1 };
+                    removeAction(actions.evolution.bunker.id);
+                    global.evolution['plasmid'] = { count: 0 };
+                    global.evolution['trade'] = { count: 0 };
+                    global.evolution['craft'] = { count: 0 };
+                    global.evolution['crispr'] = { count: 0 };
+                    addAction('evolution','plasmid');
+                    addAction('evolution','trade');
+                    addAction('evolution','craft');
+                    addAction('evolution','crispr');
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        plasmid: {
+            id: 'evo-plasmid',
+            title: 'No Plasmids',
+            desc: 'No Plasmids',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'Plasmid effects are disabled',
+            action(){
+                if (payCosts(actions.evolution.plasmid.cost)){
+                    global.race['no_plasmid'] = 1;
+                    global.evolution['plasmid'] = { count: 1 };
+                    removeAction(actions.evolution.plasmid.id);
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        trade: {
+            id: 'evo-trade',
+            title: 'No Free Trade',
+            desc: 'No Free Trade',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'No marketplace trading (Trade routes Enabled)',
+            action(){
+                if (payCosts(actions.evolution.trade.cost)){
+                    global.race['no_trade'] = 1;
+                    global.evolution['trade'] = { count: 1 };
+                    removeAction(actions.evolution.trade.id);
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        craft: {
+            id: 'evo-craft',
+            title: 'No Manual Crafting',
+            desc: 'No Manual Crafting',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'No manual resource crafting',
+            action(){
+                if (payCosts(actions.evolution.craft.cost)){
+                    global.race['no_craft'] = 1;
+                    global.evolution['craft'] = { count: 1 };
+                    removeAction(actions.evolution.craft.id);
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        crispr: {
+            id: 'evo-crispr',
+            title: 'No Crispr Discounts',
+            desc: 'No Crispr Cost Creep Discounts',
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: 'Crispr cost creep discounts disabled',
+            action(){
+                if (payCosts(actions.evolution.crispr.cost)){
+                    global.race['no_crispr'] = 1;
+                    global.evolution['crispr'] = { count: 1 };
+                    removeAction(actions.evolution.crispr.id);
+                    evoProgress();
+                }
+                return false;
+            }
+        },
     },
     city: {
         food: {
@@ -1179,6 +1757,9 @@ export const actions = {
             },
             effect(){
                 let cap = global.tech.container >= 3 ? 20 : 10;
+                if (global.tech['world_control']){
+                    cap += 10;
+                }
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
@@ -1192,6 +1773,9 @@ export const actions = {
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
                     let cap = global.tech.container >= 3 ? 20 : 10;
+                    if (global.tech['world_control']){
+                        cap += 10;
+                    }
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         cap *= 2;
                     }
@@ -1215,6 +1799,9 @@ export const actions = {
             },
             effect(){
                 let cap = global.tech.steel_container >= 2 ? 20 : 10;
+                if (global.tech['world_control']){
+                    cap += 10;
+                }
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
@@ -1228,6 +1815,9 @@ export const actions = {
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
                     let cap = global.tech['steel_container'] >= 2 ? 20 : 10;
+                    if (global.tech['world_control']){
+                        cap += 10;
+                    }
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         cap *= 2;
                     }
@@ -1276,6 +1866,9 @@ export const actions = {
                 if (global.tech['stock_exchange']){
                     vault *= 1 + (global.tech['stock_exchange'] * 0.1);
                 }
+                if (global.tech['world_control']){
+                    vault *= 1.25;
+                }
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
                 if (global.tech['banking'] >= 2){
@@ -1298,7 +1891,7 @@ export const actions = {
         lumber_yard: {
             id: 'city-lumber_yard',
             title: 'Lumber Yard',
-            desc: 'Increases lumberjack capacity',
+            desc: 'Increases lumber production',
             reqs: { axe: 1 },
             cost: { 
                 Money(){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', 5, 1.85);} else { return 0; } },
@@ -1649,13 +2242,16 @@ export const actions = {
             },
             effect() { 
                 let oil = spatialReasoning(1000);
+                oil *= global.tech['world_control'] ? 1.5 : 1;
                 let effect = `<div>+${oil} Max Oil.</div>`;
                 if (global.resource['Helium_3'].display){
                     let val = spatialReasoning(400);
+                    val *= global.tech['world_control'] ? 1.5 : 1;
                     effect = effect + `<div>+${val} Max Helium-3.</div>`;
                 }
                 if (global.tech['uranium'] >= 2){
                     let val = spatialReasoning(250);
+                    val *= global.tech['world_control'] ? 1.5 : 1;
                     effect = effect + `<div>+${val} Max Uranium.</div>`;
                 }
                 return effect;
@@ -1663,9 +2259,12 @@ export const actions = {
             action(){
                 if (payCosts(actions.city.oil_depot.cost)){
                     global.city['oil_depot'].count++;
-                    global['resource']['Oil'].max += spatialReasoning(1000);
+                    global['resource']['Oil'].max += spatialReasoning(1000) * (global.tech['world_control'] ? 1.5 : 1);
+                    if (global.resource['Helium_3'].display){
+                        global['resource']['Helium_3'].max += spatialReasoning(400) * (global.tech['world_control'] ? 1.5 : 1);
+                    }
                     if (global.tech['uranium'] >= 2){
-                        global['resource']['Uranium'].max += spatialReasoning(250);
+                        global['resource']['Uranium'].max += spatialReasoning(250) * (global.tech['world_control'] ? 1.5 : 1);
                     }
                     return true;
                 }
@@ -1712,14 +2311,15 @@ export const actions = {
             },
             effect(){
                 let routes = 2;
-                return `<div>+${routes} Trade Routes</div><div>+1% Trade Route Profitability</div><div>+10 Max Crates</div><div>+10 Max Containers</div>`; 
+                let containers = global.tech['world_control'] ? 15 : 10;
+                return `<div>+${routes} Trade Routes</div><div>+1% Trade Route Profitability</div><div>+${containers} Max Crates</div><div>+${containers} Max Containers</div>`; 
             },
             action(){
                 if (payCosts(actions.city.wharf.cost)){
                     global.city['wharf'].count++;
                     global.city.market.mtrade += 2;
-                    global.resource.Crates.max += 10;
-                    global.resource.Containers.max += 10;
+                    global.resource.Crates.max += global.tech['world_control'] ? 15 : 10;
+                    global.resource.Containers.max += global.tech['world_control'] ? 15 : 10;
                     return true;
                 }
                 return false;
@@ -1784,6 +2384,9 @@ export const actions = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
+                if (global.tech['world_control']){
+                    money *= 1.25;
+                }
                 return `<div>+${money} Max Money</div><div>+1 Max Entertainer</div><div>+1% Max Morale</div>`;
             },
             action(){
@@ -1812,11 +2415,21 @@ export const actions = {
                 Cement(){ return costMultiplier('temple', 10, 1.36); }
             },
             effect(){
-                let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
-                if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                    plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
+                let desc;
+                if (global.race['no_plasmid']){
+                    let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
+                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                        faith += +(global.civic.professor.workers * 0.04).toFixed(1);
+                    }
+                    desc = `<div>Increases production by ${faith}%.</div>`;
                 }
-                let desc = `<div>Increases the production effect of Plasmids by ${plasmid}%.</div>`;
+                else {
+                    let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
+                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                        plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
+                    }
+                    desc = `<div>Increases the production effect of Plasmids by ${plasmid}%.</div>`;
+                }
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
                     desc = desc + '<div>+1 Trade Route</div>';
                 }
@@ -2685,7 +3298,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 165000; }
             },
-            effect: '<span>High tech robotic machinary can booot the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            effect: '<span>High tech robotic machinery can boost the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
             action(){
                 if (payCosts(actions.tech.automation.cost)){
                     return true;
@@ -3990,6 +4603,31 @@ export const actions = {
                 return false;
             }
         },
+        world_collider: {
+            id: 'tech-world_collider',
+            title: 'World Collider',
+            desc: 'World Collider',
+            reqs: { science: 9, elerium: 2 },
+            grant: ['science',10],
+            cost: {
+                Knowledge(){ return 350000; }
+            },
+            effect(){ return `Design the largest supercollider ever conceived, a massive 1859 mile track that spans the entire circumference of ${races[global.race.species].solar.dwarf}.` },
+            action(){
+                if (payCosts(actions.tech.world_collider.cost)){
+                    global.space['world_collider'] = {
+                        count: 0
+                    };
+                    global.space['world_controller'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    return true;
+                }
+                return false;
+            },
+            flair: `<div>Despite its dramatic name,</div><div>this does not smash actual worlds together.</div>`
+        },
         bioscience: {
             id: 'tech-bioscience',
             title: 'Bioscience',
@@ -4118,7 +4756,8 @@ export const actions = {
                         on: 0,
                         Lux: 0,
                         Alloy: 0,
-                        Polymer: 0
+                        Polymer: 0,
+                        Nano: 0
                     };
                     return true;
                 }
@@ -4246,7 +4885,7 @@ export const actions = {
             id: 'tech-artifical_intelligence',
             title: 'Artifical Intelligence',
             desc: 'Artifical Intelligence',
-            reqs: { high_tech: 9, locked: 1 },
+            reqs: { high_tech: 9 },
             grant: ['high_tech',10],
             cost: {
                 Knowledge(){ return 325000; }
@@ -4260,6 +4899,46 @@ export const actions = {
             },
             flair(){
                 return `When the testing is over, you will be missed.`;
+            }
+        },
+        quantum_computing: {
+            id: 'tech-quantum_computing',
+            title: 'Quantum Computing',
+            desc: 'Quantum Computing',
+            reqs: { high_tech: 10, nano: 1 },
+            grant: ['high_tech',11],
+            cost: {
+                Knowledge(){ return 435000; },
+                Elerium(){ return 250 },
+                Nano_Tube(){ return 100000 }
+            },
+            effect: `Quantium computing is a greap leap fowards in processing power.`,
+            action(){
+                if (payCosts(actions.tech.quantum_computing.cost)){
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return `It's as cool as it sounds.`;
+            }
+        },
+        worker_drone: {
+            id: 'tech-worker_drone',
+            title: 'Worker Drones',
+            desc: 'Worker Drones',
+            reqs: { nano: 1 },
+            grant: ['drone',1],
+            cost: {
+                Knowledge(){ return 400000; },
+            },
+            effect: 'Advanced computer models could help design a super material known as carbon nano tubes.',
+            action(){
+                if (payCosts(actions.tech.polymer.cost)){
+                    global.space['drone'] = { count: 0 };
+                    return true;
+                }
+                return false;
             }
         },
         uranium: {
@@ -4326,7 +5005,7 @@ export const actions = {
                 Uranium(){ return 250; },
                 Iridium(){ return 1000; }
             },
-            effect: 'Breeder reactors allow you to more fully consume nuclear fuel which increases the total output of fission reactors.',
+            effect: 'Breeder reactors allow you to more fully consume nuclear fuel, which increases the total output of fission reactors.',
             action(){
                 if (payCosts(actions.tech.breeder_reactor.cost)){
                     return true;
@@ -4487,7 +5166,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 170000; }
             },
-            effect: 'Mass drivers use an electromagnetic rail to launch payloads into orbit and can be used to reduce fuel consumption required by traditional rocket launches.',
+            effect: 'Mass drivers use an electromagnetic rail to launch payloads into orbit, and can be used to reduce fuel consumption required by traditional rocket launches.',
             action(){
                 if (payCosts(actions.tech.mass_driver.cost)){
                     global.city['mass_driver'] = {
@@ -4532,6 +5211,28 @@ export const actions = {
             effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%.',
             action(){
                 if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        nano_tubes: {
+            id: 'tech-nano_tubes',
+            title: 'Nano Tubes',
+            desc: 'Nano Tubes',
+            reqs: { high_tech: 10 },
+            grant: ['nano',1],
+            cost: {
+                Knowledge(){ return 375000; },
+                Coal(){ return 100000; },
+                Neutronium(){ return 1000; }
+            },
+            effect: 'Advanced computer models could help design a super material known as carbon nano tubes.',
+            action(){
+                if (payCosts(actions.tech.polymer.cost)){
+                    global.resource.Nano_Tube.display = true;
+                    global.city.factory['Nano'] = 0;
+                    messageQueue('Nano Tubes are now available for manufacture');
                     return true;
                 }
                 return false;
@@ -4817,7 +5518,7 @@ export const actions = {
         jackhammer_mk2: {
             id: 'tech-jackhammer_mk2',
             title: 'Electric Jackhammer',
-            desc: 'Modern Jackhammers',
+            desc: 'Electric Jackhammers',
             reqs: { pickaxe: 4, high_tech: 4},
             grant: ['pickaxe',5],
             cost: {
@@ -5434,6 +6135,23 @@ export const actions = {
                 return false;
             }
         },
+        dimensional_compression: {
+            id: 'tech-dimensional_compression',
+            title: 'Dimension Compression',
+            desc: 'Dimensional Compression',
+            reqs: { particles: 3, science: 11, supercollider: 3 },
+            grant: ['particles',4],
+            cost: {
+                Knowledge(){ return 425000; }
+            },
+            effect: 'Supercollider space compression effect now applies to garages.',
+            action(){
+                if (payCosts(actions.tech.higgs_boson.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         theology: {
             id: 'tech-theology',
             title: 'Theology',
@@ -5926,10 +6644,78 @@ export const actions = {
             cost: {
                 Knowledge(){ return 250000; }
             },
-            effect(){ return `Manufactoring and deploying swarm satellites are expensive because of the distance from ${races[global.race.species].home}. By establishing automated facilities on ${races[global.race.species].solar.hell} which is much closer to the sun you can lower the costs.` },
+            effect(){ return `Manufacturing and deploying swarm satellites is expensive because of the distance from ${races[global.race.species].home}. By establishing automated facilities on ${races[global.race.species].solar.hell}, which is much closer to the sun, you can lower the costs.` },
             action(){
                 if (payCosts(actions.tech.swarm_plant.cost)){
                     global.space['swarm_plant'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        space_sourced: {
+            id: 'tech-space_sourced',
+            title: 'Space Sourced',
+            desc: 'Space Sourced Iron',
+            reqs: { solar: 4, asteroid: 3 },
+            grant: ['solar',5],
+            cost: {
+                Knowledge(){ return 300000; }
+            },
+            effect(){ return `Space sourced iron can reduce the volume needed to construct swarm plants.` },
+            action(){
+                if (payCosts(actions.tech.space_sourced.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        swarm_plant_ai: {
+            id: 'tech-swarm_plant_ai',
+            title: 'Swarm Plant AI',
+            desc: 'Swarm Plant AI',
+            reqs: { solar: 4, high_tech: 10 },
+            grant: ['swarm',1],
+            cost: {
+                Knowledge(){ return 335000; }
+            },
+            effect(){ return `Advanced AI controlling the production at swarm facilities could boost their productivity.` },
+            action(){
+                if (payCosts(actions.tech.swarm_plant_ai.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        swarm_control_ai: {
+            id: 'tech-swarm_control_ai',
+            title: 'Swarm Control AI',
+            desc: 'Swarm Control AI',
+            reqs: { swarm: 1 },
+            grant: ['swarm',2],
+            cost: {
+                Knowledge(){ return 360000; }
+            },
+            effect(){ return `With AI controlling your solar swarm, you can operate up to 6 satellites per control station.` },
+            action(){
+                if (payCosts(actions.tech.swarm_control_ai.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        quantium_swarm: {
+            id: 'tech-quantium_swarm',
+            title: 'Quantium Swarm',
+            desc: 'Quantium Swarm',
+            reqs: { swarm: 2, high_tech: 11 },
+            grant: ['swarm',3],
+            cost: {
+                Knowledge(){ return 465000; }
+            },
+            effect(){ return `By upgrading your swarm plant AI with quantium processors the efficency of the plants are limited only by your capacity for knowledge.` },
+            action(){
+                if (payCosts(actions.tech.quantium_swarm.cost)){
                     return true;
                 }
                 return false;
@@ -6050,6 +6836,23 @@ export const actions = {
                 return false;
             }
         },
+        laser_mining: {
+            id: 'tech-laser_mining',
+            title: 'Laser Mining',
+            desc: 'Laser Mining',
+            reqs: { asteroid: 5, elerium: 1, high_tech: 9 },
+            grant: ['asteroid',6],
+            cost: {
+                Knowledge(){ return 350000; },
+            },
+            effect: 'Laser mining drills can cut through asteroids quicker then traditional drills.',
+            action(){
+                if (payCosts(actions.tech.laser_mining.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         elerium_tech: {
             id: 'tech-elerium_tech',
             title: 'Elerium Theory',
@@ -6060,7 +6863,7 @@ export const actions = {
                 Knowledge(){ return 275000; },
                 Elerium(){ return 20; }
             },
-            effect: `Study the elerium to unlock it's mysteries.`,
+            effect: `Study the elerium to unlock its mysteries.`,
             action(){
                 if (payCosts(actions.tech.elerium_tech.cost)){
                     return true;
@@ -6078,7 +6881,7 @@ export const actions = {
                 Knowledge(){ return 325000; },
                 Elerium(){ return 180; }
             },
-            effect(){ return `Elerium is highly energetic and the prospect of making a power source of it is too good to ignore.` },
+            effect(){ return `Elerium is highly energetic, and the prospect of making a power source out of it is too good to ignore.` },
             action(){
                 if (payCosts(actions.tech.elerium_reactor.cost)){
                     global.space['e_reactor'] = { count: 0, on: 0 };
@@ -6105,9 +6908,323 @@ export const actions = {
                 return false;
             }
         },
+        unification: {
+            id: 'tech-unification',
+            title: 'Unification',
+            desc(){ return `${races[global.race.species].home} Unification`; },
+            reqs: { mars: 2 },
+            grant: ['unify',1],
+            cost: {
+                Knowledge(){ return 200000; }
+            },
+            effect(){ return `Come up with a plan to unify the world under your control.`; },
+            action(){
+                if (payCosts(actions.tech.unification.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        wc_conquest: {
+            id: 'tech-wc_conquest',
+            title: 'Conquest',
+            desc(){
+                let military = global.race['no_plasmid'] ? 525 : 600;
+                if (global.race['no_crispr']){
+                    military -= 75;
+                }
+                return `<div>${races[global.race.species].home} Conquest</div><div class="has-text-special">Requires ${military} Army Rating</div>`;
+            },
+            reqs: { unify: 1 },
+            grant: ['unify',2],
+            cost: {},
+            effect(){
+                return `<div>Attempt to conquer the world with your superior military might.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
+            },
+            action(){
+                let rating = global.race['no_plasmid'] ? 525 : 600;
+                if (global.race['no_crispr']){
+                    rating -= 75;
+                }
+                if (armyRating(global.civic.garrison.raid,'army') >= rating){
+                    global.tech['world_control'] = 1;
+                    $('#garrison').empty();
+                    $('#mad').empty();
+                    buildGarrison($('#garrison'));
+                    unlockAchieve(`world_domination`);
+                    return true;
+                }
+                return false;
+            }
+        },
+        wc_morale: {
+            id: 'tech-wc_morale',
+            title: 'Cultural Supremacy',
+            desc(){
+                let morale = global.race['no_plasmid'] ? 140 : 150;
+                if (global.race['no_crispr']){
+                    morale -= 10;
+                }
+                return `<div>${races[global.race.species].home} Cultural Supremacy</div><div class="has-text-special">Requires ${morale}% Morale</div>`;
+            },
+            reqs: { unify: 1 },
+            grant: ['unify',2],
+            cost: {},
+            effect(){
+                return `<div>Use your superior culture to try and take over ${races[global.race.species].home}.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
+            },
+            action(){
+                let morale = global.race['no_plasmid'] ? 140 : 150;
+                if (global.race['no_crispr']){
+                    morale -= 10;
+                }
+                if (global.city.morale.current >= morale){
+                    global.tech['world_control'] = 1;
+                    $('#garrison').empty();
+                    $('#mad').empty();
+                    buildGarrison($('#garrison'));
+                    unlockAchieve(`illuminati`);
+                    return true;
+                }
+                return false;
+            }
+        },
+        wc_money: {
+            id: 'tech-wc_money',
+            title: 'Buy the World',
+            desc(){
+                let price = global.race['no_plasmid'] ? 3 : 5;
+                if (global.race['no_crispr']){
+                    price -= 1;
+                }
+                return `<div>${races[global.race.species].home} Subversion</div><div class="has-text-special">Requires \$${price} Million</div>`;
+            },
+            reqs: { unify: 1 },
+            grant: ['unify',2],
+            cost: {},
+            effect(){
+                return `<div>Attempt to seize control of ${races[global.race.species].home} by funding subversive activities.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
+            },
+            action(){
+                let price = global.race['no_plasmid'] ? 3000000 : 5000000;
+                if (global.race['no_crispr']){
+                    price -= 1000000;
+                }
+                if (global.resource.Money.amount >= price){
+                    global.resource.Money.amount -= price;
+                    global.tech['world_control'] = 1;
+                    $('#garrison').empty();
+                    $('#mad').empty();
+                    buildGarrison($('#garrison'));
+                    unlockAchieve(`syndicate`);
+                    return true;
+                }
+                return false;
+            }
+        },
+        wc_reject: {
+            id: 'tech-wc_reject',
+            title: 'Reject Unity',
+            desc(){ return `Reject Unity`; },
+            reqs: { unify: 1 },
+            grant: ['unify',2],
+            cost: {},
+            effect(){ return `<div>Give up on your plans for world domination. Instead focus on improving your own society</div><div class="has-text-special">Game stays the same, gain a 10% morale bonus.</div>`; },
+            action(){
+                if (payCosts(actions.tech.wc_reject.cost)){
+                    global.tech['m_boost'] = 1;
+                    unlockAchieve(`cult_of_personality`);
+                    return true;
+                }
+                return false;
+            }
+        },
+        genesis: {
+            id: 'tech-genesis',
+            title: 'Genesis Project',
+            desc: 'Genesis Project',
+            reqs: { genesis: 1 },
+            grant: ['genesis',2],
+            cost: {
+                Knowledge(){ return 350000; }
+            },
+            effect(){ return `Our species appears to be doomed, research the possibly of leaving behind a lasting legacy by bioseeding a planet in another star system with life of our design.` },
+            action(){
+                if (payCosts(actions.tech.genesis.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        star_dock: {
+            id: 'tech-star_dock',
+            title: 'Star Dock',
+            desc: 'Star Dock',
+            reqs: { genesis: 2, space: 5 },
+            grant: ['genesis',3],
+            cost: {
+                Knowledge(){ return 380000; },
+            },
+            effect(){ return `Design a space based ship yard which can be used to construct advanced ships.` },
+            action(){
+                if (payCosts(actions.tech.star_dock.cost)){
+                    global.space['star_dock'] = {
+                        count: 0,
+                        ship: 0,
+                        probe: 0,
+                        template: global.race.species
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        interstellar: {
+            id: 'tech-interstellar',
+            title: 'Interstellar Probes',
+            desc: 'Interstellar Probes',
+            reqs: { genesis: 3 },
+            grant: ['genesis',4],
+            cost: {
+                Knowledge(){ return 400000; },
+            },
+            effect(){ return `Scouting outside the solar system will require much more advanced probe designs than what is currently employed.` },
+            action(){
+                if (payCosts(actions.tech.interstellar.cost)){
+                    global.starDock['probes'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        genesis_ship: {
+            id: 'tech-genesis_ship',
+            title: 'Genesis Ship',
+            desc: 'Genesis Ship',
+            reqs: { genesis: 4 },
+            grant: ['genesis',5],
+            cost: {
+                Knowledge(){ return 425000; },
+            },
+            effect(){ return `Design the genesis ship which will be used to bioseed a far away planet.` },
+            action(){
+                if (payCosts(actions.tech.genesis_ship.cost)){
+                    global.starDock['seeder'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        genetic_decay: {
+            id: 'tech-genetic_decay',
+            title: 'Gene Therapy',
+            desc: 'Gene Therapy',
+            reqs: { decay: 1 },
+            grant: ['decay',2],
+            cost: {
+                Knowledge(){ return 200000; }
+            },
+            effect(){ return `Research the genetic decay problem and try to find a solution.` },
+            action(){
+                if (payCosts(actions.tech.genetic_decay.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
-    space: spaceTech()
+    space: spaceTech(),
+    starDock: {
+        probes: {
+            id: 'spcdock-probes',
+            title: 'Space Probe',
+            desc(){
+                return `<div>Interstellar Probe</div>`;
+            },
+            reqs: { genesis: 4 },
+            cost: {
+                Money(){ return costMultiplier('probes', 500000, 1.25,'starDock'); },
+                Alloy(){ return costMultiplier('probes', 125000, 1.25,'starDock'); },
+                Polymer(){ return costMultiplier('probes', 150000, 1.25,'starDock'); },
+                Iridium(){ return costMultiplier('probes', 20000, 1.25,'starDock'); },
+                Mythril(){ return costMultiplier('probes', 10000, 1.25,'starDock'); },
+            },
+            effect(){
+                return `<div>Each interstellar probe increases the number of target worlds your bioseeder ship can scout by one.</div>`;
+            },
+            action(){
+                if (payCosts(actions.starDock.probes.cost)){
+                    global.starDock.probes.count++;
+                    return true;
+                }
+                return false;
+            },
+        },
+        seeder: {
+            id: 'spcdock-seeder',
+            title: 'Bioseeder Ship',
+            desc(){
+                if (global.starDock.seeder.count >= 100){
+                    return `<div>Bioseeder Ship</div><div class="has-text-special">Status: Complete</div>`;
+                }
+                else {
+                    return `<div>Bioseeder Ship</div><div class="has-text-special">Requires 100 segments</div>`;
+                }
+            },
+            reqs: { genesis: 5 },
+            cost: {
+                Money(){ return global.starDock.seeder.count < 100 ? 100000 : 0; },
+                Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
+                Neutronium(){ return global.starDock.seeder.count < 100 ? 300 : 0; },
+                Elerium(){ return global.starDock.seeder.count < 100 ? 10 : 0; },
+                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 18000 : 0; },
+            },
+            effect(){
+                let remain = global.starDock.seeder.count < 100 ? `${100 - global.starDock.seeder.count} segments remaining`: `The ship is complete`;
+                return `<div>The "Genesis" ship. This is an automated ship that will travel for hundreds of years to reach a target and bioseed it with new life.</div><div class="has-text-special">${remain}</div>`;
+            },
+            action(){
+                if (global.starDock.seeder.count < 100 && payCosts(actions.starDock.seeder.cost)){
+                    global.starDock.seeder.count++;
+                    if (global.starDock.seeder.count >= 100){
+                        global.tech.genesis = 6;
+                        $('#popspcdock-seeder').remove();
+                        $('#modalBox').empty();
+                        let c_action = actions.space.spc_gas.star_dock;
+                        drawModal(c_action,'star_dock');
+                    }
+                    return true;
+                }
+                return false;
+            },
+        },
+        launch_ship: {
+            id: 'spcdock-launch_ship',
+            title: 'Launch Ship',
+            desc(){
+                return `<div>Launch the Bioseeder Ship</div><div class="has-text-danger">Resets the game</div>`;
+            },
+            reqs: { genesis: 6 },
+            cost: {},
+            effect(){
+                let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
+                let plasmid = Math.round(pop / 3);
+                let k_base = global.stats.know;
+                let k_inc = 50000;
+                while (k_base > k_inc){
+                    plasmid++;
+                    k_base -= k_inc;
+                    k_inc *= 1.015;
+                }
+                return `<div>Launch the "Genesis" ship. You will seed life in a far away star system and take over as the species that evoles there.</div><div class="has-text-special">You will gain ${plasmid} Plasmids</div>`;
+            },
+            action(){
+                bioseed();
+                return false;
+            },
+        },
+    }
 };
 
 export function storageMultipler(){
@@ -6121,6 +7238,7 @@ export function storageMultipler(){
     if (global.tech['storage'] >= 6){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
     }
+    multiplier *= global.tech['world_control'] ? 3 : 1;
     return multiplier;
 }
 
@@ -6325,49 +7443,54 @@ export function setAction(c_action,action,type,old){
         },
         methods: {
             action(){
-                switch (action){
-                    case 'tech':
-                        if (c_action.action()){
-                            gainTech(type);
-                        }
-                        break;
-                    case 'genes':
-                        if (c_action.action()){
-                            gainGene(type);
-                        }
-                        break;
-                    default:
-                        let keyMult = keyMultiplier();
-                        if (c_action['grant']){
-                            keyMult = 1;
-                        }
-                        let grant = false;
-                        for (var i=0; i<keyMult; i++){
-                            if (!c_action.action()){
-                                break;
+                if (c_action.id === 'spcdock-launch_ship'){
+                    c_action.action();
+                }
+                else {
+                    switch (action){
+                        case 'tech':
+                            if (c_action.action()){
+                                gainTech(type);
                             }
-                            grant = true;
-                        }
-                        if (!checkAffordable(c_action)){
-                            let id = c_action.id;
-                            $(`#${id}`).addClass('cna');
-                        }
-                        if (c_action['grant'] && grant){
-                            let tech = c_action.grant[0];
-                            global.tech[tech] = c_action.grant[1];
-                            removeAction(c_action.id);
-                            drawCity();
-                            drawTech();
-                            space();
-                        }
-                        else if (c_action['refresh']){
-                            removeAction(c_action.id);
-                            drawCity();
-                            drawTech();
-                            space();
-                        }
-                        updateDesc(c_action,action,type);
-                        break;
+                            break;
+                        case 'genes':
+                            if (c_action.action()){
+                                gainGene(type);
+                            }
+                            break;
+                        default:
+                            let keyMult = keyMultiplier();
+                            if (c_action['grant']){
+                                keyMult = 1;
+                            }
+                            let grant = false;
+                            for (var i=0; i<keyMult; i++){
+                                if (!c_action.action()){
+                                    break;
+                                }
+                                grant = true;
+                            }
+                            if (!checkAffordable(c_action)){
+                                let id = c_action.id;
+                                $(`#${id}`).addClass('cna');
+                            }
+                            if (c_action['grant'] && grant){
+                                let tech = c_action.grant[0];
+                                global.tech[tech] = c_action.grant[1];
+                                removeAction(c_action.id);
+                                drawCity();
+                                drawTech();
+                                space();
+                            }
+                            else if (c_action['refresh']){
+                                removeAction(c_action.id);
+                                drawCity();
+                                drawTech();
+                                space();
+                            }
+                            updateDesc(c_action,action,type);
+                            break;
+                    }
                 }
             },
             trigModal(){
@@ -6379,7 +7502,7 @@ export function setAction(c_action,action,type,old){
                 var checkExist = setInterval(function() {
                    if ($('#modalBox').length > 0) {
                       clearInterval(checkExist);
-                      drawModal(action,type);
+                      drawModal(c_action,type);
                    }
                 }, 50);
             },
@@ -6401,10 +7524,77 @@ export function setAction(c_action,action,type,old){
         }
     });
     vues[id].$mount('#'+id);
+    let pop_target = action === 'starDock' ? 'body .modal' : '#main';
+    $('#'+id).on('mouseover',function(){
+            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
+            $(pop_target).append(popper);
+            actionDesc(popper,c_action,old);
+            popper.show();
+            poppers[id] = new Popper($('#'+id),popper);
+        });
+    $('#'+id).on('mouseout',function(){
+            $(`#pop${id}`).hide();
+            poppers[id].destroy();
+            $(`#pop${id}`).remove();
+        });
+}
+
+export function setPlanet(){
+    var biome = 'grassland';
+    switch (Math.floor(Math.seededRandom(0,6))){
+        case 0:
+            biome = 'grassland';
+            break;
+        case 1:
+            biome = 'oceanic';
+            break;
+        case 2:
+            biome = 'forest';
+            break;
+        case 3:
+            biome = 'desert';
+            break;
+        case 4:
+            biome = 'volcanic';
+            break;
+        case 5:
+            biome = 'tundra';
+            break;
+        default:
+            biome = 'grassland';
+            break;
+    }
+
+    var id = biome+Math.floor(Math.seededRandom(0,10000));
+    id = id.charAt(0).toUpperCase() + id.slice(1);
+
+    var orbit = Math.floor(Math.seededRandom(200,600));
+
+    var parent = $(`<div id="${id}" class="action"></div>`);
+    var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${id}</span></a>`);
+    parent.append(element);
+
+    $('#evolution').append(parent);
+
+    $('#'+id).on('click',function(){
+        global.race['chose'] = id;
+        global.city.biome = biome;
+        global.city.calendar.orbit = orbit;
+        $('#evolution').empty();
+        $(`#pop${id}`).hide();
+        poppers[id].destroy();
+        $(`#pop${id}`).remove();
+        addAction('evolution','rna');
+    });
+
     $('#'+id).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            actionDesc(popper,c_action,old);
+            
+            popper.append($(`<div>${id}</div>`));
+            popper.append($(`<div>${id} is a ${biome} planet with an orbital period of ${orbit} days.</div>`));
+            popper.append($(`<div>${biomes[biome]}</div>`));
+
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
@@ -6595,7 +7785,10 @@ function checkCosts(costs){
     return test;
 }
 
-function costMultiplier(structure,base,mutiplier){
+function costMultiplier(structure,base,mutiplier,cat){
+    if (!cat){
+        cat = 'city';
+    }
     if (global.race['small']){ mutiplier -= 0.01; }
     else if (global.race['large']){ mutiplier += 0.01; }
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
@@ -6618,22 +7811,23 @@ function costMultiplier(structure,base,mutiplier){
             mutiplier -= 0.02;
         }
     }
-    if (global.genes['creep']){
+    if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }
     if (mutiplier < 0.01){
         mutiplier = 0.01;
     }
-    var count = global.city[structure] ? global.city[structure].count : 0;
+    var count = global[cat][structure] ? global[cat][structure].count : 0;
     return Math.round((mutiplier ** count) * base);
 }
 
-function drawModal(action,type){
-    if (action === 'space' && type === 'red_factory'){
-        action = 'city';
+function drawModal(c_action,type){
+    if (type === 'red_factory'){
         type = 'factory';
     }
-    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${actions[action][type].title}</p>`));
+
+    let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}</p>`));
     
     var body = $('<div id="specialModal" class="modalBody"></div>');
     $('#modalBox').append(body);
@@ -6645,6 +7839,33 @@ function drawModal(action,type){
         case 'factory':
             factoryModal(body);
             break;
+        case 'star_dock':
+            starDockModal(body);
+            break;
+    }
+}
+
+function starDockModal(modal){
+    if (global.tech['genesis'] < 4){
+        let warn = $('<div><span class="has-text-warning">You must complete plans for your interstellar craft first</span></div>');
+        modal.append(warn);
+        return;
+    }
+
+    let dock = $(`<div id="starDock" class="actionSpace"></div>`);
+    modal.append(dock);
+
+    let c_action = actions.starDock.probes;
+    setAction(c_action,'starDock','probes');
+    
+    if (global.tech['genesis'] >= 5){
+        let c_action = actions.starDock.seeder;
+        setAction(c_action,'starDock','seeder');
+    }
+
+    if (global.tech['genesis'] >= 6){
+        let c_action = actions.starDock.launch_ship;
+        setAction(c_action,'starDock','launch_ship');
     }
 }
 
@@ -6674,7 +7895,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated><span class="current">Oil {{ Oil }}</span></b-tooltip>`);
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">Oil {{ Oil }}</span></b-tooltip>`);
         let subOil = $('<span class="sub" @click="subOil">&laquo;</span>');
         let addOil = $('<span class="add" @click="addOil">&raquo;</span>');
         fuelTypes.append(subOil);
@@ -6695,60 +7916,96 @@ function smelterModal(modal){
         data: global.city['smelter'],
         methods: {
             subWood(){
-                if (global.city.smelter.Wood > 0){
-                    global.city.smelter.Wood--;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
-                        if (global.city.smelter.Steel > 0){
-                            global.city.smelter.Steel--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Wood > 0){
+                        global.city.smelter.Wood--;
+                        if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                            if (global.city.smelter.Steel > 0){
+                                global.city.smelter.Steel--;
+                            }
+                            else {
+                                global.city.smelter.Iron--;
+                            }
                         }
-                        else {
-                            global.city.smelter.Iron--;
-                        }
+                    }
+                    else {
+                        break;
                     }
                 }
             },
             addWood(){
-                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
-                    global.city.smelter.Wood++;
-                    global.city.smelter.Iron++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                        global.city.smelter.Wood++;
+                        global.city.smelter.Iron++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             subCoal(){
-                if (global.city.smelter.Coal > 0){
-                    global.city.smelter.Coal--;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
-                        if (global.city.smelter.Steel > 0){
-                            global.city.smelter.Steel--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Coal > 0){
+                        global.city.smelter.Coal--;
+                        if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                            if (global.city.smelter.Steel > 0){
+                                global.city.smelter.Steel--;
+                            }
+                            else {
+                                global.city.smelter.Iron--;
+                            }
                         }
-                        else {
-                            global.city.smelter.Iron--;
-                        }
+                    }
+                    else {
+                        break;
                     }
                 }
             },
             addCoal(){
-                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
-                    global.city.smelter.Coal++;
-                    global.city.smelter.Iron++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                        global.city.smelter.Coal++;
+                        global.city.smelter.Iron++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             subOil(){
-                if (global.city.smelter.Oil > 0){
-                    global.city.smelter.Oil--;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
-                        if (global.city.smelter.Steel > 0){
-                            global.city.smelter.Steel--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Oil > 0){
+                        global.city.smelter.Oil--;
+                        if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                            if (global.city.smelter.Steel > 0){
+                                global.city.smelter.Steel--;
+                            }
+                            else {
+                                global.city.smelter.Iron--;
+                            }
                         }
-                        else {
-                            global.city.smelter.Iron--;
-                        }
+                    }
+                    else {
+                        break;
                     }
                 }
             },
             addOil(){
-                if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
-                    global.city.smelter.Oil++;
-                    global.city.smelter.Iron++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                        global.city.smelter.Oil++;
+                        global.city.smelter.Iron++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             ironLabel(){
@@ -6772,23 +8029,35 @@ function smelterModal(modal){
                 return `Smelt Steel, consumes 0.25 Coal and 2 Iron per second but produces ${boost} Steel`;
             },
             ironSmelting(){
-                let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
-                if (global.city.smelter.Iron + global.city.smelter.Steel < count){
-                    global.city.smelter.Iron++;
-                }
-                else if (global.city.smelter.Iron < count && global.city.smelter.Steel > 0){
-                    global.city.smelter.Iron++;
-                    global.city.smelter.Steel--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+                    if (global.city.smelter.Iron + global.city.smelter.Steel < count){
+                        global.city.smelter.Iron++;
+                    }
+                    else if (global.city.smelter.Iron < count && global.city.smelter.Steel > 0){
+                        global.city.smelter.Iron++;
+                        global.city.smelter.Steel--;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             steelSmelting(){
-                let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
-                if (global.city.smelter.Iron + global.city.smelter.Steel < count){
-                    global.city.smelter.Steel++;
-                }
-                else if (global.city.smelter.Steel < count && global.city.smelter.Iron > 0){
-                    global.city.smelter.Steel++;
-                    global.city.smelter.Iron--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+                    if (global.city.smelter.Iron + global.city.smelter.Steel < count){
+                        global.city.smelter.Steel++;
+                    }
+                    else if (global.city.smelter.Steel < count && global.city.smelter.Iron > 0){
+                        global.city.smelter.Steel++;
+                        global.city.smelter.Iron--;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             buildLabel: function(type){
@@ -6798,10 +8067,15 @@ function smelterModal(modal){
                         break;
                     case 'coal':
                         let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
-                        return `Consume ${coal_fuel} Coal/s to fuel a smelter`;
+                        if (global.tech['uranium'] && global.tech['uranium'] >= 3){
+                            return `Burn ${coal_fuel} Coal/s to fuel a smelter and produce trace amounts of uranium.`;
+                        }
+                        else {
+                            return `Burn ${coal_fuel} Coal/s to fuel a smelter`;
+                        }
                         break;
                     case 'oil':
-                        return 'Consume 0.35 Oil/s to fuel a smelter';
+                        return 'Burn 0.35 Oil/s to fuel a smelter. Provides a minor output boost.';
                         break;
                 }
             }
@@ -6831,6 +8105,11 @@ export const f_rate = {
         oil: [0.18,0.27,0.36,0.45],
         lumber: [15,22,29,36],
         output: [0.125,0.187,0.249,0.311],
+    },
+    Nano_Tube: {
+        coal: [8,12,16,20],
+        neutronium: [0.05,0.075,0.1,0.125],
+        output: [0.2,0.3,0.4,0.5],
     }
 };
 
@@ -6870,6 +8149,18 @@ function factoryModal(modal){
         polymer.append(addPolymer);
     }
 
+    if (global.tech['nano']){
+        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" position="is-left" size="is-small" multilined animated><span>Nano Tube</span></b-tooltip></div>`);
+        modal.append(nano);
+
+        let nanoCount = $(`<span class="current">{{ Nano }}</span>`);
+        let subNano= $(`<span class="sub" @click="subItem('Nano')">&laquo;</span>`);
+        let addNano = $(`<span class="add" @click="addItem('Nano')">&raquo;</span>`);
+        nano.append(subNano);
+        nano.append(nanoCount);
+        nano.append(addNano);
+    }
+
     vues['specialModal'] = new Vue({
         data: global.city['factory'],
         methods: {
@@ -6880,7 +8171,7 @@ function factoryModal(modal){
             },
             addItem: function(item){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
-                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer < max){
+                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano < max){
                     global.city.factory[item]++;
                 }
             },
@@ -6905,12 +8196,16 @@ function factoryModal(modal){
                             let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
                             return `Consume ${oil} Oil and ${lumber} Lumber/s to produce Polymer`;
                         }
+                    case 'Nano':
+                        let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
+                        let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
+                        return `Consume ${coal} Coal and ${neutronium} Neutronium/s to produce Nano Tubes`;
                 }
             }
         },
         filters: {
             on(){
-                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer;
+                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano;
             },
             max(){
                 return global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
@@ -6944,4 +8239,160 @@ export function basicHousingLabel(){
         default:
             return 'Cabin';
     }
+}
+
+function sentience(){
+    global.resource.RNA.display = false;
+    global.resource.DNA.display = false;
+
+    var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
+    for (var i = 0; i < evolve_actions.length; i++) {
+        if (global.race[evolve_actions[i]]){
+            $('#'+actions.evolution[evolve_actions[i]].id).remove();
+            $('#pop'+actions.evolution[evolve_actions[i]].id).remove();
+        }
+    }
+
+    Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
+        global.race[trait] = genus_traits[races[global.race.species].type][trait];
+    });
+    Object.keys(races[global.race.species].traits).forEach(function (trait) {
+        global.race[trait] = races[global.race.species].traits[trait];
+    });
+
+    defineResources();
+    if (!global.race['kindling_kindred']){
+        global.resource.Lumber.display = true;
+        global.city['lumber'] = 1;
+    }
+    else {
+        global.resource.Stone.display = true;
+        global.city['stone'] = 1;
+    }
+    registerTech('club');
+
+    global.city.calendar.day = 0;
+
+    var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
+    for (var i = 0; i < city_actions.length; i++) {
+        if (global.city[city_actions[i]]){
+            addAction('city',city_actions[i]);
+        }
+    }
+
+    global.settings.civTabs = 1;
+    global.settings.showEvolve = false;
+    global.settings.showCity = true;
+
+    if (global.race.gods !== 'none'){
+        global.tech['religion'] = 1;
+    }
+
+    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
+        randomMinorTrait();
+    }
+
+    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
+
+    if (global.race['slow'] || global.race['hyper']){
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        window.location.reload();
+    }
+
+    defineGarrison();
+}
+
+function bioseed(){
+    Object.keys(vues).forEach(function (v){
+        vues[v].$destroy();
+    });
+    let god = global.race.species;
+    let genus = races[god].type;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let plasmid = global.race.Plasmid.count;
+    let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
+    let new_plasmid = Math.round(pop / 3);
+    let k_base = global.stats.know;
+    let k_inc = 50000;
+    while (k_base > k_inc){
+        new_plasmid++;
+        k_base -= k_inc;
+        k_inc *= 1.015;
+    }
+    if (global.stats.died === 0){
+        unlockAchieve(`pacifist`);
+    }
+    plasmid += new_plasmid;
+    global.stats.reset++;
+    global.stats.tdays += global.stats.days;
+    global.stats.days = 0;
+    global.stats.tknow += global.stats.know;
+    global.stats.know = 0;
+    global.stats.tstarved += global.stats.starved;
+    global.stats.starved = 0;
+    global.stats.tdied += global.stats.died;
+    global.stats.died = 0;
+    global.stats.plasmid += new_plasmid;
+    unlockAchieve(`seeder`);
+    let new_biome = unlockAchieve(`biome_${biome}`);
+    let new_genus = unlockAchieve(`genus_${genus}`);
+    global['race'] = { 
+        species : 'protoplasm', 
+        gods: god,
+        Plasmid: { count: plasmid },
+        seeded: true,
+        probes: global.starDock.probes.count,
+        seed: Math.floor(Math.random(0,10000)),
+    };
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome
+    };
+    global.space = {};
+    global.starDock = {};
+    global.civic = { free: 0 };
+    global.resource = {};
+    global.evolution = {};
+    global.tech = { theology: 1 };
+    global.event = 100;
+    global.settings.civTabs = 0;
+    global.settings.showEvolve = true;
+    global.settings.showCity = false;
+    global.settings.showIndustry = false;
+    global.settings.showResearch = false;
+    global.settings.showCivic = false;
+    global.settings.showMarket = false;
+    global.settings.showGenetics = false;
+    global.settings.showSpace = false;
+    global.settings.space.home = true;
+    global.settings.space.moon = false;
+    global.settings.space.red = false;
+    global.settings.space.hell = false;
+    global.settings.space.sun = false;
+    global.settings.space.gas = false;
+    global.settings.space.gas_moon = false;
+    global.settings.space.belt = false;
+    global.settings.space.dwarf = false;
+    global.settings.space.blackhole = false;
+    global.settings.arpa = false;
+    global.settings.resTabs = 0;
+    global.arpa = {};
+    if (!new_biome && !new_genus){
+        global.lastMsg = false;
+    }
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+    
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
 }

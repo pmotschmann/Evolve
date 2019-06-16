@@ -26,6 +26,10 @@ export var p_on = {};
 export var red_on = {};
 export var moon_on = {};
 export var belt_on = {};
+export var quantium_level = 0;
+export function set_qlevel(q_level){
+    quantium_level = q_level;
+} 
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -152,7 +156,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.3.12';
+global['version'] = '0.4.0';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -196,6 +200,10 @@ if (!global['space']){
     global['space'] = {};
 }
 
+if (!global['starDock']){
+    global['starDock'] = {};
+}
+
 if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
@@ -235,8 +243,17 @@ if (!global['lastMsg']){
     global['lastMsg'] = false;
 }
 
+if (!global.race['seeded']){
+    global.race['seeded'] = false;
+}
 if (!global.race['Plasmid']){
     global.race['Plasmid'] = { count: 0 };
+}
+if (!global.race['deterioration']){
+    global.race['deterioration'] = 0;
+}
+if (!global.race['gene_fortify']){
+    global.race['gene_fortify'] = 0;
 }
 
 $('html').addClass(global.settings.theme);
@@ -250,6 +267,10 @@ if (!global.city['morale']){
         weather: 0,
         warmonger: 0,
     };
+}
+
+if (!global.city.morale['leadership']){
+    global.city.morale['leadership'] = 0;
 }
 
 if (!global.city.morale['warmonger']){
@@ -353,7 +374,7 @@ if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facil
 }
 
 function newGameData(){
-    global['race'] = { species : 'protoplasm', gods: 'none' };
+    global['race'] = { species : 'protoplasm', gods: 'none', seeded: false };
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
     global['new'] = true;
@@ -514,5 +535,94 @@ window.importGame = function importGame(){
 window.reset = function reset(){
     localStorage.removeItem('evolved');
     global = null;
+    window.location.reload();
+}
+
+// executes a soft reset
+window.soft_reset = function reset(){
+    Object.keys(vues).forEach(function (v){
+        vues[v].$destroy();
+    });
+
+    global.space = {};
+    let replace = {
+        species : 'protoplasm', 
+        Plasmid: { count: global.race.Plasmid.count },
+        seeded: global.race.seeded,
+        probes: global.race.probes,
+        seed: global.race.seed,
+    }
+    if (global.race['gods']){
+        replace['gods'] = global.race.gods;
+    }
+    if (global.race['rapid_mutation'] && global.race['rapid_mutation'] > 0){
+        replace['rapid_mutation'] = global.race['rapid_mutation'];
+    }
+    if (global.race['ancient_ruins'] && global.race['rapid_mutation'] > 0){
+        replace['ancient_ruins'] = global.race['ancient_ruins'];
+    }
+    global['race'] = replace;
+
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome
+    };
+
+    global.stats.days = 0;
+    global.stats.know = 0;
+    global.stats.starved = 0;
+    global.stats.died = 0;
+
+    global.space = {};
+    global.civic = { free: 0 };
+    global.resource = {};
+    global.evolution = {};
+
+    if (global.tech['theology'] && global.tech['theology'] >= 1){
+        global.tech = { theology: 1 };
+    }
+    else {
+        global.tech = {};
+    }
+
+    global.event = 100;
+    global.settings.civTabs = 0;
+    global.settings.showEvolve = true;
+    global.settings.showCity = false;
+    global.settings.showIndustry = false;
+    global.settings.showResearch = false;
+    global.settings.showCivic = false;
+    global.settings.showMarket = false;
+    global.settings.showGenetics = false;
+    global.settings.showSpace = false;
+    global.settings.space.home = true;
+    global.settings.space.moon = false;
+    global.settings.space.red = false;
+    global.settings.space.hell = false;
+    global.settings.space.sun = false;
+    global.settings.space.gas = false;
+    global.settings.space.gas_moon = false;
+    global.settings.space.belt = false;
+    global.settings.space.dwarf = false;
+    global.settings.space.blackhole = false;
+    global.settings.arpa = false;
+    global.settings.resTabs = 0;
+    global.settings.disableReset = false;
+    global.arpa = {};
+    global.lastMsg = false;
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
 }

@@ -1,3 +1,11 @@
+#### 0.4.0 - 6/16/2019
+Space reset option, control the destiny of your next race<br>
+Challenge Modes<br>
+New Stuff to discover<br>
+New Achievements to unlock<br>
+Added missing Cyclops racial trait<br>
+World Domination, maybe<br>
+
 #### 0.3.12 - 6/11/2019
 Fixed bug with riot event that caused it to trigger on high morale instead of low morale<br>
 

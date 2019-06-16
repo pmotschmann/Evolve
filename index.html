@@ -99,14 +99,15 @@
                             </div>
                             <div class="reset">
                                 <b-collapse :open="false">
-                                    <b-switch v-model="disableReset" slot="trigger">Enable Reset Button</b-switch>
+                                    <b-switch v-model="disableReset" slot="trigger">Enable Reset Buttons</b-switch>
                                     <div class="notification">
                                         <div class="content">
                                             <h4 class="has-text-danger">
                                                 Warning: This completely resets all your progress and can not be undone
                                             </h4>
                                             <p>
-                                                <button class="button" :disabled="!disableReset" @click="reset()">Reset Game</button>
+                                                <button class="button" :disabled="!disableReset" @click="soft_reset()"><b-tooltip :label="soft()" position="is-top" size="is-small" multilined animated>Soft Reset Game</b-tooltip></button>
+                                                <button class="button" :disabled="!disableReset" @click="reset()"><b-tooltip :label="hard()" position="is-top" size="is-small" multilined animated>Hard Reset Game</b-tooltip></button>
                                             </p>
                                         </div>
                                     </div>

@@ -101,15 +101,21 @@ function taxRates(govern){
         });
 }
 
-function buildGarrison(garrison){
-    garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>'));
+export function buildGarrison(garrison){
+    if (global.tech['world_control']){
+        garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip></div>'));
+    }
+    else {
+        garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>'));
+    }
 
     var barracks = $('<div class="columns is-mobile bunk"></div>');
     garrison.append(barracks);
 
     var bunks = $('<div class="column"></div>');
     barracks.append(bunks);
-    bunks.append($('<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>Soldiers</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>'));
+    let soldier_title = global.tech['world_control'] ? 'Peacekeepers' : 'Soldiers';
+    bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>`));
     bunks.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
     barracks.append($('<div class="column hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip><div>'));
@@ -122,53 +128,54 @@ function buildGarrison(garrison){
     var wrap = $('<div class="column war"></div>');
     campaign.append(wrap);
 
+    if (!global.tech['world_control']){
+        var tactics = $('<div id="tactics" v-show="display" class="tactics"><span>Campaign</span></div>');
+        wrap.append(tactics);
+            
+        var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ tactic | tactics }}</span></b-tooltip>');
+        var last = $('<span role="button" aria-label="easier campaign" class="sub" @click="last">&laquo;</span>');
+        var next = $('<span role="button" aria-label="harder campaign" class="add" @click="next">&raquo;</span>');
+        tactics.append(last);
+        tactics.append(strategy);
+        tactics.append(next);
 
-    var tactics = $('<div id="tactics" v-show="display" class="tactics"><span>Campaign</span></div>');
-    wrap.append(tactics);
-        
-    var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ tactic | tactics }}</span></b-tooltip>');
-    var last = $('<span role="button" aria-label="easier campaign" class="sub" @click="last">&laquo;</span>');
-    var next = $('<span role="button" aria-label="harder campaign" class="add" @click="next">&raquo;</span>');
-    tactics.append(last);
-    tactics.append(strategy);
-    tactics.append(next);
+        var battalion = $('<div id="battalion" v-show="display" class="tactics"><span>Battalion</span></div>');
+        wrap.append(battalion);
+            
+        var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ raid }}</span></b-tooltip>');
+        var alast = $('<span role="button" aria-label="add soldiers to campaign" class="sub" @click="aLast">&laquo;</span>');
+        var anext = $('<span role="button" aria-label="remove soldiers to campaign" class="add" @click="aNext">&raquo;</span>');
+        battalion.append(alast);
+        battalion.append(armysize);
+        battalion.append(anext);
 
-    var battalion = $('<div id="battalion" v-show="display" class="tactics"><span>Battalion</span></div>');
-    wrap.append(battalion);
-        
-    var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ raid }}</span></b-tooltip>');
-    var alast = $('<span role="button" aria-label="add soldiers to campaign" class="sub" @click="aLast">&laquo;</span>');
-    var anext = $('<span role="button" aria-label="remove soldiers to campaign" class="add" @click="aNext">&raquo;</span>');
-    battalion.append(alast);
-    battalion.append(armysize);
-    battalion.append(anext);
+        campaign.append($('<div class="column launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">Launch Campaign</button></b-tooltip></div>'));
 
-    campaign.append($('<div class="column launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">Launch Campaign</button></b-tooltip></div>'));
+        if (!global.civic['garrison']){
+            global.civic['garrison'] = {
+                display: false,
+                disabled: false,
+                progress: 0,
+                tactic: 0,
+                workers: 0,
+                wounded: 0,
+                raid: 0,
+                max: 0
+            };
+        }
 
-    if (!global.civic['garrison']){
-        global.civic['garrison'] = {
-            display: false,
-            disabled: false,
-            progress: 0,
-            tactic: 0,
-            workers: 0,
-            wounded: 0,
-            raid: 0,
-            max: 0
-        };
-    }
-
-    if (!global.civic.garrison['mercs']){
-        global.civic.garrison['mercs'] = false;
-    }
-    if (!global.civic.garrison['fatigue']){
-        global.civic.garrison['fatigue'] = 0;
-    }
-    if (!global.civic.garrison['protest']){
-        global.civic.garrison['protest'] = 0;
-    }
-    if (!global.civic.garrison['m_use']){
-        global.civic.garrison['m_use'] = 0;
+        if (!global.civic.garrison['mercs']){
+            global.civic.garrison['mercs'] = false;
+        }
+        if (!global.civic.garrison['fatigue']){
+            global.civic.garrison['fatigue'] = 0;
+        }
+        if (!global.civic.garrison['protest']){
+            global.civic.garrison['protest'] = 0;
+        }
+        if (!global.civic.garrison['m_use']){
+            global.civic.garrison['m_use'] = 0;
+        }
     }
 
     vues['civ_garrison'] = new Vue({
@@ -827,7 +834,10 @@ function defineMad(){
                 }
             },
             defcon(){
-                return `Enable or Disable the launch button. Launching a nuclear strike will trigger a retalitory strike which will result in the end of all life as we know it.`;
+                
+                return global.tech['world_control']
+                    ? `Enable or Disable the launch button. Scour the world clean with nuclear fire, wby? because you can.`
+                    : `Enable or Disable the launch button. Launching a nuclear strike will trigger a retalitory strike which will result in the end of all life as we know it.`;
             },
             warning(){
                 let plasma = Math.round((global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers) / 3);
@@ -883,7 +893,8 @@ function warhead(){
         gods: god, 
         rapid_mutation: 1,
         ancient_ruins: 1,
-        Plasmid: { count: plasmid }
+        Plasmid: { count: plasmid },
+        seeded: false,
     };
     global.city = {
         calendar: {
@@ -898,6 +909,7 @@ function warhead(){
         biome: biome
     };
     global.space = {};
+    global.starDock = {};
     global.civic = { free: 0 };
     global.resource = {};
     global.evolution = {};

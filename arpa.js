@@ -30,7 +30,12 @@ const arpaProjects = {
         effect() {
             let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? 8 : 4;
             if (global.tech['storage'] >= 6){
-                return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacity by 5%.`;
+                if (global.tech['particles'] && global.tech['particles'] >= 4){
+                    return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse and garage capacity by 5%.`;
+                }
+                else {
+                    return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacity by 5%.`;
+                }
             }
             else {
                 return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%.`;
@@ -307,6 +312,21 @@ const genePool = {
         effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>135</span></div>',
         action(){
             if (payPlasmids('rigorous')){
+                return true;
+            }
+            return false;
+        }
+    },
+    hardened_genes: {
+        id: 'genes-hardened_genes',
+        title: 'Hardened Genes',
+        desc: 'Unlocks challenge traits',
+        reqs: {},
+        grant: ['challenge',1],
+        cost: 5,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>5</span></div>',
+        action(){
+            if (payPlasmids('hardened_genes')){
                 return true;
             }
             return false;
