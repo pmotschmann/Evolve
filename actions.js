@@ -6729,7 +6729,7 @@ export const actions = {
                 Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
                 Neutronium(){ return global.starDock.seeder.count < 100 ? 300 : 0; },
                 Elerium(){ return global.starDock.seeder.count < 100 ? 10 : 0; },
-                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
+                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 18000 : 0; },
             },
             effect(){
                 let remain = global.starDock.seeder.count < 100 ? `${100 - global.starDock.seeder.count} segments remaining`: `The ship is complete`;
@@ -7310,6 +7310,11 @@ function starDockmodal(modal){
         let c_action = actions.starDock.seeder;
         setAction(c_action,'starDock','seeder');
     }
+
+    if (global.tech['genesis'] >= 6){
+        let warn = $('<div><span class="has-text-warning">You must complete plans for your interstellar craft first</span></div>');
+        modal.append(warn);
+    }
 }
 
 function smelterModal(modal){
@@ -7550,7 +7555,7 @@ export const f_rate = {
         output: [0.125,0.187,0.249,0.311],
     },
     Nano_Tube: {
-        coal: [10,15,20,25],
+        coal: [8,12,16,20],
         neutronium: [0.05,0.075,0.1,0.125],
         output: [0.2,0.3,0.4,0.5],
     }

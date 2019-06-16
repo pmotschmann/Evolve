@@ -256,7 +256,7 @@ const spaceProjects = {
             },
             effect(){
                 let storage = spatialReasoning(100);
-                return `<div>-1 Moon Support</div><div>+0.15 Helium-3 Production</div><div>+${storage} Max Helium-3</div>`;
+                return `<div>-1 Moon Support</div><div>+0.18 Helium-3 Production</div><div>+${storage} Max Helium-3</div>`;
             },
             support: -1,
             powered: 1,
@@ -836,10 +836,10 @@ const spaceProjects = {
             },
             reqs: { solar: 3 },
             cost: {
-                Money(){ return costMultiplier('swarm_satellite', swarm_adjust(50000), 1.2); },
-                Copper(){ return costMultiplier('swarm_satellite', swarm_adjust(25000), 1.2); },
-                Iridium(){ return costMultiplier('swarm_satellite', swarm_adjust(1500), 1.2); },
-                Helium_3(){ return costMultiplier('swarm_satellite', swarm_adjust(fuel_adjust(500)), 1.2); }
+                Money(){ return costMultiplier('swarm_satellite', swarm_adjust(50000), 1.18); },
+                Copper(){ return costMultiplier('swarm_satellite', swarm_adjust(25000), 1.18); },
+                Iridium(){ return costMultiplier('swarm_satellite', swarm_adjust(1500), 1.18); },
+                Helium_3(){ return costMultiplier('swarm_satellite', swarm_adjust(fuel_adjust(500)), 1.18); }
             },
             effect(){
                 return `+1kW, -1 Swarm Support`;
@@ -952,7 +952,7 @@ const spaceProjects = {
             id: 'space-star_dock',
             title(){ return `Space Dock`; },
             desc(){
-                return `<div>Space Dock<div>`;
+                return `<div>Space Dock<div><div class="has-text-special">Limit One</div>`;
             },
             reqs: { genesis: 3 },
             cost: {
@@ -1027,7 +1027,7 @@ const spaceProjects = {
             effect(){
                 let neutronium = 0.025;
                 if (global.tech['drone']){
-                    neutronium *= 1 + (global.space.drone.count / 25);
+                    neutronium *= 1 + (global.space.drone.count * 0.06);
                 }
                 neutronium = +neutronium.toFixed(3);
                 let max = spatialReasoning(500);
@@ -1059,10 +1059,10 @@ const spaceProjects = {
                 Steel(){ return costMultiplier('drone', 20000, 1.3); },
                 Neutronium(){ return costMultiplier('drone', 500, 1.3); },
                 Elerium(){ return costMultiplier('drone', 25, 1.3); },
-                Nano_Tube(){ return costMultiplier('drone', 100000, 1.3); }
+                Nano_Tube(){ return costMultiplier('drone', 75000, 1.3); }
             },
             effect(){
-                return `<div>Increase the output of mining outposts by 4%</div>`;
+                return `<div>Increase the output of mining outposts by 6%</div>`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_gas_moon.drone.cost)){

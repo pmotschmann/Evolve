@@ -1338,8 +1338,8 @@ function fastLoop(){
                     workDone--;
                 }
 
-                breakdown.p.consume.Coal['Factory'] = -(coalIncrement);
-                breakdown.p.consume.Neutronium['Factory'] = -(neutroniumIncrement);
+                breakdown.p.consume.Coal['Factory'] = -(coal_cost);
+                breakdown.p.consume.Neutronium['Factory'] = -(neutronium_cost);
                 modRes('Neutronium', -(neutronium_cost * time_multiplier));
                 modRes('Coal', -(coal_cost * time_multiplier));
 
@@ -1761,7 +1761,7 @@ function fastLoop(){
         // Helium 3
         let helium_bd = {};
         if (global.space['moon_base'] && moon_on['helium_mine']){
-            let helium_base = moon_on['helium_mine'] * 0.15;
+            let helium_base = moon_on['helium_mine'] * 0.18;
             let delta = helium_base * hunger * global_multiplier;
 
             helium_bd['Helium_Mine'] = helium_base + 'v';
@@ -1784,7 +1784,7 @@ function fastLoop(){
         if (p_on['outpost']){
             let n_base = p_on['outpost'] * 0.025;
             if (global.tech['drone']){
-                n_base *= 1 + (global.space.drone.count / 25);
+                n_base *= 1 + (global.space.drone.count * 0.06);
             }
             let delta = n_base * hunger * global_multiplier;
             neutronium_bd['Outpost'] = n_base + 'v';
