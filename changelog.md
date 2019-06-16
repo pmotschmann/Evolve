@@ -1,3 +1,6 @@
+#### 0.4.1 - 6/16/2019
+Fixed a bug with factories converted from some pre 0.4.0 save files<br>
+
 #### 0.4.0 - 6/16/2019
 Space reset option, control the destiny of your next race<br>
 Challenge Modes<br>
