@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, moon_on } from './vars.js';
 import { unlockAchieve } from './achieve.js';
-import { races, genus_traits, randomMinorTrait } from './races.js';
+import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison, buildGarrison, armyRating } from './civics.js';
@@ -7091,18 +7091,61 @@ export function setAction(c_action,action,type,old){
 }
 
 export function setPlanet(){
-    var id = 'Planet'+Math.floor(Math.seededRandom(0,10000));
-    var parent = $(`<div id="${id}" class="action"></div>`);
+    var biome = 'grassland';
+    switch (Math.floor(Math.seededRandom(0,6))){
+        case 0:
+            biome = 'grassland';
+            break;
+        case 1:
+            biome = 'oceanic';
+            break;
+        case 2:
+            biome = 'forest';
+            break;
+        case 3:
+            biome = 'desert';
+            break;
+        case 4:
+            biome = 'volcanic';
+            break;
+        case 5:
+            biome = 'tundra';
+            break;
+        default:
+            biome = 'grassland';
+            break;
+    }
 
+    var id = biome+Math.floor(Math.seededRandom(0,10000));
+    id = id.charAt(0).toUpperCase() + id.slice(1);
+
+    var orbit = Math.floor(Math.seededRandom(200,600));
+
+    var parent = $(`<div id="${id}" class="action"></div>`);
     var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${id}</span></a>`);
-    parent.append(element)
+    parent.append(element);
 
     $('#evolution').append(parent);
+
+    $('#'+id).on('click',function(){
+        global.race['chose'] = id;
+        global.city.biome = biome;
+        global.city.calendar.orbit = orbit;
+        $('#evolution').empty();
+        $(`#pop${id}`).hide();
+        poppers[id].destroy();
+        $(`#pop${id}`).remove();
+        addAction('evolution','rna');
+    });
 
     $('#'+id).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            //actionDesc(popper,c_action,old);
+            
+            popper.append($(`<div>${id}</div>`));
+            popper.append($(`<div>${id} is a ${biome} planet with an orbital period of ${orbit} days.</div>`));
+            popper.append($(`<div>${biomes[biome]}</div>`));
+
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
@@ -7754,6 +7797,7 @@ function bioseed(){
         vues[v].$destroy();
     });
     let god = global.race.species;
+    let genus = races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
@@ -7780,7 +7824,9 @@ function bioseed(){
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
     global.stats.plasmid += new_plasmid;
-    let new_achieve = unlockAchieve(`seeder`);
+    unlockAchieve(`seeder`);
+    let new_biome = unlockAchieve(`biome_${biome}`);
+    let new_genus = unlockAchieve(`genus_${genus}`);
     global['race'] = { 
         species : 'protoplasm', 
         gods: god,
@@ -7830,7 +7876,7 @@ function bioseed(){
     global.settings.arpa = false;
     global.settings.resTabs = 0;
     global.arpa = {};
-    if (!new_achieve){
+    if (!new_biome && !new_genus){
         global.lastMsg = false;
     }
     global.new = true;

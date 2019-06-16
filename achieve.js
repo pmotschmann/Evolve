@@ -80,6 +80,81 @@ var achievements = {
         desc: `Bioseed an alien world`,
         flair: `What is god if not us?`
     },
+    biome_grassland: {
+        name: `Grassland Civilizer`,
+        desc: `Successfully built a civilization on a grassland planet`,
+        flair: `A garden world of your own design`
+    },
+    biome_oceanic: {
+        name: `Oceanic Civilizer`,
+        desc: `Successfully built a civilization on an oceanic planet`,
+        flair: `A blue gem floating in the cosmos`
+    },
+    biome_forest: {
+        name: `Forest Civilizer`,
+        desc: `Successfully built a civilization on a forest planet`,
+        flair: `A forest paradise for those of your choosing`
+    },
+    biome_desert: {
+        name: `Desert Civilizer`,
+        desc: `Successfully built a civilization on a desert planet`,
+        flair: `Tamed the unforgiving desert and made it your own`
+    },
+    biome_volcanic: {
+        name: `Volcanic Civilizer`,
+        desc: `Successfully built a civilization on a volcanic planet`,
+        flair: `Master of the prodromal world`
+    },
+    biome_tundra: {
+        name: `Tundra Civilizer`,
+        desc: `Successfully built a civilization on a tundra planet`,
+        flair: `The cold never bothered you anyway`
+    },
+    genus_humanoid: {
+        name: `Humanoid Victus`,
+        desc: `Led a humanoid civilization to greatness`,
+        flair: `Seized your place among the stars`
+    },
+    genus_animal: {
+        name: `Scent of a Star`,
+        desc: `Led a animal civilization to greatness`,
+        flair: `Tracked a star and left your mark`
+    },
+    genus_small: {
+        name: `Tiny Supremacy`,
+        desc: `Led a small civilization to greatness`,
+        flair: `You proved that size doesn't matter`
+    },
+    genus_giant: {
+        name: `It's Always Bigger`,
+        desc: `Led a giant civilization to greatness`,
+        flair: `You proved that size does matter`
+    },
+    genus_reptilian: {
+        name: `Flew to the Sun`,
+        desc: `Led a reptilian civilization to greatness`,
+        flair: `Never left out in the cold again`
+    },
+    genus_avian: {
+        name: `Souring Above`,
+        desc: `Led an avian civilization to greatness`,
+        flair: `Even flightless birds can fly`
+    },
+    genus_insectoid: {
+        name: `Superior Numbers`,
+        desc: `Led an insectoid civilization to greatness`,
+        flair: `It's a numbers game`
+    },
+    genus_plant: {
+        name: `Growing Unchecked`,
+        desc: `Led an plant civilization to greatness`,
+        flair: `Outgrew your soil`
+    },
+    genus_fungi: {
+        name: `Spores in the Wind`,
+        desc: `Led an fungi civilization to greatness`,
+        flair: `Spread everywhere, even the stars`
+    },
     mass_extinction: {
         name: `Mass Extinction`,
         desc: `Led all civilizations to destruction`,

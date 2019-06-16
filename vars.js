@@ -548,7 +548,9 @@ window.soft_reset = function reset(){
     let replace = {
         species : 'protoplasm', 
         Plasmid: { count: global.race.Plasmid.count },
-        seeded: global.race.seeded
+        seeded: global.race.seeded,
+        probes: global.race.probes,
+        seed: global.race.seed,
     }
     if (global.race['gods']){
         replace['gods'] = global.race.gods;
@@ -615,6 +617,7 @@ window.soft_reset = function reset(){
     global.settings.space.blackhole = false;
     global.settings.arpa = false;
     global.settings.resTabs = 0;
+    global.settings.disableReset = false;
     global.arpa = {};
     global.lastMsg = false;
     global.new = true;

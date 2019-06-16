@@ -889,10 +889,10 @@ export function randomMinorTrait(){
 }
 
 export const biomes = {
-    grassland: 'Grassland worlds are covered in plains and are ideal worlds for farming.',
-    oceanic: 'Oceanic worlds are mostly covered by water with same land masses scattered around.',
-    forest: 'Forest worlds are almost entirely covered with vegetation.',
-    desert: 'Desert worlds are mostly dusty rocks covered in sand.',
-    volcanic: `Volcanic worlds are typically younder planets who haven't yet cooled off.`,
-    tundra: 'Tundra planets are largely covered in ice and are almost never warm.'
+    grassland: 'Grassland worlds are covered in plains and are ideal worlds for farming. They are characterized by easier growing of crops.',
+    oceanic: 'Oceanic worlds are mostly covered by water with same land masses scattered around. They are characterized by increased rainfall.',
+    forest: 'Forest worlds are almost entirely covered with vegetation. They are characterized by an abundance of lumber.',
+    desert: 'Desert worlds are mostly dusty rocks covered in sand. They are characterized by being very sunny.',
+    volcanic: `Volcanic worlds are typically younger planets who haven't yet cooled off. They are characterized by being hot.`,
+    tundra: 'Tundra planets are largely covered in ice and are almost never warm. They are characterized by being cold.'
 };
