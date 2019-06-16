@@ -344,9 +344,22 @@ export const actions = {
                     global.evolution['bryophyte'].count++;
                     removeAction(actions.evolution.bryophyte.id);
                     global.evolution['final'] = 100;
-                    
                     global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        if (global.evolution['chitin']){
+                            global.evolution['sporgar'] = { count: 0 };
+                            global.evolution['shroomi'] = { count: 0 };
+                            addAction('evolution','sporgar');
+                            addAction('evolution','shroomi');
+                        }
+                        else {
+                            global.evolution['entish'] = { count: 0 };
+                            global.evolution['cacti'] = { count: 0 };
+                            addAction('evolution','entish');
+                            addAction('evolution','cacti');
+                        }
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -375,6 +388,14 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['mantis'] = { count: 0 };
+                        global.evolution['scorpid'] = { count: 0 };
+                        global.evolution['antid'] = { count: 0 };
+                        addAction('evolution','mantis');
+                        addAction('evolution','scorpid');
+                        addAction('evolution','antid');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -435,6 +456,14 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['human'] = { count: 0 };
+                        global.evolution['orc'] = { count: 0 };
+                        global.evolution['elven'] = { count: 0 };
+                        addAction('evolution','human');
+                        addAction('evolution','orc');
+                        addAction('evolution','elven');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -465,6 +494,14 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['troll'] = { count: 0 };
+                        global.evolution['orge'] = { count: 0 };
+                        global.evolution['cyclops'] = { count: 0 };
+                        addAction('evolution','troll');
+                        addAction('evolution','orge');
+                        addAction('evolution','cyclops');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -495,6 +532,14 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['kobold'] = { count: 0 };
+                        global.evolution['goblin'] = { count: 0 };
+                        global.evolution['gnome'] = { count: 0 };
+                        addAction('evolution','kobold');
+                        addAction('evolution','goblin');
+                        addAction('evolution','gnome');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -525,6 +570,14 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['cath'] = { count: 0 };
+                        global.evolution['wolven'] = { count: 0 };
+                        global.evolution['centaur'] = { count: 0 };
+                        addAction('evolution','cath');
+                        addAction('evolution','wolven');
+                        addAction('evolution','centaur');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -577,6 +630,14 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['arraak'] = { count: 0 };
+                        global.evolution['pterodacti'] = { count: 0 };
+                        global.evolution['dracnid'] = { count: 0 };
+                        addAction('evolution','arraak');
+                        addAction('evolution','pterodacti');
+                        addAction('evolution','dracnid');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -603,6 +664,14 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['tortoisan'] = { count: 0 };
+                        global.evolution['gecko'] = { count: 0 };
+                        global.evolution['slitheryn'] = { count: 0 };
+                        addAction('evolution','tortoisan');
+                        addAction('evolution','gecko');
+                        addAction('evolution','slitheryn');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -728,64 +797,444 @@ export const actions = {
                         global.race.species = 'human';
                     }
 
-                    global.resource.RNA.display = false;
-                    global.resource.DNA.display = false;
-                    
-                    var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
-                    for (var i = 0; i < evolve_actions.length; i++) {
-                        if (global.race[evolve_actions[i]]){
-                            $('#'+actions.evolution[evolve_actions[i]].id).remove();
-                            $('#pop'+actions.evolution[evolve_actions[i]].id).remove();
-                        }
-                    }
-
-                    Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
-                        global.race[trait] = genus_traits[races[global.race.species].type][trait];
-                    });
-                    Object.keys(races[global.race.species].traits).forEach(function (trait) {
-                        global.race[trait] = races[global.race.species].traits[trait];
-                    });
-                    
-                    defineResources();
-                    if (!global.race['kindling_kindred']){
-                        global.resource.Lumber.display = true;
-                        global.city['lumber'] = 1;
-                    }
-                    else {
-                        global.resource.Stone.display = true;
-                        global.city['stone'] = 1;
-                    }
-                    registerTech('club');
-                    
-                    global.city.calendar.day = 0;
-                    
-                    var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
-                    for (var i = 0; i < city_actions.length; i++) {
-                        if (global.city[city_actions[i]]){
-                            addAction('city',city_actions[i]);
-                        }
-                    }
-                    
-                    global.settings.civTabs = 1;
-                    global.settings.showEvolve = false;
-                    global.settings.showCity = true;
-                    
-                    if (global.race.gods !== 'none'){
-                        global.tech['religion'] = 1;
-                    }
-
-                    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
-                        randomMinorTrait();
-                    }
-
-                    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
-
-                    if (global.race['slow'] || global.race['hyper']){
-                        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-                        window.location.reload();
-                    }
-
-                    defineGarrison();
+                    sentience();
+                }
+                return false;
+            },
+        },
+        human: {
+            id: 'evo-human',
+            title(){ return races.human.name; },
+            desc(){ return `Evolve ${races.human.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.human.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.human.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'human';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        orc: {
+            id: 'evo-orc',
+            title(){ return races.orc.name; },
+            desc(){ return `Evolve ${races.orc.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.orc.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.orc.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'orc';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        elven: {
+            id: 'evo-elven',
+            title(){ return races.elven.name; },
+            desc(){ return `Evolve ${races.elven.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.elven.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.elven.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'elven';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        troll: {
+            id: 'evo-troll',
+            title(){ return races.troll.name; },
+            desc(){ return `Evolve ${races.troll.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.troll.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.troll.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'troll';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        orge: {
+            id: 'evo-orge',
+            title(){ return races.orge.name; },
+            desc(){ return `Evolve ${races.orge.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.orge.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.orge.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'orge';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        cyclops: {
+            id: 'evo-cyclops',
+            title(){ return races.cyclops.name; },
+            desc(){ return `Evolve ${races.cyclops.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.cyclops.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.cyclops.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'cyclops';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        kobold: {
+            id: 'evo-kobold',
+            title(){ return races.kobold.name; },
+            desc(){ return `Evolve ${races.kobold.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.kobold.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.kobold.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'kobold';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        goblin: {
+            id: 'evo-goblin',
+            title(){ return races.goblin.name; },
+            desc(){ return `Evolve ${races.goblin.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.goblin.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.goblin.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'goblin';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        gnome: {
+            id: 'evo-gnome',
+            title(){ return races.gnome.name; },
+            desc(){ return `Evolve ${races.gnome.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.gnome.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.gnome.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'gnome';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        cath: {
+            id: 'evo-cath',
+            title(){ return races.cath.name; },
+            desc(){ return `Evolve ${races.cath.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.cath.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.cath.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'cath';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        wolven: {
+            id: 'evo-wolven',
+            title(){ return races.wolven.name; },
+            desc(){ return `Evolve ${races.wolven.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.wolven.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.wolven.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'wolven';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        centaur: {
+            id: 'evo-centaur',
+            title(){ return races.centaur.name; },
+            desc(){ return `Evolve ${races.centaur.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.centaur.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.centaur.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'centaur';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        tortoisan: {
+            id: 'evo-tortoisan',
+            title(){ return races.tortoisan.name; },
+            desc(){ return `Evolve ${races.tortoisan.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.tortoisan.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.tortoisan.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'tortoisan';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        gecko: {
+            id: 'evo-gecko',
+            title(){ return races.gecko.name; },
+            desc(){ return `Evolve ${races.gecko.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.gecko.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.gecko.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'gecko';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        slitheryn: {
+            id: 'evo-slitheryn',
+            title(){ return races.slitheryn.name; },
+            desc(){ return `Evolve ${races.slitheryn.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.slitheryn.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.slitheryn.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'slitheryn';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        arraak: {
+            id: 'evo-arraak',
+            title(){ return races.arraak.name; },
+            desc(){ return `Evolve ${races.arraak.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.arraak.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.arraak.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'arraak';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        sporgar: {
+            id: 'evo-sporgar',
+            title(){ return races.sporgar.name; },
+            desc(){ return `Evolve ${races.sporgar.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.sporgar.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.sporgar.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'sporgar';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        shroomi: {
+            id: 'evo-shroomi',
+            title(){ return races.shroomi.name; },
+            desc(){ return `Evolve ${races.shroomi.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.shroomi.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.shroomi.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'shroomi';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        mantis: {
+            id: 'evo-mantis',
+            title(){ return races.mantis.name; },
+            desc(){ return `Evolve ${races.mantis.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.mantis.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.mantis.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'mantis';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        scorpid: {
+            id: 'evo-scorpid',
+            title(){ return races.scorpid.name; },
+            desc(){ return `Evolve ${races.scorpid.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.scorpid.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.scorpid.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'scorpid';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        antid: {
+            id: 'evo-antid',
+            title(){ return races.antid.name; },
+            desc(){ return `Evolve ${races.antid.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.antid.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.antid.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'antid';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        entish: {
+            id: 'evo-entish',
+            title(){ return races.entish.name; },
+            desc(){ return `Evolve ${races.entish.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.entish.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.entish.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'entish';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        cacti: {
+            id: 'evo-cacti',
+            title(){ return races.cacti.name; },
+            desc(){ return `Evolve ${races.cacti.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.cacti.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.cacti.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'cacti';
+                    sentience();
                 }
                 return false;
             }
@@ -7790,6 +8239,67 @@ export function basicHousingLabel(){
         default:
             return 'Cabin';
     }
+}
+
+function sentience(){
+    global.resource.RNA.display = false;
+    global.resource.DNA.display = false;
+
+    var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
+    for (var i = 0; i < evolve_actions.length; i++) {
+        if (global.race[evolve_actions[i]]){
+            $('#'+actions.evolution[evolve_actions[i]].id).remove();
+            $('#pop'+actions.evolution[evolve_actions[i]].id).remove();
+        }
+    }
+
+    Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
+        global.race[trait] = genus_traits[races[global.race.species].type][trait];
+    });
+    Object.keys(races[global.race.species].traits).forEach(function (trait) {
+        global.race[trait] = races[global.race.species].traits[trait];
+    });
+
+    defineResources();
+    if (!global.race['kindling_kindred']){
+        global.resource.Lumber.display = true;
+        global.city['lumber'] = 1;
+    }
+    else {
+        global.resource.Stone.display = true;
+        global.city['stone'] = 1;
+    }
+    registerTech('club');
+
+    global.city.calendar.day = 0;
+
+    var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
+    for (var i = 0; i < city_actions.length; i++) {
+        if (global.city[city_actions[i]]){
+            addAction('city',city_actions[i]);
+        }
+    }
+
+    global.settings.civTabs = 1;
+    global.settings.showEvolve = false;
+    global.settings.showCity = true;
+
+    if (global.race.gods !== 'none'){
+        global.tech['religion'] = 1;
+    }
+
+    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
+        randomMinorTrait();
+    }
+
+    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
+
+    if (global.race['slow'] || global.race['hyper']){
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        window.location.reload();
+    }
+
+    defineGarrison();
 }
 
 function bioseed(){
