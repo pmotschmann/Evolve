@@ -7029,7 +7029,7 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
-            effect(){ return `<div>Give up on your plans for world domination. Instead focus on improving your own society</div><div class="has-text-special">Game stays the same, gain a 10% morale bonus.</div>`; },
+            effect(){ return `<div>Give up on your plans for world domination. Instead focus on improving your own society</div><div class="has-text-special">Game stays the same, gain a 20% morale bonus.</div>`; },
             action(){
                 if (payCosts(actions.tech.wc_reject.cost)){
                     global.tech['m_boost'] = 1;
