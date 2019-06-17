@@ -288,9 +288,14 @@ var achievements = {
 };
 
 export function unlockAchieve(achievement){
-    if (!global.stats.achieve[achievement]){
+    let a_level = 1;
+    if (global.race['no_plasmid']){ a_level++; }
+    if (global.race['no_trade']){ a_level++; }
+    if (global.race['no_craft']){ a_level++; }
+    if (global.race['no_crispr']){ a_level++; }
+    if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement] < a_level)){
         global.settings.showAchieve = true;
-        global.stats.achieve[achievement] = true;
+        global.stats.achieve[achievement] = a_level;
         messageQueue(`Achievement Unlocked! ${achievements[achievement].name}`,'special');
         drawAchieve();
         return true;
@@ -321,7 +326,8 @@ export function drawAchieve(){
         total++;
         if (global.stats.achieve[achievement]){
             earned++;
-            achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span></div></b-tooltip>`));
+            let star = global.stats.achieve[achievement] > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achievement]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>` : '';
+            achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${star}</div></b-tooltip>`));
         }
     });
     achieve.prepend(`<div class="has-text-warning">Achievements Earned: ${earned} of ${total}</div>`);

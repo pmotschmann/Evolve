@@ -1,3 +1,9 @@
+#### 0.4.3 - 6/17/2019
+Challenge mode achievement tracking<br>
+Vocational Training for craftsman<br>
+Spelling and grammer fixes<br>
+Fixed incorrect reject unity reward text<br>
+
 #### 0.4.2 - 6/16/2019
 Added some clarification to breakdown of stress<br>
 

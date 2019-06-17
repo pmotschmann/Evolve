@@ -301,6 +301,12 @@ export function loadFoundry(){
                     $('#main').append(popper);
                     let name = res.replace("_", " ");
                     let multiplier = craftingRatio(res);
+                    if (global.tech['v_train']){
+                        multiplier *= 2;
+                    }
+                    if (global.genes['crafty']){
+                        multiplier *= 1 + ((global.genes.crafty - 1) * 0.33);
+                    }
                     let final = +(global.city.foundry[res] * multiplier).toFixed(2);
 
                     popper.append($(`<div>+${final} ${name}/cycle</div>`));

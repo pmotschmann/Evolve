@@ -66,6 +66,12 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+if (convertVersion(global['version']) < 4003 && global.stats['achieve']){
+    Object.keys(global.stats.achieve).forEach(function (key){
+        global.stats.achieve[key] = 1;
+    });
+}
+
 if (convertVersion(global['version']) < 4001 && global['city'] && global.city['factory'] && !global.city.factory['Nano']){
     global.city.factory['Nano'] = 0;
 }
@@ -160,7 +166,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.2';
+global['version'] = '0.4.3';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

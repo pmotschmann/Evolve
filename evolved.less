@@ -471,6 +471,7 @@ a {
     }
 
     .achievement {
+        position: relative;
         border: .0625rem solid;
         padding: .125rem;
         margin: .125rem 0;
@@ -484,6 +485,15 @@ a {
         }
         :nth-child(2){
             width: ~"calc(100% - 11rem)";
+        }
+        .flair {
+            display: block;
+            position: absolute;
+            right: .25rem;
+            top: .125rem;
+        }
+        .star2, .star3, .star4, .star5 {
+            width: 1rem;
         }
     }
 
@@ -1070,6 +1080,19 @@ html.dark {
     .modal .actionSpace {
         background-color: #1f2424;
     }
+
+    .star2 {
+        fill: #fff;
+    }
+    .star3 {
+        fill: #cd7f32;
+    }
+    .star4 {
+        fill: #c0c0c0;
+    }
+    .star5 {
+        fill: #d4af37;
+    }
 }
 
 .dark .modal .action {
@@ -1285,6 +1308,18 @@ html.light {
     }
     .modal .actionSpace {
         background-color: #fff;
+    }
+    .star2 {
+        fill: #000;
+    }
+    .star3 {
+        fill: #cd7f32;
+    }
+    .star4 {
+        fill: #c0c0c0;
+    }
+    .star5 {
+        fill: #d4af37;
     }
 }
 

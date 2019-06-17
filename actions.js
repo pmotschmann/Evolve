@@ -3271,6 +3271,23 @@ export const actions = {
                 return false;
             }
         },
+        vocational_training: {
+            id: 'tech-vocational_training',
+            title: 'Vocational Training',
+            desc: 'Vocational Training',
+            reqs: { foundry: 1, high_tech: 3 },
+            grant: ['v_train',1],
+            cost: {
+                Knowledge(){ return 30000; }
+            },
+            effect: 'Vocational training for your craftsman will double the effectiveness of crafting upgrades on them.',
+            action(){
+                if (payCosts(actions.tech.vocational_training.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         assembly_line: {
             id: 'tech-assembly_line',
             title: 'Assembly Line',

@@ -2915,6 +2915,9 @@ function longLoop(){
                 Object.keys(craftCost).forEach(function (craft){
                     let num = global.city.foundry[craft];
                     let craft_ratio = craftingRatio(craft);
+                    if (global.tech['v_train']){
+                        craft_ratio *= 2;
+                    }
                     if (global.genes['crafty']){
                         craft_ratio *= 1 + ((global.genes.crafty - 1) * 0.33);
                     }
@@ -3074,7 +3077,7 @@ function steelCheck(){
     if (global.resource.Steel.display === false && Math.rand(0,1250) === 0){
         global.resource.Steel.display = true;
         modRes('Steel',1);
-        messageQueue('Your traders have bought back a sample of a metal they call "Steel"','success');
+        messageQueue('Your traders have brought back a sample of a metal they call "Steel"','success');
     }
 }
 
