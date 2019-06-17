@@ -836,7 +836,7 @@ function defineMad(){
             defcon(){
                 
                 return global.tech['world_control']
-                    ? `Enable or Disable the launch button. Scour the world clean with nuclear fire, wby? because you can.`
+                    ? `Enable or Disable the launch button. Scour the world clean with nuclear fire, why? because you can.`
                     : `Enable or Disable the launch button. Launching a nuclear strike will trigger a retalitory strike which will result in the end of all life as we know it.`;
             },
             warning(){

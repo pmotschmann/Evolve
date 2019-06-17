@@ -20,7 +20,7 @@ export const races = {
         solar: {
             red: 'Mars',
             hell: 'Mercury',
-            gas: 'Juptier',
+            gas: 'Jupiter',
             gas_moon: 'Ganymede',
             dwarf: 'Ceres',
         }
@@ -792,7 +792,7 @@ export const traits = {
         type: 'minor',
     },
     resilient: { // Coal Mining Bonus
-        desc: 'Natural resilence to harsh conditions makes your species more adapt at coal mining.',
+        desc: 'Natural resilence to harsh conditions makes your species more adept at coal mining.',
         type: 'minor',
     },
     cunning: { // Hunting Bonus
@@ -812,7 +812,7 @@ export const traits = {
         type: 'minor',
     },
     content: { // Morale Bonus
-        desc: 'Your people are natually content reducing the stress gained from everyday life.',
+        desc: 'Your people are natually content, reducing the stress gained from everyday life.',
         type: 'minor',
     },
 };

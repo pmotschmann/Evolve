@@ -103,7 +103,7 @@ var achievements = {
     biome_volcanic: {
         name: `Volcanic Civilizer`,
         desc: `Successfully built a civilization on a volcanic planet`,
-        flair: `Master of the prodromal world`
+        flair: `Master of the primordial world`
     },
     biome_tundra: {
         name: `Tundra Civilizer`,
