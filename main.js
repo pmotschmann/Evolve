@@ -93,9 +93,13 @@ var moraleCap = 125;
 $('#morale').on('mouseover',function(){
     var popper = $(`<div id="popMorale" class="popper has-background-light has-text-dark"></div>`);
     $('#main').append(popper);
+    if (global.city.morale.unemployed !== 0){
+        let type = global.city.morale.unemployed > 0 ? 'success' : 'danger';
+        popper.append(`<p>Unemployed<span class="has-text-${type}"> ${global.city.morale.unemployed}%</span></p>`);
+    }
     if (global.city.morale.stress !== 0){
         let type = global.city.morale.stress > 0 ? 'success' : 'danger';
-        popper.append(`<p>Stress<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
+        popper.append(`<p>Job Stress<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
     }
     if (global.city.morale.leadership !== 0){
         let type = global.city.morale.leadership > 0 ? 'success' : 'danger';
@@ -526,7 +530,8 @@ function fastLoop(){
 
         let stress = 0;
         if (!global.race['carnivore']){
-            stress -= global.civic.free;
+            morale -= global.civic.free;
+            global.city.morale.unemployed = -(global.civic.free);
         }
         else {
             stress -= Math.round(global.civic.free / 5);

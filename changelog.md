@@ -1,3 +1,6 @@
+#### 0.4.2 - 6/16/2019
+Added some clarification to breakdown of stress<br>
+
 #### 0.4.1 - 6/16/2019
 Fixed a bug with factories converted from some pre 0.4.0 save files<br>
 

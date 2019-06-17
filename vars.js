@@ -160,7 +160,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.1';
+global['version'] = '0.4.2';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -265,12 +265,18 @@ $('html').addClass(global.settings.theme);
 if (!global.city['morale']){
     global.city['morale'] = {
         current: 0,
+        unemployed: 0,
         stress: 0,
         entertain: 0,
+        leadership: 0,
         season: 0,
         weather: 0,
         warmonger: 0,
     };
+}
+
+if (!global.city.morale['unemployed']){
+    global.city.morale['unemployed'] = 0;
 }
 
 if (!global.city.morale['leadership']){
