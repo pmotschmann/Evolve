@@ -4912,7 +4912,7 @@ export const actions = {
                 Elerium(){ return 250 },
                 Nano_Tube(){ return 100000 }
             },
-            effect: `Quantium computing is a greap leap fowards in processing power.`,
+            effect: `Quantium computing is a great leap fowards in processing power.`,
             action(){
                 if (payCosts(actions.tech.quantum_computing.cost)){
                     return true;
@@ -4932,7 +4932,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 400000; },
             },
-            effect: 'Advanced computer models could help design a super material known as carbon nano tubes.',
+            effect(){ return `Worker drones will help expedite neutronium mining on ${races[global.race.species].solar.gas_moon}.`; },
             action(){
                 if (payCosts(actions.tech.polymer.cost)){
                     global.space['drone'] = { count: 0 };
