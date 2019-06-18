@@ -891,9 +891,13 @@ export function loadMarket(){
 }
 
 export function spatialReasoning(value){
+    let plasmids = global.race.Plasmid.count;
+    if (global.race['no_plasmid']){
+        plasmids = global.race.mutation > global.race.Plasmid.count ? global.race.Plasmid.count : global.race.mutation;
+    }
     if (global.genes['store'] && !global.race['no_plasmid']){
         let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
-        value *= 1 + (global.race.Plasmid.count / divisor);
+        value *= 1 + (plasmids / divisor);
         value = Math.round(value);
     }
     return value;
@@ -901,17 +905,10 @@ export function spatialReasoning(value){
 
 export function plasmidBonus(){
     let plasmid_bonus = 0;
-    if (global.race['no_plasmid']){
-        if (global.city['temple'] && global.city['temple'].count){
-            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
-            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                temple_bonus += global.civic.professor.workers * 0.0004;
-            }
-            plasmid_bonus = global.city.temple.count * temple_bonus;
-        }
-        return plasmid_bonus;
+    let plasmids = global.race['no_plasmid'] ? global.race.mutation : global.race.Plasmid.count;
+    if (plasmids > global.race.Plasmid.count){
+        plasmids = global.race.Plasmid.count;
     }
-    let plasmids = global.race.Plasmid.count;
     if (global.race['decayed']){
         plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
     }
@@ -921,7 +918,7 @@ export function plasmidBonus(){
     else {
         plasmid_bonus = plasmids / 400;
     }
-    if (global.city['temple'] && global.city['temple'].count){
+    if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid']){
         let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
             temple_bonus += global.civic.professor.workers * 0.002;

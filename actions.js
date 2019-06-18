@@ -1271,7 +1271,7 @@ export const actions = {
             cost: {
                 DNA(){ return 10; }
             },
-            effect: 'Plasmid effects are disabled',
+            effect: 'Starting plasmids have no effect',
             action(){
                 if (payCosts(actions.evolution.plasmid.cost)){
                     global.race['no_plasmid'] = 1;
