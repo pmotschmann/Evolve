@@ -221,7 +221,7 @@ if (!global.settings['showAchieve']){
 if (!global.settings['resTabs']){
     global.settings['resTabs'] = 0;
 }
-if (!global.settings['lang']){
+if (!global.settings['locale']){
     global.settings['locale'] = 'en-us';
 }
 if (typeof global.settings.mKeys === 'undefined'){

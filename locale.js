@@ -1,7 +1,10 @@
 import { global } from './vars.js';
 
 export function loc(key,variables){
-    let string = locales[key][global.settings.locale];
+    let string = strings[key][global.settings.locale];
+    if (!string){
+        string = strings[key]['en-us'];
+    }
     if (variables && variables instanceof Array){
         for (let i=0; i<variables.length; i++){
             string = string.replace(`%${i}`,variables[i]);
@@ -10,7 +13,13 @@ export function loc(key,variables){
     return string;
 }
 
-const locales = {
+export const locales = {
+    'en-us': 'English (US)',
+    //'es-us': 'Spanish (US/Latin-America)',
+    //'pr-br': 'Brazilian Portuguese',
+};
+
+const strings = {
     settings1: {
         'en-us': `Enable Control (10x) / Shift (25x) / Alt (100x) Multiplier keys`,
     },
