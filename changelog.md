@@ -2,6 +2,7 @@
 Matter compression now applies to Wharfs<br>
 Xenophobia now applies to Wharfs<br>
 Plasmids earned by mutation now apply to no plasmid challenge run<br>
+Reduced Nano Tube cost of Mining Drones<br>
 
 #### 0.4.3 - 6/17/2019
 Challenge mode achievement tracking<br>
