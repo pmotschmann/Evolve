@@ -137,4 +137,70 @@ const strings = {
     steel_sample: {
         'en-us': `Your traders have brought back a sample of a metal they call "Steel"`,
     },
+    job_farmer: {
+        'en-us': `Farmers create food to feed your population. Each farmer generates %0 food per second.`,
+    },
+    job_lumberjack: {
+        'en-us': `Lumberjacks harvet lumber from the forests. Each lumberjack generates %0 lumber per second.`,
+    },
+    job_quarry_worker: {
+        'en-us': `Quarry Workers mine stone from rock quarries. Each quarry worker generates %0 stone per second.`,
+    },
+    job_miner1: {
+        'en-us': `Miners dig up useful minerals from shafts dug deep in the ground. Each miner will extract copper from the ground.`,
+    },
+    job_miner2: {
+        'en-us': `Miners dig up useful minerals from shafts dug deep in the ground. Each miner will extract copper and iron from the ground.`,
+    },
+    job_coal_miner1: {
+        'en-us': `Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal from deep in the ground.`,
+    },
+    job_coal_miner2: {
+        'en-us': `Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal and uranium from deep in the ground.`,
+    },
+    job_craftsman: {
+        'en-us': `Craftsman can be assigned to craft various construction materials out of raw materials.`,
+    },
+    job_cement_worker: {
+        'en-us': `Cement plant workers turn stone into cement, each worker produces %0 cement and consumes 3 stone per second.`,
+    },
+    job_banker: {
+        'en-us': `Bankers manage your banks increasing tax revenue. Each banker increases tax income by %0%.`,
+    },
+    job_entertainer: {
+        'en-us': `Entertainers help combat the dreariness of everyday life. Each entertainer raise the morale of your citizens by %0%.`,
+    },
+    job_professor: {
+        'en-us': `Professors help educate your citizens and contribute to knowledge gain. Each professor generates %0 knowledge per second.`,
+    },
+    job_scientist: {
+        'en-us': `Scientists study the universe to expose it's secrets. Each scientist generates %0 knowledge per second.`,
+    },
+    job_colonist: {
+        'en-us': `Colonists work hard to keep your %0 colony running smoothly and enhance various aspects of the colony.`,
+    },
+    job_space_miner: {
+        'en-us': `Space miners work in zero G mining asteroids. Each Space Miner increases the maximum number of mining ships that can be opperated by one.`,
+    },
+    job_unemployed1: {
+        'en-us': `Unemployed`,
+    },
+    job_unemployed2: {
+        'en-us': `The number of unemployed citizens. Unemployed citizens lower morale and do not pay taxes however they also consume half rations.`,
+    },
+    job_hunter1: {
+        'en-us': `Hunter`,
+    },
+    job_hunter2: {
+        'en-us': `Citizens not assigned to any other task will hunt for food. Military technology will boost effectiveness.`,
+    },
+    craftsman_assigned: {
+        'en-us': `Craftman Assigned`,
+    },
+    job_craftsman1: {
+        'en-us': `Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon each month.`,
+    },
+    job_craftsman2: {
+        'en-us': `Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon and full moon each month.`,
+    },
 };

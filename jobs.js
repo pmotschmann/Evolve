@@ -1,4 +1,5 @@
 import { global, vues, keyMultiplier, poppers } from './vars.js';
+import { loc } from './locale.js';
 import { racialTrait, races } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
 
@@ -11,14 +12,14 @@ export const job_desc = {
         multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
         let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
         let gain = +(impact * multiplier).toFixed(1);
-        return `Farmers create food to feed your population. Each farmer generates ${gain} food per second.`;
+        return loc('job_farmer',[gain]);
     },
     lumberjack: function(){
         let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
         multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
         let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
         let gain = +(impact * multiplier).toFixed(1);
-        return `Lumberjacks harvet lumber from the forests. Each lumberjack generates ${gain} lumber per second.`;
+        return loc('job_lumberjack',gain);
     },
     quarry_worker: function(){
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
@@ -27,44 +28,44 @@ export const job_desc = {
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
-        return `Quarry Workers mine stone from rock quarries. Each quarry worker generates ${gain} stone per second.`;
+        return loc('job_quarry_worker',gain);
     },
     miner: function(){
         if (global.tech['mining'] >= 3){
-            return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner will extract copper and iron from the ground.';
+            return loc('job_miner2');
         }
         else {
-            return 'Miners dig up useful minerals from shafts dug deep in the ground. Each miner will extract copper from the ground.';
+            return loc('job_miner1');
         }
     },
     coal_miner: function(){
         if (global.tech['uranium']){
-            return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal and uranium from deep in the ground.';
+            return loc('job_coal_miner2');
         }
         else {
-            return 'Coal miners are a special breed of miner, willing to work the dirtiest of mines to extract coal from deep in the ground.';
+            return loc('job_coal_miner1');
         }
     },
     craftsman: function(){
-        return 'Craftsman can be assigned to craft various construction materials out of raw materials.';
+        return loc('job_craftsman');
     },
     cement_worker: function(){
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
         let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
         gain = +(gain).toFixed(2);
-        return `Cement plant workers turn stone into cement, each worker produces ${gain} cement and consumes 3 stone per second.`;
+        return loc('job_cement_worker',[gain]);
     },
     banker: function(){
         let interest = global.civic.banker.impact * 100;
         if (global.tech['banking'] >= 10){
             interest += 2 * global.tech['stock_exchange'];
         }
-        return `Bankers manage your banks increasing tax revenue. Each banker increases tax income by ${interest}%.`;
+        return loc('job_banker',[interest]);
     },
     entertainer: function(){
         let morale = global.tech['theatre'];
-        return `Entertainers help combat the dreariness of everyday life. Each entertainer raise the morale of your citizens by ${morale}%.`;
+        return loc('job_entertainer',[morale]);
     },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
@@ -76,7 +77,7 @@ export const job_desc = {
             impact *= 1 + (global.city.temple.count * 0.05);
         }
         impact = +impact.toFixed(2);
-        return `Professors help educate your citizens and contribute to knowledge gain. Each professor generates ${impact} knowledge per second.`;
+        return loc('job_professor',[impact]);
     },
     scientist: function(){
         let impact = global.civic.scientist.impact;
@@ -88,13 +89,13 @@ export const job_desc = {
             impact *= 1 + (global.space.satellite.count * 0.01);
         }
         impact = +impact.toFixed(2);
-        return `Scientists study the universe to expose it's secrets. Each scientist generates ${impact} knowledge per second.`;
+        return loc('job_scientist',[impact]);
     },
     colonist(){
-        return `Colonists work hard to keep your ${races[global.race.species].solar.red} colony running smoothly and enhance various aspects of the colony.`;
+        return loc('job_colonist',[races[global.race.species].solar.red]);
     },
     space_miner(){
-        return `Space miners work in zero G mining asteroids. Each Space Miner increases the maximum number of mining ships that can be opperated by one.`;
+        return loc('job_space_miner');
     }
 }
 
@@ -123,7 +124,7 @@ function loadUnemployed(){
     
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job = global.race['carnivore'] ? 'Hunter' : 'Unemployed';
+    let job = global.race['carnivore'] ? loc('job_hunter1') : loc('job_unemployed1');
     let job_label = $(`<div class="job_label"><span class="has-text-${color}">${job}</span><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
@@ -134,7 +135,7 @@ function loadUnemployed(){
     vues['civ_free'].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
-            let text = global.race['carnivore'] ? 'Citizens not assigned to any other task will hunt for food. Military technology will boost effectiveness.' : 'The number of unemployed citizens. Unemployed citizens lower morale and do not pay taxes however they also consume half rations.';
+            let text = global.race['carnivore'] ? loc('job_hunter2') : loc('job_unemployed2');
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
             $('#main').append(popper);
             popper.show();
@@ -238,7 +239,7 @@ export function loadFoundry(){
     }
     $('#foundry').empty();
     if (global.city['foundry']){
-        var foundry = $('<div class="job"><div class="foundry job_label"><span class="has-text-warning">Craftman Assigned</span><span class="count">{{ f.crafting }} / {{ f.count }}</span></div></div>');
+        var foundry = $(`<div class="job"><div class="foundry job_label"><span class="has-text-warning">${loc('craftsman_assigned')}</span><span class="count">{{ f.crafting }} / {{ f.count }}</span></div></div>`);
         $('#foundry').append(foundry);
 
         let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril'];
@@ -331,10 +332,10 @@ export function loadFoundry(){
             var popper = $(`<div id="popFoundry" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
             if (global.genes['crafty']){
-                popper.html('Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon and full moon each month.');
+                popper.html(loc('job_craftsman2'));
             }
             else {
-                popper.html('Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon each month.');
+                popper.html(loc('job_craftsman1'));
             }
             popper.show();
             poppers['popFoundry'] = new Popper($(`#foundry .foundry`),popper);
