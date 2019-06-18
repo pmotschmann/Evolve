@@ -1,4 +1,5 @@
 import { global } from './vars.js';
+import { loc } from './locale.js';
 import { races } from './races.js';
 import { unlockAchieve } from './achieve.js';
 
@@ -13,7 +14,7 @@ export const events = {
             var res = global.resource.DNA.amount + gain;
             if (res > global.resource.DNA.max){ res = global.resource.DNA.max; }
             global.resource.DNA.amount = res;
-            return `Some DNA molecules have replicated, you gain ${gain} DNA.`;
+            return loc('event_dna',[gain]);
         }
     },
     rna_meteor: {
@@ -26,7 +27,7 @@ export const events = {
             var res = global.resource.RNA.amount + gain;
             if (res > global.resource.RNA.max){ res = global.resource.RNA.max; }
             global.resource.RNA.amount = res;
-            return `A meteor has impacted the planet bringing new genetic material with it, gained ${gain} RNA.`;
+            return loc('event_rna',[gain]);
         }
     },
     inspiration: {
@@ -38,7 +39,7 @@ export const events = {
             var res = global.resource.Knowledge.amount + gain;
             if (res > global.resource.Knowledge.max){ res = global.resource.Knowledge.max; }
             global.resource.Knowledge.amount = res;
-            return `Your scientists have become inspired, gain ${gain} Knowledge.`;
+            return loc('event_inspiration',[gain]);
         }
     },
     fire: {
@@ -50,7 +51,7 @@ export const events = {
             var res = global.resource.Lumber.amount - loss;
             if (res < 0){ res = 0; }
             global.resource.Lumber.amount = res;
-            return `A fire has broken out destroying ${loss} lumber.`;
+            return loc('event_fire',[loss]);
         }
     },
     raid: {
@@ -72,14 +73,14 @@ export const events = {
             }
 
             if (army > enemy){
-                return `An attack by a rival city has been repelled, ${killed} soldiers were killed and ${wounded} soldiers were wounded.`;
+                return loc('event_raid1',[killed,wounded]);
             }
             else {
                 var loss = Math.rand(1,Math.round(global.resource.Money.amount / 4));
                 var res = global.resource.Money.amount - loss;
                 if (res < 0){ res = 0; }
                 global.resource.Money.amount = res;
-                return `Your city was raided, \$${loss} was stolen, ${killed} soldiers were killed and ${wounded} soldiers were wounded.`;
+                return loc('event_raid2',[loss,killed,wounded]);
             }
         }
     },
@@ -98,10 +99,10 @@ export const events = {
             }
 
             if (killed === 0){
-                return `${wounded} soldiers were wounded by a terrorist attack against your security forces.`;
+                return loc('event_terrorist1',[wounded]);
             }
             else {
-                return `${wounded} soldiers were wounded and ${killed} soldiers were killed by a terrorist attack against your security forces.`;
+                return loc('event_terrorist2',[wounded,killed]);
             }
         }
     },
@@ -111,7 +112,7 @@ export const events = {
         },
         effect: function(){
             unlockAchieve('doomed');
-            return `A portal to hell was accidently opened on ${races[global.race.species].solar.dwarf}, a lone space marine wearing green armor somehow managed to stop the demonic invasion.`;
+            return loc('event_doom',[races[global.race.species].solar.dwarf]);
         }
     },
     ruins: {
@@ -133,7 +134,7 @@ export const events = {
                     }
                 }
             }
-            return `An ancient cache of resources has been discovered.`;
+            return loc('event_ruins');
         }
     },
     tax_revolt: {
@@ -156,5 +157,5 @@ function tax_revolt(){
         if (remain < 0){ remain = 0; }
         global.resource[res].amount = remain;
     });
-    return 'Riots have broken out due to the excessively high taxes, widespread damage has resulted in the loss of some resources.';
+    return loc('event_tax_revolt');
 }

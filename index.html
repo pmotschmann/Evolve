@@ -89,9 +89,7 @@
                                     <b-dropdown-item v-on:click="redgreen">Red Green CB</b-dropdown-item>
                                 </b-dropdown>
                             </div>
-                            <div id="localization" class="localization">
-                                Locale: <select @change="lChange()" :v-model="locale"></select>
-                            </div>
+                            <div id="localization" class="localization"></div>
                             <b-switch v-model="animated"><b-tooltip :label="animation()" position="is-bottom" size="is-small" multilined animated>Tab Animations</b-tooltip></b-switch>
                             <b-switch v-model="mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>Multiplier Keys</b-tooltip></b-switch>
                             <div class="importExport">
