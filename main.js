@@ -1,5 +1,5 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel } from './vars.js';
-import { loc } from './locale.js';
+import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
@@ -12,9 +12,19 @@ import { arpa } from './arpa.js';
 
 var intervals = {};
 
+Object.keys(locales).forEach(function (locale){
+    let selected = global.settings.locale === locale ? ' selected=selected' : '';
+    $('#localization select').append($(`<option value="${locale}"${selected}>${locales[locale]}</option>`));
+});
+
 let settings = {
     data: global.settings,
     methods: {
+        lChange(){
+            global.settings.locale = $('#localization select').children("option:selected").val();
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            window.location.reload();
+        },
         dark(){
             global.settings.theme = 'dark';
             $('html').removeClass();
