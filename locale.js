@@ -20,6 +20,9 @@ export const locales = {
 };
 
 const strings = {
+    locale: {
+        'en-us': `Locale`,
+    },
     settings1: {
         'en-us': `Enable Control (10x) / Shift (25x) / Alt (100x) Multiplier keys`,
     },
@@ -202,5 +205,38 @@ const strings = {
     },
     job_craftsman2: {
         'en-us': `Craftman will work to produce the assigned resources, all produced materials will be delivered on the new moon and full moon each month.`,
+    },
+    event_dna: {
+        'en-us': `Some DNA molecules have replicated, you gain %0 DNA.`,
+    },
+    event_rna: {
+        'en-us': `A meteor has impacted the planet bringing new genetic material with it, gained %0 RNA.`,
+    },
+    event_inspiration: {
+        'en-us': `Your scientists have become inspired, gain %0 Knowledge.`,
+    },
+    event_fire: {
+        'en-us': `A fire has broken out destroying %0 lumber.`,
+    },
+    event_raid1: {
+        'en-us': `An attack by a rival city has been repelled, %0 soldiers were killed and %1 soldiers were wounded.`,
+    },
+    event_raid2: {
+        'en-us': `Your city was raided, \$%0 was stolen, %1 soldiers were killed and %2 soldiers were wounded.`,
+    },
+    event_terrorist1: {
+        'en-us': `%0 soldiers were wounded by a terrorist attack against your security forces.`,
+    },
+    event_terrorist2: {
+        'en-us': `%0 soldiers were wounded and %1 soldiers were killed by a terrorist attack against your security forces.`,
+    },
+    event_doom: {
+        'en-us': `A portal to hell was accidently opened on %0, a lone space marine wearing green armor somehow managed to stop the demonic invasion.`,
+    },
+    event_ruins: {
+        'en-us': `An ancient cache of resources has been discovered.`,
+    },
+    event_tax_revolt: {
+        'en-us': `Riots have broken out due to the excessively high taxes, widespread damage has resulted in the loss of some resources.`,
     },
 };

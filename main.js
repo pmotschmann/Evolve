@@ -12,10 +12,13 @@ import { arpa } from './arpa.js';
 
 var intervals = {};
 
-Object.keys(locales).forEach(function (locale){
-    let selected = global.settings.locale === locale ? ' selected=selected' : '';
-    $('#localization select').append($(`<option value="${locale}"${selected}>${locales[locale]}</option>`));
-});
+if (Object.keys(locales).length > 1){
+    $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="locale"></select></span>`));
+    Object.keys(locales).forEach(function (locale){
+        let selected = global.settings.locale === locale ? ' selected=selected' : '';
+        $('#localization select').append($(`<option value="${locale}"${selected}>${locales[locale]}</option>`));
+    });
+}
 
 let settings = {
     data: global.settings,
