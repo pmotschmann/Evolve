@@ -2074,6 +2074,9 @@ function midLoop(){
         }
         if (global.city['wharf']){
             let vol = global.tech['world_control'] ? 15 : 10
+            if (global.tech['particles'] && global.tech['particles'] >= 2){
+                vol *= 2;
+            }
             caps['Crates'] += (global.city['wharf'].count * vol);
             caps['Containers'] += (global.city['wharf'].count * vol);
         }
@@ -2499,7 +2502,7 @@ function midLoop(){
             }
         }
         if (global.city['wharf']){
-            global.city.market.mtrade += global.city.wharf.count * 2;
+            global.city.market.mtrade += global.city.wharf.count * (global.race['xenophobic'] ? 1 : 2);
         }
         
         let pop_loss = global.resource[races[global.race.species].name].amount - caps[races[global.race.species].name];

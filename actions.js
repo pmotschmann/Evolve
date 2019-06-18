@@ -2310,16 +2310,23 @@ export const actions = {
                 Oil(){ return costMultiplier('wharf', 750, 1.32); }
             },
             effect(){
-                let routes = 2;
+                let routes = global.race['xenophobic'] ? 1 : 2;
                 let containers = global.tech['world_control'] ? 15 : 10;
+                if (global.tech['particles'] && global.tech['particles'] >= 2){
+                    containers *= 2;
+                }
                 return `<div>+${routes} Trade Routes</div><div>+1% Trade Route Profitability</div><div>+${containers} Max Crates</div><div>+${containers} Max Containers</div>`; 
             },
             action(){
                 if (payCosts(actions.city.wharf.cost)){
                     global.city['wharf'].count++;
                     global.city.market.mtrade += 2;
-                    global.resource.Crates.max += global.tech['world_control'] ? 15 : 10;
-                    global.resource.Containers.max += global.tech['world_control'] ? 15 : 10;
+                    let vol = global.tech['world_control'] ? 15 : 10
+                    if (global.tech['particles'] && global.tech['particles'] >= 2){
+                        vol *= 2;
+                    }
+                    global.resource.Crates.max += vol;
+                    global.resource.Containers.max += vol;
                     return true;
                 }
                 return false;

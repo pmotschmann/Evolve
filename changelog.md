@@ -1,3 +1,7 @@
+#### 0.4.4 - 6/18/2019
+Matter compression now applies to Wharfs<br>
+Xenophobia now applies to Wharfs<br>
+
 #### 0.4.3 - 6/17/2019
 Challenge mode achievement tracking<br>
 Vocational Training for craftsman<br>
