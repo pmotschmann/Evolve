@@ -1,4 +1,5 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, moon_on } from './vars.js';
+import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
@@ -14,7 +15,7 @@ export const actions = {
             title: 'RNA',
             desc(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
-                return `Creates ${rna} RNA`;
+                return loc('evo_rna',[rna]);
             },
             action(){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
@@ -25,8 +26,8 @@ export const actions = {
         },
         dna: {
             id: 'evo-dna',
-            title: 'Form DNA',
-            desc: 'Creates a new strand of DNA',
+            title: loc('evo_dna_title'),
+            desc: loc('evo_dna_desc'),
             cost: { RNA(){ return 2; } },
             action(){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
@@ -35,16 +36,16 @@ export const actions = {
                 }
                 return false;
             },
-            effect: 'Turn 2 RNA into 1 DNA'
+            effect: loc('evo_dna_effect')
         },
         membrane: {
             id: 'evo-membrane',
-            title: 'Membrane',
-            desc: 'Evolve Membranes',
+            title: loc('evo_membrane_title'),
+            desc: loc('evo_membrane_desc'),
             cost: { RNA(){ return (global.evolution['membrane'].count * 2) + 2; } },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
-                return `Increases RNA capacity by ${effect}`;
+                return loc('evo_membrane_desc',[effect]);
             },
             action(){
                 if (payCosts(actions.evolution.membrane.cost)){
@@ -57,8 +58,8 @@ export const actions = {
         },
         organelles: {
             id: 'evo-organelles',
-            title: 'Organelles',
-            desc: 'Evolve Organelles',
+            title: loc('evo_organelles_title'),
+            desc: loc('evo_organelles_desc'),
             cost: {
                 RNA(){ return (global.evolution['organelles'].count * 8) + 12; },
                 DNA(){ return (global.evolution['organelles'].count * 4) + 4; }
@@ -68,7 +69,7 @@ export const actions = {
                 if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
                     rna++;
                 }
-                return `Automatically generate ${rna} RNA`; 
+                return loc('evo_organelles_effect',[rna]); 
             },
             action(){
                 if (payCosts(actions.evolution.organelles.cost)){

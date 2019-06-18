@@ -1059,7 +1059,7 @@ const spaceProjects = {
                 Steel(){ return costMultiplier('drone', 20000, 1.3); },
                 Neutronium(){ return costMultiplier('drone', 500, 1.3); },
                 Elerium(){ return costMultiplier('drone', 25, 1.3); },
-                Nano_Tube(){ return costMultiplier('drone', 75000, 1.3); }
+                Nano_Tube(){ return costMultiplier('drone', 45000, 1.3); }
             },
             effect(){
                 return `<div>Increase the output of mining outposts by 6%</div>`;

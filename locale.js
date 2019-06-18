@@ -239,4 +239,34 @@ const strings = {
     event_tax_revolt: {
         'en-us': `Riots have broken out due to the excessively high taxes, widespread damage has resulted in the loss of some resources.`,
     },
+    evo_rna: {
+        'en-us': `Creates %0 RNA`,
+    },
+    evo_dna_title: {
+        'en-us': `Form DNA`,
+    },
+    evo_dna_desc: {
+        'en-us': `Creates a new strand of DNA`,
+    },
+    evo_dna_effect: {
+        'en-us': `Turn 2 RNA into 1 DNA`,
+    },
+    evo_membrane_title: {
+        'en-us': `Membrane`,
+    },
+    evo_membrane_desc: {
+        'en-us': `Evolve Membranes`,
+    },
+    evo_membrane_effect: {
+        'en-us': `Increases RNA capacity by %0`,
+    },
+    evo_organelles_title: {
+        'en-us': `Organelles`,
+    },
+    evo_organelles_desc: {
+        'en-us': `Evolve Organelles`,
+    },
+    evo_organelles_effect: {
+        'en-us': `Automatically generate %0 RNA`,
+    },
 };
