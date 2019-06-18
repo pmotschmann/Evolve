@@ -1,4 +1,5 @@
 import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel } from './vars.js';
+import { loc } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
@@ -35,16 +36,16 @@ let settings = {
             $('html').addClass('redgreen');
         },
         keys(){
-            return `Enable Control (10x) / Shift (25x) / Alt (100x) Multiplier keys`;
+            return loc('settings1');
         },
         animation(){
-            return `Enable tab transition animations`;
+            return loc('settings2');
         },
         hard(){
-            return `A hard reset will erase all your game progress`;
+            return loc('settings3');
         },
         soft(){
-            return `A soft reset will reset your current run back to the evolution stage, you will not gain any bonuses.`;
+            return loc('settings4');
         }
     },
     filters: {
@@ -58,6 +59,11 @@ let settings = {
 
 vues['vue_tabs'] = new Vue(settings);
 vues['vue_tabs'].$mount('#tabs');
+
+if (global['new']){
+    messageQueue(loc('new'), 'warning');
+    global['new'] = false;
+}
 
 // Load Resources
 defineResources();
@@ -173,51 +179,51 @@ vues['topBar'] = new Vue({
             switch(global.city.calendar.weather){
                 case 0:
                     if (global.city.calendar.temp === 0){
-                        return global.city.calendar.wind === 1 ? 'Snowstorm' : 'Snow';
+                        return global.city.calendar.wind === 1 ? loc('snowstorm') : loc('snow');
                     }
                     else {
-                        return global.city.calendar.wind === 1 ? 'Thunderstorm' : 'Rain';
+                        return global.city.calendar.wind === 1 ? loc('thunderstorm') : loc('rain');
                     }
                 case 1:
-                    return global.city.calendar.wind === 1 ? 'Cloudy & Windy' : 'Cloudy';
+                    return global.city.calendar.wind === 1 ? loc('cloudy_windy') : loc('cloudy');
                 case 2:
-                    return global.city.calendar.wind === 1 ? 'Sunny & Windy' : 'Sunny';
+                    return global.city.calendar.wind === 1 ? loc('sunny_windy') : loc('sunny');
             }
         },
         temp(){
             switch(global.city.calendar.temp){
                 case 0:
-                    return 'Cold';// weather, cold weather may reduce food output.';
+                    return loc('cold');// weather, cold weather may reduce food output.';
                 case 1:
-                    return 'Moderate temperature';
+                    return loc('moderate');
                 case 2:
-                    return 'Hot';// weather, hot weather may reduce worker productivity.';
+                    return loc('hot');// weather, hot weather may reduce worker productivity.';
             }
         },
         moon(){
             if (global.city.calendar.moon === 0){
-                return 'New Moon';
+                return loc('moon1');
             }
             else if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
-                return 'Waxing Crescent Moon';
+                return loc('moon2');
             }
             else if (global.city.calendar.moon === 7){
-                return 'First Quarter Moon';
+                return loc('moon3');
             }
             else if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){
-                return 'Waxing Gibbous Moon';
+                return loc('moon4');
             }
             else if (global.city.calendar.moon === 14){
-                return 'Full Moon';
+                return loc('moon5');
             }
             else if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){
-                return 'Waning Gibbous Moon';
+                return loc('moon6');
             }
             else if (global.city.calendar.moon === 21){
-                return 'Third Quarter Moon';
+                return loc('moon7');
             }
             else if (global.city.calendar.moon > 21){
-                return 'Waning Crescent Moon';
+                return loc('moon8');
             }
         }
     },
@@ -233,14 +239,14 @@ $('#topBar .planet').on('mouseover',function(){
     var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
     $('#main').append(popper);
     if (global.race.species === 'protoplasm'){
-        popper.append($(`<span>Life on this planet is in it's infancy and still evolving</span>`));
+        popper.append($(`<span>${loc('infant')}</span>`));
     }
     else {
         let planet = races[global.race.species].home;
         let race = races[global.race.species].name;
         let biome = global.city.biome;
         let orbit = global.city.calendar.orbit;
-        popper.append($(`<span>${planet} is the home planet of the ${race} people. It is a ${biome} planet with an orbital period of ${orbit} days.</span>`));
+        popper.append($(`<span>${loc('home',[planet,race,biome,orbit])}</span>`));
     }
     popper.show();
     poppers['topbarPlanet'] = new Popper($('#topBar .planet'),popper);
@@ -2486,10 +2492,10 @@ function midLoop(){
         let pop_loss = global.resource[races[global.race.species].name].amount - caps[races[global.race.species].name];
         if (pop_loss > 0){
             if (pop_loss === 1){
-                messageQueue(`${pop_loss} citizen has abandoned your settlement due to homelessness.`,'danger');
+                messageQueue(loc('abandon1',[pop_loss]),'danger');
             }
             else {
-                messageQueue(`${pop_loss} citizens have abandoned your settlement due to homelessness.`,'danger');
+                messageQueue(loc('abandon2',[pop_loss]),'danger');
             }
         }
 
@@ -2654,13 +2660,13 @@ function midLoop(){
                 global.arpa.sequence.progress = 0;
                 global.arpa.sequence.time = global.arpa.sequence.max;
                 if (global.tech['genetics'] === 2){
-                    messageQueue(`The ${races[global.race.species].name} genome project has been completed.`,'success');
+                    messageQueue(loc('genome',[races[global.race.species].name]),'success');
                     global.tech['genetics'] = 3;
                 }
                 else {
                     global.race.mutation++;
                     randomMinorTrait();
-                    messageQueue('Gene therapy has resulted in an improvement to your species.','success');
+                    messageQueue(loc('gene_therapy'),'success');
                     global.stats.plasmid++;
                     global.race.Plasmid.count++;
                 }
@@ -2710,7 +2716,7 @@ function midLoop(){
                 global.resource.Elerium.display = true;
                 modRes('Elerium',1);
                 drawTech();
-                messageQueue(`Your asteroid miners have discovered an unknown rare element in the belt, a sample has been retreived for analysis.`);
+                messageQueue(loc('discover_elerium'));
             }
         }
 
@@ -2718,7 +2724,7 @@ function midLoop(){
             if (Math.rand(0,100) <= p_on['outpost']){
                 global.space['oil_extractor'] = { count: 0, on: 0 };
                 global.tech['gas_moon'] = 2;
-                messageQueue(`Oil has unexpectedly been discovered on ${races[global.race.species].solar.gas_moon}.`);
+                messageQueue(loc('discover_oil',[races[global.race.species].solar.gas_moon]));
                 space();
             }
         }
@@ -2947,34 +2953,34 @@ function longLoop(){
         if (global.race.deterioration === 0 && deterioration < 40000000){
             global.race.deterioration = 1;
             let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-            messageQueue(`Scientists have discovered that the ${races[global.race.species].name} genome is deteriorating, they think the species has about ${death_clock} years remaining before genetic decay becomes a problem.`,'danger');
+            messageQueue(loc('deterioration1',[races[global.race.species].name,death_clock]),'danger');
         }
         else if (global.race.deterioration === 1 && deterioration < 20000000){
             global.race.deterioration = 2;
             let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-            messageQueue(`Some alarmists now claim that the ${races[global.race.species].name} genome decay is accelerating and there is as little as ${death_clock} years remaining.`,'danger');
+            messageQueue(loc('deterioration2',[races[global.race.species].name,death_clock]),'danger');
         }
         else if (global.race.deterioration === 2 && deterioration < 5000000){
             global.race.deterioration = 3;
             let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-            messageQueue(`There is now a concensus about the alarming ${races[global.race.species].name} genome decay. If it doesn't accelerate any further there might be ${death_clock} years remaining.`,'danger');
+            messageQueue(loc('deterioration3',[races[global.race.species].name,death_clock]),'danger');
         }
         else if (global.race.deterioration === 3 && deterioration < 1000000){
             global.race.deterioration = 4;
             let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-            messageQueue(`If a solution can not be found genetic damage will begain to weaken the ${races[global.race.species].name} race in at most ${death_clock} years.`,'danger');
+            messageQueue(loc('deterioration4',[races[global.race.species].name,death_clock]),'danger');
         }
         else if (global.race.deterioration === 4 && deterioration <= 0){
             global.race.deterioration = 5;
             global.race['decayed'] = global.stats.days;
             global.tech['decay'] = 1;
-            messageQueue(`Genetic decay has started to weaken the ${races[global.race.species].name} race.`,'danger');
+            messageQueue(loc('deterioration5',[races[global.race.species].name]),'danger');
             drawTech();
         }
 
         if (!global.tech['genesis'] && global.race.deterioration >= 1 && global.tech['high_tech'] && global.tech['high_tech'] >= 10){
             global.tech['genesis'] = 1;
-            messageQueue(`A group of scientists have proposed a new initiative they call the "Genesis Project".`,'special');
+            messageQueue(loc('genesis'),'special');
             drawTech();
         }
     }
@@ -3077,7 +3083,7 @@ function steelCheck(){
     if (global.resource.Steel.display === false && Math.rand(0,1250) === 0){
         global.resource.Steel.display = true;
         modRes('Steel',1);
-        messageQueue('Your traders have brought back a sample of a metal they call "Steel"','success');
+        messageQueue(loc('steel_sample'),'success');
     }
 }
 

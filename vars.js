@@ -188,7 +188,8 @@ if (!global['settings']){
         showAchieve: false,
         animated: true,
         disableReset: false,
-        theme: 'dark'
+        theme: 'dark',
+        locale: 'en-us',
     }
 }
 if (!global.settings['space']){
@@ -219,6 +220,9 @@ if (!global.settings['showAchieve']){
 }
 if (!global.settings['resTabs']){
     global.settings['resTabs'] = 0;
+}
+if (!global.settings['lang']){
+    global.settings['locale'] = 'en-us';
 }
 if (typeof global.settings.mKeys === 'undefined'){
     global.settings['mKeys'] = true;
@@ -378,11 +382,6 @@ if (!global.race['mutation']){
 
 if (global.lastMsg){
     messageQueue(global.lastMsg.m, global.lastMsg.c);
-}
-
-if (global['new']){
-    messageQueue('You are protoplasm in the primordial ooze', 'warning');
-    global['new'] = false;
 }
 
 if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facility.rank > 0 && !global.tech['space']){
