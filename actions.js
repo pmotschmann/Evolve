@@ -2963,7 +2963,7 @@ export const actions = {
             cost: { 
                 Knowledge(){ return 80; }
             },
-            effect: 'Creates plans for a long term storage medium for meat.',
+            effect: 'Create plans for a long term storage medium for meat.',
             action(){
                 if (payCosts(actions.tech.smokehouse.cost)){
                     global.city['smokehouse'] = { count: 0 };
@@ -3052,7 +3052,7 @@ export const actions = {
             cost: { 
                 Knowledge(){ return 80; }
             },
-            effect: 'Creates plans for a storage medium for food.',
+            effect: 'Create plans for a storage medium for food.',
             action(){
                 if (payCosts(actions.tech.silo.cost)){
                     global.city['silo'] = { count: 0 };
@@ -3070,7 +3070,7 @@ export const actions = {
             cost: { 
                 Knowledge(){ return 5400; }
             },
-            effect: 'Creates plans for a grain mill, grain mills boost farm effectiveness.',
+            effect: 'Create plans for a grain mill, grain mills boost farm effectiveness.',
             action(){
                 if (payCosts(actions.tech.mill.cost)){
                     global.city['mill'] = {
@@ -3323,7 +3323,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 165000; }
             },
-            effect: '<span>High tech robotic machinery can boost the production of factories by an addtional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            effect: '<span>High tech robotic machinery can boost the production of factories by an additional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
             action(){
                 if (payCosts(actions.tech.automation.cost)){
                     return true;
@@ -4140,7 +4140,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 44000; }
             },
-            effect: 'Zone coastal areas of your city for contructing wharfs.',
+            effect: 'Zone coastal areas of your city for constructing wharfs.',
             action(){
                 if (payCosts(actions.tech.wharf.cost)){
                     global.city['wharf'] = { count: 0 };
@@ -4838,7 +4838,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 90000; }
             },
-            effect: 'Establish the Advanced Research Projects Agency (A.R.P.A.). This advanced labratory is dedicated to providing the facilties to progress all your special projects.',
+            effect: 'Establish the Advanced Research Projects Agency (A.R.P.A.). This advanced labratory is dedicated to providing the facilities to progress all your special projects.',
             action(){
                 if (payCosts(actions.tech.arpa.cost)){
                     global.settings.showGenetics = true;
@@ -4937,7 +4937,7 @@ export const actions = {
                 Elerium(){ return 250 },
                 Nano_Tube(){ return 100000 }
             },
-            effect: `Quantium computing is a great leap fowards in processing power.`,
+            effect: `Quantium computing is a great leap forwards in processing power.`,
             action(){
                 if (payCosts(actions.tech.quantum_computing.cost)){
                     return true;
@@ -5174,7 +5174,7 @@ export const actions = {
                 Knowledge(){ return 165000; },
                 Mythril(){ return 100; }
             },
-            effect: 'New mythril drills that will improve the efficency of your oil derricks.',
+            effect: 'New mythril drills that will improve the efficiency of your oil derricks.',
             action(){
                 if (payCosts(actions.tech.mythril_drills.cost)){
                     return true;
@@ -5846,7 +5846,7 @@ export const actions = {
                 Knowledge(){ return 225; },
                 Furs(){ return 250; }
             },
-            effect: 'Basic armor made from leather, will reduce the number of casulaties you take during military actions.',
+            effect: 'Basic armor made from leather, will reduce the number of casualties you take during military actions.',
             action(){
                 if (payCosts(actions.tech.armor.cost)){
                     return true;
@@ -6738,7 +6738,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 465000; }
             },
-            effect(){ return `By upgrading your swarm plant AI with quantium processors the efficency of the plants are limited only by your capacity for knowledge.` },
+            effect(){ return `By upgrading your swarm plant AI with quantium processors the efficiency of the plants are limited only by your capacity for knowledge.` },
             action(){
                 if (payCosts(actions.tech.quantium_swarm.cost)){
                     return true;
@@ -6814,7 +6814,7 @@ export const actions = {
                 Knowledge(){ return 290000; },
                 Elerium(){ return 250; }
             },
-            effect(){ return `Increase efficency of ${races[global.race.species].solar.gas} Helium-3 collectors.` },
+            effect(){ return `Increase efficiency of ${races[global.race.species].solar.gas} Helium-3 collectors.` },
             action(){
                 if (payCosts(actions.tech.helium_attractor.cost)){
                     return true;
