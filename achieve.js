@@ -1,4 +1,4 @@
-import { global, vues, messageQueue } from './vars.js';
+import { global, vues, messageQueue, set_alevel } from './vars.js';
 
 if (!global.stats['achieve']){
     global.stats['achieve'] = {};
@@ -322,14 +322,17 @@ export function drawAchieve(){
     let achieve = $('#achievePanel');
     let earned = 0;
     let total = 0;
+    let level = 0;
     Object.keys(achievements).forEach(function (achievement){
         total++;
         if (global.stats.achieve[achievement]){
             earned++;
+            level += global.stats.achieve[achievement];
             let star = global.stats.achieve[achievement] > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achievement]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>` : '';
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${star}</div></b-tooltip>`));
         }
     });
+    set_alevel(level);
     achieve.prepend(`<div class="has-text-warning">Achievements Earned: ${earned} of ${total}</div>`);
 
     let avue = {
