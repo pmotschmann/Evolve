@@ -2886,7 +2886,8 @@ export const actions = {
             },
             effect(){
                 let label = basicHousingLabel();
-                return `Reduce material costs of ${label}s and Cottages by introducing strong steel beams.`;
+                let cLabel = global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottage';
+                return `Reduce material costs of ${label}s and ${cLabel}s by introducing strong steel beams.`;
             },
             action(){
                 if (payCosts(actions.tech.steel_beams.cost)){
@@ -2907,7 +2908,8 @@ export const actions = {
             },
             effect(){
                 let label = basicHousingLabel();
-                return `Reduce material costs of ${label}s and Cottages by introducing unbreakble mythril beams.`;
+                let cLabel = global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottage';
+                return `Reduce material costs of ${label}s and ${cLabel}s by introducing unbreakble mythril beams.`;
             },
             action(){
                 if (payCosts(actions.tech.mythril_beams.cost)){

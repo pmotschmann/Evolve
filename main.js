@@ -753,6 +753,7 @@ function fastLoop(){
             }
             else {
                 p_on[parts[1]] = 0;
+                $(`#${region}-${parts[1]} .on`).removeClass('warn');
             }
         }
 
