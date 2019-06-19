@@ -19,7 +19,7 @@ export const job_desc = {
         multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
         let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
         let gain = +(impact * multiplier).toFixed(1);
-        return loc('job_lumberjack',gain);
+        return loc('job_lumberjack',[gain]);
     },
     quarry_worker: function(){
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
@@ -28,7 +28,7 @@ export const job_desc = {
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
-        return loc('job_quarry_worker',gain);
+        return loc('job_quarry_worker',[gain]);
     },
     miner: function(){
         if (global.tech['mining'] >= 3){

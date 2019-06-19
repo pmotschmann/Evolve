@@ -383,6 +383,7 @@ else {
     }, long_timer);
 }
 
+var gene_sequence = global.arpa.sequence.on;
 function fastLoop(){
     keyMultiplier();
     
@@ -1215,10 +1216,14 @@ function fastLoop(){
                 let gene_cost = 50 + (global.race.mutation * 10);
                 if (gene_cost * time_multiplier <= global.resource.Knowledge.amount){
                     gene_consume = gene_cost;
+                    gene_sequence = true;
                 }
                 else {
-                    global.arpa.sequence.on = false;
+                    gene_sequence = false;
                 }
+            }
+            else {
+                gene_sequence = false;
             }
 
             let delta = professors_base + scientist_base;
@@ -2676,7 +2681,7 @@ function midLoop(){
             global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 6 : 4);
         }
 
-        if (global.arpa['sequence'] && global.arpa.sequence.on){
+        if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
             global.arpa.sequence.time -= global.city.biolab.on;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
             if (global.arpa.sequence.time <= 0){
