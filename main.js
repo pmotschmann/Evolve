@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel, achieve_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
@@ -407,6 +407,11 @@ function fastLoop(){
     if (global.tech['world_control']){
         breakdown.p['Global']['Unification'] = '25%';
         global_multiplier += 0.25;
+    }
+    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        achieve_level * 0.0025;
+        breakdown.p['Global']['Mastery'] = (achieve_level * 0.25) + '%';
+        global_multiplier += (achieve_level * 0.0025);
     }
 
     if (global.race['intelligent']){
@@ -879,7 +884,7 @@ function fastLoop(){
                     let operating = global.space[belt_structs[i]].on;
                     let id = actions.space.spc_belt[belt_structs[i]].id;
                     if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support)) > global.space.space_station.s_max){
-                        operating -=  (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support))) - global.space.space_station.s_max;
+                        operating -= used_support + operating - global.space.space_station.s_max;
                         $(`#${id} .on`).addClass('warn');
                     }
                     else {

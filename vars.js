@@ -27,8 +27,12 @@ export var red_on = {};
 export var moon_on = {};
 export var belt_on = {};
 export var quantium_level = 0;
+export var achieve_level = 0;
 export function set_qlevel(q_level){
     quantium_level = q_level;
+}
+export function set_alevel(a_level){
+    achieve_level = a_level;
 } 
 
 Math.rand = function(min, max) {
