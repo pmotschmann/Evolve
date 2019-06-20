@@ -332,6 +332,21 @@ const genePool = {
             return false;
         }
     },
+    unlocked: {
+        id: 'genes-unlocked',
+        title: 'Unlocked',
+        desc: 'Achievements grant a small production bonus',
+        reqs: {challenge:1},
+        grant: ['challenge',2],
+        cost: 50,
+        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>50</span></div>',
+        action(){
+            if (payPlasmids('unlocked')){
+                return true;
+            }
+            return false;
+        }
+    },
     transcendence: {
         id: 'genes-transcendence',
         title: 'Transcendence',
@@ -448,7 +463,7 @@ function adjustCosts(costs){
     if (global.race['creative']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            newCosts[res] = function(){ return Math.round(costs[res]() * 0.98) || 0; }
+            newCosts[res] = function(){ return Math.round(costs[res]() * 0.95) || 0; }
         });
         return newCosts;
     }

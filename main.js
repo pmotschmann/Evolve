@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel, achieve_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
@@ -383,6 +383,7 @@ else {
     }, long_timer);
 }
 
+var gene_sequence = global.arpa.sequence.on;
 function fastLoop(){
     keyMultiplier();
     
@@ -406,6 +407,11 @@ function fastLoop(){
     if (global.tech['world_control']){
         breakdown.p['Global']['Unification'] = '25%';
         global_multiplier += 0.25;
+    }
+    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        achieve_level * 0.0025;
+        breakdown.p['Global']['Mastery'] = (achieve_level * 0.25) + '%';
+        global_multiplier += (achieve_level * 0.0025);
     }
 
     if (global.race['intelligent']){
@@ -568,7 +574,7 @@ function fastLoop(){
         }
 
         if (global.race['optimistic']){
-            stress += 2;
+            stress += 10;
         }
 
         if (global.race['pessimistic']){
@@ -752,6 +758,7 @@ function fastLoop(){
             }
             else {
                 p_on[parts[1]] = 0;
+                $(`#${region}-${parts[1]} .on`).removeClass('warn');
             }
         }
 
@@ -877,7 +884,7 @@ function fastLoop(){
                     let operating = global.space[belt_structs[i]].on;
                     let id = actions.space.spc_belt[belt_structs[i]].id;
                     if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support)) > global.space.space_station.s_max){
-                        operating -=  (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support))) - global.space.space_station.s_max;
+                        operating -= used_support + operating - global.space.space_station.s_max;
                         $(`#${id} .on`).addClass('warn');
                     }
                     else {
@@ -1215,10 +1222,14 @@ function fastLoop(){
                 let gene_cost = 50 + (global.race.mutation * 10);
                 if (gene_cost * time_multiplier <= global.resource.Knowledge.amount){
                     gene_consume = gene_cost;
+                    gene_sequence = true;
                 }
                 else {
-                    global.arpa.sequence.on = false;
+                    gene_sequence = false;
                 }
+            }
+            else {
+                gene_sequence = false;
             }
 
             let delta = professors_base + scientist_base;
@@ -1647,7 +1658,7 @@ function fastLoop(){
             miner_base *= global.civic.miner.impact;
             miner_base *= racialTrait(global.civic.miner.workers,'miner');
             if (global.race['tough']){
-                miner_base *= 1.1;
+                miner_base *= 1.25;
             }
             if (global.race['industrious']){
                 let bonus = 1 + (global.race['industrious'] / 50);
@@ -1739,7 +1750,7 @@ function fastLoop(){
             coal_base *= global.civic.coal_miner.impact;
             coal_base *= racialTrait(global.civic.coal_miner.workers,'miner');
             if (global.race['tough']){
-                coal_base *= 1.1;
+                coal_base *= 1.25;
             }
             if (global.race['resilient']){
                 let bonus = 1 + (global.race['resilient'] / 50);
@@ -2437,7 +2448,7 @@ function midLoop(){
                 vault *= 0.9;
             }
             else if (global.race['hoarder']){
-                vault *= 1.1;
+                vault *= 1.2;
             }
             if (global.tech['banking'] >= 7){
                 vault *= 1 + (global.civic.banker.workers * 0.05);
@@ -2676,7 +2687,7 @@ function midLoop(){
             global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 6 : 4);
         }
 
-        if (global.arpa['sequence'] && global.arpa.sequence.on){
+        if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
             global.arpa.sequence.time -= global.city.biolab.on;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
             if (global.arpa.sequence.time <= 0){
@@ -2811,7 +2822,7 @@ function longLoop(){
 
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
-            global.civic.garrison.wounded -= global.race['regenerative'] ? 2 : 1;
+            global.civic.garrison.wounded -= global.race['regenerative'] ? 4 : 1;
             if (global.civic.garrison.wounded < 0){
                 global.civic.garrison.wounded = 0;
             }
@@ -2944,7 +2955,7 @@ function longLoop(){
 
             // Crafting
             if (global.tech['foundry'] && (global.city.calendar.moon === 0 || (global.city.calendar.moon === 14 && global.genes['crafty']))){
-                let craft_costs = global.race['resourceful'] ? 0.95 : 1;
+                let craft_costs = global.race['resourceful'] ? 0.9 : 1;
                 Object.keys(craftCost).forEach(function (craft){
                     let num = global.city.foundry[craft];
                     let craft_ratio = craftingRatio(craft);

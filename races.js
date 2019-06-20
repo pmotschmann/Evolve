@@ -647,7 +647,7 @@ export const traits = {
         desc: 'Your race does not easily understand new concepts.',
         type: 'major',
     },
-    tough: { // Mining output increased by 10%
+    tough: { // Mining output increased by 25%
         desc: 'Your race is tough and can withstand the most grueling jobs without sucumbing to weakness.',
         type: 'major',
     },
@@ -659,7 +659,7 @@ export const traits = {
         desc: `Your species always leverages the latest advancements in science to it's full benefit.`,
         type: 'major',
     },
-    regenerative: { // Wounded soldiers heal twice as fast
+    regenerative: { // Wounded soldiers heal 4x as fast
         desc: 'Your race inherently heals quickly.',
         type: 'major',
     },
@@ -707,7 +707,7 @@ export const traits = {
         desc: 'Your race gets depressed easily.',
         type: 'major',
     },
-    hoarder: { // Banks can store 10% more money
+    hoarder: { // Banks can store 20% more money
         desc: 'Your race loves to hoard money.',
         type: 'major',
     },
@@ -861,7 +861,7 @@ export function racialTrait(workers,type){
         modifier *= 0.75;
     }
     if (global.race['toxic'] && type === 'factory'){
-        modifier *= 1.1;
+        modifier *= 1.25;
     }
     if (global.race['hardy'] && type === 'factory'){
         modifier *= 1 + (global.race['hardy'] / 100);
