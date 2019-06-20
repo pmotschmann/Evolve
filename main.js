@@ -574,7 +574,7 @@ function fastLoop(){
         }
 
         if (global.race['optimistic']){
-            stress += 2;
+            stress += 10;
         }
 
         if (global.race['pessimistic']){
@@ -1658,7 +1658,7 @@ function fastLoop(){
             miner_base *= global.civic.miner.impact;
             miner_base *= racialTrait(global.civic.miner.workers,'miner');
             if (global.race['tough']){
-                miner_base *= 1.1;
+                miner_base *= 1.25;
             }
             if (global.race['industrious']){
                 let bonus = 1 + (global.race['industrious'] / 50);
@@ -1750,7 +1750,7 @@ function fastLoop(){
             coal_base *= global.civic.coal_miner.impact;
             coal_base *= racialTrait(global.civic.coal_miner.workers,'miner');
             if (global.race['tough']){
-                coal_base *= 1.1;
+                coal_base *= 1.25;
             }
             if (global.race['resilient']){
                 let bonus = 1 + (global.race['resilient'] / 50);
@@ -2448,7 +2448,7 @@ function midLoop(){
                 vault *= 0.9;
             }
             else if (global.race['hoarder']){
-                vault *= 1.1;
+                vault *= 1.2;
             }
             if (global.tech['banking'] >= 7){
                 vault *= 1 + (global.civic.banker.workers * 0.05);
@@ -2822,7 +2822,7 @@ function longLoop(){
 
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
-            global.civic.garrison.wounded -= global.race['regenerative'] ? 2 : 1;
+            global.civic.garrison.wounded -= global.race['regenerative'] ? 4 : 1;
             if (global.civic.garrison.wounded < 0){
                 global.civic.garrison.wounded = 0;
             }
@@ -2955,7 +2955,7 @@ function longLoop(){
 
             // Crafting
             if (global.tech['foundry'] && (global.city.calendar.moon === 0 || (global.city.calendar.moon === 14 && global.genes['crafty']))){
-                let craft_costs = global.race['resourceful'] ? 0.95 : 1;
+                let craft_costs = global.race['resourceful'] ? 0.9 : 1;
                 Object.keys(craftCost).forEach(function (craft){
                     let num = global.city.foundry[craft];
                     let craft_ratio = craftingRatio(craft);

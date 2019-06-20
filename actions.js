@@ -1856,7 +1856,7 @@ export const actions = {
                     vault *= 0.9;
                 }
                 else if (global.race['hoarder']){
-                    vault *= 1.1;
+                    vault *= 1.2;
                 }
                 if (global.tech['banking'] >= 7){
                     vault *= 1 + (global.civic.banker.workers * 0.05);
@@ -7834,6 +7834,11 @@ function costMultiplier(structure,base,mutiplier,cat){
         if (global.race['solitary']){
             mutiplier += 0.02;
         }
+        if (global.race['pack_mentality']){
+            mutiplier -= 0.02;
+        }
+    }
+    if (structure === 'apartment'){
         if (global.race['pack_mentality']){
             mutiplier -= 0.02;
         }
