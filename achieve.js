@@ -49,7 +49,7 @@ var achievements = {
     colonist: {
         name: "achieve_colonist_name",
         desc: "achieve_colonist_desc",
-        flair: "achieve_colonist_flair"
+        flair: "achieve_colonist_flair" //${global.race.species} //TODO: that property need be here...
     },
     world_domination: {
         name: "achieve_world_domination_name",

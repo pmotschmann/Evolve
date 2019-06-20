@@ -11,9 +11,14 @@ export function loc(key, variables) {
         console.error(`string ${key} don't found`);
         console.log(strings);
     }
-    if (variables && variables instanceof Array) {
-        for (let i = 0; i < variables.length; i++) {
-            string = string.replace(`%${i}`, variables[i]);
+    if (variables) {
+        if(variables instanceof Array) {
+            for (let i = 0; i < variables.length; i++) {
+                string = string.replace(`%${i}`, variables[i]);
+            }
+        }
+        else{
+            throw TypeError('"variables" need be a instance of "Array"');
         }
     }
     return string;

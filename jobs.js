@@ -28,7 +28,7 @@ export const job_desc = {
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
-        return loc('job_quarry_worker',gain);
+        return loc('job_quarry_worker',[gain]);
     },
     miner: function(){
         if (global.tech['mining'] >= 3){
