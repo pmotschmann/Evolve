@@ -463,7 +463,7 @@ function adjustCosts(costs){
     if (global.race['creative']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            newCosts[res] = function(){ return Math.round(costs[res]() * 0.98) || 0; }
+            newCosts[res] = function(){ return Math.round(costs[res]() * 0.95) || 0; }
         });
         return newCosts;
     }

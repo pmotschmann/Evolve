@@ -1,3 +1,19 @@
+#### 0.4.5 - 6/19/2019
+Mastery Bonus now unlockable in crispr<br>
+Fixed bug with elerium mining that could cause negative mining when you lacked asteroid miners<br>
+Fixed low power warning not clearing when you have no buildings active<br>
+Fixed Sporgar label of Cottages in Steel & Mythril Beams research<br>
+Gene Mutation research will no longer turn off when you run out of knowledge, instead it will pause<br>
+Human creative trait buffed from 2% to 5%<br>
+Troll regenerative trait buffed to heal 4 wounded per day instead of 2<br>
+Ogre tough trait buffed to 25% from 10%<br>
+Gecko optimistic trait buffed to 10% from 2%<br>
+Arraak resourceful trait buffed from 5% to 10%<br>
+Dracnid hoarder trait buffed from 10% to 20%<br>
+Shroomi toxic trait buffed from 10% to 25%<br>
+Wolven pack mentality trait now applies to apartments<br>
+
+
 #### 0.4.4 - 6/18/2019
 Matter compression now applies to Wharfs<br>
 Xenophobia now applies to Wharfs<br>
