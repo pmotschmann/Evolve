@@ -1,3 +1,6 @@
+#### 0.4.7 - 6/21/2019
+Activating challenge genes now provide a bonus to the number of plasmids earned<br>
+
 #### 0.4.6 - 6/21/2019
 Reduced Nano Tube and Nautronium costs of bioseeder ship<br>
 Reduced Mythril cost of Space Probes<br>

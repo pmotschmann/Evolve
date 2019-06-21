@@ -848,11 +848,32 @@ function defineMad(){
                     k_base -= k_inc;
                     k_inc *= 1.1;
                 }
+                plasma = challenge_multiplier(plasma);
                 return `This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning. You will gain ${plasma} Plasmids.`;
             }
         }
     });
     vues['mad'].$mount('#mad');
+}
+
+export function challenge_multiplier(plasmid){
+    let challenge_level = 0;
+    if (global.race['no_plasmid']){ challenge_level++; }
+    if (global.race['no_trade']){ challenge_level++; }
+    if (global.race['no_craft']){ challenge_level++; }
+    if (global.race['no_crispr']){ challenge_level++; }
+    switch (challenge_level){
+        case 1:
+            return Math.round(plasmid * 1.05);
+        case 2:
+            return Math.round(plasmid * 1.10);
+        case 3:
+            return Math.round(plasmid * 1.20);
+        case 4:
+            return Math.round(plasmid * 1.35);
+        default:
+            return plasmid;
+    }
 }
 
 function warhead(){
@@ -872,6 +893,7 @@ function warhead(){
         k_base -= k_inc;
         k_inc *= 1.1;
     }
+    new_plasmid = challenge_multiplier(new_plasmid);
     if (global.stats.died === 0){
         unlockAchieve(`pacifist`);
     }

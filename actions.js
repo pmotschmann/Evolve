@@ -4,7 +4,7 @@ import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineGarrison, buildGarrison, armyRating } from './civics.js';
+import { defineGarrison, buildGarrison, armyRating, challenge_multiplier } from './civics.js';
 import { spaceTech, space } from './space.js';
 import { arpa, gainGene } from './arpa.js';
 
@@ -7244,6 +7244,7 @@ export const actions = {
                     k_base -= k_inc;
                     k_inc *= 1.015;
                 }
+                plasmid = challenge_multiplier(plasmid);
                 return `<div>Launch the "Genesis" ship. You will seed life in a far away star system and take over as the species that evoles there.</div><div class="has-text-special">You will gain ${plasmid} Plasmids</div>`;
             },
             action(){
@@ -8355,6 +8356,7 @@ function bioseed(){
     if (global.stats.died === 0){
         unlockAchieve(`pacifist`);
     }
+    new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
