@@ -1107,6 +1107,44 @@ export const actions = {
                 return false;
             }
         },
+        pterodacti: {
+            id: 'evo-pterodacti',
+            title(){ return races.pterodacti.name; },
+            desc(){ return `Evolve ${races.pterodacti.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.pterodacti.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.pterodacti.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'pterodacti';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        dracnid: {
+            id: 'evo-dracnid',
+            title(){ return races.dracnid.name; },
+            desc(){ return `Evolve ${races.dracnid.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return `Evolve into a ${races.dracnid.name}, this completes evolution.`; },
+            action(){
+                if (payCosts(actions.evolution.dracnid.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'dracnid';
+                    sentience();
+                }
+                return false;
+            }
+        },
         sporgar: {
             id: 'evo-sporgar',
             title(){ return races.sporgar.name; },
