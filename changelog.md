@@ -1,3 +1,7 @@
+#### 0.4.6 - 6/21/2019
+Reduced Nano Tube and Nautronium costs of bioseeder ship<br>
+Reduced Mythril cost of Space Probes<br>
+
 #### 0.4.5 - 6/19/2019
 Mastery Bonus now unlockable in crispr<br>
 Fixed bug with elerium mining that could cause negative mining when you lacked asteroid miners<br>
@@ -12,6 +16,7 @@ Arraak resourceful trait buffed from 5% to 10%<br>
 Dracnid hoarder trait buffed from 10% to 20%<br>
 Shroomi toxic trait buffed from 10% to 25%<br>
 Wolven pack mentality trait now applies to apartments<br>
+Reduced Nano Tube cost of Mining Drones<br>
 
 
 #### 0.4.4 - 6/18/2019
