@@ -7175,7 +7175,7 @@ export const actions = {
                 Alloy(){ return costMultiplier('probes', 125000, 1.25,'starDock'); },
                 Polymer(){ return costMultiplier('probes', 150000, 1.25,'starDock'); },
                 Iridium(){ return costMultiplier('probes', 20000, 1.25,'starDock'); },
-                Mythril(){ return costMultiplier('probes', 10000, 1.25,'starDock'); },
+                Mythril(){ return costMultiplier('probes', 5000, 1.25,'starDock'); },
             },
             effect(){
                 return `<div>Each interstellar probe increases the number of target worlds your bioseeder ship can scout by one.</div>`;
@@ -7203,9 +7203,9 @@ export const actions = {
             cost: {
                 Money(){ return global.starDock.seeder.count < 100 ? 100000 : 0; },
                 Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
-                Neutronium(){ return global.starDock.seeder.count < 100 ? 300 : 0; },
+                Neutronium(){ return global.starDock.seeder.count < 100 ? 240 : 0; },
                 Elerium(){ return global.starDock.seeder.count < 100 ? 10 : 0; },
-                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 18000 : 0; },
+                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 12000 : 0; },
             },
             effect(){
                 let remain = global.starDock.seeder.count < 100 ? `${100 - global.starDock.seeder.count} segments remaining`: `The ship is complete`;
