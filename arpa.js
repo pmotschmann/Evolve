@@ -2,6 +2,7 @@ import { global, vues, poppers, messageQueue, modRes } from './vars.js';
 import { actions, drawCity, drawTech, addAction, removeAction } from './actions.js';
 import { races, traits } from './races.js';
 import { space } from './space.js';
+import { loc } from './locale.js'
 
 export function arpa(type) {
     switch(type){
@@ -23,22 +24,22 @@ export function arpa(type) {
 
 const arpaProjects = {
     lhc: {
-        title: 'Supercollider',
-        desc: 'A supercollider will help expand your understanding of theoretical sciences',
+        title: loc('arpa_projects_lhc_title'),
+        desc: loc('arpa_projects_lhc_desc'),
         reqs: { high_tech: 6 },
         grant: 'supercollider',
-        effect() {
+        effect(){
             let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? 8 : 4;
             if (global.tech['storage'] >= 6){
                 if (global.tech['particles'] && global.tech['particles'] >= 4){
-                    return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse and garage capacity by 5%.`;
+                    return loc('arpa_projects_lhc_effect3',sc);
                 }
                 else {
-                    return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%. They also boost warehouse capacity by 5%.`;
+                    return loc('arpa_projects_lhc_effect2',sc);
                 }
             }
             else {
-                return `Each completed supercollider increases wardenclyffe and university science caps by ${sc}%.`;
+                return loc('arpa_projects_lhc_effect1',sc);
             }
         },
         cost: {
@@ -52,16 +53,16 @@ const arpaProjects = {
         }
     },
     stock_exchange: {
-        title: 'Stock Exchange',
-        desc: 'The stock exchange will boost the amount of money your banks can trade in.',
+        title: loc('arpa_projects_stock_exchange_title'),
+        desc: loc('arpa_projects_stock_exchange_desc'),
         reqs: { banking: 9 },
         grant: 'stock_exchange',
-        effect() {
+        effect(){
             if (global.tech['banking'] >= 10){
-                return 'Each level of stock exchange will boost bank capacity by 10% and banker effectiveness by 2%.';
+                return loc('arpa_projects_stock_exchange_effect2');
             }
             else {
-                return 'Each level of stock exchange will boost bank capacity by 10%.';
+                return loc('arpa_projects_stock_exchange_effect1');
             }
         },
         cost: {
@@ -72,13 +73,13 @@ const arpaProjects = {
         }
     },
     launch_facility: {
-        title: 'Launch Facility',
-        desc: 'A launch facility allows for construction and firing of rockets, and thus space exploration.',
+        title: loc('arpa_projects_launch_facility_title'),
+        desc: loc('arpa_projects_launch_facility_desc'),
         reqs: { high_tech: 7 },
         grant: 'launch_facility',
         rank: 1,
         effect(){
-            return `Enables the space tab, does this description matter? it shouldn't because no one should be reading it.`;
+            return loc('arpa_projects_launch_facility_effect1');
         },
         cost: {
             Money: function(){ return costMultiplier('launch_facility', 2000000, 1.1); },
@@ -90,12 +91,23 @@ const arpaProjects = {
         }
     },
     monument: {
-        title(){ return global.arpa.m_type },
-        desc: `Construct a monument to your civilization's greatness.`,
+        title(){ 
+            switch(global.arpa.m_type){
+                case 'Obelisk':
+                    loc('arpa_project_monument_obelisk');
+                case 'Statue':
+                    loc('arpa_project_monument_statue');
+                case 'Sculpture':
+                    loc('arpa_project_monument_sculpture');
+                case 'Monolith':
+                    loc('arpa_project_monument_monolith');
+            }
+        },
+        desc: loc('arpa_projects_monument_desc'),
         reqs: { monument: 1 },
         grant: 'monuments',
         effect(){
-            return 'Each monument increases maximum morale by 2%';
+            return loc('arpa_projects_monument_effect1');
         },
         cost: {
             Stone: function(){ return monument_costs('Stone') },
@@ -109,12 +121,12 @@ const arpaProjects = {
 const genePool = {
     genetic_memory: {
         id: 'genes-genetic_memory',
-        title: 'Genetic Memory',
-        desc: 'Reduces cost creep by 0.01',
+        title: loc('arpa_genepool_genetic_memory_title'),
+        desc: loc('arpa_genepool_genetic_memory_desc'),
         reqs: {},
         grant: ['creep',1],
         cost: 25,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>25</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>25</span></div>`,
         action(){
             if (payPlasmids('genetic_memory')){
                 return true;
@@ -124,12 +136,12 @@ const genePool = {
     },
     animus: {
         id: 'genes-animus',
-        title: 'Animus',
-        desc: 'Reduces cost creep by 0.02',
+        title: loc('arpa_genepool_animus_title'),
+        desc: loc('arpa_genepool_animus_desc'),
         reqs: { creep: 1 },
         grant: ['creep',2],
         cost: 75,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>75</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>75</span></div>`,
         action(){
             if (payPlasmids('animus')){
                 return true;
@@ -139,12 +151,12 @@ const genePool = {
     },
     divine_remembrance: {
         id: 'genes-divine_remembrance',
-        title: 'Divine Remembrance',
-        desc: 'Reduces cost creep by 0.03',
+        title: loc('arpa_genepool_divine_remembrance_title'),
+        desc: loc('arpa_genepool_divine_remembrance_desc'),
         reqs: { creep: 2 },
         grant: ['creep',3],
         cost: 225,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>225</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>225</span></div>`,
         action(){
             if (payPlasmids('divine_remembrance')){
                 return true;
@@ -154,12 +166,12 @@ const genePool = {
     },
     divine_proportion: {
         id: 'genes-divine_proportion',
-        title: 'Divine Proportion',
-        desc: 'Reduces cost creep by 0.04',
+        title: loc('arpa_genepool_divine_proportion_title'),
+        desc: loc('arpa_genepool_divine_proportion_desc'),
         reqs: { creep: 3 },
         grant: ['creep',4],
         cost: 618,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>618</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>618</span></div>`,
         action(){
             if (payPlasmids('divine_proportion')){
                 return true;
@@ -169,12 +181,12 @@ const genePool = {
     },
     genetic_repository: {
         id: 'genes-genetic_repository',
-        title: 'Genetic Repository',
-        desc: 'Reduces cost creep by 0.05',
+        title: loc('arpa_genepool_genetic_repository_title'),
+        desc: loc('arpa_genepool_genetic_repository_desc'),
         reqs: { creep: 4 },
         grant: ['creep',5],
         cost: 999,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>999</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>999</span></div>`,
         action(){
             if (payPlasmids('genetic_repository')){
                 return true;
@@ -184,12 +196,12 @@ const genePool = {
     },
     spatial_reasoning: {
         id: 'genes-spatial_reasoning',
-        title: 'Spatial Reasoning',
-        desc: 'Plasmids boost storage space',
+        title: loc('arpa_genepool_spatial_reasoning_title'),
+        desc: loc('arpa_genepool_spatial_reasoning_desc'),
         reqs: {},
         grant: ['store',1],
         cost: 50,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>50</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>50</span></div>`,
         action(){
             if (payPlasmids('spatial_reasoning')){
                 return true;
@@ -199,12 +211,12 @@ const genePool = {
     },
     spatial_superiority: {
         id: 'genes-spatial_superiority',
-        title: 'Spatial Superiority',
-        desc: 'Plasmid storage effect +50%',
+        title: loc('arpa_genepool_spatial_superiority_title'),
+        desc: loc('arpa_genepool_spatial_superiority_desc'),
         reqs: { store: 1 },
         grant: ['store',2],
         cost: 125,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>125</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>125</span></div>`,
         action(){
             if (payPlasmids('spatial_superiority')){
                 return true;
@@ -214,12 +226,12 @@ const genePool = {
     },
     spatial_supremacy: {
         id: 'genes-spatial_supremacy',
-        title: 'Spatial Supremacy',
-        desc: 'Plasmid storage effect +33%',
+        title: loc('arpa_genepool_spatial_supremacy_title'),
+        desc: loc('arpa_genepool_spatial_supremacy_desc'),
         reqs: { store: 2 },
         grant: ['store',3],
         cost: 325,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>325</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>325</span></div>`,
         action(){
             if (payPlasmids('spatial_supremacy')){
                 return true;
@@ -229,12 +241,12 @@ const genePool = {
     },
     morphogenesis: {
         id: 'genes-morphogenesis',
-        title: 'Morphogenesis',
-        desc: 'Decreases evolution costs',
+        title: loc('arpa_genepool_morphogenesis_title'),
+        desc: loc('arpa_genepool_morphogenesis_desc'),
         reqs: {},
         grant: ['evolve',1],
         cost: 10,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>10</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>10</span></div>`,
         action(){
             if (payPlasmids('morphogenesis')){
                 return true;
@@ -244,12 +256,12 @@ const genePool = {
     },
     recombination: {
         id: 'genes-recombination',
-        title: 'Recombination',
-        desc: 'Gain a minor trait when evolving',
+        title: loc('arpa_genepool_recombination_title'),
+        desc: loc('arpa_genepool_recombination_desc'),
         reqs: { evolve: 1 },
         grant: ['evolve',2],
         cost: 35,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>35</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>35</span></div>`,
         action(){
             if (payPlasmids('recombination')){
                 return true;
@@ -259,12 +271,12 @@ const genePool = {
     },
     replication: {
         id: 'genes-replication',
-        title: 'Replication',
-        desc: 'Increases Birth Rate',
+        title: loc('arpa_genepool_replication_title'),
+        desc: loc('arpa_genepool_replication_desc'),
         reqs: { evolve: 1 },
         grant: ['birth',1],
         cost: 65,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>65</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>65</span></div>`,
         action(){
             if (payPlasmids('replication')){
                 return true;
@@ -274,12 +286,12 @@ const genePool = {
     },
     artificer: {
         id: 'genes-artificer',
-        title: 'Artificer',
-        desc: 'Craftsman trigger twice a month',
+        title: loc('arpa_genepool_artificer_title'),
+        desc: loc('arpa_genepool_artificer_desc'),
         reqs: { evolve: 1 },
         grant: ['crafty',1],
         cost: 45,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>45</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>45</span></div>`,
         action(){
             if (payPlasmids('artificer')){
                 return true;
@@ -289,12 +301,12 @@ const genePool = {
     },
     detail_oriented: {
         id: 'genes-detail_oriented',
-        title: 'Detail Oriented',
-        desc: 'Auto crafting produces 33% more product',
+        title: loc('arpa_genepool_detail_oriented_title'),
+        desc: loc('arpa_genepool_detail_oriented_desc'),
         reqs: { crafty: 1 },
         grant: ['crafty',2],
         cost: 90,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>90</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>90</span></div>`,
         action(){
             if (payPlasmids('detail_oriented')){
                 return true;
@@ -304,12 +316,12 @@ const genePool = {
     },
     rigorous: {
         id: 'genes-rigorous',
-        title: 'Rigorous',
-        desc: 'Auto crafting produces 66% more product',
+        title: loc('arpa_genepool_rigorous_title'),
+        desc: loc('arpa_genepool_rigorous_desc'),
         reqs: { crafty: 2 },
         grant: ['crafty',3],
         cost: 135,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>135</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>135</span></div>`,
         action(){
             if (payPlasmids('rigorous')){
                 return true;
@@ -319,12 +331,12 @@ const genePool = {
     },
     hardened_genes: {
         id: 'genes-hardened_genes',
-        title: 'Hardened Genes',
-        desc: 'Unlocks challenge traits',
+        title: loc('arpa_genepool_hardened_genes_title'),
+        desc: loc('arpa_genepool_hardened_genes_desc'),
         reqs: {},
         grant: ['challenge',1],
         cost: 5,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>5</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>5</span></div>`,
         action(){
             if (payPlasmids('hardened_genes')){
                 return true;
@@ -334,12 +346,12 @@ const genePool = {
     },
     unlocked: {
         id: 'genes-unlocked',
-        title: 'Unlocked',
-        desc: 'Achievements grant a small production bonus',
+        title: loc('arpa_genepool_unlocked_title'),
+        desc: loc('arpa_genepool_unlocked_desc'),
         reqs: {challenge:1},
         grant: ['challenge',2],
         cost: 50,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>50</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>50</span></div>`,
         action(){
             if (payPlasmids('unlocked')){
                 return true;
@@ -349,12 +361,12 @@ const genePool = {
     },
     transcendence: {
         id: 'genes-transcendence',
-        title: 'Transcendence',
-        desc: 'Can unlock both fanaticism and anthropology',
+        title: loc('arpa_genepool_transcendence_title'),
+        desc: loc('arpa_genepool_transcendence_desc'),
         reqs: { creep: 1, birth: 1, store: 1, locked: 1 },
         grant: ['transcendence',1],
         cost: 5000,
-        effect: '<div class="cost"><span class="has-text-special">Plasmid</span>: <span>5000</span></div>',
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>5000</span></div>`,
         action(){
             if (payPlasmids('transcendence')){
                 return true;
@@ -520,12 +532,12 @@ function genetics(){
             };
         }
 
-        let label = global.tech.genetics > 2 ? 'Gene Mutation' : 'Sequence Genome';
-        let sequence = $(`<div><b-tooltip class="has-text-warning" :label="seq()" position="is-bottom" size="is-small" multilined animated>${label}</b-tooltip> - To Complete: {{ time | timer }}</div>`);
+        let label = global.tech.genetics > 2 ? loc('arpa_gene_mutation') : loc('arpa_sequence_genome');
+        let sequence = $(`<div><b-tooltip class="has-text-warning" :label="seq()" position="is-bottom" size="is-small" multilined animated>${label}</b-tooltip> - ${loc('arpa_to_complete')} {{ time | timer }}</div>`);
         genome.append(sequence);
         let progress = $(`<progress class="progress" :value="progress" max="${global.arpa.sequence.max}">{{ progress }}%</progress>`);
         genome.append(progress);
-        let b_label = global.tech.genetics > 2 ? 'Mutate' : 'Sequence';
+        let b_label = global.tech.genetics > 2 ? loc('arpa_mutate') : loc('arpa_sequence');
         let button = $(`<button class="button" @click="toggle">${b_label}</button>`);
         genome.append(button);
         if (global.arpa.sequence.on){
@@ -537,10 +549,10 @@ function genetics(){
             methods: {
                 seq(){
                     if (global.tech.genetics > 2){
-                        return 'Research beneficial gene mutations. More Bio Labs will make this go faster';
+                        return loc('arpa_mutate_desc');
                     }
                     else {
-                        return 'Sequence your genome, this will unlock the secrets of DNA. More Bio Labs will make this go faster';
+                        return loc('arpa_sequence_desc');
                     }
                 },
                 toggle(){
@@ -560,7 +572,7 @@ function genetics(){
                         return (val / global.city.biolab.on).toFixed(0) + 's';
                     }
                     else {
-                        return 'Never';
+                        return loc('time_never');
                     }
                 }
             }
@@ -570,7 +582,7 @@ function genetics(){
     if (global.tech['genetics'] > 2){
         let breakdown = $('<div id="geneticBreakdown"></div>');
         $('#arpaGenetics').append(breakdown);
-        breakdown.append(`<div class="trait has-text-success">${races[global.race.species].name} Genetic Traits</div>`)
+        breakdown.append(`<div class="trait has-text-success">${loc('arpa_race_genetic_traids',[races[global.race.species].name])}</div>`)
         
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait]){
@@ -588,7 +600,7 @@ function genetics(){
 function crispr(){
     if (global.tech['genetics'] > 3){
         $('#arpaCrispr').empty();
-        $('#arpaCrispr').append('<div class="has-text-warning">Permanently alter your DNA. These upgrades carry over across resets.</div>');
+        $('#arpaCrispr').append(`<div class="has-text-warning">${loc('arpa_crispr_desc')}</div>`);
         $('#arpaCrispr').append('<div id="genes"></div>');
         drawGenes();
     }

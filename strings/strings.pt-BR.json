@@ -66,7 +66,7 @@
   "event_inspiration": "Seus cientistas se inspiraram, ganham %0 de Conhecimento.",
   "event_fire": "Um incêndio aconteceu, destruindo %0 de madeira.",
   "event_raid1": "Um ataque por uma cidade rival foi repelido, %0 soldados foram mortos e %1 soldados ficaram feridos.",
-  "event_raid2": "Sua cidade foi invadida, %0 foi roubado, %1 soldados foram mortos e %2 soldados ficaram feridos.",
+  "event_raid2": "Sua cidade foi invadida, $%0 foi roubado, %1 soldados foram mortos e %2 soldados ficaram feridos.",
   "event_terrorist1": "%0 soldados foram feridos por um ataque terrorista contra suas forças de segurança.",
   "event_terrorist2": "%0 soldados ficaram feridos e %1 soldados foram mortos por um ataque terrorista contra suas forças de segurança.",
   "event_doom": "Um portal para o inferno foi acidentalmente aberto em %0, um marinheiro espacial solitário vestindo uma armadura verde conseguiu de alguma forma impedir a invasão demoníaca.",
