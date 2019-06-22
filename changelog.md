@@ -1,3 +1,7 @@
+#### 0.4.8 - 6/22/2019
+Fixed a bug that removed MAD when achieving unification<br>
+Fixed missing options in evolution stage with picking avians after space reset<br>
+
 #### 0.4.7 - 6/21/2019
 Activating challenge genes now provide a bonus to the number of plasmids earned<br>
 
