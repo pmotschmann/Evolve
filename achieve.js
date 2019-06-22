@@ -1,4 +1,5 @@
 import { global, vues, messageQueue, set_alevel } from './vars.js';
+import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
     global.stats['achieve'] = {};
@@ -6,284 +7,284 @@ if (!global.stats['achieve']){
 
 var achievements = {
     apocalypse: {
-        name: `Apocalypse`,
-        desc: `Wiped yourself out with nuclear weapons`,
-        flair: `The vaults didn't help`
+        name: loc("achieve_apocalypse_name"),
+        desc: loc("achieve_apocalypse_desc"),
+        flair: loc("achieve_apocalypse_flair")
     },
     second_evolution: {
-        name: `Second Evolution`,
-        desc: `Evolve the same species twice in a row and then worship your ancestors.`,
-        flair: `Coincidence or ancient hubris?`
+        name: loc("achieve_second_evolution_name"),
+        desc: loc("achieve_second_evolution_desc"),
+        flair: loc("achieve_second_evolution_flair")
     },
     blackhole: {
-        name: `Blackhole? No hole`,
-        desc: `Didn't destroy your planet with an artifical blackhole`,
-        flair: `Science 1, Fearmongers 0`
+        name: loc("achieve_blackhole_name"),
+        desc: loc("achieve_blackhole_desc"),
+        flair: loc("achieve_blackhole_flair")
     },
     warmonger: {
-        name: `Heir of Genghis Khan`,
-        desc: `Have a warmonger penalty of 8% or more.`,
-        flair: `What is best in life? to see your enemies fall before you.`
+        name: loc("achieve_warmonger_name"),
+        desc: loc("achieve_warmonger_desc"),
+        flair: loc("achieve_warmonger_flair")
     },
     red_tactics: {
-        name: `Red Tactician`,
-        desc: `Lose 250 soldiers in a single game`,
-        flair: `Not one step backwards.`
+        name: loc("achieve_red_tactics_name"),
+        desc: loc("achieve_red_tactics_desc"),
+        flair: loc("achieve_red_tactics_flair")
     },
     pacifist: {
-        name: `Pacifist`,
-        desc: `Reset the game without losing any soliders in your current game`,
-        flair: `Make love not war.`
+        name: loc("achieve_pacifist_name"),
+        desc: loc("achieve_pacifist_desc"),
+        flair: loc("achieve_pacifist_flair")
     },
     madagascar_tree: {
-        name: `Madagascar Tree`,
-        desc: `Evolved nightmarish flesh eating trees`,
-        flair: `Audrey III`
+        name: loc("achieve_madagascar_tree_name"),
+        desc: loc("achieve_madagascar_tree_desc"),
+        flair: loc("achieve_madagascar_tree_flair")
     },
     mass_starvation: {
-        name: `Great Leap Backwards`,
-        desc: `Have 100 citizens starve to death in a single game`,
-        flair: `Was Mao your mentor?`
+        name: loc("achieve_mass_starvation_name"),
+        desc: loc("achieve_mass_starvation_desc"),
+        flair: loc("achieve_mass_starvation_flair")
     },
     colonist: {
-        name: `Space Colonist`,
-        desc: `Colonize another planet`,
-        flair: `That's one small step for a ${global.race.species}...`
+        name: loc("achieve_colonist_name"),
+        desc: loc("achieve_colonist_desc"),
+        flair: loc("achieve_colonist_flair",[global.race.species]) //it was because of this that I had to load all the strings twice!
     },
     world_domination: {
-        name: `World Domination`,
-        desc: `Conquered the world through military force`,
-        flair: `All those games of RISK finally paid off`
+        name: loc("achieve_world_domination_name"),
+        desc: loc("achieve_world_domination_desc"),
+        flair: loc("achieve_world_domination_flair")
     },
     illuminati: {
-        name: `Illuminati`,
-        desc: `Seized control of the world through influential dominance`,
-        flair: `To rule from the shadows`
+        name: loc("achieve_illuminati_name"),
+        desc: loc("achieve_illuminati_desc"),
+        flair: loc("achieve_illuminati_flair")
     },
     syndicate: {
-        name: `Syndicate`,
-        desc: `Used your wealth to execute a hostile takeover of the world`,
-        flair: `Caveat emptor`
+        name: loc("achieve_syndicate_name"),
+        desc: loc("achieve_syndicate_desc"),
+        flair: loc("achieve_syndicate_flair")
     },
     cult_of_personality: {
-        name: `Cult of Personality`,
-        desc: `Inspired your people with your leadership abilities`,
-        flair: `What is steel compared to the hand that wields it?`
+        name: loc("achieve_cult_of_personality_name"),
+        desc: loc("achieve_cult_of_personality_desc"),
+        flair: loc("achieve_cult_of_personality_flair")
     },
     doomed: {
-        name: `Doomed`,
-        desc: `Stopped an invasion from hell`,
-        flair: `Shoot it until it dies`
+        name: loc("achieve_doomed_name"),
+        desc: loc("achieve_doomed_desc"),
+        flair: loc("achieve_doomed_flair")
     },
     seeder: {
-        name: `Seeder`,
-        desc: `Bioseed an alien world`,
-        flair: `What is god if not us?`
+        name: loc("achieve_seeder_name"),
+        desc: loc("achieve_seeder_desc"),
+        flair: loc("achieve_seeder_flair")
     },
     biome_grassland: {
-        name: `Grassland Civilizer`,
-        desc: `Successfully built a civilization on a grassland planet`,
-        flair: `A garden world of your own design`
+        name: loc("achieve_biome_grassland_name"),
+        desc: loc("achieve_biome_grassland_desc"),
+        flair: loc("achieve_biome_grassland_flair")
     },
     biome_oceanic: {
-        name: `Oceanic Civilizer`,
-        desc: `Successfully built a civilization on an oceanic planet`,
-        flair: `A blue gem floating in the cosmos`
+        name: loc("achieve_biome_oceanic_name"),
+        desc: loc("achieve_biome_oceanic_desc"),
+        flair: loc("achieve_biome_oceanic_flair")
     },
     biome_forest: {
-        name: `Forest Civilizer`,
-        desc: `Successfully built a civilization on a forest planet`,
-        flair: `A forest paradise for those of your choosing`
+        name: loc("achieve_biome_forest_name"),
+        desc: loc("achieve_biome_forest_desc"),
+        flair: loc("achieve_biome_forest_flair")
     },
     biome_desert: {
-        name: `Desert Civilizer`,
-        desc: `Successfully built a civilization on a desert planet`,
-        flair: `Tamed the unforgiving desert and made it your own`
+        name: loc("achieve_biome_desert_name"),
+        desc: loc("achieve_biome_desert_desc"),
+        flair: loc("achieve_biome_desert_flair")
     },
     biome_volcanic: {
-        name: `Volcanic Civilizer`,
-        desc: `Successfully built a civilization on a volcanic planet`,
-        flair: `Master of the primordial world`
+        name: loc("achieve_biome_volcanic_name"),
+        desc: loc("achieve_biome_volcanic_desc"),
+        flair: loc("achieve_biome_volcanic_flair")
     },
     biome_tundra: {
-        name: `Tundra Civilizer`,
-        desc: `Successfully built a civilization on a tundra planet`,
-        flair: `The cold never bothered you anyway`
+        name: loc("achieve_biome_tundra_name"),
+        desc: loc("achieve_biome_tundra_desc"),
+        flair: loc("achieve_biome_tundra_flair")
     },
     genus_humanoid: {
-        name: `Humanoid Victus`,
-        desc: `Led a humanoid civilization to greatness`,
-        flair: `Seized your place among the stars`
+        name: loc("achieve_genus_humanoid_name"),
+        desc: loc("achieve_genus_humanoid_desc"),
+        flair: loc("achieve_genus_humanoid_flair")
     },
     genus_animal: {
-        name: `Scent of a Star`,
-        desc: `Led a animal civilization to greatness`,
-        flair: `Tracked a star and left your mark`
+        name: loc("achieve_genus_animal_name"),
+        desc: loc("achieve_genus_animal_desc"),
+        flair: loc("achieve_genus_animal_flair")
     },
     genus_small: {
-        name: `Tiny Supremacy`,
-        desc: `Led a small civilization to greatness`,
-        flair: `You proved that size doesn't matter`
+        name: loc("achieve_genus_small_name"),
+        desc: loc("achieve_genus_small_desc"),
+        flair: loc("achieve_genus_small_flair")
     },
     genus_giant: {
-        name: `It's Always Bigger`,
-        desc: `Led a giant civilization to greatness`,
-        flair: `You proved that size does matter`
+        name: loc("achieve_genus_giant_name"),
+        desc: loc("achieve_genus_giant_desc"),
+        flair: loc("achieve_genus_giant_flair")
     },
     genus_reptilian: {
-        name: `Flew to the Sun`,
-        desc: `Led a reptilian civilization to greatness`,
-        flair: `Never left out in the cold again`
+        name: loc("achieve_genus_reptilian_name"),
+        desc: loc("achieve_genus_reptilian_desc"),
+        flair: loc("achieve_genus_reptilian_flair")
     },
     genus_avian: {
-        name: `Souring Above`,
-        desc: `Led an avian civilization to greatness`,
-        flair: `Even flightless birds can fly`
+        name: loc("achieve_genus_avian_name"),
+        desc: loc("achieve_genus_avian_desc"),
+        flair: loc("achieve_genus_avian_flair")
     },
     genus_insectoid: {
-        name: `Superior Numbers`,
-        desc: `Led an insectoid civilization to greatness`,
-        flair: `It's a numbers game`
+        name: loc("achieve_genus_insectoid_name"),
+        desc: loc("achieve_genus_insectoid_desc"),
+        flair: loc("achieve_genus_insectoid_flair")
     },
     genus_plant: {
-        name: `Growing Unchecked`,
-        desc: `Led an plant civilization to greatness`,
-        flair: `Outgrew your soil`
+        name: loc("achieve_genus_plant_name"),
+        desc: loc("achieve_genus_plant_desc"),
+        flair: loc("achieve_genus_plant_flair")
     },
     genus_fungi: {
-        name: `Spores in the Wind`,
-        desc: `Led an fungi civilization to greatness`,
-        flair: `Spread everywhere, even the stars`
+        name: loc("achieve_genus_fungi_name"),
+        desc: loc("achieve_genus_fungi_desc"),
+        flair: loc("achieve_genus_fungi_flair")
     },
     mass_extinction: {
-        name: `Mass Extinction`,
-        desc: `Led all civilizations to destruction`,
-        flair: `Cosmic rays have got nothing on you`
+        name: loc("achieve_mass_extinction_name"),
+        desc: loc("achieve_mass_extinction_desc"),
+        flair: loc("achieve_mass_extinction_flair")
     },
     extinct_human: {
-        name: `Homo Adeadus`,
-        desc: `Led a human civilization to destruction`,
-        flair: `Homo Erectus? More like Homo Flacidus`
+        name: loc("achieve_extinct_human_name"),
+        desc: loc("achieve_extinct_human_desc"),
+        flair: loc("achieve_extinct_human_flair")
     },
     extinct_elven: {
-        name: `The few, the proud, the dead`,
-        desc: `Led an elven civilization to destruction`,
-        flair: `Now they can help the trees as fertilizer`
+        name: loc("achieve_extinct_elven_name"),
+        desc: loc("achieve_extinct_elven_desc"),
+        flair: loc("achieve_extinct_elven_flair")
     },
     extinct_orc: {
-        name: `Outlander`,
-        desc: `Led an orc civilization to destruction`,
-        flair: `Went out in a blaze of glory`
+        name: loc("achieve_extinct_orc_name"),
+        desc: loc("achieve_extinct_orc_desc"),
+        flair: loc("achieve_extinct_orc_flair")
     },
     extinct_cath: {
-        name: `Saber Tooth Tiger`,
-        desc: `Led a cath civilization to destruction`,
-        flair: `Scratched their last post`
+        name: loc("achieve_extinct_cath_name"),
+        desc: loc("achieve_extinct_cath_desc"),
+        flair: loc("achieve_extinct_cath_flair")
     },
     extinct_wolven: {
-        name: `Dire Wolf`,
-        desc: `Led a wolven civilization to destruction`,
-        flair: `The moon will be lonely`
+        name: loc("achieve_extinct_wolven_name"),
+        desc: loc("achieve_extinct_wolven_desc"),
+        flair: loc("achieve_extinct_wolven_flair")
     },
     extinct_centaur: {
-        name: `Ferghana`,
-        desc: `Led a centaur civilization to destruction`,
-        flair: `Just dust in the wind`
+        name: loc("achieve_extinct_centaur_name"),
+        desc: loc("achieve_extinct_centaur_desc"),
+        flair: loc("achieve_extinct_centaur_flair")
     },
     extinct_kobold: {
-        name: `Took their candle`,
-        desc: `Led a kobold civilization to destruction`,
-        flair: `It didn't smell very good`
+        name: loc("achieve_extinct_kobold_name"),
+        desc: loc("achieve_extinct_kobold_desc"),
+        flair: loc("achieve_extinct_kobold_flair")
     },
     extinct_goblin: {
-        name: `Greed before Need`,
-        desc: `Led a goblin civilization to destruction`,
-        flair: `Too cheap for tombstones`
+        name: loc("achieve_extinct_goblin_name"),
+        desc: loc("achieve_extinct_goblin_desc"),
+        flair: loc("achieve_extinct_goblin_flair")
     },
     extinct_gnome: {
-        name: `Unathletic`,
-        desc: `Led a gnome civilization to destruction`,
-        flair: `Couldn't outrun the bombs`
+        name: loc("achieve_extinct_gnome_name"),
+        desc: loc("achieve_extinct_gnome_desc"),
+        flair: loc("achieve_extinct_gnome_flair")
     },
     extinct_orge: {
-        name: `Too stupid to live`,
-        desc: `Led an ogre civilization to destruction`,
-        flair: `Darwin would be proud`
+        name: loc("achieve_extinct_orge_name"),
+        desc: loc("achieve_extinct_orge_desc"),
+        flair: loc("achieve_extinct_orge_flair")
     },
     extinct_cyclops: {
-        name: `Blind Ambition`,
-        desc: `Led a cyclops civilization to destruction`,
-        flair: `Lost an eye and didn't have a spare`
+        name: loc("achieve_extinct_cyclops_name"),
+        desc: loc("achieve_extinct_cyclops_desc"),
+        flair: loc("achieve_extinct_cyclops_flair")
     },
     extinct_troll: {
-        name: `Bad Juju`,
-        desc: `Led a troll civilization to destruction`,
-        flair: `Paid the final toll`
+        name: loc("achieve_extinct_troll_name"),
+        desc: loc("achieve_extinct_troll_desc"),
+        flair: loc("achieve_extinct_troll_flair")
     },
     extinct_tortoisan: {
-        name: `Circle of Life`,
-        desc: `Led a tortoisan civilization to destruction`,
-        flair: `A turtle didn't make it to the water`
+        name: loc("achieve_extinct_tortoisan_name"),
+        desc: loc("achieve_extinct_tortoisan_desc"),
+        flair: loc("achieve_extinct_tortoisan_flair")
     },
     extinct_gecko: {
-        name: `No Savings`,
-        desc: `Led a gecko civilization to destruction`,
-        flair: `The rates weren't that good afterall`
+        name: loc("achieve_extinct_gecko_name"),
+        desc: loc("achieve_extinct_gecko_desc"),
+        flair: loc("achieve_extinct_gecko_flair")
     },
     extinct_slitheryn: {
-        name: `Final Shedding`,
-        desc: `Led a slitheryn civilization to destruction`,
-        flair: `Choked on the apple`
+        name: loc("achieve_extinct_slitheryn_name"),
+        desc: loc("achieve_extinct_slitheryn_desc"),
+        flair: loc("achieve_extinct_slitheryn_flair")
     },
     extinct_arraak: {
-        name: `Way of the Dodo`,
-        desc: `Led an arraak civilization to destruction`,
-        flair: `Tastes like chicken`
+        name: loc("achieve_extinct_arraak_name"),
+        desc: loc("achieve_extinct_arraak_desc"),
+        flair: loc("achieve_extinct_arraak_flair")
     },
     extinct_pterodacti: {
-        name: `Chicxulub`,
-        desc: `Led a pterodacti civilization to destruction`,
-        flair: `Just couldn't adapt`
+        name: loc("achieve_extinct_pterodacti_name"),
+        desc: loc("achieve_extinct_pterodacti_desc"),
+        flair: loc("achieve_extinct_pterodacti_flair")
     },
     extinct_dracnid: {
-        name: `Desolate Smaug`,
-        desc: `Led a dracnid civilization to destruction`,
-        flair: `The forever lonely mountain`
+        name: loc("achieve_extinct_dracnid_name"),
+        desc: loc("achieve_extinct_dracnid_desc"),
+        flair: loc("achieve_extinct_dracnid_flair")
     },
     extinct_entish: {
-        name: `Saruman's Revenge`,
-        desc: `Led an entish civilization to destruction`,
-        flair: `Ripped them all down`
+        name: loc("achieve_extinct_entish_name"),
+        desc: loc("achieve_extinct_entish_desc"),
+        flair: loc("achieve_extinct_entish_flair")
     },
     extinct_cacti: {
-        name: `Desert Deserted`,
-        desc: `Led a cacti civilization to destruction`,
-        flair: `The oasis was a mirage`
+        name: loc("achieve_extinct_cacti_name"),
+        desc: loc("achieve_extinct_cacti_desc"),
+        flair: loc("achieve_extinct_cacti_flair")
     },
     extinct_sporgar: {
-        name: `Fungicide`,
-        desc: `Led a sporgar civilization to destruction`,
-        flair: `The oil of the future`
+        name: loc("achieve_extinct_sporgar_name"),
+        desc: loc("achieve_extinct_sporgar_desc"),
+        flair: loc("achieve_extinct_sporgar_flair")
     },
     extinct_shroomi: {
-        name: `Bad Trip`,
-        desc: `Led a shroomi civilization to destruction`,
-        flair: `Shouldn't have eaten that`
+        name: loc("achieve_extinct_shroomi_name"),
+        desc: loc("achieve_extinct_shroomi_desc"),
+        flair: loc("achieve_extinct_shroomi_flair")
     },
     extinct_mantis: {
-        name: `Praying Unanswered`,
-        desc: `Led a mantis civilization to destruction`,
-        flair: `Maybe next time they'll be listening`
+        name: loc("achieve_extinct_mantis_name"),
+        desc: loc("achieve_extinct_mantis_desc"),
+        flair: loc("achieve_extinct_mantis_flair")
     },
     extinct_scorpid: {
-        name: `Pulmonoscorpius`,
-        desc: `Led a scorpid civilization to destruction`,
-        flair: `Owl supremacy`
+        name: loc("achieve_extinct_scorpid_name"),
+        desc: loc("achieve_extinct_scorpid_desc"),
+        flair: loc("achieve_extinct_scorpid_flair")
     },
     extinct_antid: {
-        name: `Ophiocordyceps Unilateralis`,
-        desc: `Led an antid civilization to destruction`,
-        flair: `Walked off into history`
+        name: loc("achieve_extinct_antid_name"),
+        desc: loc("achieve_extinct_antid_desc"),
+        flair: loc("achieve_extinct_antid_flair")
     }
 };
 
@@ -296,7 +297,7 @@ export function unlockAchieve(achievement){
     if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement] < a_level)){
         global.settings.showAchieve = true;
         global.stats.achieve[achievement] = a_level;
-        messageQueue(`Achievement Unlocked! ${achievements[achievement].name}`,'special');
+        messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
         drawAchieve();
         return true;
     }
@@ -333,7 +334,7 @@ export function drawAchieve(){
         }
     });
     set_alevel(level);
-    achieve.prepend(`<div class="has-text-warning">Achievements Earned: ${earned} of ${total}</div>`);
+    achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}</div>`);
 
     let avue = {
         methods: {
@@ -385,18 +386,18 @@ export function drawStats(){
     $('#statsPanel').empty();
     let stats = $('#statsPanel');
     
-    stats.append(`<div><span class="has-text-success">Overall</span></div>`);
-    stats.append(`<div><span class="has-text-warning">Plasmids Earned:</span> {{ plasmid }}</div>`);
-    stats.append(`<div><span class="has-text-warning">Knowledge Spent:</span> {{ know | t_know }}</div>`);
-    stats.append(`<div><span class="has-text-warning">Starved to Death:</span> {{ starved | t_starved }}</div>`);
-    stats.append(`<div><span class="has-text-warning">Died in Combat:</span> {{ died | t_died }}</div>`);
-    stats.append(`<div><span class="has-text-warning">Game Days Played:</span> {{ days | played }}</div>`);
-    stats.append(`<div><span class="has-text-warning">Total Resets:</span> {{ reset }}</div>`);
-    stats.append(`<div class="cstat"><span class="has-text-success">Current Game</span></div>`);
-    stats.append(`<div><span class="has-text-warning">Knowledge Spent:</span> {{ know }}</div>`);
-    stats.append(`<div><span class="has-text-warning">Starved to Death:</span> {{ starved }}</div>`);
-    stats.append(`<div><span class="has-text-warning">Died in Combat:</span> {{ died }}</div>`);
-    stats.append(`<div><span class="has-text-warning">Game Days Played:</span> {{ days }}</div>`);
+    stats.append(`<div><span class="has-text-success">${loc("achieve_stats_overall")}</span></div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_plasmid_earned")}</span> {{ plasmid }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know | t_know }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved | t_starved }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died | t_died }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days | played }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_total_resets")}</span> {{ reset }}</div>`);
+    stats.append(`<div class="cstat"><span class="has-text-success">${loc("achieve_stats_current_game")}</span></div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days }}</div>`);
 
     let svue = {
         data: global.stats,
