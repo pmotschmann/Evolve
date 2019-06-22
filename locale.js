@@ -1,14 +1,12 @@
 import { global } from './vars.js';
 
-
 let strings;
 getString(global.settings.locale);
-
 
 export function loc(key, variables) {
     let string = strings[key];
     if (!string) {
-        console.error(`string ${key} don't found`);
+        console.error(`string ${key} not found`);
         console.log(strings);
     }
     if (variables) {
@@ -47,7 +45,7 @@ function getString(locale) {
     }
 
     if(defaultString.length != defSize){
-        console.error(`string.${locale}.json have extra keys.`);
+        console.error(`string.${locale}.json has extra keys.`);
     }
 
     strings = defaultString;
@@ -55,6 +53,6 @@ function getString(locale) {
 
 export const locales = {
     'en-US': 'English (US)',
-    //'es-us': 'Spanish (US/Latin-America)',
-    'pt-BR': 'Português Brasileiro',
+    //'es-US': 'Spanish (US/Latin-America)',
+    //'pt-BR': 'Português Brasileiro',
 };
