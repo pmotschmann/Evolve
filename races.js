@@ -1,18 +1,19 @@
 import { global } from './vars.js';
+import { loc } from './locale.js';
 
 export const races = {
     protoplasm: {
         name: 'Protoplasm',
-        desc: "Your race has yet to evolve into a complex lifeform, currently you're nothing but protoplasm in the primortal ooze.",
+        desc: loc('race_protoplasm'),
         type: 'organism',
         home: 'Prehistoric'
     },
     human: {
         name: 'Human',
-        desc: "Humans are versatile creatures who are adept at bending the environment around them to suit their needs. They are an ambitious race who seek to expand their knowledge of the universe around them and build great empires.",
+        desc: loc('race_human'),
         type: 'humanoid',
         home: 'Terra',
-        entity: 'pink skinned bipedal creatures',
+        entity: loc('race_human_entity'),
         traits: {
             creative: 1,
             diverse: 1
@@ -27,10 +28,10 @@ export const races = {
     },
     elven: {
         name: 'Elf',
-        desc: 'Elves are typically tall and slender creatures with pointy ears, they tend to be reclusive but sharp of wit. Elves live long lives and often devote themselves to study seeking answers to the deep fundamental questions of the universe.',
+        desc: loc('race_elven'),
         type: 'humanoid',
         home: 'Valinor',
-        entity: 'pointy eared bipedal creatures',
+        entity: loc('race_elven_entity'),
         traits: { 
             studious: 1,
             arrogant: 1
@@ -45,10 +46,10 @@ export const races = {
     },
     orc: {
         name: 'Orc',
-        desc: "Orcs tend to be large and muscular creatures who are slow of wit but contain immense brute strength. They typically try to solve problems with violence first, then seek a more rational solution only when that doesn't work.",
+        desc: loc('race_orc'),
         type: 'humanoid',
         home: 'Roneard',
-        entity: 'green skinned bipedal creatures',
+        entity: loc('race_orc_entity'),
         traits: { 
             brute: 1,
             angry: 1
@@ -63,10 +64,10 @@ export const races = {
     },
     cath: {
         name: 'Cath',
-        desc: 'The cath are a feline race who are typically lazy. They are stealthy and adapt at hunting when motivated, however most cath prefer to laze about rather then work hard.',
+        desc: loc('race_cath'),
         type: 'animal',
         home: 'Cathar',
-        entity: 'cat people',
+        entity: loc('race_cath_entity'),
         traits: { 
             lazy: 1,
             carnivore: 1
@@ -81,10 +82,10 @@ export const races = {
     },
     wolven: {
         name: 'Wolven',
-        desc: 'The wolven are a canine race who usally move in organized packs. They are a highly social species and rarely undertake any task alone.',
+        desc: loc('race_wolven'),
         type: 'animal',
         home: 'Wolvar',
-        entity: 'dog people',
+        entity: loc('race_wolven_entity'),
         traits: { 
             pack_mentality: 1,
             tracker: 1
@@ -99,10 +100,10 @@ export const races = {
     },
     centaur: {
         name: 'Centaur',
-        desc: 'Centaur are a species of horse creatures who have human like upper bodies. They are fast moving and strong.',
+        desc: loc('race_centaur'),
         type: 'animal',
         home: 'Sagittarius',
-        entity: 'horse people',
+        entity: loc('race_centaur_entity'),
         traits: {
             beast_of_burden: 1,
             herbivore: 1
@@ -117,10 +118,10 @@ export const races = {
     },
     kobold: {
         name: 'Kobold',
-        desc: 'Kobolds are small humanoid creatures who are known for their infatuation with candles. They are adapt at hoarding as much stuff as possible.',
+        desc: loc('race_kobold'),
         type: 'small',
         home: 'Wax',
-        entity: 'small red skinned humanoids',
+        entity: loc('race_kobold_entity'),
         traits: {
             pack_rat: 1,
             paranoid: 1
@@ -135,10 +136,10 @@ export const races = {
     },
     goblin: {
         name: 'Goblin',
-        desc: 'Goblins are small humanoid creatures who are known for their greed and cunning. They are highly intelligent but typically selfish in nature.',
+        desc: loc('race_goblin'),
         type: 'small',
         home: 'Crassus',
-        entity: 'small green skinned bipedal creatures',
+        entity: loc('race_goblin_entity'),
         traits: { 
             greedy: 1,
             merchant: 1
@@ -153,10 +154,10 @@ export const races = {
     },
     gnome: {
         name: 'Gnome',
-        desc: 'Gnomes are small humanoid creatures who are known for their superior intelligence. They are natural scientists and seek to expand their knowledge, often at the cost of safety and morality.',
+        desc: loc('race_gnome'),
         type: 'small',
         home: 'Lawn',
-        entity: 'small pink humanoids',
+        entity: loc('race_goblin'),
         traits: { 
             smart: 1,
             puny: 1
@@ -171,10 +172,10 @@ export const races = {
     },
     orge: {
         name: 'Ogre',
-        desc: 'Ogres are large humanoid creatures who are known for being kind of dumb. They are very strong with few other races being able to match their physical prowess, however they learn slowly.',
+        desc: loc('race_ogre'),
         type: 'giant',
         home: 'Mourn',
-        entity: 'giant humanoids',
+        entity: loc('race_ogre_entity'),
         traits: { 
             dumb: 1,
             tough: 1
@@ -189,10 +190,10 @@ export const races = {
     },
     cyclops: {
         name: 'Cyclops',
-        desc: 'Cyclops are large humanoid creatures who have a single giant eye. They have poor depth perception but are fairly social and intelligent.',
+        desc: loc('race_cyclops'),
         type: 'giant',
         home: 'Unus',
-        entity: 'one-eyed giant humanoids',
+        entity: loc('race_cyclops_entity'),
         traits: {
             nearsighted: 1,
             intelligent: 1
@@ -207,10 +208,10 @@ export const races = {
     },
     troll: {
         name: 'Troll',
-        desc: 'Trolls are large humanoid creatures who are known for their regenerative powers. They are a hardy race highly resistant to disease and injury.',
+        desc: loc('race_troll'),
         type: 'giant',
         home: 'Brücke',
-        entity: 'large green humanoids',
+        entity: loc('race_troll_entity'),
         traits: {
             regenerative: 1,
             gluttony: 1
@@ -225,10 +226,10 @@ export const races = {
     },
     tortoisan: {
         name: 'Tortoisan',
-        desc: 'Tortoisans are a reptilian species with shells on their backs, they are slow moving and good at hiding.',
+        desc: loc('race_tortoisan'),
         type: 'reptilian',
         home: 'Splinter',
-        entity: 'turtle people',
+        entity: loc('race_tortoisan_entity'),
         traits: { 
             slow: 1,
             armored: 1
@@ -243,10 +244,10 @@ export const races = {
     },
     gecko: {
         name: 'Gecko',
-        desc: 'The gecks are a lizard species who can naturally camouflage themselves to their surroundings. They are very agile and fast moving.',
+        desc: loc('race_gecko'),
         type: 'reptilian',
         home: 'Ijsabom',
-        entity: 'lizard people',
+        entity: loc('race_gecko_entity'),
         traits: {
             optimistic: 1,
             chameleon: 1
@@ -261,10 +262,10 @@ export const races = {
     },
     slitheryn: {
         name: 'Slitheryn',
-        desc: 'Slitheryn are a reptilian species who evolved from snakes. They have humanoid upper bodies but retain snake like lower halves.',
+        desc: loc('race_slitheryn'),
         type: 'reptilian',
         home: 'Viper',
-        entity: 'snake creatures',
+        entity: loc('race_slitheryn_entity'),
         traits: {
             slow_digestion: 1,
             hard_of_hearing: 1
@@ -279,10 +280,10 @@ export const races = {
     },
     arraak: {
         name: 'Arraak',
-        desc: 'Arraak are a feathered species of flightless birds. Long ago they may have taken to the skies but modern Arraak are too heavy to fly.',
+        desc: loc('race_arraak'),
         type: 'avian',
         home: 'Daphne',
-        entity: 'bird people',
+        entity: loc('race_arraak_entity'),
         traits: {
             resourceful: 1,
             selenophobia: 1
@@ -297,10 +298,10 @@ export const races = {
     },
     pterodacti: {
         name: 'Pterodacti',
-        desc: 'Pterodacti are decended from large featherless flying creatures. Their skin is leathery and they have long, narrow heads.',
+        desc: loc('race_pterodacti'),
         type: 'avian',
         home: 'Crichton',
-        entity: 'leathery winged creatures',
+        entity: loc('race_pterodacti_entity'),
         traits: {
             leathery: 1,
             pessimistic: 1
@@ -315,10 +316,10 @@ export const races = {
     },
     dracnid: {
         name: 'Dracnid',
-        desc: 'Dracnid are decended from large scaly flying creatures. They are tough being naturally armored, however they tend to be anti-social and greedy.',
+        desc: loc('race_dracnid'),
         type: 'avian',
         home: 'Draco',
-        entity: 'scaly winged creatures',
+        entity: loc('race_dracnid_entity'),
         traits: {
             hoarder: 1,
             solitary: 1
@@ -333,10 +334,10 @@ export const races = {
     },
     entish: {
         name: 'Ent',
-        desc: 'Ents are basically sentient trees who can uproot themselves and move around. They are large and slow moving, but fearsome and can get most of their nutrients from the sun.',
+        desc: loc('race_entish'),
         type: 'plant',
         home: 'Fangorn',
-        entity: 'sentient trees',
+        entity: loc('race_entish_entity'),
         traits: {
             kindling_kindred: 1,
             pyrophobia: 1
@@ -351,10 +352,10 @@ export const races = {
     },
     cacti: {
         name: 'Cacti',
-        desc: 'Cacti are small sentient plant creatures covered in spines. They are surprisingly fast moving, but easily startled.',
+        desc: loc('race_cacti'),
         type: 'plant',
         home: 'Bikanel',
-        entity: 'sentient cactuses',
+        entity: loc('race_cacti_entity'),
         traits: {
             hyper: 1,
             skittish: 1
@@ -369,10 +370,10 @@ export const races = {
     },
     sporgar: {
         name: 'Sporgar',
-        desc: 'Sporgar are a parasitic species of sentient mold spores that spread by infecting host bodies and possessing them.',
+        desc: loc('race_sporgar'),
         type: 'fungi',
         home: 'Zanger',
-        entity: 'sentient mold',
+        entity: loc('race_sporgar_entity'),
         traits: {
             infectious: 1,
             parasite: 1
@@ -387,10 +388,10 @@ export const races = {
     },
     shroomi: {
         name: 'Shroomi',
-        desc: 'The Shroomi are a race of mushroom like creatures. They like dark places away from sunlight.',
+        desc: loc('race_shroomi'),
         type: 'fungi',
         home: 'Armillaria',
-        entity: 'sentient shrooms',
+        entity: loc('race_shroomi_entity'),
         traits: {
             toxic: 1,
             nyctophilia: 1
@@ -405,10 +406,10 @@ export const races = {
     },
     mantis: {
         name: 'Mantis',
-        desc: 'Mantis are an insectoid species that resemble giant... mantis. They are quick but fragile.',
+        desc: loc('race_mantis'),
         type: 'insectoid',
         home: 'Chryssalid',
-        entity: 'insects',
+        entity: loc('race_mantis_entity'),
         traits: {
             fraile: 1,
             malnutrition: 1
@@ -423,10 +424,10 @@ export const races = {
     },
     scorpid: {
         name: 'Scorpid',
-        desc: 'Scorpid are a bipedal species with large claw hands and barbed tails. They are tough fighters naturally equipped for close combat.',
+        desc: loc('race_scorpid'),
         type: 'insectoid',
         home: 'Scorpio',
-        entity: 'scorpians',
+        entity: loc('race_scorpid_entity'),
         traits: {
             claws: 1,
             atrophy: 1
@@ -441,10 +442,10 @@ export const races = {
     },
     antid: {
         name: 'Antid',
-        desc: 'Antid are a hivemind species descended from ants. Individually they are not intelligent but as their swarm gets bigger so does their collective intelligence.',
+        desc: loc('race_antid'),
         type: 'insectoid',
         home: 'Menzel',
-        entity: 'intelligent ants',
+        entity: loc('race_antid_entity'),
         traits: {
             hivemind: 1,
             tunneler: 1
@@ -500,319 +501,311 @@ export const genus_traits = {
 
 export const traits = {
     adaptable: { // Genetic Mutations occur faster from gene tampering
-        desc: 'Your race is more easily modified by gene therapy.',
+        desc: loc('trait_adaptable'),
         type: 'genus',
     },
     xenophobic: { // Trade posts suffer a -1 penalty per post
-        desc: 'Your races dislike of foreigners reduces the number of trade routes you can operate.',
+        desc: loc('trait_xenophobic'),
         type: 'genus',
     },
     beast: { // Hunting improved when it's windy
-        desc: 'Your races keen senses help you detect the scent of prey.',
+        desc: loc('trait_beast'),
         type: 'genus',
     },
     cautious: { // Rain reduces combat rating
-        desc: 'Your race is less effective at combat when it is precipitating.',
+        desc: loc('trait_cautious'),
         type: 'genus',
     },
     small: { // Reduces cost creep multipliers by 0.01
-        desc: 'Your race is small and thus requires less materials to build things.',
+        desc: loc('trait_small'),
         type: 'genus',
     },
     weak: { // Lumberjacks, miners, and quarry workers are 10% less effective
-        desc: 'Your race is ineffective at tough manual labor tasks.',
+        desc: loc('trait_weak'),
         type: 'genus',
     },
     large: { // Increases cost creep multipliers by 0.01
-        desc: 'Your race is large and thus requires extra materials to build things.',
+        desc: loc('trait_large'),
         type: 'genus',
     },
     strong: { // Increased manual resource gain
-        desc: 'Your race has great strength and can harvest the basics in greater quantity.',
+        desc: loc('trait_strong'),
         type: 'genus',
     },
     cold_blooded: { // Weather affects productivity
-        desc: 'Your species is sensitive to the outside temperature.',
+        desc: loc('trait_cold_blooded'),
         type: 'genus',
     },
     scales: { // Minor decrease of soldiers killed in combat
-        desc: 'Your species is protected by scales which act as a kind of natural armor.',
+        desc: loc('trait_scales'),
         type: 'genus',
     },
     hollow_bones: { // Less Crafted Materials Needed
-        desc: 'Your species has light weight bones and requires less crafted materials to build structures.',
+        desc: loc('trait_hollow_bones'),
         type: 'genus',
     },
     rigid: { // Crafting production lowered slightly
-        desc: 'Your race has a stiff skeletal structure and crafts less efficiently.',
+        desc: loc('trait_rigid'),
         type: 'genus',
     },
     fast_growth: { // Greatly increases odds of population growth each cycle
-        desc: 'Your species gestates quickly, population thus raises faster then other species.',
+        desc: loc('trait_fast_growth'),
         type: 'genus',
     },
     high_metabolism: { // Food requirements increased by 10%
-        desc: 'Your species metabolises food quickly, as a result you need more of it.',
+        desc: loc('trait_high_metabolism'),
         type: 'genus',
     },
     photosynth: { // Reduces food requirements dependant on sunshine.
-        desc: 'Your race produces part of its food requirements through photosynthesis with the sun',
+        desc: loc('trait_photosynth'),
         type: 'genus',
     },
     asymmetrical: { // Trade selling prices are slightly worse then normal
-        desc: 'Your species is asymmetrical. This gives you a more monstrous appearance making trade more difficult.',
+        desc: loc('trait_asymmetrical'),
         type: 'genus',
     },
     spores: { // Birthrate increased when it's windy
-        desc: `Your species propagates quickly when it's windy`,
+        desc: loc('trait_spores'),
         type: 'genus',
     },
     spongy: { // Birthrate decreased when it's raining
-        desc: `Your species doesn't propagate when it's precipitating`,
+        desc: loc('trait_spongy'),
         type: 'genus',
     },
-    creative: { // A.R.P.A. Projects are 2% cheaper
-        desc: 'Your species natural creativity leads to faster development of super projects.',
+    creative: { // A.R.P.A. Projects are cheaper
+        desc: loc('trait_creative'),
         type: 'major',
     },
     diverse: { // Training soldiers takes longer
-        desc: 'The diverse nature of your species makes working together as a cohesive military unit more difficult.',
+        desc: loc('trait_diverse'),
         type: 'major',
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second
-        desc: 'Your race is more focused when studying then average. Knowledge is gained faster as a result.',
+        desc: loc('trait_studious'),
         type: 'major',
     },
     arrogant: { // Market prices are higher
-        desc: 'The inherent arrogance of your species often leads to you overpaying in negotiations.',
+        desc: loc('trait_arrogant'),
         type: 'major',
     },
     brute: { // Recruitment costs are 1/2 price
-        desc: 'Your race loves fighting and is easier to recruit for battle.',
+        desc: loc('trait_brute'),
         type: 'major',
     },
     angry: { // When hungry you get hangry, low food penalty is more severe
-        desc: 'Your race is quick to get angry when hungry.',
+        desc: loc('trait_angry'),
         type: 'major',
     },
     lazy: { // All production is lowered when the temperature is hot
-        desc: 'Your race loves nothing more then a lazy afternoon. Productivity is lost in warm weather as a result.',
+        desc: loc('trait_lazy'),
         type: 'major',
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
-        desc: 'Your species is carnivorous and does not engage in agriculture.',
+        desc: loc('trait_carnivore'),
         type: 'major',
     },
     pack_mentality: { // Cabins cost more, but cottages cost less.
-        desc: 'Your race prefers to live in groups.',
+        desc: loc('trait_pack_mentality'),
         type: 'major',
     },
     tracker: { // 10% increased gains from hunting
-        desc: 'Your race excels at tracking game, and thus produces more from hunting.',
+        desc: loc('trait_tracker'),
         type: 'major',
     },
     beast_of_burden: { // Gains more loot during raids
-        desc: 'Your race is able to carry away more loot when winning a military conflict.',
+        desc: loc('trait_beast_of_burden'),
         type: 'major',
     },
     herbivore: { // No food is gained from hunting
-        desc: 'Your species does not eat meat.',
+        desc: loc('trait_herbivore'),
         type: 'major',
     },
     pack_rat: { // Storage space is increased
-        desc: 'Your species is adept at packing the most stuff into any storage space.',
+        desc: loc('trait_pack_rat'),
         type: 'major',
     },
     paranoid: { // Bank capacity reduced by 10%
-        desc: `Your race is paranoid and doesn't trust banks.`,
+        desc: loc('trait_paranoid'),
         type: 'major',
     },
     greedy: { // Lowers income from taxes
-        desc: 'Your race is greedy and will not willingly part with money, reduces income from taxes.',
+        desc: loc('trait_greedy'),
         type: 'major',
     },
     merchant: { // Better commodity selling prices
-        desc: 'Your race has an innate gift for haggling.',
+        desc: loc('trait_merchant'),
         type: 'major',
     },
     smart: { // Knowledge costs reduced by 10%
-        desc: 'Your race more easily understands new concepts.',
+        desc: loc('trait_smart'),
         type: 'major',
     },
     puny: { // Lowers minium bound for army score roll
-        desc: 'Your race is less effective in combat.',
+        desc: loc('trait_puny'),
         type: 'major',
     },
     dumb: { // Knowledge costs increased by 5%
-        desc: 'Your race does not easily understand new concepts.',
+        desc: loc('trait_dumb'),
         type: 'major',
     },
     tough: { // Mining output increased by 25%
-        desc: 'Your race is tough and can withstand the most grueling jobs without sucumbing to weakness.',
+        desc: loc('trait_tough'),
         type: 'major',
     },
     nearsighted: { // Libraries are less effective
-        desc: 'Your species is nearsighted and requires bigger font sizes to read.',
+        desc: loc('trait_nearsighted'),
         type: 'major',
     },
     intelligent: { // Professors and Scientists add a global production bonus
-        desc: `Your species always leverages the latest advancements in science to it's full benefit.`,
+        desc: loc('trait_intelligent'),
         type: 'major',
     },
     regenerative: { // Wounded soldiers heal 4x as fast
-        desc: 'Your race inherently heals quickly.',
+        desc: loc('trait_regenerative'),
         type: 'major',
     },
     gluttony: { // Eats 25% more food per rank
-        desc: 'Your species is always hungry and eats extra food.',
+        desc: loc('trait_gluttony'),
         type: 'major',
     },
     slow: { // The game moves at a 10% slower pace
-        desc: 'Your species is slow moving and rarely in a hurry to get anything done.',
+        desc: loc('trait_slow'),
         type: 'major',
     },
     armored: { // Less soldiers die in combat
-        desc: 'Your race is naturally armored and thus less likely to be fatally wounded in battle.',
+        desc: loc('trait_armored'),
         type: 'major',
     },
     optimistic: { // Minor reduction to stress
-        desc: 'Your race always tries to look for the best possible outcome.',
+        desc: loc('trait_optimistic'),
         type: 'major',
     },
     chameleon: { // Barracks have less soldiers
-        desc: 'Your species natural affinity for hiding has caused you to be more averse to having a standing army.',
+        desc: loc('trait_chameleon'),
         type: 'major',
     },
     slow_digestion: { // Your race is more resilient to starvation
-        desc: 'Your race digests food slowly and thus will not starve as easily.',
+        desc: loc('trait_slow_digestion'),
         type: 'major',
     },
     hard_of_hearing: { // University science cap gain reduced by 5%
-        desc: 'Your species has poor hearing and thus lectures are less effective.',
+        desc: loc('trait_hard_of_hearing'),
         type: 'major',
     },
     resourceful: { // Crafting costs are reduced slightly
-        desc: 'Your species resourcefulness leads to less waste when crafting.',
+        desc: loc('trait_resourceful'),
         type: 'major',
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
-        desc: 'Your race prefers moonless nights.',
+        desc: loc('trait_selenophobia'),
         type: 'major',
     },
     leathery: { // Morale penalty from some weather conditions are reduced.
-        desc: 'Your race has leathery skin which makes you more weather resistent.',
+        desc: loc('trait_leathery'),
         type: 'major',
     },
     pessimistic: { // Minor increase to stress
-        desc: 'Your race gets depressed easily.',
+        desc: loc('trait_pessimistic'),
         type: 'major',
     },
     hoarder: { // Banks can store 20% more money
-        desc: 'Your race loves to hoard money.',
+        desc: loc('trait_hoarder'),
         type: 'major',
     },
     solitary: { // Cabins are cheaper however cottages cost more
-        desc: 'Your race perfers to live alone rather then with others.',
+        desc: loc('trait_solitary'),
         type: 'major',
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
-        desc: 'Your race is adverse to cutting down trees for lumber, all lumber costs are removed but other costs are increased.',
+        desc: loc('trait_kindling_kindred'),
         type: 'major',
     },
     pyrophobia: { // Smelter productivity is reduced
-        desc: 'Your race is afraid of fire and smelters operate slower as a result',
+        desc: loc('trait_pyrophobia'),
         type: 'major',
     },
     hyper: { // The game moves at a 5% faster pace
-        desc: 'Your race can never sit still and is always doing something.',
+        desc: loc('trait_hyper'),
         type: 'major',
     },
     skittish: { // Thunderstorms lower all production
-        desc: 'Your race is easily startled and may lose productivity when scared',
+        desc: loc('trait_skittish'),
         type: 'major',
     },
     infectious: { // Attacking has a chance to infect other creatures and grow your population
-        desc: 'Your race spreads by infecting other creatures and taking over the host body.',
+        desc: loc('trait_infectious'),
         type: 'major',
     },
     parasite: { // You can only reproduce by infecting victims, spores sometimes find a victim when it's windy
-        desc: 'Your species is a parasite and must infect host victims to grow.',
-        type: 'major',
-    },
-    crafty: { // 3% bonus craft ratio
-        desc: 'Your race has a knack for crafting.',
-        type: 'major',
-    },
-    hydrophilic: { // none factory jobs are reduced by 25% when raining
-        desc: 'Your species does not like rain.',
+        desc: loc('trait_parasite'),
         type: 'major',
     },
     toxic: { // Factory type jobs are more productive
-        desc: 'Your species natural toxicity makes you resistent to toxic workplaces and thus are more productive in factories',
+        desc: loc('trait_toxic'),
         type: 'major',
     },
     nyctophilia: { // Productivity is lost when it is sunny
-        desc: `Your race does not like direct sunlight, they are less productive when it's sunny`,
+        desc: loc('trait_nyctophilia'),
         type: 'major',
     },
     frail: { // More soldiers die in combat
-        desc: 'Your race is frail and is more likely to die in combat.',
+        desc: loc('trait_frail'),
         type: 'major',
     },
     malnutrition: { // The rationing penalty is weaker
-        desc: 'Your race can function while suffering from malnutrition better then most.',
+        desc: loc('trait_malnutrition'),
         type: 'major',
     },
     claws: { // Raises maximum bound for army score roll
-        desc: 'Your race is more effective in combat.',
+        desc: loc('trait_claws'),
         type: 'major',
     },
     atrophy: { // More prone to starvation
-        desc: 'Your race atrophies quicker when not well fed.',
+        desc: loc('trait_atrophy'),
         type: 'major',
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
-        desc: 'Your citizens are highly ineffectual when working as individuals but gain potency as they work in bigger groups.',
+        desc: loc('trait_hivemind'),
         type: 'major',
     },
     tunneler: { // Mines and Coal Mines are cheaper. 
-        desc: 'Your species is naturally adept at digging tunnels which make mine shafts cheaper to produce.',
+        desc: loc('trait_tunneler'),
         type: 'major',
     },
     tactical: { // War Bonus
-        desc: 'A genetic disposition to tactical thinking gives your race an edge in combat.',
+        desc: loc('trait_tactical'),
         type: 'minor',
     },
     analytical: { // Science Bonus
-        desc: 'Your race has an enhanced analytical mind which increases your knowledge gain.',
+        desc: loc('trait_analytical'),
         type: 'minor',
     },
     promiscuous: { // Population Growth Bonus
-        desc: 'Your race has an elevated birth rate.',
+        desc: loc('trait_promiscuous'),
         type: 'minor',
     },
     resilient: { // Coal Mining Bonus
-        desc: 'Natural resilence to harsh conditions makes your species more adept at coal mining.',
+        desc: loc('trait_resilient'),
         type: 'minor',
     },
     cunning: { // Hunting Bonus
-        desc: 'Your race possesses an affinity for tracking game.',
+        desc: loc('trait_cunning'),
         type: 'minor',
     },
     hardy: { // Factory Woker Bonus
-        desc: 'A genetically hardy physiology lets your race endure tough factory condiditons.',
+        desc: loc('trait_hardy'),
         type: 'minor',
     },
     ambidextrous: { // Crafting Bonus
-        desc: 'A natural ability to work with both hands improves your crafting.',
+        desc: loc('trait_ambidextrous'),
         type: 'minor',
     },
     industrious: { // Miner Bonus
-        desc: 'Your natually hard working citizens produce extra copper and iron ore from mining.',
+        desc: loc('trait_industrious'),
         type: 'minor',
     },
     content: { // Morale Bonus
-        desc: 'Your people are natually content, reducing the stress gained from everyday life.',
+        desc: loc('trait_content'),
         type: 'minor',
     },
 };
@@ -889,10 +882,11 @@ export function randomMinorTrait(){
 }
 
 export const biomes = {
-    grassland: 'Grassland worlds are covered in plains and are ideal worlds for farming. They are characterized by easier growing of crops.',
-    oceanic: 'Oceanic worlds are mostly covered by water with same land masses scattered around. They are characterized by increased rainfall.',
-    forest: 'Forest worlds are almost entirely covered with vegetation. They are characterized by an abundance of lumber.',
-    desert: 'Desert worlds are mostly dusty rocks covered in sand. They are characterized by being very sunny.',
-    volcanic: `Volcanic worlds are typically younger planets who haven't yet cooled off. They are characterized by being hot.`,
-    tundra: 'Tundra planets are largely covered in ice and are almost never warm. They are characterized by being cold.'
+    grassland: loc('biome_grassland'),
+    oceanic: loc('biome_oceanic'),
+    forest: loc('biome_forest'),
+    desert: loc('biome_desert'),
+    volcanic: loc('biome_volcanic'),
+    tundra: loc('biome_tundra'),
+    hellscape: loc('biome_hellscape')
 };

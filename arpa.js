@@ -1,5 +1,5 @@
-import { global, vues, poppers, messageQueue, modRes } from './vars.js';
-import { actions, drawCity, drawTech, addAction, removeAction } from './actions.js';
+import { global, vues, poppers } from './vars.js';
+import { actions, drawTech, addAction, removeAction } from './actions.js';
 import { races, traits } from './races.js';
 import { space } from './space.js';
 
