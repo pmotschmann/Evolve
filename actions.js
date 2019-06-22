@@ -7014,7 +7014,6 @@ export const actions = {
                 if (armyRating(global.civic.garrison.raid,'army') >= rating){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    $('#mad').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`world_domination`);
                     return true;
@@ -7046,7 +7045,6 @@ export const actions = {
                 if (global.city.morale.current >= morale){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    $('#mad').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`illuminati`);
                     return true;
@@ -7079,7 +7077,6 @@ export const actions = {
                     global.resource.Money.amount -= price;
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    $('#mad').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`syndicate`);
                     return true;
