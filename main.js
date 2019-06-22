@@ -383,7 +383,7 @@ else {
     }, long_timer);
 }
 
-var gene_sequence = global.arpa.sequence.on;
+var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 function fastLoop(){
     keyMultiplier();
     

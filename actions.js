@@ -4,7 +4,7 @@ import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineGarrison, buildGarrison, armyRating } from './civics.js';
+import { defineGarrison, buildGarrison, armyRating, challenge_multiplier } from './civics.js';
 import { spaceTech, space } from './space.js';
 import { arpa, gainGene } from './arpa.js';
 
@@ -81,15 +81,15 @@ export const actions = {
         },
         nucleus: {
             id: 'evo-nucleus',
-            title: 'Nucleus',
-            desc: 'Evolve Nucleus',
+            title: loc('evo_nucleus_title'),
+            desc: loc('evo_nucleus_desc'),
             cost: {
                 RNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 16 : 32)) + 38; },
                 DNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16)) + 18; }
             },
             effect(){
                 let dna = global.evolution['bryophyte'] || global.evolution['protostomes'] || global.evolution['deuterostome'] ? 2 : 1;
-                return `Automatically consume 2 RNA to create ${dna} DNA`;
+                return loc('evo_nucleus_effect',[dna]);
             },
             action(){
                 if (payCosts(actions.evolution.nucleus.cost)){
@@ -101,15 +101,15 @@ export const actions = {
         },
         eukaryotic_cell: {
             id: 'evo-eukaryotic_cell',
-            title: 'Eukaryotic Cell',
-            desc: 'Evolve Eukaryotic Cell',
+            title: loc('evo_eukaryotic_title'),
+            desc: loc('evo_eukaryotic_desc'),
             cost: {
                 RNA(){ return (global.evolution['eukaryotic_cell'].count * 20) + 20; },
                 DNA(){ return (global.evolution['eukaryotic_cell'].count * 12) + 40; }
             },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 10 + 10 : 10;
-                return `Increases DNA capacity by ${effect}`;
+                return loc('evo_eukaryotic_effect',[effect]);
             },
             action(){
                 if (payCosts(actions.evolution.eukaryotic_cell.cost)){
@@ -122,13 +122,13 @@ export const actions = {
         },
         mitochondria: {
             id: 'evo-mitochondria',
-            title: 'Mitochondria',
-            desc: 'Evolve Mitochondria',
+            title: loc('evo_mitochondria_title'),
+            desc: loc('evo_mitochondria_desc'),
             cost: {
                 RNA(){ return (global.evolution['mitochondria'].count * 50) + 75; },
                 DNA(){ return (global.evolution['mitochondria'].count * 35) + 65; }
             },
-            effect: 'Increases the effect of membranes and eukaryotic cells',
+            effect: loc('evo_mitochondria_effect'),
             action(){
                 if (payCosts(actions.evolution.mitochondria.cost)){
                     global.evolution['mitochondria'].count++;
@@ -139,12 +139,12 @@ export const actions = {
         },
         sexual_reproduction: {
             id: 'evo-sexual_reproduction',
-            title: 'Sexual Reproduction',
-            desc: 'Evolve Sexual Reproduction',
+            title: loc('evo_sexual_reproduction_title'),
+            desc: loc('evo_sexual_reproduction_desc'),
             cost: {
                 DNA(){ return 150; }
             },
-            effect: 'Increases RNA generation from organelles',
+            effect: loc('evo_sexual_reproduction_effect'),
             action(){
                 if (payCosts(actions.evolution.sexual_reproduction.cost)){
                     global.evolution['sexual_reproduction'].count++;
@@ -165,12 +165,12 @@ export const actions = {
         },
         phagocytosis: {
             id: 'evo-phagocytosis',
-            title: 'Phagocytosis',
-            desc: 'Evolve Phagocytosis',
+            title: loc('evo_phagocytosis_title'),
+            desc: loc('evo_phagocytosis_desc'),
             cost: {
                 DNA(){ return 175; }
             },
-            effect: 'Evolve in the direction of the animal kingdom. This is a major evolutionary fork.',
+            effect: loc('evo_phagocytosis_effect'),
             action(){
                 if (payCosts(actions.evolution.phagocytosis.cost)){
                     global.evolution['phagocytosis'].count++;
@@ -189,12 +189,12 @@ export const actions = {
         },
         chloroplasts: {
             id: 'evo-chloroplasts',
-            title: 'Chloroplasts',
-            desc: 'Evolve Chloroplasts',
+            title: loc('evo_chloroplasts_title'),
+            desc: loc('evo_chloroplasts_desc'),
             cost: {
                 DNA(){ return 175; }
             },
-            effect: 'Evolve in the direction of the plant kingdom. This is a major evolutionary fork.',
+            effect: loc('evo_chloroplasts_effect'),
             action(){
                 if (payCosts(actions.evolution.chloroplasts.cost)){
                     global.evolution['chloroplasts'].count++;
@@ -213,12 +213,12 @@ export const actions = {
         },
         chitin: {
             id: 'evo-chitin',
-            title: 'Chitin',
-            desc: 'Evolve Chitin',
+            title: loc('evo_chitin_title'),
+            desc: loc('evo_chitin_desc'),
             cost: {
                 DNA(){ return 175; }
             },
-            effect: 'Evolve in the direction of the fungi kingdom. This is a major evolutionary fork.',
+            effect: loc('evo_chitin_effect'),
             action(){
                 if (payCosts(actions.evolution.chitin.cost)){
                     global.evolution['chitin'].count++;
@@ -237,12 +237,12 @@ export const actions = {
         },
         multicellular: {
             id: 'evo-multicellular',
-            title: 'Multicellular',
-            desc: 'Evolve Multicellular',
+            title: loc('evo_multicellular_title'),
+            desc: loc('evo_multicellular_desc'),
             cost: {
                 DNA(){ return 200; }
             },
-            effect: 'Decreases cost of producing new nucleus',
+            effect: loc('evo_multicellular_effect'),
             action(){
                 if (payCosts(actions.evolution.multicellular.cost)){
                     global.evolution['multicellular'].count++;
@@ -268,12 +268,12 @@ export const actions = {
         },
         spores: {
             id: 'evo-spores',
-            title: 'Spores',
-            desc: 'Evolve Spores',
+            title: loc('evo_spores_title'),
+            desc: loc('evo_spores_desc'),
             cost: {
                 DNA(){ return 230; }
             },
-            effect: 'Increases DNA generation from nucleus',
+            effect: loc('evo_nucleus_boost'),
             action(){
                 if (payCosts(actions.evolution.spores.cost)){
                     global.evolution['spores'].count++;
@@ -288,12 +288,12 @@ export const actions = {
         },
         poikilohydric: {
             id: 'evo-poikilohydric',
-            title: 'Poikilohydric',
-            desc: 'Evolve Poikilohydric',
+            title: loc('evo_poikilohydric_title'),
+            desc: loc('evo_poikilohydric_desc'),
             cost: {
                 DNA(){ return 230; }
             },
-            effect: 'Increases DNA generation from nucleus',
+            effect: loc('evo_nucleus_boost'),
             action(){
                 if (payCosts(actions.evolution.poikilohydric.cost)){
                     global.evolution['poikilohydric'].count++;
@@ -308,12 +308,12 @@ export const actions = {
         },
         bilateral_symmetry: {
             id: 'evo-bilateral_symmetry',
-            title: 'Bilateral Symmetry',
-            desc: 'Evolve Bilateral Symmetry',
+            title: loc('evo_bilateral_symmetry_title'),
+            desc: loc('evo_bilateral_symmetry_desc'),
             cost: {
                 DNA(){ return 230; }
             },
-            effect: 'Increases DNA generation from nucleus',
+            effect: loc('evo_nucleus_boost'),
             action(){
                 if (payCosts(actions.evolution.bilateral_symmetry.cost)){
                     global.evolution['bilateral_symmetry'].count++;
@@ -334,12 +334,12 @@ export const actions = {
         },
         bryophyte: {
             id: 'evo-bryophyte',
-            title: 'Bryophyte',
-            desc: 'Evolve Bryophyte',
+            title: loc('evo_bryophyte_title'),
+            desc: loc('evo_bryophyte_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Continue evolving towards sentience',
+            effect: loc('evo_bryophyte_effect'),
             action(){
                 if (payCosts(actions.evolution.bryophyte.cost)){
                     global.evolution['bryophyte'].count++;
@@ -372,12 +372,12 @@ export const actions = {
         },
         athropods: {
             id: 'evo-athropods',
-            title: 'Arthropods',
-            desc: 'Evolve Arthropods',
+            title: loc('evo_bryophyte_title'),
+            desc: loc('evo_athropods_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Evolve in the direction of arthropods. This is an evolutionary fork.',
+            effect: loc('evo_athropods_effect'),
             action(){
                 if (payCosts(actions.evolution.athropods.cost)){
                     global.evolution['athropods'].count++;
@@ -408,12 +408,12 @@ export const actions = {
         },
         mammals: {
             id: 'evo-mammals',
-            title: 'Mammals',
-            desc: 'Evolve Mammals',
+            title: loc('evo_mammals_title'),
+            desc: loc('evo_mammals_desc'),
             cost: {
                 DNA(){ return 245; }
             },
-            effect: 'Evolve in the direction of mammals. This is an evolutionary fork.',
+            effect: loc('evo_mammals_effect'),
             action(){
                 if (payCosts(actions.evolution.mammals.cost)){
                     global.evolution['mammals'].count++;
@@ -438,12 +438,12 @@ export const actions = {
         },
         humanoid: {
             id: 'evo-humanoid',
-            title: 'Humanoid',
-            desc: 'Evolve Humanoid',
+            title: loc('evo_humanoid_title'),
+            desc: loc('evo_humanoid_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Evolve in the direction of humanoids. This is an evolutionary fork.',
+            effect: loc('evo_humanoid_effect'),
             action(){
                 if (payCosts(actions.evolution.humanoid.cost)){
                     global.evolution['humanoid'].count++;
@@ -476,12 +476,12 @@ export const actions = {
         },
         gigantism: {
             id: 'evo-gigantism',
-            title: 'Gigantism',
-            desc: 'Evolve Gigantism',
+            title: loc('evo_gigantism_title'),
+            desc: loc('evo_gigantism_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Evolve in the direction of gigantism. This is an evolutionary fork.',
+            effect: loc('evo_gigantism_effect'),
             action(){
                 if (payCosts(actions.evolution.gigantism.cost)){
                     global.evolution['gigantism'].count++;
@@ -514,12 +514,12 @@ export const actions = {
         },
         dwarfism: {
             id: 'evo-dwarfism',
-            title: 'Dwarfism',
-            desc: 'Evolve Dwarfism',
+            title: loc('evo_dwarfism_title'),
+            desc: loc('evo_dwarfism_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Evolve in the direction of dwarfism. This is an evolutionary fork.',
+            effect: loc('evo_dwarfism_effect'),
             action(){
                 if (payCosts(actions.evolution.dwarfism.cost)){
                     global.evolution['dwarfism'].count++;
@@ -552,12 +552,12 @@ export const actions = {
         },
         animalism: {
             id: 'evo-animalism',
-            title: 'Animalism',
-            desc: 'Evolve Animalism',
+            title: loc('evo_animalism_title'),
+            desc: loc('evo_animalism_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Evolve in the direction of animalism. This is an evolutionary fork.',
+            effect: loc('evo_animalism_effect'),
             action(){
                 if (payCosts(actions.evolution.animalism.cost)){
                     global.evolution['animalism'].count++;
@@ -590,12 +590,12 @@ export const actions = {
         },
         eggshell: {
             id: 'evo-eggshell',
-            title: 'Eggshell',
-            desc: 'Evolve Eggshell',
+            title: loc('evo_eggshell_title'),
+            desc: loc('evo_eggshell_desc'),
             cost: {
                 DNA(){ return 245; }
             },
-            effect: 'Evolve in the direction of egg laying reproduction. This is an evolutionary fork.',
+            effect: loc('evo_eggshell_effect'),
             action(){
                 if (payCosts(actions.evolution.eggshell.cost)){
                     global.evolution['eggshell'].count++;
@@ -616,12 +616,12 @@ export const actions = {
         },
         endothermic: {
             id: 'evo-endothermic',
-            title: 'Endothermic',
-            desc: 'Evolve Endothermic',
+            title: loc('evo_endothermic_title'),
+            desc: loc('evo_endothermic_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Evolve in the direction of avians. This is an evolutionary fork.',
+            effect: loc('evo_endothermic_effect'),
             action(){
                 if (payCosts(actions.evolution.endothermic.cost)){
                     global.evolution['endothermic'].count++;
@@ -650,12 +650,12 @@ export const actions = {
         },
         ectothermic: {
             id: 'evo-ectothermic',
-            title: 'Ectothermic',
-            desc: 'Evolve Ectothermic',
+            title: loc('evo_ectothermic_title'),
+            desc: loc('evo_ectothermic_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: 'Evolve in the direction of reptiles. This is an evolutionary fork.',
+            effect: loc('evo_ectothermic_effect'),
             action(){
                 if (payCosts(actions.evolution.ectothermic.cost)){
                     global.evolution['ectothermic'].count++;
@@ -684,13 +684,13 @@ export const actions = {
         },
         sentience: {
             id: 'evo-sentience',
-            title: 'Sentience',
-            desc: 'Evolve Sentience',
+            title: loc('evo_sentience_title'),
+            desc: loc('evo_sentience_desc'),
             cost: {
                 RNA(){ return 300; },
                 DNA(){ return 300; }
             },
-            effect: 'Complete your evolution by evolving into a species which has achieved sentience',
+            effect: loc('evo_sentience_effect'),
             action(){
                 if (payCosts(actions.evolution.sentience.cost)){
                     global.evolution['sentience'].count++;
@@ -806,12 +806,12 @@ export const actions = {
         human: {
             id: 'evo-human',
             title(){ return races.human.name; },
-            desc(){ return `Evolve ${races.human.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.human.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.human.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.human.name]); },
             action(){
                 if (payCosts(actions.evolution.human.cost)){
                     global.evolution['sentience'].count++;
@@ -825,12 +825,12 @@ export const actions = {
         orc: {
             id: 'evo-orc',
             title(){ return races.orc.name; },
-            desc(){ return `Evolve ${races.orc.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.orc.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.orc.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.orc.name]); },
             action(){
                 if (payCosts(actions.evolution.orc.cost)){
                     global.evolution['sentience'].count++;
@@ -844,12 +844,12 @@ export const actions = {
         elven: {
             id: 'evo-elven',
             title(){ return races.elven.name; },
-            desc(){ return `Evolve ${races.elven.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.elven.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.elven.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.elven.name]); },
             action(){
                 if (payCosts(actions.evolution.elven.cost)){
                     global.evolution['sentience'].count++;
@@ -863,12 +863,12 @@ export const actions = {
         troll: {
             id: 'evo-troll',
             title(){ return races.troll.name; },
-            desc(){ return `Evolve ${races.troll.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.troll.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.troll.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.troll.name]); },
             action(){
                 if (payCosts(actions.evolution.troll.cost)){
                     global.evolution['sentience'].count++;
@@ -882,12 +882,12 @@ export const actions = {
         orge: {
             id: 'evo-orge',
             title(){ return races.orge.name; },
-            desc(){ return `Evolve ${races.orge.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.orge.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.orge.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.orge.name]); },
             action(){
                 if (payCosts(actions.evolution.orge.cost)){
                     global.evolution['sentience'].count++;
@@ -901,12 +901,12 @@ export const actions = {
         cyclops: {
             id: 'evo-cyclops',
             title(){ return races.cyclops.name; },
-            desc(){ return `Evolve ${races.cyclops.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.cyclops.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.cyclops.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.cyclops.name]); },
             action(){
                 if (payCosts(actions.evolution.cyclops.cost)){
                     global.evolution['sentience'].count++;
@@ -920,12 +920,12 @@ export const actions = {
         kobold: {
             id: 'evo-kobold',
             title(){ return races.kobold.name; },
-            desc(){ return `Evolve ${races.kobold.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.kobold.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.kobold.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.kobold.name]); },
             action(){
                 if (payCosts(actions.evolution.kobold.cost)){
                     global.evolution['sentience'].count++;
@@ -939,12 +939,12 @@ export const actions = {
         goblin: {
             id: 'evo-goblin',
             title(){ return races.goblin.name; },
-            desc(){ return `Evolve ${races.goblin.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.goblin.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.goblin.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.goblin.name]); },
             action(){
                 if (payCosts(actions.evolution.goblin.cost)){
                     global.evolution['sentience'].count++;
@@ -958,12 +958,12 @@ export const actions = {
         gnome: {
             id: 'evo-gnome',
             title(){ return races.gnome.name; },
-            desc(){ return `Evolve ${races.gnome.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.gnome.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.gnome.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.gnome.name]); },
             action(){
                 if (payCosts(actions.evolution.gnome.cost)){
                     global.evolution['sentience'].count++;
@@ -977,12 +977,12 @@ export const actions = {
         cath: {
             id: 'evo-cath',
             title(){ return races.cath.name; },
-            desc(){ return `Evolve ${races.cath.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.cath.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.cath.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.cath.name]); },
             action(){
                 if (payCosts(actions.evolution.cath.cost)){
                     global.evolution['sentience'].count++;
@@ -996,12 +996,12 @@ export const actions = {
         wolven: {
             id: 'evo-wolven',
             title(){ return races.wolven.name; },
-            desc(){ return `Evolve ${races.wolven.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.wolven.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.wolven.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.wolven.name]); },
             action(){
                 if (payCosts(actions.evolution.wolven.cost)){
                     global.evolution['sentience'].count++;
@@ -1015,12 +1015,12 @@ export const actions = {
         centaur: {
             id: 'evo-centaur',
             title(){ return races.centaur.name; },
-            desc(){ return `Evolve ${races.centaur.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.centaur.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.centaur.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.centaur.name]); },
             action(){
                 if (payCosts(actions.evolution.centaur.cost)){
                     global.evolution['sentience'].count++;
@@ -1034,12 +1034,12 @@ export const actions = {
         tortoisan: {
             id: 'evo-tortoisan',
             title(){ return races.tortoisan.name; },
-            desc(){ return `Evolve ${races.tortoisan.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.tortoisan.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.tortoisan.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.tortoisan.name]); },
             action(){
                 if (payCosts(actions.evolution.tortoisan.cost)){
                     global.evolution['sentience'].count++;
@@ -1053,12 +1053,12 @@ export const actions = {
         gecko: {
             id: 'evo-gecko',
             title(){ return races.gecko.name; },
-            desc(){ return `Evolve ${races.gecko.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.gecko.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.gecko.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.gecko.name]); },
             action(){
                 if (payCosts(actions.evolution.gecko.cost)){
                     global.evolution['sentience'].count++;
@@ -1072,12 +1072,12 @@ export const actions = {
         slitheryn: {
             id: 'evo-slitheryn',
             title(){ return races.slitheryn.name; },
-            desc(){ return `Evolve ${races.slitheryn.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.slitheryn.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.slitheryn.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.slitheryn.name]); },
             action(){
                 if (payCosts(actions.evolution.slitheryn.cost)){
                     global.evolution['sentience'].count++;
@@ -1091,12 +1091,12 @@ export const actions = {
         arraak: {
             id: 'evo-arraak',
             title(){ return races.arraak.name; },
-            desc(){ return `Evolve ${races.arraak.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.arraak.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.arraak.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.arraak.name]); },
             action(){
                 if (payCosts(actions.evolution.arraak.cost)){
                     global.evolution['sentience'].count++;
@@ -1107,15 +1107,53 @@ export const actions = {
                 return false;
             }
         },
-        sporgar: {
-            id: 'evo-sporgar',
-            title(){ return races.sporgar.name; },
-            desc(){ return `Evolve ${races.sporgar.name}`; },
+        pterodacti: {
+            id: 'evo-pterodacti',
+            title(){ return races.pterodacti.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.pterodacti.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.sporgar.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.pterodacti.name]); },
+            action(){
+                if (payCosts(actions.evolution.pterodacti.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'pterodacti';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        dracnid: {
+            id: 'evo-dracnid',
+            title(){ return races.dracnid.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.dracnid.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.dracnid.name]); },
+            action(){
+                if (payCosts(actions.evolution.dracnid.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'dracnid';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        sporgar: {
+            id: 'evo-sporgar',
+            title(){ return races.sporgar.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.sporgar.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.sporgar.name]); },
             action(){
                 if (payCosts(actions.evolution.sporgar.cost)){
                     global.evolution['sentience'].count++;
@@ -1129,12 +1167,12 @@ export const actions = {
         shroomi: {
             id: 'evo-shroomi',
             title(){ return races.shroomi.name; },
-            desc(){ return `Evolve ${races.shroomi.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.shroomi.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.shroomi.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.shroomi.name]); },
             action(){
                 if (payCosts(actions.evolution.shroomi.cost)){
                     global.evolution['sentience'].count++;
@@ -1148,12 +1186,12 @@ export const actions = {
         mantis: {
             id: 'evo-mantis',
             title(){ return races.mantis.name; },
-            desc(){ return `Evolve ${races.mantis.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.mantis.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.mantis.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.mantis.name]); },
             action(){
                 if (payCosts(actions.evolution.mantis.cost)){
                     global.evolution['sentience'].count++;
@@ -1167,12 +1205,12 @@ export const actions = {
         scorpid: {
             id: 'evo-scorpid',
             title(){ return races.scorpid.name; },
-            desc(){ return `Evolve ${races.scorpid.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.scorpid.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.scorpid.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.scorpid.name]); },
             action(){
                 if (payCosts(actions.evolution.scorpid.cost)){
                     global.evolution['sentience'].count++;
@@ -1186,12 +1224,12 @@ export const actions = {
         antid: {
             id: 'evo-antid',
             title(){ return races.antid.name; },
-            desc(){ return `Evolve ${races.antid.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.antid.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.antid.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.antid.name]); },
             action(){
                 if (payCosts(actions.evolution.antid.cost)){
                     global.evolution['sentience'].count++;
@@ -1205,12 +1243,12 @@ export const actions = {
         entish: {
             id: 'evo-entish',
             title(){ return races.entish.name; },
-            desc(){ return `Evolve ${races.entish.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.entish.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.entish.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.entish.name]); },
             action(){
                 if (payCosts(actions.evolution.entish.cost)){
                     global.evolution['sentience'].count++;
@@ -1224,12 +1262,12 @@ export const actions = {
         cacti: {
             id: 'evo-cacti',
             title(){ return races.cacti.name; },
-            desc(){ return `Evolve ${races.cacti.name}`; },
+            desc(){ return `${loc("evo_evolve")} ${races.cacti.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return `Evolve into a ${races.cacti.name}, this completes evolution.`; },
+            effect(){ return loc('evo_pick_race',[races.cacti.name]); },
             action(){
                 if (payCosts(actions.evolution.cacti.cost)){
                     global.evolution['sentience'].count++;
@@ -1243,11 +1281,11 @@ export const actions = {
         bunker: {
             id: 'evo-bunker',
             title: 'Bunker Gene',
-            desc: '<div>Bunker Gene</div><div class="has-text-special">Opens the challenge mode gene pool</div>',
+            desc(){ return `<div>Bunker Gene</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
             cost: {
                 DNA(){ return 10; }
             },
-            effect: 'Evolve the bunker gene',
+            effect: loc('evo_bunker'),
             action(){
                 if (payCosts(actions.evolution.bunker.cost)){
                     global.evolution['bunker'] = { count: 1 };
@@ -1267,12 +1305,12 @@ export const actions = {
         },
         plasmid: {
             id: 'evo-plasmid',
-            title: 'No Plasmids',
-            desc: 'No Plasmids',
+            title: loc('evo_challenge_pladmid'),
+            desc: loc('evo_challenge_pladmid'),
             cost: {
                 DNA(){ return 10; }
             },
-            effect: 'Starting plasmids have no effect',
+            effect: loc('evo_challenge_pladmid_effect'),
             action(){
                 if (payCosts(actions.evolution.plasmid.cost)){
                     global.race['no_plasmid'] = 1;
@@ -1285,12 +1323,12 @@ export const actions = {
         },
         trade: {
             id: 'evo-trade',
-            title: 'No Free Trade',
-            desc: 'No Free Trade',
+            title: loc('evo_challenge_trade'),
+            desc: loc('evo_challenge_trade'),
             cost: {
                 DNA(){ return 10; }
             },
-            effect: 'No marketplace trading (Trade routes Enabled)',
+            effect: loc('evo_challenge_trade_effect'),
             action(){
                 if (payCosts(actions.evolution.trade.cost)){
                     global.race['no_trade'] = 1;
@@ -1303,12 +1341,12 @@ export const actions = {
         },
         craft: {
             id: 'evo-craft',
-            title: 'No Manual Crafting',
-            desc: 'No Manual Crafting',
+            title: loc('evo_challenge_craft'),
+            desc: loc('evo_challenge_craft'),
             cost: {
                 DNA(){ return 10; }
             },
-            effect: 'No manual resource crafting',
+            effect: loc('evo_challenge_craft_effect'),
             action(){
                 if (payCosts(actions.evolution.craft.cost)){
                     global.race['no_craft'] = 1;
@@ -1321,12 +1359,12 @@ export const actions = {
         },
         crispr: {
             id: 'evo-crispr',
-            title: 'No Crispr Discounts',
-            desc: 'No Crispr Cost Creep Discounts',
+            title: loc('evo_challenge_crispr'),
+            desc: loc('evo_challenge_crispr_desc'),
             cost: {
                 DNA(){ return 10; }
             },
-            effect: 'Crispr cost creep discounts disabled',
+            effect: loc('evo_challenge_crispr_effect'),
             action(){
                 if (payCosts(actions.evolution.crispr.cost)){
                     global.race['no_crispr'] = 1;
@@ -5997,7 +6035,7 @@ export const actions = {
                 Knowledge(){ return 3200; },
                 Iron(){ return 750; }
             },
-            effect: 'Adding rebar to concrete will make it much stronger and reduce cement costs.',
+            effect: 'Adding rebar to concrete will make it much stronger and reduce building cement costs.',
             action(){
                 if (payCosts(actions.tech.rebar.cost)){
                     return true;
@@ -6015,7 +6053,7 @@ export const actions = {
                 Knowledge(){ return 6750; },
                 Steel(){ return 750; }
             },
-            effect: 'Use stronger steel as rebar, further reducing cement costs.',
+            effect: 'Use stronger steel as rebar, further reducing building cement costs.',
             action(){
                 if (payCosts(actions.tech.steel_rebar.cost)){
                     return true;
@@ -6976,7 +7014,6 @@ export const actions = {
                 if (armyRating(global.civic.garrison.raid,'army') >= rating){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    $('#mad').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`world_domination`);
                     return true;
@@ -7008,7 +7045,6 @@ export const actions = {
                 if (global.city.morale.current >= morale){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    $('#mad').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`illuminati`);
                     return true;
@@ -7041,7 +7077,6 @@ export const actions = {
                     global.resource.Money.amount -= price;
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    $('#mad').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`syndicate`);
                     return true;
@@ -7175,7 +7210,7 @@ export const actions = {
                 Alloy(){ return costMultiplier('probes', 125000, 1.25,'starDock'); },
                 Polymer(){ return costMultiplier('probes', 150000, 1.25,'starDock'); },
                 Iridium(){ return costMultiplier('probes', 20000, 1.25,'starDock'); },
-                Mythril(){ return costMultiplier('probes', 10000, 1.25,'starDock'); },
+                Mythril(){ return costMultiplier('probes', 5000, 1.25,'starDock'); },
             },
             effect(){
                 return `<div>Each interstellar probe increases the number of target worlds your bioseeder ship can scout by one.</div>`;
@@ -7203,9 +7238,9 @@ export const actions = {
             cost: {
                 Money(){ return global.starDock.seeder.count < 100 ? 100000 : 0; },
                 Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
-                Neutronium(){ return global.starDock.seeder.count < 100 ? 300 : 0; },
+                Neutronium(){ return global.starDock.seeder.count < 100 ? 240 : 0; },
                 Elerium(){ return global.starDock.seeder.count < 100 ? 10 : 0; },
-                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 18000 : 0; },
+                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 12000 : 0; },
             },
             effect(){
                 let remain = global.starDock.seeder.count < 100 ? `${100 - global.starDock.seeder.count} segments remaining`: `The ship is complete`;
@@ -7244,6 +7279,7 @@ export const actions = {
                     k_base -= k_inc;
                     k_inc *= 1.015;
                 }
+                plasmid = challenge_multiplier(plasmid);
                 return `<div>Launch the "Genesis" ship. You will seed life in a far away star system and take over as the species that evoles there.</div><div class="has-text-special">You will gain ${plasmid} Plasmids</div>`;
             },
             action(){
@@ -8355,6 +8391,7 @@ function bioseed(){
     if (global.stats.died === 0){
         unlockAchieve(`pacifist`);
     }
+    new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
