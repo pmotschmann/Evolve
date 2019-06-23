@@ -1,3 +1,6 @@
+#### 0.4.9 - 6/23/2019
+Fabrication facilities now increase craftsman cap<br>
+
 #### 0.4.8 - 6/22/2019
 Fixed a bug that removed MAD when achieving unification<br>
 Fixed missing options in evolution stage with picking avians after space reset<br>

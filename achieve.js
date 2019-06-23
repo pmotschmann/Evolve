@@ -41,6 +41,11 @@ var achievements = {
         desc: loc("achieve_madagascar_tree_desc"),
         flair: loc("achieve_madagascar_tree_flair")
     },
+    laser_shark: {
+        name: loc("achieve_laser_shark_name"),
+        desc: loc("achieve_laser_shark_desc"),
+        flair: loc("achieve_laser_shark_flair")
+    },
     mass_starvation: {
         name: loc("achieve_mass_starvation_name"),
         desc: loc("achieve_mass_starvation_desc"),

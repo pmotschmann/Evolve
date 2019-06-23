@@ -170,7 +170,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.8';
+global['version'] = '0.4.9';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -210,6 +210,8 @@ if (!global.settings['space']){
         blackhole: false
     }
 }
+
+console.log(global.race);
 
 if (!global['space']){
     global['space'] = {};

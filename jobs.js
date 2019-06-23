@@ -239,7 +239,7 @@ export function loadFoundry(){
     }
     $('#foundry').empty();
     if (global.city['foundry']){
-        var foundry = $(`<div class="job"><div class="foundry job_label"><span class="has-text-warning">${loc('craftsman_assigned')}</span><span class="count">{{ f.crafting }} / {{ f.count }}</span></div></div>`);
+        var foundry = $(`<div class="job"><div class="foundry job_label"><span class="has-text-warning">${loc('craftsman_assigned')}</span><span class="count">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
         let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril'];
@@ -272,7 +272,7 @@ export function loadFoundry(){
                 add(res){
                     let keyMult = keyMultiplier();
                     for (let i=0; i<keyMult; i++){
-                        if (global.city.foundry.crafting < global.city.foundry.count && global.civic.free > 0){
+                        if (global.city.foundry.crafting < global.civic.craftsman.max && global.civic.free > 0){
                             global.civic.craftsman.workers++;
                             global.city.foundry.crafting++;
                             global.city.foundry[res]++;

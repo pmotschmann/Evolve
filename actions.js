@@ -327,6 +327,11 @@ export const actions = {
                     global.evolution['eggshell'] = { count: 0 };
                     addAction('evolution','eggshell');
 
+                    if (global.city.biome === 'oceanic'){
+                        global.evolution['aquatic'] = { count: 0 };
+                        addAction('evolution','aquatic');
+                    }
+
                     evoProgress();
                 }
                 return false;
@@ -386,6 +391,10 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.mammals;
                     delete global.evolution.eggshell;
+                    if (global.city.biome === 'oceanic'){
+                        removeAction(actions.evolution.aquatic.id);
+                        delete global.evolution.aquatic;
+                    }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -422,6 +431,10 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.athropods;
                     delete global.evolution.eggshell;
+                    if (global.city.biome === 'oceanic'){
+                        removeAction(actions.evolution.aquatic.id);
+                        delete global.evolution.aquatic;
+                    }
                     global.evolution['humanoid'] = { count: 0 };
                     global.evolution['gigantism'] = { count: 0 };
                     global.evolution['dwarfism'] = { count: 0 };
@@ -550,6 +563,42 @@ export const actions = {
                 return false;
             }
         },
+        aquatic: {
+            id: 'evo-aquatic',
+            title: loc('evo_aquatic_title'),
+            desc: loc('evo_aquatic_desc'),
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_aquatic_effect'),
+            action(){
+                if (payCosts(actions.evolution.aquatic.cost)){
+                    global.evolution['aquatic'].count++;
+                    removeAction(actions.evolution.athropods.id);
+                    removeAction(actions.evolution.mammals.id);
+                    removeAction(actions.evolution.eggshell.id);
+                    removeAction(actions.evolution.aquatic.id);
+                    delete global.evolution.athropods;
+                    delete global.evolution.mammals;
+                    delete global.evolution.eggshell;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['sharkin'] = { count: 0 };
+                        global.evolution['octigoran'] = { count: 0 };
+                        addAction('evolution','sharkin');
+                        addAction('evolution','octigoran');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
+                    evoProgress();
+                }
+                return false;
+            }
+        },
         animalism: {
             id: 'evo-animalism',
             title: loc('evo_animalism_title'),
@@ -604,6 +653,10 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.athropods;
                     delete global.evolution.mammals;
+                    if (global.city.biome === 'oceanic'){
+                        removeAction(actions.evolution.aquatic.id);
+                        delete global.evolution.aquatic;
+                    }
                     global.evolution['endothermic'] = { count: 0 };
                     global.evolution['ectothermic'] = { count: 0 };
                     global.evolution['final'] = 90;
@@ -789,6 +842,14 @@ export const actions = {
                         }
                         else {
                             global.race.species = 'cacti';
+                        }
+                    }
+                    else if (global.evolution['aquatic']){
+                        if (path < 50){
+                            global.race.species = 'sharkin';
+                        }
+                        else {
+                            global.race.species = 'octigoran';
                         }
                     }
                     else if (global.evolution['eggshell']){
@@ -1278,6 +1339,44 @@ export const actions = {
                 return false;
             }
         },
+        sharkin: {
+            id: 'evo-sharkin',
+            title(){ return races.sharkin.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.sharkin.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.sharkin.name]); },
+            action(){
+                if (payCosts(actions.evolution.sharkin.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'sharkin';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        octigoran: {
+            id: 'evo-octigoran',
+            title(){ return races.octigoran.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.octigoran.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.octigoran.name]); },
+            action(){
+                if (payCosts(actions.evolution.octigoran.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'octigoran';
+                    sentience();
+                }
+                return false;
+            }
+        },
         bunker: {
             id: 'evo-bunker',
             title: 'Bunker Gene',
@@ -1599,7 +1698,7 @@ export const actions = {
                 farming *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                 farming = +farming.toFixed(2);
-                return global.tech['farm'] ? `<div>+${farming} Food Production</div><div>+1 Max Citizen</div>` : `++${farming} Food`; 
+                return global.tech['farm'] ? `<div>+${farming} Food Production</div><div>+1 Max Citizen</div>` : `+${farming} Food`; 
             },
             action(){
                 if (payCosts(actions.city.farm.cost)){
@@ -5851,6 +5950,11 @@ export const actions = {
                     global.tech[tech] = actions.tech.laser_rifles.grant[1];
                     global.civic['garrison'].workers--;
                     global.civic['garrison'].workers++;
+
+                    if (global.race.species === 'sharkin'){
+                        unlockAchieve('laser_shark');
+                    }
+
                     return true;
                 }
                 return false;
@@ -7436,6 +7540,9 @@ export function setAction(c_action,action,type,old){
         return;
     }
     if (global.race['herbivore'] && action === 'tech' && type === 'fanaticism'){
+        return;
+    }
+    if (global.race['apex_predator'] && action === 'tech' && type === 'armor'){
         return;
     }
     if (c_action['powered'] && !global[action][type]['on']){

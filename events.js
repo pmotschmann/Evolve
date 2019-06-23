@@ -72,6 +72,13 @@ export const events = {
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
 
+            if (global.race['frenzy']){
+                global.race['frenzy'] += Math.ceil(enemy / 5);
+                if (global.race['frenzy'] > 1000000){
+                    global.race['frenzy'] = 1000000;
+                }
+            }
+
             if (army > enemy){
                 return loc('event_raid1',[killed,wounded]);
             }
@@ -96,6 +103,13 @@ export const events = {
             global.stats.died += killed;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
+            }
+
+            if (global.race['frenzy']){
+                global.race['frenzy'] += 1000;
+                if (global.race['frenzy'] > 1000000){
+                    global.race['frenzy'] = 1000000;
+                }
             }
 
             if (killed === 0){

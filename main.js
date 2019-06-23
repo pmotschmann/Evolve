@@ -114,23 +114,23 @@ $('#morale').on('mouseover',function(){
     $('#main').append(popper);
     if (global.city.morale.unemployed !== 0){
         let type = global.city.morale.unemployed > 0 ? 'success' : 'danger';
-        popper.append(`<p>Unemployed<span class="has-text-${type}"> ${global.city.morale.unemployed}%</span></p>`);
+        popper.append(`<p>${loc('morale_unemployed')}<span class="has-text-${type}"> ${global.city.morale.unemployed}%</span></p>`);
     }
     if (global.city.morale.stress !== 0){
         let type = global.city.morale.stress > 0 ? 'success' : 'danger';
-        popper.append(`<p>Job Stress<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
+        popper.append(`<p>${loc('morale_stress')}<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
     }
     if (global.city.morale.leadership !== 0){
         let type = global.city.morale.leadership > 0 ? 'success' : 'danger';
-        popper.append(`<p>Leadership<span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
+        popper.append(`<p>${loc('morale_leadership')}<span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
     }
     if (global.city.morale.warmonger !== 0){
         let type = global.city.morale.warmonger > 0 ? 'success' : 'danger';
-        popper.append(`<p>Warmonger<span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
+        popper.append(`<p>${loc('morale_warmonger')}<span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
     }
     if (global.city.morale.entertain !== 0){
         let type = global.city.morale.entertain > 0 ? 'success' : 'danger';
-        popper.append(`<p>Entertainment<span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
+        popper.append(`<p>${loc('morale_entertainment')}<span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
     }
     if (global.city.morale.season !== 0){
         let season = global.city.calendar.season === 0 ? 'Spring' : 'Winter';
@@ -139,18 +139,23 @@ $('#morale').on('mouseover',function(){
     }
     if (global.city.morale.weather !== 0){
         let type = global.city.morale.weather > 0 ? 'success' : 'danger';
-        popper.append(`<p>Weather<span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
+        popper.append(`<p>${loc('morale_weather')}<span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
     }
     if (global.city.morale.tax !== 0){
         let type = global.city.morale.tax > 0 ? 'success' : 'danger';
-        popper.append(`<p>Taxes<span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
+        popper.append(`<p>${loc('morale_taxes')}<span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
     }
     let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership;
+    if (global.city.morale['frenzy']){
+        let type = global.city.morale.frenzy > 0 ? 'success' : 'danger';
+        popper.append(`<p>${loc('morale_frenzy')}<span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
+    }
+    
     if (total > moraleCap || total < 50){
-        popper.append(`<div>Current<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
+        popper.append(`<div>${loc('morale_current')}<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
     }
     else {
-        popper.append(`<div>Current<span class="has-text-warning"> ${global.city.morale.current}%</span></div>`);
+        popper.append(`<div>${loc('morale_current')}<span class="has-text-warning"> ${global.city.morale.current}%</span></div>`);
     }
     popper.show();
     poppers['morale'] = new Popper($('#morale'),popper);
@@ -165,13 +170,13 @@ $('#powerStatus').on('mouseover',function(){
     var popper = $(`<div id="popPowerStatus" class="popper has-background-light has-text-dark"></div>`);
     $('#main').append(popper);
     let drain = global.city.power_total - global.city.power;
-    popper.append(`<p>Generated<span class="has-text-success"> +${global.city.power_total}</span></p>`);
-    popper.append(`<p>Consumed<span class="has-text-danger"> -${drain}</span></p>`);
+    popper.append(`<p>${loc('power_generated')}<span class="has-text-success"> +${global.city.power_total}</span></p>`);
+    popper.append(`<p>${loc('power_consumed')}<span class="has-text-danger"> -${drain}</span></p>`);
     if (global.city.power > 0){
-        popper.append(`<div>Available <span class="has-text-success">${global.city.power}</span></div>`);
+        popper.append(`<div>${loc('power_available')} <span class="has-text-success">${global.city.power}</span></div>`);
     }
     else {
-        popper.append(`<div>Available <span class="has-text-danger">${global.city.power}</span></div>`);
+        popper.append(`<div>${loc('power_available')} <span class="has-text-danger">${global.city.power}</span></div>`);
     }
     popper.show();
     poppers['PowerStatus'] = new Popper($('#powerStatus'),popper);
@@ -302,7 +307,7 @@ if (global.race.species === 'protoplasm'){
         addAction('evolution','chitin');
     }
     else {
-        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','sentience','bunker','plasmid','trade','craft','crispr'];
+        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','sentience','bunker','plasmid','trade','craft','crispr'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -310,7 +315,7 @@ if (global.race.species === 'protoplasm'){
         }
 
         if (global.race.seeded){
-            var race_options = ['human','orc','elven','troll','orge','cyclops','kobold','goblin','gnome','cath','wolven','centaur','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','mantis','scorpid','antid','entish','cacti'];
+            var race_options = ['human','orc','elven','troll','orge','cyclops','kobold','goblin','gnome','cath','wolven','centaur','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','mantis','scorpid','antid','entish','cacti','sharkin','octigoran'];
             for (var i = 0; i < race_options.length; i++){
                 if (global.evolution[race_options[i]] && global.evolution[race_options[i]].count == 0){
                     addAction('evolution',race_options[i]);
@@ -409,9 +414,12 @@ function fastLoop(){
         global_multiplier += 0.25;
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-        achieve_level * 0.0025;
         breakdown.p['Global']['Mastery'] = (achieve_level * 0.25) + '%';
         global_multiplier += (achieve_level * 0.0025);
+    }
+    if (global.race['suction_grip']){
+        breakdown.p['Global']['Grip'] = '8%';
+        global_multiplier += 0.08;
     }
 
     if (global.race['intelligent']){
@@ -525,13 +533,25 @@ function fastLoop(){
             global.city.morale.leadership = 0;
         }
 
+        if (global.race['frenzy']){
+            if (!global.city.morale['frenzy']){
+                global.city.morale['frenzy'] = 0;
+            }
+
+            if (global.race.frenzy > 1){
+                let frenzy = Math.ceil(Math.log2(global.race.frenzy));
+                global.city.morale.frenzy = frenzy;
+                morale += frenzy;
+            }
+        }
+
         let weather_morale = 0;
         if (global.city.calendar.weather === 0){
             if (global.city.calendar.temp > 0){
                 if (global.city.calendar.wind === 1){
                     // Thunderstorm
                     if (global.race['skittish']){
-                        weather_morale = -12; //possibly -25??
+                        weather_morale = -12;
                     }
                     else {
                         weather_morale = global.race['leathery'] ? -4 : -5;
@@ -546,7 +566,7 @@ function fastLoop(){
         else if (global.city.calendar.weather === 2){
             // Sunny
             if (global.race['nyctophilia']){
-                weather_morale = -5; //possibly -10??
+                weather_morale = -5;
             }
             else if ((global.city.calendar.wind === 0 && global.city.calendar.temp < 2) || (global.city.calendar.wind === 1 && global.city.calendar.temp === 2)){
                 //Still and Not Hot
@@ -561,8 +581,8 @@ function fastLoop(){
                 weather_morale = 2;
             }
         }
-        global.city.morale.weather = weather_morale;
-        morale += weather_morale;
+        global.city.morale.weather = global.race['submerged'] ? 0 : weather_morale;
+        morale += global.race['submerged'] ? 0 : weather_morale;
 
         let stress = 0;
         if (!global.race['carnivore']){
@@ -1005,18 +1025,21 @@ function fastLoop(){
                 farmers_base *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farmers_base *= racialTrait(global.civic.farmer.workers,'farmer');
                 farmers_base *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
+                farmers_base *= global.race['low_light'] ? 0.9 : 1;
 
                 let weather_multiplier = 1;
-                if (global.city.calendar.temp === 0){
-                    if (global.city.calendar.weather === 0){
-                        weather_multiplier *= 0.7;
+                if (!global.race['submerged']){
+                    if (global.city.calendar.temp === 0){
+                        if (global.city.calendar.weather === 0){
+                            weather_multiplier *= 0.7;
+                        }
+                        else {
+                            weather_multiplier *= 0.85;
+                        }
                     }
-                    else {
-                        weather_multiplier *= 0.85;
+                    if (global.city.calendar.weather === 2){
+                        weather_multiplier *= 1.1;
                     }
-                }
-                if (global.city.calendar.weather === 2){
-                    weather_multiplier *= 1.1;
                 }
 
                 let mill_multiplier = 1;
@@ -1031,13 +1054,13 @@ function fastLoop(){
                     farm = global.city['farm'].count * (global.tech['agriculture'] >= 2 ? 1.25 : 0.75);
                     farm *= global.city.biome === 'grassland' ? 1.1 : 1;
                     farm *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
+                    farm *= global.race['low_light'] ? 0.9 : 1;
                 }
 
                 food_bd['Farms'] = (farm) + 'v';
                 food_bd['Farmers'] = (farmers_base) + 'v';
 
                 food_base = ((farm + farmers_base) * weather_multiplier * mill_multiplier);
-
                 
                 food_bd['Weather'] = ((weather_multiplier - 1) * 100) + '%';
                 food_bd['Mills'] = ((mill_multiplier - 1) * 100) + '%';
@@ -2515,6 +2538,10 @@ function midLoop(){
         if (global.city['foundry']){
             lCaps['craftsman'] += global.city['foundry'].count;
         }
+        if (red_on['fabrication']){
+            lCaps['craftsman'] += red_on['fabrication'];
+            console.log(red_on['fabrication']);
+        }
 
         if (global.city['trade']){
             let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
@@ -2820,6 +2847,16 @@ function longLoop(){
             });
         }
 
+        if (global.race['frenzy']){
+            if (!global.city.morale['frenzy']){
+                global.city.morale['frenzy'] = 0;
+            }
+
+            if (global.race.frenzy > 1){
+                global.race.frenzy--;
+            }
+        }
+
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
             global.civic.garrison.wounded -= global.race['regenerative'] ? 4 : 1;
@@ -3063,6 +3100,11 @@ function longLoop(){
                             break;
                         case 'low_morale':
                             if (global.city.morale.current >= [events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'biome':
+                            if (global.city.biome !== [events[event].reqs[req]]){
                                 isOk = false;
                             }
                             break;

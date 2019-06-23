@@ -457,6 +457,42 @@ export const races = {
             gas_moon: 'Pharaoh',
             dwarf: 'Odorous',
         }
+    },
+    sharkin: {
+        name: 'Sharkin',
+        desc: loc('race_sharkin'),
+        type: 'aquatic',
+        home: 'Baidam',
+        entity: loc('race_sharkin_entity'),
+        traits: {
+            frenzy: 1,
+            apex_predator: 1
+        },
+        solar: {
+            red: 'Mako',
+            hell: 'Hammerhead',
+            gas: 'Whale',
+            gas_moon: 'Bull',
+            dwarf: 'Thresher',
+        }
+    },
+    octigoran: {
+        name: 'Octigoran',
+        desc: loc('race_octigoran'),
+        type: 'aquatic',
+        home: 'Cetus',
+        entity: loc('race_octigoran_entity'),
+        traits: {
+            invertebrate: 1,
+            suction_grip: 1
+        },
+        solar: {
+            red: 'Kraken',
+            hell: 'Siren',
+            gas: 'Godzilla',
+            gas_moon: 'Moby',
+            dwarf: 'Jaws',
+        }
     }
 };
 
@@ -496,6 +532,10 @@ export const genus_traits = {
     fungi: {
         spores: 1,
         spongy: 1
+    },
+    aquatic: {
+        submerged: 1,
+        low_light: 1
     }
 };
 
@@ -570,6 +610,14 @@ export const traits = {
     },
     spongy: { // Birthrate decreased when it's raining
         desc: loc('trait_spongy'),
+        type: 'genus',
+    },
+    submerged: { // Immune to weather effects
+        desc: loc('trait_submerged'),
+        type: 'genus',
+    },
+    low_light: { // Farming effectiveness decreased
+        desc: loc('trait_low_light'),
         type: 'genus',
     },
     creative: { // A.R.P.A. Projects are cheaper
@@ -770,6 +818,22 @@ export const traits = {
     },
     tunneler: { // Mines and Coal Mines are cheaper. 
         desc: loc('trait_tunneler'),
+        type: 'major',
+    },
+    frenzy: { // Combat causes a temporary increase in morale
+        desc: loc('trait_frenzy'),
+        type: 'major',
+    },
+    apex_predator: { // Hunting and Combat ratings are significantly higher, but you can't use armor
+        desc: loc('trait_apex_predator'),
+        type: 'major',
+    },
+    invertebrate: { // You have no bones
+        desc: loc('trait_invertebrate'),
+        type: 'major',
+    },
+    suction_grip: { // Global productivity boost
+        desc: loc('trait_suction_grip'),
         type: 'major',
     },
     tactical: { // War Bonus

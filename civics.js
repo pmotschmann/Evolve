@@ -213,7 +213,7 @@ export function buildGarrison(garrison){
 
                 let luck = Math.floor(Math.seededRandom(lowLuck,highLuck)) / 10;
                 let army = armyRating(global.civic.garrison.raid,'army') * luck;
-                let enemy = 0;
+                let enemy = 0;                
 
                 switch(global.civic.garrison.tactic){
                     case 0:
@@ -231,6 +231,13 @@ export function buildGarrison(garrison){
                     case 4:
                         enemy = Math.floor(Math.seededRandom(100,500));
                         break;
+                }
+
+                if (global.race['frenzy']){
+                    global.race['frenzy'] += Math.ceil(enemy / 5);
+                    if (global.race['frenzy'] > 1000000){
+                        global.race['frenzy'] = 1000000;
+                    }
                 }
 
                 let wounded = 0;
@@ -729,6 +736,9 @@ function lootModify(val){
     if (global.race['beast_of_burden']){
         loot = loot * 1.1;
     }
+    if (global.race['invertebrate']){
+        loot = loot * 0.9;
+    }
     return Math.floor(loot);
 }
 
@@ -754,6 +764,9 @@ export function armyRating(val,type){
             let bonus = 1 + (global.race['tactical'] / 20);
             army = Math.floor(army * bonus);
         }
+        if (global.race['apex_predator']){
+            army = Math.floor(army * 1.25);
+        }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
         }
@@ -772,6 +785,9 @@ export function armyRating(val,type){
         }
         if (global.race['beast'] && global.city.calendar.wind === 1){
             army = Math.floor(army * 1.15);
+        }
+        if (global.race['apex_predator']){
+            army = Math.floor(army * 1.5);
         }
         if (global.race['cunning']){
             let bonus = 1 + (global.race['cunning'] / 20);

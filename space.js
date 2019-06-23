@@ -527,7 +527,7 @@ const spaceProjects = {
                 Wrought_Iron(){ return costMultiplier('fabrication', 1200, 1.32); }
             },
             effect(){
-                return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+2% Crafted Materials per colonist</div>`;
+                return `<div>-1 ${races[global.race.species].solar.red} Support</div><div>+1 Craftsman</div><div>+2% Crafted Materials per colonist</div>`;
             },
             support: -1,
             powered: 1,
@@ -536,6 +536,7 @@ const spaceProjects = {
                     incrementStruct('fabrication');
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['fabrication'].on++;
+                        global.civic.craftsman.max++;
                     }
                     return true;
                 }
