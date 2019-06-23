@@ -1,5 +1,11 @@
 #### 0.4.9 - 6/23/2019
 Fabrication facilities now increase craftsman cap<br>
+Added stats tracking on demonic invasions<br>
+Detail Oriented buffed to 50% from 33%<br>
+Rigorous buffed to 100% from 50%<br>
+Crafting bonus now shown for each resource<br>
+Temple Faith bonus now applies to crafting in no plasmid challenge mode<br>
+Mastery bonus now applies to crafting<br>
 
 #### 0.4.8 - 6/22/2019
 Fixed a bug that removed MAD when achieving unification<br>

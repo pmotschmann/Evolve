@@ -2999,7 +2999,7 @@ function longLoop(){
                         craft_ratio *= 2;
                     }
                     if (global.genes['crafty']){
-                        craft_ratio *= 1 + ((global.genes.crafty - 1) * 0.33);
+                        craft_ratio *= 1 + ((global.genes.crafty - 1) * 0.5);
                     }
 
                     let volume = Math.floor(global.resource[craftCost[craft][0].r].amount / (craftCost[craft][0].a * craft_costs));

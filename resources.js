@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on } from './vars.js';
+import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
 import { races } from './races.js';
 
 export const resource_values = {
@@ -87,6 +87,18 @@ export function craftingRatio(res){
     }
     if (global.race.Plasmid.count > 0){
         multiplier *= plasmidBonus() / 8 + 1;
+    }
+    if (global.race['no_plasmid']){
+        if (global.city['temple'] && global.city['temple'].count){
+            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
+            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                temple_bonus += global.civic.professor.workers * 0.0004;
+            }
+            multiplier *= 1 + (global.city.temple.count * temple_bonus / 4);
+        }
+    }
+    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        multiplier *= 1 + (achieve_level * 0.0025);
     }
     return multiplier;
 }
@@ -272,6 +284,10 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             hover(res,vol){
                 var popper = $(`<div id="popRes${res}${vol}" class="popper has-background-light has-text-dark"></div>`);
                 $('#main').append(popper);
+
+                let bonus = (craftingRatio(res) * 100).toFixed(0);
+                popper.append($(`<div>+${bonus}% Crafted ${res}</div>`));
+
                 for (let i=0; i<craftCost[res].length; i++){
                     let num = typeof vol === 'number' ? vol * craftCost[res][i].a : vol;
                     popper.append($(`<div>${craftCost[res][i].r} <span class="craft" data-val="${num}">${num}</span></div>`));

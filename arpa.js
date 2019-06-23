@@ -302,7 +302,7 @@ const genePool = {
     detail_oriented: {
         id: 'genes-detail_oriented',
         title: loc('arpa_genepool_detail_oriented_title'),
-        desc: loc('arpa_genepool_detail_oriented_desc'),
+        desc: loc('arpa_genepool_crafting_desc',['50']),
         reqs: { crafty: 1 },
         grant: ['crafty',2],
         cost: 90,
@@ -317,7 +317,7 @@ const genePool = {
     rigorous: {
         id: 'genes-rigorous',
         title: loc('arpa_genepool_rigorous_title'),
-        desc: loc('arpa_genepool_rigorous_desc'),
+        desc: loc('arpa_genepool_crafting_desc',['100']),
         reqs: { crafty: 2 },
         grant: ['crafty',3],
         cost: 135,

@@ -6477,6 +6477,15 @@ export const actions = {
                         case 'antid':
                             global.race['hivemind'] = 1;
                             break;
+                        case 'sharkin':
+                            global.race['frenzy'] = 1;
+                            break;
+                        case 'octigoran':
+                            global.race['suction_grip'] = 1;
+                            break;
+                        case 'balorg':
+                            global.race['suction_grip'] = 1;
+                            break;
                     }
                     return true;
                 }

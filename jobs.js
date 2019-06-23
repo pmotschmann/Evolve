@@ -306,10 +306,12 @@ export function loadFoundry(){
                         multiplier *= 2;
                     }
                     if (global.genes['crafty']){
-                        multiplier *= 1 + ((global.genes.crafty - 1) * 0.33);
+                        multiplier *= 1 + ((global.genes.crafty - 1) * 0.5);
                     }
                     let final = +(global.city.foundry[res] * multiplier).toFixed(2);
+                    let bonus = (multiplier * 100).toFixed(0);
 
+                    popper.append($(`<div>+${bonus}% Craftsman ${name}</div>`));
                     popper.append($(`<div>+${final} ${name}/cycle</div>`));
                     for (let i=0; i<craftCost[res].length; i++){
                         let cost = +(craftCost[res][i].a * global.city.foundry[res]).toFixed(2);

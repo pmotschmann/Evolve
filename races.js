@@ -493,6 +493,24 @@ export const races = {
             gas_moon: 'Moby',
             dwarf: 'Jaws',
         }
+    },
+    balorg: {
+        name: 'Balorg',
+        desc: loc('race_balorg'),
+        type: 'demonic',
+        home: 'Abyss',
+        entity: loc('race_balorg_entity'),
+        traits: {
+            fiery: 1,
+            soul_infusion: 1
+        },
+        solar: {
+            red: 'Azzagrat',
+            hell: 'Smaragd',
+            gas: 'Thanatos',
+            gas_moon: 'Shedaklah',
+            dwarf: 'Belistor',
+        }
     }
 };
 
@@ -536,6 +554,10 @@ export const genus_traits = {
     aquatic: {
         submerged: 1,
         low_light: 1
+    },
+    demonic: {
+        immortal: 1,
+        evil: 1
     }
 };
 
