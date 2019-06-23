@@ -1,5 +1,5 @@
 #### 0.4.10 - 6/23/2019
-Fixed stats tracking on demonic invasions so it actually trackings new invasions<br>
+Fixed stats tracking on demonic invasions so it actually tracks new invasions<br>
 
 #### 0.4.9 - 6/23/2019
 Fabrication facilities now increase craftsman cap<br>
