@@ -161,6 +161,11 @@ var achievements = {
         desc: loc("achieve_genus_fungi_desc"),
         flair: loc("achieve_genus_fungi_flair")
     },
+    genus_aquatic: {
+        name: loc("achieve_genus_aquatic_name"),
+        desc: loc("achieve_genus_aquatic_desc"),
+        flair: loc("achieve_genus_aquatic_flair")
+    },
     mass_extinction: {
         name: loc("achieve_mass_extinction_name"),
         desc: loc("achieve_mass_extinction_desc"),
