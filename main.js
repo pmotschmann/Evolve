@@ -2540,7 +2540,6 @@ function midLoop(){
         }
         if (red_on['fabrication']){
             lCaps['craftsman'] += red_on['fabrication'];
-            console.log(red_on['fabrication']);
         }
 
         if (global.city['trade']){

@@ -211,8 +211,6 @@ if (!global.settings['space']){
     }
 }
 
-console.log(global.race);
-
 if (!global['space']){
     global['space'] = {};
 }
