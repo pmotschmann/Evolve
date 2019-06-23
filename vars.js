@@ -257,7 +257,7 @@ if (!global.stats['tknow']){
     global.stats['tknow'] = 0;
 }
 if (!global.stats['portals']){
-    global.stats['portals'] = global.stats.achieve['doomed'] ? 1 : 0;
+    global.stats['portals'] = global.stats['achieve'] && global.stats.achieve['doomed'] ? 1 : 0;
 }
 
 if (!global['lastMsg']){

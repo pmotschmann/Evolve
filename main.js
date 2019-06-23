@@ -1306,7 +1306,7 @@ function fastLoop(){
                 let demand = global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]);
                 let delta = workDone * demand;
                 if (global.race['toxic']){
-                    delta *= 1.08;
+                    delta *= 1.20;
                 }
 
                 delta *= hunger;
@@ -1345,7 +1345,7 @@ function fastLoop(){
 
                 let factory_output = workDone * (assembly ? f_rate.Alloy.output[global.tech['factory']] : f_rate.Alloy.output[0]);
                 if (global.race['toxic']){
-                    factory_output *= 1.08;
+                    factory_output *= 1.20;
                 }
 
                 let delta = factory_output;
@@ -1389,7 +1389,7 @@ function fastLoop(){
 
                 let factory_output = workDone * (assembly ? f_rate.Polymer.output[global.tech['factory']] : f_rate.Polymer.output[0]);
                 if (global.race['toxic']) {
-                    factory_output *= 1.08;
+                    factory_output *= 1.20;
                 }
                 if (global.tech['polymer'] >= 2){
                     factory_output *= 1.42;
