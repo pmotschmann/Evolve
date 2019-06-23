@@ -2,7 +2,7 @@
 Fabrication facilities now increase craftsman cap<br>
 Added stats tracking on demonic invasions<br>
 Detail Oriented buffed to 50% from 33%<br>
-Rigorous buffed to 100% from 50%<br>
+Rigorous buffed to 100% from 66%<br>
 Crafting bonus now shown for each resource<br>
 Temple Faith bonus now applies to crafting in no plasmid challenge mode<br>
 Mastery bonus now applies to crafting<br>
@@ -33,7 +33,6 @@ Dracnid hoarder trait buffed from 10% to 20%<br>
 Shroomi toxic trait buffed from 10% to 25%<br>
 Wolven pack mentality trait now applies to apartments<br>
 Reduced Nano Tube cost of Mining Drones<br>
-
 
 #### 0.4.4 - 6/18/2019
 Matter compression now applies to Wharfs<br>
