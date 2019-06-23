@@ -94,13 +94,13 @@ const arpaProjects = {
         title(){ 
             switch(global.arpa.m_type){
                 case 'Obelisk':
-                    loc('arpa_project_monument_obelisk');
+                    return loc('arpa_project_monument_obelisk');
                 case 'Statue':
-                    loc('arpa_project_monument_statue');
+                    return loc('arpa_project_monument_statue');
                 case 'Sculpture':
-                    loc('arpa_project_monument_sculpture');
+                    return loc('arpa_project_monument_sculpture');
                 case 'Monolith':
-                    loc('arpa_project_monument_monolith');
+                    return loc('arpa_project_monument_monolith');
             }
         },
         desc: loc('arpa_projects_monument_desc'),
