@@ -126,6 +126,7 @@ export const events = {
         },
         effect: function(){
             unlockAchieve('doomed');
+            global.stats.portals++;
             return loc('event_doom',[races[global.race.species].solar.dwarf]);
         }
     },
