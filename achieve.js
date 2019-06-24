@@ -1,4 +1,4 @@
-import { global, vues, messageQueue, set_alevel } from './vars.js';
+import { global, vues, messageQueue, set_alevel, achieve_level } from './vars.js';
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
@@ -364,12 +364,12 @@ export function drawAchieve(){
 }
 
 export function checkAchievements(){
-    if (!global.stats.achieve['mass_extinction']){
+    if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'] < achieve_level){
         let check = true;
         const keys = Object.keys(achievements)
         for (const key of keys) {
             if (key.includes('extinct_')){
-                if (!global.stats.achieve[key]){
+                if (!global.stats.achieve[key] || global.stats.achieve[key] < achieve_level){
                     check = false;
                     break;
                 }
@@ -379,16 +379,16 @@ export function checkAchievements(){
             unlockAchieve('mass_extinction');
         }
     }
-    if (!global.stats.achieve['blackhole'] && global.tech['supercollider'] && global.tech['supercollider'] >= 99){
+    if (global.tech['supercollider'] && global.tech['supercollider'] >= 99){
         unlockAchieve('blackhole');
     }
-    if (!global.stats.achieve['mass_starvation'] && global.stats.starved >= 100){
+    if (global.stats.starved >= 100){
         unlockAchieve('mass_starvation');
     }
-    if (!global.stats.achieve['warmonger'] && Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue) >= 8)){
+    if (Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue) >= 8)){
         unlockAchieve('warmonger');
     }
-    if (!global.stats.achieve['red_tactics'] && global.stats.died >= 250){
+    if (global.stats.died >= 250){
         unlockAchieve('red_tactics');
     }
 }
