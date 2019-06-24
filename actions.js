@@ -2,7 +2,7 @@ import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, moon_
 import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
-import { defineResources, loadMarket, spatialReasoning } from './resources.js';
+import { defineResources, loadMarket, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison, buildGarrison, armyRating, challenge_multiplier } from './civics.js';
 import { spaceTech, space } from './space.js';
@@ -6212,6 +6212,7 @@ export const actions = {
             effect: 'Steel smelting will result in small amounts of titanium production.',
             action(){
                 if (payCosts(actions.tech.hunter_process.cost)){
+                    global.resource.Titanium.value = resource_values['Titanium'];
                     return true;
                 }
                 return false;
@@ -6464,6 +6465,9 @@ export const actions = {
                             break;
                         case 'sporgar':
                             global.race['infectious'] = 1;
+                            if (global.race.species === 'human'){
+                                unlockAchieve(`infested`);
+                            }
                             break;
                         case 'shroomi':
                             global.race['toxic'] = 1;

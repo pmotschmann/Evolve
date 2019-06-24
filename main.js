@@ -1139,9 +1139,9 @@ function fastLoop(){
 
             if (!modRes('Food', delta * time_multiplier)){
                 fed = false;
-                let threshold = global.race['slow_digestion'] ? 2.5 : 2;
+                let threshold = global.race['slow_digestion'] ? 2 : 1.25;
                 if (global.race['atrophy']){
-                    threshold -= 0.5;
+                    threshold -= 0.15;
                 }
 
                 // threshold can be thought of as the inverse of nutrition ratio per unit of food.
@@ -2830,7 +2830,7 @@ function longLoop(){
                         r_val *= 5;
                     }
                 }
-                if (global.resource[res].display && Math.rand(0,10) === 0){
+                if (global.resource[res].display && Math.rand(0,4) === 0){
                     let max = r_val * 3;
                     let min = r_val / 2;
                     let variance = (Math.rand(0,200) - 100) / 100;

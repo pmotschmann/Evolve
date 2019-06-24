@@ -46,6 +46,11 @@ var achievements = {
         desc: loc("achieve_laser_shark_desc"),
         flair: loc("achieve_laser_shark_flair")
     },
+    infested: {
+        name: loc("achieve_infested_name"),
+        desc: loc("achieve_infested_desc"),
+        flair: loc("achieve_infested_flair")
+    },
     mass_starvation: {
         name: loc("achieve_mass_starvation_name"),
         desc: loc("achieve_mass_starvation_desc"),

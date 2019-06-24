@@ -1,3 +1,9 @@
+#### 0.4.11 - 6/24/2019
+Re-evaluated starvation breakpoint<br>
+Added Infested Terran achievement<br>
+Titanium price is now reset after unlocking Hunter Process<br>
+Resources now have a 25% chnage of their market price changing per day, up from 10%<br>
+
 #### 0.4.10 - 6/23/2019
 Fixed stats tracking on demonic invasions so it actually tracks new invasions<br>
 
