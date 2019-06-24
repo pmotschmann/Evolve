@@ -3060,7 +3060,7 @@ function longLoop(){
     }
 
     // Event triggered
-    if (!global.race.seeded && !global.race['chose']){
+    if (!global.race.seeded || (global.race.seeded && global.race['chose'])){
         if (Math.rand(0,global.event) === 0){
             var event_pool = [];
             Object.keys(events).forEach(function (event) {
