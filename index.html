@@ -46,7 +46,7 @@
                     <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>kW</span> <span id="powerMeter" class="meter">{{ city.power }}</span></span></div>
                 </div>
                 <div id="sideQueue">
-                    <div id="msgQueue" class="msgQueue has-text-info"></div>
+                    <div id="msgQueue" class="msgQueue has-text-info" aria-live="polite"></div>
                 </div>
                 <div id="resources" class="resources"></div>
             </div>
