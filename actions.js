@@ -7806,11 +7806,11 @@ function actionDesc(parent,c_action,old){
         Object.keys(costs).forEach(function (res) {
             var res_cost = costs[res]();
             if (res_cost > 0){
-                var label = res === 'Money' ? '$' : res+': ';
+                let label = res === 'Money' ? '$' : res+': ';
                 label = label.replace("_", " ");
-                var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
-                res_cost = sizeApproximation(res_cost,1);
-                cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${res_cost}</div>`));
+                let color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
+                let display_cost = sizeApproximation(res_cost,1);
+                cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
             }
         });
         parent.append(cost);
