@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, moon_on } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, sizeApproximation, moon_on } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
@@ -7809,6 +7809,7 @@ function actionDesc(parent,c_action,old){
                 var label = res === 'Money' ? '$' : res+': ';
                 label = label.replace("_", " ");
                 var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
+                res_cost = sizeApproximation(res_cost,1);
                 cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${res_cost}</div>`));
             }
         });
