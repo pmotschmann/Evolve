@@ -144,8 +144,8 @@ export function buildGarrison(garrison){
         wrap.append(battalion);
             
         var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ raid }}</span></b-tooltip>');
-        var alast = $('<span role="button" aria-label="add soldiers to campaign" class="sub" @click="aLast">&laquo;</span>');
-        var anext = $('<span role="button" aria-label="remove soldiers to campaign" class="add" @click="aNext">&raquo;</span>');
+        var alast = $('<span role="button" aria-label="remove soldiers from campaign" class="sub" @click="aLast">&laquo;</span>');
+        var anext = $('<span role="button" aria-label="add soldiers to campaign" class="add" @click="aNext">&raquo;</span>');
         battalion.append(alast);
         battalion.append(armysize);
         battalion.append(anext);

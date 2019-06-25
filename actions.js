@@ -45,7 +45,7 @@ export const actions = {
             cost: { RNA(){ return (global.evolution['membrane'].count * 2) + 2; } },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
-                return loc('evo_membrane_desc',[effect]);
+                return loc('evo_membrane_effect',[effect]);
             },
             action(){
                 if (payCosts(actions.evolution.membrane.cost)){
@@ -7599,13 +7599,13 @@ export function setAction(c_action,action,type,old){
         parent.append(special);
     }
     if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)){
-        var powerOn = $('<div class="on" @click="power_on" title="ON">{{ act.on }}</div>');
-        var powerOff = $('<div class="off" @click="power_off" title="OFF">{{ act.on | off }}</div>');
+        var powerOn = $('<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON">{{ act.on }}</span>');
+        var powerOff = $('<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF">{{ act.on | off }}</span>');
         parent.append(powerOn);
         parent.append(powerOff);
     }
     if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count >= 0){
-        element.append($('<span aria-label="owned: {{ act.count }}" class="count">{{ act.count }}</span>'));
+        element.append($('<span class="count">{{ act.count }}</span>'));
     }
     if (old){
         $('#oldTech').append(parent);
@@ -7696,6 +7696,12 @@ export function setAction(c_action,action,type,old){
                       drawModal(c_action,type);
                    }
                 }, 50);
+            },
+            on_label(){
+                return `on: ${global[action][type].on}`;
+            },
+            off_label(){
+                return `off: ${global[action][type].count - global[action][type].on}`;
             },
             power_on(){
                 if (global[action][type].on < global[action][type].count){

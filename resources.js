@@ -203,7 +203,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
     }
     
     if (rate !== 0){
-        res_container.append($(`<span id="inc${name}" class="diff">{{ diff | diffSize }} /s</span>`));
+        res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diff | diffSize }} /s</span>`));
     }
     else if (max === -1 && !global.race['no_craft']){
         let craft = $('<span class="craftable"></span>');
@@ -211,9 +211,9 @@ function loadResource(name,max,rate,tradable,stackable,color) {
 
         let inc = [1,5];
         for (let i=0; i<inc.length; i++){
-            craft.append($(`<span id="inc${name}${inc[i]}" @mouseover="hover('${name}',${inc[i]})" @mouseout="unhover('${name}',${inc[i]})"><a @click="craft('${name}',${inc[i]})">+<span class="craft" data-val="${inc[i]}">${inc[i]}</span></a></span>`));
+            craft.append($(`<span id="inc${name}${inc[i]}" @mouseover="hover('${name}',${inc[i]})" @mouseout="unhover('${name}',${inc[i]})"><a @click="craft('${name}',${inc[i]})" aria-label="craft ${inc[i]} ${name}">+<span class="craft" data-val="${inc[i]}">${inc[i]}</span></a></span>`));
         }
-        craft.append($(`<span id="inc${name}A"><a @click="craft('${name}','A')">+A</a></span>`));
+        craft.append($(`<span id="inc${name}A"><a @click="craft('${name}','A')" aria-label="craft max ${name}">+A</a></span>`));
     }
     else {
         res_container.append($(`<span></span>`));
@@ -239,7 +239,11 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             }
         },
         methods: {
-            trigModal: function(){
+            resRate(n){
+                let diff = sizeApproximation(global.resource[n].diff,2);
+                return `${n} ${diff} per second`;
+            },
+            trigModal(){
                 this.$modal.open({
                     parent: this,
                     component: modal
@@ -252,10 +256,10 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                    }
                 }, 50);
             },
-            showTrigger: function(){
+            showTrigger(){
                 return global.resource.Crates.display;
             },
-            craft: function(res,vol){
+            craft(res,vol){
                 let craft_bonus = craftingRatio(res);
                 let volume = Math.floor(global.resource[craftCost[res][0].r].amount / craftCost[res][0].a);
                 for (let i=1; i<craftCost[res].length; i++){
@@ -276,7 +280,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                 }
                 global.resource[res].amount += volume * craft_bonus;
             },
-            craftCost: function(res,vol){
+            craftCost(res,vol){
                 let costs = '';
                 for (let i=0; i<craftCost[res].length; i++){
                     let num = vol * craftCost[res][i].a * keyMultiplier();
