@@ -1,11 +1,12 @@
 import { global, vues, poppers, messageQueue, modRes, save, keyMultiplier } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races, racialTrait } from './races.js';
+import { loc } from './locale.js'
 
 // Sets up government in civics tab
 export function defineGovernment(){
     var govern = $('<div id="government" class="government tile is-child"></div>');
-    govern.append($('<div class="header has-text-warning" v-show="display">Government</div>'));
+    govern.append($(`<div class="header has-text-warning" v-show="display">${loc('civics_government')}</div>`));
     $('#r_civics').append(govern);
     
     if (!global.civic['taxes']){
@@ -36,7 +37,7 @@ function taxRates(govern){
     var tax_rates = $('<div id="tax_rates" v-show="display" class="taxRate"></div>');
     govern.append(tax_rates);
     
-    var label = $('<span id="taxRateLabel">Tax Rate</span>');
+    var label = $(`<span id="taxRateLabel">${loc('civics_tax_rates')}</span>`);
     tax_rates.append(label);
     
     var tax_level = $('<span class="current">{{ tax_rate | tax_level }}</span>');
@@ -89,7 +90,7 @@ function taxRates(govern){
     vues['civ_taxes'].$mount('#tax_rates');
     
     $('#taxRateLabel').on('mouseover',function(){
-            var popper = $('<div id="popTaxRate" class="popper has-background-light has-text-dark">High tax rates yield more money but reduce morale, low taxes have the inverse effect.</div>');
+            var popper = $(`<div id="popTaxRate" class="popper has-background-light has-text-dark">${loc('civics_tax_rates_desc')}</div>`);
             $('#main').append(popper);
             popper.show();
             poppers['popTaxRate'] = new Popper($('#taxRateLabel'),popper);
@@ -103,10 +104,10 @@ function taxRates(govern){
 
 export function buildGarrison(garrison){
     if (global.tech['world_control']){
-        garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip></div>'));
+        garrison.append($(`<div class="header"><span class="has-text-warning">${loc('civics_garrison')}</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip></div>`));
     }
     else {
-        garrison.append($('<div class="header"><span class="has-text-warning">Garrison</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>'));
+        garrison.append($(`<div class="header"><span class="has-text-warning">${loc('civics_garrison')}</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>`));
     }
 
     var barracks = $('<div class="columns is-mobile bunk"></div>');
@@ -114,13 +115,13 @@ export function buildGarrison(garrison){
 
     var bunks = $('<div class="column"></div>');
     barracks.append(bunks);
-    let soldier_title = global.tech['world_control'] ? 'Peacekeepers' : 'Soldiers';
+    let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
     bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>`));
     bunks.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
-    barracks.append($('<div class="column hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="mercs" class="button first" @click="hire">Hire Mercenary</button></b-tooltip><div>'));
+    barracks.append($(`<div class="column hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
     
-    garrison.append($(`<div class="training"><span>Training</span> <progress class="progress" :value="progress" max="100">{{ progress }}%</progress></div>`));
+    garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="progress" max="100">{{ progress }}%</progress></div>`));
 
     var campaign = $('<div class="columns is-mobile"></div>');
     garrison.append(campaign);
@@ -129,7 +130,7 @@ export function buildGarrison(garrison){
     campaign.append(wrap);
 
     if (!global.tech['world_control']){
-        var tactics = $('<div id="tactics" v-show="display" class="tactics"><span>Campaign</span></div>');
+        var tactics = $(`<div id="tactics" v-show="display" class="tactics"><span>${loc('civics_garrison_campaign')}</span></div>`);
         wrap.append(tactics);
             
         var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ tactic | tactics }}</span></b-tooltip>');
@@ -139,7 +140,7 @@ export function buildGarrison(garrison){
         tactics.append(strategy);
         tactics.append(next);
 
-        var battalion = $('<div id="battalion" v-show="display" class="tactics"><span>Battalion</span></div>');
+         var battalion = $(`<div id="battalion" v-show="display" class="tactics"><span>${loc('civics_garrison_battalion')}</span></div>`);
         wrap.append(battalion);
             
         var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ raid }}</span></b-tooltip>');
@@ -149,7 +150,7 @@ export function buildGarrison(garrison){
         battalion.append(armysize);
         battalion.append(anext);
 
-        campaign.append($('<div class="column launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">Launch Campaign</button></b-tooltip></div>'));
+        campaign.append($(`<div class="column launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
 
         if (!global.civic['garrison']){
             global.civic['garrison'] = {
@@ -201,7 +202,7 @@ export function buildGarrison(garrison){
             },
             campaign(){
                 if (global.civic.garrison.raid === 0){
-                    messageQueue('Can not start a campaign without any soldiers.','warning');
+                    messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning');
                     return;
                 }
                 if (global.civic.garrison.raid > global.civic.garrison.workers){
@@ -425,53 +426,54 @@ export function buildGarrison(garrison){
                             break;
                     }
 
-                    let loot = 'Gained ';
+                    let loot = loc('civics_garrison_gained');
                     if (global.resource.Money.display && money > 0){
                         money = lootModify(money);
-                        loot = loot + `\$${money}, `;
+                        loot = loot + loc('civics_garrison_quant_money',[money]);
                         modRes('Money',money);
                     }
                     if (global.resource.Food.display && food > 0){
                         food = lootModify(food);
-                        loot = loot + `${food} Food, `;
+                        loot = loot + loc('civics_garrison_quant_food',[food]);
                         modRes('Food',food);
                     }
                     if (global.resource.Lumber.display && lumber > 0){
                         lumber = lootModify(lumber);
-                        loot = loot + `${lumber} Lumber, `;
+                        loot = loot + loc('civics_garrison_quant_lumber',[lumber]);
                         modRes('Lumber',lumber);
                     }
                     if (global.resource.Stone.display && stone > 0){
                         stone = lootModify(stone);
-                        loot = loot + `${stone} Stone, `;
+                        loot = loot + loc('civics_garrison_quant_stone',[stone]);
                         modRes('Stone',stone);
                     }
                     if (global.resource.Copper.display && copper > 0){
                         copper = lootModify(copper);
-                        loot = loot + `${copper} Copper, `;
+                        loot = loot + loc('civics_garrison_quant_copper',[copper]);
                         modRes('Copper',copper);
                     }
                     if (global.resource.Iron.display && iron > 0){
                         iron = lootModify(iron);
-                        loot = loot + `${iron} Iron, `;
+                        loot = loot + loc('civics_garrison_quant_iron',[iron]);
                         modRes('Iron',iron);
                     }
                     if (global.resource.Cement.display && cement > 0){
                         cement = lootModify(cement);
-                        loot = loot + `${cement} Cement, `;
+                        loot = loot + loc('civics_garrison_quant_cement',[cement]);
                         modRes('Cement',cement);
                     }
                     if (steel > 0){
                         steel = lootModify(steel);
                         global.resource.Steel.display = true;
                         loot = loot + `${steel} Steel, `;
+                        loot = loot + loc('civics_garrison_quant_money',[money]);
                         modRes('Steel',steel);
                     }
 
                     loot = loot.slice(0,-2);
                     loot = loot + '.';
                     messageQueue(loot,'warning');
-                    messageQueue(`Your army was victorious! ${death} soldiers died in the conflict.`,'success');
+                    messageQueue(loc('civics_garrison_victorious',[death]),'success');
                     if (global.race['infectious']){
                         let infected = 0;
                         switch(global.civic.garrison.tactic){
@@ -497,10 +499,10 @@ export function buildGarrison(garrison){
                         }
                         global.resource[races[global.race.species].name].amount = zombies;
                         if (infected === 1){
-                            messageQueue(`${infected} enemy soldier was infected during the battle`,'special');
+                            messageQueue(loc('civics_garrison_soldier_infected'),'special');
                         }
                         else {
-                            messageQueue(`${infected} enemy soldiers were infected during the battle`,'special');
+                            messageQueue(loc('civics_garrison_soldiers_infected',[infected]),'special');
                         }
                     }
                 }
@@ -553,7 +555,7 @@ export function buildGarrison(garrison){
                     }
 
                     global.civic.garrison.wounded += 1 + Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death));
-                    messageQueue(`Your army was defeated. ${death} soldiers died in the conflict.`,'danger');
+                    messageQueue(loc('civics_garrison_defeat',[death]),'danger');
                 }
                 if (global.civic.garrison.wounded > global.civic.garrison.workers){
                     global.civic.garrison.wounded = global.civic.garrison.workers;
@@ -565,15 +567,15 @@ export function buildGarrison(garrison){
             strategyLabel(){
                 switch (global.civic.garrison.tactic){
                     case 0:
-                        return 'Attempt to ambush a rival caravan and steal their goods. Low risk operation, but low reward.';
+                        return loc('civics_garrison_tactic_ambush_desc');
                     case 1:
-                        return 'Attempt to raid a rival camp. Medium risk operation with average payoff potential.';
+                        return loc('civics_garrison_tactic_raid_desc');
                     case 2:
-                        return 'Attempt to pillage a rival settlement. High risk operation with superior payoff potential.';
+                        return loc('civics_garrison_tactic_pillage_desc');
                     case 3:
-                        return 'Attempt to assault a rival town. Very High risk operation with huge payoff potential.';
+                        return loc('civics_garrison_tactic_assault_desc');
                     case 4:
-                        return 'Attempt to seige a rival city. This operation is suicide for all but the strongest armies, but if sucessful will be glorious.';
+                        return loc('civics_garrison_tactic_siege_desc');
                 }
             },
             hireLabel(){
@@ -588,7 +590,7 @@ export function buildGarrison(garrison){
                     cost = cost / 2;
                 }
                 cost = Math.round(cost);
-                return `Hire a mercenary: \$${cost}`;
+                return loc('civics_garrison_hire_mercenary_cost',[cost]);
             },
             battleAssessment(){
                 let army = armyRating(global.civic.garrison.raid,'army');
@@ -611,46 +613,46 @@ export function buildGarrison(garrison){
                         break;
                 }
                 if (army * 2 < enemy){
-                    return 'Your advisors think this campaign is suicide.';
+                    return loc('civics_garrison_advice1');
                 }
                 else if (army * 1.5 < enemy){
-                    return 'Your advisors think this campaign will be a disaster.';
+                    return loc('civics_garrison_advice2');
                 }
                 else if (army * 1.1 < enemy){
-                    return 'You are advised against launching this war campaign.';
+                    return loc('civics_garrison_advice3');
                 }
                 else if (army > enemy * 2){
-                    return 'Your generals think you are squandering resources on small targets.';
+                    return loc('civics_garrison_advice7');
                 }
                 else if (army > enemy * 1.5){
-                    return 'This battle should be an easy victory.';
+                    return loc('civics_garrison_advice6');
                 }
                 else if (army > enemy * 1.1){
-                    return 'Your top military advisors think you have the advantage for this campaign.';
+                    return loc('civics_garrison_advice5');
                 }
                 else {
-                    return 'The battle seems evenly matched.';
+                    return loc('civics_garrison_advice4');
                 }
             },
             armyLabel(){
-                return `Number of soldiers to commit to millitary campaigns.`;
+                return loc('civics_garrison_army_label');
             },
             soldierDesc(){
                 let rating = armyRating(global.civic.garrison.workers,'hunting');
                 let food = +(rating / 3).toFixed(2);
                 let fur = +(rating / 10).toFixed(2);
                 return global.race['herbivore']
-                    ? `Idle soldiers spend their time hunting, they are currently bringing in ${fur} furs per trip.`
-                    : `Idle soldiers spend their time hunting, they are currently bringing in ${food} food worth of meat per trip and ${fur} furs.`;
+                    ? loc('civics_garrison_soldier_desc_herb',[fur])
+                    : loc('civics_garrison_soldier_desc_herb',[food,fur]);
             },
             woundedDesc(){
-                return `Wounded soldiers are both less effective in combat and more likely to die. Wounded soldiers will heal over time.`;
+                return loc('civics_garrison_wounded_desc');
             },
             defense(){
-                return `Defensive Rating`;
+                return loc('civics_garrison_defensive_rate');
             },
             offense(){
-                return `Offensive Rating`;
+                return loc('civics_garrison_offensive_rate');
             },
             next(){
                 if (global.civic.garrison.tactic < 4){
@@ -685,15 +687,15 @@ export function buildGarrison(garrison){
             tactics(val){
                 switch(val){
                     case 0:
-                        return 'Ambush';
+                        return loc('civics_garrison_tactic_ambush');
                     case 1:
-                        return 'Raid';
+                        return loc('civics_garrison_tactic_raid');
                     case 2:
-                        return 'Pillage';
+                        return loc('civics_garrison_tactic_pillage');
                     case 3:
-                        return 'Assault';
+                        return loc('civics_garrison_tactic_assault');
                     case 4:
-                        return 'Siege';
+                        return loc('civics_garrison_tactic_siege');
                 }
             },
             rating(val){
@@ -810,14 +812,14 @@ function defineMad(){
     var mad = $('<div class="mad"></div>');
     mad_command.append(mad);
 
-    mad.append($('<div class="warn">This will reset the game, you will gain some plasmids and you may gain some other minor bonuses as a result. Export a save state before proceeding.</div>'));
+    mad.append($(`<div class="warn">${loc('civics_mad_reset_desc')}</div>`));
 
-    mad.append($('<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button arm" @click="arm">Arm Missiles</button></b-tooltip></div>'));
-    mad.append($('<div class="defcon"><b-tooltip :label="warning()" position="is-bottom" multilined animated><button class="button" @click="launch" :disabled="armed">Launch Missiles</button></b-tooltip></div>'));
+    mad.append($(`<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button arm" @click="arm">${loc('civics_mad_arm_missiles')}</button></b-tooltip></div>`));
+    mad.append($(`<div class="defcon"><b-tooltip :label="warning()" position="is-bottom" multilined animated><button class="button" @click="launch" :disabled="armed">${loc('civics_mad_launch_missiles')}</button></b-tooltip></div>`));
 
     if (!global.civic.mad.armed){
         $('#mad').addClass('armed');
-        $('#mad .arm').html('Disarm Missiles');
+        $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
     }
 
     vues['mad'] = new Vue({
@@ -839,12 +841,12 @@ function defineMad(){
             },
             arm(){
                 if (global.civic.mad.armed){
-                    $('#mad .arm').html('Disarm Missiles');
+                    $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
                     global.civic.mad.armed = false;
                     $('#mad').addClass('armed');
                 }
                 else {
-                    $('#mad .arm').html('Arm Missiles');
+                    $('#mad .arm').html(loc('civics_mad_arm_missiles'));
                     global.civic.mad.armed = true;
                     $('#mad').removeClass('armed');
                 }
@@ -852,8 +854,8 @@ function defineMad(){
             defcon(){
                 
                 return global.tech['world_control']
-                    ? `Enable or Disable the launch button. Scour the world clean with nuclear fire, why? because you can.`
-                    : `Enable or Disable the launch button. Launching a nuclear strike will trigger a retalitory strike which will result in the end of all life as we know it.`;
+                    ? loc('civics_mad_missiles_world_control_desc')
+                    : loc('civics_mad_missiles_desc');
             },
             warning(){
                 let plasma = Math.round((global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers) / 3);
@@ -865,7 +867,7 @@ function defineMad(){
                     k_inc *= 1.1;
                 }
                 plasma = challenge_multiplier(plasma);
-                return `This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning. You will gain ${plasma} Plasmids.`;
+                return loc('civics_mad_missiles_warning',[plasma]);
             }
         }
     });
