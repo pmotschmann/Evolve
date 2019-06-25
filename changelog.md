@@ -1,3 +1,8 @@
+#### 0.4.12 - 6/24/2019
+Blackhole achievement now gives a permanent perk for completing it, the perk strength depends on the achievemnt level<br>
+Fixed issue with event timer being frozen after changing planets<br>
+Fixed the unlocking of upgraded versions of some achievements<br>
+
 #### 0.4.11 - 6/24/2019
 Re-evaluated starvation breakpoint<br>
 Added Infested Terran achievement<br>

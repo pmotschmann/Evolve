@@ -1672,6 +1672,7 @@ export const actions = {
             },
             effect(){ 
                 let food = spatialReasoning(500);
+                if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 return `+${food} Max Food`; 
             },
             action(){
@@ -1764,6 +1765,7 @@ export const actions = {
             },
             effect(){ 
                 let food = spatialReasoning(500);
+                if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 return `+${food} Max Food`; 
             },
             action(){
@@ -2038,6 +2040,7 @@ export const actions = {
             },
             effect:  function(){
                 let lum = spatialReasoning(100);
+                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 return `<div>+2% Lumber Production</div><div>+${lum} Max Lumber</div>`;
             },
             action(){
@@ -2063,6 +2066,7 @@ export const actions = {
             effect(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = spatialReasoning(200);
+                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 let desc = `<div>+${lum} Max Lumber</div><div>Lumberjack efficiency +${impact}%</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
                     desc = desc + `<div>+2% Plywood Crafting</div>`; 
@@ -2099,6 +2103,7 @@ export const actions = {
             },
             effect() {
                 let stone = spatialReasoning(100);
+                if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 if (global.tech['mine_conveyor']){
                     return `<div>+2% Quarry Efficiency</div><div>+${stone} Max Stone</div><div>If powered consumes 1kW but increases rock yield by 4%</div>`;
                 }
@@ -7418,6 +7423,9 @@ export function storageMultipler(){
     if (global.tech['storage'] >= 6){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
     }
+    if (global.stats.achieve['blackhole']){
+        multiplier *= 1 + global.stats.achieve.blackhole * 0.05;
+    }
     multiplier *= global.tech['world_control'] ? 3 : 1;
     return multiplier;
 }
@@ -7597,7 +7605,7 @@ export function setAction(c_action,action,type,old){
         parent.append(powerOff);
     }
     if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count >= 0){
-        element.append($('<span class="count">{{ act.count }}</span>'));
+        element.append($('<span aria-label="owned: {{ act.count }}" class="count">{{ act.count }}</span>'));
     }
     if (old){
         $('#oldTech').append(parent);

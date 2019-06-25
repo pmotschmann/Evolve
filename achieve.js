@@ -313,6 +313,7 @@ export function unlockAchieve(achievement){
         global.settings.showAchieve = true;
         global.stats.achieve[achievement] = a_level;
         messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
+        drawPerks();
         drawAchieve();
         return true;
     }
@@ -323,9 +324,12 @@ export function setupStats(){
     $('#achieve').empty();
     let stats = $('<div id="statsPanel"></div>');
     $('#achieve').append(stats);
+    let perks = $('<div id="perksPanel"></div>');
+    $('#achieve').append(perks);
     let achieve = $('<div id="achievePanel"></div>');
     $('#achieve').append(achieve);
     drawStats();
+    drawPerks();
     drawAchieve();
 }
 
@@ -390,6 +394,22 @@ export function checkAchievements(){
     }
     if (global.stats.died >= 250){
         unlockAchieve('red_tactics');
+    }
+}
+
+export function drawPerks(){
+    $('#perksPanel').empty();
+    let perks = $('#perksPanel');
+    
+    let unlocked = 0;
+    if (global.stats.achieve['blackhole']){
+        unlocked++;
+        let bonus = global.stats.achieve.blackhole * 5;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_blackhole",[bonus])}</span></div>`);
+    }
+
+    if (unlocked > 0){
+        perks.prepend(`<div class="cstat"><span class="has-text-success">${loc("achieve_perks")}</span></div>`);
     }
 }
 

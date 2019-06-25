@@ -856,7 +856,8 @@ export function crateValue(){
     if (global.tech['container'] && global.tech['container'] >= 4){
         create_value += global.tech['container'] >= 5 ? 500 : 250;
     }
-    return spatialReasoning(create_value);
+    create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
+    return spatialReasoning(Math.round(create_value));
 }
 
 export function containerValue(){
@@ -867,7 +868,8 @@ export function containerValue(){
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 4){
         container_value += 400;
     }
-    return spatialReasoning(container_value);
+    container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
+    return spatialReasoning(Math.round(container_value));
 }
 
 export function initMarket(){

@@ -448,6 +448,7 @@ const spaceProjects = {
                     multiplier *= global.tech['world_control'] ? 2 : 1;
                     containers += 10;
                 }
+                multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
                 let copper = +(spatialReasoning(6500) * multiplier).toFixed(0);
                 let iron = +(spatialReasoning(5500) * multiplier).toFixed(0);
                 let cement = +(spatialReasoning(6000) * multiplier).toFixed(0);
@@ -471,6 +472,7 @@ const spaceProjects = {
                     incrementStruct('garage');
                     let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
                     multiplier *= global.tech['world_control'] ? 2 : 1;
+                    multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
                     global['resource']['Copper'].max += (spatialReasoning(6500) * multiplier);
                     global['resource']['Iron'].max += (spatialReasoning(5500) * multiplier);
                     global['resource']['Cement'].max += (spatialReasoning(6000) * multiplier);
