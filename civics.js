@@ -466,7 +466,7 @@ export function buildGarrison(garrison){
                         steel = lootModify(steel);
                         global.resource.Steel.display = true;
                         loot = loot + `${steel} Steel, `;
-                        loot = loot + loc('civics_garrison_quant_money',[money]);
+                        loot = loot + loc('civics_garrison_quant_steel',[steel]);
                         modRes('Steel',steel);
                     }
 
