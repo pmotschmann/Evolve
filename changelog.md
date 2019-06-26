@@ -1,5 +1,5 @@
 #### 0.4.13 - 6/26/2019 ####
-Aluminium resource added to the game<br>
+Aluminium resource added to the game, research Bayer Process to unlock Metal Refinery which in turn unlocks Aluminum<br>
 New Metal Refinery structure for producing Aluminium<br>
 Alloy is now made out of Aluminium and Copper<br>
 Sheet Metal is now made out of Aluminium<br>
