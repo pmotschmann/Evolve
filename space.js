@@ -96,8 +96,8 @@ const spaceProjects = {
             reqs: { space_explore: 1 },
             cost: {
                 Money(){ return costMultiplier('propellant_depot', 55000, 1.35); },
+                Aluminium(){ return costMultiplier('propellant_depot', 22000, 1.35); },
                 Oil(){ return costMultiplier('propellant_depot', fuel_adjust(5500), 1.35); },
-                Steel(){ return costMultiplier('propellant_depot', 22000, 1.35); }
             },
             effect(){
                 let oil = spatialReasoning(1250) * (global.tech['world_control'] ? 1.5 : 1);

@@ -2194,7 +2194,7 @@ export const actions = {
                     if (global.resource.Iron.display){
                         global.resource.Wrought_Iron.display = true;
                     }
-                    if (global.tech['smelting'] && global.tech['smelting'] >= 2){
+                    if (global.resource.Aluminium.display){
                         global.resource.Sheet_Metal.display = true;
                     }
                     loadFoundry();
@@ -2272,6 +2272,30 @@ export const actions = {
                 return false;
             },
             flair: '<div>40% Zinc, 40% Titanium, 30% Iron,<div></div>40% Dolomite, 40% Lead, 0.04% Nickel</div>'
+        },
+        metal_refinery: {
+            id: 'city-metal_refinery',
+            title: 'Metal Refinery',
+            desc: 'Refines aluminium',
+            reqs: { alumina: 1 },
+            cost: { 
+                Money(){ return costMultiplier('metal_refinery', 2500, 1.35); },
+                Steel(){ return costMultiplier('metal_refinery', 350, 1.35); }
+            },
+            effect() {
+                return '<div>Enables aluminium mining by quarry workers and boosts aluminium production by 4%</div>';
+            },
+            action(){
+                if (payCosts(actions.city.metal_refinery.cost)){
+                    global.city['metal_refinery'].count++;
+                    global.resource.Aluminium.display = true;
+                    if (global.tech['foundry']){
+                        global.resource.Sheet_Metal.display = true;
+                    }
+                    return true;
+                }
+                return false;
+            }
         },
         mine: {
             id: 'city-mine',
@@ -2819,8 +2843,8 @@ export const actions = {
             cost: { 
                 Money(){ return costMultiplier('oil_power', 50000, 1.22); },
                 Copper(){ return costMultiplier('oil_power', 6500, 1.22) + 1000; },
-                Cement(){ return costMultiplier('oil_power', 5600, 1.22) + 1000; },
-                Steel(){ return costMultiplier('oil_power', 9000, 1.22) + 3000; }
+                Aluminium(){ return costMultiplier('oil_power', 12000, 1.22); },
+                Cement(){ return costMultiplier('oil_power', 5600, 1.22) + 1000; }
             },
             effect(){
                 let consume = 0.65;
@@ -3630,6 +3654,26 @@ export const actions = {
                     global.city['rock_quarry'] = { 
                         count: 0, 
                         on: 0 
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        bayer_process: {
+            id: 'tech-bayer_process',
+            title: 'Bayer Process',
+            desc: 'Learn to extract Aluminium from mines',
+            reqs: { smelting: 2 },
+            grant: ['alumina',1],
+            cost: { 
+                Knowledge(){ return 4500; }
+            },
+            effect: 'Learn how to remove Aluminium from previously unusable waste material produced by your rock quarries.',
+            action(){
+                if (payCosts(actions.tech.bayer_process.cost)){
+                    global.city['metal_refinery'] = { 
+                        count: 0
                     };
                     return true;
                 }
@@ -4868,7 +4912,7 @@ export const actions = {
             cost: {
                 Money(){ return 10000; },
                 Knowledge(){ return 6750; },
-                Steel(){ return 1000; }
+                Aluminium(){ return 1000; }
             },
             effect: 'The greatest leaps in science are often made by "misunderstood" individuals.',
             action(){
@@ -8300,7 +8344,7 @@ export const f_rate = {
     },
     Alloy: {
         copper: [0.75,1.12,1.49,1.86],
-        titanium: [0.15,0.22,0.29,0.36],
+        aluminium: [1,1.5,2,2.5],
         output: [0.075,0.112,0.149,0.186]
     },
     Polymer: {
@@ -8387,8 +8431,8 @@ function factoryModal(modal){
                         return `Consume ${fur} Furs/s to produce luxury goods worth \$${demand}`;
                     case 'Alloy':
                         let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
-                        let titanium = assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0];
-                        return `Consume ${copper} Copper and ${titanium} Titanium/s to produce Alloy`;
+                        let aluminium = assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0];
+                        return `Consume ${copper} Copper and ${aluminium} Aluminium/s to produce Alloy`;
                     case 'Polymer':
                         if (global.race['kindling_kindred']){
                             let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];

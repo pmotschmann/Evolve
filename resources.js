@@ -9,6 +9,7 @@ export const resource_values = {
     Furs: 8,
     Copper: 25,
     Iron: 40,
+    Aluminium: 50,
     Cement: 15,
     Coal: 20,
     Oil: 75,
@@ -32,11 +33,12 @@ export const tradeRatio = {
     Furs: 1,
     Copper: 1,
     Iron: 1,
+    Aluminium: 1,
     Cement: 1,
     Coal: 1,
     Oil: 0.5,
     Uranium: 0.25,
-    Steel: 1,
+    Steel: 0.5,
     Titanium: 0.25,
     Alloy: 0.2,
     Polymer: 0.2,
@@ -52,7 +54,7 @@ export const craftCost = {
     Brick: [{ r: 'Cement', a: 40 }],
     Bronze: [{ r: 'Copper', a: 80 }],
     Wrought_Iron: [{ r: 'Iron', a: 80 }],
-    Sheet_Metal: [{ r: 'Steel', a: 60 }],
+    Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
     Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
 };
 
@@ -105,7 +107,7 @@ export function craftingRatio(res){
 }
 
 // Sets up resource definitions
-export function defineResources() {
+export function defineResources(){
     if (global.race.species === 'protoplasm'){
         loadResource('RNA',100,1,false);
         loadResource('DNA',100,1,false);
@@ -123,6 +125,7 @@ export function defineResources() {
         loadResource('Furs',100,1,true,true);
         loadResource('Copper',100,1,true,true);
         loadResource('Iron',100,1,true,true);
+        loadResource('Aluminium',50,1,true,true);
         loadResource('Cement',100,1,true,true);
         loadResource('Coal',50,1,true,true);
         loadResource('Oil',0,1,true,false);
@@ -151,11 +154,11 @@ export function defineResources() {
 // Load resource function
 // This function defines each resource, loads saved values from localStorage
 // And it creates Vue binds for various resource values
-function loadResource(name,max,rate,tradable,stackable,color) {
+function loadResource(name,max,rate,tradable,stackable,color){
     color = color || 'info';
     if (!global['resource'][name]){
         global['resource'][name] = {
-            name: name === races[global.race.species].name? name : name === 'Money' ? '$' : loc('resource_' + name + '_name'),
+            name: name === races[global.race.species].name ? name : (name === 'Money' ? '$' : loc(`resource_${name}_name`)),
             display: false,
             value: resource_values[name],
             amount: 0,
@@ -166,9 +169,10 @@ function loadResource(name,max,rate,tradable,stackable,color) {
             rate: rate
         };
     }
-    else{
-        global['resource'][name].name = name === races[global.race.species].name? name : name === 'Money' ? '$' : loc('resource_' + name + '_name')
+    else {
+        global['resource'][name].name = name === races[global.race.species].name? name : (name === 'Money' ? '$' : loc(`resource_${name}_name`));
     }
+
     if (vues[`res_${name}`]){
         vues[`res_${name}`].$destroy();
     }
@@ -293,7 +297,7 @@ function loadResource(name,max,rate,tradable,stackable,color) {
                 $('#main').append(popper);
 
                 let bonus = (craftingRatio(res) * 100).toFixed(0);
-                popper.append($(`<div>+${bonus}% Crafted ${res}</div>`));
+                popper.append($(`<div>+${bonus}% Crafted ${global.resource[res].name}</div>`));
 
                 for (let i=0; i<craftCost[res].length; i++){
                     let num = typeof vol === 'number' ? vol * craftCost[res][i].a : vol;
@@ -701,7 +705,7 @@ function drawModal(name,color){
             },
             buildCrate: function(){
                 let keyMutipler = keyMultiplier();
-                let material = global.race['kindling_kindred'] ? loc('resource_Stone_name') : loc('resource_Plywood_name');
+                let material = global.race['kindling_kindred'] ? 'Stone' : 'Plywood';
                 let cost = global.race['kindling_kindred'] ? 200 : 10;
                 if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
                     keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;

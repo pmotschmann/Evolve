@@ -441,6 +441,7 @@ function fastLoop(){
         Coal: {},
         Oil: {},
         Uranium: {},
+        Aluminium: {},
         Steel: {},
         Titanium: {},
         Alloy: {},
@@ -1324,24 +1325,24 @@ function fastLoop(){
                 }
 
                 let copper_cost = global.city.factory.Alloy * (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
-                let titanium_cost = global.city.factory.Alloy * (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
+                let aluminium_cost = global.city.factory.Alloy * (assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0]);
                 let workDone = global.city.factory.Alloy;
                 
                 while (copper_cost * time_multiplier > global.resource.Copper.amount && copper_cost > 0){
                     copper_cost -= (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
-                    titanium_cost -= (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
+                    aluminium_cost -= (assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
                     workDone--;
                 }
-                while (titanium_cost * time_multiplier > global.resource.Titanium.amount && titanium_cost > 0){
+                while (aluminium_cost * time_multiplier > global.resource.Aluminium.amount && aluminium_cost > 0){
                     copper_cost -= (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
-                    titanium_cost -= (assembly ? f_rate.Alloy.titanium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
+                    aluminium_cost -= (assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
                     workDone--;
                 }
 
                 breakdown.p.consume.Copper['Factory'] = -(copper_cost);
-                breakdown.p.consume.Titanium['Factory'] = -(titanium_cost);
+                breakdown.p.consume.Aluminium['Factory'] = -(aluminium_cost);
                 modRes('Copper', -(copper_cost * time_multiplier));
-                modRes('Titanium', -(titanium_cost * time_multiplier));
+                modRes('Aluminium', -(aluminium_cost * time_multiplier));
 
                 let factory_output = workDone * (assembly ? f_rate.Alloy.output[global.tech['factory']] : f_rate.Alloy.output[0]);
                 if (global.race['toxic']){
@@ -1655,11 +1656,14 @@ function fastLoop(){
 
             let power_mult = 1;
             let rock_quarry = 1;
+            let alum_mult = 1;
             if (global.city['rock_quarry']){
                 if (global.city.rock_quarry['on']){
                     power_mult += (p_on['rock_quarry'] * 0.04);
+                    alum_mult += (p_on['rock_quarry'] * 0.01);
                 }
                 rock_quarry += global.city['rock_quarry'].count * 0.02;
+                alum_mult += (global.city['rock_quarry'].count * 0.01);
             }
 
             let delta = stone_base * power_mult * rock_quarry;
@@ -1672,6 +1676,21 @@ function fastLoop(){
             stone_bd['Hunger'] = ((hunger - 1) * 100) + '%';
             breakdown.p['Stone'] = stone_bd;
             modRes('Stone', delta * time_multiplier);
+
+            if (global.city['metal_refinery']){
+                let base = stone_base * alum_mult * global.city.metal_refinery.count * 0.01;
+                let delta = base * hunger * global_multiplier;
+
+                let refinery = global.city['metal_refinery'].count * 4;
+                delta *= 1 + (refinery / 100);
+
+                let alumina_bd = {};
+                alumina_bd['Workers'] = base + 'v';
+                alumina_bd['Refinery'] = refinery + '%';
+                alumina_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Aluminium'] = alumina_bd;
+                modRes('Aluminium', delta * time_multiplier);
+            }
         }
         
         // Miners
@@ -2059,6 +2078,7 @@ function midLoop(){
             Coal: 50,
             Oil: 0,
             Uranium: 10,
+            Aluminium: 50,
             Steel: 50,
             Titanium: 50,
             Alloy: 50,
@@ -2101,6 +2121,7 @@ function midLoop(){
         var bd_Oil = { Base: caps['Oil']+'v' };
         var bd_Uranium = { Base: caps['Uranium']+'v' };
         var bd_Steel = { Base: caps['Steel']+'v' };
+        var bd_Aluminium = { Base: caps['Aluminium']+'v' };
         var bd_Titanium = { Base: caps['Titanium']+'v' };
         var bd_Alloy = { Base: caps['Alloy']+'v' };
         var bd_Polymer = { Base: caps['Polymer']+'v' };
@@ -2590,6 +2611,7 @@ function midLoop(){
             Oil: bd_Oil,
             Uranium: bd_Uranium,
             Steel: bd_Steel,
+            Aluminium: bd_Aluminium,
             Titanium: bd_Titanium,
             Alloy: bd_Alloy,
             Polymer: bd_Polymer,
