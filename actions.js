@@ -1845,6 +1845,10 @@ export const actions = {
                     let val = +(spatialReasoning(125) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Iron.`;
                 }
+                if (global.resource.Aluminium.display){
+                    let val = +(spatialReasoning(90) * multiplier).toFixed(0);
+                    storage = storage + `+${val} Max Aluminium.`;
+                }
                 if (global.resource.Cement.display){
                     let val = +(spatialReasoning(100) * multiplier).toFixed(0);
                     storage = storage + `+${val} Max Cement.`;
@@ -1870,6 +1874,7 @@ export const actions = {
                     global['resource']['Stone'].max += (spatialReasoning(300) * multiplier);
                     global['resource']['Copper'].max += (spatialReasoning(90) * multiplier);
                     global['resource']['Iron'].max += (spatialReasoning(125) * multiplier);
+                    global['resource']['Aluminium'].max += (spatialReasoning(90) * multiplier);
                     global['resource']['Furs'].max += (spatialReasoning(125) * multiplier);
                     global['resource']['Cement'].max += (spatialReasoning(100) * multiplier);
                     global['resource']['Coal'].max += (spatialReasoning(75) * multiplier);

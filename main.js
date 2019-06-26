@@ -2295,6 +2295,10 @@ function midLoop(){
             caps['Iron'] += gain;
             bd_Iron[label] = gain+'v';
             
+            gain = (global.city['shed'].count * (spatialReasoning(90) * multiplier));
+            caps['Aluminium'] += gain;
+            bd_Aluminium[label] = gain+'v';
+            
             gain = (global.city['shed'].count * (spatialReasoning(100) * multiplier));
             caps['Cement'] += gain;
             bd_Cement[label] = gain+'v';
