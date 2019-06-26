@@ -1,3 +1,6 @@
+#### 0.4.14 - 6/26/2019 ####
+Statues now cost Aluminium instead of Wrought Iron<br>
+
 #### 0.4.13 - 6/26/2019 ####
 Aluminium resource added to the game, research Bayer Process to unlock Metal Refinery which in turn unlocks Aluminum<br>
 New Metal Refinery structure for producing Aluminium<br>

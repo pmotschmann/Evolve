@@ -111,7 +111,7 @@ const arpaProjects = {
         },
         cost: {
             Stone: function(){ return monument_costs('Stone') },
-            Wrought_Iron: function(){ return monument_costs('Wrought_Iron') },
+            Aluminium: function(){ return monument_costs('Aluminium') },
             Cement: function(){ return monument_costs('Cement') },
             Steel: function(){ return monument_costs('Steel') }
         }
@@ -430,7 +430,7 @@ function monument_costs(res){
         case 'Obelisk':
             return res === 'Stone' ? costMultiplier('monument', 1000000, 1.1) : 0;
         case 'Statue':
-            return res === 'Wrought_Iron' ? costMultiplier('monument', 25000, 1.1) : 0;
+            return res === 'Aluminium' ? costMultiplier('monument', 350000, 1.1) : 0;
         case 'Sculpture':
             return res === 'Steel' ? costMultiplier('monument', 300000, 1.1) : 0;
         case 'Monolith':
