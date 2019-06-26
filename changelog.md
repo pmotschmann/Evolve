@@ -1,3 +1,11 @@
+#### 0.4.13 - 6/26/2019 ####
+Aluminium resource added to the game<br>
+New Metal Refinery structure for producing Aluminium<br>
+Alloy is now made out of Aluminium and Copper<br>
+Sheet Metal is now made out of Aluminium<br>
+Oil Powerplant and Propellant Depot now cost Aluminium instead of Steel<br>
+Some minor accessibility improvements<br>
+
 #### 0.4.12 - 6/24/2019
 Blackhole achievement now gives a permanent perk for completing it, the perk strength depends on the achievemnt level<br>
 Fixed issue with event timer being frozen after changing planets<br>

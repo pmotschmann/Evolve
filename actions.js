@@ -2283,7 +2283,7 @@ export const actions = {
                 Steel(){ return costMultiplier('metal_refinery', 350, 1.35); }
             },
             effect() {
-                return '<div>Enables aluminium mining by quarry workers and boosts aluminium production by 4%</div>';
+                return '<div>Enables aluminium mining by quarry workers and boosts aluminium production by 6%</div>';
             },
             action(){
                 if (payCosts(actions.city.metal_refinery.cost)){

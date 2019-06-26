@@ -1330,12 +1330,12 @@ function fastLoop(){
                 
                 while (copper_cost * time_multiplier > global.resource.Copper.amount && copper_cost > 0){
                     copper_cost -= (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
-                    aluminium_cost -= (assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
+                    aluminium_cost -= (assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0]);
                     workDone--;
                 }
                 while (aluminium_cost * time_multiplier > global.resource.Aluminium.amount && aluminium_cost > 0){
                     copper_cost -= (assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0]);
-                    aluminium_cost -= (assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.titanium[0]);
+                    aluminium_cost -= (assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0]);
                     workDone--;
                 }
 
@@ -1656,14 +1656,11 @@ function fastLoop(){
 
             let power_mult = 1;
             let rock_quarry = 1;
-            let alum_mult = 1;
             if (global.city['rock_quarry']){
                 if (global.city.rock_quarry['on']){
                     power_mult += (p_on['rock_quarry'] * 0.04);
-                    alum_mult += (p_on['rock_quarry'] * 0.01);
                 }
-                rock_quarry += global.city['rock_quarry'].count * 0.02;
-                alum_mult += (global.city['rock_quarry'].count * 0.01);
+                rock_quarry += global.city['rock_quarry'].count * 0.04;
             }
 
             let delta = stone_base * power_mult * rock_quarry;
@@ -1678,10 +1675,10 @@ function fastLoop(){
             modRes('Stone', delta * time_multiplier);
 
             if (global.city['metal_refinery']){
-                let base = stone_base * alum_mult * global.city.metal_refinery.count * 0.01;
+                let base = stone_base * rock_quarry * power_mult * 0.08;
                 let delta = base * hunger * global_multiplier;
 
-                let refinery = global.city['metal_refinery'].count * 4;
+                let refinery = global.city['metal_refinery'].count * 6;
                 delta *= 1 + (refinery / 100);
 
                 let alumina_bd = {};
