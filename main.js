@@ -965,7 +965,7 @@ function fastLoop(){
         global.city.morale.tax = 20 - global.civic.taxes.tax_rate;
         morale -= global.civic.taxes.tax_rate - 20;
 
-        if (global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
+        if (!global.race['frenzy'] && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
             global.city.morale.warmonger = -(Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue)));
             morale += global.city.morale.warmonger;
         }
