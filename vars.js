@@ -196,6 +196,7 @@ if (!global['settings']){
         locale: 'en-us',
     }
 }
+
 if (!global.settings['space']){
     global.settings['space'] = {
         home: true,
@@ -386,6 +387,8 @@ if (global.city['factory']){
 if (!global.race['mutation']){
     global.race['mutation'] = 0;
 }
+
+global.settings.disableReset = false;
 
 if (global.lastMsg){
     messageQueue(global.lastMsg.m, global.lastMsg.c);

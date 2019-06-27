@@ -511,6 +511,24 @@ export const races = {
             gas_moon: 'Shedaklah',
             dwarf: 'Belistor',
         }
+    },
+    imp: {
+        name: 'Imp',
+        desc: loc('race_imp'),
+        type: 'demonic',
+        home: 'Baator',
+        entity: loc('race_imp_entity'),
+        traits: {
+            compact: 1,
+            conniving: 1
+        },
+        solar: {
+            red: 'Avernus',
+            hell: 'Dis',
+            gas: 'Minauros',
+            gas_moon: 'Phlegethos',
+            dwarf: 'Stygia',
+        }
     }
 };
 

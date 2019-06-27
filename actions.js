@@ -1478,8 +1478,8 @@ export const actions = {
     city: {
         food: {
             id: 'city-food',
-            title: 'Gather Food',
-            desc: 'Harvest and preserve food.',
+            title: loc('city_food'),
+            desc: loc('city_food_desc'),
             reqs: { primitive: 1 },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
@@ -1490,8 +1490,8 @@ export const actions = {
         },
         lumber: {
             id: 'city-lumber',
-            title: 'Gather Lumber',
-            desc: 'Harvest lumber from the forest',
+            title: loc('city_lumber'),
+            desc: loc('city_lumber_desc'),
             reqs: {},
             action(){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
@@ -1502,8 +1502,8 @@ export const actions = {
         },
         stone: {
             id: 'city-stone',
-            title: 'Gather Stone',
-            desc: 'Gather stone from a quarry',
+            title: loc('city_stone'),
+            desc: loc('city_stone_desc'),
             reqs: { primitive: 2 },
             action(){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
@@ -1514,8 +1514,8 @@ export const actions = {
         },
         garrison: {
             id: 'city-garrison',
-            title: 'Barracks',
-            desc: 'Increases soldier capacity',
+            title: loc('city_garrison'),
+            desc: loc('city_garrison_desc'),
             reqs: { military: 1, housing: 1 },
             cost: { 
                 Money(){ return costMultiplier('garrison', 240, 1.5); },
@@ -1526,7 +1526,7 @@ export const actions = {
                 if (global.race['chameleon']){
                     bunks--;
                 }
-                return `+${bunks} Max Soldiers`;
+                return loc('city_garrison_effect',[bunks]);
             },
             action(){
                 if (payCosts(actions.city.garrison.cost)){
