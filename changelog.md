@@ -1,5 +1,9 @@
 #### 0.4.14 - 6/26/2019 ####
 Statues now cost Aluminium instead of Wrought Iron<br>
+Nav Beacon now costs Aluminium instead of Iron<br>
+Helium-3 Mine now costs Aluminium instead of Copper<br>
+Elerium Mining Ship now costs Titanium instead of Iridium<br>
+Iron Mining Ship now costs Aluminium instead of Titanium<br>
 
 #### 0.4.13 - 6/26/2019 ####
 Aluminium resource added to the game, research Bayer Process to unlock Metal Refinery which in turn unlocks Aluminum<br>

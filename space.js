@@ -127,7 +127,7 @@ const spaceProjects = {
             cost: {
                 Money(){ return costMultiplier('nav_beacon', 75000, 1.32); },
                 Copper(){ return costMultiplier('nav_beacon', 38000, 1.32); },
-                Iron(){ return costMultiplier('nav_beacon', 44000, 1.32); },
+                Aluminium(){ return costMultiplier('nav_beacon', 44000, 1.32); },
                 Oil(){ return costMultiplier('nav_beacon', fuel_adjust(12500), 1.32); },
                 Iridium(){ return costMultiplier('nav_beacon', 1200, 1.32); }
             },
@@ -251,7 +251,7 @@ const spaceProjects = {
             reqs: { space: 3, luna: 1 },
             cost: {
                 Money(){ return costMultiplier('helium_mine', 38000, 1.35); },
-                Copper(){ return costMultiplier('helium_mine', 9000, 1.35); },
+                Aluminium(){ return costMultiplier('helium_mine', 9000, 1.35); },
                 Steel(){ return costMultiplier('helium_mine', 17500, 1.35); }
             },
             effect(){
@@ -1197,7 +1197,7 @@ const spaceProjects = {
             cost: {
                 Money(){ return costMultiplier('elerium_ship', 500000, 1.3); },
                 Uranium(){ return costMultiplier('elerium_ship', 2500, 1.3); },
-                Iridium(){ return costMultiplier('elerium_ship', 10000, 1.3); },
+                Titanium(){ return costMultiplier('elerium_ship', 10000, 1.3); },
                 Mythril(){ return costMultiplier('elerium_ship', 500, 1.3); },
                 Helium_3(){ return costMultiplier('elerium_ship', fuel_adjust(5000), 1.3); }
             },
@@ -1259,7 +1259,7 @@ const spaceProjects = {
             cost: {
                 Money(){ return costMultiplier('iron_ship', 80000, 1.3); },
                 Steel(){ return costMultiplier('iron_ship', 42000, 1.3); },
-                Titanium(){ return costMultiplier('iron_ship', 38000, 1.3); },
+                Aluminium(){ return costMultiplier('iron_ship', 38000, 1.3); },
                 Polymer(){ return costMultiplier('iron_ship', 16000, 1.3); },
                 Helium_3(){ return costMultiplier('iron_ship', fuel_adjust(1200), 1.3); }
             },
