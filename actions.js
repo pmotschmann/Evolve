@@ -3680,6 +3680,8 @@ export const actions = {
                     global.city['metal_refinery'] = { 
                         count: 0
                     };
+                    global.resource.Sheet_Metal.display = true;
+                    loadFoundry();
                     return true;
                 }
                 return false;
@@ -3724,8 +3726,6 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
-                    global.resource.Sheet_Metal.display = true;
-                    loadFoundry();
                     return true;
                 }
                 return false;
@@ -3928,11 +3928,12 @@ export const actions = {
             id: 'tech-barns',
             title: 'Barns',
             desc: 'Replace sheds with barns',
-            reqs: { storage: 2, smelting: 2 },
+            reqs: { storage: 2, smelting: 2, alumina: 1 },
             grant: ['storage',3],
             cost: {
                 Knowledge(){ return 15750; },
-                Steel(){ return 5000; }
+                Aluminium(){ return 3000; },
+                Steel(){ return 3000; }
             },
             effect: 'Replace smaller storage sheds with larger storage barns, a significant increase in storage capacity.',
             action(){
