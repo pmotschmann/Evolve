@@ -301,6 +301,7 @@ export function buildGarrison(garrison){
                     let stone = 0;
                     let copper = 0;
                     let iron = 0;
+                    let aluminium = 0;
                     let cement = 0;
                     let steel = 0;
                     switch(global.civic.garrison.tactic){
@@ -320,6 +321,9 @@ export function buildGarrison(garrison){
                             }
                             if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 iron = Math.floor(Math.seededRandom(25,100));
+                            }
+                            if (Math.floor(Math.seededRandom(0,10)) <= 2){
+                                aluminium = Math.floor(Math.seededRandom(25,100));
                             }
                             if (Math.floor(Math.seededRandom(0,10)) <= 1){
                                 cement = Math.floor(Math.seededRandom(25,100));
@@ -345,6 +349,9 @@ export function buildGarrison(garrison){
                             if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 iron = Math.floor(Math.seededRandom(250,1000));
                             }
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
+                                aluminium = Math.floor(Math.seededRandom(250,1000));
+                            }
                             if (Math.floor(Math.seededRandom(0,10)) <= 3){
                                 cement = Math.floor(Math.seededRandom(250,1000));
                             }
@@ -368,6 +375,9 @@ export function buildGarrison(garrison){
                             }
                             if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 iron = Math.floor(Math.seededRandom(2500,10000));
+                            }
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
+                                aluminium = Math.floor(Math.seededRandom(2500,10000));
                             }
                             if (Math.floor(Math.seededRandom(0,10)) <= 4){
                                 cement = Math.floor(Math.seededRandom(2500,10000));
@@ -393,6 +403,9 @@ export function buildGarrison(garrison){
                             if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 iron = Math.floor(Math.seededRandom(5000,20000));
                             }
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
+                                aluminium = Math.floor(Math.seededRandom(5000,20000));
+                            }
                             if (Math.floor(Math.seededRandom(0,10)) <= 4){
                                 cement = Math.floor(Math.seededRandom(5000,20000));
                             }
@@ -416,6 +429,9 @@ export function buildGarrison(garrison){
                             }
                             if (Math.floor(Math.seededRandom(0,10)) <= 5){
                                 iron = Math.floor(Math.seededRandom(10000,50000));
+                            }
+                            if (Math.floor(Math.seededRandom(0,10)) <= 5){
+                                aluminium = Math.floor(Math.seededRandom(10000,50000));
                             }
                             if (Math.floor(Math.seededRandom(0,10)) <= 4){
                                 cement = Math.floor(Math.seededRandom(10000,50000));
@@ -457,6 +473,11 @@ export function buildGarrison(garrison){
                         loot = loot + loc('civics_garrison_quant_iron',[iron]);
                         modRes('Iron',iron);
                     }
+                    if (global.resource.Aluminium.display && aluminium > 0){
+                        aluminium = lootModify(aluminium);
+                        loot = loot + loc('civics_garrison_quant_aluminium',[aluminium]);
+                        modRes('Aluminium',aluminium);
+                    }
                     if (global.resource.Cement.display && cement > 0){
                         cement = lootModify(cement);
                         loot = loot + loc('civics_garrison_quant_cement',[cement]);
@@ -465,7 +486,6 @@ export function buildGarrison(garrison){
                     if (steel > 0){
                         steel = lootModify(steel);
                         global.resource.Steel.display = true;
-                        loot = loot + `${steel} Steel, `;
                         loot = loot + loc('civics_garrison_quant_steel',[steel]);
                         modRes('Steel',steel);
                     }

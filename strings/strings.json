@@ -603,6 +603,7 @@
   "civics_garrison_quant_stone": "%0 Stone, ",
   "civics_garrison_quant_copper": "%0 Copper, ",
   "civics_garrison_quant_iron": "%0 Iron, ",
+  "civics_garrison_quant_aluminium": "%0 Aluminium, ",
   "civics_garrison_quant_cement": "%0 Cement, ",
   "civics_garrison_quant_steel": "%0 Steel, ",
   "civics_garrison_victorious": "Your army was victorious! %0 soldiers died in the conflict.",

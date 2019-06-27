@@ -29,11 +29,11 @@
     <div id="topBar" class="topBar">
         <span class="planet">{{ race.species | planet }}</span>
         <span class="calendar" v-show="city.calendar.day">
-            <b-tooltip :label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
+            <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
             <span class="year">Year <span class="has-text-warning">{{ city.calendar.year }}</span></span> 
             <span class="day">Day <span class="has-text-warning">{{ city.calendar.day }}</span></span>
-            <b-tooltip :label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
-            <b-tooltip :label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
+            <b-tooltip :label="weather()" :aria-label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
+            <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
         </span>
         <span class="version"><a href="https://github.com/pmotschmann/Evolve/blob/master/changelog.md" target="_blank"></a></span>
     </div>
