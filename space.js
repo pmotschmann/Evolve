@@ -442,8 +442,8 @@ const spaceProjects = {
                 Sheet_Metal(){ return costMultiplier('garage', 1500, 1.28); }
             },
             effect(){
-                let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
-                let containers = global.tech['supercollider'] ? 20 + global.tech['supercollider'] : 20;
+                let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
+                let containers = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
                 if (global.tech['world_control']){
                     multiplier *= global.tech['world_control'] ? 2 : 1;
                     containers += 10;
@@ -470,7 +470,7 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_red.garage.cost)){
                     incrementStruct('garage');
-                    let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
+                    let multiplier = global.tech['particles'] >= 4  ? 1 + (global.tech['supercollider'] / 20) : 1;
                     multiplier *= global.tech['world_control'] ? 2 : 1;
                     multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
                     global['resource']['Copper'].max += (spatialReasoning(6500) * multiplier);

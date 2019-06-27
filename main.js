@@ -2157,7 +2157,7 @@ function midLoop(){
             });
         }
         if (global.space['garage']){
-            let g_vol = global.tech['supercollider'] ? 20 + global.tech['supercollider'] : 20;
+            let g_vol = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
             if (global.tech['world_control']){
                 g_vol += 10;
             }
@@ -2308,7 +2308,7 @@ function midLoop(){
             bd_Coal[label] = gain+'v';
         }
         if (global.space['garage']){
-            let multiplier = global.tech['supercollider'] ? 1 + (global.tech['supercollider'] / 20) : 1;
+            let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
             multiplier *= global.tech['world_control'] ? 2 : 1;
             multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
 

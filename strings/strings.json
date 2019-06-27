@@ -553,7 +553,7 @@
   "trait_atrophy": "Your race atrophies quicker when not well fed.",
   "trait_hivemind": "Your citizens are highly ineffectual when working as individuals but gain potency as they work in bigger groups.",
   "trait_tunneler": "Your species is naturally adept at digging tunnels which make mine shafts cheaper to produce.",
-  "trait_frenzy": "The scent of blood sends your troops into a frenzy increasing your morale temporarily.",
+  "trait_frenzy": "The scent of blood sends your troops into a frenzy increasing your morale temporarily. You are also immune to the warmonger penalty.",
   "trait_apex_predator": "You are a very dangerous predator. Hunting and combat effectiveness is increased but armor technology is unusable.",
   "trait_invertebrate": "Your lack of a skeletal structure means you can't haul away as much loot from battle.",
   "trait_suction_grip": "Your superior grip boosts all productivity.",
