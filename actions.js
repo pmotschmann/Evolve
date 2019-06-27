@@ -1547,7 +1547,7 @@ export const actions = {
             title(){
                 return basicHousingLabel();
             },
-            desc: 'Basic housing for one citizen',
+            desc: loc('city_basic_housing_desc'),
             reqs: { housing: 1 },
             cost: { 
                 Money(){ 
@@ -1561,7 +1561,7 @@ export const actions = {
                 Lumber(){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', 10, 1.23); },
                 Stone(){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', 10, 1.23) : 0; }
             },
-            effect: '+1 Max Citizen',
+            effect: loc('city_one_citizen'),
             action(){
                 if (payCosts(actions.city.basic_housing.cost)){
                     global['resource'][races[global.race.species].name].display = true;
@@ -1576,9 +1576,9 @@ export const actions = {
         cottage: {
             id: 'city-cottage',
             title(){
-                return global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottage';
+                return global.race.species === 'sporgar' ? loc('city_cottage_title2') : loc('city_cottage_title1');
             },
-            desc: 'Cozy housing for 2 citizens',
+            desc: loc('city_cottage_desc'),
             reqs: { housing: 2 },
             cost: { 
                 Money(){ return costMultiplier('cottage', 900, 1.15); },
@@ -1589,10 +1589,10 @@ export const actions = {
             effect(){
                 if (global.tech['home_safe']){
                     let safe = spatialReasoning(global.tech.home_safe > 1 ? 2000 : 1000);
-                    return `<div>+2 Max Citizens</div><div>+${safe} Max Money</div>`;
+                    return `<div>${loc('city_cottage_effect')}</div><div>${loc('city_max_money',[safe])}</div>`;
                 }
                 else {
-                    return '+2 Max Citizens';
+                    return loc('city_cottage_effect');
                 }
             },
             action(){
@@ -1607,9 +1607,9 @@ export const actions = {
         apartment: {
             id: 'city-apartment',
             title(){
-                return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartment';
+                return global.race.species === 'sporgar' ? loc('city_apartment_title2') : loc('city_apartment_title1');
             },
-            desc: '<div>Housing complex for 5 citizens</div><div class="has-text-special">Requires Power</div>',
+            desc: `<div>${loc('city_apartment_desc')}</div><div class="has-text-special">${loc('city_requires_power')}</div>`,
             reqs: { housing: 3 },
             cost: { 
                 Money(){ return costMultiplier('apartment', 1750, 1.26) - 500; },
@@ -1621,10 +1621,10 @@ export const actions = {
             effect(){
                 if (global.tech['home_safe']){
                     let safe = spatialReasoning(global.tech.home_safe > 1 ? 5000 : 2000);
-                    return `<div>+5 Max Citizens. -1kW.</div><div>+${safe} Max Money</div>`;
+                    return `<div>${loc('city_apartment_effect')}</div><div>${loc('city_max_money',[safe])}</div>`;
                 }
                 else {
-                    return '+5 Max Citizens. -1kW.';
+                    return loc('city_apartment_effect');
                 }
             },
             powered: 1,
@@ -1642,15 +1642,15 @@ export const actions = {
         },
         lodge: {
             id: 'city-lodge',
-            title: 'Lodge',
-            desc: 'Increases hunter capacity',
+            title: loc('city_lodge'),
+            desc: loc('city_lodge_desc'),
             reqs: { hunting: 2 },
             cost: { 
                 Money(){ return costMultiplier('lodge', 50, 1.32); },
                 Lumber(){ return costMultiplier('lodge', 20, 1.36); },
                 Stone(){ return costMultiplier('lodge', 10, 1.36); }
             },
-            effect(){ return '+1 Max Citizen'; },
+            effect(){ return loc('city_one_citizen'); },
             action(){
                 if (payCosts(actions.city.lodge.cost)){
                     global.city['lodge'].count++;
@@ -1662,8 +1662,8 @@ export const actions = {
         },
         smokehouse: {
             id: 'city-smokehouse',
-            title: 'Smokehouse',
-            desc: 'Increases food storage capacity',
+            title: loc('city_smokehouse'),
+            desc: loc('city_food_storage'),
             reqs: { hunting: 1 },
             cost: { 
                 Money(){ return costMultiplier('smokehouse', 85, 1.32); },
@@ -1673,7 +1673,7 @@ export const actions = {
             effect(){ 
                 let food = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                return `+${food} Max Food`; 
+                return loc('city_max_food',[food]); 
             },
             action(){
                 if (payCosts(actions.city.smokehouse.cost)){
@@ -1686,8 +1686,8 @@ export const actions = {
         },
         farm: {
             id: 'city-farm',
-            title: 'Farm',
-            desc: 'Produces food',
+            title: loc('city_farm'),
+            desc: loc('city_farm_desc'),
             reqs: { agriculture: 1 },
             cost: { 
                 Money(){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', 50, 1.32);} else { return 0; } },
@@ -1699,7 +1699,7 @@ export const actions = {
                 farming *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                 farming = +farming.toFixed(2);
-                return global.tech['farm'] ? `<div>+${farming} Food Production</div><div>+1 Max Citizen</div>` : `+${farming} Food`; 
+                return global.tech['farm'] ? `<div>${loc('city_farm_effect',[farming])}</div><div>${loc('city_one_citizen')}</div>` : loc('city_farm_effect',[farming]); 
             },
             action(){
                 if (payCosts(actions.city.farm.cost)){
@@ -1712,20 +1712,20 @@ export const actions = {
                 }
                 return false;
             },
-            flair(){ return global.tech.agriculture >= 7 ? '100% Inorganic' : '100% Organic'; }
+            flair(){ return global.tech.agriculture >= 7 ? loc('city_farm_flair2') : loc('city_farm_flair1'); }
         },
         mill: {
             id: 'city-mill',
             title(){
-                return global.tech['agriculture'] >= 5 ? 'Windmill' : 'Mill';
+                return global.tech['agriculture'] >= 5 ? loc('city_mill_title2') : loc('city_mill_title1');
             },
             desc(){ 
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
-                    return `+${bonus}% Farming efficiency OR +1kW`;
+                    return loc('city_mill_desc2',[bonus]);
                 }
                 else {
-                    return `Increases farming efficiency by ${bonus}%`;
+                    return loc('city_mill_desc1',[bonus]);
                 }
             },
             reqs: { agriculture: 4 },
@@ -1746,7 +1746,7 @@ export const actions = {
             },
             effect(){
                 if (global.tech['agriculture'] >= 6){
-                    return '<span class="has-text-success">ON</span> for power, <span class="has-text-danger">OFF</span> for grain mill.';
+                    return `<span class="has-text-success">${loc('city_on')}</span> ${loc('city_mill_effect1')} <span class="has-text-danger">${loc('city_off')}</span> ${loc('city_mill_effect2')}`;
                 }
                 else {
                     return false;
@@ -1755,8 +1755,8 @@ export const actions = {
         },
         silo: {
             id: 'city-silo',
-            title: 'Grain Silo',
-            desc: 'Increases food storage capacity',
+            title: loc('city_silo'),
+            desc: loc('city_food_storage'),
             reqs: { agriculture: 3 },
             cost: { 
                 Money(){ return costMultiplier('silo', 85, 1.32); },
@@ -1766,7 +1766,7 @@ export const actions = {
             effect(){ 
                 let food = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                return `+${food} Max Food`; 
+                return loc('city_max_food',[food]);
             },
             action(){
                 if (payCosts(actions.city.silo.cost)){
@@ -2017,10 +2017,10 @@ export const actions = {
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
                 if (global.tech['banking'] >= 2){
-                    return `<div>+\$${vault} Max Money</div><div>+1 Max Banker</div>`; 
+                    return `<div>${loc('city_max_money',[vault])}</div><div>+1 Max Banker</div>`; 
                 }
                 else {
-                    return `+\$${vault} Max Money.`; 
+                    return loc('city_max_money',[vault]); 
                 }
             },
             action(){
@@ -2564,9 +2564,9 @@ export const actions = {
             effect(){
                 let money = spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
                 if (global.tech['world_control']){
-                    money *= 1.25;
+                    money = Math.round(money * 1.25);
                 }
-                return `<div>+${money} Max Money</div><div>+1 Max Entertainer</div><div>+1% Max Morale</div>`;
+                return `<div>${loc('city_max_money',[money])}</div><div>+1 Max Entertainer</div><div>+1% Max Morale</div>`;
             },
             action(){
                 if (payCosts(actions.city.casino.cost)){
@@ -8478,19 +8478,19 @@ export function evoProgress(){
 export function basicHousingLabel(){
     switch (global.race.species){
         case 'orc':
-            return 'Hut';
+            return loc('city_basic_housing_title2');
         case 'wolven':
-            return 'Den';
+            return loc('city_basic_housing_title3');
         case 'entish':
-            return 'Grove';
+            return loc('city_basic_housing_title4');
         case 'arraak':
-            return 'Nest';
+            return loc('city_basic_housing_title5');
         case 'pterodacti':
-            return 'Nest';
+            return loc('city_basic_housing_title5');
         case 'sporgar':
-            return 'Spore Nest';
+            return loc('city_basic_housing_title6');
         default:
-            return 'Cabin';
+            return loc('city_basic_housing_title1');
     }
 }
 

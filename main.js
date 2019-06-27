@@ -2520,7 +2520,7 @@ function midLoop(){
         if (global.city['casino']){
             let vault = global.city['casino'].count * spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
             if (global.tech['world_control']){
-                vault *= 1.25;
+                vault = Math.round(vault * 1.25);
             }
             caps['Money'] += vault;
             bd_Money['Casino'] = vault+'v';
