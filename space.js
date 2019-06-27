@@ -628,7 +628,7 @@ const spaceProjects = {
                 Money(){ return costMultiplier('exotic_lab', 750000, 1.28); },
                 Steel(){ return costMultiplier('exotic_lab', 100000, 1.28); },
                 Mythril(){ return costMultiplier('exotic_lab', 1000, 1.28); },
-                Elerium(){ return costMultiplier('exotic_lab', 20, 1.28); }
+                Elerium(){ return costMultiplier('exotic_lab', 20, 1.28) - 4; }
             },
             effect(){
                 let elerium = spatialReasoning(10);

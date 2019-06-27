@@ -1,3 +1,7 @@
+#### 0.4.15 - 6/27/2019 ####
+Global bonuses are now multiplicative instead of additive<br>
+Decreased base Elerium cost of Exotic Lab by 4<br>
+
 #### 0.4.14 - 6/27/2019 ####
 Statues now cost Aluminium instead of Wrought Iron<br>
 Nav Beacon now costs Aluminium instead of Iron<br>

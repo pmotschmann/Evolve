@@ -394,6 +394,10 @@ function fastLoop(){
     
     breakdown.p['Global'] = {};
     var global_multiplier = 1;
+    if (global.race.Plasmid.count > 0){
+        breakdown.p['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
+        global_multiplier += plasmidBonus();
+    }
     if (global.race['no_plasmid']){
         if (global.city['temple'] && global.city['temple'].count){
             let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
@@ -402,30 +406,25 @@ function fastLoop(){
             }
             let faith = global.city.temple.count * temple_bonus;
             breakdown.p['Global']['Faith'] = (faith * 100) + '%';
-            global_multiplier += faith;
+            global_multiplier *= (1 + faith);
         }
-    }
-    if (global.race.Plasmid.count > 0){
-        breakdown.p['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
-        global_multiplier += plasmidBonus();
     }
     if (global.tech['world_control']){
         breakdown.p['Global']['Unification'] = '25%';
-        global_multiplier += 0.25;
+        global_multiplier *= 1.25;
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
         breakdown.p['Global']['Mastery'] = (achieve_level * 0.25) + '%';
-        global_multiplier += (achieve_level * 0.0025);
+        global_multiplier *= 1 + (achieve_level * 0.0025);
     }
     if (global.race['suction_grip']){
         breakdown.p['Global']['Grip'] = '8%';
-        global_multiplier += 0.08;
+        global_multiplier *= 1.08;
     }
-
     if (global.race['intelligent']){
         let bonus = (global.civic.scientist.workers * 0.25) + (global.civic.professor.workers * 0.125);
         breakdown.p['Global']['Intelligence'] = bonus+'%';
-        global_multiplier += (bonus / 100);
+        global_multiplier *= 1 + (bonus / 100);
     }
 
     breakdown.p['consume'] = {
