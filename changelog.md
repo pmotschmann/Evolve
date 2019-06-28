@@ -1,3 +1,8 @@
+#### 0.4.16 - 6/28/2019 ####
+Lowered research cost of Mass Driver from 170k to 160k<br>
+Lowered Iridium cost of Mass Drivers<br>
+Updated Mass Extiction unlock requirement<br>
+
 #### 0.4.15 - 6/28/2019 ####
 Global bonuses are now multiplicative instead of additive<br>
 Decreased base Elerium cost of Exotic Lab by 4<br>

@@ -2902,7 +2902,7 @@ export const actions = {
                 Money(){ return costMultiplier('mass_driver', 375000, 1.32); },
                 Copper(){ return costMultiplier('mass_driver', 33000, 1.32); },
                 Iron(){ return costMultiplier('mass_driver', 42500, 1.32); },
-                Iridium(){ return costMultiplier('mass_driver', 3500, 1.32); }
+                Iridium(){ return costMultiplier('mass_driver', 2200, 1.32); }
             },
             effect(){
                 return `-5% space fuel costs. -${actions.city.mass_driver.powered}kW.`;
@@ -4559,7 +4559,7 @@ export const actions = {
                 Knowledge(){ return 150000; },
                 Mythril(){ return 750; }
             },
-            effect: 'Upgrade banks with impenetrable mythil plated vaults.',
+            effect: 'Upgrade banks with impenetrable mythil plated vaults, increases $ storage capacity.',
             action(){
                 if (payCosts(actions.tech.mythril_vault.cost)){
                     return true;
@@ -4578,7 +4578,7 @@ export const actions = {
                 Knowledge(){ return 280000; },
                 Neutronium(){ return 650; }
             },
-            effect: 'Upgrade your bank vault doors with neutronium.',
+            effect: 'Upgrade your bank vault doors with neutronium, increases $ storage capacity.',
             action(){
                 if (payCosts(actions.tech.neutronium_vault.cost)){
                     return true;
@@ -4597,7 +4597,7 @@ export const actions = {
                 Knowledge(){ return 8000; },
                 Steel(){ return 4500; }
             },
-            effect: 'Install a safe in every cottage and apartment to store valuables.',
+            effect: 'Install a safe in every cottage and apartment to store valuables. Adds $ storage to housing.',
             action(){
                 if (payCosts(actions.tech.home_safe.cost)){
                     return true;
@@ -4616,7 +4616,7 @@ export const actions = {
                 Knowledge(){ return 120000; },
                 Iridium(){ return 1000; }
             },
-            effect: 'Upgrade house safes with newer fire resistant materials.',
+            effect: 'Upgrade house safes with newer fire resistant materials, increases $ storage capacity.',
             action(){
                 if (payCosts(actions.tech.fire_proof_safe.cost)){
                     return true;
@@ -5383,7 +5383,7 @@ export const actions = {
             reqs: { oil: 6, space: 3 },
             grant: ['mass',1],
             cost: {
-                Knowledge(){ return 170000; }
+                Knowledge(){ return 160000; }
             },
             effect: 'Mass drivers use an electromagnetic rail to launch payloads into orbit, and can be used to reduce fuel consumption required by traditional rocket launches.',
             action(){
