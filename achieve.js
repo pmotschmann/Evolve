@@ -300,6 +300,16 @@ var achievements = {
         name: loc("achieve_extinct_antid_name"),
         desc: loc("achieve_extinct_antid_desc"),
         flair: loc("achieve_extinct_antid_flair")
+    },
+    extinct_sharkin: {
+        name: loc("achieve_extinct_sharkin_name"),
+        desc: loc("achieve_extinct_sharkin_desc"),
+        flair: loc("achieve_extinct_sharkin_flair")
+    },
+    extinct_octigoran: {
+        name: loc("achieve_extinct_octigoran_name"),
+        desc: loc("achieve_extinct_octigoran_desc"),
+        flair: loc("achieve_extinct_octigoran_flair")
     }
 };
 
@@ -369,17 +379,16 @@ export function drawAchieve(){
 
 export function checkAchievements(){
     if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'] < achieve_level){
-        let check = true;
+        let total = 0;
         const keys = Object.keys(achievements)
         for (const key of keys) {
             if (key.includes('extinct_')){
-                if (!global.stats.achieve[key] || global.stats.achieve[key] < achieve_level){
-                    check = false;
-                    break;
+                if (global.stats.achieve[key] && global.stats.achieve[key] >= achieve_level){
+                    total++
                 }
             }
         }
-        if (check){
+        if (total >= 25){
             unlockAchieve('mass_extinction');
         }
     }

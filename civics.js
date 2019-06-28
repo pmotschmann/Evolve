@@ -1,5 +1,5 @@
 import { global, vues, poppers, messageQueue, modRes, save, keyMultiplier } from './vars.js';
-import { unlockAchieve } from './achieve.js';
+import { unlockAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js'
 
@@ -957,6 +957,7 @@ function warhead(){
     global.stats.plasmid += new_plasmid;
     unlockAchieve(`apocalypse`);
     let new_achieve = unlockAchieve(`extinct_${god}`);
+    checkAchievements();
     global['race'] = { 
         species : 'protoplasm', 
         gods: god, 
