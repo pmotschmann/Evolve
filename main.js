@@ -1996,6 +1996,9 @@ function fastLoop(){
     
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
         let rate = global.race['diverse'] ? 2 : 2.5;
+        if (global.city['boot_camp']){
+            rate *= 1 + (global.city['boot_camp'].count * 0.05);
+        }
         global.civic.garrison.progress += rate * time_multiplier;
         if (global.race['brute']){
             global.civic.garrison.progress += 2.5 * time_multiplier;
@@ -2886,7 +2889,18 @@ function longLoop(){
 
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
-            global.civic.garrison.wounded -= global.race['regenerative'] ? 4 : 1;
+            let healed = global.race['regenerative'] ? 4 : 1;
+            if (global.city['hospital']){
+                let hc = global.city['hospital'].count;
+                while (hc >= 20){
+                    healed++;
+                    hc -= 20;
+                }
+                if (Math.rand(0,hc) > Math.rand(0,20)){
+                    healed++;
+                }
+            }
+            global.civic.garrison.wounded -= healed;
             if (global.civic.garrison.wounded < 0){
                 global.civic.garrison.wounded = 0;
             }

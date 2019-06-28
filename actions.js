@@ -1512,36 +1512,6 @@ export const actions = {
                 return false;
             }
         },
-        garrison: {
-            id: 'city-garrison',
-            title: loc('city_garrison'),
-            desc: loc('city_garrison_desc'),
-            reqs: { military: 1, housing: 1 },
-            cost: { 
-                Money(){ return costMultiplier('garrison', 240, 1.5); },
-                Stone(){ return costMultiplier('garrison', 260, 1.46); }
-            },
-            effect() {
-                let bunks = global.tech['military'] >= 5 ? 3 : 2;
-                if (global.race['chameleon']){
-                    bunks--;
-                }
-                return loc('city_garrison_effect',[bunks]);
-            },
-            action(){
-                if (payCosts(actions.city.garrison.cost)){
-                    let gain = global.tech['military'] >= 5 ? 3 : 2;
-                    if (global.race['chameleon']){
-                        gain -= global.city.garrison.count;
-                    }
-                    global.civic['garrison'].max += gain;
-                    global.city['garrison'].count++;
-                    global.resource.Furs.display = true;
-                    return true;
-                }
-                return false;
-            }
-        },
         basic_housing: {
             id: 'city-house',
             title(){
@@ -1772,6 +1742,79 @@ export const actions = {
                 if (payCosts(actions.city.silo.cost)){
                     global.city['silo'].count++;
                     global['resource']['Food'].max += spatialReasoning(500);
+                    return true;
+                }
+                return false;
+            }
+        },
+        garrison: {
+            id: 'city-garrison',
+            title: loc('city_garrison'),
+            desc: loc('city_garrison_desc'),
+            reqs: { military: 1, housing: 1 },
+            cost: { 
+                Money(){ return costMultiplier('garrison', 240, 1.5); },
+                Stone(){ return costMultiplier('garrison', 260, 1.46); }
+            },
+            effect(){
+                let bunks = global.tech['military'] >= 5 ? 3 : 2;
+                if (global.race['chameleon']){
+                    bunks--;
+                }
+                return loc('city_garrison_effect',[bunks]);
+            },
+            action(){
+                if (payCosts(actions.city.garrison.cost)){
+                    let gain = global.tech['military'] >= 5 ? 3 : 2;
+                    if (global.race['chameleon']){
+                        gain -= global.city.garrison.count;
+                    }
+                    global.civic['garrison'].max += gain;
+                    global.city['garrison'].count++;
+                    global.resource.Furs.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        hospital: {
+            id: 'city-hospital',
+            title: loc('city_hospital'),
+            desc: loc('city_hospital_desc'),
+            reqs: { medic: 1 },
+            cost: { 
+                Money(){ return costMultiplier('hospital', 22000, 1.32); },
+                Furs(){ return costMultiplier('hospital', 4000, 1.32); },
+                Aluminium(){ return costMultiplier('hospital', 10000, 1.32); }
+            },
+            effect(){
+                return loc('city_hospital_effect',[5]);
+            },
+            action(){
+                if (payCosts(actions.city.hospital.cost)){
+                    global.city['hospital'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
+        boot_camp: {
+            id: 'city-boot_camp',
+            title: loc('city_boot_camp'),
+            desc: loc('city_boot_camp_desc'),
+            reqs: { boot_camp: 1 },
+            cost: { 
+                Money(){ return costMultiplier('boot_camp', 50000, 1.32); },
+                Lumber(){ return costMultiplier('boot_camp', 21500, 1.32); },
+                Aluminium(){ return costMultiplier('boot_camp', 12000, 1.32); },
+                Brick(){ return costMultiplier('boot_camp', 2800, 1.32); }
+            },
+            effect(){
+                return loc('city_boot_camp_effect',[5]);
+            },
+            action(){
+                if (payCosts(actions.city.boot_camp.cost)){
+                    global.city['boot_camp'].count++;
                     return true;
                 }
                 return false;
@@ -5876,6 +5919,42 @@ export const actions = {
             effect: 'Regererate the mercenary pool faster by offering signing bonuses.',
             action(){
                 if (payCosts(actions.tech.signing_bonus.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        hospital: {
+            id: 'tech-hospital',
+            title: 'Hospital',
+            desc: 'Design a medical facility for your wounded',
+            reqs: { military: 1, alumina: 1 },
+            grant: ['medic',1],
+            cost: {
+                Knowledge(){ return 5000; }
+            },
+            effect: 'Establish a triage center which can be used to accelerate the healing of wounded soldiers.',
+            action(){
+                if (payCosts(actions.tech.hospital.cost)){
+                    global.city['hospital'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        boot_camp: {
+            id: 'tech-boot_camp',
+            title: 'Boot Camp',
+            desc: 'Design a military training facility',
+            reqs: { high_tech: 1 },
+            grant: ['boot_camp',1],
+            cost: {
+                Knowledge(){ return 8000; }
+            },
+            effect: 'Accelerate the training of new soldiers with a specialized training facility.',
+            action(){
+                if (payCosts(actions.tech.boot_camp.cost)){
+                    global.city['boot_camp'] = { count: 0 };
                     return true;
                 }
                 return false;
