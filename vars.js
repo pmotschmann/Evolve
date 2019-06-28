@@ -388,6 +388,7 @@ if (!global.race['mutation']){
     global.race['mutation'] = 0;
 }
 
+global.settings.animated = true;
 global.settings.disableReset = false;
 
 if (global.lastMsg){
