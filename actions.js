@@ -4024,7 +4024,7 @@ export const actions = {
                 Knowledge(){ return 6750; },
                 Sheet_Metal(){ return 100; }
             },
-            effect: 'Upgrade wooden crates by reinforcing them with steel.',
+            effect: 'Upgrade wooden crates by reinforcing them with metal plates.',
             action(){
                 if (payCosts(actions.tech.reinforced_crates.cost)){
                     return true;
@@ -4095,7 +4095,7 @@ export const actions = {
             grant: ['steel_container',1],
             cost: {
                 Knowledge(){ return 9000; },
-                Sheet_Metal(){ return 200; }
+                Steel(){ return 250; }
             },
             effect: 'Replace cheap wooden crates with more durable steel containers.',
             action(){

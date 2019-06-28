@@ -59,7 +59,7 @@ var achievements = {
     colonist: {
         name: loc("achieve_colonist_name"),
         desc: loc("achieve_colonist_desc"),
-        flair: loc("achieve_colonist_flair",[global.race.species]) //it was because of this that I had to load all the strings twice!
+        flair: loc("achieve_colonist_flair",[global.race.species])
     },
     world_domination: {
         name: loc("achieve_world_domination_name"),

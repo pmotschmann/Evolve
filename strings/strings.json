@@ -658,6 +658,8 @@
   "civics_garrison_tactic_siege": "Siege",
   "civics_garrison_tactic_siege_desc": "Attempt to seige a rival city. This operation is suicide for all but the strongest armies, but if sucessful will be glorious.",
   "civics_garrison_hire_mercenary_cost": "Hire a mercenary: $%0",
+  "civics_garrison_advantage": "%0% advantage",
+  "civics_garrison_disadvantage": "%0% disadvantage",
   "civics_garrison_advice1": "Your advisors think this campaign is suicide.",
   "civics_garrison_advice2": "Your advisors think this campaign will be a disaster.",
   "civics_garrison_advice3": "You are advised against launching this war campaign.",

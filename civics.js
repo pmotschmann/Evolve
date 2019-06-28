@@ -632,6 +632,15 @@ export function buildGarrison(garrison){
                         enemy = 300;
                         break;
                 }
+
+                if (army < enemy){
+                    return loc('civics_garrison_disadvantage',[+((1 - (army / enemy)) * 100).toFixed(1)]);
+                }
+                else {
+                    return loc('civics_garrison_advantage',[+((1 - (enemy / army)) * 100).toFixed(1)]);
+                }
+
+                /*
                 if (army * 2 < enemy){
                     return loc('civics_garrison_advice1');
                 }
@@ -652,7 +661,7 @@ export function buildGarrison(garrison){
                 }
                 else {
                     return loc('civics_garrison_advice4');
-                }
+                }*/
             },
             armyLabel(){
                 return loc('civics_garrison_army_label');
