@@ -472,13 +472,6 @@ function checkCosts(costs){
 }
 
 function adjustCosts(costs){
-    if (global.race['creative']){
-        var newCosts = {};
-        Object.keys(costs).forEach(function (res){
-            newCosts[res] = function(){ return Math.round(costs[res]() * 0.95) || 0; }
-        });
-        return newCosts;
-    }
     return kindlingAdjust(costs);
 }
 
@@ -497,6 +490,9 @@ function kindlingAdjust(costs){
 
 function costMultiplier(project,base,mutiplier){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
+    if (global.race['creative']){
+        mutiplier -= 0.01;
+    }
     return Math.round((mutiplier ** rank) * base);
 }
 
@@ -633,12 +629,15 @@ function addProject(parent,project){
         buy.append($(`<button class="button x1" @click="build('${project}',1)">1%</button>`));
         buy.append($(`<button class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button class="button x25" @click="build('${project}',25)">25%</button>`));
-        buy.append($(`<button class="button x100" @click="build('${project}',100)">100%</button>`));
+        buy.append($(`<button class="button x100" @click="build('${project}',100)">{{ complete | remain }}%</button>`));
 
         vues[`arpa${project}`] = new Vue({
             data: global.arpa[project],
             methods: {
                 build(pro,num){
+                    if (num === 100){
+                        num = 100 - global.arpa[project].complete;
+                    }
                     for (let i=0; i<num; i++){
                         if (payCosts(arpaProjects[pro].cost)){
                             global.arpa[pro].complete++;
@@ -663,6 +662,11 @@ function addProject(parent,project){
                             }
                         }
                     }
+                }
+            },
+            filters: {
+                remain(val){
+                    return 100 - val;
                 }
             }
         });
@@ -697,10 +701,11 @@ function addProject(parent,project){
         for (let i=0; i<classes.length; i++){
             let id = classes[i];
             $(`#arpa${project} .buy .x${id}`).on('mouseover',function(){
+                let inc = id === '100' ? 100 - global.arpa[project].complete : id;
                 var cost = $('<div></div>');
                 var costs = adjustCosts(arpaProjects[project].cost);
-                Object.keys(costs).forEach(function (res) {
-                    var res_cost = (costs[res]() * (id / 100)).toFixed(0);
+                Object.keys(costs).forEach(function (res){
+                    var res_cost = (costs[res]() * (inc / 100)).toFixed(0);
                     if (res_cost > 0){
                         var label = res === 'Money' ? '$' : res+': ';
                         label = label.replace("_", " ");
