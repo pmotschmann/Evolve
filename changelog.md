@@ -1,4 +1,6 @@
 #### 0.4.16 - 6/28/2019 ####
+New Hospital, heals wounded soldiers faster<br>
+New Boot Camp, train new soldiers quicker<br>
 Lowered research cost of Mass Driver from 170k to 160k<br>
 Lowered Iridium cost of Mass Drivers<br>
 Updated Mass Extinction unlock requirement<br>
