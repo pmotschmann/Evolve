@@ -1823,14 +1823,14 @@ export const actions = {
         shed: {
             id: 'city-shed',
             title(){ 
-                return global.tech['storage'] <= 2 ? 'Shed' : (global.tech['storage'] >= 4 ? 'Warehouse' : 'Barn'); 
+                return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2')); 
             },
             desc(){
-                let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? 'large storage' : 'storage') : 'small storage';
-                return `A ${storage} facility for your various resources`;
+                let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
+                return loc('city_shed_desc',[storage]);
             },
             reqs: { storage: 1 },
-            cost: { 
+            cost: {
                 Money(){ return costMultiplier('shed', 75, 1.22); },
                 Lumber(){
                     if (global.tech['storage'] && global.tech['storage'] < 4){ 
@@ -1869,44 +1869,44 @@ export const actions = {
                 let storage = '';
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
-                    let val = +(spatialReasoning(300) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Lumber.`;
+                    let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Lumber_name')}. `;
                 }
                 if (global.resource.Stone.display){
-                    let val = +(spatialReasoning(300) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Stone.`;
+                    let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Stone_name')}. `;
                 }
                 if (global.resource.Furs.display){
-                    let val = +(spatialReasoning(125) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Furs.`;
+                    let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Furs_name')}. `;
                 }
                 if (global.resource.Copper.display){
-                    let val = +(spatialReasoning(90) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Copper.`;
+                    let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Copper_name')}. `;
                 }
                 if (global.resource.Iron.display){
-                    let val = +(spatialReasoning(125) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Iron.`;
+                    let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Iron_name')}. `;
                 }
                 if (global.resource.Aluminium.display){
-                    let val = +(spatialReasoning(90) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Aluminium.`;
+                    let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Aluminium_name')}. `;
                 }
                 if (global.resource.Cement.display){
-                    let val = +(spatialReasoning(100) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Cement.`;
+                    let val = sizeApproximation(+(spatialReasoning(100) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Cement_name')}. `;
                 }
                 if (global.resource.Coal.display){
-                    let val = +(spatialReasoning(75) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Coal.`;
+                    let val = sizeApproximation(+(spatialReasoning(75) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Coal_name')}. `;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    let val = +(spatialReasoning(40) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Steel.`;
+                    let val = sizeApproximation(+(spatialReasoning(40) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Steel_name')}. `;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    let val = +(spatialReasoning(20) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Titanium.`;
+                    let val = sizeApproximation(+(spatialReasoning(20) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Titanium_name')}.`;
                 }
                 return storage;
             },
@@ -1935,10 +1935,10 @@ export const actions = {
         },
         storage_yard: {
             id: 'city-storage_yard',
-            title: 'Freight Yard',
-            desc: 'Increases crate capacity',
+            title: loc('city_storage_yard'),
+            desc: loc('city_storage_yard_desc'),
             reqs: { container: 1 },
-            cost: { 
+            cost: {
                 Money(){ return costMultiplier('storage_yard', 10, 1.36); },
                 Brick(){ return costMultiplier('storage_yard', 3, 1.35); },
                 Wrought_Iron(){ return costMultiplier('storage_yard', 5, 1.35); }
@@ -1951,12 +1951,12 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return `+${cap} Max Crates`; 
+                return loc('city_storage_yard_effect',[cap]); 
             },
             action(){
                 if (payCosts(actions.city.storage_yard.cost)){
                     if (global.resource.Crates.display === false){
-                        messageQueue('You have unlocked a new method of resource management, click the + symbol next to a resource to manage it.','success');
+                        messageQueue(loc('city_storage_yard_msg'),'success');
                     }
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
@@ -1977,10 +1977,10 @@ export const actions = {
         },
         warehouse: {
             id: 'city-warehouse',
-            title: 'Container Port',
-            desc: 'Increases container capacity',
+            title: loc('city_warehouse'),
+            desc: loc('city_warehouse_desc'),
             reqs: { steel_container: 1 },
-            cost: { 
+            cost: {
                 Money(){ return costMultiplier('warehouse', 400, 1.26); },
                 Cement(){ return costMultiplier('warehouse', 75, 1.26); },
                 Sheet_Metal(){ return costMultiplier('warehouse', 25, 1.25); }
@@ -1993,12 +1993,12 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return `+${cap} Max Containers`; 
+                return loc('city_warehouse_effect',[cap]);
             },
             action(){
                 if (payCosts(actions.city.warehouse.cost)){
                     if (global.resource.Containers.display === false){
-                        messageQueue('You can now construct containers, click the + symbol next to a resource to manage containers.','success');
+                        messageQueue(loc('city_warehouse_msg'),'success');
                     }
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
@@ -7451,9 +7451,9 @@ export const actions = {
     starDock: {
         probes: {
             id: 'spcdock-probes',
-            title: 'Space Probe',
+            title: loc('star_dock_probe'),
             desc(){
-                return `<div>Interstellar Probe</div>`;
+                return `<div>${loc('star_dock_probe_desc')}</div>`;
             },
             reqs: { genesis: 4 },
             cost: {
@@ -7464,7 +7464,7 @@ export const actions = {
                 Mythril(){ return costMultiplier('probes', 5000, 1.25,'starDock'); },
             },
             effect(){
-                return `<div>Each interstellar probe increases the number of target worlds your bioseeder ship can scout by one.</div>`;
+                return `<div>${loc('star_dock_probe_effect')}</div>`;
             },
             action(){
                 if (payCosts(actions.starDock.probes.cost)){
@@ -7476,13 +7476,13 @@ export const actions = {
         },
         seeder: {
             id: 'spcdock-seeder',
-            title: 'Bioseeder Ship',
+            title: loc('star_dock_seeder'),
             desc(){
                 if (global.starDock.seeder.count >= 100){
-                    return `<div>Bioseeder Ship</div><div class="has-text-special">Status: Complete</div>`;
+                    return `<div>${loc('star_dock_seeder')}</div><div class="has-text-special">${loc('star_dock_seeder_desc2')}</div>`;
                 }
                 else {
-                    return `<div>Bioseeder Ship</div><div class="has-text-special">Requires 100 segments</div>`;
+                    return `<div>${loc('star_dock_seeder')}</div><div class="has-text-special">${loc('star_dock_seeder_desc1')}</div>`;
                 }
             },
             reqs: { genesis: 5 },
@@ -7494,8 +7494,8 @@ export const actions = {
                 Nano_Tube(){ return global.starDock.seeder.count < 100 ? 12000 : 0; },
             },
             effect(){
-                let remain = global.starDock.seeder.count < 100 ? `${100 - global.starDock.seeder.count} segments remaining`: `The ship is complete`;
-                return `<div>The "Genesis" ship. This is an automated ship that will travel for hundreds of years to reach a target and bioseed it with new life.</div><div class="has-text-special">${remain}</div>`;
+                let remain = global.starDock.seeder.count < 100 ? loc('star_dock_seeder_status1',[100 - global.starDock.seeder.count]) : loc('star_dock_seeder_status2');
+                return `<div>${loc('star_dock_seeder_effect')}</div><div class="has-text-special">${remain}</div>`;
             },
             action(){
                 if (global.starDock.seeder.count < 100 && payCosts(actions.starDock.seeder.cost)){
@@ -7514,9 +7514,9 @@ export const actions = {
         },
         launch_ship: {
             id: 'spcdock-launch_ship',
-            title: 'Launch Ship',
+            title: loc('star_dock_genesis'),
             desc(){
-                return `<div>Launch the Bioseeder Ship</div><div class="has-text-danger">Resets the game</div>`;
+                return `<div>${loc('star_dock_genesis_desc1')}</div><div class="has-text-danger">${loc('star_dock_genesis_desc2')}</div>`;
             },
             reqs: { genesis: 6 },
             cost: {},
@@ -7531,7 +7531,7 @@ export const actions = {
                     k_inc *= 1.015;
                 }
                 plasmid = challenge_multiplier(plasmid);
-                return `<div>Launch the "Genesis" ship. You will seed life in a far away star system and take over as the species that evoles there.</div><div class="has-text-special">You will gain ${plasmid} Plasmids</div>`;
+                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div>`;
             },
             action(){
                 bioseed();
@@ -7918,7 +7918,7 @@ export function setPlanet(){
             $('#main').append(popper);
             
             popper.append($(`<div>${id}</div>`));
-            popper.append($(`<div>${id} is a ${biome} planet with an orbital period of ${orbit} days.</div>`));
+            popper.append($(`<div>${loc('set_planet',[id,biome,orbit])}`));
             popper.append($(`<div>${biomes[biome]}</div>`));
 
             popper.show();
