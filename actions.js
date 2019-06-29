@@ -5187,14 +5187,14 @@ export const actions = {
         },
         worker_drone: {
             id: 'tech-worker_drone',
-            title: 'Worker Drones',
-            desc: 'Worker Drones',
+            title: 'Mining Drones',
+            desc: 'Mining Drones',
             reqs: { nano: 1 },
             grant: ['drone',1],
             cost: {
                 Knowledge(){ return 400000; },
             },
-            effect(){ return `Worker drones will help expedite neutronium mining on ${races[global.race.species].solar.gas_moon}.`; },
+            effect(){ return `Mining drones can help expedite neutronium mining on ${races[global.race.species].solar.gas_moon}.`; },
             action(){
                 if (payCosts(actions.tech.polymer.cost)){
                     global.space['drone'] = { count: 0 };
@@ -7941,7 +7941,7 @@ function actionDesc(parent,c_action,old){
         Object.keys(costs).forEach(function (res) {
             var res_cost = costs[res]();
             if (res_cost > 0){
-                let label = res === 'Money' ? '$' : res+': ';
+                let label = res === 'Money' ? '$' : global.resource[res].name+': ';
                 label = label.replace("_", " ");
                 let color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
                 let display_cost = sizeApproximation(res_cost,1);
@@ -8028,10 +8028,10 @@ function kindlingAdjust(costs){
 }
 
 function craftAdjust(costs){
-    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'])){
+    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal'){
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril'){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
             }
             else {
@@ -8179,7 +8179,7 @@ function drawModal(c_action,type){
 
 function starDockModal(modal){
     if (global.tech['genesis'] < 4){
-        let warn = $('<div><span class="has-text-warning">You must complete plans for your interstellar craft first</span></div>');
+        let warn = $(`<div><span class="has-text-warning">${loc('stardock_warn')}</span></div>`);
         modal.append(warn);
         return;
     }
@@ -8202,14 +8202,14 @@ function starDockModal(modal){
 }
 
 function smelterModal(modal){
-    let fuel = $('<div><span class="has-text-warning">Fueled:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>');
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>`);
     modal.append(fuel);
 
     let fuelTypes = $('<div></div>');
     modal.append(fuelTypes);
 
     if (!global.race['kindling_kindred']){
-        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">Wood {{ Wood }}</span></b-tooltip>`);
+        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">${loc('resource_Lumber_name')} {{ Wood }}</span></b-tooltip>`);
         let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
         let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
         fuelTypes.append(subWood);
@@ -8218,7 +8218,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">Coal {{ Coal }}</span></b-tooltip>`);
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">${loc('resource_Coal_name')} {{ Coal }}</span></b-tooltip>`);
         let subCoal = $('<span class="sub" @click="subCoal">&laquo;</span>');
         let addCoal = $('<span class="add" @click="addCoal">&raquo;</span>');
         fuelTypes.append(subCoal);
@@ -8227,7 +8227,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">Oil {{ Oil }}</span></b-tooltip>`);
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">${loc('resource_Oil_name')} {{ Oil }}</span></b-tooltip>`);
         let subOil = $('<span class="sub" @click="subOil">&laquo;</span>');
         let addOil = $('<span class="add" @click="addOil">&raquo;</span>');
         fuelTypes.append(subOil);
@@ -8237,8 +8237,8 @@ function smelterModal(modal){
 
     if (global.resource.Steel.display && global.tech.smelting >= 2){
         let smelt = $('<div class="smelting"></div>');
-        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" @click="ironSmelting()">Iron Smelting: {{ Iron }}</button></b-tooltip>`);
-        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" @click="steelSmelting()">Steel Smelting: {{ Steel }}</button></b-tooltip>`);
+        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ Iron }}</button></b-tooltip>`);
+        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ Steel }}</button></b-tooltip>`);
         modal.append(smelt);
         smelt.append(ironSmelt);
         smelt.append(steelSmelt);
@@ -8345,7 +8345,7 @@ function smelterModal(modal){
                 if (global.race['pyrophobia']){
                     boost *= 0.9;
                 }
-                return `Smelt Iron, boosts Iron production by ${boost}%`;
+                return loc('modal_smelter_iron',[boost,loc('resource_Iron_name')]);
             },
             steelLabel(){
                 let boost = global.tech['smelting'] >= 4 ? 1.2 : 1;
@@ -8358,7 +8358,7 @@ function smelterModal(modal){
                 if (global.race['pyrophobia']){
                     boost *= 0.9;
                 }
-                return `Smelt Steel, consumes 0.25 Coal and 2 Iron per second but produces ${boost} Steel`;
+                return loc('modal_smelter_steel',[boost,loc('resource_Steel_name'),loc('resource_Coal_name'),loc('resource_Iron_name')]);
             },
             ironSmelting(){
                 let keyMult = keyMultiplier();
@@ -8395,20 +8395,17 @@ function smelterModal(modal){
             buildLabel: function(type){
                 switch(type){
                     case 'wood':
-                        return 'Consume 3 Lumber/s to fuel a smelter';
-                        break;
+                        return loc('modal_build_wood',[loc('resource_Lumber_name')]);
                     case 'coal':
                         let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
                         if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                            return `Burn ${coal_fuel} Coal/s to fuel a smelter and produce trace amounts of uranium.`;
+                            return loc('modal_build_coal2',[coal_fuel,loc('resource_Coal_name'),loc('resource_Uranium_name')]);
                         }
                         else {
-                            return `Burn ${coal_fuel} Coal/s to fuel a smelter`;
+                            return loc('modal_build_coal1',[coal_fuel,loc('resource_Coal_name')]);
                         }
-                        break;
                     case 'oil':
-                        return 'Burn 0.35 Oil/s to fuel a smelter. Provides a minor output boost.';
-                        break;
+                        return loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
                 }
             }
         },
@@ -8446,10 +8443,10 @@ export const f_rate = {
 };
 
 function factoryModal(modal){
-    let fuel = $('<div><span class="has-text-warning">Operating:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>');
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>`);
     modal.append(fuel);
 
-    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>Luxury Goods</span></b-tooltip></div>`);
+    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>${loc('modal_factory_lux')}</span></b-tooltip></div>`);
     modal.append(lux);
 
     let luxCount = $(`<span class="current">{{ Lux }}</span>`);
@@ -8459,7 +8456,7 @@ function factoryModal(modal){
     lux.append(luxCount);
     lux.append(addLux);
 
-    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-left" size="is-small" multilined animated><span>Alloy</span></b-tooltip></div>`);
+    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Alloy_name')}</span></b-tooltip></div>`);
     modal.append(alloy);
 
     let alloyCount = $(`<span class="current">{{ Alloy }}</span>`);
@@ -8470,7 +8467,7 @@ function factoryModal(modal){
     alloy.append(addAlloy);
 
     if (global.tech['polymer']){
-        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" position="is-left" size="is-small" multilined animated><span>Polymer</span></b-tooltip></div>`);
+        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Polymer_name')}</span></b-tooltip></div>`);
         modal.append(polymer);
 
         let polymerCount = $(`<span class="current">{{ Polymer }}</span>`);
@@ -8482,7 +8479,7 @@ function factoryModal(modal){
     }
 
     if (global.tech['nano']){
-        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" position="is-left" size="is-small" multilined animated><span>Nano Tube</span></b-tooltip></div>`);
+        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Nano_Tube_name')}</span></b-tooltip></div>`);
         modal.append(nano);
 
         let nanoCount = $(`<span class="current">{{ Nano }}</span>`);
@@ -8513,25 +8510,25 @@ function factoryModal(modal){
                     case 'Lux':
                         let demand = +(global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
                         let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
-                        return `Consume ${fur} Furs/s to produce luxury goods worth \$${demand}`;
+                        return loc('modal_factory_lux_label',[fur,loc('resource_Furs_name'),demand]);
                     case 'Alloy':
                         let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
                         let aluminium = assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0];
-                        return `Consume ${copper} Copper and ${aluminium} Aluminium/s to produce Alloy`;
+                        return loc('modal_factory_alloy_label',[copper,loc('resource_Copper_name'),aluminium,loc('resource_Aluminium_name'),loc('resource_Alloy_name')]);
                     case 'Polymer':
                         if (global.race['kindling_kindred']){
                             let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
-                            return `Consume ${oil} Oil/s to produce Polymer`;
+                            return loc('modal_factory_polymer_label2',[oil,loc('resource_Oil_name'),loc('resource_Polymer_name')]);
                         }
                         else {
                             let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
                             let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
-                            return `Consume ${oil} Oil and ${lumber} Lumber/s to produce Polymer`;
+                            return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,loc('resource_Lumber_name'),loc('resource_Polymer_name')]);
                         }
                     case 'Nano':
                         let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
                         let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
-                        return `Consume ${coal} Coal and ${neutronium} Neutronium/s to produce Nano Tubes`;
+                        return loc('modal_factory_nano_label',[coal,loc('resource_Coal_name'),neutronium,loc('resource_Neutronium_name'),loc('resource_Nano_Tube_name')]);
                 }
             }
         },
@@ -8624,7 +8621,7 @@ function sentience(){
         randomMinorTrait();
     }
 
-    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
+    messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]));
 
     if (global.race['slow'] || global.race['hyper']){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
