@@ -2017,10 +2017,10 @@ export const actions = {
         },
         bank: {
             id: 'city-bank',
-            title: 'Bank',
+            title: loc('city_bank'),
             desc(){
                 let planet = races[global.race.species].home;
-                return `Bank of ${planet}`;
+                return loc('city_bank_desc',[planet]);
             },
             reqs: { banking: 1 },
             cost: { 
@@ -2060,7 +2060,7 @@ export const actions = {
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
                 if (global.tech['banking'] >= 2){
-                    return `<div>${loc('city_max_money',[vault])}</div><div>+1 Max Banker</div>`; 
+                    return `<div>${loc('city_max_money',[vault])}</div><div>${loc('city_banker',[1])}</div>`; 
                 }
                 else {
                     return loc('city_max_money',[vault]); 
@@ -2078,8 +2078,8 @@ export const actions = {
         },
         lumber_yard: {
             id: 'city-lumber_yard',
-            title: 'Lumber Yard',
-            desc: 'Increases lumber production',
+            title: loc('city_lumber_yard'),
+            desc: loc('city_lumber_yard_desc'),
             reqs: { axe: 1 },
             cost: { 
                 Money(){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', 5, 1.85);} else { return 0; } },
@@ -2089,7 +2089,7 @@ export const actions = {
             effect:  function(){
                 let lum = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                return `<div>+2% Lumber Production</div><div>+${lum} Max Lumber</div>`;
+                return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('city_lumber_effect',[lum])}</div>`;
             },
             action(){
                 if (payCosts(actions.city.lumber_yard.cost)){
@@ -2103,8 +2103,8 @@ export const actions = {
         },
         sawmill: {
             id: 'city-sawmill',
-            title: 'Sawmill',
-            desc: 'Increases lumber output',
+            title: loc('city_sawmill'),
+            desc: loc('city_sawmill_desc'),
             reqs: { saw: 1 },
             cost: { 
                 Money(){ return costMultiplier('sawmill', 3000, 1.26); },
@@ -2115,12 +2115,12 @@ export const actions = {
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = spatialReasoning(200);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                let desc = `<div>+${lum} Max Lumber</div><div>Lumberjack efficiency +${impact}%</div>`;
+                let desc = `<div>${loc('city_lumber_effect',[lum])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
-                    desc = desc + `<div>+2% Plywood Crafting</div>`; 
+                    desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`; 
                 }
                 if (global.city.powered){
-                    desc = desc + `<div>Each powered sawmill uses 1kW but produces 4% more lumber</div>`; 
+                    desc = desc + `<div>${loc('city_sawmill_effect3',[4])}</div>`; 
                 }
                 return desc;
             },
@@ -2141,8 +2141,8 @@ export const actions = {
         },
         rock_quarry: {
             id: 'city-rock_quarry',
-            title: 'Rock Quarry',
-            desc: 'Allows workers to quarry for stone',
+            title: loc('city_rock_quarry'),
+            desc: loc('city_rock_quarry_desc'),
             reqs: { mining: 1 },
             cost: { 
                 Money(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.45);} else { return 0; } },
@@ -2153,10 +2153,10 @@ export const actions = {
                 let stone = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 if (global.tech['mine_conveyor']){
-                    return `<div>+2% Quarry Efficiency</div><div>+${stone} Max Stone</div><div>If powered consumes 1kW but increases rock yield by 4%</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('city_stone_effect',[stone])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
                 }
                 else {
-                    return `<div>+2% Quarry Efficiency</div><div>+${stone} Max Stone</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('city_stone_effect',[stone])}</div>`;
                 }
             },
             powered: 1,
