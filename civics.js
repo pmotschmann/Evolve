@@ -1,12 +1,12 @@
 import { global, vues, poppers, messageQueue, modRes, save, keyMultiplier } from './vars.js';
 import { unlockAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
-import { loc } from './locale.js'
+import { loc } from './locale.js';
 
 // Sets up government in civics tab
 export function defineGovernment(){
     var govern = $('<div id="government" class="government tile is-child"></div>');
-    govern.append($(`<div class="header has-text-warning" v-show="display">${loc('civics_government')}</div>`));
+    govern.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_government')}</h2></div>`));
     $('#r_civics').append(govern);
     
     if (!global.civic['taxes']){
@@ -37,7 +37,7 @@ function taxRates(govern){
     var tax_rates = $('<div id="tax_rates" v-show="display" class="taxRate"></div>');
     govern.append(tax_rates);
     
-    var label = $(`<span id="taxRateLabel">${loc('civics_tax_rates')}</span>`);
+    var label = $(`<h3 id="taxRateLabel">${loc('civics_tax_rates')}</h3>`);
     tax_rates.append(label);
     
     var tax_level = $('<span class="current">{{ tax_rate | tax_level }}</span>');
@@ -104,10 +104,10 @@ function taxRates(govern){
 
 export function buildGarrison(garrison){
     if (global.tech['world_control']){
-        garrison.append($(`<div class="header"><span class="has-text-warning">${loc('civics_garrison')}</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip></div>`));
     }
     else {
-        garrison.append($(`<div class="header"><span class="has-text-warning">${loc('civics_garrison')}</span> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>`));
     }
 
     var barracks = $('<div class="columns is-mobile bunk"></div>');

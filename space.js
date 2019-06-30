@@ -4,6 +4,7 @@ import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { payCosts, setAction } from './actions.js';
+import { loc } from './locale.js';
 
 const spaceProjects = {
     spc_home: {
@@ -1507,6 +1508,7 @@ function checkRequirements(region,action){
 export function space(){
     let parent = $('#space');
     parent.empty();
+    parent.append($(`<h2 class="is-sr-only">${loc('space')}</h2>`));
     if (!global.settings.showSpace){
         return false;
     }
@@ -1519,14 +1521,14 @@ export function space(){
             
             if (spaceProjects[region].info['support']){
                 let support = spaceProjects[region].info['support'];
-                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><span class="name has-text-warning">${name}</span> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
+                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
                 vues[`sr${region}`] = new Vue({
                     data: global.space[support]
                 });
                 vues[`sr${region}`].$mount(`#sr${region}`);
             }
             else {
-                parent.append(`<div id="${region}" class="space"><div><span class="name has-text-warning">${name}</span></div></div>`);
+                parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
             }
             
             $(`#${region} span.name`).on('mouseover',function(){

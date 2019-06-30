@@ -11,6 +11,19 @@ body {
     line-height: initial;
 }
 
+h2, h3,
+.content h2,
+.content h3 {
+    font-size: 1rem;
+    font-weight: normal;
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+.is-sr-only {
+    margin: 0;
+}
+
 span,
 div {
     -moz-user-select: none;
@@ -310,7 +323,11 @@ a {
             }
             :first-child {
                 margin-right: .5rem;
+                margin-bottom: 0;
                 width: 10rem;
+                font-size: 1rem;
+                font-weight: normal;
+                display: inline-block;
             }
             :nth-child(2) {
                 min-width: 4rem;
@@ -504,7 +521,7 @@ a {
     .space {
         margin-top: 1rem;
     }
-    .space:first-child {
+    .space:nth-child(2) {
         margin-top: 0;
     }
 }
@@ -569,7 +586,7 @@ a {
         margin-left: 25.25rem;
     }
     .tradeTotal.nt {
-        margin-left: 12rem;
+        margin-left: 11.5rem;
     }
 }
 
@@ -884,6 +901,11 @@ div.nuke {
 .darkTheme,
 html.dark {
     background-color: #1f2424;
+    h2, h3,
+    .content h2,
+    .content h3 {
+        color: #fff;
+    }
     .has-text-special {
         color: #91006c;
     }
@@ -1110,6 +1132,11 @@ html.dark {
 
 .lightTheme,
 html.light {
+    h2, h3,
+    .content h2,
+    .content h3 {
+        color: #000;
+    }
     body {
         color: #000000;
         font-weight: 500;
