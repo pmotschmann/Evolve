@@ -1,3 +1,6 @@
+#### 0.4.18 - 7/1/2019 ####
+The fire event no longer triggers for aquatic races<br>
+
 #### 0.4.17 - 6/29/2019 ####
 Added indication of current challenge level to top bar<br>
 Added H tags for accessibility<br>

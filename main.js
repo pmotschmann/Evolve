@@ -3114,6 +3114,16 @@ function longLoop(){
                                 isOk = false;
                             }
                             break;
+                        case 'genus':
+                            if (events[event].reqs[req] !== races[global.race.species].type){
+                                isOk = false;
+                            }
+                            break;
+                        case 'nogenus':
+                            if (events[event].reqs[req] === races[global.race.species].type){
+                                isOk = false;
+                            }
+                            break;
                         case 'resource':
                             if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
                                 isOk = false;
