@@ -11,8 +11,9 @@ export function loc(key, variables) {
     }
     if (variables) {
         if(variables instanceof Array) {
-            for (let i = 0; i < variables.length; i++) {
-                string = string.replace(`%${i}`, variables[i]);
+            for (let i = 0; i < variables.length; i++){
+                let re = new RegExp(`%${i}`, "g");
+                string = string.replace(re, variables[i]);
             }
         }
         else{

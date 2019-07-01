@@ -1,3 +1,7 @@
+#### 0.4.17 - 6/29/2019 ####
+Added indication of current challenge level to top bar<br>
+Added H tags for accessibility<br>
+
 #### 0.4.16 - 6/28/2019 ####
 New Hospital, heals wounded soldiers faster<br>
 New Boot Camp, train new soldiers quicker<br>

@@ -190,13 +190,13 @@ function loadResource(name,max,rate,tradable,stackable,color){
     if (!global['resource'][name]['trade'] && tradable){
         global['resource'][name]['trade'] = 0;
     }
-    
+
     var res_container;
     if (global.resource[name].max === -1){
-        res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><span class="res has-text-${color}">{{ name | namespace }}</span><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div>`);
+        res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div>`);
     }
     else {
-        res_container = $(`<div id="res${name}" class="resource" v-show="display"><span class="res has-text-${color}">{{ name | namespace }}</span><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
+        res_container = $(`<div id="res${name}" class="resource" v-show="display"><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
     }
 
     if (stackable){
@@ -369,7 +369,7 @@ function loadSpecialResource(name,color) {
 
 function marketItem(vue,mount,market_item,name,color,full){
     if (full){
-        market_item.append($(`<span class="res has-text-${color}">{{ r.name | namespace }}</span>`));
+        market_item.append($(`<h3 class="res has-text-${color}">{{ r.name | namespace }}</h3>`));
     }
 
     if (!global.race['no_trade']){
@@ -883,7 +883,7 @@ export function containerValue(){
 }
 
 export function initMarket(){
-    let market = $('<div id="market-qty" class="market-header"></div>');
+    let market = $(`<div id="market-qty" class="market-header"><h2 class="is-sr-only">${loc('resource_market')}</h2</div>`);
     $('#market').empty();
     $('#market').append(market);
     loadMarket();
@@ -898,6 +898,7 @@ export function loadMarket(){
     }
 
     if (!global.race['no_trade']){
+        market.append($(`<h3 class="is-sr-only">${loc('resource_trade_qty')}</h3>`));
         market.append($('<b-radio v-model="qty" native-value="10">10x</b-radio>'));
         market.append($('<b-radio v-model="qty" native-value="25">25x</b-radio>'));
         market.append($('<b-radio v-model="qty" native-value="100">100x</b-radio>'));

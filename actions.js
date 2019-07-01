@@ -1823,14 +1823,14 @@ export const actions = {
         shed: {
             id: 'city-shed',
             title(){ 
-                return global.tech['storage'] <= 2 ? 'Shed' : (global.tech['storage'] >= 4 ? 'Warehouse' : 'Barn'); 
+                return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2')); 
             },
             desc(){
-                let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? 'large storage' : 'storage') : 'small storage';
-                return `A ${storage} facility for your various resources`;
+                let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
+                return loc('city_shed_desc',[storage]);
             },
             reqs: { storage: 1 },
-            cost: { 
+            cost: {
                 Money(){ return costMultiplier('shed', 75, 1.22); },
                 Lumber(){
                     if (global.tech['storage'] && global.tech['storage'] < 4){ 
@@ -1869,44 +1869,44 @@ export const actions = {
                 let storage = '';
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
-                    let val = +(spatialReasoning(300) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Lumber.`;
+                    let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Lumber_name')}. `;
                 }
                 if (global.resource.Stone.display){
-                    let val = +(spatialReasoning(300) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Stone.`;
+                    let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Stone_name')}. `;
                 }
                 if (global.resource.Furs.display){
-                    let val = +(spatialReasoning(125) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Furs.`;
+                    let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Furs_name')}. `;
                 }
                 if (global.resource.Copper.display){
-                    let val = +(spatialReasoning(90) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Copper.`;
+                    let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Copper_name')}. `;
                 }
                 if (global.resource.Iron.display){
-                    let val = +(spatialReasoning(125) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Iron.`;
+                    let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Iron_name')}. `;
                 }
                 if (global.resource.Aluminium.display){
-                    let val = +(spatialReasoning(90) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Aluminium.`;
+                    let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Aluminium_name')}. `;
                 }
                 if (global.resource.Cement.display){
-                    let val = +(spatialReasoning(100) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Cement.`;
+                    let val = sizeApproximation(+(spatialReasoning(100) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Cement_name')}. `;
                 }
                 if (global.resource.Coal.display){
-                    let val = +(spatialReasoning(75) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Coal.`;
+                    let val = sizeApproximation(+(spatialReasoning(75) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Coal_name')}. `;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    let val = +(spatialReasoning(40) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Steel.`;
+                    let val = sizeApproximation(+(spatialReasoning(40) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Steel_name')}. `;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    let val = +(spatialReasoning(20) * multiplier).toFixed(0);
-                    storage = storage + `+${val} Max Titanium.`;
+                    let val = sizeApproximation(+(spatialReasoning(20) * multiplier).toFixed(0),1);
+                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Titanium_name')}.`;
                 }
                 return storage;
             },
@@ -1935,10 +1935,10 @@ export const actions = {
         },
         storage_yard: {
             id: 'city-storage_yard',
-            title: 'Freight Yard',
-            desc: 'Increases crate capacity',
+            title: loc('city_storage_yard'),
+            desc: loc('city_storage_yard_desc'),
             reqs: { container: 1 },
-            cost: { 
+            cost: {
                 Money(){ return costMultiplier('storage_yard', 10, 1.36); },
                 Brick(){ return costMultiplier('storage_yard', 3, 1.35); },
                 Wrought_Iron(){ return costMultiplier('storage_yard', 5, 1.35); }
@@ -1951,12 +1951,12 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return `+${cap} Max Crates`; 
+                return loc('city_storage_yard_effect',[cap]); 
             },
             action(){
                 if (payCosts(actions.city.storage_yard.cost)){
                     if (global.resource.Crates.display === false){
-                        messageQueue('You have unlocked a new method of resource management, click the + symbol next to a resource to manage it.','success');
+                        messageQueue(loc('city_storage_yard_msg'),'success');
                     }
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
@@ -1977,10 +1977,10 @@ export const actions = {
         },
         warehouse: {
             id: 'city-warehouse',
-            title: 'Container Port',
-            desc: 'Increases container capacity',
+            title: loc('city_warehouse'),
+            desc: loc('city_warehouse_desc'),
             reqs: { steel_container: 1 },
-            cost: { 
+            cost: {
                 Money(){ return costMultiplier('warehouse', 400, 1.26); },
                 Cement(){ return costMultiplier('warehouse', 75, 1.26); },
                 Sheet_Metal(){ return costMultiplier('warehouse', 25, 1.25); }
@@ -1993,12 +1993,12 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return `+${cap} Max Containers`; 
+                return loc('city_warehouse_effect',[cap]);
             },
             action(){
                 if (payCosts(actions.city.warehouse.cost)){
                     if (global.resource.Containers.display === false){
-                        messageQueue('You can now construct containers, click the + symbol next to a resource to manage containers.','success');
+                        messageQueue(loc('city_warehouse_msg'),'success');
                     }
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
@@ -2017,10 +2017,10 @@ export const actions = {
         },
         bank: {
             id: 'city-bank',
-            title: 'Bank',
+            title: loc('city_bank'),
             desc(){
                 let planet = races[global.race.species].home;
-                return `Bank of ${planet}`;
+                return loc('city_bank_desc',[planet]);
             },
             reqs: { banking: 1 },
             cost: { 
@@ -2060,7 +2060,7 @@ export const actions = {
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
                 if (global.tech['banking'] >= 2){
-                    return `<div>${loc('city_max_money',[vault])}</div><div>+1 Max Banker</div>`; 
+                    return `<div>${loc('city_max_money',[vault])}</div><div>${loc('city_banker',[1])}</div>`; 
                 }
                 else {
                     return loc('city_max_money',[vault]); 
@@ -2078,8 +2078,8 @@ export const actions = {
         },
         lumber_yard: {
             id: 'city-lumber_yard',
-            title: 'Lumber Yard',
-            desc: 'Increases lumber production',
+            title: loc('city_lumber_yard'),
+            desc: loc('city_lumber_yard_desc'),
             reqs: { axe: 1 },
             cost: { 
                 Money(){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', 5, 1.85);} else { return 0; } },
@@ -2089,7 +2089,7 @@ export const actions = {
             effect:  function(){
                 let lum = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                return `<div>+2% Lumber Production</div><div>+${lum} Max Lumber</div>`;
+                return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('city_lumber_effect',[lum])}</div>`;
             },
             action(){
                 if (payCosts(actions.city.lumber_yard.cost)){
@@ -2103,8 +2103,8 @@ export const actions = {
         },
         sawmill: {
             id: 'city-sawmill',
-            title: 'Sawmill',
-            desc: 'Increases lumber output',
+            title: loc('city_sawmill'),
+            desc: loc('city_sawmill_desc'),
             reqs: { saw: 1 },
             cost: { 
                 Money(){ return costMultiplier('sawmill', 3000, 1.26); },
@@ -2115,12 +2115,12 @@ export const actions = {
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = spatialReasoning(200);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                let desc = `<div>+${lum} Max Lumber</div><div>Lumberjack efficiency +${impact}%</div>`;
+                let desc = `<div>${loc('city_lumber_effect',[lum])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
-                    desc = desc + `<div>+2% Plywood Crafting</div>`; 
+                    desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`; 
                 }
                 if (global.city.powered){
-                    desc = desc + `<div>Each powered sawmill uses 1kW but produces 4% more lumber</div>`; 
+                    desc = desc + `<div>${loc('city_sawmill_effect3',[4])}</div>`; 
                 }
                 return desc;
             },
@@ -2141,8 +2141,8 @@ export const actions = {
         },
         rock_quarry: {
             id: 'city-rock_quarry',
-            title: 'Rock Quarry',
-            desc: 'Allows workers to quarry for stone',
+            title: loc('city_rock_quarry'),
+            desc: loc('city_rock_quarry_desc'),
             reqs: { mining: 1 },
             cost: { 
                 Money(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.45);} else { return 0; } },
@@ -2153,10 +2153,10 @@ export const actions = {
                 let stone = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 if (global.tech['mine_conveyor']){
-                    return `<div>+2% Quarry Efficiency</div><div>+${stone} Max Stone</div><div>If powered consumes 1kW but increases rock yield by 4%</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('city_stone_effect',[stone])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
                 }
                 else {
-                    return `<div>+2% Quarry Efficiency</div><div>+${stone} Max Stone</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('city_stone_effect',[stone])}</div>`;
                 }
             },
             powered: 1,
@@ -5187,14 +5187,14 @@ export const actions = {
         },
         worker_drone: {
             id: 'tech-worker_drone',
-            title: 'Worker Drones',
-            desc: 'Worker Drones',
+            title: 'Mining Drones',
+            desc: 'Mining Drones',
             reqs: { nano: 1 },
             grant: ['drone',1],
             cost: {
                 Knowledge(){ return 400000; },
             },
-            effect(){ return `Worker drones will help expedite neutronium mining on ${races[global.race.species].solar.gas_moon}.`; },
+            effect(){ return `Mining drones can help expedite neutronium mining on ${races[global.race.species].solar.gas_moon}.`; },
             action(){
                 if (payCosts(actions.tech.polymer.cost)){
                     global.space['drone'] = { count: 0 };
@@ -7451,9 +7451,9 @@ export const actions = {
     starDock: {
         probes: {
             id: 'spcdock-probes',
-            title: 'Space Probe',
+            title: loc('star_dock_probe'),
             desc(){
-                return `<div>Interstellar Probe</div>`;
+                return `<div>${loc('star_dock_probe_desc')}</div>`;
             },
             reqs: { genesis: 4 },
             cost: {
@@ -7464,7 +7464,7 @@ export const actions = {
                 Mythril(){ return costMultiplier('probes', 5000, 1.25,'starDock'); },
             },
             effect(){
-                return `<div>Each interstellar probe increases the number of target worlds your bioseeder ship can scout by one.</div>`;
+                return `<div>${loc('star_dock_probe_effect')}</div>`;
             },
             action(){
                 if (payCosts(actions.starDock.probes.cost)){
@@ -7476,13 +7476,13 @@ export const actions = {
         },
         seeder: {
             id: 'spcdock-seeder',
-            title: 'Bioseeder Ship',
+            title: loc('star_dock_seeder'),
             desc(){
                 if (global.starDock.seeder.count >= 100){
-                    return `<div>Bioseeder Ship</div><div class="has-text-special">Status: Complete</div>`;
+                    return `<div>${loc('star_dock_seeder')}</div><div class="has-text-special">${loc('star_dock_seeder_desc2')}</div>`;
                 }
                 else {
-                    return `<div>Bioseeder Ship</div><div class="has-text-special">Requires 100 segments</div>`;
+                    return `<div>${loc('star_dock_seeder')}</div><div class="has-text-special">${loc('star_dock_seeder_desc1')}</div>`;
                 }
             },
             reqs: { genesis: 5 },
@@ -7494,8 +7494,8 @@ export const actions = {
                 Nano_Tube(){ return global.starDock.seeder.count < 100 ? 12000 : 0; },
             },
             effect(){
-                let remain = global.starDock.seeder.count < 100 ? `${100 - global.starDock.seeder.count} segments remaining`: `The ship is complete`;
-                return `<div>The "Genesis" ship. This is an automated ship that will travel for hundreds of years to reach a target and bioseed it with new life.</div><div class="has-text-special">${remain}</div>`;
+                let remain = global.starDock.seeder.count < 100 ? loc('star_dock_seeder_status1',[100 - global.starDock.seeder.count]) : loc('star_dock_seeder_status2');
+                return `<div>${loc('star_dock_seeder_effect')}</div><div class="has-text-special">${remain}</div>`;
             },
             action(){
                 if (global.starDock.seeder.count < 100 && payCosts(actions.starDock.seeder.cost)){
@@ -7514,9 +7514,9 @@ export const actions = {
         },
         launch_ship: {
             id: 'spcdock-launch_ship',
-            title: 'Launch Ship',
+            title: loc('star_dock_genesis'),
             desc(){
-                return `<div>Launch the Bioseeder Ship</div><div class="has-text-danger">Resets the game</div>`;
+                return `<div>${loc('star_dock_genesis_desc1')}</div><div class="has-text-danger">${loc('star_dock_genesis_desc2')}</div>`;
             },
             reqs: { genesis: 6 },
             cost: {},
@@ -7531,7 +7531,7 @@ export const actions = {
                     k_inc *= 1.015;
                 }
                 plasmid = challenge_multiplier(plasmid);
-                return `<div>Launch the "Genesis" ship. You will seed life in a far away star system and take over as the species that evoles there.</div><div class="has-text-special">You will gain ${plasmid} Plasmids</div>`;
+                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div>`;
             },
             action(){
                 bioseed();
@@ -7918,7 +7918,7 @@ export function setPlanet(){
             $('#main').append(popper);
             
             popper.append($(`<div>${id}</div>`));
-            popper.append($(`<div>${id} is a ${biome} planet with an orbital period of ${orbit} days.</div>`));
+            popper.append($(`<div>${loc('set_planet',[id,biome,orbit])}`));
             popper.append($(`<div>${biomes[biome]}</div>`));
 
             popper.show();
@@ -7941,7 +7941,7 @@ function actionDesc(parent,c_action,old){
         Object.keys(costs).forEach(function (res) {
             var res_cost = costs[res]();
             if (res_cost > 0){
-                let label = res === 'Money' ? '$' : res+': ';
+                let label = res === 'Money' ? '$' : global.resource[res].name+': ';
                 label = label.replace("_", " ");
                 let color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
                 let display_cost = sizeApproximation(res_cost,1);
@@ -8028,10 +8028,10 @@ function kindlingAdjust(costs){
 }
 
 function craftAdjust(costs){
-    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'])){
+    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal'){
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril'){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
             }
             else {
@@ -8179,7 +8179,7 @@ function drawModal(c_action,type){
 
 function starDockModal(modal){
     if (global.tech['genesis'] < 4){
-        let warn = $('<div><span class="has-text-warning">You must complete plans for your interstellar craft first</span></div>');
+        let warn = $(`<div><span class="has-text-warning">${loc('stardock_warn')}</span></div>`);
         modal.append(warn);
         return;
     }
@@ -8202,14 +8202,14 @@ function starDockModal(modal){
 }
 
 function smelterModal(modal){
-    let fuel = $('<div><span class="has-text-warning">Fueled:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>');
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>`);
     modal.append(fuel);
 
     let fuelTypes = $('<div></div>');
     modal.append(fuelTypes);
 
     if (!global.race['kindling_kindred']){
-        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">Wood {{ Wood }}</span></b-tooltip>`);
+        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">${loc('resource_Lumber_name')} {{ Wood }}</span></b-tooltip>`);
         let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
         let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
         fuelTypes.append(subWood);
@@ -8218,7 +8218,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">Coal {{ Coal }}</span></b-tooltip>`);
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">${loc('resource_Coal_name')} {{ Coal }}</span></b-tooltip>`);
         let subCoal = $('<span class="sub" @click="subCoal">&laquo;</span>');
         let addCoal = $('<span class="add" @click="addCoal">&raquo;</span>');
         fuelTypes.append(subCoal);
@@ -8227,7 +8227,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">Oil {{ Oil }}</span></b-tooltip>`);
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">${loc('resource_Oil_name')} {{ Oil }}</span></b-tooltip>`);
         let subOil = $('<span class="sub" @click="subOil">&laquo;</span>');
         let addOil = $('<span class="add" @click="addOil">&raquo;</span>');
         fuelTypes.append(subOil);
@@ -8237,8 +8237,8 @@ function smelterModal(modal){
 
     if (global.resource.Steel.display && global.tech.smelting >= 2){
         let smelt = $('<div class="smelting"></div>');
-        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" @click="ironSmelting()">Iron Smelting: {{ Iron }}</button></b-tooltip>`);
-        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" @click="steelSmelting()">Steel Smelting: {{ Steel }}</button></b-tooltip>`);
+        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ Iron }}</button></b-tooltip>`);
+        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ Steel }}</button></b-tooltip>`);
         modal.append(smelt);
         smelt.append(ironSmelt);
         smelt.append(steelSmelt);
@@ -8345,7 +8345,7 @@ function smelterModal(modal){
                 if (global.race['pyrophobia']){
                     boost *= 0.9;
                 }
-                return `Smelt Iron, boosts Iron production by ${boost}%`;
+                return loc('modal_smelter_iron',[boost,loc('resource_Iron_name')]);
             },
             steelLabel(){
                 let boost = global.tech['smelting'] >= 4 ? 1.2 : 1;
@@ -8358,7 +8358,7 @@ function smelterModal(modal){
                 if (global.race['pyrophobia']){
                     boost *= 0.9;
                 }
-                return `Smelt Steel, consumes 0.25 Coal and 2 Iron per second but produces ${boost} Steel`;
+                return loc('modal_smelter_steel',[boost,loc('resource_Steel_name'),loc('resource_Coal_name'),loc('resource_Iron_name')]);
             },
             ironSmelting(){
                 let keyMult = keyMultiplier();
@@ -8395,20 +8395,17 @@ function smelterModal(modal){
             buildLabel: function(type){
                 switch(type){
                     case 'wood':
-                        return 'Consume 3 Lumber/s to fuel a smelter';
-                        break;
+                        return loc('modal_build_wood',[loc('resource_Lumber_name')]);
                     case 'coal':
                         let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
                         if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                            return `Burn ${coal_fuel} Coal/s to fuel a smelter and produce trace amounts of uranium.`;
+                            return loc('modal_build_coal2',[coal_fuel,loc('resource_Coal_name'),loc('resource_Uranium_name')]);
                         }
                         else {
-                            return `Burn ${coal_fuel} Coal/s to fuel a smelter`;
+                            return loc('modal_build_coal1',[coal_fuel,loc('resource_Coal_name')]);
                         }
-                        break;
                     case 'oil':
-                        return 'Burn 0.35 Oil/s to fuel a smelter. Provides a minor output boost.';
-                        break;
+                        return loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
                 }
             }
         },
@@ -8446,10 +8443,10 @@ export const f_rate = {
 };
 
 function factoryModal(modal){
-    let fuel = $('<div><span class="has-text-warning">Operating:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>');
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>`);
     modal.append(fuel);
 
-    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>Luxury Goods</span></b-tooltip></div>`);
+    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>${loc('modal_factory_lux')}</span></b-tooltip></div>`);
     modal.append(lux);
 
     let luxCount = $(`<span class="current">{{ Lux }}</span>`);
@@ -8459,7 +8456,7 @@ function factoryModal(modal){
     lux.append(luxCount);
     lux.append(addLux);
 
-    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-left" size="is-small" multilined animated><span>Alloy</span></b-tooltip></div>`);
+    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Alloy_name')}</span></b-tooltip></div>`);
     modal.append(alloy);
 
     let alloyCount = $(`<span class="current">{{ Alloy }}</span>`);
@@ -8470,7 +8467,7 @@ function factoryModal(modal){
     alloy.append(addAlloy);
 
     if (global.tech['polymer']){
-        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" position="is-left" size="is-small" multilined animated><span>Polymer</span></b-tooltip></div>`);
+        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Polymer_name')}</span></b-tooltip></div>`);
         modal.append(polymer);
 
         let polymerCount = $(`<span class="current">{{ Polymer }}</span>`);
@@ -8482,7 +8479,7 @@ function factoryModal(modal){
     }
 
     if (global.tech['nano']){
-        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" position="is-left" size="is-small" multilined animated><span>Nano Tube</span></b-tooltip></div>`);
+        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Nano_Tube_name')}</span></b-tooltip></div>`);
         modal.append(nano);
 
         let nanoCount = $(`<span class="current">{{ Nano }}</span>`);
@@ -8513,25 +8510,25 @@ function factoryModal(modal){
                     case 'Lux':
                         let demand = +(global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
                         let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
-                        return `Consume ${fur} Furs/s to produce luxury goods worth \$${demand}`;
+                        return loc('modal_factory_lux_label',[fur,loc('resource_Furs_name'),demand]);
                     case 'Alloy':
                         let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
                         let aluminium = assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0];
-                        return `Consume ${copper} Copper and ${aluminium} Aluminium/s to produce Alloy`;
+                        return loc('modal_factory_alloy_label',[copper,loc('resource_Copper_name'),aluminium,loc('resource_Aluminium_name'),loc('resource_Alloy_name')]);
                     case 'Polymer':
                         if (global.race['kindling_kindred']){
                             let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
-                            return `Consume ${oil} Oil/s to produce Polymer`;
+                            return loc('modal_factory_polymer_label2',[oil,loc('resource_Oil_name'),loc('resource_Polymer_name')]);
                         }
                         else {
                             let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
                             let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
-                            return `Consume ${oil} Oil and ${lumber} Lumber/s to produce Polymer`;
+                            return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,loc('resource_Lumber_name'),loc('resource_Polymer_name')]);
                         }
                     case 'Nano':
                         let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
                         let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
-                        return `Consume ${coal} Coal and ${neutronium} Neutronium/s to produce Nano Tubes`;
+                        return loc('modal_factory_nano_label',[coal,loc('resource_Coal_name'),neutronium,loc('resource_Neutronium_name'),loc('resource_Nano_Tube_name')]);
                 }
             }
         },
@@ -8624,7 +8621,7 @@ function sentience(){
         randomMinorTrait();
     }
 
-    messageQueue(`Congratulations! You have evolved into a ${races[global.race.species].type} species of ${races[global.race.species].entity} called "${races[global.race.species].name}"`);
+    messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]));
 
     if (global.race['slow'] || global.race['hyper']){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

@@ -375,6 +375,16 @@ export function drawAchieve(){
     
     vues['vue_achieve'] = new Vue(avue);
     vues['vue_achieve'].$mount('#achievePanel');
+
+    let a_level = 1;
+    if (global.race['no_plasmid']){ a_level++; }
+    if (global.race['no_trade']){ a_level++; }
+    if (global.race['no_craft']){ a_level++; }
+    if (global.race['no_crispr']){ a_level++; }
+
+    if (a_level > 1 && $('#topBar .planet .flair').length === 0){
+        $('#topBar .planet').append(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>`);
+    }
 }
 
 export function checkAchievements(){

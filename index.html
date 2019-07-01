@@ -27,6 +27,7 @@
 </head>
 <body>
     <div id="topBar" class="topBar">
+        <h2 class="is-sr-only">Top Bar</h2>
         <span class="planet">{{ race.species | planet }}</span>
         <span class="calendar" v-show="city.calendar.day">
             <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
@@ -41,27 +42,30 @@
         <div class="columns is-gapless">
             <div class="column is-one-quarter">
                 <div id="race" class="race columns is-mobile is-gapless">
+                    <h2 class="is-sr-only">Race Info</h2>
                     <div class="column is-one-quarter"><b-tooltip :label="desc()" position="is-right" size="is-large" multilined animated>{{ name() }}</b-tooltip></div>
                     <div class="column is-half morale-contain"><span id="morale" v-show="city.morale.current" class="morale">Morale <span class="has-text-warning">{{ city.morale.current }}%</span></div>
                     <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>kW</span> <span id="powerMeter" class="meter">{{ city.power }}</span></span></div>
                 </div>
                 <div id="sideQueue">
+                    <h2 class="is-sr-only">Message Queue</h2>
                     <div id="msgQueue" class="msgQueue has-text-info" aria-live="polite"></div>
                 </div>
-                <div id="resources" class="resources"></div>
+                <div id="resources" class="resources"><h2 class="is-sr-only">Resources</h2></div>
             </div>
             <div id="mainColumn" class="column is-three-quarters">
                 <div id="tabs" class="content">
+                    <h2 class="is-sr-only">Tab Navigation</h2>
                     <b-tabs v-model="civTabs" :animated="animated">
                         <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
-                        <b-tab-item id="city" :visible="showCity" label="Village"></b-tab-item>
+                        <b-tab-item id="city" :visible="showCity" label="Village"><h2 class="is-sr-only">City</h2></b-tab-item>
                         <b-tab-item id="space" :visible="showSpace" label="Space"></b-tab-item>
                         <b-tab-item id="civic" :visible="showCivic" label="Civics" class="columns"></b-tab-item>
                         <b-tab-item id="industry" :visible="showIndustry" label="Industry" class="columns"></b-tab-item>
                         <b-tab-item id="research" :visible="showResearch" label="Research">
                             <b-tabs class="resTabs" v-model="resTabs" :animated="animated">
-                                <b-tab-item id="tech" label="New"></b-tab-item>
-                                <b-tab-item id="oldTech" label="Completed"></b-tab-item>
+                                <b-tab-item id="tech" label="New"><h2 class="is-sr-only">New Research</h2></b-tab-item>
+                                <b-tab-item id="oldTech" label="Completed"><h2 class="is-sr-only">Completed Research</h2></b-tab-item>
                             </b-tabs>
                         </b-tab-item>
                         <b-tab-item id="market" :visible="showMarket" label="Market"></b-tab-item>
@@ -121,6 +125,6 @@
             <div id="queueColumn" class="column"></div>
         </div>
     </div>
-    <div class="promoBar"><span class="left"><span class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</span></span><span class="right"><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a> | <a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a> | <a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a></span></div>
+    <div class="promoBar"><span class="left"><h1 class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</h1></span><span class="right"><h2 class="is-sr-only">External Links</h2><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a> | <a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a> | <a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a></span></div>
 </body>
 </html>

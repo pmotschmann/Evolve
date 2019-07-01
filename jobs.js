@@ -101,7 +101,7 @@ export const job_desc = {
 
 // Sets up jobs in civics tab
 export function defineJobs(){
-    $('#civics').append($('<div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>'));
+    $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
     loadUnemployed();
     loadJob('farmer','Farmer',1.35);
     loadJob('lumberjack','Lumberjack',1);
@@ -125,7 +125,7 @@ function loadUnemployed(){
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
     let job = global.race['carnivore'] ? loc('job_hunter1') : loc('job_unemployed1');
-    let job_label = $(`<div class="job_label"><span class="has-text-${color}">${job}</span><span class="count">{{ free }}</span></div>`);
+    let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">${job}</h3><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
@@ -172,11 +172,11 @@ function loadJob(job, name, impact, color){
     var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
     var controls = $('<div class="controls"></div>');
     if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker'){
-        let job_label = $(`<div class="job_label"><span class="has-text-${color}">{{ name }}</span><span class="count">{{ workers }}</span></div>`);
+        let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ name }}</h3><span class="count">{{ workers }}</span></div>`);
         civ_container.append(job_label);
     }
     else {
-        let job_label = $(`<div class="job_label"><span class="has-text-${color}">{{ name }}</span><span class="count">{{ workers }} / {{ max }}</span></div>`);
+        let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ name }}</h3><span class="count">{{ workers }} / {{ max }}</span></div>`);
         civ_container.append(job_label);
     }
     civ_container.append(controls);
@@ -239,7 +239,7 @@ export function loadFoundry(){
     }
     $('#foundry').empty();
     if (global.city['foundry']){
-        var foundry = $(`<div class="job"><div class="foundry job_label"><span class="has-text-warning">${loc('craftsman_assigned')}</span><span class="count">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
+        var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span class="count">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
         let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril'];
@@ -251,7 +251,7 @@ export function loadFoundry(){
                 $('#foundry').append(resource);
 
                 let controls = $('<div class="controls"></div>');
-                let job_label = $(`<div id="craft${res}" class="job_label" @mouseover="hover('${res}')" @mouseout="unhover('${res}')"><span class="has-text-danger">${name}</span><span class="count">{{ f.${res} }}</span></div>`);
+                let job_label = $(`<div id="craft${res}" class="job_label" @mouseover="hover('${res}')" @mouseout="unhover('${res}')"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
                 resource.append(job_label);
                 resource.append(controls);
                 $('#foundry').append(resource);
