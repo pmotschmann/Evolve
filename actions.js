@@ -8636,6 +8636,7 @@ function bioseed(){
         vues[v].$destroy();
     });
     let god = global.race.species;
+    let old_god = global.race.gods;
     let genus = races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
@@ -8670,6 +8671,7 @@ function bioseed(){
     global['race'] = { 
         species : 'protoplasm', 
         gods: god,
+        old_gods: old_god,
         Plasmid: { count: plasmid },
         seeded: true,
         probes: global.starDock.probes.count,
