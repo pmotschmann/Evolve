@@ -995,7 +995,7 @@
   "space_gas_moon_drone_effect1": "Increase the output of mining outposts by 6%",
   "space_gas_moon_oil_extractor_title": "Oil Extractor",
   "space_gas_moon_oil_extractor_desc": "Oil Extractor",
-  "space_gas_moon_oil_extractor_effect1": "+%0 Oil/s, -$1 kW.",
+  "space_gas_moon_oil_extractor_effect1": "+%0 Oil/s, -%1 kW.",
   "space_belt_info_name": "Asteroid Belt",
   "space_belt_info_desc": "The asteroid belt is located between %0 and %1, it is a potentially rich source of resources.",
   "space_belt_mission_title": "Asteroid Belt Mission",
