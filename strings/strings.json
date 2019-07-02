@@ -989,7 +989,7 @@
   "space_gas_moon_outpost_desc": "Neutronium Mining Outpost",
   "space_gas_moon_outpost_effect1": "+%0 Neutronium/s",
   "space_gas_moon_outpost_effect2": "+%0 Max Neutronium",
-  "space_gas_moon_outpost_effect3": "-%0 Oil/s, -%0kW/s",
+  "space_gas_moon_outpost_effect3": "-%0 Oil/s, -%1kW/s",
   "space_gas_moon_drone_title": "Mining Drone",
   "space_gas_moon_drone_desc": "Neutronium Mining Drone",
   "space_gas_moon_drone_effect1": "Increase the output of mining outposts by 6%",
