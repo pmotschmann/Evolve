@@ -7457,11 +7457,11 @@ export const actions = {
             },
             reqs: { genesis: 4 },
             cost: {
-                Money(){ return costMultiplier('probes', 500000, 1.25,'starDock'); },
-                Alloy(){ return costMultiplier('probes', 125000, 1.25,'starDock'); },
-                Polymer(){ return costMultiplier('probes', 150000, 1.25,'starDock'); },
-                Iridium(){ return costMultiplier('probes', 20000, 1.25,'starDock'); },
-                Mythril(){ return costMultiplier('probes', 5000, 1.25,'starDock'); },
+                Money(){ return costMultiplier('probes', 350000, 1.25,'starDock'); },
+                Alloy(){ return costMultiplier('probes', 75000, 1.25,'starDock'); },
+                Polymer(){ return costMultiplier('probes', 85000, 1.25,'starDock'); },
+                Iridium(){ return costMultiplier('probes', 12000, 1.25,'starDock'); },
+                Mythril(){ return costMultiplier('probes', 3500, 1.25,'starDock'); },
             },
             effect(){
                 return `<div>${loc('star_dock_probe_effect')}</div>`;
