@@ -1579,7 +1579,7 @@ export const actions = {
             title(){
                 return global.race.species === 'sporgar' ? loc('city_apartment_title2') : loc('city_apartment_title1');
             },
-            desc: `<div>${loc('city_apartment_desc')}</div><div class="has-text-special">${loc('city_requires_power')}</div>`,
+            desc: `<div>${loc('city_apartment_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { housing: 3 },
             cost: { 
                 Money(){ return costMultiplier('apartment', 1750, 1.26) - 500; },
