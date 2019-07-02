@@ -1,6 +1,7 @@
 #### 0.4.19 - 7/2/2019 ####
 Fixed bugs with the hell planet and gas planet survey mission<br>
 Fixed bug that prevented the planet description tooltip from triggering<br>
+Aluminium now properly requires you to build a metal refinery<br>
 
 #### 0.4.18 - 7/1/2019 ####
 Planets choice now has more depth to it, each planet can be poor or rich in various resource types<br>

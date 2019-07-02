@@ -1681,7 +1681,7 @@ function fastLoop(){
             modRes('Stone', delta * time_multiplier);
 
             // Aluminium
-            if (global.city['metal_refinery']){
+            if (global.city['metal_refinery'] && global.city['metal_refinery'].count > 0){
                 let base = stone_base * rock_quarry * power_mult * 0.08;
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
