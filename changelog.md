@@ -1,4 +1,4 @@
-#### 0.4.19 - 7/1/2019 ####
+#### 0.4.19 - 7/2/2019 ####
 Fixed bugs with the hell planet and gas planet survey mission<br>
 Fixed bug that prevented the planet description tooltip from triggering<br>
 
