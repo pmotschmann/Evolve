@@ -7890,6 +7890,37 @@ export function setPlanet(){
             biome = 'grassland';
             break;
     }
+    
+    let geology = {};
+    let max = Math.floor(Math.seededRandom(0,3));
+
+    for (let i=0; i<max; i++){
+        switch (Math.floor(Math.seededRandom(0,10))){
+            case 0:
+                geology['Copper'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 1:
+                geology['Iron'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 2:
+                geology['Aluminium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 3:
+                geology['Coal'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 4:
+                geology['Oil'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 5:
+                geology['Titanium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 6:
+                geology['Uranium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            default:
+                break;
+        }
+    }
 
     var id = biome+Math.floor(Math.seededRandom(0,10000));
     id = id.charAt(0).toUpperCase() + id.slice(1);
@@ -7906,6 +7937,7 @@ export function setPlanet(){
         global.race['chose'] = id;
         global.city.biome = biome;
         global.city.calendar.orbit = orbit;
+        global.city.geology = geology;
         $('#evolution').empty();
         $(`#pop${id}`).hide();
         poppers[id].destroy();
@@ -7917,9 +7949,31 @@ export function setPlanet(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
             
-            popper.append($(`<div>${id}</div>`));
-            popper.append($(`<div>${loc('set_planet',[id,biome,orbit])}`));
+            popper.append($(`<div>${loc('set_planet',[id,biome,orbit])}</div>`));
             popper.append($(`<div>${biomes[biome]}</div>`));
+
+            let array = [];
+            for (let key in geology){
+                if (key !== 0){
+                    array.push(geology[key] > 0 ? loc('set_planet_rich') : loc('set_planet_poor'));
+                    array.push(key);
+                }
+            }
+            
+            //console.log(array);
+            switch (array.length){
+                case 2:
+                    popper.append($(`<div>${loc('set_planet_extra1',[array[0],array[1]])}</div>`));
+                    break;
+                case 4:
+                    popper.append($(`<div>${loc('set_planet_extra2',[array[0],array[1],array[2],array[3]])}</div>`));
+                    break;
+                case 6:
+                    popper.append($(`<div>${loc('set_planet_extra3',[array[0],array[1],array[2],array[3],array[4],array[5]])}</div>`));
+                    break;
+                default:
+                    break;
+            }
 
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
@@ -8674,7 +8728,7 @@ function bioseed(){
         old_gods: old_god,
         Plasmid: { count: plasmid },
         seeded: true,
-        probes: global.starDock.probes.count,
+        probes: global.starDock.probes.count + 1,
         seed: Math.floor(Math.random(0,10000)),
     };
     global.city = {

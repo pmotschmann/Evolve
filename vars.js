@@ -347,6 +347,10 @@ if (!global.city['biome']){
     global.city['biome'] = 'grassland';
 }
 
+if (!global.city['geology']){
+    global.city['geology'] = {};
+}
+
 if (!global.city['market']){
     global.city['market'] = {
         qty: 10,

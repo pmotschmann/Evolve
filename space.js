@@ -501,7 +501,7 @@ const spaceProjects = {
                 Iron(){ return costMultiplier('red_mine', 33000, 1.32); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect1')}</div><div${loc('space_red_mine_effect2')}></div>`;
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect1')}</div><div>${loc('space_red_mine_effect2')}</div>`;
             },
             support: -1,
             powered: 1,

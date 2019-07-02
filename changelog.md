@@ -1,5 +1,9 @@
 #### 0.4.18 - 7/1/2019 ####
+Planets choice now has more depth to it, each planet can be poor or rich in various resource types<br>
+A mineral poor planet suffers anywhere from 1 to 10% penalty for that resource<br>
+A mineral rich planet gains anywhere from 1 to 20% bonus for that resource<br>
 The fire event no longer triggers for aquatic races<br>
+The first interstellar probe now contributes to the number of potential target worlds<br>
 
 #### 0.4.17 - 6/29/2019 ####
 Added indication of current challenge level to top bar<br>
