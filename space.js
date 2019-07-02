@@ -1531,15 +1531,15 @@ export function space(){
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
             }
             
-            $(`#${region} span.name`).on('mouseover',function(){
+            $(`#${region} h3.name`).on('mouseover',function(){
                 var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);
                 $('#main').append(popper);
                 
                 popper.append($(`<div>${desc}</div>`));
                 popper.show();
-                poppers[region] = new Popper($(`#${region} span.name`),popper);
+                poppers[region] = new Popper($(`#${region} h3.name`),popper);
             });
-            $(`#${region} span.name`).on('mouseout',function(){
+            $(`#${region} h3.name`).on('mouseout',function(){
                 $(`#pop${region}`).hide();
                 poppers[region].destroy();
                 $(`#pop${region}`).remove();
