@@ -563,7 +563,7 @@ const spaceProjects = {
                     desc = desc + `<div>${loc('space_red_factory_effect2')}</div>`;
                 }
                 let helium = +(fuel_adjust(1)).toFixed(2);
-                desc = desc + `<div>${loc('space_red_factory_effect3'),[helium]}</div>`;
+                desc = desc + `<div>${loc('space_red_factory_effect3',[helium])}</div>`;
                 return desc;
             },
             powered: 3,
