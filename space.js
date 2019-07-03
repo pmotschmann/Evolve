@@ -285,7 +285,7 @@ const spaceProjects = {
                 Iridium(){ return costMultiplier('observatory', 1250, 1.32); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_observatory_effect1')}</div><div>${loc('space_moon_observatory_effect2')}<</div>`;
+                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_observatory_effect1')}</div><div>${loc('space_moon_observatory_effect2')}</div>`;
             },
             support: -1,
             powered: 1,
