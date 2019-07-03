@@ -2965,8 +2965,8 @@ export const actions = {
     tech: {
         club: {
             id: 'tech-club',
-            title: 'Club',
-            desc: 'Make a basic club',
+            title: loc('tech_club'),
+            desc: loc('tech_club_desc'),
             reqs: {},
             grant: ['primitive',1],
             cost: {
@@ -2983,8 +2983,8 @@ export const actions = {
         },
         bone_tools: {
             id: 'tech-bone_tools',
-            title: 'Bone Tools',
-            desc: 'Create tools out of animal bones',
+            title: loc('tech_bone_tools'),
+            desc: loc('tech_bone_tools_desc'),
             reqs: { primitive: 1 },
             grant: ['primitive',2],
             cost: {
@@ -3000,18 +3000,18 @@ export const actions = {
         },
         sundial: {
             id: 'tech-sundial',
-            title: 'Sundial',
-            desc: 'Construct a sundial',
+            title: loc('tech_sundial'),
+            desc: loc('tech_sundial_desc'),
             reqs: { primitive: 2 },
             grant: ['primitive',3],
             cost: {
                 Lumber(){ return 8; },
                 Stone(){ return 10; }
             },
-            effect: 'Start tracking the days and begin building a settlement.',
+            effect: loc('tech_sundial_effect'),
             action(){
                 if (payCosts(actions.tech.sundial.cost)){
-                    messageQueue('You have founded a settlement.','success');
+                    messageQueue(loc('tech_sundial_msg'),'success');
                     global.resource.Knowledge.display = true;
                     global.city.calendar.day++;
                     if (global.race['infectious']){
@@ -3026,14 +3026,14 @@ export const actions = {
         },
         housing: {
             id: 'tech-housing',
-            title: 'Housing',
-            desc: 'Discover Housing',
+            title: loc('tech_housing'),
+            desc: loc('tech_housing_desc'),
             reqs: { primitive: 3 },
             grant: ['housing',1],
             cost: { 
                 Knowledge(){ return 10; }
             },
-            effect: 'Learn to construct basic housing for your citizens.',
+            effect: loc('tech_housing_effect'),
             action(){
                 if (payCosts(actions.tech.housing.cost)){
                     global.city['basic_housing'] = { count: 0 };
@@ -3045,15 +3045,15 @@ export const actions = {
         cottage: {
             id: 'tech-cottage',
             title(){
-                return global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottages';
+                return global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
             },
-            desc: 'Design a newer housing unit',
+            desc: loc('tech_cottage_desc'),
             reqs: { housing: 1, cement: 1, mining: 3 },
             grant: ['housing',2],
             cost: { 
                 Knowledge(){ return 3600; }
             },
-            effect: 'Learn to construct more comfortable housing for couples.',
+            effect: loc('tech_cottage_effect'),
             action(){
                 if (payCosts(actions.tech.cottage.cost)){
                     global.city['cottage'] = { count: 0 };
@@ -3065,17 +3065,17 @@ export const actions = {
         apartment: {
             id: 'tech-apartment',
             title(){
-                return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartments';
+                return global.race.species === 'sporgar' ? loc('tech_apartment2') : loc('tech_apartment1');
             },
             desc(){
-                return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartments';
+                return global.race.species === 'sporgar' ? loc('tech_apartment2') : loc('tech_apartment1');
             },
             reqs: { housing: 2, high_tech: 2 },
             grant: ['housing',3],
             cost: { 
                 Knowledge(){ return 15750; }
             },
-            effect: 'Design high occupancy housing complexes.',
+            effect: loc('tech_apartment_effect'),
             action(){
                 if (payCosts(actions.tech.apartment.cost)){
                     global.city['apartment'] = {
@@ -3089,8 +3089,8 @@ export const actions = {
         },
         steel_beams: {
             id: 'tech-steel_beams',
-            title: 'Steel Beams',
-            desc: 'Reduce cost of housing',
+            title: loc('tech_steel_beams'),
+            desc: loc('tech_steel_beams_desc'),
             reqs: { housing: 2, smelting: 2 },
             grant: ['housing_reduction',1],
             cost: { 
@@ -3099,8 +3099,8 @@ export const actions = {
             },
             effect(){
                 let label = basicHousingLabel();
-                let cLabel = global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottage';
-                return `Reduce material costs of ${label}s and ${cLabel}s by introducing strong steel beams.`;
+                let cLabel = global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
+                return loc('tech_steel_beams_effect',[label,cLabel]);
             },
             action(){
                 if (payCosts(actions.tech.steel_beams.cost)){
@@ -3111,8 +3111,8 @@ export const actions = {
         },
         mythril_beams: {
             id: 'tech-mythril_beams',
-            title: 'Mythril Beams',
-            desc: 'Reduce cost of housing',
+            title: loc('tech_mythril_beams'),
+            desc: loc('tech_steel_beams_desc'),
             reqs: { housing_reduction: 1, space: 3 },
             grant: ['housing_reduction',2],
             cost: { 
@@ -3121,8 +3121,8 @@ export const actions = {
             },
             effect(){
                 let label = basicHousingLabel();
-                let cLabel = global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottage';
-                return `Reduce material costs of ${label}s and ${cLabel}s by introducing unbreakble mythril beams.`;
+                let cLabel = global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
+                return loc('tech_mythril_beams_effect',[label,cLabel]);
             },
             action(){
                 if (payCosts(actions.tech.mythril_beams.cost)){
