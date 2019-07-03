@@ -12,8 +12,16 @@ export function loc(key, variables) {
     if (variables) {
         if(variables instanceof Array) {
             for (let i = 0; i < variables.length; i++){
-                let re = new RegExp(`%${i}`, "g");
+                let re = new RegExp(`%${i}(?!\d)`, "g");
+                if(!re.exec(string)){
+                    throw SyntaxError(`"%${i}" was not found in the string ${key} to be replace by "${variables[i]}"`);
+                }
                 string = string.replace(re, variables[i]);
+            }
+            let re = new RegExp("%\\d+(?!\\d)", 'g');
+            const results = string.match(re);
+            if(results){
+                throw SyntaxError(`${results} was found in the string, but there is no variables to make the replacement`);
             }
         }
         else{
