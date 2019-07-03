@@ -2922,7 +2922,7 @@ export const actions = {
             effect(){
                 let consume = 0.1;
                 let output = global.tech['uranium'] >= 4 ? 18 : 14;
-                return `+${output}kW. ${loc('city_oil_power_effect',[consume])}`;
+                return `+${output}kW. ${loc('city_fission_power_effect',[consume])}`;
             },
             powered: -14,
             action(){
