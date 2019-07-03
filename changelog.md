@@ -1,3 +1,16 @@
+#### 0.4.19 - 7/2/2019 ####
+Fixed bugs with the hell planet and gas planet survey mission<br>
+Fixed bug that prevented the planet description tooltip from triggering<br>
+Aluminium now properly requires you to build a metal refinery<br>
+
+#### 0.4.18 - 7/1/2019 ####
+Planets choice now has more depth to it, each planet can be poor or rich in various resource types<br>
+A mineral poor planet suffers anywhere from 1 to 10% penalty for that resource<br>
+A mineral rich planet gains anywhere from 1 to 20% bonus for that resource<br>
+The fire event no longer triggers for aquatic races<br>
+The first interstellar probe now contributes to the number of potential target worlds<br>
+All interstellar space probe costs are now cheaper<br>
+
 #### 0.4.17 - 6/29/2019 ####
 Added indication of current challenge level to top bar<br>
 Added H tags for accessibility<br>

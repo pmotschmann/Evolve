@@ -157,7 +157,7 @@ export const races = {
         desc: loc('race_gnome'),
         type: 'small',
         home: 'Lawn',
-        entity: loc('race_goblin'),
+        entity: loc('race_gnome_entity'),
         traits: { 
             smart: 1,
             puny: 1

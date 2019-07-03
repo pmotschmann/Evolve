@@ -170,7 +170,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.17';
+global['version'] = '0.4.19';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -278,6 +278,10 @@ if (!global.race['gene_fortify']){
     global.race['gene_fortify'] = 0;
 }
 
+if (!global.race['old_gods']){
+    global.race['old_gods'] = 'none';
+}
+
 $('html').addClass(global.settings.theme);
 
 if (!global.city['morale']){
@@ -343,6 +347,10 @@ if (!global.city['biome']){
     global.city['biome'] = 'grassland';
 }
 
+if (!global.city['geology']){
+    global.city['geology'] = {};
+}
+
 if (!global.city['market']){
     global.city['market'] = {
         qty: 10,
@@ -400,7 +408,7 @@ if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facil
 }
 
 function newGameData(){
-    global['race'] = { species : 'protoplasm', gods: 'none', seeded: false };
+    global['race'] = { species : 'protoplasm', gods: 'none', old_gods: 'none', seeded: false };
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
     global['new'] = true;
@@ -580,6 +588,9 @@ window.soft_reset = function reset(){
     }
     if (global.race['gods']){
         replace['gods'] = global.race.gods;
+    }
+    if (global.race['old_gods']){
+        replace['old_gods'] = global.race.old_gods;
     }
     if (global.race['rapid_mutation'] && global.race['rapid_mutation'] > 0){
         replace['rapid_mutation'] = global.race['rapid_mutation'];

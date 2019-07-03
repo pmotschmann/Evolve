@@ -1561,8 +1561,12 @@ function fastLoop(){
 
             // Uranium
             if (consume_coal > 0 && global.tech['uranium'] && global.tech['uranium'] >= 3){
-                uranium_bd['Coal_Ash'] = uranium_bd['Coal_Ash'] + (consume_coal / 65 / global_multiplier);
-                modRes('Uranium', (consume_coal * time_multiplier) / 65);
+                let ash_base = consume_coal;
+                if (global.city.geology['Uranium']){
+                    ash_base *= global.city.geology['Uranium'] + 1;
+                }
+                uranium_bd['Coal_Ash'] = uranium_bd['Coal_Ash'] + (ash_base / 65 / global_multiplier);
+                modRes('Uranium', (ash_base * time_multiplier) / 65);
             }
 
             //Steel Production
@@ -1607,6 +1611,9 @@ function fastLoop(){
                 
                 if (global.tech['titanium'] && global.tech['titanium'] >= 1){
                     let titanium = smelter_output * hunger;
+                    if (global.city.geology['Titanium']){
+                        delta *= global.city.geology['Titanium'] + 1;
+                    }
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
                     titanium_bd['Steel'] = (titanium / divisor) + 'v';
@@ -1673,8 +1680,12 @@ function fastLoop(){
             breakdown.p['Stone'] = stone_bd;
             modRes('Stone', delta * time_multiplier);
 
-            if (global.city['metal_refinery']){
+            // Aluminium
+            if (global.city['metal_refinery'] && global.city['metal_refinery'].count > 0){
                 let base = stone_base * rock_quarry * power_mult * 0.08;
+                if (global.city.geology['Aluminium']){
+                    base *= global.city.geology['Aluminium'] + 1;
+                }
                 let delta = base * hunger * global_multiplier;
 
                 let refinery = global.city['metal_refinery'].count * 6;
@@ -1720,6 +1731,9 @@ function fastLoop(){
                 }
 
                 let copper_base = miner_base * copper_mult;
+                if (global.city.geology['Copper']){
+                    copper_base *= global.city.geology['Copper'] + 1;
+                }
 
                 let delta = copper_base * power_mult;
                 delta *= hunger * global_multiplier;
@@ -1735,6 +1749,9 @@ function fastLoop(){
                 let iron_mult = 1/4;
                 let iron_base = miner_base * iron_mult;
                 let smelter_mult = 1 + (iron_smelter * 0.1);
+                if (global.city.geology['Iron']){
+                    iron_base *= global.city.geology['Iron'] + 1;
+                }
                 
                 let space_iron = 0;
                 
@@ -1757,6 +1774,9 @@ function fastLoop(){
                     let labor_base = belt_on['iron_ship'] ? (global.civic.miner.workers / 4) + (belt_on['iron_ship'] / 2) : (global.civic.miner.workers / 4); 
                     let iron = labor_base * iron_smelter * 0.1;
                     delta = iron * global_multiplier;
+                    if (global.city.geology['Titanium']){
+                        delta *= global.city.geology['Titanium'] + 1;
+                    }
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
                     titanium_bd['Iron'] = (iron / divisor) + 'v';
@@ -1798,6 +1818,9 @@ function fastLoop(){
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 coal_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
+            if (global.city.geology['Coal']){
+                coal_base *= global.city.geology['Coal'] + 1;
+            }
 
             let power_mult = 1;
             if (global.city['coal_mine']['on']){
@@ -1817,6 +1840,9 @@ function fastLoop(){
             // Uranium
             if (global.resource.Uranium.display){
                 let uranium = delta / 115;
+                if (global.city.geology['Uranium']){
+                    uranium *= global.city.geology['Uranium'] + 1;
+                }
                 modRes('Uranium', uranium * time_multiplier);
                 uranium_bd['Miners'] = uranium / global_multiplier + 'v';
             }
@@ -1831,6 +1857,9 @@ function fastLoop(){
             }
             else if (global.tech['oil'] >= 5){
                 oil_base *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
+            }
+            if (global.city.geology['Oil']){
+                oil_base *= global.city.geology['Oil'] + 1;
             }
             let oil_well = oil_base * global.city.oil_well.count;
             let oil_extractor = oil_base * p_on['oil_extractor'];
@@ -3111,6 +3140,16 @@ function longLoop(){
                     switch(req){
                         case 'race':
                             if (events[event].reqs[req] !== global.race.species){
+                                isOk = false;
+                            }
+                            break;
+                        case 'genus':
+                            if (events[event].reqs[req] !== races[global.race.species].type){
+                                isOk = false;
+                            }
+                            break;
+                        case 'nogenus':
+                            if (events[event].reqs[req] === races[global.race.species].type){
                                 isOk = false;
                             }
                             break;

@@ -928,6 +928,7 @@ function warhead(){
         vues[v].$destroy();
     });
     let god = global.race.species;
+    let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
@@ -960,7 +961,8 @@ function warhead(){
     checkAchievements();
     global['race'] = { 
         species : 'protoplasm', 
-        gods: god, 
+        gods: god,
+        old_gods: old_god,
         rapid_mutation: 1,
         ancient_ruins: 1,
         Plasmid: { count: plasmid },

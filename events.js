@@ -44,7 +44,8 @@ export const events = {
     },
     fire: {
         reqs: { 
-            resource: 'Lumber'
+            resource: 'Lumber',
+            nogenus: 'aquatic'
         },
         effect: function(){
             var loss = Math.rand(1,Math.round(global.resource.Lumber.amount / 4));

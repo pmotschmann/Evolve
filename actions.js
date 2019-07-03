@@ -2178,21 +2178,20 @@ export const actions = {
         },
         cement_plant: {
             id: 'city-cement_plant',
-            title: 'Cement Factory',
-            desc: 'Employs cement plant workers',
+            title: loc('city_cement_plant'),
+            desc: loc('city_cement_plant_desc'),
             reqs: { cement: 1 },
             cost: { 
                 Money(){ return costMultiplier('cement_plant', 3000, 1.5); },
                 Lumber(){ return costMultiplier('cement_plant', 1800, 1.36); },
                 Stone(){ return costMultiplier('cement_plant', 2000, 1.32); }
             },
-            effect: '+2 Max Cement Plant Workers',
-            effect() { 
+            effect(){ 
                 if (global.tech['cement'] >= 5){
-                    return '<div>+2 Max Cement Plant Workers</div><div>If powered consumes 2kW but increases cement production by 5%</div>';
+                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div>${loc('city_cement_plant_effect2',[actions.city.cement_plant.powered,5])}</div>`;
                 }
                 else {
-                    return '+2 Max Cement Plant Workers';
+                    return loc('city_cement_plant_effect1',[2]);
                 }
             },
             powered: 2,
@@ -2213,8 +2212,8 @@ export const actions = {
         },
         foundry: {
             id: 'city-foundry',
-            title: 'Foundry',
-            desc: 'Manufacture building materials from raw materials',
+            title: loc('city_foundry'),
+            desc: loc('city_foundry_desc'),
             reqs: { foundry: 1 },
             cost: {
                 Money(){ return costMultiplier('foundry', 750, 1.36); },
@@ -2222,13 +2221,13 @@ export const actions = {
                 Stone(){ return costMultiplier('foundry', 100, 1.36); }
             },
             effect(){
-                let desc = `<div>+1 Craftsman</div>`;
+                let desc = `<div>${loc('city_foundry_effect1',[1])}</div>`;
                 if (global.tech['foundry'] >= 2){
                     let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 8 : 5) : 3;
-                    desc = desc + `<div>+${skill}% Crafted Materials</div>`;
+                    desc = desc + `<div>${loc('city_crafted_mats',[skill])}</div>`;
                 }
                 if (global.tech['foundry'] >= 6){
-                    desc = desc + `<div>+2% Brick Crafting</div>`;
+                    desc = desc + `<div>${loc('city_foundry_effect2',[2])}</div>`;
                 }
                 return desc;
             },
@@ -2255,8 +2254,8 @@ export const actions = {
         },
         factory: {
             id: 'city-factory',
-            title: 'Factory',
-            desc: '<div>Produces manufactured goods</div><div class="has-text-special">Requires Power</div>',
+            title: loc('city_factory'),
+            desc: `<div>${loc('city_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`, 
             reqs: { high_tech: 3 },
             cost: { 
                 Money(){ return costMultiplier('factory', 25000, 1.32); },
@@ -2265,9 +2264,9 @@ export const actions = {
                 Titanium(){ return costMultiplier('factory', 2500, 1.32); }
             },
             effect(){
-                let desc = `<div>Factories can be used to produce any number of manufactured goods. Uses 3kW per factory.</div>`;
+                let desc = `<div>${loc('city_factory_effect',[actions.city.factory.powered])}</div>`;
                 if (global.tech['foundry'] >= 7){
-                    desc = desc + `<div>+5% Crafted Materials</div>`;
+                    desc = desc + `<div>${loc('city_crafted_mats',[5])}</div>`;
                 }
                 return desc;
             },
@@ -2287,8 +2286,8 @@ export const actions = {
         },
         smelter: {
             id: 'city-smelter',
-            title: 'Smelter',
-            desc: 'Increase iron output',
+            title: loc('city_smelter'),
+            desc: loc('city_smelter_desc'),
             reqs: { smelting: 1 },
             cost: { 
                 Money(){ return costMultiplier('smelter', 1000, 1.32); },
@@ -2300,10 +2299,10 @@ export const actions = {
                     iron_yield *= 0.9;
                 }
                 if (global.tech['smelting'] >= 2){
-                    return `Smelters can either increase Iron yield by ${iron_yield}% per smelter or produce Steel by consuming Iron and Coal. Smelters require fuel to operate.`;
+                    return loc('city_smelter_effect2',[iron_yield]);
                 }
                 else {
-                    return `Smelters increase Iron yield by ${iron_yield}% per smelter but require fuel to operate.`;
+                    return loc('city_smelter_effect1',[iron_yield]);
                 }
             },
             special: true,
@@ -2321,19 +2320,19 @@ export const actions = {
                 }
                 return false;
             },
-            flair: '<div>40% Zinc, 40% Titanium, 30% Iron,<div></div>40% Dolomite, 40% Lead, 0.04% Nickel</div>'
+            flair: `<div>${loc('city_smelter_flair1')}<div></div>${loc('city_smelter_flair2')}</div>`
         },
         metal_refinery: {
             id: 'city-metal_refinery',
-            title: 'Metal Refinery',
-            desc: 'Refines aluminium',
+            title: loc('city_metal_refinery'),
+            desc: loc('city_metal_refinery_desc'),
             reqs: { alumina: 1 },
             cost: { 
                 Money(){ return costMultiplier('metal_refinery', 2500, 1.35); },
                 Steel(){ return costMultiplier('metal_refinery', 350, 1.35); }
             },
             effect() {
-                return '<div>Enables aluminium mining by quarry workers and boosts aluminium production by 6%</div>';
+                return `<div>${loc('city_metal_refinery_effect',[6])}</div>`;
             },
             action(){
                 if (payCosts(actions.city.metal_refinery.cost)){
@@ -2349,8 +2348,8 @@ export const actions = {
         },
         mine: {
             id: 'city-mine',
-            title: 'Mine',
-            desc: 'Employs miners',
+            title: loc('city_mine'),
+            desc: loc('city_mine_desc'),
             reqs: { mining: 2 },
             cost: { 
                 Money(){ return costMultiplier('mine', 60, 1.6); },
@@ -2358,10 +2357,10 @@ export const actions = {
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
-                    return '<div>+1 Max Miner</div><div>If powered consumes 1kW but increases ore yield by 5%</div>';
+                    return `<div>${loc('city_mine_effect1')}</div><div>${loc('city_mine_effect2',[actions.city.mine.powered,5])}</div>`;
                 }
                 else {
-                    return '+1 Max Miner';
+                    return loc('city_mine_effect1');
                 }
             },
             powered: 1,
@@ -2382,8 +2381,8 @@ export const actions = {
         },
         coal_mine: {
             id: 'city-coal_mine',
-            title: 'Coal Mine',
-            desc: 'Employs coal miners',
+            title: loc('city_coal_mine'),
+            desc: loc('city_coal_mine_desc'),
             reqs: { mining: 4 },
             cost: { 
                 Money(){ return costMultiplier('coal_mine', 480, 1.4); },
@@ -2392,10 +2391,10 @@ export const actions = {
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
-                    return '<div>+1 Max Coal Miner</div><div>If powered consumes 1kW but increases coal yield by 5%</div>';
+                    return `<div>${loc('city_coal_mine_effect1')}</div><div>${loc('city_coal_mine_effect2',[actions.city.coal_mine.powered,5])}</div>`;
                 }
                 else {
-                    return '+1 Max Coal Miner';
+                    return loc('city_coal_mine_effect1');
                 }
             },
             powered: 1,
@@ -2416,8 +2415,8 @@ export const actions = {
         },
         oil_well: {
             id: 'city-oil_well',
-            title: 'Oil Derrick',
-            desc: 'Extract oil from deep underground',
+            title: loc('city_oil_well'),
+            desc: loc('city_oil_well_desc'),
             reqs: { oil: 1 },
             cost: { 
                 Money(){ return costMultiplier('oil_well', 5000, 1.5); },
@@ -2434,7 +2433,7 @@ export const actions = {
                 }
                 oil = +oil.toFixed(2);
                 let oc = spatialReasoning(500);
-                return `+${oil} oil per second. +${oc} Max Oil.`;
+                return loc('city_oil_well_effect',[oil,oc]);
             },
             action(){
                 if (payCosts(actions.city.oil_well.cost)){
@@ -2449,8 +2448,8 @@ export const actions = {
         },
         oil_depot: {
             id: 'city-oil_depot',
-            title: 'Fuel Depot',
-            desc: 'Special storage for fuels',
+            title: loc('city_oil_depot'),
+            desc: loc('city_oil_depot_desc'),
             reqs: { oil: 2 },
             cost: { 
                 Money(){ return costMultiplier('oil_depot', 2500, 1.46); },
@@ -2460,16 +2459,16 @@ export const actions = {
             effect() { 
                 let oil = spatialReasoning(1000);
                 oil *= global.tech['world_control'] ? 1.5 : 1;
-                let effect = `<div>+${oil} Max Oil.</div>`;
+                let effect = `<div>+${oil} ${loc('max')} ${loc('resource_Oil_name')}.</div>`;
                 if (global.resource['Helium_3'].display){
                     let val = spatialReasoning(400);
                     val *= global.tech['world_control'] ? 1.5 : 1;
-                    effect = effect + `<div>+${val} Max Helium-3.</div>`;
+                    effect = effect + `<div>+${val} ${loc('max')} ${loc('resource_Helium_3_name')}.</div>`;
                 }
                 if (global.tech['uranium'] >= 2){
                     let val = spatialReasoning(250);
                     val *= global.tech['world_control'] ? 1.5 : 1;
-                    effect = effect + `<div>+${val} Max Uranium.</div>`;
+                    effect = effect + `<div>+${val} ${loc('max')} ${loc('resource_Uranium_name')}.</div>`;
                 }
                 return effect;
             },
@@ -2490,8 +2489,8 @@ export const actions = {
         },
         trade: {
             id: 'city-trade',
-            title: 'Trade Post',
-            desc: 'Increases trade route capacity',
+            title: loc('city_trade'),
+            desc: loc('city_trade_desc'),
             reqs: { trade: 1 },
             cost: { 
                 Money(){ return costMultiplier('trade', 500, 1.36); },
@@ -2501,7 +2500,7 @@ export const actions = {
             },
             effect(){
                 let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-                return `+${routes} Trade Routes`; 
+                return loc('city_trade_routes',[routes]); 
             },
             action(){
                 if (payCosts(actions.city.trade.cost)){
@@ -2517,8 +2516,8 @@ export const actions = {
         },
         wharf: {
             id: 'city-wharf',
-            title: 'Wharf',
-            desc: 'Wharfs offer a place for ships to dock',
+            title: loc('city_wharf'),
+            desc: loc('city_wharf_desc'),
             reqs: { wharf: 1 },
             cost: { 
                 Money(){ return costMultiplier('wharf', 62000, 1.32); },
@@ -2532,7 +2531,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>+${routes} Trade Routes</div><div>+1% Trade Route Profitability</div><div>+${containers} Max Crates</div><div>+${containers} Max Containers</div>`; 
+                return `<div>${loc('city_trade_routes',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('city_storage_yard_effect',[containers])}</div><div>${loc('city_warehouse_effect',[containers])}</div>`; 
             },
             action(){
                 if (payCosts(actions.city.wharf.cost)){
@@ -2551,8 +2550,8 @@ export const actions = {
         },
         tourist_center: {
             id: 'city-tourist_center',
-            title: 'Tourist Center',
-            desc: 'Generates tourism revenue',
+            title: loc('city_tourist_center'),
+            desc: loc('city_tourist_center_desc'),
             reqs: { monument: 2 },
             cost: { 
                 Money(){ return costMultiplier('tourist_center', 100000, 1.36); },
@@ -2561,7 +2560,7 @@ export const actions = {
                 Plywood(){ return costMultiplier('tourist_center', 5000, 1.36); },
             },
             effect(){
-                return `<div>-50 Food per Tourist Center</div><div>+$1 per Amphitheatre</div><div>+$5 per Casino</div><div>+$2 per Monument</div>`; 
+                return `<div>${loc('city_tourist_center_effect1')}</div><div>${loc('city_tourist_center_effect2')}</div><div>${loc('city_tourist_center_effect3')}</div><div>${loc('city_tourist_center_effect4')}</div>`; 
             },
             powered: 1,
             action(){
@@ -2575,15 +2574,15 @@ export const actions = {
         },
         amphitheatre: {
             id: 'city-amphitheatre',
-            title: 'Amphitheatre',
-            desc: 'A stage for the performing arts',
+            title: loc('city_amphitheatre'),
+            desc: loc('city_amphitheatre_desc'),
             reqs: { theatre: 1 },
             cost: {
                 Money(){ return costMultiplier('amphitheatre', 500, 1.55); },
                 Lumber(){ return costMultiplier('amphitheatre', 50, 1.75); },
                 Stone(){ return costMultiplier('amphitheatre', 200, 1.75); }
             },
-            effect: '<div>+1 Max Entertainer</div><div>+1% Max Morale</div>',
+            effect: `<div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`,
             action(){
                 if (payCosts(actions.city.amphitheatre.cost)){
                     global.city['amphitheatre'].count++;
@@ -2593,12 +2592,12 @@ export const actions = {
                 }
                 return false;
             },
-            flair: `Admission is free, but tomatoes are $9.99 each.`
+            flair: loc('city_amphitheatre_flair')
         },
         casino: {
             id: 'city-casino',
-            title: 'Casino',
-            desc: 'A new form of entertainment for your population',
+            title: loc('city_casino'),
+            desc: loc('city_casino_desc'),
             reqs: { gambling: 1 },
             cost: {
                 Money(){ return costMultiplier('casino', 350000, 1.35); },
@@ -2612,7 +2611,7 @@ export const actions = {
                     money = Math.round(money * 1.25);
                 }
                 money = '$'+money;
-                return `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>+1 Max Entertainer</div><div>+1% Max Morale</div>`;
+                return `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
             },
             action(){
                 if (payCosts(actions.city.casino.cost)){
@@ -2623,14 +2622,14 @@ export const actions = {
                 }
                 return false;
             },
-            flair: `The house always wins.`
+            flair: loc('city_casino_flair')
         },
         temple: {
             id: 'city-temple',
-            title: 'Temple',
+            title: loc('city_temple'),
             desc(){
                 let entity = races[global.race.gods.toLowerCase()].entity;
-                return `Your race believes it was created by a species of ${entity}. Devote a temple to them.`;
+                return loc('city_temple_desc',[entity]);
             },
             reqs: { theology: 2 },
             cost: {
@@ -2646,20 +2645,20 @@ export const actions = {
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         faith += +(global.civic.professor.workers * 0.04).toFixed(1);
                     }
-                    desc = `<div>Increases production by ${faith}%.</div>`;
+                    desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
                 }
                 else {
                     let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
                     }
-                    desc = `<div>Increases the production effect of Plasmids by ${plasmid}%.</div>`;
+                    desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
                 }
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-                    desc = desc + '<div>+1 Trade Route</div>';
+                    desc = desc + `<div>${loc('city_temple_effect3')}</div>`;
                 }
                 if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
-                    desc = desc + '<div>+2.5% Tax Income</div>';
+                    desc = desc + `<div>${loc('city_temple_effect4')}</div>`;
                 }
                 return desc;
             },
@@ -2673,10 +2672,10 @@ export const actions = {
         },
         university: {
             id: 'city-university',
-            title: 'University',
+            title: loc('city_university'),
             desc(){
                 let planet = races[global.race.species].home;
-                return `${planet} University`;
+                return loc('city_university_desc',[planet]);
             },
             reqs: { science: 1 },
             cost: {
@@ -2702,7 +2701,7 @@ export const actions = {
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
                 gain = gain.toFixed(0);
-                return `<div>+1 Max Professor</div><div>+${gain} Max Knowledge</div>`;
+                return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
             },
             action(){
                 if (payCosts(actions.city.university.cost)){
@@ -2725,10 +2724,10 @@ export const actions = {
         },
         library: {
             id: 'city-library',
-            title: 'Library',
+            title: loc('city_library'),
             desc(){
                 let planet = races[global.race.species].home;
-                return `Library of ${planet}`;
+                return loc('city_library_desc',[planet]);
             },
             reqs: { science: 2 },
             cost: {
@@ -2749,7 +2748,7 @@ export const actions = {
                     gain *= 1 + (global.civic.scientist.workers * 0.12);
                 }
                 gain = +(gain).toFixed(1);
-                return `<div>+${gain} Max Knowledge</div><div>+5% Knowledge Production</div>`; 
+                return `<div>${loc('city_max_knowledge',[gain])}</div><div>${loc('city_library_effect',[5])}</div>`; 
             },
             action(){
                 if (payCosts(actions.city.library.cost)){
@@ -2766,8 +2765,8 @@ export const actions = {
         },
         wardenclyffe: {
             id: 'city-wardenclyffe',
-            title: 'Wardenclyffe',
-            desc: 'Advanced science facility',
+            title: loc('city_wardenclyffe'),
+            desc: loc('city_wardenclyffe_desc'),
             reqs: { high_tech: 1 },
             cost: { 
                 Money(){ return costMultiplier('wardenclyffe', 5000, 1.22); },
@@ -2796,18 +2795,18 @@ export const actions = {
                         pgain *= (global.tech['supercollider'] / ratio) + 1;
                     }
                     pgain = +(pgain).toFixed(1);
-                    let desc = `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
+                    let desc = `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div>If powered uses ${actions.city.wardenclyffe.powered}kW but increases its Max Knowledge to ${pgain} and morale by ${morale}%</div>`
+                        desc = desc + `<div>${loc('city_wardenclyffe_effect3',[actions.city.wardenclyffe.powered,pgain,morale])}</div>`
                     }
                     else {
-                        desc = desc + `<div>If powered uses ${actions.city.wardenclyffe.powered}kW but increases its Max Knowledge to ${pgain}</div>`;
+                        desc = desc + `<div>${loc('city_wardenclyffe_effect2',[actions.city.wardenclyffe.powered,pgain])}</div>`;
                     }
                     return desc;
                 }
                 else {
-                    return `<div>+1 Max Scientist</div><div>+${gain} Max Knowledge</div>`;
+                    return `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
                 }
             },
             powered: 2,
@@ -2830,12 +2829,12 @@ export const actions = {
                 }
                 return false;
             },
-            flair: `<div>I don't care that they stole my idea...</div><div>I care that they don't have any of their own.</div>`
+            flair: `<div>${loc('city_wardenclyffe_flair1')}</div><div>${loc('city_wardenclyffe_flair2')}</div>`
         },
         biolab: {
             id: 'city-biolab',
-            title: 'Bioscience Lab',
-            desc: '<div>Bioscience Labratory</div><div class="has-text-special">Requires Power</div>',
+            title: loc('city_biolab'),
+            desc: `<div>${loc('city_biolab_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { genetics: 1 },
             cost: { 
                 Money(){ return costMultiplier('biolab', 25000, 1.3); },
@@ -2845,7 +2844,7 @@ export const actions = {
             },
             effect(){
                 let gain = 3000;
-                return `+${gain} Max Knowledge, -${actions.city.biolab.powered}kW`;
+                return `${loc('city_max_knowledge',[gain])}, -${actions.city.biolab.powered}kW`;
             },
             powered: 2,
             action(){
@@ -2862,8 +2861,8 @@ export const actions = {
         },
         coal_power: {
             id: 'city-coal_power',
-            title: 'Coal Powerplant',
-            desc: '<div>Generates electricity from coal</div><div class="has-text-special">Requires Coal</div>',
+            title: loc('city_coal_power'),
+            desc: `<div>${loc('city_coal_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Coal_name')])}</div>`,
             reqs: { high_tech: 2 },
             cost: { 
                 Money(){ return costMultiplier('coal_power', 10000, 1.22); },
@@ -2873,7 +2872,7 @@ export const actions = {
             },
             effect(){
                 let consume = 0.35;
-                return `+5kW. -${consume} Coal per second.`;
+                return `+5kW. ${loc('city_coal_power_effect',[consume])}`;
             },
             powered: -5,
             action(){
@@ -2888,8 +2887,8 @@ export const actions = {
         },
         oil_power: {
             id: 'city-oil_power',
-            title: 'Oil Powerplant',
-            desc: '<div>Generates electricity from oil</div><div class="has-text-special">Requires Oil</div>',
+            title: loc('city_oil_power'),
+            desc: `<div>${loc('city_oil_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Oil_name')])}</div>`,
             reqs: { oil: 3 },
             cost: { 
                 Money(){ return costMultiplier('oil_power', 50000, 1.22); },
@@ -2899,7 +2898,7 @@ export const actions = {
             },
             effect(){
                 let consume = 0.65;
-                return `+6kW. -${consume} Oil per second.`;
+                return `+6kW. ${loc('city_oil_power_effect',[consume])}`;
             },
             powered: -6,
             action(){
@@ -2914,8 +2913,8 @@ export const actions = {
         },
         fission_power: {
             id: 'city-fission_power',
-            title: 'Fission Reactor',
-            desc: '<div>Uses nuclear fission to generate large amounts of power</div><div class="has-text-special">Requires Uranium</div>',
+            title: loc('city_fission_power'),
+            desc: `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Uranium_name')])}</div>`,
             reqs: { high_tech: 5 },
             cost: { 
                 Money(){ return costMultiplier('fission_power', 250000, 1.36); },
@@ -2926,7 +2925,7 @@ export const actions = {
             effect(){
                 let consume = 0.1;
                 let output = global.tech['uranium'] >= 4 ? 18 : 14;
-                return `+${output}kW. -${consume} Uranium per second.`;
+                return `+${output}kW. ${loc('city_fission_power_effect',[consume])}`;
             },
             powered: -14,
             action(){
@@ -2941,8 +2940,8 @@ export const actions = {
         },
         mass_driver: {
             id: 'city-mass_driver',
-            title: 'Mass Driver',
-            desc: '<div>Eletromagnetic launch system</div><div class="has-text-special">Requires Power</div>',
+            title: loc('city_mass_driver'),
+            desc: `<div>${loc('city_mass_driver_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { mass: 1 },
             cost: { 
                 Money(){ return costMultiplier('mass_driver', 375000, 1.32); },
@@ -2951,7 +2950,7 @@ export const actions = {
                 Iridium(){ return costMultiplier('mass_driver', 2200, 1.32); }
             },
             effect(){
-                return `-5% space fuel costs. -${actions.city.mass_driver.powered}kW.`;
+                return loc('city_mass_driver_effect',[5,actions.city.mass_driver.powered]);
             },
             powered: 5,
             action(){
@@ -2969,8 +2968,8 @@ export const actions = {
     tech: {
         club: {
             id: 'tech-club',
-            title: 'Club',
-            desc: 'Make a basic club',
+            title: loc('tech_club'),
+            desc: loc('tech_club_desc'),
             reqs: {},
             grant: ['primitive',1],
             cost: {
@@ -2987,8 +2986,8 @@ export const actions = {
         },
         bone_tools: {
             id: 'tech-bone_tools',
-            title: 'Bone Tools',
-            desc: 'Create tools out of animal bones',
+            title: loc('tech_bone_tools'),
+            desc: loc('tech_bone_tools_desc'),
             reqs: { primitive: 1 },
             grant: ['primitive',2],
             cost: {
@@ -3004,18 +3003,18 @@ export const actions = {
         },
         sundial: {
             id: 'tech-sundial',
-            title: 'Sundial',
-            desc: 'Construct a sundial',
+            title: loc('tech_sundial'),
+            desc: loc('tech_sundial_desc'),
             reqs: { primitive: 2 },
             grant: ['primitive',3],
             cost: {
                 Lumber(){ return 8; },
                 Stone(){ return 10; }
             },
-            effect: 'Start tracking the days and begin building a settlement.',
+            effect: loc('tech_sundial_effect'),
             action(){
                 if (payCosts(actions.tech.sundial.cost)){
-                    messageQueue('You have founded a settlement.','success');
+                    messageQueue(loc('tech_sundial_msg'),'success');
                     global.resource.Knowledge.display = true;
                     global.city.calendar.day++;
                     if (global.race['infectious']){
@@ -3030,14 +3029,14 @@ export const actions = {
         },
         housing: {
             id: 'tech-housing',
-            title: 'Housing',
-            desc: 'Discover Housing',
+            title: loc('tech_housing'),
+            desc: loc('tech_housing_desc'),
             reqs: { primitive: 3 },
             grant: ['housing',1],
             cost: { 
                 Knowledge(){ return 10; }
             },
-            effect: 'Learn to construct basic housing for your citizens.',
+            effect: loc('tech_housing_effect'),
             action(){
                 if (payCosts(actions.tech.housing.cost)){
                     global.city['basic_housing'] = { count: 0 };
@@ -3049,15 +3048,15 @@ export const actions = {
         cottage: {
             id: 'tech-cottage',
             title(){
-                return global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottages';
+                return global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
             },
-            desc: 'Design a newer housing unit',
+            desc: loc('tech_cottage_desc'),
             reqs: { housing: 1, cement: 1, mining: 3 },
             grant: ['housing',2],
             cost: { 
                 Knowledge(){ return 3600; }
             },
-            effect: 'Learn to construct more comfortable housing for couples.',
+            effect: loc('tech_cottage_effect'),
             action(){
                 if (payCosts(actions.tech.cottage.cost)){
                     global.city['cottage'] = { count: 0 };
@@ -3069,17 +3068,17 @@ export const actions = {
         apartment: {
             id: 'tech-apartment',
             title(){
-                return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartments';
+                return global.race.species === 'sporgar' ? loc('tech_apartment2') : loc('tech_apartment1');
             },
             desc(){
-                return global.race.species === 'sporgar' ? 'Spore Nexus' : 'Apartments';
+                return global.race.species === 'sporgar' ? loc('tech_apartment2') : loc('tech_apartment1');
             },
             reqs: { housing: 2, high_tech: 2 },
             grant: ['housing',3],
             cost: { 
                 Knowledge(){ return 15750; }
             },
-            effect: 'Design high occupancy housing complexes.',
+            effect: loc('tech_apartment_effect'),
             action(){
                 if (payCosts(actions.tech.apartment.cost)){
                     global.city['apartment'] = {
@@ -3093,8 +3092,8 @@ export const actions = {
         },
         steel_beams: {
             id: 'tech-steel_beams',
-            title: 'Steel Beams',
-            desc: 'Reduce cost of housing',
+            title: loc('tech_steel_beams'),
+            desc: loc('tech_steel_beams_desc'),
             reqs: { housing: 2, smelting: 2 },
             grant: ['housing_reduction',1],
             cost: { 
@@ -3103,8 +3102,8 @@ export const actions = {
             },
             effect(){
                 let label = basicHousingLabel();
-                let cLabel = global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottage';
-                return `Reduce material costs of ${label}s and ${cLabel}s by introducing strong steel beams.`;
+                let cLabel = global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
+                return loc('tech_steel_beams_effect',[label,cLabel]);
             },
             action(){
                 if (payCosts(actions.tech.steel_beams.cost)){
@@ -3115,8 +3114,8 @@ export const actions = {
         },
         mythril_beams: {
             id: 'tech-mythril_beams',
-            title: 'Mythril Beams',
-            desc: 'Reduce cost of housing',
+            title: loc('tech_mythril_beams'),
+            desc: loc('tech_steel_beams_desc'),
             reqs: { housing_reduction: 1, space: 3 },
             grant: ['housing_reduction',2],
             cost: { 
@@ -3125,8 +3124,8 @@ export const actions = {
             },
             effect(){
                 let label = basicHousingLabel();
-                let cLabel = global.race.species === 'sporgar' ? 'Spore Colony' : 'Cottage';
-                return `Reduce material costs of ${label}s and ${cLabel}s by introducing unbreakble mythril beams.`;
+                let cLabel = global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
+                return loc('tech_mythril_beams_effect',[label,cLabel]);
             },
             action(){
                 if (payCosts(actions.tech.mythril_beams.cost)){
@@ -7460,11 +7459,11 @@ export const actions = {
             },
             reqs: { genesis: 4 },
             cost: {
-                Money(){ return costMultiplier('probes', 500000, 1.25,'starDock'); },
-                Alloy(){ return costMultiplier('probes', 125000, 1.25,'starDock'); },
-                Polymer(){ return costMultiplier('probes', 150000, 1.25,'starDock'); },
-                Iridium(){ return costMultiplier('probes', 20000, 1.25,'starDock'); },
-                Mythril(){ return costMultiplier('probes', 5000, 1.25,'starDock'); },
+                Money(){ return costMultiplier('probes', 350000, 1.25,'starDock'); },
+                Alloy(){ return costMultiplier('probes', 75000, 1.25,'starDock'); },
+                Polymer(){ return costMultiplier('probes', 85000, 1.25,'starDock'); },
+                Iridium(){ return costMultiplier('probes', 12000, 1.25,'starDock'); },
+                Mythril(){ return costMultiplier('probes', 3500, 1.25,'starDock'); },
             },
             effect(){
                 return `<div>${loc('star_dock_probe_effect')}</div>`;
@@ -7893,6 +7892,37 @@ export function setPlanet(){
             biome = 'grassland';
             break;
     }
+    
+    let geology = {};
+    let max = Math.floor(Math.seededRandom(0,3));
+
+    for (let i=0; i<max; i++){
+        switch (Math.floor(Math.seededRandom(0,10))){
+            case 0:
+                geology['Copper'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 1:
+                geology['Iron'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 2:
+                geology['Aluminium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 3:
+                geology['Coal'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 4:
+                geology['Oil'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 5:
+                geology['Titanium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            case 6:
+                geology['Uranium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                break;
+            default:
+                break;
+        }
+    }
 
     var id = biome+Math.floor(Math.seededRandom(0,10000));
     id = id.charAt(0).toUpperCase() + id.slice(1);
@@ -7909,6 +7939,7 @@ export function setPlanet(){
         global.race['chose'] = id;
         global.city.biome = biome;
         global.city.calendar.orbit = orbit;
+        global.city.geology = geology;
         $('#evolution').empty();
         $(`#pop${id}`).hide();
         poppers[id].destroy();
@@ -7920,9 +7951,31 @@ export function setPlanet(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
             
-            popper.append($(`<div>${id}</div>`));
-            popper.append($(`<div>${loc('set_planet',[id,biome,orbit])}`));
+            popper.append($(`<div>${loc('set_planet',[id,biome,orbit])}</div>`));
             popper.append($(`<div>${biomes[biome]}</div>`));
+
+            let array = [];
+            for (let key in geology){
+                if (key !== 0){
+                    array.push(geology[key] > 0 ? loc('set_planet_rich') : loc('set_planet_poor'));
+                    array.push(key);
+                }
+            }
+            
+            //console.log(array);
+            switch (array.length){
+                case 2:
+                    popper.append($(`<div>${loc('set_planet_extra1',[array[0],array[1]])}</div>`));
+                    break;
+                case 4:
+                    popper.append($(`<div>${loc('set_planet_extra2',[array[0],array[1],array[2],array[3]])}</div>`));
+                    break;
+                case 6:
+                    popper.append($(`<div>${loc('set_planet_extra3',[array[0],array[1],array[2],array[3],array[4],array[5]])}</div>`));
+                    break;
+                default:
+                    break;
+            }
 
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
@@ -8639,6 +8692,7 @@ function bioseed(){
         vues[v].$destroy();
     });
     let god = global.race.species;
+    let old_god = global.race.gods;
     let genus = races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
@@ -8673,9 +8727,10 @@ function bioseed(){
     global['race'] = { 
         species : 'protoplasm', 
         gods: god,
+        old_gods: old_god,
         Plasmid: { count: plasmid },
         seeded: true,
-        probes: global.starDock.probes.count,
+        probes: global.starDock.probes.count + 1,
         seed: Math.floor(Math.random(0,10000)),
     };
     global.city = {
