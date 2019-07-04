@@ -3375,14 +3375,14 @@ export const actions = {
         },
         gmfood: {
             id: 'tech-gmfood',
-            title: 'GM Food',
-            desc: 'Genetically Modified Food',
+            title: loc('tech_gmfood'),
+            desc: loc('tech_gmfood_desc'),
             reqs: { agriculture: 6, genetics: 1 },
             grant: ['agriculture',7],
             cost: { 
                 Knowledge(){ return 95000; }
             },
-            effect: 'Genetically modify your crops to yield more usable food.',
+            effect: loc('tech_gmfood_effect'),
             action(){
                 if (payCosts(actions.tech.gmfood.cost)){
                     return true;
@@ -3392,14 +3392,14 @@ export const actions = {
         },
         foundry: {
             id: 'tech-foundry',
-            title: 'Foundry',
-            desc: 'Foundry',
+            title: loc('tech_foundry'),
+            desc: loc('tech_foundry'),
             reqs: { mining: 2 },
             grant: ['foundry',1],
             cost: {
                 Knowledge(){ return 650; }
             },
-            effect: 'Design the foundry, a place for craftsman to produce manufactured materials.',
+            effect: loc('tech_foundry_effect'),
             action(){
                 if (payCosts(actions.tech.foundry.cost)){
                     global.city['foundry'] = {
@@ -3419,14 +3419,14 @@ export const actions = {
         },
         artisans: {
             id: 'tech-artisans',
-            title: 'Artisans',
-            desc: 'Artisans',
+            title: loc('tech_artisans'),
+            desc: loc('tech_artisans'),
             reqs: { foundry: 1 },
             grant: ['foundry',2],
             cost: {
                 Knowledge(){ return 1500; }
             },
-            effect: 'Craftsman produce an extra 3% for each Foundry.',
+            effect: loc('tech_artisans_effect'),
             action(){
                 if (payCosts(actions.tech.artisans.cost)){
                     return true;
@@ -3436,14 +3436,14 @@ export const actions = {
         },
         apprentices: {
             id: 'tech-apprentices',
-            title: 'Apprentices',
-            desc: 'Foundry',
+            title: loc('tech_apprentices'),
+            desc: loc('tech_apprentices'),
             reqs: { foundry: 2 },
             grant: ['foundry',3],
             cost: {
                 Knowledge(){ return 3200; }
             },
-            effect: 'Each craftsman beyond the first assigned to a resource increases production of that resource by 3%.',
+            effect: loc('tech_apprentices_effect'),
             action(){
                 if (payCosts(actions.tech.apprentices.cost)){
                     return true;
@@ -3453,14 +3453,14 @@ export const actions = {
         },
         carpentry: {
             id: 'tech-carpentry',
-            title: 'Carpentry',
-            desc: 'Carpentry',
+            title: loc('tech_carpentry'),
+            desc: loc('tech_carpentry'),
             reqs: { foundry: 3, saw: 1 },
             grant: ['foundry',4],
             cost: {
                 Knowledge(){ return 5200; }
             },
-            effect: 'Sawmills increase Plywood production by 2%.',
+            effect: loc('tech_carpentry_effect'),
             action(){
                 if (payCosts(actions.tech.carpentry.cost)){
                     return true;
@@ -3470,14 +3470,14 @@ export const actions = {
         },
         master_craftsman: {
             id: 'tech-master_craftsman',
-            title: 'Master Craftsman',
-            desc: 'Master Craftsman',
+            title: loc('tech_master_craftsman'),
+            desc: loc('tech_master_craftsman'),
             reqs: { foundry: 4 },
             grant: ['foundry',5],
             cost: {
                 Knowledge(){ return 12000; }
             },
-            effect: 'Craftsman produce an extra 5% for each Foundry.',
+            effect: loc('tech_master_craftsman_effect'),
             action(){
                 if (payCosts(actions.tech.master_craftsman.cost)){
                     return true;
@@ -3487,14 +3487,14 @@ export const actions = {
         },
         brickworks: {
             id: 'tech-brickworks',
-            title: 'Brickworks',
-            desc: 'Brickworks',
+            title: loc('tech_brickworks'),
+            desc: loc('tech_brickworks'),
             reqs: { foundry: 5 },
             grant: ['foundry',6],
             cost: {
                 Knowledge(){ return 18500; }
             },
-            effect: 'New specialized brickmaking equipment adds an extra 2% bonus to brick crafting per foundry.',
+            effect: loc('tech_brickworks_effect'),
             action(){
                 if (payCosts(actions.tech.brickworks.cost)){
                     return true;
@@ -3504,14 +3504,14 @@ export const actions = {
         },
         machinery: {
             id: 'tech-machinery',
-            title: 'Machinery',
-            desc: 'Machinery',
+            title: loc('tech_machinery'),
+            desc: loc('tech_machinery'),
             reqs: { foundry: 6, high_tech: 4 },
             grant: ['foundry',7],
             cost: {
                 Knowledge(){ return 66000; }
             },
-            effect: 'New manufacturing machines add a crafting bonus to factories.',
+            effect: loc('tech_machinery_effect'),
             action(){
                 if (payCosts(actions.tech.machinery.cost)){
                     return true;
@@ -3521,14 +3521,14 @@ export const actions = {
         },
         cnc_machine: {
             id: 'tech-cnc_machine',
-            title: 'CNC Machine',
-            desc: 'CNC Machine',
+            title: loc('tech_cnc_machine'),
+            desc: loc('tech_cnc_machine'),
             reqs: { foundry: 7, high_tech: 8 },
             grant: ['foundry',8],
             cost: {
                 Knowledge(){ return 132000; }
             },
-            effect: 'CNC machines are a new high tech tool for craftsman.',
+            effect: loc('tech_cnc_machine_effect'),
             action(){
                 if (payCosts(actions.tech.cnc_machine.cost)){
                     return true;
@@ -3538,14 +3538,14 @@ export const actions = {
         },
         vocational_training: {
             id: 'tech-vocational_training',
-            title: 'Vocational Training',
-            desc: 'Vocational Training',
+            title: loc('tech_vocational_training'),
+            desc: loc('tech_vocational_training'),
             reqs: { foundry: 1, high_tech: 3 },
             grant: ['v_train',1],
             cost: {
                 Knowledge(){ return 30000; }
             },
-            effect: 'Vocational training for your craftsman will double the effectiveness of crafting upgrades on them.',
+            effect: loc('tech_vocational_training_effect'),
             action(){
                 if (payCosts(actions.tech.vocational_training.cost)){
                     return true;
@@ -3555,15 +3555,15 @@ export const actions = {
         },
         assembly_line: {
             id: 'tech-assembly_line',
-            title: 'Assembly Line',
-            desc: 'Assembly Line',
+            title: loc('tech_assembly_line'),
+            desc: loc('tech_assembly_line'),
             reqs: { high_tech: 4 },
             grant: ['factory',1],
             cost: {
                 Knowledge(){ return 72000; },
                 Copper(){ return 125000; }
             },
-            effect: '<span>The assembly line revolutionizes manufacturing speeding up factory production by 50%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            effect(){ return `<span>${loc('tech_assembly_line_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`; },
             action(){
                 if (payCosts(actions.tech.assembly_line.cost)){
                     return true;
@@ -3573,14 +3573,14 @@ export const actions = {
         },
         automation: {
             id: 'tech-automation',
-            title: 'Factory Automation',
-            desc: 'Factory Automation',
+            title: loc('tech_automation'),
+            desc: loc('tech_automation'),
             reqs: { high_tech: 8, factory: 1},
             grant: ['factory',2],
             cost: {
                 Knowledge(){ return 165000; }
             },
-            effect: '<span>High tech robotic machinery can boost the production of factories by an additional 33%.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            effect(){ return `<span>${loc('tech_automation_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`; },
             action(){
                 if (payCosts(actions.tech.automation.cost)){
                     return true;
@@ -3590,15 +3590,15 @@ export const actions = {
         },
         laser_cutters: {
             id: 'tech-laser_cutters',
-            title: 'Laser Cutters',
-            desc: 'Laser Cutters',
+            title: loc('tech_laser_cutters'),
+            desc: loc('tech_laser_cutters'),
             reqs: { high_tech: 9, factory: 2 },
             grant: ['factory',3],
             cost: {
                 Knowledge(){ return 300000; },
                 Elerium(){ return 200; }
             },
-            effect: '<span>Laser cutters provide a 25% boost to manufacturing speed.</span> <span class="has-text-special">This increases both consumption and production.</span>',
+            effect(){ return `<span>${loc('tech_laser_cutters_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`; },
             action(){
                 if (payCosts(actions.tech.laser_cutters.cost)){
                     return true;
@@ -3608,14 +3608,14 @@ export const actions = {
         },
         theatre: {
             id: 'tech-theatre',
-            title: 'Theatre',
-            desc: 'Theatre',
+            title: loc('tech_theatre'),
+            desc: loc('tech_theatre'),
             reqs: { housing: 1, currency: 1, cement: 1 },
             grant: ['theatre',1],
             cost: {
                 Knowledge(){ return 750; }
             },
-            effect: 'Design a space for shows to help uplift your spirits.',
+            effect: loc('tech_theatre_effect'),
             action(){
                 if (payCosts(actions.tech.theatre.cost)){
                     global.city['amphitheatre'] = { count: 0 };
@@ -3626,14 +3626,14 @@ export const actions = {
         },
         playwright: {
             id: 'tech-playwright',
-            title: 'Playwright',
-            desc: 'Playwright',
+            title: loc('tech_playwright'),
+            desc: loc('tech_playwright'),
             reqs: { theatre: 1, science: 2 },
             grant: ['theatre',2],
             cost: {
                 Knowledge(){ return 1080; }
             },
-            effect: 'Playwrights will increase the quality of entertainment increasing the effectiveness of entertainers.',
+            effect: loc('tech_playwright_effect'),
             action(){
                 if (payCosts(actions.tech.playwright.cost)){
                     return true;
@@ -3643,14 +3643,14 @@ export const actions = {
         },
         magic: {
             id: 'tech-magic',
-            title: 'Techno Wizards',
-            desc: 'Techno Wizards',
+            title: loc('tech_magic'),
+            desc: loc('tech_magic'),
             reqs: { theatre: 2, high_tech: 1 },
             grant: ['theatre',3],
             cost: {
                 Knowledge(){ return 7920; }
             },
-            effect: 'Techno Wizards are a new type of stage performer that uses technology to perform "Magic". Increases effectiveness of entertainers.',
+            effect: loc('tech_magic_effect'),
             action(){
                 if (payCosts(actions.tech.magic.cost)){
                     return true;
@@ -3660,14 +3660,14 @@ export const actions = {
         },
         radio: {
             id: 'tech-radio',
-            title: 'Radio',
-            desc: 'Radio',
+            title: loc('tech_radio'),
+            desc: loc('tech_radio'),
             reqs: { theatre: 3, high_tech: 2 },
             grant: ['broadcast',1],
             cost: {
                 Knowledge(){ return 16200; }
             },
-            effect: 'Powered Wardenclyffe towers broadcast radio signals which help entertain your citizens.',
+            effect: loc('tech_radio_effect'),
             action(){
                 if (payCosts(actions.tech.radio.cost)){
                     return true;
@@ -3677,14 +3677,14 @@ export const actions = {
         },
         tv: {
             id: 'tech-tv',
-            title: 'Television',
-            desc: 'Television',
+            title: loc('tech_tv'),
+            desc: loc('tech_tv'),
             reqs: { broadcast: 1, high_tech: 4 },
             grant: ['broadcast',2],
             cost: {
                 Knowledge(){ return 67500; }
             },
-            effect: 'New broadcast TV signals double the entertainment value of Wardenclyffe towers.',
+            effect: loc('tech_tv_effect'),
             action(){
                 if (payCosts(actions.tech.tv.cost)){
                     return true;
@@ -3694,14 +3694,14 @@ export const actions = {
         },
         casino: {
             id: 'tech-casino',
-            title: 'Casino',
-            desc: 'Casino',
+            title: loc('tech_casino'),
+            desc: loc('tech_casino'),
             reqs: { high_tech: 4, currency: 5 },
             grant: ['gambling',1],
             cost: {
                 Knowledge(){ return 95000; }
             },
-            effect: 'Casinos not only offer entertainment for your populace but a new revenue source for you.',
+            effect: loc('tech_casino_effect'),
             action(){
                 if (payCosts(actions.tech.casino.cost)){
                     global.city['casino'] = { count: 0 };
@@ -3712,15 +3712,15 @@ export const actions = {
         },
         casino_vault: {
             id: 'tech-casino_vault',
-            title: 'Casino Vault',
-            desc: 'Casino Vault',
+            title: loc('tech_casino_vault'),
+            desc: loc('tech_casino_vault'),
             reqs: { gambling: 1, space: 3 },
             grant: ['gambling',2],
             cost: {
                 Knowledge(){ return 145000; },
                 Iridium(){ return 2500; }
             },
-            effect: 'Upgrade your casino vaults to store 50% more money.',
+            effect: loc('tech_casino_vault_effect'),
             action(){
                 if (payCosts(actions.tech.casino_vault.cost)){
                     return true;
@@ -3730,14 +3730,14 @@ export const actions = {
         },
         mining: {
             id: 'tech-mining',
-            title: 'Mining',
-            desc: 'Learn the basics of mining',
+            title: loc('tech_mining'),
+            desc: loc('tech_mining_desc'),
             reqs: { primitive: 3 },
             grant: ['mining',1],
             cost: { 
                 Knowledge(){ return 45; }
             },
-            effect: 'Learn how to dig up stone slabs from a quarry.',
+            effect: loc('tech_mining_effect'),
             action(){
                 if (payCosts(actions.tech.mining.cost)){
                     global.city['rock_quarry'] = { 
@@ -5957,7 +5957,7 @@ export const actions = {
                 Money(){ return 50000 },
                 Knowledge(){ return 32000; }
             },
-            effect: 'Regererate the mercenary pool faster by offering signing bonuses.',
+            effect: 'Regenerate the mercenary pool faster by offering signing bonuses.',
             action(){
                 if (payCosts(actions.tech.signing_bonus.cost)){
                     return true;
