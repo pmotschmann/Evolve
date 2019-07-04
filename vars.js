@@ -170,7 +170,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.19';
+global['version'] = '0.4.20';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -270,6 +270,9 @@ if (!global.race['seeded']){
 }
 if (!global.race['Plasmid']){
     global.race['Plasmid'] = { count: 0 };
+}
+if (!global.race['Phage']){
+    global.race['Phage'] = { count: 0 };
 }
 if (!global.race['deterioration']){
     global.race['deterioration'] = 0;

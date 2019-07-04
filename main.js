@@ -755,6 +755,11 @@ function fastLoop(){
             power_grid -= power;
         }
 
+        if (global.city['windmill'] && global.tech['hunting'] && global.tech['hunting'] >= 3){
+            max_power -= global.city.windmill.count;
+            power_grid += global.city.windmill.count;
+        }
+
         // Power usage
         let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver'];
         for (var i = 0; i < p_structs.length; i++){
@@ -2576,7 +2581,7 @@ function midLoop(){
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
             if (global.tech['asteroid'] >= 5){
-                let gain = p_on['space_station'] * spatialReasoning(4);
+                let gain = p_on['space_station'] * spatialReasoning(5);
                 caps['Elerium'] += gain;
                 bd_Elerium['Space_Station'] = gain+'v';
             }
