@@ -2610,8 +2610,12 @@ export const actions = {
                 if (global.tech['world_control']){
                     money = Math.round(money * 1.25);
                 }
+<<<<<<< HEAD
                 money = '$'+money;
                 return `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
+=======
+                return `<div>${loc('city_max_money',[money])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
+>>>>>>> pmotschmann/master
             },
             action(){
                 if (payCosts(actions.city.casino.cost)){
