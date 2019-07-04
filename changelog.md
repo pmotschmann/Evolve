@@ -1,3 +1,6 @@
+#### 0.4.20 - 7/4/2019 ####
+Added special windmill tech for carnivore path to equalize power grid<br>
+
 #### 0.4.19 - 7/2/2019 ####
 Fixed bugs with the hell planet and gas planet survey mission<br>
 Fixed bug that prevented the planet description tooltip from triggering<br>

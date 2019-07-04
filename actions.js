@@ -1546,7 +1546,7 @@ export const actions = {
         cottage: {
             id: 'city-cottage',
             title(){
-                return global.race.species === 'sporgar' ? loc('city_cottage_title2') : loc('city_cottage_title1');
+                return housingLabel('medium');
             },
             desc: loc('city_cottage_desc'),
             reqs: { housing: 2 },
@@ -1577,7 +1577,7 @@ export const actions = {
         apartment: {
             id: 'city-apartment',
             title(){
-                return global.race.species === 'sporgar' ? loc('city_apartment_title2') : loc('city_apartment_title1');
+                return housingLabel('large');
             },
             desc: `<div>${loc('city_apartment_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { housing: 3 },
@@ -1721,6 +1721,29 @@ export const actions = {
                 else {
                     return false;
                 }
+            }
+        },
+        windmill: {
+            id: 'city-windmill',
+            title(){
+                return loc('city_mill_title2');
+            },
+            desc(){
+                return loc('city_windmill_desc');
+            },
+            reqs: { hunting: 3 },
+            cost: { 
+                Money(){ return costMultiplier('windmill', 1000, 1.31); },
+                Lumber(){ return costMultiplier('windmill', 600, 1.33); },
+                Iron(){ return costMultiplier('windmill', 150, 1.33); },
+                Cement(){ return costMultiplier('windmill', 125, 1.33); },
+            },
+            action(){
+                if (payCosts(actions.city.windmill.cost)){
+                    global.city['windmill'].count++;
+                    return true;
+                }
+                return false;
             }
         },
         silo: {
@@ -3045,7 +3068,7 @@ export const actions = {
         cottage: {
             id: 'tech-cottage',
             title(){
-                return global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
+                return housingLabel('medium');
             },
             desc: loc('tech_cottage_desc'),
             reqs: { housing: 1, cement: 1, mining: 3 },
@@ -3065,10 +3088,10 @@ export const actions = {
         apartment: {
             id: 'tech-apartment',
             title(){
-                return global.race.species === 'sporgar' ? loc('tech_apartment2') : loc('tech_apartment1');
+                return housingLabel('large');
             },
             desc(){
-                return global.race.species === 'sporgar' ? loc('tech_apartment2') : loc('tech_apartment1');
+                return housingLabel('large');
             },
             reqs: { housing: 2, high_tech: 2 },
             grant: ['housing',3],
@@ -3090,7 +3113,7 @@ export const actions = {
         steel_beams: {
             id: 'tech-steel_beams',
             title: loc('tech_steel_beams'),
-            desc: loc('tech_steel_beams_desc'),
+            desc: loc('tech_housing_cost'),
             reqs: { housing: 2, smelting: 2 },
             grant: ['housing_reduction',1],
             cost: { 
@@ -3098,8 +3121,8 @@ export const actions = {
                 Steel(){ return 2500; }
             },
             effect(){
-                let label = basicHousingLabel();
-                let cLabel = global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
+                let label = housingLabel('small');
+                let cLabel = housingLabel('medium');
                 return loc('tech_steel_beams_effect',[label,cLabel]);
             },
             action(){
@@ -3112,7 +3135,7 @@ export const actions = {
         mythril_beams: {
             id: 'tech-mythril_beams',
             title: loc('tech_mythril_beams'),
-            desc: loc('tech_steel_beams_desc'),
+            desc: loc('tech_housing_cost'),
             reqs: { housing_reduction: 1, space: 3 },
             grant: ['housing_reduction',2],
             cost: { 
@@ -3120,8 +3143,8 @@ export const actions = {
                 Mythril(){ return 1000; }
             },
             effect(){
-                let label = basicHousingLabel();
-                let cLabel = global.race.species === 'sporgar' ? loc('tech_cottage2') : loc('tech_cottage1');
+                let label = housingLabel('small');
+                let cLabel = housingLabel('medium');
                 return loc('tech_mythril_beams_effect',[label,cLabel]);
             },
             action(){
@@ -3133,8 +3156,8 @@ export const actions = {
         },
         neutronium_walls: {
             id: 'tech-neutronium_walls',
-            title: 'Neutronium Walls',
-            desc: 'Reduce cost of housing',
+            title: loc('tech_neutronium_walls'),
+            desc: loc('tech_housing_cost'),
             reqs: { housing_reduction: 2, gas_moon: 1 },
             grant: ['housing_reduction',3],
             cost: { 
@@ -3142,8 +3165,9 @@ export const actions = {
                 Neutronium(){ return 850; }
             },
             effect(){
-                let label = basicHousingLabel();
-                return `Reduce material costs of ${label}s and Cottages by adding load bearing walls made out of Neutronium.`;
+                let label = housingLabel('small');
+                let cLabel = housingLabel('medium');
+                return loc('tech_neutronium_walls_effect',[label,cLabel]);
             },
             action(){
                 if (payCosts(actions.tech.neutronium_walls.cost)){
@@ -3154,14 +3178,14 @@ export const actions = {
         },
         aphrodisiac: {
             id: 'tech-aphrodisiac',
-            title: 'Aphrodisiac',
-            desc: 'Study population growth and how to enhance it',
+            title: loc('tech_aphrodisiac'),
+            desc: loc('tech_aphrodisiac_desc'),
             reqs: { housing: 2 },
             grant: ['reproduction',1],
             cost: { 
                 Knowledge(){ return 4500; }
             },
-            effect: 'Develop a substance that aids with population growth.',
+            effect: loc('tech_aphrodisiac_effect'),
             action(){
                 if (payCosts(actions.tech.aphrodisiac.cost)){
                     return true;
@@ -3171,14 +3195,14 @@ export const actions = {
         },
         smokehouse: {
             id: 'tech-smokehouse',
-            title: 'Smokehouse',
-            desc: 'Devise a method of preserving meat',
+            title: loc('tech_smokehouse'),
+            desc: loc('tech_smokehouse_desc'),
             reqs: { primitive: 3, storage: 1 },
             grant: ['hunting',1],
             cost: { 
                 Knowledge(){ return 80; }
             },
-            effect: 'Create plans for a long term storage medium for meat.',
+            effect: loc('tech_smokehouse_effect'),
             action(){
                 if (payCosts(actions.tech.smokehouse.cost)){
                     global.city['smokehouse'] = { count: 0 };
@@ -3189,14 +3213,14 @@ export const actions = {
         },
         lodge: {
             id: 'tech-lodge',
-            title: 'Hunting Lodge',
-            desc: 'Hunting Lodge',
+            title: loc('tech_lodge'),
+            desc: loc('tech_lodge'),
             reqs: { hunting: 1, housing: 1, currency: 1 },
             grant: ['hunting',2],
             cost: {
                 Knowledge(){ return 180; }
             },
-            effect: 'Design a hunting lodge to help bolster your food income.',
+            effect: loc('tech_lodge_effect'),
             action(){
                 if (payCosts(actions.tech.lodge.cost)){
                     global.city['lodge'] = { count: 0 };
@@ -3207,14 +3231,14 @@ export const actions = {
         },
         agriculture: {
             id: 'tech-agriculture',
-            title: 'Agriculture',
-            desc: 'Discover the basics of agriculture',
+            title: loc('tech_agriculture'),
+            desc: loc('tech_agriculture_desc'),
             reqs: { primitive: 3 },
             grant: ['agriculture',1],
             cost: { 
                 Knowledge(){ return 10; }
             },
-            effect: 'Learn to plant crops and harvest them for food.',
+            effect: loc('tech_agriculture_effect'),
             action(){
                 if (payCosts(actions.tech.agriculture.cost)){
                     global.city['farm'] = { count: 0 };
@@ -3225,15 +3249,15 @@ export const actions = {
         },
         farm_house: {
             id: 'tech-farm_house',
-            title: 'Farm Houses',
-            desc: 'Add a house to every farm',
+            title: loc('tech_agriculture'),
+            desc: loc('tech_farm_house_desc'),
             reqs: { agriculture: 1, housing: 1, currency: 1 },
             grant: ['farm',1],
             cost: {
                 Money(){ return 50; },
                 Knowledge(){ return 180; }
             },
-            effect: 'Learn the joys of a short commute by living at work!',
+            effect: loc('tech_farm_house_effect'),
             action(){
                 if (payCosts(actions.tech.farm_house.cost)){
                     return true;
@@ -3243,14 +3267,14 @@ export const actions = {
         },
         irrigation: {
             id: 'tech-irrigation',
-            title: 'Irrigation',
-            desc: 'Discover the benefits of irrigation',
+            title: loc('tech_irrigation'),
+            desc: loc('tech_irrigation_desc'),
             reqs: { agriculture: 1 },
             grant: ['agriculture',2],
             cost: { 
                 Knowledge(){ return 55; }
             },
-            effect: 'Increase farm efficiency by 66% with irrigation.',
+            effect: loc('tech_irrigation_effect'),
             action(){
                 if (payCosts(actions.tech.irrigation.cost)){
                     return true;
@@ -3260,14 +3284,14 @@ export const actions = {
         },
         silo: {
             id: 'tech-silo',
-            title: 'Grain Silo',
-            desc: 'Devise a structure to house grain',
+            title: loc('tech_silo'),
+            desc: loc('tech_silo_desc'),
             reqs: { agriculture: 2, storage: 1 },
             grant: ['agriculture',3],
             cost: { 
                 Knowledge(){ return 80; }
             },
-            effect: 'Create plans for a storage medium for food.',
+            effect: loc('tech_silo_effect'),
             action(){
                 if (payCosts(actions.tech.silo.cost)){
                     global.city['silo'] = { count: 0 };
@@ -3278,14 +3302,14 @@ export const actions = {
         },
         mill: {
             id: 'tech-mill',
-            title: 'Grain Mill',
-            desc: 'Develop mills to increase food production',
+            title: loc('tech_mill'),
+            desc: loc('tech_mill_desc'),
             reqs: { agriculture: 3, mining: 3 },
             grant: ['agriculture',4],
             cost: { 
                 Knowledge(){ return 5400; }
             },
-            effect: 'Create plans for a grain mill, grain mills boost farm effectiveness.',
+            effect: loc('tech_mill_effect'),
             action(){
                 if (payCosts(actions.tech.mill.cost)){
                     global.city['mill'] = {
@@ -3299,14 +3323,14 @@ export const actions = {
         },
         windmill: {
             id: 'tech-windmill',
-            title: 'Windmill',
-            desc: 'Upgrade your grain mills with windmill sail',
+            title: loc('tech_windmill'),
+            desc: loc('tech_windmill_desc'),
             reqs: { agriculture: 4, high_tech: 1 },
             grant: ['agriculture',5],
             cost: { 
                 Knowledge(){ return 16200; }
             },
-            effect: 'Add a windmill sail to your grain mills, boosts the effectiveness of mills.',
+            effect: loc('tech_windmill_effect'),
             action(){
                 if (payCosts(actions.tech.windmill.cost)){
                     return true;
@@ -3316,16 +3340,34 @@ export const actions = {
         },
         windturbine: {
             id: 'tech-windturbine',
-            title: 'Wind Turbine',
-            desc: 'Wind Turbine',
+            title: loc('tech_windturbine'),
+            desc: loc('tech_windturbine'),
             reqs: { agriculture: 5, high_tech: 4 },
             grant: ['agriculture',6],
             cost: { 
                 Knowledge(){ return 66000; }
             },
-            effect: 'Add a turbine to your windmills, allowing you to use them for power instead of milling.',
+            effect: loc('tech_windturbine_effect'),
             action(){
                 if (payCosts(actions.tech.windturbine.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        wind_plant: {
+            id: 'tech-wind_plant',
+            title: loc('tech_windmill'),
+            desc: loc('tech_windmill'),
+            reqs: { hunting: 2, high_tech: 4 },
+            grant: ['hunting',3],
+            cost: { 
+                Knowledge(){ return 66000; }
+            },
+            effect: loc('tech_wind_plant_effect'),
+            action(){
+                if (payCosts(actions.tech.windturbine.cost)){
+                    global.city['windmill'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -8620,6 +8662,35 @@ export function basicHousingLabel(){
             return loc('city_basic_housing_title6');
         default:
             return loc('city_basic_housing_title1');
+    }
+}
+
+function mediumHousingLabel(){
+    switch (global.race.species){
+        case 'sporgar':
+            return loc('city_cottage_title2');
+        default:
+            return loc('city_cottage_title1');
+    }
+}
+
+function largeHousingLabel(){
+    switch (global.race.species){
+        case 'sporgar':
+            return loc('city_apartment_title2');
+        default:
+            return loc('city_apartment_title1');
+    }
+}
+
+function housingLabel(type){
+    switch (type){
+        case 'small':
+            return basicHousingLabel();
+        case 'medium':
+            return mediumHousingLabel();
+        case 'large':
+            return largeHousingLabel();
     }
 }
 
