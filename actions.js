@@ -3751,14 +3751,14 @@ export const actions = {
         },
         bayer_process: {
             id: 'tech-bayer_process',
-            title: 'Bayer Process',
-            desc: 'Learn to extract Aluminium from mines',
+            title: loc('tech_bayer_process'),
+            desc: loc('tech_bayer_process_desc'),
             reqs: { smelting: 2 },
             grant: ['alumina',1],
             cost: { 
                 Knowledge(){ return 4500; }
             },
-            effect: 'Learn how to remove Aluminium from previously unusable waste material produced by your rock quarries.',
+            effect: loc('tech_bayer_process_effect'),
             action(){
                 if (payCosts(actions.tech.bayer_process.cost)){
                     global.city['metal_refinery'] = { 
@@ -3773,14 +3773,14 @@ export const actions = {
         },
         smelting: {
             id: 'tech-smelting',
-            title: 'Smelting',
-            desc: 'Design smelting facilities to refine ore',
+            title: loc('tech_smelting'),
+            desc: loc('tech_smelting_desc'),
             reqs: { mining: 3 },
             grant: ['smelting',1],
             cost: { 
                 Knowledge(){ return 4050; }
             },
-            effect: 'Learn advanced techniques for smelting ore that will increase yield.',
+            effect: loc('tech_smelting_effect'),
             action(){
                 if (payCosts(actions.tech.smelting.cost)){
                     global.city['smelter'] = { 
@@ -3798,15 +3798,15 @@ export const actions = {
         },
         steel: {
             id: 'tech-steel',
-            title: 'Crucible Steel',
-            desc: 'Learn to smelt steel',
+            title: loc('tech_steel'),
+            desc: loc('tech_steel_desc'),
             reqs: { smelting: 1, mining: 4 },
             grant: ['smelting',2],
             cost: { 
                 Knowledge(){ return 4950; },
                 Steel(){ return 25; }
             },
-            effect: 'Upgrade your smelters so they can produce steel.',
+            effect: loc('tech_steel_effect'),
             action(){
                 if (payCosts(actions.tech.steel.cost)){
                     global.resource.Steel.display = true;
@@ -3817,15 +3817,15 @@ export const actions = {
         },
         blast_furnace: {
             id: 'tech-blast_furnace',
-            title: 'Blast Furnace',
-            desc: 'Blast Furnace',
+            title: loc('tech_blast_furnace'),
+            desc: loc('tech_blast_furnace'),
             reqs: { smelting: 2 },
             grant: ['smelting',3],
             cost: { 
                 Knowledge(){ return 13500; },
                 Coal(){ return 2000; }
             },
-            effect: 'Increases Iron output of smelters by 20%.',
+            effect: loc('tech_blast_furnace_effect'),
             action(){
                 if (payCosts(actions.tech.blast_furnace.cost)){
                     return true;
@@ -3835,15 +3835,15 @@ export const actions = {
         },
         bessemer_process: {
             id: 'tech-bessemer_process',
-            title: 'Bessemer Process',
-            desc: 'Bessemer Process',
+            title: loc('tech_bessemer_process'),
+            desc: loc('tech_bessemer_process'),
             reqs: { smelting: 3 },
             grant: ['smelting',4],
             cost: { 
                 Knowledge(){ return 19800; },
                 Coal(){ return 5000; }
             },
-            effect: 'Increases Steel output of smelters by 20%.',
+            effect: loc('tech_bessemer_process_effect'),
             action(){
                 if (payCosts(actions.tech.bessemer_process.cost)){
                     return true;
@@ -3853,15 +3853,15 @@ export const actions = {
         },
         oxygen_converter: {
             id: 'tech-oxygen_converter',
-            title: 'Oxygen Converter',
-            desc: 'Oxygen Converter',
+            title: loc('tech_oxygen_converter'),
+            desc: loc('tech_oxygen_converter'),
             reqs: { smelting: 4, high_tech: 3 },
             grant: ['smelting',5],
             cost: { 
                 Knowledge(){ return 46800; },
                 Coal(){ return 10000; }
             },
-            effect: 'Increases Steel output of smelters by 20%.',
+            effect: loc('tech_oxygen_converter_effect'),
             action(){
                 if (payCosts(actions.tech.oxygen_converter.cost)){
                     return true;
@@ -3871,15 +3871,15 @@ export const actions = {
         },
         electric_arc_furnace: {
             id: 'tech-electric_arc_furnace',
-            title: 'Electric Arc Furnace',
-            desc: 'Electric Arc Furnace',
+            title: loc('tech_electric_arc_furnace'),
+            desc: loc('tech_electric_arc_furnace'),
             reqs: { smelting: 5, high_tech: 4 },
             grant: ['smelting',6],
             cost: { 
                 Knowledge(){ return 85500; },
                 Copper(){ return 25000; }
             },
-            effect: 'Increases Steel output of smelters by 20%.',
+            effect: loc('tech_electric_arc_furnace_effect'),
             action(){
                 if (payCosts(actions.tech.electric_arc_furnace.cost)){
                     return true;
@@ -3889,15 +3889,15 @@ export const actions = {
         },
         rotary_kiln: {
             id: 'tech-rotary_kiln',
-            title: 'Rotary Kiln',
-            desc: 'Rotary Kiln',
+            title: loc('tech_rotary_kiln'),
+            desc: loc('tech_rotary_kiln'),
             reqs: { smelting: 3, high_tech: 3 },
             grant: ['copper',1],
             cost: { 
                 Knowledge(){ return 57600; },
                 Coal(){ return 8000; }
             },
-            effect: 'Advanced smelting processes improve copper refinement by 20%.',
+            effect: loc('tech_rotary_kiln_effect'),
             action(){
                 if (payCosts(actions.tech.rotary_kiln.cost)){
                     return true;
@@ -3907,14 +3907,14 @@ export const actions = {
         },
         metal_working: {
             id: 'tech-metal_working',
-            title: 'Metal Working',
-            desc: 'Learn the basics of smelting and metalworking',
+            title: loc('tech_metal_working'),
+            desc: loc('tech_metal_working_desc'),
             reqs: { mining: 1 },
             grant: ['mining',2],
             cost: { 
                 Knowledge(){ return 350; }
             },
-            effect: 'Learn how to mine and refine copper into a pure form.',
+            effect: loc('tech_metal_working_effect'),
             action(){
                 if (payCosts(actions.tech.metal_working.cost)){
                     global.city['mine'] = {
@@ -3928,14 +3928,14 @@ export const actions = {
         },
         iron_mining: {
             id: 'tech-iron_mining',
-            title: 'Iron Mining',
-            desc: 'Learn how to mine iron',
+            title: loc('tech_iron_mining'),
+            desc: loc('tech_iron_mining_desc'),
             reqs: { mining: 2 },
             grant: ['mining',3],
             cost: { 
                 Knowledge(){ return 2500; }
             },
-            effect: 'Learn how to extract iron ore from mines.',
+            effect: loc('tech_iron_mining_effect'),
             action(){
                 if (payCosts(actions.tech.iron_mining.cost)){
                     global.resource.Iron.display = true;
@@ -3950,14 +3950,14 @@ export const actions = {
         },
         coal_mining: {
             id: 'tech-coal_mining',
-            title: 'Coal Mining',
-            desc: 'Discover Coal',
+            title: loc('tech_coal_mining'),
+            desc: loc('tech_coal_mining_desc'),
             reqs: { mining: 3 },
             grant: ['mining',4],
             cost: {
                 Knowledge(){ return 4320; }
             },
-            effect: 'Learn about how coal can be used as a resource.',
+            effect: loc('tech_coal_mining_effect'),
             action(){
                 if (payCosts(actions.tech.coal_mining.cost)){
                     global.city['coal_mine'] = {
@@ -3972,14 +3972,14 @@ export const actions = {
         },
         storage: {
             id: 'tech-storage',
-            title: 'Basic Storage',
-            desc: 'Design a structure to house resources',
+            title: loc('tech_storage'),
+            desc: loc('tech_storage_desc'),
             reqs: { primitive: 3, currency: 1 },
             grant: ['storage',1],
             cost: { 
                 Knowledge(){ return 20; }
             },
-            effect: 'Design a small storage shed.',
+            effect: loc('tech_storage_effect'),
             action(){
                 if (payCosts(actions.tech.storage.cost)){
                     global.city['shed'] = { count: 0 };
@@ -3990,8 +3990,8 @@ export const actions = {
         },
         reinforced_shed: {
             id: 'tech-reinforced_shed',
-            title: 'Reinforced Sheds',
-            desc: 'Upgrade your sheds',
+            title: loc('tech_reinforced_shed'),
+            desc: loc('tech_reinforced_shed_desc'),
             reqs: { storage: 1, cement: 1 },
             grant: ['storage',2],
             cost: {
@@ -4000,7 +4000,7 @@ export const actions = {
                 Iron(){ return 750; },
                 Cement(){ return 500; }
             },
-            effect: 'Reinforce your sheds with newer materials to increase storage capacity.',
+            effect: loc('tech_reinforced_shed_effect'),
             action(){
                 if (payCosts(actions.tech.reinforced_shed.cost)){
                     return true;
@@ -4010,8 +4010,8 @@ export const actions = {
         },
         barns: {
             id: 'tech-barns',
-            title: 'Barns',
-            desc: 'Replace sheds with barns',
+            title: loc('tech_barns'),
+            desc: loc('tech_barns_desc'),
             reqs: { storage: 2, smelting: 2, alumina: 1 },
             grant: ['storage',3],
             cost: {
@@ -4019,7 +4019,7 @@ export const actions = {
                 Aluminium(){ return 3000; },
                 Steel(){ return 3000; }
             },
-            effect: 'Replace smaller storage sheds with larger storage barns, a significant increase in storage capacity.',
+            effect: loc('tech_barns_effect'),
             action(){
                 if (payCosts(actions.tech.barns.cost)){
                     return true;
@@ -4029,15 +4029,15 @@ export const actions = {
         },
         warehouse: {
             id: 'tech-warehouse',
-            title: 'Warehouse',
-            desc: 'Replace barns with warehouses',
+            title: loc('tech_warehouse'),
+            desc: loc('tech_warehouse_desc'),
             reqs: { storage: 3, high_tech: 3, smelting: 2 },
             grant: ['storage',4],
             cost: {
                 Knowledge(){ return 40500; },
                 Titanium(){ return 3000; }
             },
-            effect: 'Replace your barns with huge storage facilities known as "warehouses".',
+            effect: loc('tech_warehouse_effect'),
             action(){
                 if (payCosts(actions.tech.warehouse.cost)){
                     return true;
@@ -4047,15 +4047,15 @@ export const actions = {
         },
         cameras: {
             id: 'tech-cameras',
-            title: 'Security Cameras',
-            desc: 'Upgrade warehouses with cameras',
+            title: loc('tech_cameras'),
+            desc: loc('tech_cameras_desc'),
             reqs: { storage: 4, high_tech: 4 },
             grant: ['storage',5],
             cost: {
                 Money(){ return 90000; },
                 Knowledge(){ return 65000; }
             },
-            effect: 'Security cameras make monitoring large storage spaces easier, increasing storage potential.',
+            effect: loc('tech_cameras_effect'),
             action(){
                 if (payCosts(actions.tech.cameras.cost)){
                     return true;
@@ -4065,14 +4065,14 @@ export const actions = {
         },
         pocket_dimensions: {
             id: 'tech-pocket_dimensions',
-            title: 'Pocket Dimensions',
-            desc: 'Learn to create interior spaces that are larger than exterior spaces.',
+            title: loc('tech_pocket_dimensions'),
+            desc: loc('tech_pocket_dimensions_desc'),
             reqs: { particles: 1, storage: 5 },
             grant: ['storage',6],
             cost: {
                 Knowledge(){ return 108000; }
             },
-            effect: 'The ultimate upgrade for warehouses. Extra supercollider levels will increase the effectiveness of this technology.',
+            effect: loc('tech_pocket_dimensions_effect'),
             action(){
                 if (payCosts(actions.tech.pocket_dimensions.cost)){
                     return true;
@@ -4082,14 +4082,14 @@ export const actions = {
         },
         containerization: {
             id: 'tech-containerization',
-            title: 'Containerization',
-            desc: 'Research scalable new storage solutions',
+            title: loc('tech_containerization'),
+            desc: loc('tech_containerization_desc'),
             reqs: { cement: 1 },
             grant: ['container',1],
             cost: {
                 Knowledge(){ return 2700; }
             },
-            effect: 'Designs a scalable storage solution for all your storage needs.',
+            effect: loc('tech_containerization_effect'),
             action(){
                 if (payCosts(actions.tech.containerization.cost)){
                     global.city['storage_yard'] = { count: 0 };
@@ -4100,15 +4100,15 @@ export const actions = {
         },
         reinforced_crates: {
             id: 'tech-reinforced_crates',
-            title: 'Reinforced Crates',
-            desc: 'Reinforced Crates',
+            title: loc('tech_reinforced_crates'),
+            desc: loc('tech_reinforced_crates'),
             reqs: { container: 1, smelting: 2 },
             grant: ['container',2],
             cost: {
                 Knowledge(){ return 6750; },
                 Sheet_Metal(){ return 100; }
             },
-            effect: 'Upgrade wooden crates by reinforcing them with metal plates.',
+            effect: loc('tech_reinforced_crates_effect'),
             action(){
                 if (payCosts(actions.tech.reinforced_crates.cost)){
                     return true;
@@ -4118,8 +4118,8 @@ export const actions = {
         },
         cranes: {
             id: 'tech-cranes',
-            title: 'Cranes',
-            desc: 'Freight Cranes',
+            title: loc('tech_cranes'),
+            desc: loc('tech_cranes_desc'),
             reqs: { container: 2, high_tech: 2 },
             grant: ['container',3],
             cost: {
@@ -4127,7 +4127,7 @@ export const actions = {
                 Copper(){ return 1000; },
                 Steel(){ return 2500; }
             },
-            effect: 'Upgrade your freight yards with cranes, doubling the amount of crates that can be stored in each yard.',
+            effect: loc('tech_cranes_effect'),
             action(){
                 if (payCosts(actions.tech.cranes.cost)){
                     return true;
@@ -4137,15 +4137,15 @@ export const actions = {
         },
         titanium_crates: {
             id: 'tech-titanium_crates',
-            title: 'Titanium Banded Crates',
-            desc: 'Titanium Banded Crates',
+            title: loc('tech_titanium_crates'),
+            desc: loc('tech_titanium_crates'),
             reqs: { container: 3, titanium: 1 },
             grant: ['container',4],
             cost: {
                 Knowledge(){ return 67500; },
                 Titanium(){ return 1000; }
             },
-            effect: 'Increase the maximum load of crates by adding strong titanium bands.',
+            effect: loc('tech_titanium_crates_effect'),
             action(){
                 if (payCosts(actions.tech.titanium_crates.cost)){
                     return true;
@@ -4155,15 +4155,15 @@ export const actions = {
         },
         mythril_crates: {
             id: 'tech-mythril_crates',
-            title: 'Mythril Plated Crates',
-            desc: 'Mythril Plated Crates',
+            title: loc('tech_mythril_crates'),
+            desc: loc('tech_mythril_crates'),
             reqs: { container: 4, space: 3 },
             grant: ['container',5],
             cost: {
                 Knowledge(){ return 145000; },
                 Mythril(){ return 350; }
             },
-            effect: 'Increase the maximum load of crates by plating them with mythril.',
+            effect: loc('tech_mythril_crates_effect'),
             action(){
                 if (payCosts(actions.tech.mythril_crates.cost)){
                     return true;
@@ -4173,15 +4173,15 @@ export const actions = {
         },
         steel_containers: {
             id: 'tech-steel_containers',
-            title: 'Steel Containers',
-            desc: 'Design better steel containers',
+            title: loc('tech_steel_containers'),
+            desc: loc('tech_steel_containers_desc'),
             reqs: { smelting: 2, container: 1 },
             grant: ['steel_container',1],
             cost: {
                 Knowledge(){ return 9000; },
                 Steel(){ return 250; }
             },
-            effect: 'Replace cheap wooden crates with more durable steel containers.',
+            effect: loc('tech_steel_containers_effect'),
             action(){
                 if (payCosts(actions.tech.steel_containers.cost)){
                     global.city['warehouse'] = { count: 0 };
@@ -4192,15 +4192,15 @@ export const actions = {
         },
         gantry_crane: {
             id: 'tech-gantry_crane',
-            title: 'Gantry Cranes',
-            desc: 'Add gantry cranes to container ports',
+            title: loc('tech_gantry_crane'),
+            desc: loc('tech_gantry_crane_desc'),
             reqs: { steel_container: 1, high_tech: 2 },
             grant: ['steel_container',2],
             cost: {
                 Knowledge(){ return 22500; },
                 Steel(){ return 5000; }
             },
-            effect: 'Upgrade your container ports with gantry cranes. This doubles the number of containers that can be stored at each port.',
+            effect: loc('tech_gantry_crane_effect'),
             action(){
                 if (payCosts(actions.tech.gantry_crane.cost)){
                     return true;
@@ -4210,15 +4210,15 @@ export const actions = {
         },
         alloy_containers: {
             id: 'tech-alloy_containers',
-            title: 'Alloy Containers',
-            desc: 'New larger containers made from alloy',
+            title: loc('tech_alloy_containers'),
+            desc: loc('tech_alloy_containers_desc'),
             reqs: { steel_container: 2, storage: 4 },
             grant: ['steel_container',3],
             cost: {
                 Knowledge(){ return 49500; },
                 Alloy(){ return 2500; }
             },
-            effect: 'Increase container capacity by 50% with new alloy containers.',
+            effect: loc('tech_alloy_containers_effect'),
             action(){
                 if (payCosts(actions.tech.alloy_containers.cost)){
                     return true;
@@ -4228,15 +4228,15 @@ export const actions = {
         },
         mythril_containers: {
             id: 'tech-mythril_containers',
-            title: 'Mythril Containers',
-            desc: 'Reinforce containers with mythril struts',
+            title: loc('tech_mythril_containers'),
+            desc: loc('tech_mythril_containers_desc'),
             reqs: { steel_container: 3, space: 3 },
             grant: ['steel_container',4],
             cost: {
                 Knowledge(){ return 165000; },
                 Mythril(){ return 500; }
             },
-            effect: 'Increase container capacity by adding mythril struts.',
+            effect: loc('tech_mythril_containers_effect'),
             action(){
                 if (payCosts(actions.tech.mythril_containers.cost)){
                     return true;
@@ -4246,15 +4246,15 @@ export const actions = {
         },
         currency: {
             id: 'tech-currency',
-            title: 'Currency',
-            desc: 'Invent the concept of currency',
+            title: loc('tech_currency'),
+            desc: loc('tech_currency_desc'),
             reqs: { housing: 1 },
             grant: ['currency',1],
             cost: {
                 Knowledge(){ return 22; },
                 Lumber(){ return 10; } 
             },
-            effect: 'Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.',
+            effect: loc('tech_currency_effect'),
             action(){
                 if (payCosts(actions.tech.currency.cost)){
                     global.resource.Money.display = true;
