@@ -239,6 +239,9 @@ if (!global.stats['reset']){
 if (!global.stats['plasmid']){
     global.stats['plasmid'] = 0;
 }
+if (!global.stats['phage']){
+    global.stats['phage'] = 0;
+}
 if (!global.stats['starved']){
     global.stats['starved'] = 0;
 }
