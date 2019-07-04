@@ -2581,7 +2581,7 @@ function midLoop(){
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
             if (global.tech['asteroid'] >= 5){
-                let gain = p_on['space_station'] * spatialReasoning(4);
+                let gain = p_on['space_station'] * spatialReasoning(5);
                 caps['Elerium'] += gain;
                 bd_Elerium['Space_Station'] = gain+'v';
             }

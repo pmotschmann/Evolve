@@ -1,5 +1,6 @@
 #### 0.4.20 - 7/4/2019 ####
 Added special windmill tech for carnivore path to equalize power grid<br>
+Space Stations now give 5 Elerium storage instead of 4<br>
 
 #### 0.4.19 - 7/2/2019 ####
 Fixed bugs with the hell planet and gas planet survey mission<br>
