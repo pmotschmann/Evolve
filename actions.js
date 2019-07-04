@@ -7572,7 +7572,8 @@ export const actions = {
                     k_inc *= 1.015;
                 }
                 plasmid = challenge_multiplier(plasmid);
-                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div>`;
+                let phage = Math.floor(Math.log2(plasmid) * Math.E);
+                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
             },
             action(){
                 bioseed();
@@ -8765,6 +8766,7 @@ function bioseed(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
+    let phage = global.race.Phage.count;
     let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 3);
     let k_base = global.stats.know;
@@ -8779,6 +8781,8 @@ function bioseed(){
     }
     new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;
+    let new_phage = Math.floor(Math.log2(new_plasmid) * Math.E);
+    phage += new_phage;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
@@ -8789,6 +8793,7 @@ function bioseed(){
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
     global.stats.plasmid += new_plasmid;
+    global.stats.phage += new_phage;
     unlockAchieve(`seeder`);
     let new_biome = unlockAchieve(`biome_${biome}`);
     let new_genus = unlockAchieve(`genus_${genus}`);
@@ -8797,6 +8802,7 @@ function bioseed(){
         gods: god,
         old_gods: old_god,
         Plasmid: { count: plasmid },
+        Phage: { count: phage },
         seeded: true,
         probes: global.starDock.probes.count + 1,
         seed: Math.floor(Math.random(0,10000)),

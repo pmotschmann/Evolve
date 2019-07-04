@@ -239,6 +239,21 @@ const genePool = {
             return false;
         }
     },
+    dimensional_warping: {
+        id: 'genes-dimensional_warping',
+        title: loc('arpa_genepool_dimensional_warping_title'),
+        desc: loc('arpa_genepool_dimensional_warping_desc'),
+        reqs: { store: 3 },
+        grant: ['store',4],
+        cost: 500,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>500</span></div>`,
+        action(){
+            if (payPlasmids('dimensional_warping')){
+                return true;
+            }
+            return false;
+        }
+    },
     morphogenesis: {
         id: 'genes-morphogenesis',
         title: loc('arpa_genepool_morphogenesis_title'),

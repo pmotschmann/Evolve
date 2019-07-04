@@ -271,6 +271,9 @@ if (!global.race['seeded']){
 if (!global.race['Plasmid']){
     global.race['Plasmid'] = { count: 0 };
 }
+if (!global.race['Phage']){
+    global.race['Phage'] = { count: 0 };
+}
 if (!global.race['deterioration']){
     global.race['deterioration'] = 0;
 }

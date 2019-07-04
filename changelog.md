@@ -1,4 +1,6 @@
 #### 0.4.20 - 7/4/2019 ####
+Phage can now be earned from space resets, phage extends the plasmid diminishing return breakpoint<br>
+Dimensional Warping cripsr upgrade, applies phages to spatial reasoning<br>
 Added special windmill tech for carnivore path to equalize power grid<br>
 Space Stations now give 5 Elerium storage instead of 4<br>
 
