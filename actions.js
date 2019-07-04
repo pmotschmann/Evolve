@@ -1559,10 +1559,10 @@ export const actions = {
             effect(){
                 if (global.tech['home_safe']){
                     let safe = spatialReasoning(global.tech.home_safe > 1 ? '$2000' : '$1000');
-                    return `<div>${loc('plus_max_resource',[2,loc('citizen')])}</div><div>${loc('plus_max_resource',[safe,loc('resource_Money_name')])}</div>`;
+                    return `<div>${loc('plus_max_citizens',[2])}</div><div>${loc('plus_max_resource',[safe,loc('resource_Money_name')])}</div>`;
                 }
                 else {
-                    return loc('plus_max_resource',[2,loc('citizen')]);
+                    return loc('plus_max_citizens',[2]);
                 }
             },
             action(){
@@ -1591,7 +1591,7 @@ export const actions = {
             effect(){
                 if (global.tech['home_safe']){
                     let safe = spatialReasoning(global.tech.home_safe > 1 ? '$5000' : '$2000');
-                    return `<div>${loc('plus_max_resource',[5,loc('citizen')])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[safe,loc('resource_Money_name')])}</div>`;
+                    return `<div>${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[safe,loc('resource_Money_name')])}</div>`;
                 }
                 else {
                     return loc('plus_max_resource',loc(5,'citizen'));
@@ -2531,7 +2531,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>${loc('city_trade_routes',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('city_storage_yard_effect',[containers])}</div><div>${loc('city_warehouse_effect',[containers])}</div>`; 
+                return `<div>${loc('city_trade_routes',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`; 
             },
             action(){
                 if (payCosts(actions.city.wharf.cost)){

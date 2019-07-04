@@ -667,7 +667,7 @@ const spaceProjects = {
             },
             effect(){
                 let oil = +fuel_adjust(2).toFixed(2);
-                return `<div>${loc('plus_max_resource',[2,loc('soldier')])}</div><div>${loc('space_red_space_barracks_effect2',[oil])}</div><div>${loc('space_red_space_barracks_effect3')}</div>`;
+                return `<div>${loc('plus_max_soldiers',[2])}</div><div>${loc('space_red_space_barracks_effect2',[oil])}</div><div>${loc('space_red_space_barracks_effect3')}</div>`;
             },
             powered: 1,
             action(){
@@ -1168,7 +1168,7 @@ const spaceProjects = {
                 let food = 10;
                 let elerium_cap = spatialReasoning(4);
                 let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('plus_max_resource',[elerium_cap, loc('resource_Elerium_name')])}</div>` : '';
-                return `<div>${loc('plus_max_resource',[3,loc('space_miner')])}</div>${elerium}<div>${loc('space_belt_station_effect3',[helium])}</div><div>${loc('space_belt_station_effect4',[food,spaceProjects.spc_belt.space_station.powered])}</div>`;
+                return `<div>${loc('plus_max_space_miners',[3])}</div>${elerium}<div>${loc('space_belt_station_effect3',[helium])}</div><div>${loc('space_belt_station_effect4',[food,spaceProjects.spc_belt.space_station.powered])}</div>`;
             },
             support: 3,
             powered: 3,
