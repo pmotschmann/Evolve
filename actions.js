@@ -4918,7 +4918,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 350000; }
             },
-            effect: loc('tech_world_collider_effect',[races[global.race.species].solar.dwarf]),
+            effect(){ return loc('tech_world_collider_effect',[races[global.race.species].solar.dwarf]); },
             action(){
                 if (payCosts(actions.tech.world_collider.cost)){
                     global.space['world_collider'] = {
@@ -5238,7 +5238,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 400000; },
             },
-            effect: loc('tech_worker_drone_effect',[races[global.race.species].solar.gas_moon]),
+            effect(){ return loc('tech_worker_drone_effect',[races[global.race.species].solar.gas_moon]); },
             action(){
                 if (payCosts(actions.tech.polymer.cost)){
                     global.space['drone'] = { count: 0 };
@@ -6891,13 +6891,13 @@ export const actions = {
         colonization: {
             id: 'tech-colonization',
             title: loc('tech_colonization'),
-            desc: loc('tech_colonization_desc',[races[global.race.species].solar.red]),
+            desc(){ return loc('tech_colonization_desc',[races[global.race.species].solar.red]); },
             reqs: { space: 4, mars: 1 },
             grant: ['mars',2],
             cost: {
                 Knowledge(){ return 172000; }
             },
-            effect: loc('tech_colonization_effect',[races[global.race.species].solar.red]),
+            effect(){ return loc('tech_colonization_effect',[races[global.race.species].solar.red]); },
             action(){
                 if (payCosts(actions.tech.colonization.cost)){
                     global.space['biodome'] = { count: 0, on: 0 };
@@ -6908,14 +6908,14 @@ export const actions = {
         },
         red_tower: {
             id: 'tech-red_tower',
-            title: loc('tech_red_tower',[races[global.race.species].solar.red]),
-            desc: loc('tech_red_tower',[races[global.race.species].solar.red]),
+            title(){ return loc('tech_red_tower',[races[global.race.species].solar.red]); },
+            desc(){ return loc('tech_red_tower',[races[global.race.species].solar.red]); },
             reqs: { mars: 2 },
             grant: ['mars',3],
             cost: {
                 Knowledge(){ return 195000; }
             },
-            effect: loc('tech_red_tower_effect',[races[global.race.species].solar.red]),
+            effect(){ return loc('tech_red_tower_effect',[races[global.race.species].solar.red]); },
             action(){
                 if (payCosts(actions.tech.red_tower.cost)){
                     global.space['red_tower'] = { count: 0, on: 0 };
@@ -6933,7 +6933,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 220000; }
             },
-            effect: loc('tech_space_manufacturing_effect',[races[global.race.species].solar.red]),
+            effect(){ return loc('tech_space_manufacturing_effect',[races[global.race.species].solar.red]); },
             action(){
                 if (payCosts(actions.tech.space_manufacturing.cost)){
                     global.space['red_factory'] = { count: 0, on: 0 };
@@ -7004,7 +7004,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 250000; }
             },
-            effect: loc('tech_swarm_plant_effect',[races[global.race.species].home,races[global.race.species].solar.hell]),
+            effect(){ return loc('tech_swarm_plant_effect',[races[global.race.species].home,races[global.race.species].solar.hell]); },
             action(){
                 if (payCosts(actions.tech.swarm_plant.cost)){
                     global.space['swarm_plant'] = { count: 0 };
@@ -7149,7 +7149,7 @@ export const actions = {
                 Knowledge(){ return 290000; },
                 Elerium(){ return 250; }
             },
-            effect: loc('tech_helium_attractor_effect',[races[global.race.species].solar.gas]),
+            effect(){ return loc('tech_helium_attractor_effect',[races[global.race.species].solar.gas]); },
             action(){
                 if (payCosts(actions.tech.helium_attractor.cost)){
                     return true;
@@ -7260,7 +7260,7 @@ export const actions = {
                 Knowledge(){ return 275000; },
                 Neutronium(){ return 350; }
             },
-            effect: loc('tech_neutronium_housing_effect',[races[global.race.species].solar.red]),
+            effect(){ return loc('tech_neutronium_housing_effect',[races[global.race.species].solar.red]); },
             action(){
                 if (payCosts(actions.tech.neutronium_housing.cost)){
                     return true;
@@ -7271,7 +7271,7 @@ export const actions = {
         unification: {
             id: 'tech-unification',
             title: loc('tech_unification'),
-            desc: loc('tech_unification_desc',[races[global.race.species].home]),
+            desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
             reqs: { mars: 2 },
             grant: ['unify',1],
             cost: {

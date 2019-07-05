@@ -629,6 +629,8 @@
   "tech_world_collider": "World Collider",
   "tech_world_collider_desc": "World Collider",
   "tech_world_collider_effect": "Design the largest supercollider ever conceived, a massive 1859 mile track that spans the entire circumference of %0.",
+  "tech_world_collider_flair1": "Despite its dramatic name,",
+  "tech_world_collider_flair2": "this does not smash actual worlds together.",
   "tech_bioscience": "Bioscience",
   "tech_bioscience_desc": "Bioscience",
   "tech_bioscience_effect": "Begin unlocking the mysteries of life.",
