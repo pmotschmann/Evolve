@@ -45,7 +45,7 @@ const spaceProjects = {
                 Oil(){ return costMultiplier('satellite', fuel_adjust(3200), 1.25); },
                 Alloy(){ return costMultiplier('satellite', 10000, 1.25); }
             },
-            effect: `<div>${loc('space_home_satellite_effect1')}</div><div>${loc('space_home_satellite_effect2')}</div><div>${loc('space_home_satellite_effect3')}</div>`,
+            effect: `<div>${loc('plus_max_resource',[750,loc('resource_Knowledge_name')])}</div><div>${loc('space_home_satellite_effect2')}</div><div>${loc('space_home_satellite_effect3')}</div>`,
             action(){
                 if (payCosts(spaceProjects.spc_home.satellite.cost)){
                     incrementStruct('satellite');
@@ -104,9 +104,9 @@ const spaceProjects = {
                 let oil = spatialReasoning(1250) * (global.tech['world_control'] ? 1.5 : 1);
                 if (global.resource['Helium_3'].display){
                     let helium = spatialReasoning(1000) * (global.tech['world_control'] ? 1.5 : 1);
-                    return `<div>${loc('space_home_propellant_depot_effect1',[oil])}</div><div>${loc('space_home_propellant_depot_effect2',[helium])}</div>`;
+                    return `<div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div>`;
                 }
-                return `<div>${loc('space_home_propellant_depot_effect1',[oil])}</div>`;
+                return `<div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div>`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_home.propellant_depot.cost)){
@@ -159,7 +159,7 @@ const spaceProjects = {
         },
         moon_mission: {
             id: 'space-moon_mission',
-            title: loc('space_moon_mission_tiltle'),
+            title: loc('space_moon_mission_title'),
             desc: loc('space_moon_mission_desc'),
             reqs: { space: 2, space_explore: 2 },
             grant: ['space',3],
@@ -191,7 +191,7 @@ const spaceProjects = {
             effect(){
                 let iridium = spatialReasoning(500);
                 let oil = +(fuel_adjust(2)).toFixed(2);
-                return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('space_moon_base_effect2',[iridium])}</div><div>${loc('space_moon_base_effect3',[oil,spaceProjects.spc_moon.moon_base.powered])}</div>`;
+                return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('plus_max_resource',[iridium,loc('resource_Iridium_name')])}</div><div>${loc('space_moon_base_effect3',[oil,spaceProjects.spc_moon.moon_base.powered])}</div>`;
             },
             support: 2,
             powered: 4,
@@ -257,7 +257,7 @@ const spaceProjects = {
             },
             effect(){
                 let storage = spatialReasoning(100);
-                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_helium_mine_effect1')}</div><div>${loc('space_moon_helium_mine_effect2',[storage])}</div>`;
+                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_helium_mine_effect1')}</div><div>${loc('plus_max_resource',[storage,loc('resource_Helium_3_name')])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -285,7 +285,7 @@ const spaceProjects = {
                 Iridium(){ return costMultiplier('observatory', 1250, 1.32); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_observatory_effect1')}</div><div>${loc('space_moon_observatory_effect2')}</div>`;
+                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}<</div><div>${loc('space_moon_observatory_effect2')}<</div>`;
             },
             support: -1,
             powered: 1,
@@ -314,10 +314,10 @@ const spaceProjects = {
         red_mission: {
             id: 'space-red_mission',
             title(){
-                return loc('space_red_mission_title',[races[global.race.species].solar.red]);
+                return loc('space_mission_title',[races[global.race.species].solar.red]);
             },
             desc(){
-                return loc('space_red_mission_desc',[races[global.race.species].solar.red]);
+                return loc('space_mission_desc',[races[global.race.species].solar.red]);
             },
             reqs: { space: 3, space_explore: 3 },
             grant: ['space',4],
@@ -412,7 +412,7 @@ const spaceProjects = {
                 Polymer(){ return costMultiplier('living_quarters', house_adjust(9500), 1.28); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_living_quarters_effect1')}</div><div>${loc('space_red_living_quarters_effect2')}</div>`;
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('plus_max_resource',[1,loc('colonist')])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -457,14 +457,14 @@ const spaceProjects = {
                 let titanium = +(spatialReasoning(3500) * multiplier).toFixed(0);
                 let alloy = +(spatialReasoning(2500) * multiplier).toFixed(0);
                 
-                let desc = `<div>${loc('space_red_garage_effect1',[containers])}</div><div>${loc('space_red_garage_effect2',[copper])}</div><div>${loc('space_red_garage_effect3',[iron])}</div><div>${loc('space_red_garage_effect4',[cement])}</div><div>${loc('space_red_garage_effect5',[steel])}</div><div>${loc('space_red_garage_effect6',[titanium])}</div><div>${loc('space_red_garage_effect7',[alloy])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div><div>${loc('plus_max_resource',[copper,loc('resource_Copper_name')])}</div><div>${loc('plus_max_resource',[iron,loc('resource_Iron_name')])}</div><div>${loc('plus_max_resource',[cement,loc('resource_Cement_name')])}</div><div>${loc('plus_max_resource',[steel,loc('resource_Steel_name')])}</div><div>${loc('plus_max_resource',[titanium,loc('resource_Titanium_name')])}</div><div>${loc('plus_max_resource',[alloy,loc('resource_Alloy_name')])}</div>`;
                 if (global.resource.Nano_Tube.display){
                     let nano = +(spatialReasoning(25000) * multiplier).toFixed(0);
-                    desc = desc + `<div>${loc('space_red_garage_effect8',[nano])}</div>`
+                    desc = desc + `<div>${loc('plus_max_resource',[nano,loc('resource_Nano_Tube_name')])}</div>`
                 }
                 if (global.resource.Neutronium.display){
                     let neutronium = +(spatialReasoning(125) * multiplier).toFixed(0);
-                    desc = desc + `<div>${loc('space_red_garage_effect9',[neutronium])}</div>`
+                    desc = desc + `<div>${loc('plus_max_resource',[neutronium,loc('resource_Neutronium_name')])}</div>`
                 }
                 return desc;
             },
@@ -633,7 +633,7 @@ const spaceProjects = {
             },
             effect(){
                 let elerium = spatialReasoning(10);
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[500])}</div><div>${loc('space_red_exotic_lab_effect2',[elerium])}</div>`;
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[500])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -667,7 +667,7 @@ const spaceProjects = {
             },
             effect(){
                 let oil = +fuel_adjust(2).toFixed(2);
-                return `<div>${loc('space_red_space_barracks_effect1')}</div><div>${loc('space_red_space_barracks_effect2',[oil])}</div><div>${loc('space_red_space_barracks_effect3')}</div>`;
+                return `<div>${loc('plus_max_soldiers',[2])}</div><div>${loc('space_red_space_barracks_effect2',[oil])}</div><div>${loc('space_red_space_barracks_effect3')}</div>`;
             },
             powered: 1,
             action(){
@@ -692,10 +692,10 @@ const spaceProjects = {
         hell_mission: {
             id: 'space-hell_mission',
             title(){
-                return loc('space_hell_mission_title',[races[global.race.species].solar.hell]);
+                return loc('space_mission_title',[races[global.race.species].solar.hell]);
             },
             desc(){
-                return loc('space_hell_mission_desc',[races[global.race.species].solar.hell]);
+                return loc('space_mission_desc',[races[global.race.species].solar.hell]);
             },
             reqs: { space: 3, space_explore: 3 },
             grant: ['hell',1],
@@ -871,10 +871,10 @@ const spaceProjects = {
         gas_mission: {
             id: 'space-gas_mission',
             title(){
-                return loc('space_gas_mission_title',[races[global.race.species].solar.gas]);
+                return loc('space_mission_title',races[global.race.species].solar.gas);
             },
             desc(){
-                return loc('space_gas_mission_desc',[races[global.race.species].solar.gas]);
+                return loc('space_mission_desc',races[global.race.species].solar.gas);
             },
             reqs: { space: 4, space_explore: 4 },
             grant: ['space',5],
@@ -942,7 +942,7 @@ const spaceProjects = {
                 let oil = spatialReasoning(3500) * (global.tech['world_control'] ? 1.5 : 1);
                 let helium = spatialReasoning(2500) * (global.tech['world_control'] ? 1.5 : 1);
                 let uranium = spatialReasoning(1000) * (global.tech['world_control'] ? 1.5 : 1);
-                return `<div>${loc('space_gas_storage_effect1',[oil])}</div><div>${loc('space_gas_storage_effect2',[helium])}</div><div>${loc('space_gas_storage_effect3',[uranium])}</div>`;
+                return `<div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[uranium,loc('resource_Uranium_name')])}</div>`;
             },
             action(){
                 if (payCosts(spaceProjects.spc_gas.gas_storage.cost)){
@@ -991,10 +991,10 @@ const spaceProjects = {
         gas_moon_mission: {
             id: 'space-gas_moon_mission',
             title(){
-                return loc('space_gas_moon_mission_title',[races[global.race.species].solar.gas_moon]);
+                return loc('space_mission_title',[races[global.race.species].solar.gas_moon]);
             },
             desc(){
-                return loc('space_gas_moon_mission_desc',[races[global.race.species].solar.gas_moon]);
+                return loc('space_mission_desc',[races[global.race.species].solar.gas_moon]);
             },
             reqs: { space: 5 },
             grant: ['space',6],
@@ -1036,7 +1036,7 @@ const spaceProjects = {
                 neutronium = +neutronium.toFixed(3);
                 let max = spatialReasoning(500);
                 let oil = +(fuel_adjust(2)).toFixed(2);
-                return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('space_gas_moon_outpost_effect2',[max])}</div><div>${loc('space_gas_moon_outpost_effect3',[oil,spaceProjects.spc_gas_moon.outpost.powered])}</div>`;
+                return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max,loc('resource_Neutronium_name')])}</div><div>${loc('space_gas_moon_outpost_effect3',[oil,spaceProjects.spc_gas_moon.outpost.powered])}</div>`;
             },
             powered: 3,
             action(){
@@ -1167,8 +1167,8 @@ const spaceProjects = {
                 let helium = +(fuel_adjust(2.5)).toFixed(2);
                 let food = 10;
                 let elerium_cap = spatialReasoning(5);
-                let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('space_belt_station_effect1',[elerium_cap])}</div>` : '';
-                return `<div>${loc('space_belt_station_effect2')}</div>${elerium}<div>${loc('space_belt_station_effect3',[helium])}</div><div>${loc('space_belt_station_effect4',[food,spaceProjects.spc_belt.space_station.powered])}</div>`;
+                let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('plus_max_resource',[elerium_cap, loc('resource_Elerium_name')])}</div>` : '';
+                return `<div>${loc('plus_max_space_miners',[3])}</div>${elerium}<div>${loc('space_belt_station_effect3',[helium])}</div><div>${loc('space_belt_station_effect4',[food,spaceProjects.spc_belt.space_station.powered])}</div>`;
             },
             support: 3,
             powered: 3,
@@ -1299,10 +1299,10 @@ const spaceProjects = {
         dwarf_mission: {
             id: 'space-dwarf_mission',
             title(){
-                return loc('space_dwarf_mission_title',[races[global.race.species].solar.dwarf]);
+                return loc('space_mission_title',[races[global.race.species].solar.dwarf]);
             },
             desc(){
-                return loc('space_dwarf_mission_desc',[races[global.race.species].solar.dwarf]);
+                return loc('space_mission_desc',[races[global.race.species].solar.dwarf]);
             },
             reqs: { asteroid: 1, elerium: 1 },
             grant: ['dwarf',1],
@@ -1336,7 +1336,7 @@ const spaceProjects = {
             },
             effect(){
                 let elerium = spatialReasoning(100);
-                return `<div>${loc('space_dwarf_elerium_contain_effect1',[elerium])}</div><div>${loc('space_dwarf_elerium_contain_effect2',[spaceProjects.spc_dwarf.elerium_contain.powered])}</div>`;
+                return `<div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('space_dwarf_elerium_contain_effect2',[spaceProjects.spc_dwarf.elerium_contain.powered])}</div>`;
             },
             powered: 6,
             action(){
@@ -1430,7 +1430,7 @@ const spaceProjects = {
             reqs: { science: 11 },
             cost: {},
             effect(){
-                return `<div>${loc('space_dwarf_controller_effect1')}</div><div>${loc('space_dwarf_controller_effect2')}</div><div>${loc('space_dwarf_controller_effect3')}</div><div>${loc('space_dwarf_controller_effect4',[spaceProjects.spc_dwarf.world_controller.powered])}</div>`;
+                return `<div>${loc('space_dwarf_controller_effect1')}</div><div>${loc('plus_max_resource',['25%',loc('resource_Knowledge_name')])}</div><div>${loc('space_dwarf_controller_effect3')}</div><div>${loc('space_dwarf_controller_effect4',[spaceProjects.spc_dwarf.world_controller.powered])}</div>`;
             },
             powered: 20,
             action(){

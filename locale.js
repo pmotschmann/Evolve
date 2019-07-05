@@ -8,16 +8,26 @@ export function loc(key, variables) {
     if (!string) {
         console.error(`string ${key} not found`);
         console.log(strings);
+        return key;
     }
     if (variables) {
         if(variables instanceof Array) {
             for (let i = 0; i < variables.length; i++){
-                let re = new RegExp(`%${i}`, "g");
+                let re = new RegExp(`%${i}(?!\d)`, "g");
+                if(!re.exec(string)){
+                    console.error(`"%${i}" was not found in the string ${key} to be replace by "${variables[i]}"`);
+                    continue;
+                }
                 string = string.replace(re, variables[i]);
+            }
+            let re = new RegExp("%\\d+(?!\\d)", 'g');
+            const results = string.match(re);
+            if(results){
+                console.error(`${results} was found in the string, but there is no variables to make the replacement`);
             }
         }
         else{
-            throw TypeError('"variables" need be a instance of "Array"');
+            console.error('"variables" need be a instance of "Array"');
         }
     }
     return string;

@@ -47,7 +47,7 @@
   "job_coal_miner1": "Os mineradores de carvão são uma classe especial de mineradores, dispostos a trabalhar nas minas mais sujas para extrair carvão das profundezas do solo.",
   "job_coal_miner2": "Os mineradores de carvão são uma classe especial de mineradores, dispostos a trabalhar nas minas mais sujas para extrair carvão e urânio das profundezas do solo.",
   "job_craftsman": "O artesão pode ser designado para fabricar vários materiais de construção a partir de matéria bruta.",
-  "job_cement_worker": "Os trabalhadores da fábrica de cimento transformam pedra em cimento, cada trabalhador produz 0% de cimento e consome 3 pedras por segundo.",
+  "job_cement_worker": "Os trabalhadores da fábrica de cimento transformam pedra em cimento, cada trabalhador produz %0 de cimento e consome 3 pedras por segundo.",
   "job_banker": "Os banqueiros administram os seus bancos, aumentando a receita tributária. Cada banqueiro aumenta a receita tributária em %0%.",
   "job_entertainer": "Os artistas ajudam a combater a tristeza da vida cotidiana. Cada artista eleva o moral de seus cidadãos em %0%.",
   "job_professor": "Os professores ajudam a educar seus cidadãos e contribuem para o ganho de conhecimento. Cada professor gera %0 conhecimento por segundo.",

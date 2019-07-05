@@ -672,7 +672,7 @@ export function buildGarrison(garrison){
                 let fur = +(rating / 10).toFixed(2);
                 return global.race['herbivore']
                     ? loc('civics_garrison_soldier_desc_herb',[fur])
-                    : loc('civics_garrison_soldier_desc_herb',[food,fur]);
+                    : loc('civics_garrison_soldier_desc',[food,fur]);
             },
             woundedDesc(){
                 return loc('civics_garrison_wounded_desc');

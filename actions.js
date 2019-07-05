@@ -1531,7 +1531,7 @@ export const actions = {
                 Lumber(){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', 10, 1.23); },
                 Stone(){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', 10, 1.23) : 0; }
             },
-            effect: loc('city_one_citizen'),
+            effect: loc('plus_max_resource',[1,loc('citizen')]),
             action(){
                 if (payCosts(actions.city.basic_housing.cost)){
                     global['resource'][races[global.race.species].name].display = true;
@@ -1558,11 +1558,11 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe > 1 ? 2000 : 1000);
-                    return `<div>${loc('city_cottage_effect')}</div><div>${loc('city_max_money',[safe])}</div>`;
+                    let safe = spatialReasoning(global.tech.home_safe > 1 ? '$2000' : '$1000');
+                    return `<div>${loc('plus_max_citizens',[2])}</div><div>${loc('plus_max_resource',[safe,loc('resource_Money_name')])}</div>`;
                 }
                 else {
-                    return loc('city_cottage_effect');
+                    return loc('plus_max_citizens',[2]);
                 }
             },
             action(){
@@ -1590,11 +1590,11 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe > 1 ? 5000 : 2000);
-                    return `<div>${loc('city_apartment_effect')}</div><div>${loc('city_max_money',[safe])}</div>`;
+                    let safe = spatialReasoning(global.tech.home_safe > 1 ? '$5000' : '$2000');
+                    return `<div>${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[safe,loc('resource_Money_name')])}</div>`;
                 }
                 else {
-                    return loc('city_apartment_effect');
+                    return loc('plus_max_resource',loc(5,'citizen'));
                 }
             },
             powered: 1,
@@ -1620,7 +1620,7 @@ export const actions = {
                 Lumber(){ return costMultiplier('lodge', 20, 1.36); },
                 Stone(){ return costMultiplier('lodge', 10, 1.36); }
             },
-            effect(){ return loc('city_one_citizen'); },
+            effect(){ return loc('plus_max_resource',[1,loc('citizen')]); },
             action(){
                 if (payCosts(actions.city.lodge.cost)){
                     global.city['lodge'].count++;
@@ -1643,7 +1643,7 @@ export const actions = {
             effect(){ 
                 let food = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                return loc('city_max_food',[food]); 
+                return loc('plus_max_resource',[food, loc('resource_Food_name')]); 
             },
             action(){
                 if (payCosts(actions.city.smokehouse.cost)){
@@ -1669,7 +1669,7 @@ export const actions = {
                 farming *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                 farming = +farming.toFixed(2);
-                return global.tech['farm'] ? `<div>${loc('city_farm_effect',[farming])}</div><div>${loc('city_one_citizen')}</div>` : loc('city_farm_effect',[farming]); 
+                return global.tech['farm'] ? `<div>${loc('city_farm_effect',[farming])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect',[farming]); 
             },
             action(){
                 if (payCosts(actions.city.farm.cost)){
@@ -1759,7 +1759,7 @@ export const actions = {
             effect(){ 
                 let food = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                return loc('city_max_food',[food]);
+                return loc('plus_max_resource',[food, loc('resource_Food_name')]);
             },
             action(){
                 if (payCosts(actions.city.silo.cost)){
@@ -1784,7 +1784,7 @@ export const actions = {
                 if (global.race['chameleon']){
                     bunks--;
                 }
-                return loc('city_garrison_effect',[bunks]);
+                return loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')]);
             },
             action(){
                 if (payCosts(actions.city.garrison.cost)){
@@ -1974,7 +1974,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return loc('city_storage_yard_effect',[cap]); 
+                return loc('plus_max_resource',[cap,loc('resource_Crates_name')]);
             },
             action(){
                 if (payCosts(actions.city.storage_yard.cost)){
@@ -2016,7 +2016,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return loc('city_warehouse_effect',[cap]);
+                return loc('plus_max_resource',[cap,loc('resource_Containers_name')]);
             },
             action(){
                 if (payCosts(actions.city.warehouse.cost)){
@@ -2082,11 +2082,13 @@ export const actions = {
                 }
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
+
+                vault = '$'+vault;
                 if (global.tech['banking'] >= 2){
-                    return `<div>${loc('city_max_money',[vault])}</div><div>${loc('city_banker',[1])}</div>`; 
+                    return `<div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[1,loc('banker_name')])}</div>`; 
                 }
                 else {
-                    return loc('city_max_money',[vault]); 
+                    return loc('plus_max_resource',[vault,loc('resource_Money_name')]);
                 }
             },
             action(){
@@ -2112,7 +2114,7 @@ export const actions = {
             effect:  function(){
                 let lum = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('city_lumber_effect',[lum])}</div>`;
+                return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('plus_max_resource',[lum,loc('resource_Lumber_name')])}</div>`;
             },
             action(){
                 if (payCosts(actions.city.lumber_yard.cost)){
@@ -2138,7 +2140,7 @@ export const actions = {
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = spatialReasoning(200);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                let desc = `<div>${loc('city_lumber_effect',[lum])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[lum,loc('resource_Lumber_name')])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
                     desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`; 
                 }
@@ -2176,10 +2178,10 @@ export const actions = {
                 let stone = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('city_stone_effect',[stone])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,loc('resource_Stone_name')])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
                 }
                 else {
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('city_stone_effect',[stone])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,loc('resource_Stone_name')])}</div>`;
                 }
             },
             powered: 1,
@@ -2552,7 +2554,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>${loc('city_trade_routes',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('city_storage_yard_effect',[containers])}</div><div>${loc('city_warehouse_effect',[containers])}</div>`; 
+                return `<div>${loc('city_trade_routes',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`; 
             },
             action(){
                 if (payCosts(actions.city.wharf.cost)){
@@ -2631,7 +2633,8 @@ export const actions = {
                 if (global.tech['world_control']){
                     money = Math.round(money * 1.25);
                 }
-                return `<div>${loc('city_max_money',[money])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
+                money = '$'+money;
+                return `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
             },
             action(){
                 if (payCosts(actions.city.casino.cost)){
