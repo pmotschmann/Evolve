@@ -179,7 +179,7 @@ const spaceProjects = {
         },
         moon_base: {
             id: 'space-moon_base',
-            title: loc('space_moon_base_tilte'),
+            title: loc('space_moon_base_title'),
             desc: `<div>${loc('space_moon_base_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { space: 3 },
             cost: {

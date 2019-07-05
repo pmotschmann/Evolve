@@ -3252,7 +3252,7 @@ export const actions = {
         },
         farm_house: {
             id: 'tech-farm_house',
-            title: loc('tech_agriculture'),
+            title: loc('tech_farm_house'),
             desc: loc('tech_farm_house_desc'),
             reqs: { agriculture: 1, housing: 1, currency: 1 },
             grant: ['farm',1],
@@ -3566,7 +3566,7 @@ export const actions = {
                 Knowledge(){ return 72000; },
                 Copper(){ return 125000; }
             },
-            effect(){ return `<span>${loc('tech_assembly_line_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`; },
+            effect: `<span>${loc('tech_assembly_line_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
             action(){
                 if (payCosts(actions.tech.assembly_line.cost)){
                     return true;
@@ -3583,7 +3583,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 165000; }
             },
-            effect(){ return `<span>${loc('tech_automation_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`; },
+            effect: `<span>${loc('tech_automation_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
             action(){
                 if (payCosts(actions.tech.automation.cost)){
                     return true;
@@ -3601,7 +3601,7 @@ export const actions = {
                 Knowledge(){ return 300000; },
                 Elerium(){ return 200; }
             },
-            effect(){ return `<span>${loc('tech_laser_cutters_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`; },
+            effect: `<span>${loc('tech_laser_cutters_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
             action(){
                 if (payCosts(actions.tech.laser_cutters.cost)){
                     return true;
@@ -4268,14 +4268,14 @@ export const actions = {
         },
         market: {
             id: 'tech-market',
-            title: 'Marketplace',
-            desc: 'Open a commodities market',
+            title: loc('tech_market'),
+            desc: loc('tech_market_desc'),
             reqs: { banking: 1, currency: 1 },
             grant: ['currency',2],
             cost: {
                 Knowledge(){ return 1800; }
             },
-            effect: 'Opens a commodities market where you can buy and sell resources.',
+            effect: loc('tech_market_effect'),
             action(){
                 if (payCosts(actions.tech.market.cost)){
                     global.settings.showMarket = true;
@@ -4286,14 +4286,14 @@ export const actions = {
         },
         tax_rates: {
             id: 'tech-tax_rates',
-            title: 'Tax Rates',
-            desc: 'Enables tax rates',
+            title: loc('tech_tax_rates'),
+            desc: loc('tech_tax_rates_desc'),
             reqs: { banking: 2, currency: 2 },
             grant: ['currency',3],
             cost: {
                 Knowledge(){ return 3375; }
             },
-            effect: 'Allows government to adjust the tax rate.',
+            effect: loc('tech_tax_rates_effect'),
             action(){
                 if (payCosts(actions.tech.tax_rates.cost)){
                     global.civic['taxes'].display = true;
@@ -4304,14 +4304,14 @@ export const actions = {
         },
         large_trades: {
             id: 'tech-large_trades',
-            title: 'Large Volume Trading',
-            desc: 'Upgrades marketplace for large orders',
+            title: loc('tech_large_trades'),
+            desc: loc('tech_large_trades_desc'),
             reqs: { currency: 3 },
             grant: ['currency',4],
             cost: {
                 Knowledge(){ return 6750; }
             },
-            effect: 'Upgrades the commodities market to allow for buying and selling at higher volumes.',
+            effect: loc('tech_large_trades_effect'),
             action(){
                 if (payCosts(actions.tech.large_trades.cost)){
                     var tech = actions.tech.large_trades.grant[0];
@@ -4324,14 +4324,14 @@ export const actions = {
         },
         corruption: {
             id: 'tech-corruption',
-            title: 'Corrupt Politicians',
-            desc: 'Enable Extreme Taxes',
+            title: loc('tech_corruption'),
+            desc: loc('tech_corruption_desc'),
             reqs: { currency: 4, high_tech: 3 },
             grant: ['currency',5],
             cost: {
                 Knowledge(){ return 36000; }
             },
-            effect: 'Corrupt politicians enable the setting of extreme tax strategies.',
+            effect: loc('tech_corruption_effect'),
             action(){
                 if (payCosts(actions.tech.corruption.cost)){
                     return true;
@@ -4341,14 +4341,14 @@ export const actions = {
         },
         massive_trades: {
             id: 'tech-massive_trades',
-            title: 'Massive Volume Trading',
-            desc: 'Upgrades marketplace for massive orders',
+            title: loc('tech_massive_trades'),
+            desc: loc('tech_massive_trades_desc'),
             reqs: { currency: 5, high_tech: 4 },
             grant: ['currency',6],
             cost: {
                 Knowledge(){ return 108000; }
             },
-            effect: 'Upgrades the commodities market to allow for buying and selling at very high volumes.',
+            effect: loc('tech_massive_trades_effect'),
             action(){
                 if (payCosts(actions.tech.massive_trades.cost)){
                     var tech = actions.tech.massive_trades.grant[0];
@@ -4361,14 +4361,14 @@ export const actions = {
         },
         trade: {
             id: 'tech-trade',
-            title: 'Trade Routes',
-            desc: 'Establish trade routes',
+            title: loc('tech_trade'),
+            desc: loc('tech_trade_desc'),
             reqs: { currency: 2, military: 1 },
             grant: ['trade',1],
             cost: {
                 Knowledge(){ return 4500; }
             },
-            effect: 'Create trade routes with your neighbors.',
+            effect: loc('tech_trade_effect'),
             action(){
                 if (payCosts(actions.tech.trade.cost)){
                     global.city['trade'] = { count: 0 };
@@ -4380,14 +4380,14 @@ export const actions = {
         },
         diplomacy: {
             id: 'tech-diplomacy',
-            title: 'Diplomacy',
-            desc: 'Negotiate new trade routes',
+            title: loc('tech_diplomacy'),
+            desc: loc('tech_diplomacy_desc'),
             reqs: { trade: 1, high_tech: 1 },
             grant: ['trade',2],
             cost: {
                 Knowledge(){ return 16200; }
             },
-            effect: 'Increase the effectiveness of each trade post by 1.',
+            effect: loc('tech_diplomacy_effect'),
             action(){
                 if (payCosts(actions.tech.diplomacy.cost)){
                     return true;
@@ -4397,14 +4397,14 @@ export const actions = {
         },
         freight: {
             id: 'tech-freight',
-            title: 'Freight Trains',
-            desc: 'Increase trade volume with trains',
+            title: loc('tech_freight'),
+            desc: loc('tech_freight_desc'),
             reqs: { trade: 2, high_tech: 3 },
             grant: ['trade',3],
             cost: {
                 Knowledge(){ return 37800; }
             },
-            effect: 'Increase the effectiveness of each trade post by 1.',
+            effect: loc('tech_freight_effect'),
             action(){
                 if (payCosts(actions.tech.freight.cost)){
                     return true;
@@ -4414,14 +4414,14 @@ export const actions = {
         },
         wharf: {
             id: 'tech-wharf',
-            title: 'Wharfs',
-            desc: 'Establish sea routes with wharfs',
+            title: loc('tech_wharf'),
+            desc: loc('tech_wharf_desc'),
             reqs: { trade: 1, high_tech: 3, oil: 1 },
             grant: ['wharf',1],
             cost: {
                 Knowledge(){ return 44000; }
             },
-            effect: 'Zone coastal areas of your city for constructing wharfs.',
+            effect: loc('tech_wharf_effect'),
             action(){
                 if (payCosts(actions.tech.wharf.cost)){
                     global.city['wharf'] = { count: 0 };
@@ -4432,14 +4432,14 @@ export const actions = {
         },
         banking: {
             id: 'tech-banking',
-            title: 'Banking',
-            desc: 'Invent Banking',
+            title: loc('tech_banking'),
+            desc: loc('tech_banking_desc'),
             reqs: { currency: 1 },
             grant: ['banking',1],
             cost: {
                 Knowledge(){ return 90; }
             },
-            effect: 'Creates the concept of banking, allowing government to accumulate massive wealth. Also gives the plebs somewhere to store their money.',
+            effect: loc('tech_banking_effect'),
             action(){
                 if (payCosts(actions.tech.banking.cost)){
                     global.city['bank'] = { count: 0 };
@@ -4450,15 +4450,15 @@ export const actions = {
         },
         investing: {
             id: 'tech-investing',
-            title: 'Investing',
-            desc: 'Invent Investing',
+            title: loc('tech_investing'),
+            desc: loc('tech_investing_desc'),
             reqs: { banking: 1 },
             grant: ['banking',2],
             cost: {
                 Money(){ return 2500; },
                 Knowledge(){ return 900; }
             },
-            effect: 'Discover the principles of investing, unlocks the banker job.',
+            effect: loc('tech_investing_effect'),
             action(){
                 if (payCosts(actions.tech.investing.cost)){
                     global.civic.banker.display = true;
@@ -4469,8 +4469,8 @@ export const actions = {
         },
         vault: {
             id: 'tech-vault',
-            title: 'Bank Vault',
-            desc: 'Concrete Vaults',
+            title: loc('tech_vault'),
+            desc: loc('tech_vault_desc'),
             reqs: { banking: 2, cement: 1 },
             grant: ['banking',3],
             cost: {
@@ -4479,7 +4479,7 @@ export const actions = {
                 Iron(){ return 500; },
                 Cement(){ return 750; }
             },
-            effect: 'Upgrade your banks with vaults made out of concrete, increases $ storage capacity.',
+            effect: loc('tech_vault_effect'),
             action(){
                 if (payCosts(actions.tech.vault.cost)){
                     return true;
@@ -4489,15 +4489,15 @@ export const actions = {
         },
         bonds: {
             id: 'tech-bonds',
-            title: 'Savings Bonds',
-            desc: 'Savings Bonds',
+            title: loc('tech_bonds'),
+            desc: loc('tech_bonds_desc'),
             reqs: { banking: 3 },
             grant: ['banking',4],
             cost: {
                 Money(){ return 20000; },
                 Knowledge(){ return 5000; }
             },
-            effect: 'Raise new capital by creating a series of savings bonds. With savings bonds each citizen will increase your money cap by $250.',
+            effect: loc('tech_bonds_effect'),
             action(){
                 if (payCosts(actions.tech.bonds.cost)){
                     return true;
@@ -4507,8 +4507,8 @@ export const actions = {
         },
         steel_vault: {
             id: 'tech-steel_vault',
-            title: 'Steel Vault',
-            desc: 'Steel Vaults',
+            title: loc('tech_steel_vault'),
+            desc: loc('tech_steel_vault_desc'),
             reqs: { banking: 4, smelting: 2 },
             grant: ['banking',5],
             cost: {
@@ -4516,7 +4516,7 @@ export const actions = {
                 Knowledge(){ return 6750; },
                 Steel(){ return 3000; }
             },
-            effect: 'Reinforce your bank vaults with heavy steel doors and walls, increases $ storage capacity.',
+            effect: loc('tech_steel_vault_effect'),
             action(){
                 if (payCosts(actions.tech.steel_vault.cost)){
                     return true;
@@ -4526,15 +4526,15 @@ export const actions = {
         },
         eebonds: {
             id: 'tech-eebonds',
-            title: 'Series EE Bonds',
-            desc: 'Series EE Bonds',
+            title: loc('tech_eebonds'),
+            desc: loc('tech_eebonds_desc'),
             reqs: { banking: 5, high_tech: 1 },
             grant: ['banking',6],
             cost: {
                 Money(){ return 75000; },
                 Knowledge(){ return 18000; }
             },
-            effect: 'Create new series EE savings bonds which mature at a much higher value. Each citizen will increase your money cap by $600.',
+            effect: loc('tech_eebonds_effect'),
             action(){
                 if (payCosts(actions.tech.eebonds.cost)){
                     return true;
@@ -4544,15 +4544,15 @@ export const actions = {
         },
         swiss_banking: {
             id: 'tech-swiss_banking',
-            title: 'Swiss Banking',
-            desc: 'Swiss Banking',
+            title: loc('tech_swiss_banking'),
+            desc: loc('tech_swiss_banking_desc'),
             reqs: { banking: 6 },
             grant: ['banking',7],
             cost: {
                 Money(){ return 125000; },
                 Knowledge(){ return 45000; }
             },
-            effect: 'With new training your bankers will learn how to creatively store money. Increases bank vault capacity by 5% per banker.',
+            effect: loc('tech_swiss_banking_effect'),
             action(){
                 if (payCosts(actions.tech.swiss_banking.cost)){
                     return true;
@@ -4562,15 +4562,15 @@ export const actions = {
         },
         safety_deposit: {
             id: 'tech-safety_deposit',
-            title: 'Safety Deposit Box',
-            desc: 'Safety Deposit Box',
+            title: loc('tech_safety_deposit'),
+            desc: loc('tech_safety_deposit_desc'),
             reqs: { banking: 7, high_tech: 4 },
             grant: ['banking',8],
             cost: {
                 Money(){ return 250000; },
                 Knowledge(){ return 67500; }
             },
-            effect: 'Banks will offer safety deposit boxes, increasing bank capacity by $25 per citizen.',
+            effect: loc('tech_safety_deposit_effect'),
             action(){
                 if (payCosts(actions.tech.safety_deposit.cost)){
                     return true;
@@ -4580,15 +4580,15 @@ export const actions = {
         },
         stock_market: {
             id: 'tech-stock_market',
-            title: 'Stock Exchange',
-            desc: 'Stock Exchange',
+            title: loc('tech_stock_market'),
+            desc: loc('tech_stock_market_desc'),
             reqs: { banking: 8, high_tech: 6 },
             grant: ['banking',9],
             cost: {
                 Money(){ return 325000; },
                 Knowledge(){ return 108000; }
             },
-            effect: 'Establish a stock exchange to increase wealth potential.',
+            effect: loc('tech_stock_market_effect'),
             action(){
                 if (payCosts(actions.tech.stock_market.cost)){
                     var tech = actions.tech.stock_market.grant[0];
@@ -4601,15 +4601,15 @@ export const actions = {
         },
         hedge_funds: {
             id: 'tech-hedge_funds',
-            title: 'Hedge Funds',
-            desc: 'Hedge Funds',
+            title: loc('tech_hedge_funds'),
+            desc: loc('tech_hedge_funds_desc'),
             reqs: { banking: 9, stock_exchange: 1 },
             grant: ['banking',10],
             cost: {
                 Money(){ return 375000; },
                 Knowledge(){ return 126000; }
             },
-            effect: 'Bankers also manage hedge funds, increasing the amount of money generated per banker by 2% per stock market level.',
+            effect: loc('tech_hedge_funds_effect'),
             action(){
                 if (payCosts(actions.tech.hedge_funds.cost)){
                     return true;
@@ -4619,15 +4619,15 @@ export const actions = {
         },
         four_oh_one: {
             id: 'tech-four_oh_one',
-            title: '401K',
-            desc: '401K',
+            title: loc('tech_four_oh_one'),
+            desc: loc('tech_four_oh_one_desc'),
             reqs: { banking: 10 },
             grant: ['banking',11],
             cost: {
                 Money(){ return 425000; },
                 Knowledge(){ return 144000; }
             },
-            effect: 'Encourage citizens to establish 401K plans increasing the total amount of wealth available.',
+            effect: loc('tech_four_oh_one_effect'),
             action(){
                 if (payCosts(actions.tech.four_oh_one.cost)){
                     return true;
@@ -4637,8 +4637,8 @@ export const actions = {
         },
         mythril_vault: {
             id: 'tech-mythril_vault',
-            title: 'Mythril Vault',
-            desc: 'Mythril Vault',
+            title: loc('tech_mythril_vault'),
+            desc: loc('tech_mythril_vault_desc'),
             reqs: { banking: 5, space: 3 },
             grant: ['vault',1],
             cost: {
@@ -4646,7 +4646,7 @@ export const actions = {
                 Knowledge(){ return 150000; },
                 Mythril(){ return 750; }
             },
-            effect: 'Upgrade banks with impenetrable mythil plated vaults, increases $ storage capacity.',
+            effect: loc('tech_mythril_vault_effect'),
             action(){
                 if (payCosts(actions.tech.mythril_vault.cost)){
                     return true;
@@ -4656,8 +4656,8 @@ export const actions = {
         },
         neutronium_vault: {
             id: 'tech-neutronium_vault',
-            title: 'Neutronium Vault',
-            desc: 'Neutronium Vault',
+            title: loc('tech_neutronium_vault'),
+            desc: loc('tech_neutronium_vault_desc'),
             reqs: { vault: 1, gas_moon: 1 },
             grant: ['vault',2],
             cost: {
@@ -4665,7 +4665,7 @@ export const actions = {
                 Knowledge(){ return 280000; },
                 Neutronium(){ return 650; }
             },
-            effect: 'Upgrade your bank vault doors with neutronium, increases $ storage capacity.',
+            effect: loc('tech_neutronium_vault_effect'),
             action(){
                 if (payCosts(actions.tech.neutronium_vault.cost)){
                     return true;
@@ -4675,8 +4675,8 @@ export const actions = {
         },
         home_safe: {
             id: 'tech-home_safe',
-            title: 'House Safe',
-            desc: 'House Safe',
+            title: loc('tech_home_safe'),
+            desc: loc('tech_home_safe_desc'),
             reqs: { banking: 5 },
             grant: ['home_safe',1],
             cost: {
@@ -4684,7 +4684,7 @@ export const actions = {
                 Knowledge(){ return 8000; },
                 Steel(){ return 4500; }
             },
-            effect: 'Install a safe in every cottage and apartment to store valuables. Adds $ storage to housing.',
+            effect: loc('tech_home_safe_effect'),
             action(){
                 if (payCosts(actions.tech.home_safe.cost)){
                     return true;
@@ -4694,8 +4694,8 @@ export const actions = {
         },
         fire_proof_safe: {
             id: 'tech-fire_proof_safe',
-            title: 'Fire Proof Safe',
-            desc: 'Fire Proof Safe',
+            title: loc('tech_fire_proof_safe'),
+            desc: loc('tech_fire_proof_safe_desc'),
             reqs: { home_safe: 1, space: 3 },
             grant: ['home_safe',2],
             cost: {
@@ -4703,7 +4703,7 @@ export const actions = {
                 Knowledge(){ return 120000; },
                 Iridium(){ return 1000; }
             },
-            effect: 'Upgrade house safes with newer fire resistant materials, increases $ storage capacity.',
+            effect: loc('tech_fire_proof_safe_effect'),
             action(){
                 if (payCosts(actions.tech.fire_proof_safe.cost)){
                     return true;
@@ -4713,14 +4713,14 @@ export const actions = {
         },
         monument: {
             id: 'tech-monument',
-            title: 'Monuments',
-            desc: 'Monuments',
+            title: loc('tech_monument'),
+            desc: loc('tech_monument_desc'),
             reqs: { high_tech: 6 },
             grant: ['monument',1],
             cost: {
                 Knowledge(){ return 120000; }
             },
-            effect: `Plan the construction of a monument to celebrate your civilization's greatness.`,
+            effect: loc('tech_monument_effect'),
             action(){
                 if (payCosts(actions.tech.monument.cost)){
                     var tech = actions.tech.monument.grant[0];
@@ -4734,14 +4734,14 @@ export const actions = {
         },
         tourism: {
             id: 'tech-tourism',
-            title: 'Tourism',
-            desc: 'Tourism',
+            title: loc('tech_tourism'),
+            desc: loc('tech_tourism_desc'),
             reqs: { monuments: 2 },
             grant: ['monument',2],
             cost: {
                 Knowledge(){ return 150000; }
             },
-            effect: `Promote tourism of your city.`,
+            effect: loc('tech_tourism_effect'),
             action(){
                 if (payCosts(actions.tech.tourism.cost)){
                     global.city['tourist_center'] = { count: 0, on: 0 };
@@ -4752,14 +4752,14 @@ export const actions = {
         },
         science: {
             id: 'tech-science',
-            title: 'Scientific Method',
-            desc: 'Begin a journey of testing and discovery',
+            title: loc('tech_science'),
+            desc: loc('tech_science_desc'),
             reqs: { housing: 1 },
             grant: ['science',1],
             cost: {
                 Knowledge(){ return 65; }
             },
-            effect: 'Conceive of the scientific method. This will set your race down a path of science and discovery.',
+            effect: loc('tech_science_effect'),
             action(){
                 if (payCosts(actions.tech.science.cost)){
                     global.city['university'] = { count: 0 };
@@ -4770,14 +4770,14 @@ export const actions = {
         },
         library: {
             id: 'tech-library',
-            title: 'Dewey Decimal System',
-            desc: 'Oraganize and store all the knowledge of your race',
+            title: loc('tech_library'),
+            desc: loc('tech_library_desc'),
             reqs: { science: 1, cement: 1 },
             grant: ['science',2],
             cost: {
                 Knowledge(){ return 720; }
             },
-            effect: 'Create a system for organizing and storing knowledge in large storage buildings designed specifically for books.',
+            effect: loc('tech_library_effect'),
             action(){
                 if (payCosts(actions.tech.library.cost)){
                     global.city['library'] = { count: 0 };
@@ -4788,14 +4788,14 @@ export const actions = {
         },
         thesis: {
             id: 'tech-thesis',
-            title: 'Thesis Papers',
-            desc: 'Professors will require their students to write thesis papers',
+            title: loc('tech_thesis'),
+            desc: loc('tech_thesis_desc'),
             reqs: { science: 2 },
             grant: ['science',3],
             cost: {
                 Knowledge(){ return 1125; }
             },
-            effect: 'Libraries will have a minor effect on professor effectiveness.',
+            effect: loc('tech_thesis_effect'),
             action(){
                 if (payCosts(actions.tech.library.cost)){
                     return true;
@@ -4805,14 +4805,14 @@ export const actions = {
         },
         research_grant: {
             id: 'tech-research_grant',
-            title: 'Research Grants',
-            desc: 'Research Grants',
+            title: loc('tech_research_grant'),
+            desc: loc('tech_research_grant_desc'),
             reqs: { science: 3 },
             grant: ['science',4],
             cost: {
                 Knowledge(){ return 3240; }
             },
-            effect: 'Libraries will boost the effect of universities by 2% per library.',
+            effect: loc('tech_research_grant_effect'),
             action(){
                 if (payCosts(actions.tech.research_grant.cost)){
                     return true;
@@ -4822,14 +4822,14 @@ export const actions = {
         },
         scientific_journal: {
             id: 'tech-scientific_journal',
-            title: 'Scientific Journal',
-            desc: 'Publish a Scientific Journal',
+            title: loc('tech_scientific_journal'),
+            desc: loc('tech_scientific_journal_desc'),
             reqs: { science: 4, high_tech: 3 },
             grant: ['science',5],
             cost: {
                 Knowledge(){ return 27000; }
             },
-            effect: 'Each scientist will publish their work in a scientific journal. Libraries max knowledge increased by 12% per scientist.',
+            effect: loc('tech_scientific_journal_effect'),
             action(){
                 if (payCosts(actions.tech.scientific_journal.cost)){
                     return true;
@@ -4839,14 +4839,14 @@ export const actions = {
         },
         adjunct_professor: {
             id: 'tech-adjunct_professor',
-            title: 'Adjunct Professors',
-            desc: 'Adjunct Professors',
+            title: loc('tech_adjunct_professor'),
+            desc: loc('tech_adjunct_professor_desc'),
             reqs: { science: 5 },
             grant: ['science',6],
             cost: {
                 Knowledge(){ return 36000; }
             },
-            effect: 'Professors will boost the effectiveness of scientists by 1% per powered wardenclyffe tower.',
+            effect: loc('tech_adjunct_professor_effect'),
             action(){
                 if (payCosts(actions.tech.adjunct_professor.cost)){
                     return true;
@@ -4856,14 +4856,14 @@ export const actions = {
         },
         tesla_coil: {
             id: 'tech-tesla_coil',
-            title: 'Tesla Coil',
-            desc: 'Tesla Coil',
+            title: loc('tech_tesla_coil'),
+            desc: loc('tech_tesla_coil_desc'),
             reqs: { science: 6, high_tech: 3 },
             grant: ['science',7],
             cost: {
                 Knowledge(){ return 51750; }
             },
-            effect: 'Upgrade wardenclyffe towers with tesla coils increasing their science potential when powered.',
+            effect: loc('tech_tesla_coil_effect'),
             action(){
                 if (payCosts(actions.tech.tesla_coil.cost)){
                     return true;
@@ -4873,14 +4873,14 @@ export const actions = {
         },
         internet: {
             id: 'tech-internet',
-            title: 'Internet',
-            desc: 'Internet',
+            title: loc('tech_internet'),
+            desc: loc('tech_internet_desc'),
             reqs: { science: 7, high_tech: 4 },
             grant: ['science',8],
             cost: {
                 Knowledge(){ return 61200; }
             },
-            effect: 'The internet is a revolution which massively changes how information is exchanged. Increases the base value of Universities and Libraries by 40%.',
+            effect: loc('tech_internet_effect'),
             action(){
                 if (payCosts(actions.tech.internet.cost)){
                     return true;
@@ -4890,14 +4890,14 @@ export const actions = {
         },
         observatory: {
             id: 'tech-observatory',
-            title: 'Space Observatory',
-            desc: 'Space Observatory',
+            title: loc('tech_observatory'),
+            desc: loc('tech_observatory_desc'),
             reqs: { science: 8, space: 3, luna: 1 },
             grant: ['science',9],
             cost: {
                 Knowledge(){ return 148000; }
             },
-            effect: 'Create plans for a moon based observatory, the lack of atmosphere makes this an ideal location for observing the stars.',
+            effect: loc('tech_observatory_effect'),
             action(){
                 if (payCosts(actions.tech.observatory.cost)){
                     global.space['observatory'] = {
@@ -4911,14 +4911,14 @@ export const actions = {
         },
         world_collider: {
             id: 'tech-world_collider',
-            title: 'World Collider',
-            desc: 'World Collider',
+            title: loc('tech_world_collider'),
+            desc: loc('tech_world_collider_desc'),
             reqs: { science: 9, elerium: 2 },
             grant: ['science',10],
             cost: {
                 Knowledge(){ return 350000; }
             },
-            effect(){ return `Design the largest supercollider ever conceived, a massive 1859 mile track that spans the entire circumference of ${races[global.race.species].solar.dwarf}.` },
+            effect: loc('tech_world_collider_effect',[races[global.race.species].solar.dwarf]),
             action(){
                 if (payCosts(actions.tech.world_collider.cost)){
                     global.space['world_collider'] = {
@@ -4936,14 +4936,14 @@ export const actions = {
         },
         bioscience: {
             id: 'tech-bioscience',
-            title: 'Bioscience',
-            desc: 'Bioscience',
+            title: loc('tech_bioscience'),
+            desc: loc('tech_bioscience_desc'),
             reqs: { science: 8 },
             grant: ['genetics',1],
             cost: {
                 Knowledge(){ return 67500; }
             },
-            effect: 'Begin unlocking the mysteries of life.',
+            effect: loc('tech_bioscience_effect'),
             action(){
                 if (payCosts(actions.tech.bioscience.cost)){
                     global.city['biolab'] = { count: 0 };
@@ -4954,14 +4954,14 @@ export const actions = {
         },
         genetics: {
             id: 'tech-genetics',
-            title: 'Genetics',
-            desc: 'Genetics',
+            title: loc('tech_genetics'),
+            desc: loc('tech_genetics_desc'),
             reqs: { genetics: 1, high_tech: 6 },
             grant: ['genetics',2],
             cost: {
                 Knowledge(){ return 108000; }
             },
-            effect: 'Begin unlocking the secrets of DNA.',
+            effect: loc('tech_genetics_effect'),
             action(){
                 if (payCosts(actions.tech.genetics.cost)){
                     var tech = actions.tech.genetics.grant[0];
@@ -4975,14 +4975,14 @@ export const actions = {
         },
         crispr: {
             id: 'tech-crispr',
-            title: 'Crispr Cas9',
-            desc: 'Crispr Cas9',
+            title: loc('tech_crispr'),
+            desc: loc('tech_crispr_desc'),
             reqs: { genetics: 3 },
             grant: ['genetics',4],
             cost: {
                 Knowledge(){ return 125000; }
             },
-            effect: 'Crispr is a breakthrough in genetic engineering that will allow you to permanently modify your own genome.',
+            effect: loc('tech_crispr_effect'),
             action(){
                 if (payCosts(actions.tech.crispr.cost)){
                     var tech = actions.tech.crispr.grant[0];
@@ -4998,8 +4998,8 @@ export const actions = {
         },
         mad_science: {
             id: 'tech-mad_science',
-            title: 'Mad Science',
-            desc: 'Mad Science',
+            title: loc('tech_mad_science'),
+            desc: loc('tech_mad_science_desc'),
             reqs: { science: 2, smelting: 2 },
             grant: ['high_tech',1],
             cost: {
@@ -5007,7 +5007,7 @@ export const actions = {
                 Knowledge(){ return 6750; },
                 Aluminium(){ return 1000; }
             },
-            effect: 'The greatest leaps in science are often made by "misunderstood" individuals.',
+            effect: loc('tech_mad_science_effect'),
             action(){
                 if (payCosts(actions.tech.mad_science.cost)){
                     global.city['wardenclyffe'] = {
@@ -5021,15 +5021,15 @@ export const actions = {
         },
         electricity: {
             id: 'tech-electricity',
-            title: 'Electricity',
-            desc: 'Electricity',
+            title: loc('tech_electricity'),
+            desc: loc('tech_electricity_desc'),
             reqs: { high_tech: 1 },
             grant: ['high_tech',2],
             cost: {
                 Knowledge(){ return 13500; },
                 Copper(){ return 1000; }
             },
-            effect: 'Discover electricity, no kites required.',
+            effect: loc('tech_electricity_effect'),
             action(){
                 if (payCosts(actions.tech.electricity.cost)){
                     messageQueue('Electricity is a major advancement for your people, the future possibilities are endless.','success');
@@ -5046,14 +5046,14 @@ export const actions = {
         },
         industrialization: {
             id: 'tech-industrialization',
-            title: 'Industrialization',
-            desc: 'Industrialization',
+            title: loc('tech_industrialization'),
+            desc: loc('tech_industrialization_desc'),
             reqs: { high_tech: 2, cement: 2, steel_container: 1 },
             grant: ['high_tech',3],
             cost: {
                 Knowledge(){ return 25200; }
             },
-            effect: 'Bring about the industrial revolution. Leads to all sorts of new technological developments.',
+            effect: loc('tech_industrialization_effect'),
             action(){
                 if (payCosts(actions.tech.industrialization.cost)){
                     global.resource.Titanium.display = true;
@@ -5072,14 +5072,14 @@ export const actions = {
         },
         electronics: {
             id: 'tech-electronics',
-            title: 'Electronics',
-            desc: 'Electronics',
+            title: loc('tech_electronics'),
+            desc: loc('tech_electronics_desc'),
             reqs: { high_tech: 3, titanium: 1 },
             grant: ['high_tech',4],
             cost: {
                 Knowledge(){ return 50000; }
             },
-            effect: 'Electronics is the next major step forward in technological advancement.',
+            effect: loc('tech_electronics_effect'),
             action(){
                 if (payCosts(actions.tech.electronics.cost)){
                     return true;
@@ -5089,15 +5089,15 @@ export const actions = {
         },
         fission: {
             id: 'tech-fission',
-            title: 'Nuclear Fission',
-            desc: 'Nuclear Fission',
+            title: loc('tech_fission'),
+            desc: loc('tech_fission_desc'),
             reqs: { high_tech: 4, uranium: 1 },
             grant: ['high_tech',5],
             cost: {
                 Knowledge(){ return 77400; },
                 Uranium(){ return 10; }
             },
-            effect: 'Learn to split the atom, a powerful but terrifying new development.',
+            effect: loc('tech_fission_effect'),
             action(){
                 if (payCosts(actions.tech.fission.cost)){
                     messageQueue('Your scientists have unlocked the secrets of the atom, the atomic age has begun.','success');
@@ -5112,14 +5112,14 @@ export const actions = {
         },
         arpa: {
             id: 'tech-arpa',
-            title: 'A.R.P.A.',
-            desc: 'Advanced Reseach Projects Agency',
+            title: loc('tech_arpa'),
+            desc: loc('tech_arpa_desc'),
             reqs: { high_tech: 5 },
             grant: ['high_tech',6],
             cost: {
                 Knowledge(){ return 90000; }
             },
-            effect: 'Establish the Advanced Research Projects Agency (A.R.P.A.). This advanced labratory is dedicated to providing the facilities to progress all your special projects.',
+            effect: loc('tech_arpa_effect'),
             action(){
                 if (payCosts(actions.tech.arpa.cost)){
                     global.settings.showGenetics = true;
@@ -5133,15 +5133,15 @@ export const actions = {
         },
         rocketry: {
             id: 'tech-rocketry',
-            title: 'Rocketry',
-            desc: 'Rocketry',
+            title: loc('tech_rocketry'),
+            desc: loc('tech_rocketry_desc'),
             reqs: { high_tech: 6 },
             grant: ['high_tech',7],
             cost: {
                 Knowledge(){ return 112500; },
                 Oil(){ return 6800; }
             },
-            effect: 'Establish the the field of rocketry. Leads to all sorts of new ballistic technologies.',
+            effect: loc('tech_rocketry_effect'),
             action(){
                 if (payCosts(actions.tech.rocketry.cost)){
                     var tech = actions.tech.rocketry.grant[0];
@@ -5154,14 +5154,14 @@ export const actions = {
         },
         robotics: {
             id: 'tech-robotics',
-            title: 'Advanced Robotics',
-            desc: 'Advanced Robotics',
+            title: loc('tech_robotics'),
+            desc: loc('tech_robotics_desc'),
             reqs: { high_tech: 7 },
             grant: ['high_tech',8],
             cost: {
                 Knowledge(){ return 125000; }
             },
-            effect: 'New breakthroughs in robotics could lead to new technologies that increase productivity.',
+            effect: loc('tech_robotics_effect'),
             action(){
                 if (payCosts(actions.tech.robotics.cost)){
                     return true;
@@ -5171,15 +5171,15 @@ export const actions = {
         },
         lasers: {
             id: 'tech-lasers',
-            title: 'Lasers',
-            desc: 'Light Amplification by Stimulated Emission of Radiation',
+            title: loc('tech_lasers'),
+            desc: loc('tech_lasers_desc'),
             reqs: { high_tech: 8, space: 3, supercollider: 1, elerium: 1 },
             grant: ['high_tech',9],
             cost: {
                 Knowledge(){ return 280000; },
                 Elerium(){ return 100; }
             },
-            effect: 'Laser technology finally made practical. This could lead to all sorts of new breakthroughs.',
+            effect: loc('tech_lasers_effect'),
             action(){
                 if (payCosts(actions.tech.lasers.cost)){
                     return true;
@@ -5189,14 +5189,14 @@ export const actions = {
         },
         artifical_intelligence: {
             id: 'tech-artifical_intelligence',
-            title: 'Artifical Intelligence',
-            desc: 'Artifical Intelligence',
+            title: loc('tech_artifical_intelligence'),
+            desc: loc('tech_artifical_intelligence_desc'),
             reqs: { high_tech: 9 },
             grant: ['high_tech',10],
             cost: {
                 Knowledge(){ return 325000; }
             },
-            effect: `SciFi says this isn't a good idea, but what do a bunch of self important SciFi writers know?`,
+            effect: loc('tech_artifical_intelligence_effect'),
             action(){
                 if (payCosts(actions.tech.artifical_intelligence.cost)){
                     return true;
@@ -5209,8 +5209,8 @@ export const actions = {
         },
         quantum_computing: {
             id: 'tech-quantum_computing',
-            title: 'Quantum Computing',
-            desc: 'Quantum Computing',
+            title: loc('tech_quantum_computing'),
+            desc: loc('tech_quantum_computing_desc'),
             reqs: { high_tech: 10, nano: 1 },
             grant: ['high_tech',11],
             cost: {
@@ -5218,7 +5218,7 @@ export const actions = {
                 Elerium(){ return 250 },
                 Nano_Tube(){ return 100000 }
             },
-            effect: `Quantium computing is a great leap forwards in processing power.`,
+            effect: loc('tech_quantum_computing_effect'),
             action(){
                 if (payCosts(actions.tech.quantum_computing.cost)){
                     return true;
@@ -5231,14 +5231,14 @@ export const actions = {
         },
         worker_drone: {
             id: 'tech-worker_drone',
-            title: 'Mining Drones',
-            desc: 'Mining Drones',
+            title: loc('tech_worker_drone'),
+            desc: loc('tech_worker_drone_desc'),
             reqs: { nano: 1 },
             grant: ['drone',1],
             cost: {
                 Knowledge(){ return 400000; },
             },
-            effect(){ return `Mining drones can help expedite neutronium mining on ${races[global.race.species].solar.gas_moon}.`; },
+            effect: loc('tech_worker_drone_effect',[races[global.race.species].solar.gas_moon]),
             action(){
                 if (payCosts(actions.tech.polymer.cost)){
                     global.space['drone'] = { count: 0 };
@@ -5249,14 +5249,14 @@ export const actions = {
         },
         uranium: {
             id: 'tech-uranium',
-            title: 'Uranium Extraction',
-            desc: 'Uranium Extraction',
+            title: loc('tech_uranium'),
+            desc: loc('tech_uranium_desc'),
             reqs: { high_tech: 4 },
             grant: ['uranium',1],
             cost: {
                 Knowledge(){ return 72000; }
             },
-            effect: 'Learn how to extract trace amounts of uranium from coal deposits.',
+            effect: loc('tech_uranium_effect'),
             action(){
                 if (payCosts(actions.tech.uranium.cost)){
                     global.resource.Uranium.display = true;
@@ -5267,15 +5267,15 @@ export const actions = {
         },
         uranium_storage: {
             id: 'tech-uranium_storage',
-            title: 'Uranium Storage',
-            desc: 'Uranium Storage',
+            title: loc('tech_uranium_storage'),
+            desc: loc('tech_uranium_storage_desc'),
             reqs: { uranium: 1 },
             grant: ['uranium',2],
             cost: {
                 Knowledge(){ return 75600; },
                 Alloy(){ return 2500; }
             },
-            effect: 'Upgrade your fuel depots with specially designed areas for storing uranium.',
+            effect: loc('tech_uranium_storage_effect'),
             action(){
                 if (payCosts(actions.tech.uranium_storage.cost)){
                     return true;
@@ -5285,14 +5285,14 @@ export const actions = {
         },
         uranium_ash: {
             id: 'tech-uranium_ash',
-            title: 'Uranium Ash',
-            desc: 'Uranium Ash',
+            title: loc('tech_uranium_ash'),
+            desc: loc('tech_uranium_ash_desc'),
             reqs: { uranium: 2 },
             grant: ['uranium',3],
             cost: {
                 Knowledge(){ return 122000; }
             },
-            effect: 'Learn how to extract trace amounts of uranium from coal ash.',
+            effect: loc('tech_uranium_ash_effect'),
             action(){
                 if (payCosts(actions.tech.uranium_ash.cost)){
                     return true;
@@ -5302,8 +5302,8 @@ export const actions = {
         },
         breeder_reactor: {
             id: 'tech-breeder_reactor',
-            title: 'Breeder Reactor',
-            desc: 'Breeder Reactor',
+            title: loc('tech_breeder_reactor'),
+            desc: loc('tech_breeder_reactor_desc'),
             reqs: { high_tech: 5, uranium: 3, space: 3 },
             grant: ['uranium',4],
             cost: {
@@ -5311,7 +5311,7 @@ export const actions = {
                 Uranium(){ return 250; },
                 Iridium(){ return 1000; }
             },
-            effect: 'Breeder reactors allow you to more fully consume nuclear fuel, which increases the total output of fission reactors.',
+            effect: loc('tech_breeder_reactor_effect'),
             action(){
                 if (payCosts(actions.tech.breeder_reactor.cost)){
                     return true;
@@ -5321,8 +5321,8 @@ export const actions = {
         },
         mine_conveyor: {
             id: 'tech-mine_conveyor',
-            title: 'Mine Conveyor Belts',
-            desc: 'Mine Conveyor Belts',
+            title: loc('tech_mine_conveyor'),
+            desc: loc('tech_mine_conveyor_desc'),
             reqs: { high_tech: 2 },
             grant: ['mine_conveyor',1],
             cost: {
@@ -5330,7 +5330,7 @@ export const actions = {
                 Copper(){ return 2250; },
                 Steel(){ return 1750; }
             },
-            effect: 'Add mining conveyor belts to your mining operations. Greatly increasing mining excavation rates.',
+            effect: loc('tech_mine_conveyor_effect'),
             action(){
                 if (payCosts(actions.tech.mine_conveyor.cost)){
                     return true;
@@ -5340,14 +5340,14 @@ export const actions = {
         },
         oil_well: {
             id: 'tech-oil_well',
-            title: 'Oil Derrick',
-            desc: 'Oil Derrick',
+            title: loc('tech_oil_well'),
+            desc: loc('tech_oil_well_desc'),
             reqs: { high_tech: 3 },
             grant: ['oil',1],
             cost: {
                 Knowledge(){ return 27000; }
             },
-            effect: 'Unlock oil derricks and begin the age of big oil.',
+            effect: loc('tech_oil_well_effect'),
             action(){
                 if (payCosts(actions.tech.oil_well.cost)){
                     global.city['oil_well'] = { count: 0 };
@@ -5358,14 +5358,14 @@ export const actions = {
         },
         oil_depot: {
             id: 'tech-oil_depot',
-            title: 'Fuel Depot',
-            desc: 'Fuel Depot',
+            title: loc('tech_oil_depot'),
+            desc: loc('tech_oil_depot_desc'),
             reqs: { oil: 1 },
             grant: ['oil',2],
             cost: {
                 Knowledge(){ return 32000; }
             },
-            effect: 'Design a facility specially made to increase your oil reserves.',
+            effect: loc('tech_oil_depot_effect'),
             action(){
                 if (payCosts(actions.tech.oil_depot.cost)){
                     global.city['oil_depot'] = { count: 0 };
@@ -5376,14 +5376,14 @@ export const actions = {
         },
         oil_power: {
             id: 'tech-oil_power',
-            title: 'Oil Powerplant',
-            desc: 'Oil Powerplant',
+            title: loc('tech_oil_power'),
+            desc: loc('tech_oil_power_desc'),
             reqs: { oil: 2 },
             grant: ['oil',3],
             cost: {
                 Knowledge(){ return 44000; }
             },
-            effect: 'Design a power facility that runs on oil.',
+            effect: loc('tech_oil_power_effect'),
             action(){
                 if (payCosts(actions.tech.oil_power.cost)){
                     global.city['oil_power'] = { count: 0 };
@@ -5394,15 +5394,15 @@ export const actions = {
         },
         titanium_drills: {
             id: 'tech-titanium_drills',
-            title: 'Titanium Drills',
-            desc: 'Titanium Drills',
+            title: loc('tech_titanium_drills'),
+            desc: loc('tech_titanium_drills_desc'),
             reqs: { oil: 3 },
             grant: ['oil',4],
             cost: {
                 Knowledge(){ return 54000; },
                 Titanium(){ return 3500; }
             },
-            effect: 'New oil drills made from titanium will increase oil production by an estimated 20%.',
+            effect: loc('tech_titanium_drills_effect'),
             action(){
                 if (payCosts(actions.tech.titanium_drills.cost)){
                     return true;
@@ -5412,15 +5412,15 @@ export const actions = {
         },
         alloy_drills: {
             id: 'tech-alloy_drills',
-            title: 'Alloy Drills',
-            desc: 'Alloy Drills',
+            title: loc('tech_alloy_drills'),
+            desc: loc('tech_alloy_drills_desc'),
             reqs: { oil: 4 },
             grant: ['oil',5],
             cost: {
                 Knowledge(){ return 77000; },
                 Alloy(){ return 1000; }
             },
-            effect: 'Enhanced drills made with new alloys increase oil production by another estimated 25%.',
+            effect: loc('tech_alloy_drills_effect'),
             action(){
                 if (payCosts(actions.tech.alloy_drills.cost)){
                     return true;
@@ -5430,14 +5430,14 @@ export const actions = {
         },
         fracking: {
             id: 'tech-fracking',
-            title: 'Fracking',
-            desc: 'Fracking',
+            title: loc('tech_fracking'),
+            desc: loc('tech_fracking_desc'),
             reqs: { oil: 5, high_tech: 6 },
             grant: ['oil',6],
             cost: {
                 Knowledge(){ return 132000; }
             },
-            effect: 'A new oil mining technique, controversial but effective. Improves oil derrick output by 40%.',
+            effect: loc('tech_fracking_effect'),
             action(){
                 if (payCosts(actions.tech.fracking.cost)){
                     return true;
@@ -5447,15 +5447,15 @@ export const actions = {
         },
         mythril_drills: {
             id: 'tech-mythril_drills',
-            title: 'Mythril Drills',
-            desc: 'Mythril Drills',
+            title: loc('tech_mythril_drills'),
+            desc: loc('tech_mythril_drills_desc'),
             reqs: { oil: 6, space: 3 },
             grant: ['oil',7],
             cost: {
                 Knowledge(){ return 165000; },
                 Mythril(){ return 100; }
             },
-            effect: 'New mythril drills that will improve the efficiency of your oil derricks.',
+            effect: loc('tech_mythril_drills_effect'),
             action(){
                 if (payCosts(actions.tech.mythril_drills.cost)){
                     return true;
@@ -5465,14 +5465,14 @@ export const actions = {
         },
         mass_driver: {
             id: 'tech-mass_driver',
-            title: 'Mass Driver',
-            desc: 'Mass Driver',
+            title: loc('tech_mass_driver'),
+            desc: loc('tech_mass_driver_desc'),
             reqs: { oil: 6, space: 3 },
             grant: ['mass',1],
             cost: {
                 Knowledge(){ return 160000; }
             },
-            effect: 'Mass drivers use an electromagnetic rail to launch payloads into orbit, and can be used to reduce fuel consumption required by traditional rocket launches.',
+            effect: loc('tech_mass_driver_effect'),
             action(){
                 if (payCosts(actions.tech.mass_driver.cost)){
                     global.city['mass_driver'] = {
@@ -5486,8 +5486,8 @@ export const actions = {
         },
         polymer: {
             id: 'tech-polymer',
-            title: 'Polymer',
-            desc: 'Polymer',
+            title: loc('tech_polymer'),
+            desc: loc('tech_polymer_desc'),
             reqs: { genetics: 1 },
             grant: ['polymer',1],
             cost: {
@@ -5495,7 +5495,7 @@ export const actions = {
                 Oil(){ return 5000; },
                 Alloy(){ return 450; }
             },
-            effect: 'Create a new high tech polymer material that can be used for a wide variety of applications.',
+            effect: loc('tech_polymer_effect'),
             action(){
                 if (payCosts(actions.tech.polymer.cost)){
                     global.resource.Polymer.display = true;
@@ -5507,14 +5507,14 @@ export const actions = {
         },
         fluidized_bed_reactor: {
             id: 'tech-fluidized_bed_reactor',
-            title: 'Fluidized Bed Reactor',
-            desc: 'Fluidized Bed Reactor',
+            title: loc('tech_fluidized_bed_reactor'),
+            desc: loc('tech_fluidized_bed_reactor_desc'),
             reqs: { polymer: 1, high_tech: 6 },
             grant: ['polymer',2],
             cost: {
                 Knowledge(){ return 99000; }
             },
-            effect: 'Fluidized bed reactors revolutionize the manufacturing of polymers boosting output by an astonishing 42%.',
+            effect: loc('tech_fluidized_bed_reactor_effect'),
             action(){
                 if (payCosts(actions.tech.fluidized_bed_reactor.cost)){
                     return true;
@@ -5524,8 +5524,8 @@ export const actions = {
         },
         nano_tubes: {
             id: 'tech-nano_tubes',
-            title: 'Nano Tubes',
-            desc: 'Nano Tubes',
+            title: loc('tech_nano_tubes'),
+            desc: loc('tech_nano_tubes_desc'),
             reqs: { high_tech: 10 },
             grant: ['nano',1],
             cost: {
@@ -5533,7 +5533,7 @@ export const actions = {
                 Coal(){ return 100000; },
                 Neutronium(){ return 1000; }
             },
-            effect: 'Advanced computer models could help design a super material known as carbon nano tubes.',
+            effect: loc('tech_nano_tubes_effect'),
             action(){
                 if (payCosts(actions.tech.polymer.cost)){
                     global.resource.Nano_Tube.display = true;
@@ -5546,8 +5546,8 @@ export const actions = {
         },
         stone_axe: {
             id: 'tech-stone_axe',
-            title: 'Primitive Axes',
-            desc: 'Create the first axe',
+            title: loc('tech_stone_axe'),
+            desc: loc('tech_stone_axe_desc'),
             reqs: { primitive: 3 },
             grant: ['axe',1],
             cost: {
@@ -5555,7 +5555,7 @@ export const actions = {
                 Lumber(){ return 20; },
                 Stone(){ return 20; }
             },
-            effect: 'Creates a primitive axe made from stone lashed to a stick. Enables lumber harvesting.',
+            effect: loc('tech_stone_axe_effect'),
             action(){
                 if (payCosts(actions.tech.stone_axe.cost)){
                     global.civic.lumberjack.display = true;
@@ -5567,15 +5567,15 @@ export const actions = {
         },
         copper_axes: {
             id: 'tech-copper_axes',
-            title: 'Bronze Axe',
-            desc: 'Create an axe made from bronze',
+            title: loc('tech_copper_axes'),
+            desc: loc('tech_copper_axes_desc'),
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
             cost: {
                 Knowledge(){ return 540; },
                 Copper(){ return 25; }
             },
-            effect: 'Upgrade axe technology to metal axes made from bronze. Improves lumber harvesting.',
+            effect: loc('tech_copper_axes_effect'),
             action(){
                 if (payCosts(actions.tech.copper_axes.cost)){
                     return true;
@@ -5585,15 +5585,15 @@ export const actions = {
         },
         iron_saw: {
             id: 'tech-iron_saw',
-            title: 'Sawmills',
-            desc: 'Create plans for a sawmill',
+            title: loc('tech_iron_saw'),
+            desc: loc('tech_iron_saw_desc'),
             reqs: { axe: 1, mining: 3 },
             grant: ['saw',1],
             cost: {
                 Knowledge(){ return 3375; },
                 Iron(){ return 400; }
             },
-            effect: 'Sawmills increase the lumber yield of your lumberjacks.',
+            effect: loc('tech_iron_saw_effect'),
             action(){
                 if (payCosts(actions.tech.iron_saw.cost)){
                     global.city['sawmill'] = {
@@ -5607,15 +5607,15 @@ export const actions = {
         },
         steel_saw: {
             id: 'tech-steel_saw',
-            title: 'Steel Saws',
-            desc: 'Steel Sawmill blades',
+            title: loc('tech_steel_saw'),
+            desc: loc('tech_steel_saw_desc'),
             reqs: { smelting: 2, saw: 1 },
             grant: ['saw',2],
             cost: {
                 Knowledge(){ return 10800; },
                 Steel(){ return 400; }
             },
-            effect: 'Upgrade sawmills with steel blades.',
+            effect: loc('tech_steel_saw_effect'),
             action(){
                 if (payCosts(actions.tech.steel_saw.cost)){
                     return true;
@@ -5625,15 +5625,15 @@ export const actions = {
         },
         iron_axes: {
             id: 'tech-iron_axes',
-            title: 'Iron Axe',
-            desc: 'Create a sturdy axe made from iron',
+            title: loc('tech_iron_axes'),
+            desc: loc('tech_iron_axes_desc'),
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
             cost: {
                 Knowledge(){ return 2700; },
                 Iron(){ return 250; }
             },
-            effect: 'Upgrade axe technology to metal axes made from iron. Improves lumber harvesting.',
+            effect: loc('tech_iron_axes_effect'),
             action(){
                 if (payCosts(actions.tech.iron_axes.cost)){
                     return true;
@@ -5643,15 +5643,15 @@ export const actions = {
         },
         steel_axes: {
             id: 'tech-steel_axes',
-            title: 'Steel Axe',
-            desc: 'Create a superior axe made from steel',
+            title: loc('tech_steel_axes'),
+            desc: loc('tech_steel_axes_desc'),
             reqs: { axe: 3, smelting: 2 },
             grant: ['axe',4],
             cost: {
                 Knowledge(){ return 9000; },
                 Steel(){ return 250; }
             },
-            effect: 'Upgrade axe technology to durable axes made from steel. Improves lumber harvesting.',
+            effect: loc('tech_steel_axes_effect'),
             action(){
                 if (payCosts(actions.tech.steel_axes.cost)){
                     return true;
@@ -5661,15 +5661,15 @@ export const actions = {
         },
         titanium_axes: {
             id: 'tech-titanium_axes',
-            title: 'Titanium Axe',
-            desc: 'Create the ultimate axe made from titanium',
+            title: loc('tech_titanium_axes'),
+            desc: loc('tech_titanium_axes_desc'),
             reqs: { axe: 4, high_tech: 3 },
             grant: ['axe',5],
             cost: {
                 Knowledge(){ return 38000; },
                 Titanium(){ return 350; }
             },
-            effect: 'Upgrade axe technology to durable axes made from titanium. Improves lumber harvesting.',
+            effect: loc('tech_titanium_axes_effect'),
             action(){
                 if (payCosts(actions.tech.titanium_axes.cost)){
                     return true;
@@ -5679,15 +5679,15 @@ export const actions = {
         },
         copper_sledgehammer: {
             id: 'tech-copper_sledgehammer',
-            title: 'Bronze Sledgehammer',
-            desc: 'Create a sledgehammer with a bronze head',
+            title: loc('tech_copper_sledgehammer'),
+            desc: loc('tech_copper_sledgehammer_desc'),
             reqs: { mining: 2 },
             grant: ['hammer',1],
             cost: {
                 Knowledge(){ return 540; },
                 Copper(){ return 25; }
             },
-            effect: 'Create sledgehammers made from bronze. Improves rock quarrying.',
+            effect: loc('tech_copper_sledgehammer_effect'),
             action(){
                 if (payCosts(actions.tech.copper_sledgehammer.cost)){
                     return true;
@@ -5697,15 +5697,15 @@ export const actions = {
         },
         iron_sledgehammer: {
             id: 'tech-iron_sledgehammer',
-            title: 'Iron Sledgehammer',
-            desc: 'Create a sledgehammer with an iron head',
+            title: loc('tech_iron_sledgehammer'),
+            desc: loc('tech_iron_sledgehammer_desc'),
             reqs: { hammer: 1, mining: 3 },
             grant: ['hammer',2],
             cost: {
                 Knowledge(){ return 2700; },
                 Iron(){ return 250; }
             },
-            effect: 'Upgrade to more durable sledgehammers made from iron. Improves rock quarrying.',
+            effect: loc('tech_iron_sledgehammer_effect'),
             action(){
                 if (payCosts(actions.tech.iron_sledgehammer.cost)){
                     return true;
@@ -5715,15 +5715,15 @@ export const actions = {
         },
         steel_sledgehammer: {
             id: 'tech-steel_sledgehammer',
-            title: 'Steel Sledgehammer',
-            desc: 'Create a sledgehammer with a steel head',
+            title: loc('tech_steel_sledgehammer'),
+            desc: loc('tech_steel_sledgehammer_desc'),
             reqs: { hammer: 2, smelting: 2 },
             grant: ['hammer',3],
             cost: {
                 Knowledge(){ return 7200; },
                 Steel(){ return 250; }
             },
-            effect: 'Upgrade to stronger sledgehammers made from steel. Improves rock quarrying.',
+            effect: loc('tech_steel_sledgehammer_effect'),
             action(){
                 if (payCosts(actions.tech.steel_sledgehammer.cost)){
                     return true;
@@ -5733,15 +5733,15 @@ export const actions = {
         },
         titanium_sledgehammer: {
             id: 'tech-titanium_sledgehammer',
-            title: 'Titanium Sledgehammer',
-            desc: 'Create a sledgehammer with a titanium head',
+            title: loc('tech_titanium_sledgehammer'),
+            desc: loc('tech_titanium_sledgehammer_desc'),
             reqs: { hammer: 3, high_tech: 3 },
             grant: ['hammer',4],
             cost: {
                 Knowledge(){ return 40000; },
                 Titanium(){ return 400; }
             },
-            effect: 'Upgrade to stronger sledgehammers made from titanium. Improves rock quarrying.',
+            effect: loc('tech_titanium_sledgehammer_effect'),
             action(){
                 if (payCosts(actions.tech.titanium_sledgehammer.cost)){
                     return true;
@@ -5751,15 +5751,15 @@ export const actions = {
         },
         copper_pickaxe: {
             id: 'tech-copper_pickaxe',
-            title: 'Bronze Pickaxe',
-            desc: 'Create a pickaxe made from bronze',
+            title: loc('tech_copper_pickaxe'),
+            desc: loc('tech_copper_pickaxe_desc'),
             reqs: { mining: 2 },
             grant: ['pickaxe',1],
             cost: {
                 Knowledge(){ return 675; },
                 Copper(){ return 25; }
             },
-            effect: 'Create metal pickaxes made with bronze heads. Improves mining activities.',
+            effect: loc('tech_copper_pickaxe_effect'),
             action(){
                 if (payCosts(actions.tech.copper_pickaxe.cost)){
                     return true;
@@ -5769,15 +5769,15 @@ export const actions = {
         },
         iron_pickaxe: {
             id: 'tech-iron_pickaxe',
-            title: 'Iron Pickaxe',
-            desc: 'Create a pickaxe made from iron',
+            title: loc('tech_iron_pickaxe'),
+            desc: loc('tech_iron_pickaxe_desc'),
             reqs: { pickaxe: 1, mining: 3 },
             grant: ['pickaxe',2],
             cost: {
                 Knowledge(){ return 3200; },
                 Iron(){ return 250; }
             },
-            effect: 'Upgrades pickaxe technology to metal pickaxes made from iron. Improves mining activities.',
+            effect: loc('tech_iron_pickaxe_effect'),
             action(){
                 if (payCosts(actions.tech.iron_pickaxe.cost)){
                     return true;
@@ -5787,15 +5787,15 @@ export const actions = {
         },
         steel_pickaxe: {
             id: 'tech-steel_pickaxe',
-            title: 'Steel Pickaxe',
-            desc: 'Create a pickaxe made from steel',
+            title: loc('tech_steel_pickaxe'),
+            desc: loc('tech_steel_pickaxe_desc'),
             reqs: { pickaxe: 2, smelting: 2},
             grant: ['pickaxe',3],
             cost: {
                 Knowledge(){ return 9000; },
                 Steel(){ return 250; }
             },
-            effect: 'Upgrades pickaxe technology to steel pickaxes. Improves mining activities.',
+            effect: loc('tech_steel_pickaxe_effect'),
             action(){
                 if (payCosts(actions.tech.steel_pickaxe.cost)){
                     return true;
@@ -5805,15 +5805,15 @@ export const actions = {
         },
         jackhammer: {
             id: 'tech-jackhammer',
-            title: 'Jackhammer',
-            desc: 'Invent the Jackhammer',
+            title: loc('tech_jackhammer'),
+            desc: loc('tech_jackhammer_desc'),
             reqs: { pickaxe: 3, high_tech: 2},
             grant: ['pickaxe',4],
             cost: {
                 Knowledge(){ return 22500; },
                 Copper(){ return 5000; }
             },
-            effect: 'Replace old mining pick technology with jackhammers. Improves mining activities.',
+            effect: loc('tech_jackhammer_effect'),
             action(){
                 if (payCosts(actions.tech.jackhammer.cost)){
                     return true;
@@ -5823,8 +5823,8 @@ export const actions = {
         },
         jackhammer_mk2: {
             id: 'tech-jackhammer_mk2',
-            title: 'Electric Jackhammer',
-            desc: 'Electric Jackhammers',
+            title: loc('tech_jackhammer_mk2'),
+            desc: loc('tech_jackhammer_mk2_desc'),
             reqs: { pickaxe: 4, high_tech: 4},
             grant: ['pickaxe',5],
             cost: {
@@ -5832,7 +5832,7 @@ export const actions = {
                 Titanium(){ return 2000; },
                 Alloy(){ return 500; }
             },
-            effect: 'Upgrade your jackhammers with newer models. Improves mining activities.',
+            effect: loc('tech_jackhammer_mk2_effect'),
             action(){
                 if (payCosts(actions.tech.jackhammer_mk2.cost)){
                     return true;
@@ -5842,15 +5842,15 @@ export const actions = {
         },
         copper_hoe: {
             id: 'tech-copper_hoe',
-            title: 'Bronze Hoes',
-            desc: 'Create farming tools made from bronze',
+            title: loc('tech_copper_hoe'),
+            desc: loc('tech_copper_hoe_desc'),
             reqs: { mining: 2, agriculture: 1 },
             grant: ['hoe',1],
             cost: {
                 Knowledge(){ return 720; },
                 Copper(){ return 50; }
             },
-            effect: 'Create tools made from bronze that aid farming. Improves farm efficiency.',
+            effect: loc('tech_copper_hoe_effect'),
             action(){
                 if (payCosts(actions.tech.copper_hoe.cost)){
                     return true;
@@ -5860,15 +5860,15 @@ export const actions = {
         },
         iron_hoe: {
             id: 'tech-iron_hoe',
-            title: 'Iron Hoes',
-            desc: 'Create farming tools made from iron',
+            title: loc('tech_iron_hoe'),
+            desc: loc('tech_iron_hoe_desc'),
             reqs: { hoe: 1, mining: 3, agriculture: 1 },
             grant: ['hoe',2],
             cost: {
                 Knowledge(){ return 3600; },
                 Iron(){ return 500; }
             },
-            effect: 'Create tools made from iron that aid farming. Improves farm efficiency.',
+            effect: loc('tech_iron_hoe_effect'),
             action(){
                 if (payCosts(actions.tech.iron_hoe.cost)){
                     return true;
@@ -5878,15 +5878,15 @@ export const actions = {
         },
         steel_hoe: {
             id: 'tech-steel_hoe',
-            title: 'Steel Hoes',
-            desc: 'Create better farming tools made from steel',
+            title: loc('tech_steel_hoe'),
+            desc: loc('tech_steel_hoe_desc'),
             reqs: { hoe: 2, smelting: 2, agriculture: 1 },
             grant: ['hoe',3],
             cost: {
                 Knowledge(){ return 12600; },
                 Steel(){ return 500; }
             },
-            effect: 'Create tools made from steel that aid farming. Improves farm efficiency.',
+            effect: loc('tech_steel_hoe_effect'),
             action(){
                 if (payCosts(actions.tech.steel_hoe.cost)){
                     return true;
@@ -5896,15 +5896,15 @@ export const actions = {
         },
         titanium_hoe: {
             id: 'tech-titanium_hoe',
-            title: 'Titanium Hoes',
-            desc: 'Create better farming tools made from titanium',
+            title: loc('tech_titanium_hoe'),
+            desc: loc('tech_titanium_hoe_desc'),
             reqs: { hoe: 3, high_tech: 3, agriculture: 1 },
             grant: ['hoe',4],
             cost: {
                 Knowledge(){ return 44000; },
                 Titanium(){ return 500; }
             },
-            effect: 'Create tools made from titanium that aid farming. Improves farm efficiency.',
+            effect: loc('tech_titanium_hoe_effect'),
             action(){
                 if (payCosts(actions.tech.titanium_hoe.cost)){
                     return true;
@@ -5914,14 +5914,14 @@ export const actions = {
         },
         garrison: {
             id: 'tech-garrison',
-            title: 'Garrison',
-            desc: 'Found the military',
+            title: loc('tech_garrison'),
+            desc: loc('tech_garrison_desc'),
             reqs: { science: 1, housing: 1 },
             grant: ['military',1],
             cost: {
                 Knowledge(){ return 70; }
             },
-            effect: 'Establish a military to keep your people safe from external threats, or to conquer your enemies with.',
+            effect: loc('tech_garrison_effect'),
             action(){
                 if (payCosts(actions.tech.garrison.cost)){
                     global.civic['garrison'].display = true;
@@ -5933,15 +5933,15 @@ export const actions = {
         },
         mercs: {
             id: 'tech-mercs',
-            title: 'Mercenaries',
-            desc: 'Establish a mercenary recruitment center',
+            title: loc('tech_mercs'),
+            desc: loc('tech_mercs_desc'),
             reqs: { military: 1 },
             grant: ['mercs',1],
             cost: {
                 Money(){ return 10000 },
                 Knowledge(){ return 4500; }
             },
-            effect: 'Unlocks the ability to hire mercenaries. You can pay a man to die for you after all.',
+            effect: loc('tech_mercs_effect'),
             action(){
                 if (payCosts(actions.tech.mercs.cost)){
                     global.civic.garrison['mercs'] = true;
@@ -5952,15 +5952,15 @@ export const actions = {
         },
         signing_bonus: {
             id: 'tech-signing_bonus',
-            title: 'Signing Bonus',
-            desc: 'Signing Bonus',
+            title: loc('tech_signing_bonus'),
+            desc: loc('tech_signing_bonus_desc'),
             reqs: { mercs: 1, high_tech: 3 },
             grant: ['mercs',2],
             cost: {
                 Money(){ return 50000 },
                 Knowledge(){ return 32000; }
             },
-            effect: 'Regenerate the mercenary pool faster by offering signing bonuses.',
+            effect: loc('tech_signing_bonus_effect'),
             action(){
                 if (payCosts(actions.tech.signing_bonus.cost)){
                     return true;
@@ -5970,14 +5970,14 @@ export const actions = {
         },
         hospital: {
             id: 'tech-hospital',
-            title: 'Hospital',
-            desc: 'Design a medical facility for your wounded',
+            title: loc('tech_hospital'),
+            desc: loc('tech_hospital_desc'),
             reqs: { military: 1, alumina: 1 },
             grant: ['medic',1],
             cost: {
                 Knowledge(){ return 5000; }
             },
-            effect: 'Establish a triage center which can be used to accelerate the healing of wounded soldiers.',
+            effect: loc('tech_hospital_effect'),
             action(){
                 if (payCosts(actions.tech.hospital.cost)){
                     global.city['hospital'] = { count: 0 };
@@ -5988,14 +5988,14 @@ export const actions = {
         },
         boot_camp: {
             id: 'tech-boot_camp',
-            title: 'Boot Camp',
-            desc: 'Design a military training facility',
+            title: loc('tech_boot_camp'),
+            desc: loc('tech_boot_camp_desc'),
             reqs: { high_tech: 1 },
             grant: ['boot_camp',1],
             cost: {
                 Knowledge(){ return 8000; }
             },
-            effect: 'Accelerate the training of new soldiers with a specialized training facility.',
+            effect: loc('tech_boot_camp_effect'),
             action(){
                 if (payCosts(actions.tech.boot_camp.cost)){
                     global.city['boot_camp'] = { count: 0 };
@@ -6006,15 +6006,15 @@ export const actions = {
         },
         bows: {
             id: 'tech-bows',
-            title: 'Bows',
-            desc: 'Discover Ranged Weaponry',
+            title: loc('tech_bows'),
+            desc: loc('tech_bows_desc'),
             reqs: { military: 1 },
             grant: ['military',2],
             cost: {
                 Knowledge(){ return 225; },
                 Lumber(){ return 250; }
             },
-            effect: `Create the bow and outfit your army with ranged weapons. It's sure to give you dominance over the primates.`,
+            effect: loc('tech_bows_effect'),
             action(){
                 if (payCosts(actions.tech.bows.cost)){
                     var tech = actions.tech.bows.grant[0];
@@ -6028,15 +6028,15 @@ export const actions = {
         },
         flintlock_rifle: {
             id: 'tech-flintlock_rifle',
-            title: 'Flintlock Rifle',
-            desc: 'Flintlock Rifles',
+            title: loc('tech_flintlock_rifle'),
+            desc: loc('tech_flintlock_rifle_desc'),
             reqs: { military: 2, explosives: 1 },
             grant: ['military',3],
             cost: {
                 Knowledge(){ return 5400; },
                 Coal(){ return 750; }
             },
-            effect: 'Outfit your army with firearms, much deadlier than primitive bows and arrows.',
+            effect: loc('tech_flintlock_rifle_effect'),
             action(){
                 if (payCosts(actions.tech.flintlock_rifle.cost)){
                     var tech = actions.tech.flintlock_rifle.grant[0];
@@ -6050,15 +6050,15 @@ export const actions = {
         },
         machine_gun: {
             id: 'tech-machine_gun',
-            title: 'Machine Gun',
-            desc: 'Machine Gun',
+            title: loc('tech_machine_gun'),
+            desc: loc('tech_machine_gun_desc'),
             reqs: { military: 3, oil: 1 },
             grant: ['military',4],
             cost: {
                 Knowledge(){ return 33750; },
                 Oil(){ return 1500; }
             },
-            effect: 'Decimate your foes with rapid fire weaponry.',
+            effect: loc('tech_machine_gun_effect'),
             action(){
                 if (payCosts(actions.tech.machine_gun.cost)){
                     var tech = actions.tech.machine_gun.grant[0];
@@ -6072,8 +6072,8 @@ export const actions = {
         },
         bunk_beds: {
             id: 'tech-bunk_beds',
-            title: 'Bunk Beds',
-            desc: 'Bunk Beds',
+            title: loc('tech_bunk_beds'),
+            desc: loc('tech_bunk_beds_desc'),
             reqs: { military: 4, high_tech: 4 },
             grant: ['military',5],
             cost: {
@@ -6081,7 +6081,7 @@ export const actions = {
                 Furs(){ return 25000; },
                 Alloy(){ return 3000; }
             },
-            effect: 'Upgrade your garrisons to house additional soldiers.',
+            effect: loc('tech_bunk_beds_effect'),
             action(){
                 if (payCosts(actions.tech.bunk_beds.cost)){
                     return true;
@@ -6091,15 +6091,15 @@ export const actions = {
         },
         rail_guns: {
             id: 'tech-rail_guns',
-            title: 'Rail Guns',
-            desc: 'Rail Guns',
+            title: loc('tech_rail_guns'),
+            desc: loc('tech_rail_guns_desc'),
             reqs: { military: 5, mass: 1 },
             grant: ['military',6],
             cost: {
                 Knowledge(){ return 200000; },
                 Iridium(){ return 2500; }
             },
-            effect: 'New more powerful weaponry for your army.',
+            effect: loc('tech_rail_guns_effect'),
             action(){
                 if (payCosts(actions.tech.rail_guns.cost)){
                     var tech = actions.tech.rail_guns.grant[0];
@@ -6113,15 +6113,15 @@ export const actions = {
         },
         laser_rifles: {
             id: 'tech-laser_rifles',
-            title: 'Laser Rifles',
-            desc: 'Laser Rifles',
+            title: loc('tech_laser_rifles'),
+            desc: loc('tech_laser_rifles_desc'),
             reqs: { military: 6, high_tech: 9, elerium: 1 },
             grant: ['military',7],
             cost: {
                 Knowledge(){ return 325000; },
                 Elerium(){ return 250; }
             },
-            effect: 'High tech weapons for the future.',
+            effect: loc('tech_laser_rifles_effect'),
             action(){
                 if (payCosts(actions.tech.laser_rifles.cost)){
                     var tech = actions.tech.laser_rifles.grant[0];
@@ -6140,14 +6140,14 @@ export const actions = {
         },
         space_marines: {
             id: 'tech-space_marines',
-            title: 'Space Marines',
-            desc: 'Space Marines',
+            title: loc('tech_space_marines'),
+            desc: loc('tech_space_marines_desc'),
             reqs: { space: 3, mars: 2 },
             grant: ['marines',1],
             cost: {
                 Knowledge(){ return 210000; }
             },
-            effect(){ return `<div>Militarize space with</div><div>a ${races[global.race.species].solar.red} garrison.</div>` },
+            effect(){ return `<div>${loc('tech_space_marines_effect1')}</div><div>${loc('tech_space_marines_effect2',races[global.race.species].solar.red)}</div>` },
             action(){
                 if (payCosts(actions.tech.space_marines.cost)){
                     global.space['space_barracks'] = { count: 0, on: 0 };
@@ -6159,8 +6159,8 @@ export const actions = {
         },
         armor: {
             id: 'tech-armor',
-            title: 'Leather Armor',
-            desc: 'Create Leather Armor',
+            title: loc('tech_armor'),
+            desc: loc('tech_armor_desc'),
             reqs: { military: 1 },
             grant: ['armor',1],
             cost: {
@@ -6168,7 +6168,7 @@ export const actions = {
                 Knowledge(){ return 225; },
                 Furs(){ return 250; }
             },
-            effect: 'Basic armor made from leather, will reduce the number of casualties you take during military actions.',
+            effect: loc('tech_armor_effect'),
             action(){
                 if (payCosts(actions.tech.armor.cost)){
                     return true;
@@ -6178,15 +6178,15 @@ export const actions = {
         },
         plate_armor: {
             id: 'tech-plate_armor',
-            title: 'Plate Armor',
-            desc: 'Create Plate Armor',
+            title: loc('tech_plate_armor'),
+            desc: loc('tech_plate_armor_desc'),
             reqs: { armor: 1, mining: 3 },
             grant: ['armor',2],
             cost: {
                 Knowledge(){ return 3400; },
                 Iron(){ return 600; },
             },
-            effect: 'Armor reinforced with iron plates, heavy but offers better protection for your soldiers.',
+            effect: loc('tech_plate_armor_effect'),
             action(){
                 if (payCosts(actions.tech.plate_armor.cost)){
                     return true;
@@ -6196,15 +6196,15 @@ export const actions = {
         },
         kevlar: {
             id: 'tech-kevlar',
-            title: 'Kevlar',
-            desc: 'Create Kevlar Vests',
+            title: loc('tech_kevlar'),
+            desc: loc('tech_kevlar_desc'),
             reqs: { armor: 2, polymer: 1 },
             grant: ['armor',3],
             cost: {
                 Knowledge(){ return 86000; },
                 Polymer(){ return 750; },
             },
-            effect: 'New armor made out of kevlar provides modern protection for your soldiers.',
+            effect: loc('tech_kevlar_effect'),
             action(){
                 if (payCosts(actions.tech.kevlar.cost)){
                     return true;
@@ -6214,15 +6214,15 @@ export const actions = {
         },
         black_powder: {
             id: 'tech-black_powder',
-            title: 'Black Powder',
-            desc: 'Discover black powder',
+            title: loc('tech_black_powder'),
+            desc: loc('tech_black_powder_desc'),
             reqs: { mining: 4 },
             grant: ['explosives',1],
             cost: {
                 Knowledge(){ return 4500; },
                 Coal(){ return 500; }
             },
-            effect: 'Usher in a new era of things that go boom. Surely nothing bad can happen thanks to this discovery.',
+            effect: loc('tech_black_powder_effect'),
             action(){
                 if (payCosts(actions.tech.black_powder.cost)){
                     return true;
@@ -6232,15 +6232,15 @@ export const actions = {
         },
         dynamite: {
             id: 'tech-dynamite',
-            title: 'Dynamite',
-            desc: 'Dynamite',
+            title: loc('tech_dynamite'),
+            desc: loc('tech_dynamite_desc'),
             reqs: { explosives: 1 },
             grant: ['explosives',2],
             cost: {
                 Knowledge(){ return 4800; },
                 Coal(){ return 750; }
             },
-            effect: 'Dynamite can be used to increase the efficiency of mining, no one would ever misuse this invention for nefarious purposes.',
+            effect: loc('tech_dynamite_effect'),
             action(){
                 if (payCosts(actions.tech.dynamite.cost)){
                     return true;
@@ -6250,15 +6250,15 @@ export const actions = {
         },
         anfo: {
             id: 'tech-anfo',
-            title: 'ANFO',
-            desc: 'ANFO',
+            title: loc('tech_anfo'),
+            desc: loc('tech_anfo_desc'),
             reqs: { explosives: 2, oil: 1 },
             grant: ['explosives',3],
             cost: {
                 Knowledge(){ return 42000; },
                 Oil(){ return 2500; }
             },
-            effect: 'ANFO is a powerful explosive that can greatly aid mining activities.',
+            effect: loc('tech_anfo_effect'),
             action(){
                 if (payCosts(actions.tech.anfo.cost)){
                     return true;
@@ -6268,8 +6268,8 @@ export const actions = {
         },
         mad: {
             id: 'tech-mad',
-            title: 'Mutual Destruction',
-            desc: 'Mutual Assured Destruction',
+            title: loc('tech_mad'),
+            desc: loc('tech_mad_desc'),
             reqs: { uranium: 1, explosives: 3, high_tech: 7 },
             grant: ['mad',1],
             cost: {
@@ -6277,7 +6277,7 @@ export const actions = {
                 Oil(){ return 8500; },
                 Uranium(){ return 1250; }
             },
-            effect: 'Create a network of nuclear armed ICBMs to counter a similar threat by your enemies.',
+            effect: loc('tech_mad_effect'),
             action(){
                 if (payCosts(actions.tech.mad.cost)){
                     global.civic.mad.display = true;
@@ -6288,14 +6288,14 @@ export const actions = {
         },
         cement: {
             id: 'tech-cement',
-            title: 'Cement',
-            desc: 'Learn how to turn stone into cement',
+            title: loc('tech_cement'),
+            desc: loc('tech_cement_desc'),
             reqs: { mining: 1, storage: 1, science: 1 },
             grant: ['cement',1],
             cost: {
                 Knowledge(){ return 500; }
             },
-            effect: 'Learn how to make cement from stone.',
+            effect: loc('tech_cement_effect'),
             action(){
                 if (payCosts(actions.tech.cement.cost)){
                     global.city['cement_plant'] = {
@@ -6309,15 +6309,15 @@ export const actions = {
         },
         rebar: {
             id: 'tech-rebar',
-            title: 'Rebar',
-            desc: 'Rebar',
+            title: loc('tech_rebar'),
+            desc: loc('tech_rebar_desc'),
             reqs: { mining: 3, cement: 1 },
             grant: ['cement',2],
             cost: {
                 Knowledge(){ return 3200; },
                 Iron(){ return 750; }
             },
-            effect: 'Adding rebar to concrete will make it much stronger and reduce building cement costs.',
+            effect: loc('tech_rebar_effect'),
             action(){
                 if (payCosts(actions.tech.rebar.cost)){
                     return true;
@@ -6327,15 +6327,15 @@ export const actions = {
         },
         steel_rebar: {
             id: 'tech-steel_rebar',
-            title: 'Steel Rebar',
-            desc: 'Steel Rebar',
+            title: loc('tech_steel_rebar'),
+            desc: loc('tech_steel_rebar_desc'),
             reqs: { smelting: 2, cement: 2 },
             grant: ['cement',3],
             cost: {
                 Knowledge(){ return 6750; },
                 Steel(){ return 750; }
             },
-            effect: 'Use stronger steel as rebar, further reducing building cement costs.',
+            effect: loc('tech_steel_rebar_effect'),
             action(){
                 if (payCosts(actions.tech.steel_rebar.cost)){
                     return true;
@@ -6345,14 +6345,14 @@ export const actions = {
         },
         portland_cement: {
             id: 'tech-portland_cement',
-            title: 'Portland Cement',
-            desc: 'Portland Cement',
+            title: loc('tech_portland_cement'),
+            desc: loc('tech_portland_cement_desc'),
             reqs: { cement: 3, high_tech: 3 },
             grant: ['cement',4],
             cost: {
                 Knowledge(){ return 32000; }
             },
-            effect: 'Portland cement is easier to make boosting productivity of cement workers by 20%.',
+            effect: loc('tech_portland_cement_effect'),
             action(){
                 if (payCosts(actions.tech.portland_cement.cost)){
                     return true;
@@ -6362,14 +6362,14 @@ export const actions = {
         },
         screw_conveyor: {
             id: 'tech-screw_conveyor',
-            title: 'Screw Conveyor',
-            desc: 'Screw Conveyor',
+            title: loc('tech_screw_conveyor'),
+            desc: loc('tech_screw_conveyor_desc'),
             reqs: { cement: 4, high_tech: 4 },
             grant: ['cement',5],
             cost: {
                 Knowledge(){ return 72000; }
             },
-            effect: 'Screw conveyors can greatly increase the output of cement factories, however they require power to operate.',
+            effect: loc('tech_screw_conveyor_effect'),
             action(){
                 if (payCosts(actions.tech.screw_conveyor.cost)){
                     return true;
@@ -6379,15 +6379,15 @@ export const actions = {
         },
         hunter_process: {
             id: 'tech-hunter_process',
-            title: 'Hunter Process',
-            desc: 'Hunter Process',
+            title: loc('tech_hunter_process'),
+            desc: loc('tech_hunter_process_desc'),
             reqs: { high_tech: 3, smelting: 2 },
             grant: ['titanium',1],
             cost: {
                 Knowledge(){ return 45000; },
                 Titanium(){ return 1000; }
             },
-            effect: 'Steel smelting will result in small amounts of titanium production.',
+            effect: loc('tech_hunter_process_effect'),
             action(){
                 if (payCosts(actions.tech.hunter_process.cost)){
                     global.resource.Titanium.value = resource_values['Titanium'];
@@ -6398,15 +6398,15 @@ export const actions = {
         },
         kroll_process: {
             id: 'tech-kroll_process',
-            title: 'Kroll Process',
-            desc: 'Kroll Process',
+            title: loc('tech_kroll_process'),
+            desc: loc('tech_kroll_process_desc'),
             reqs: { titanium: 1, high_tech: 4 },
             grant: ['titanium',2],
             cost: {
                 Knowledge(){ return 78000; },
                 Titanium(){ return 10000; }
             },
-            effect: 'Iron smelting will result in small amounts of titanium production.',
+            effect: loc('tech_kroll_process_effect'),
             action(){
                 if (payCosts(actions.tech.kroll_process.cost)){
                     return true;
@@ -6416,15 +6416,15 @@ export const actions = {
         },
         cambridge_process: {
             id: 'tech-cambridge_process',
-            title: 'Cambridge Process',
-            desc: 'Cambridge Process',
+            title: loc('tech_cambridge_process'),
+            desc: loc('tech_cambridge_process_desc'),
             reqs: { titanium: 2, supercollider: 1 },
             grant: ['titanium',3],
             cost: {
                 Knowledge(){ return 135000; },
                 Titanium(){ return 17500; }
             },
-            effect: 'Modern techniques result in more efficent production of titanium from smelters.',
+            effect: loc('tech_cambridge_process_effect'),
             action(){
                 if (payCosts(actions.tech.cambridge_process.cost)){
                     return true;
@@ -6434,14 +6434,14 @@ export const actions = {
         },
         pynn_partical: {
             id: 'tech-pynn_partical',
-            title: 'Pynn Particals',
-            desc: 'Pynn Particals',
+            title: loc('tech_pynn_partical'),
+            desc: loc('tech_pynn_partical_desc'),
             reqs: { supercollider: 1 },
             grant: ['particles',1],
             cost: {
                 Knowledge(){ return 100000; }
             },
-            effect: 'Subatomic particles discovered by Dr Hank Pynn using the supercollider. Has applications in dimensional physics.',
+            effect: loc('tech_pynn_partical_effect'),
             action(){
                 if (payCosts(actions.tech.pynn_partical.cost)){
                     return true;
@@ -6451,14 +6451,14 @@ export const actions = {
         },
         matter_compression: {
             id: 'tech-matter_compression',
-            title: 'Matter Compression',
-            desc: 'Matter Compression',
+            title: loc('tech_matter_compression'),
+            desc: loc('tech_matter_compression_desc'),
             reqs: { particles: 1 },
             grant: ['particles',2],
             cost: {
                 Knowledge(){ return 112500; }
             },
-            effect: 'Use pynn particals to shrink containers down to half size, therefore doubling the amount you can store.',
+            effect: loc('tech_matter_compression_effect'),
             action(){
                 if (payCosts(actions.tech.matter_compression.cost)){
                     return true;
@@ -6468,14 +6468,14 @@ export const actions = {
         },
         higgs_boson: {
             id: 'tech-higgs_boson',
-            title: 'Higgs Boson',
-            desc: 'Higgs Boson',
+            title: loc('tech_higgs_boson'),
+            desc: loc('tech_higgs_boson_desc'),
             reqs: { particles: 2, supercollider: 2 },
             grant: ['particles',3],
             cost: {
                 Knowledge(){ return 125000; }
             },
-            effect: 'Discover the Higgs Boson. No one knows what practical application this has but excitement about it will raise the contribution to science from supercolliders.',
+            effect: loc('tech_higgs_boson_effect'),
             action(){
                 if (payCosts(actions.tech.higgs_boson.cost)){
                     return true;
@@ -6485,14 +6485,14 @@ export const actions = {
         },
         dimensional_compression: {
             id: 'tech-dimensional_compression',
-            title: 'Dimension Compression',
-            desc: 'Dimensional Compression',
+            title: loc('tech_dimensional_compression'),
+            desc: loc('tech_dimensional_compression_desc'),
             reqs: { particles: 3, science: 11, supercollider: 3 },
             grant: ['particles',4],
             cost: {
                 Knowledge(){ return 425000; }
             },
-            effect: 'Supercollider space compression effect now applies to garages.',
+            effect: loc('tech_dimensional_compression_effect'),
             action(){
                 if (payCosts(actions.tech.higgs_boson.cost)){
                     return true;
@@ -6502,14 +6502,14 @@ export const actions = {
         },
         theology: {
             id: 'tech-theology',
-            title: 'Theology',
-            desc: 'Theology',
+            title: loc('tech_theology'),
+            desc: loc('tech_theology_desc'),
             reqs: { theology: 1, housing: 1, cement: 1 },
             grant: ['theology',2],
             cost: {
                 Knowledge(){ return 900; }
             },
-            effect: 'Explore the mysteries of creation and faith.',
+            effect: loc('tech_theology_effect'),
             action(){
                 if (payCosts(actions.tech.theology.cost)){
                     global.city['temple'] = { count: 0 };
@@ -6520,14 +6520,14 @@ export const actions = {
         },
         fanaticism: {
             id: 'tech-fanaticism',
-            title: 'Fanaticism',
-            desc: 'Fanaticism',
+            title: loc('tech_fanaticism'),
+            desc: loc('tech_fanaticism_desc'),
             reqs: { theology: 2 },
             grant: ['theology',3],
             cost: {
                 Knowledge(){ return 2500; }
             },
-            effect: '<div>Revere your creators as literal gods and attempt to mimic them.</div><div class="has-text-special">This is mutually exclusive with Anthropology, choose wisely.</div>',
+            effect: `<div>${loc('tech_fanaticism_effect')}</div><div class="has-text-special">${loc('tech_fanaticism_warning')}</div>`,
             action(){
                 if (payCosts(actions.tech.fanaticism.cost)){
                     global.tech['fanaticism'] = 1;
@@ -6676,14 +6676,14 @@ export const actions = {
         },
         indoctrination: {
             id: 'tech-indoctrination',
-            title: 'Indoctrination',
-            desc: 'Indoctrination',
+            title: loc('tech_indoctrination'),
+            desc: loc('tech_indoctrination_desc'),
             reqs: { fanaticism: 1 },
             grant: ['fanaticism',2],
             cost: {
                 Knowledge(){ return 5000; }
             },
-            effect: 'Professors will help spread your ideology. Each professor gives a minor boost to temple effectiveness.',
+            effect: loc('tech_indoctrination_effect'),
             action(){
                 if (payCosts(actions.tech.indoctrination.cost)){
                     return true;
@@ -6693,14 +6693,14 @@ export const actions = {
         },
         missionary: {
             id: 'tech-missionary',
-            title: 'Missionary',
-            desc: 'Missionary',
+            title: loc('tech_missionary'),
+            desc: loc('tech_missionary_desc'),
             reqs: { fanaticism: 2 },
             grant: ['fanaticism',3],
             cost: {
                 Knowledge(){ return 10000; }
             },
-            effect: 'Missionaries will go forth to spread the word. Incidentally they will help establish new trade routes.',
+            effect: loc('tech_missionary_effect'),
             action(){
                 if (payCosts(actions.tech.missionary.cost)){
                     return true;
@@ -6710,14 +6710,14 @@ export const actions = {
         },
         zealotry: {
             id: 'tech-zealotry',
-            title: 'Zealotry',
-            desc: 'Zealotry',
+            title: loc('tech_zealotry'),
+            desc: loc('tech_zealotry_desc'),
             reqs: { fanaticism: 3 },
             grant: ['fanaticism',4],
             cost: {
                 Knowledge(){ return 25000; }
             },
-            effect: 'Your fanatical followers will fight to the death making you feared in combat. Temples add a minor bonus to soldier effectiveness.',
+            effect: loc('tech_zealotry_effect'),
             action(){
                 if (payCosts(actions.tech.zealotry.cost)){
                     return true;
@@ -6727,14 +6727,14 @@ export const actions = {
         },
         anthropology: {
             id: 'tech-anthropology',
-            title: 'Anthropology',
-            desc: 'Anthropology',
+            title: loc('tech_anthropology'),
+            desc: loc('tech_anthropology_desc'),
             reqs: { theology: 2 },
             grant: ['theology',3],
             cost: {
                 Knowledge(){ return 2500; }
             },
-            effect: '<div>Study your ancient creators and attempt to learn from them.</div><div class="has-text-special">This is mutually exclusive with Fanaticism, choose wisely.</div>',
+            effect: `<div>${loc('tech_anthropology_effect')}</div><div class="has-text-special">${loc('tech_anthropology_warning')}</div>`,
             action(){
                 if (payCosts(actions.tech.anthropology.cost)){
                     global.tech['anthropology'] = 1;
@@ -6745,14 +6745,14 @@ export const actions = {
         },
         mythology: {
             id: 'tech-mythology',
-            title: 'Mythology',
-            desc: 'Mythology',
+            title: loc('tech_mythology'),
+            desc: loc('tech_mythology_desc'),
             reqs: { anthropology: 1 },
             grant: ['anthropology',2],
             cost: {
                 Knowledge(){ return 5000; }
             },
-            effect: 'Mythological stories of the creators boost your libraries by 5% per temple.',
+            effect: loc('tech_mythology_effect'),
             action(){
                 if (payCosts(actions.tech.mythology.cost)){
                     return true;
@@ -6762,14 +6762,14 @@ export const actions = {
         },
         archaeology: {
             id: 'tech-archaeology',
-            title: 'Archaeology',
-            desc: 'Archaeology',
+            title: loc('tech_archaeology'),
+            desc: loc('tech_archaeology_desc'),
             reqs: { anthropology: 2 },
             grant: ['anthropology',3],
             cost: {
                 Knowledge(){ return 10000; }
             },
-            effect: 'Professors studying the past history of the creators are boosted in effectiveness by 5% per temple.',
+            effect: loc('tech_archaeology_effect'),
             action(){
                 if (payCosts(actions.tech.archaeology.cost)){
                     return true;
@@ -6779,14 +6779,14 @@ export const actions = {
         },
         merchandising: {
             id: 'tech-merchandising',
-            title: 'Merchandising',
-            desc: 'Merchandising',
+            title: loc('tech_merchandising'),
+            desc: loc('tech_merchandising_desc'),
             reqs: { anthropology: 3 },
             grant: ['anthropology',4],
             cost: {
                 Knowledge(){ return 25000; }
             },
-            effect: 'The popularity of the creators among your culture has led to great merchandising opportunities. Tax income is boosted by 2.5% per temple.',
+            effect: loc('tech_merchandising_effect'),
             action(){
                 if (payCosts(actions.tech.merchandising.cost)){
                     return true;
@@ -6796,14 +6796,14 @@ export const actions = {
         },
         astrophysics: {
             id: 'tech-astrophysics',
-            title: 'Astrophysics',
-            desc: 'Astrophysics',
+            title: loc('tech_astrophysics'),
+            desc: loc('tech_astrophysics_desc'),
             reqs: { space: 2 },
             grant: ['space_explore',1],
             cost: {
                 Knowledge(){ return 125000; }
             },
-            effect: 'Navigating space requires research into a new branch of science called astrophysics.',
+            effect: loc('tech_astrophysics_effect'),
             action(){
                 if (payCosts(actions.tech.astrophysics.cost)){
                     global.space['propellant_depot'] = { count: 0 };
@@ -6814,8 +6814,8 @@ export const actions = {
         },
         rover: {
             id: 'tech-rover',
-            title: 'Rovers',
-            desc: 'Rovers',
+            title: loc('tech_rover'),
+            desc: loc('tech_rover_desc'),
             reqs: { space_explore: 1 },
             grant: ['space_explore',2],
             cost: {
@@ -6824,7 +6824,7 @@ export const actions = {
                 Polymer(){ return 18000 },
                 Uranium(){ return 750 }
             },
-            effect: 'Design an unmanned vehicle which can be used to explore other planets and determine their potential.',
+            effect: loc('tech_rover_effect'),
             action(){
                 if (payCosts(actions.tech.rover.cost)){
                     global.settings.space.moon = true;
@@ -6841,8 +6841,8 @@ export const actions = {
         },
         probes: {
             id: 'tech-probes',
-            title: 'Space Probes',
-            desc: 'Space Probes',
+            title: loc('tech_probes'),
+            desc: loc('tech_probes_desc'),
             reqs: { space_explore: 2 },
             grant: ['space_explore',3],
             cost: {
@@ -6852,7 +6852,7 @@ export const actions = {
                 Uranium(){ return 2250 },
                 Helium_3(){ return 3500 }
             },
-            effect: 'Design an unmanned space craft which can be used to survey far away planetoids.',
+            effect: loc('tech_probes_effect'),
             action(){
                 if (payCosts(actions.tech.probes.cost)){
                     global.settings.space.red = true;
@@ -6870,14 +6870,14 @@ export const actions = {
         },
         starcharts: {
             id: 'tech-starcharts',
-            title: 'Star Charts',
-            desc: 'Star Charts',
+            title: loc('tech_starcharts'),
+            desc: loc('tech_starcharts_desc'),
             reqs: { space_explore: 3, science: 9 },
             grant: ['space_explore',4],
             cost: {
                 Knowledge(){ return 185000; }
             },
-            effect: `Map the planets' orbits to determine the best routes for visiting further away destinations.`,
+            effect: loc('tech_starcharts_effect'),
             action(){
                 if (payCosts(actions.tech.starcharts.cost)){
                     global.settings.space.gas = true;
@@ -6890,14 +6890,14 @@ export const actions = {
         },
         colonization: {
             id: 'tech-colonization',
-            title: 'Colonization',
-            desc(){ return `${races[global.race.species].solar.red} Colonization`; },
+            title: loc('tech_colonization'),
+            desc: loc('tech_colonization_desc',[races[global.race.species].solar.red]),
             reqs: { space: 4, mars: 1 },
             grant: ['mars',2],
             cost: {
                 Knowledge(){ return 172000; }
             },
-            effect(){ return `They say you technically haven't colonized a place until you grow crops there. "Colonize" ${races[global.race.species].solar.red} by designing a biodome.`; },
+            effect: loc('tech_colonization_effect',[races[global.race.species].solar.red]),
             action(){
                 if (payCosts(actions.tech.colonization.cost)){
                     global.space['biodome'] = { count: 0, on: 0 };
@@ -6908,14 +6908,14 @@ export const actions = {
         },
         red_tower: {
             id: 'tech-red_tower',
-            title(){ return `${races[global.race.species].solar.red} Control Tower`; },
-            desc(){ return `${races[global.race.species].solar.red} Control Tower`; },
+            title: loc('tech_red_tower',[races[global.race.species].solar.red]),
+            desc: loc('tech_red_tower',[races[global.race.species].solar.red]),
             reqs: { mars: 2 },
             grant: ['mars',3],
             cost: {
                 Knowledge(){ return 195000; }
             },
-            effect(){ return `Space traffic control towers can help regulate the traffic coming in and out of ${races[global.race.species].solar.red}.`; },
+            effect: loc('tech_red_tower_effect',[races[global.race.species].solar.red]),
             action(){
                 if (payCosts(actions.tech.red_tower.cost)){
                     global.space['red_tower'] = { count: 0, on: 0 };
@@ -6926,14 +6926,14 @@ export const actions = {
         },
         space_manufacturing: {
             id: 'tech-space_manufacturing',
-            title: 'Space Manufacturing',
-            desc: 'Space Manufacturing',
+            title: loc('tech_space_manufacturing'),
+            desc: loc('tech_space_manufacturing_desc'),
             reqs: { mars: 3 },
             grant: ['mars',4],
             cost: {
                 Knowledge(){ return 220000; }
             },
-            effect(){ return `Research the logistics of manufacturing on ${races[global.race.species].solar.red}`; },
+            effect: loc('tech_space_manufacturing_effect',[races[global.race.species].solar.red]),
             action(){
                 if (payCosts(actions.tech.space_manufacturing.cost)){
                     global.space['red_factory'] = { count: 0, on: 0 };
@@ -6944,14 +6944,14 @@ export const actions = {
         },
         exotic_lab: {
             id: 'tech-energy_lab',
-            title: 'Exotic Materials Lab',
-            desc: 'Exotic Materials Laboratory',
+            title: loc('tech_exotic_lab'),
+            desc: loc('tech_exotic_lab_desc'),
             reqs: { mars: 4, asteroid: 5 },
             grant: ['mars',5],
             cost: {
                 Knowledge(){ return 250000; }
             },
-            effect(){ return `Design a special high tech laboratory to study exotic materials.`; },
+            effect: loc('tech_exotic_lab_effect'),
             action(){
                 if (payCosts(actions.tech.exotic_lab.cost)){
                     global.space['exotic_lab'] = { count: 0, on: 0 };
@@ -6962,14 +6962,14 @@ export const actions = {
         },
         dyson_sphere: {
             id: 'tech-dyson_sphere',
-            title: 'Dyson Sphere',
-            desc: 'Dyson Sphere',
+            title: loc('tech_dyson_sphere'),
+            desc: loc('tech_dyson_sphere_desc'),
             reqs: { solar: 1 },
             grant: ['solar',2],
             cost: {
                 Knowledge(){ return 195000; }
             },
-            effect: 'Science fiction has popularized the idea of a Dyson Sphere, try to figure out how to make one.',
+            effect: loc('tech_dyson_sphere_effect'),
             action(){
                 if (payCosts(actions.tech.dyson_sphere.cost)){
                     return true;
@@ -6979,14 +6979,14 @@ export const actions = {
         },
         dyson_swarm: {
             id: 'tech-dyson_swarm',
-            title: 'Dyson Swarm',
-            desc: 'Dyson Swarm',
+            title: loc('tech_dyson_swarm'),
+            desc: loc('tech_dyson_swarm_desc'),
             reqs: { solar: 2 },
             grant: ['solar',3],
             cost: {
                 Knowledge(){ return 210000; }
             },
-            effect: 'A Dyson Sphere turns out to be completely impractical, if not impossible. Instead design a network of solar satellites known as a Dyson Swarm.',
+            effect: loc('tech_dyson_swarm_effect'),
             action(){
                 if (payCosts(actions.tech.dyson_swarm.cost)){
                     global.space['swarm_satellite'] = { count: 0 };
@@ -6997,14 +6997,14 @@ export const actions = {
         },
         swarm_plant: {
             id: 'tech-swarm_plant',
-            title: 'Swarm Plant',
-            desc: 'Swarm Plant',
+            title: loc('tech_swarm_plant'),
+            desc: loc('tech_swarm_plant_desc'),
             reqs: { solar: 3, hell: 1, gas_moon: 1 },
             grant: ['solar',4],
             cost: {
                 Knowledge(){ return 250000; }
             },
-            effect(){ return `Manufacturing and deploying swarm satellites is expensive because of the distance from ${races[global.race.species].home}. By establishing automated facilities on ${races[global.race.species].solar.hell}, which is much closer to the sun, you can lower the costs.` },
+            effect: loc('tech_swarm_plant_effect',[races[global.race.species].home,races[global.race.species].solar.hell]),
             action(){
                 if (payCosts(actions.tech.swarm_plant.cost)){
                     global.space['swarm_plant'] = { count: 0 };
@@ -7015,14 +7015,14 @@ export const actions = {
         },
         space_sourced: {
             id: 'tech-space_sourced',
-            title: 'Space Sourced',
-            desc: 'Space Sourced Iron',
+            title: loc('tech_space_sourced'),
+            desc: loc('tech_space_sourced_desc'),
             reqs: { solar: 4, asteroid: 3 },
             grant: ['solar',5],
             cost: {
                 Knowledge(){ return 300000; }
             },
-            effect(){ return `Space sourced iron can reduce the volume needed to construct swarm plants.` },
+            effect: loc('tech_space_sourced_effect'),
             action(){
                 if (payCosts(actions.tech.space_sourced.cost)){
                     return true;
@@ -7032,14 +7032,14 @@ export const actions = {
         },
         swarm_plant_ai: {
             id: 'tech-swarm_plant_ai',
-            title: 'Swarm Plant AI',
-            desc: 'Swarm Plant AI',
+            title: loc('tech_swarm_plant_ai'),
+            desc: loc('tech_swarm_plant_ai_desc'),
             reqs: { solar: 4, high_tech: 10 },
             grant: ['swarm',1],
             cost: {
                 Knowledge(){ return 335000; }
             },
-            effect(){ return `Advanced AI controlling the production at swarm facilities could boost their productivity.` },
+            effect: loc('tech_swarm_plant_ai_effect'),
             action(){
                 if (payCosts(actions.tech.swarm_plant_ai.cost)){
                     return true;
@@ -7049,14 +7049,14 @@ export const actions = {
         },
         swarm_control_ai: {
             id: 'tech-swarm_control_ai',
-            title: 'Swarm Control AI',
-            desc: 'Swarm Control AI',
+            title: loc('tech_swarm_control_ai'),
+            desc: loc('tech_swarm_control_ai_desc'),
             reqs: { swarm: 1 },
             grant: ['swarm',2],
             cost: {
                 Knowledge(){ return 360000; }
             },
-            effect(){ return `With AI controlling your solar swarm, you can operate up to 6 satellites per control station.` },
+            effect: loc('tech_swarm_control_ai_effect'),
             action(){
                 if (payCosts(actions.tech.swarm_control_ai.cost)){
                     return true;
@@ -7066,14 +7066,14 @@ export const actions = {
         },
         quantium_swarm: {
             id: 'tech-quantium_swarm',
-            title: 'Quantium Swarm',
-            desc: 'Quantium Swarm',
+            title: loc('tech_quantium_swarm'),
+            desc: loc('tech_quantium_swarm_desc'),
             reqs: { swarm: 2, high_tech: 11 },
             grant: ['swarm',3],
             cost: {
                 Knowledge(){ return 465000; }
             },
-            effect(){ return `By upgrading your swarm plant AI with quantium processors the efficiency of the plants are limited only by your capacity for knowledge.` },
+            effect: loc('tech_quantium_swarm_effect'),
             action(){
                 if (payCosts(actions.tech.quantium_swarm.cost)){
                     return true;
@@ -7083,14 +7083,14 @@ export const actions = {
         },
         gps: {
             id: 'tech-gps',
-            title: 'GPS Constellation',
-            desc: 'GPS Constellation',
+            title: loc('tech_gps'),
+            desc: loc('tech_gps_desc'),
             reqs: { space_explore: 1 },
             grant: ['satellite',1],
             cost: {
                 Knowledge(){ return 150000; }
             },
-            effect: 'Design a network of navigation satellites.',
+            effect: loc('tech_gps_effect'),
             action(){
                 if (payCosts(actions.tech.gps.cost)){
                     global.space['gps'] = { count: 0 };
@@ -7101,14 +7101,14 @@ export const actions = {
         },
         nav_beacon: {
             id: 'tech-nav_beacon',
-            title: 'Navigation Beacon',
-            desc: 'Navigation Beacon',
+            title: loc('tech_nav_beacon'),
+            desc: loc('tech_nav_beacon_desc'),
             reqs: { luna: 1 },
             grant: ['luna',2],
             cost: {
                 Knowledge(){ return 180000; }
             },
-            effect: 'Navigation assist beacons will help guide space traffic.',
+            effect: loc('tech_nav_beacon_effect'),
             action(){
                 if (payCosts(actions.tech.nav_beacon.cost)){
                     global.space['nav_beacon'] = {
@@ -7122,14 +7122,14 @@ export const actions = {
         },
         atmospheric_mining: {
             id: 'tech-atmospheric_mining',
-            title: 'Atmospheric Mining',
-            desc: 'Atmospheric Mining',
+            title: loc('tech_atmospheric_mining'),
+            desc: loc('tech_atmospheric_mining_desc'),
             reqs: { space: 5 },
             grant: ['gas_giant',1],
             cost: {
                 Knowledge(){ return 190000; }
             },
-            effect: 'Learn the physics of operating a gas giant orbital mining platform.',
+            effect: loc('tech_atmospheric_mining_effect'),
             action(){
                 if (payCosts(actions.tech.atmospheric_mining.cost)){
                     global.space['gas_mining'] = { count: 0, on: 0 };
@@ -7141,15 +7141,15 @@ export const actions = {
         },
         helium_attractor: {
             id: 'tech-helium_attractor',
-            title: 'Helium Attractor',
-            desc: 'Helium Attractor',
+            title: loc('tech_helium_attractor'),
+            desc: loc('tech_helium_attractor_desc'),
             reqs: { gas_giant: 1, elerium: 1 },
             grant: ['helium',1],
             cost: {
                 Knowledge(){ return 290000; },
                 Elerium(){ return 250; }
             },
-            effect(){ return `Increase efficiency of ${races[global.race.species].solar.gas} Helium-3 collectors.` },
+            effect: loc('tech_helium_attractor_effect',[races[global.race.species].solar.gas]),
             action(){
                 if (payCosts(actions.tech.helium_attractor.cost)){
                     return true;
@@ -7159,14 +7159,14 @@ export const actions = {
         },
         zero_g_mining: {
             id: 'tech-zero_g_mining',
-            title: 'Zero G Mining',
-            desc: 'Zero G Mining',
+            title: loc('tech_zero_g_mining'),
+            desc: loc('tech_zero_g_mining_desc'),
             reqs: { asteroid: 1, high_tech: 8 },
             grant: ['asteroid',2],
             cost: {
                 Knowledge(){ return 210000; }
             },
-            effect: 'Asteroid mining in Zero G presents new challenges that must be studied before this resource can be developed.',
+            effect: loc('tech_zero_g_mining_effect'),
             action(){
                 if (payCosts(actions.tech.zero_g_mining.cost)){
                     global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
@@ -7179,15 +7179,15 @@ export const actions = {
         },
         elerium_mining: {
             id: 'tech-elerium_mining',
-            title: 'Elerium Mining',
-            desc: 'Elerium Mining',
+            title: loc('tech_elerium_mining'),
+            desc: loc('tech_elerium_mining_desc'),
             reqs: { asteroid: 4 },
             grant: ['asteroid',5],
             cost: {
                 Knowledge(){ return 235000; },
                 Elerium(){ return 1; }
             },
-            effect: 'Elerium is a rare new highly energetic element discovered in the asteroid belt, mining this element safely will require specialized harvesting equipment and containment vessels.',
+            effect: loc('tech_elerium_mining_effect'),
             action(){
                 if (payCosts(actions.tech.elerium_mining.cost)){
                     global.space['elerium_ship'] = { count: 0, on: 0 };
@@ -7198,14 +7198,14 @@ export const actions = {
         },
         laser_mining: {
             id: 'tech-laser_mining',
-            title: 'Laser Mining',
-            desc: 'Laser Mining',
+            title: loc('tech_laser_mining'),
+            desc: loc('tech_laser_mining_desc'),
             reqs: { asteroid: 5, elerium: 1, high_tech: 9 },
             grant: ['asteroid',6],
             cost: {
                 Knowledge(){ return 350000; },
             },
-            effect: 'Laser mining drills can cut through asteroids quicker then traditional drills.',
+            effect: loc('tech_laser_mining_effect'),
             action(){
                 if (payCosts(actions.tech.laser_mining.cost)){
                     return true;
@@ -7215,15 +7215,15 @@ export const actions = {
         },
         elerium_tech: {
             id: 'tech-elerium_tech',
-            title: 'Elerium Theory',
-            desc: 'Elerium Theory',
+            title: loc('tech_elerium_tech'),
+            desc: loc('tech_elerium_tech_desc'),
             reqs: { asteroid: 5 },
             grant: ['elerium',1],
             cost: {
                 Knowledge(){ return 275000; },
                 Elerium(){ return 20; }
             },
-            effect: `Study the elerium to unlock its mysteries.`,
+            effect: loc('tech_elerium_tech_effect'),
             action(){
                 if (payCosts(actions.tech.elerium_tech.cost)){
                     return true;
@@ -7233,15 +7233,15 @@ export const actions = {
         },
         elerium_reactor: {
             id: 'tech-elerium_reactor',
-            title: 'Elerium Reactor',
-            desc: 'Elerium Reactor',
+            title: loc('tech_elerium_reactor'),
+            desc: loc('tech_elerium_reactor_desc'),
             reqs: { dwarf: 1, elerium: 1 },
             grant: ['elerium',2],
             cost: {
                 Knowledge(){ return 325000; },
                 Elerium(){ return 180; }
             },
-            effect(){ return `Elerium is highly energetic, and the prospect of making a power source out of it is too good to ignore.` },
+            effect: loc('tech_elerium_reactor_effect'),
             action(){
                 if (payCosts(actions.tech.elerium_reactor.cost)){
                     global.space['e_reactor'] = { count: 0, on: 0 };
@@ -7252,15 +7252,15 @@ export const actions = {
         },
         neutronium_housing: {
             id: 'tech-neutronium_housing',
-            title: 'Neutronium Housing',
-            desc: 'Neutronium Housing',
+            title: loc('tech_neutronium_housing'),
+            desc: loc('tech_neutronium_housing_desc'),
             reqs: { gas_moon: 1 },
             grant: ['space_housing',1],
             cost: {
                 Knowledge(){ return 275000; },
                 Neutronium(){ return 350; }
             },
-            effect(){ return `Neutronium supports make Living Quarters cheaper to produce on ${races[global.race.species].solar.red}.` },
+            effect: loc('tech_neutronium_housing_effect',[races[global.race.species].solar.red]),
             action(){
                 if (payCosts(actions.tech.neutronium_housing.cost)){
                     return true;
@@ -7270,14 +7270,14 @@ export const actions = {
         },
         unification: {
             id: 'tech-unification',
-            title: 'Unification',
-            desc(){ return `${races[global.race.species].home} Unification`; },
+            title: loc('tech_unification'),
+            desc: loc('tech_unification_desc',[races[global.race.species].home]),
             reqs: { mars: 2 },
             grant: ['unify',1],
             cost: {
                 Knowledge(){ return 200000; }
             },
-            effect(){ return `Come up with a plan to unify the world under your control.`; },
+            effect: loc('tech_unification_effect'),
             action(){
                 if (payCosts(actions.tech.unification.cost)){
                     return true;
@@ -7287,20 +7287,18 @@ export const actions = {
         },
         wc_conquest: {
             id: 'tech-wc_conquest',
-            title: 'Conquest',
+            title: loc('tech_wc_conquest'),
             desc(){
                 let military = global.race['no_plasmid'] ? 525 : 600;
                 if (global.race['no_crispr']){
                     military -= 75;
                 }
-                return `<div>${races[global.race.species].home} Conquest</div><div class="has-text-special">Requires ${military} Army Rating</div>`;
+                return `<div>${loc('tech_wc_conquest_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_conquest_desc_req',[military])}</div>`;
             },
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
-            effect(){
-                return `<div>Attempt to conquer the world with your superior military might.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
-            },
+            effect(){ return `<div>${loc('tech_wc_conquest_effect')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
                 let rating = global.race['no_plasmid'] ? 525 : 600;
                 if (global.race['no_crispr']){
@@ -7318,20 +7316,20 @@ export const actions = {
         },
         wc_morale: {
             id: 'tech-wc_morale',
-            title: 'Cultural Supremacy',
+            title: loc('tech_wc_morale'),
             desc(){
                 let morale = global.race['no_plasmid'] ? 140 : 150;
                 if (global.race['no_crispr']){
                     morale -= 10;
                 }
-                return `<div>${races[global.race.species].home} Cultural Supremacy</div><div class="has-text-special">Requires ${morale}% Morale</div>`;
+                return `<div>${loc('tech_wc_morale_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_morale_desc_req'),[morale]}</div>`;
             },
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
             effect(){
-                return `<div>Use your superior culture to try and take over ${races[global.race.species].home}.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
-            },
+                return `<div>${loc('tech_wc_morale_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`;
+            }, 
             action(){
                 let morale = global.race['no_plasmid'] ? 140 : 150;
                 if (global.race['no_crispr']){
@@ -7349,20 +7347,18 @@ export const actions = {
         },
         wc_money: {
             id: 'tech-wc_money',
-            title: 'Buy the World',
+            title: loc('tech_wc_money'),
             desc(){
                 let price = global.race['no_plasmid'] ? 3 : 5;
                 if (global.race['no_crispr']){
                     price -= 1;
                 }
-                return `<div>${races[global.race.species].home} Subversion</div><div class="has-text-special">Requires \$${price} Million</div>`;
+                return `<div>${loc('tech_wc_money_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_money_desc_req',[price])}</div>`;
             },
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
-            effect(){
-                return `<div>Attempt to seize control of ${races[global.race.species].home} by funding subversive activities.</div><div class="has-text-special">Unification changes the game, there will be no more conflict but you'll gain huge amounts of resources.</div>`;
-            },
+            effect(){ return `<div>${loc('tech_wc_money_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warn')}</div>`; },
             action(){
                 let price = global.race['no_plasmid'] ? 3000000 : 5000000;
                 if (global.race['no_crispr']){
@@ -7381,12 +7377,12 @@ export const actions = {
         },
         wc_reject: {
             id: 'tech-wc_reject',
-            title: 'Reject Unity',
-            desc(){ return `Reject Unity`; },
+            title: loc('tech_wc_reject'),
+            desc: loc('tech_wc_reject'),
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
-            effect(){ return `<div>Give up on your plans for world domination. Instead focus on improving your own society</div><div class="has-text-special">Game stays the same, gain a 20% morale bonus.</div>`; },
+            effect(){ return `<div>${loc('tech_wc_reject_effect')}</div><div class="has-text-special">loc('tech_wc_reject_warning')</div>`; },
             action(){
                 if (payCosts(actions.tech.wc_reject.cost)){
                     global.tech['m_boost'] = 1;
@@ -7398,14 +7394,14 @@ export const actions = {
         },
         genesis: {
             id: 'tech-genesis',
-            title: 'Genesis Project',
-            desc: 'Genesis Project',
+            title: loc('tech_genesis'),
+            desc: loc('tech_genesis_desc'),
             reqs: { genesis: 1 },
             grant: ['genesis',2],
             cost: {
                 Knowledge(){ return 350000; }
             },
-            effect(){ return `Our species appears to be doomed, research the possibly of leaving behind a lasting legacy by bioseeding a planet in another star system with life of our design.` },
+            effect: loc('tech_genesis_effect'),
             action(){
                 if (payCosts(actions.tech.genesis.cost)){
                     return true;
@@ -7415,14 +7411,14 @@ export const actions = {
         },
         star_dock: {
             id: 'tech-star_dock',
-            title: 'Star Dock',
-            desc: 'Star Dock',
+            title: loc('tech_star_dock'),
+            desc: loc('tech_star_dock_desc'),
             reqs: { genesis: 2, space: 5 },
             grant: ['genesis',3],
             cost: {
                 Knowledge(){ return 380000; },
             },
-            effect(){ return `Design a space based ship yard which can be used to construct advanced ships.` },
+            effect: loc('tech_star_dock_effect'),
             action(){
                 if (payCosts(actions.tech.star_dock.cost)){
                     global.space['star_dock'] = {
@@ -7438,14 +7434,14 @@ export const actions = {
         },
         interstellar: {
             id: 'tech-interstellar',
-            title: 'Interstellar Probes',
-            desc: 'Interstellar Probes',
+            title: loc('tech_interstellar'),
+            desc: loc('tech_interstellar_desc'),
             reqs: { genesis: 3 },
             grant: ['genesis',4],
             cost: {
                 Knowledge(){ return 400000; },
             },
-            effect(){ return `Scouting outside the solar system will require much more advanced probe designs than what is currently employed.` },
+            effect: loc('tech_interstellar_effect'),
             action(){
                 if (payCosts(actions.tech.interstellar.cost)){
                     global.starDock['probes'] = { count: 0 };
@@ -7456,14 +7452,14 @@ export const actions = {
         },
         genesis_ship: {
             id: 'tech-genesis_ship',
-            title: 'Genesis Ship',
-            desc: 'Genesis Ship',
+            title: loc('tech_genesis_ship'),
+            desc: loc('tech_genesis_ship_desc'),
             reqs: { genesis: 4 },
             grant: ['genesis',5],
             cost: {
                 Knowledge(){ return 425000; },
             },
-            effect(){ return `Design the genesis ship which will be used to bioseed a far away planet.` },
+            effect: loc('tech_genesis_ship_effect'),
             action(){
                 if (payCosts(actions.tech.genesis_ship.cost)){
                     global.starDock['seeder'] = { count: 0 };
@@ -7474,14 +7470,14 @@ export const actions = {
         },
         genetic_decay: {
             id: 'tech-genetic_decay',
-            title: 'Gene Therapy',
-            desc: 'Gene Therapy',
+            title: loc('tech_genetic_decay'),
+            desc: loc('tech_genetic_decay_desc'),
             reqs: { decay: 1 },
             grant: ['decay',2],
             cost: {
                 Knowledge(){ return 200000; }
             },
-            effect(){ return `Research the genetic decay problem and try to find a solution.` },
+            effect: loc('tech_genetic_decay_effect'),
             action(){
                 if (payCosts(actions.tech.genetic_decay.cost)){
                     return true;
