@@ -6147,7 +6147,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 210000; }
             },
-            effect(){ return `<div>${loc('tech_space_marines_effect1')}</div><div>${loc('tech_space_marines_effect2',races[global.race.species].solar.red)}</div>` },
+            effect(){ return `<div>${loc('tech_space_marines_effect1')}</div><div>${loc('tech_space_marines_effect2',[races[global.race.species].solar.red])}</div>` },
             action(){
                 if (payCosts(actions.tech.space_marines.cost)){
                     global.space['space_barracks'] = { count: 0, on: 0 };
@@ -7322,7 +7322,7 @@ export const actions = {
                 if (global.race['no_crispr']){
                     morale -= 10;
                 }
-                return `<div>${loc('tech_wc_morale_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_morale_desc_req'),[morale]}</div>`;
+                return `<div>${loc('tech_wc_morale_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_morale_desc_req',[morale])}</div>`;
             },
             reqs: { unify: 1 },
             grant: ['unify',2],
@@ -7358,7 +7358,7 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
-            effect(){ return `<div>${loc('tech_wc_money_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warn')}</div>`; },
+            effect(){ return `<div>${loc('tech_wc_money_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
                 let price = global.race['no_plasmid'] ? 3000000 : 5000000;
                 if (global.race['no_crispr']){
@@ -7382,7 +7382,7 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
-            effect(){ return `<div>${loc('tech_wc_reject_effect')}</div><div class="has-text-special">loc('tech_wc_reject_warning')</div>`; },
+            effect(){ return `<div>${loc('tech_wc_reject_effect')}</div><div class="has-text-special">${loc('tech_wc_reject_warning')}</div>`; },
             action(){
                 if (payCosts(actions.tech.wc_reject.cost)){
                     global.tech['m_boost'] = 1;
