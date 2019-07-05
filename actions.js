@@ -2991,7 +2991,7 @@ export const actions = {
     tech: {
         club: {
             id: 'tech-club',
-            title: loc('tech_club_title'),
+            title: loc('tech_club'),
             desc: loc('tech_club_desc'),
             reqs: {},
             grant: ['primitive',1],
@@ -3009,7 +3009,7 @@ export const actions = {
         },
         bone_tools: {
             id: 'tech-bone_tools',
-            title: loc('tech_bone_tools_title'),
+            title: loc('tech_bone_tools'),
             desc: loc('tech_bone_tools_desc'),
             reqs: { primitive: 1 },
             grant: ['primitive',2],
@@ -3026,7 +3026,7 @@ export const actions = {
         },
         sundial: {
             id: 'tech-sundial',
-            title: loc('tech_sundial_title'),
+            title: loc('tech_sundial'),
             desc: loc('tech_sundial_desc'),
             reqs: { primitive: 2 },
             grant: ['primitive',3],
@@ -3052,7 +3052,7 @@ export const actions = {
         },
         housing: {
             id: 'tech-housing',
-            title: loc('tech_housing_title'),
+            title: loc('tech_housing'),
             desc: loc('tech_housing_desc'),
             reqs: { primitive: 3 },
             grant: ['housing',1],
@@ -3115,7 +3115,7 @@ export const actions = {
         },
         steel_beams: {
             id: 'tech-steel_beams',
-            title: loc('tech_steel_beams_title'),
+            title: loc('tech_steel_beams'),
             desc: loc('tech_housing_cost'),
             reqs: { housing: 2, smelting: 2 },
             grant: ['housing_reduction',1],
@@ -3137,7 +3137,7 @@ export const actions = {
         },
         mythril_beams: {
             id: 'tech-mythril_beams',
-            title: loc('tech_mythril_beams_title'),
+            title: loc('tech_mythril_beams'),
             desc: loc('tech_housing_cost'),
             reqs: { housing_reduction: 1, space: 3 },
             grant: ['housing_reduction',2],
@@ -3159,7 +3159,7 @@ export const actions = {
         },
         neutronium_walls: {
             id: 'tech-neutronium_walls',
-            title: loc('tech_neutronium_walls_title'),
+            title: loc('tech_neutronium_walls'),
             desc: loc('tech_housing_cost'),
             reqs: { housing_reduction: 2, gas_moon: 1 },
             grant: ['housing_reduction',3],
@@ -3181,7 +3181,7 @@ export const actions = {
         },
         aphrodisiac: {
             id: 'tech-aphrodisiac',
-            title: loc('tech_aphrodisiac_title'),
+            title: loc('tech_aphrodisiac'),
             desc: loc('tech_aphrodisiac_desc'),
             reqs: { housing: 2 },
             grant: ['reproduction',1],
@@ -3198,7 +3198,7 @@ export const actions = {
         },
         smokehouse: {
             id: 'tech-smokehouse',
-            title: loc('tech_smokehouse_title'),
+            title: loc('tech_smokehouse'),
             desc: loc('tech_smokehouse_desc'),
             reqs: { primitive: 3, storage: 1 },
             grant: ['hunting',1],
@@ -3216,8 +3216,8 @@ export const actions = {
         },
         lodge: {
             id: 'tech-lodge',
-            title: loc('tech_lodge_title'),
-            desc: loc('tech_lodge_title'),
+            title: loc('tech_lodge'),
+            desc: loc('tech_lodge'),
             reqs: { hunting: 1, housing: 1, currency: 1 },
             grant: ['hunting',2],
             cost: {
@@ -3234,7 +3234,7 @@ export const actions = {
         },
         agriculture: {
             id: 'tech-agriculture',
-            title: loc('tech_agriculture_title'),
+            title: loc('tech_agriculture'),
             desc: loc('tech_agriculture_desc'),
             reqs: { primitive: 3 },
             grant: ['agriculture',1],
@@ -3252,7 +3252,7 @@ export const actions = {
         },
         farm_house: {
             id: 'tech-farm_house',
-            title: loc('tech_farm_house_title'),
+            title: loc('tech_farm_house'),
             desc: loc('tech_farm_house_desc'),
             reqs: { agriculture: 1, housing: 1, currency: 1 },
             grant: ['farm',1],
@@ -3270,7 +3270,7 @@ export const actions = {
         },
         irrigation: {
             id: 'tech-irrigation',
-            title: loc('tech_irrigation_title'),
+            title: loc('tech_irrigation'),
             desc: loc('tech_irrigation_desc'),
             reqs: { agriculture: 1 },
             grant: ['agriculture',2],
@@ -3287,7 +3287,7 @@ export const actions = {
         },
         silo: {
             id: 'tech-silo',
-            title: loc('tech_silo_title'),
+            title: loc('tech_silo'),
             desc: loc('tech_silo_desc'),
             reqs: { agriculture: 2, storage: 1 },
             grant: ['agriculture',3],
@@ -3305,7 +3305,7 @@ export const actions = {
         },
         mill: {
             id: 'tech-mill',
-            title: loc('tech_mill_title'),
+            title: loc('tech_mill'),
             desc: loc('tech_mill_desc'),
             reqs: { agriculture: 3, mining: 3 },
             grant: ['agriculture',4],
@@ -3326,7 +3326,7 @@ export const actions = {
         },
         windmill: {
             id: 'tech-windmill',
-            title: loc('tech_windmill_title'),
+            title: loc('tech_windmill'),
             desc: loc('tech_windmill_desc'),
             reqs: { agriculture: 4, high_tech: 1 },
             grant: ['agriculture',5],
@@ -3343,8 +3343,8 @@ export const actions = {
         },
         windturbine: {
             id: 'tech-windturbine',
-            title: loc('tech_windturbine_title'),
-            desc: loc('tech_windturbine_title'),
+            title: loc('tech_windturbine'),
+            desc: loc('tech_windturbine'),
             reqs: { agriculture: 5, high_tech: 4 },
             grant: ['agriculture',6],
             cost: { 
@@ -3360,8 +3360,8 @@ export const actions = {
         },
         wind_plant: {
             id: 'tech-wind_plant',
-            title: loc('tech_windmill_title'),
-            desc: loc('tech_windmill_title'),
+            title: loc('tech_windmill'),
+            desc: loc('tech_windmill'),
             reqs: { hunting: 2, high_tech: 4 },
             grant: ['hunting',3],
             cost: { 
@@ -3378,7 +3378,7 @@ export const actions = {
         },
         gmfood: {
             id: 'tech-gmfood',
-            title: loc('tech_gmfood_title'),
+            title: loc('tech_gmfood'),
             desc: loc('tech_gmfood_desc'),
             reqs: { agriculture: 6, genetics: 1 },
             grant: ['agriculture',7],
@@ -3395,8 +3395,8 @@ export const actions = {
         },
         foundry: {
             id: 'tech-foundry',
-            title: loc('tech_foundry_title'),
-            desc: loc('tech_foundry_title'),
+            title: loc('tech_foundry'),
+            desc: loc('tech_foundry'),
             reqs: { mining: 2 },
             grant: ['foundry',1],
             cost: {
@@ -3422,8 +3422,8 @@ export const actions = {
         },
         artisans: {
             id: 'tech-artisans',
-            title: loc('tech_artisans_title'),
-            desc: loc('tech_artisans_title'),
+            title: loc('tech_artisans'),
+            desc: loc('tech_artisans'),
             reqs: { foundry: 1 },
             grant: ['foundry',2],
             cost: {
@@ -3439,8 +3439,8 @@ export const actions = {
         },
         apprentices: {
             id: 'tech-apprentices',
-            title: loc('tech_apprentices_title'),
-            desc: loc('tech_apprentices_title'),
+            title: loc('tech_apprentices'),
+            desc: loc('tech_apprentices'),
             reqs: { foundry: 2 },
             grant: ['foundry',3],
             cost: {
@@ -3456,8 +3456,8 @@ export const actions = {
         },
         carpentry: {
             id: 'tech-carpentry',
-            title: loc('tech_carpentry_title'),
-            desc: loc('tech_carpentry_title'),
+            title: loc('tech_carpentry'),
+            desc: loc('tech_carpentry'),
             reqs: { foundry: 3, saw: 1 },
             grant: ['foundry',4],
             cost: {
@@ -3473,8 +3473,8 @@ export const actions = {
         },
         master_craftsman: {
             id: 'tech-master_craftsman',
-            title: loc('tech_master_craftsman_title'),
-            desc: loc('tech_master_craftsman_title'),
+            title: loc('tech_master_craftsman'),
+            desc: loc('tech_master_craftsman'),
             reqs: { foundry: 4 },
             grant: ['foundry',5],
             cost: {
@@ -3490,8 +3490,8 @@ export const actions = {
         },
         brickworks: {
             id: 'tech-brickworks',
-            title: loc('tech_brickworks_title'),
-            desc: loc('tech_brickworks_title'),
+            title: loc('tech_brickworks'),
+            desc: loc('tech_brickworks'),
             reqs: { foundry: 5 },
             grant: ['foundry',6],
             cost: {
@@ -3507,8 +3507,8 @@ export const actions = {
         },
         machinery: {
             id: 'tech-machinery',
-            title: loc('tech_machinery_title'),
-            desc: loc('tech_machinery_title'),
+            title: loc('tech_machinery'),
+            desc: loc('tech_machinery'),
             reqs: { foundry: 6, high_tech: 4 },
             grant: ['foundry',7],
             cost: {
@@ -3524,8 +3524,8 @@ export const actions = {
         },
         cnc_machine: {
             id: 'tech-cnc_machine',
-            title: loc('tech_cnc_machine_title'),
-            desc: loc('tech_cnc_machine_title'),
+            title: loc('tech_cnc_machine'),
+            desc: loc('tech_cnc_machine'),
             reqs: { foundry: 7, high_tech: 8 },
             grant: ['foundry',8],
             cost: {
@@ -3541,8 +3541,8 @@ export const actions = {
         },
         vocational_training: {
             id: 'tech-vocational_training',
-            title: loc('tech_vocational_training_title'),
-            desc: loc('tech_vocational_training_title'),
+            title: loc('tech_vocational_training'),
+            desc: loc('tech_vocational_training'),
             reqs: { foundry: 1, high_tech: 3 },
             grant: ['v_train',1],
             cost: {
@@ -3558,8 +3558,8 @@ export const actions = {
         },
         assembly_line: {
             id: 'tech-assembly_line',
-            title: loc('tech_assembly_line_title'),
-            desc: loc('tech_assembly_line_title'),
+            title: loc('tech_assembly_line'),
+            desc: loc('tech_assembly_line'),
             reqs: { high_tech: 4 },
             grant: ['factory',1],
             cost: {
@@ -3576,8 +3576,8 @@ export const actions = {
         },
         automation: {
             id: 'tech-automation',
-            title: loc('tech_automation_title'),
-            desc: loc('tech_automation_title'),
+            title: loc('tech_automation'),
+            desc: loc('tech_automation'),
             reqs: { high_tech: 8, factory: 1},
             grant: ['factory',2],
             cost: {
@@ -3593,8 +3593,8 @@ export const actions = {
         },
         laser_cutters: {
             id: 'tech-laser_cutters',
-            title: loc('tech_laser_cutters_title'),
-            desc: loc('tech_laser_cutters_title'),
+            title: loc('tech_laser_cutters'),
+            desc: loc('tech_laser_cutters'),
             reqs: { high_tech: 9, factory: 2 },
             grant: ['factory',3],
             cost: {
@@ -3611,8 +3611,8 @@ export const actions = {
         },
         theatre: {
             id: 'tech-theatre',
-            title: loc('tech_theatre_title'),
-            desc: loc('tech_theatre_title'),
+            title: loc('tech_theatre'),
+            desc: loc('tech_theatre'),
             reqs: { housing: 1, currency: 1, cement: 1 },
             grant: ['theatre',1],
             cost: {
@@ -3629,8 +3629,8 @@ export const actions = {
         },
         playwright: {
             id: 'tech-playwright',
-            title: loc('tech_playwright_title'),
-            desc: loc('tech_playwright_title'),
+            title: loc('tech_playwright'),
+            desc: loc('tech_playwright'),
             reqs: { theatre: 1, science: 2 },
             grant: ['theatre',2],
             cost: {
@@ -3646,8 +3646,8 @@ export const actions = {
         },
         magic: {
             id: 'tech-magic',
-            title: loc('tech_magic_title'),
-            desc: loc('tech_magic_title'),
+            title: loc('tech_magic'),
+            desc: loc('tech_magic'),
             reqs: { theatre: 2, high_tech: 1 },
             grant: ['theatre',3],
             cost: {
@@ -3663,8 +3663,8 @@ export const actions = {
         },
         radio: {
             id: 'tech-radio',
-            title: loc('tech_radio_title'),
-            desc: loc('tech_radio_title'),
+            title: loc('tech_radio'),
+            desc: loc('tech_radio'),
             reqs: { theatre: 3, high_tech: 2 },
             grant: ['broadcast',1],
             cost: {
@@ -3680,8 +3680,8 @@ export const actions = {
         },
         tv: {
             id: 'tech-tv',
-            title: loc('tech_tv_title'),
-            desc: loc('tech_tv_title'),
+            title: loc('tech_tv'),
+            desc: loc('tech_tv'),
             reqs: { broadcast: 1, high_tech: 4 },
             grant: ['broadcast',2],
             cost: {
@@ -3697,8 +3697,8 @@ export const actions = {
         },
         casino: {
             id: 'tech-casino',
-            title: loc('tech_casino_title'),
-            desc: loc('tech_casino_title'),
+            title: loc('tech_casino'),
+            desc: loc('tech_casino'),
             reqs: { high_tech: 4, currency: 5 },
             grant: ['gambling',1],
             cost: {
@@ -3715,8 +3715,8 @@ export const actions = {
         },
         casino_vault: {
             id: 'tech-casino_vault',
-            title: loc('tech_casino_vault_title'),
-            desc: loc('tech_casino_vault_title'),
+            title: loc('tech_casino_vault'),
+            desc: loc('tech_casino_vault'),
             reqs: { gambling: 1, space: 3 },
             grant: ['gambling',2],
             cost: {
@@ -3733,7 +3733,7 @@ export const actions = {
         },
         mining: {
             id: 'tech-mining',
-            title: loc('tech_mining_title'),
+            title: loc('tech_mining'),
             desc: loc('tech_mining_desc'),
             reqs: { primitive: 3 },
             grant: ['mining',1],
@@ -3754,7 +3754,7 @@ export const actions = {
         },
         bayer_process: {
             id: 'tech-bayer_process',
-            title: loc('tech_bayer_process_title'),
+            title: loc('tech_bayer_process'),
             desc: loc('tech_bayer_process_desc'),
             reqs: { smelting: 2 },
             grant: ['alumina',1],
@@ -3776,7 +3776,7 @@ export const actions = {
         },
         smelting: {
             id: 'tech-smelting',
-            title: loc('tech_smelting_title'),
+            title: loc('tech_smelting'),
             desc: loc('tech_smelting_desc'),
             reqs: { mining: 3 },
             grant: ['smelting',1],
@@ -3801,7 +3801,7 @@ export const actions = {
         },
         steel: {
             id: 'tech-steel',
-            title: loc('tech_steel_title'),
+            title: loc('tech_steel'),
             desc: loc('tech_steel_desc'),
             reqs: { smelting: 1, mining: 4 },
             grant: ['smelting',2],
@@ -3820,8 +3820,8 @@ export const actions = {
         },
         blast_furnace: {
             id: 'tech-blast_furnace',
-            title: loc('tech_blast_furnace_title'),
-            desc: loc('tech_blast_furnace_title'),
+            title: loc('tech_blast_furnace'),
+            desc: loc('tech_blast_furnace'),
             reqs: { smelting: 2 },
             grant: ['smelting',3],
             cost: { 
@@ -3838,8 +3838,8 @@ export const actions = {
         },
         bessemer_process: {
             id: 'tech-bessemer_process',
-            title: loc('tech_bessemer_process_title'),
-            desc: loc('tech_bessemer_process_title'),
+            title: loc('tech_bessemer_process'),
+            desc: loc('tech_bessemer_process'),
             reqs: { smelting: 3 },
             grant: ['smelting',4],
             cost: { 
@@ -3856,8 +3856,8 @@ export const actions = {
         },
         oxygen_converter: {
             id: 'tech-oxygen_converter',
-            title: loc('tech_oxygen_converter_title'),
-            desc: loc('tech_oxygen_converter_title'),
+            title: loc('tech_oxygen_converter'),
+            desc: loc('tech_oxygen_converter'),
             reqs: { smelting: 4, high_tech: 3 },
             grant: ['smelting',5],
             cost: { 
@@ -3874,8 +3874,8 @@ export const actions = {
         },
         electric_arc_furnace: {
             id: 'tech-electric_arc_furnace',
-            title: loc('tech_electric_arc_furnace_title'),
-            desc: loc('tech_electric_arc_furnace_title'),
+            title: loc('tech_electric_arc_furnace'),
+            desc: loc('tech_electric_arc_furnace'),
             reqs: { smelting: 5, high_tech: 4 },
             grant: ['smelting',6],
             cost: { 
@@ -3892,8 +3892,8 @@ export const actions = {
         },
         rotary_kiln: {
             id: 'tech-rotary_kiln',
-            title: loc('tech_rotary_kiln_title'),
-            desc: loc('tech_rotary_kiln_title'),
+            title: loc('tech_rotary_kiln'),
+            desc: loc('tech_rotary_kiln'),
             reqs: { smelting: 3, high_tech: 3 },
             grant: ['copper',1],
             cost: { 
@@ -3910,7 +3910,7 @@ export const actions = {
         },
         metal_working: {
             id: 'tech-metal_working',
-            title: loc('tech_metal_working_title'),
+            title: loc('tech_metal_working'),
             desc: loc('tech_metal_working_desc'),
             reqs: { mining: 1 },
             grant: ['mining',2],
@@ -3931,7 +3931,7 @@ export const actions = {
         },
         iron_mining: {
             id: 'tech-iron_mining',
-            title: loc('tech_iron_mining_title'),
+            title: loc('tech_iron_mining'),
             desc: loc('tech_iron_mining_desc'),
             reqs: { mining: 2 },
             grant: ['mining',3],
@@ -3953,7 +3953,7 @@ export const actions = {
         },
         coal_mining: {
             id: 'tech-coal_mining',
-            title: loc('tech_coal_mining_title'),
+            title: loc('tech_coal_mining'),
             desc: loc('tech_coal_mining_desc'),
             reqs: { mining: 3 },
             grant: ['mining',4],
@@ -3975,7 +3975,7 @@ export const actions = {
         },
         storage: {
             id: 'tech-storage',
-            title: loc('tech_storage_title'),
+            title: loc('tech_storage'),
             desc: loc('tech_storage_desc'),
             reqs: { primitive: 3, currency: 1 },
             grant: ['storage',1],
@@ -3993,7 +3993,7 @@ export const actions = {
         },
         reinforced_shed: {
             id: 'tech-reinforced_shed',
-            title: loc('tech_reinforced_shed_title'),
+            title: loc('tech_reinforced_shed'),
             desc: loc('tech_reinforced_shed_desc'),
             reqs: { storage: 1, cement: 1 },
             grant: ['storage',2],
@@ -4013,7 +4013,7 @@ export const actions = {
         },
         barns: {
             id: 'tech-barns',
-            title: loc('tech_barns_title'),
+            title: loc('tech_barns'),
             desc: loc('tech_barns_desc'),
             reqs: { storage: 2, smelting: 2, alumina: 1 },
             grant: ['storage',3],
@@ -4032,7 +4032,7 @@ export const actions = {
         },
         warehouse: {
             id: 'tech-warehouse',
-            title: loc('tech_warehouse_title'),
+            title: loc('tech_warehouse'),
             desc: loc('tech_warehouse_desc'),
             reqs: { storage: 3, high_tech: 3, smelting: 2 },
             grant: ['storage',4],
@@ -4050,7 +4050,7 @@ export const actions = {
         },
         cameras: {
             id: 'tech-cameras',
-            title: loc('tech_cameras_title'),
+            title: loc('tech_cameras'),
             desc: loc('tech_cameras_desc'),
             reqs: { storage: 4, high_tech: 4 },
             grant: ['storage',5],
@@ -4068,7 +4068,7 @@ export const actions = {
         },
         pocket_dimensions: {
             id: 'tech-pocket_dimensions',
-            title: loc('tech_pocket_dimensions_title'),
+            title: loc('tech_pocket_dimensions'),
             desc: loc('tech_pocket_dimensions_desc'),
             reqs: { particles: 1, storage: 5 },
             grant: ['storage',6],
@@ -4085,7 +4085,7 @@ export const actions = {
         },
         containerization: {
             id: 'tech-containerization',
-            title: loc('tech_containerization_title'),
+            title: loc('tech_containerization'),
             desc: loc('tech_containerization_desc'),
             reqs: { cement: 1 },
             grant: ['container',1],
@@ -4103,8 +4103,8 @@ export const actions = {
         },
         reinforced_crates: {
             id: 'tech-reinforced_crates',
-            title: loc('tech_reinforced_crates_title'),
-            desc: loc('tech_reinforced_crates_title'),
+            title: loc('tech_reinforced_crates'),
+            desc: loc('tech_reinforced_crates'),
             reqs: { container: 1, smelting: 2 },
             grant: ['container',2],
             cost: {
@@ -4121,7 +4121,7 @@ export const actions = {
         },
         cranes: {
             id: 'tech-cranes',
-            title: loc('tech_cranes_title'),
+            title: loc('tech_cranes'),
             desc: loc('tech_cranes_desc'),
             reqs: { container: 2, high_tech: 2 },
             grant: ['container',3],
@@ -4140,8 +4140,8 @@ export const actions = {
         },
         titanium_crates: {
             id: 'tech-titanium_crates',
-            title: loc('tech_titanium_crates_title'),
-            desc: loc('tech_titanium_crates_title'),
+            title: loc('tech_titanium_crates'),
+            desc: loc('tech_titanium_crates'),
             reqs: { container: 3, titanium: 1 },
             grant: ['container',4],
             cost: {
@@ -4158,8 +4158,8 @@ export const actions = {
         },
         mythril_crates: {
             id: 'tech-mythril_crates',
-            title: loc('tech_mythril_crates_title'),
-            desc: loc('tech_mythril_crates_title'),
+            title: loc('tech_mythril_crates'),
+            desc: loc('tech_mythril_crates'),
             reqs: { container: 4, space: 3 },
             grant: ['container',5],
             cost: {
@@ -4176,7 +4176,7 @@ export const actions = {
         },
         steel_containers: {
             id: 'tech-steel_containers',
-            title: loc('tech_steel_containers_title'),
+            title: loc('tech_steel_containers'),
             desc: loc('tech_steel_containers_desc'),
             reqs: { smelting: 2, container: 1 },
             grant: ['steel_container',1],
@@ -4195,7 +4195,7 @@ export const actions = {
         },
         gantry_crane: {
             id: 'tech-gantry_crane',
-            title: loc('tech_gantry_crane_title'),
+            title: loc('tech_gantry_crane'),
             desc: loc('tech_gantry_crane_desc'),
             reqs: { steel_container: 1, high_tech: 2 },
             grant: ['steel_container',2],
@@ -4213,7 +4213,7 @@ export const actions = {
         },
         alloy_containers: {
             id: 'tech-alloy_containers',
-            title: loc('tech_alloy_containers_title'),
+            title: loc('tech_alloy_containers'),
             desc: loc('tech_alloy_containers_desc'),
             reqs: { steel_container: 2, storage: 4 },
             grant: ['steel_container',3],
@@ -4231,7 +4231,7 @@ export const actions = {
         },
         mythril_containers: {
             id: 'tech-mythril_containers',
-            title: loc('tech_mythril_containers_title'),
+            title: loc('tech_mythril_containers'),
             desc: loc('tech_mythril_containers_desc'),
             reqs: { steel_container: 3, space: 3 },
             grant: ['steel_container',4],
@@ -4249,7 +4249,7 @@ export const actions = {
         },
         currency: {
             id: 'tech-currency',
-            title: loc('tech_currency_title'),
+            title: loc('tech_currency'),
             desc: loc('tech_currency_desc'),
             reqs: { housing: 1 },
             grant: ['currency',1],
@@ -4268,7 +4268,7 @@ export const actions = {
         },
         market: {
             id: 'tech-market',
-            title: loc('tech_market_title'),
+            title: loc('tech_market'),
             desc: loc('tech_market_desc'),
             reqs: { banking: 1, currency: 1 },
             grant: ['currency',2],
@@ -4286,7 +4286,7 @@ export const actions = {
         },
         tax_rates: {
             id: 'tech-tax_rates',
-            title: loc('tech_tax_rates_title'),
+            title: loc('tech_tax_rates'),
             desc: loc('tech_tax_rates_desc'),
             reqs: { banking: 2, currency: 2 },
             grant: ['currency',3],
@@ -4304,7 +4304,7 @@ export const actions = {
         },
         large_trades: {
             id: 'tech-large_trades',
-            title: loc('tech_large_trades_title'),
+            title: loc('tech_large_trades'),
             desc: loc('tech_large_trades_desc'),
             reqs: { currency: 3 },
             grant: ['currency',4],
@@ -4324,7 +4324,7 @@ export const actions = {
         },
         corruption: {
             id: 'tech-corruption',
-            title: loc('tech_corruption_title'),
+            title: loc('tech_corruption'),
             desc: loc('tech_corruption_desc'),
             reqs: { currency: 4, high_tech: 3 },
             grant: ['currency',5],
@@ -4341,7 +4341,7 @@ export const actions = {
         },
         massive_trades: {
             id: 'tech-massive_trades',
-            title: loc('tech_massive_trades_title'),
+            title: loc('tech_massive_trades'),
             desc: loc('tech_massive_trades_desc'),
             reqs: { currency: 5, high_tech: 4 },
             grant: ['currency',6],
@@ -4361,7 +4361,7 @@ export const actions = {
         },
         trade: {
             id: 'tech-trade',
-            title: loc('tech_trade_title'),
+            title: loc('tech_trade'),
             desc: loc('tech_trade_desc'),
             reqs: { currency: 2, military: 1 },
             grant: ['trade',1],
@@ -4380,7 +4380,7 @@ export const actions = {
         },
         diplomacy: {
             id: 'tech-diplomacy',
-            title: loc('tech_diplomacy_title'),
+            title: loc('tech_diplomacy'),
             desc: loc('tech_diplomacy_desc'),
             reqs: { trade: 1, high_tech: 1 },
             grant: ['trade',2],
@@ -4397,7 +4397,7 @@ export const actions = {
         },
         freight: {
             id: 'tech-freight',
-            title: loc('tech_freight_title'),
+            title: loc('tech_freight'),
             desc: loc('tech_freight_desc'),
             reqs: { trade: 2, high_tech: 3 },
             grant: ['trade',3],
@@ -4414,7 +4414,7 @@ export const actions = {
         },
         wharf: {
             id: 'tech-wharf',
-            title: loc('tech_wharf_title'),
+            title: loc('tech_wharf'),
             desc: loc('tech_wharf_desc'),
             reqs: { trade: 1, high_tech: 3, oil: 1 },
             grant: ['wharf',1],
@@ -4432,7 +4432,7 @@ export const actions = {
         },
         banking: {
             id: 'tech-banking',
-            title: loc('tech_banking_title'),
+            title: loc('tech_banking'),
             desc: loc('tech_banking_desc'),
             reqs: { currency: 1 },
             grant: ['banking',1],
@@ -4450,7 +4450,7 @@ export const actions = {
         },
         investing: {
             id: 'tech-investing',
-            title: loc('tech_investing_title'),
+            title: loc('tech_investing'),
             desc: loc('tech_investing_desc'),
             reqs: { banking: 1 },
             grant: ['banking',2],
@@ -4469,7 +4469,7 @@ export const actions = {
         },
         vault: {
             id: 'tech-vault',
-            title: loc('tech_vault_title'),
+            title: loc('tech_vault'),
             desc: loc('tech_vault_desc'),
             reqs: { banking: 2, cement: 1 },
             grant: ['banking',3],
@@ -4489,7 +4489,7 @@ export const actions = {
         },
         bonds: {
             id: 'tech-bonds',
-            title: loc('tech_bonds_title'),
+            title: loc('tech_bonds'),
             desc: loc('tech_bonds_desc'),
             reqs: { banking: 3 },
             grant: ['banking',4],
@@ -4507,7 +4507,7 @@ export const actions = {
         },
         steel_vault: {
             id: 'tech-steel_vault',
-            title: loc('tech_steel_vault_title'),
+            title: loc('tech_steel_vault'),
             desc: loc('tech_steel_vault_desc'),
             reqs: { banking: 4, smelting: 2 },
             grant: ['banking',5],
@@ -4526,7 +4526,7 @@ export const actions = {
         },
         eebonds: {
             id: 'tech-eebonds',
-            title: loc('tech_eebonds_title'),
+            title: loc('tech_eebonds'),
             desc: loc('tech_eebonds_desc'),
             reqs: { banking: 5, high_tech: 1 },
             grant: ['banking',6],
@@ -4544,7 +4544,7 @@ export const actions = {
         },
         swiss_banking: {
             id: 'tech-swiss_banking',
-            title: loc('tech_swiss_banking_title'),
+            title: loc('tech_swiss_banking'),
             desc: loc('tech_swiss_banking_desc'),
             reqs: { banking: 6 },
             grant: ['banking',7],
@@ -4562,7 +4562,7 @@ export const actions = {
         },
         safety_deposit: {
             id: 'tech-safety_deposit',
-            title: loc('tech_safety_deposit_title'),
+            title: loc('tech_safety_deposit'),
             desc: loc('tech_safety_deposit_desc'),
             reqs: { banking: 7, high_tech: 4 },
             grant: ['banking',8],
@@ -4580,7 +4580,7 @@ export const actions = {
         },
         stock_market: {
             id: 'tech-stock_market',
-            title: loc('tech_stock_market_title'),
+            title: loc('tech_stock_market'),
             desc: loc('tech_stock_market_desc'),
             reqs: { banking: 8, high_tech: 6 },
             grant: ['banking',9],
@@ -4601,7 +4601,7 @@ export const actions = {
         },
         hedge_funds: {
             id: 'tech-hedge_funds',
-            title: loc('tech_hedge_funds_title'),
+            title: loc('tech_hedge_funds'),
             desc: loc('tech_hedge_funds_desc'),
             reqs: { banking: 9, stock_exchange: 1 },
             grant: ['banking',10],
@@ -4619,7 +4619,7 @@ export const actions = {
         },
         four_oh_one: {
             id: 'tech-four_oh_one',
-            title: loc('tech_four_oh_one_title'),
+            title: loc('tech_four_oh_one'),
             desc: loc('tech_four_oh_one_desc'),
             reqs: { banking: 10 },
             grant: ['banking',11],
@@ -4637,7 +4637,7 @@ export const actions = {
         },
         mythril_vault: {
             id: 'tech-mythril_vault',
-            title: loc('tech_mythril_vault_title'),
+            title: loc('tech_mythril_vault'),
             desc: loc('tech_mythril_vault_desc'),
             reqs: { banking: 5, space: 3 },
             grant: ['vault',1],
@@ -4656,7 +4656,7 @@ export const actions = {
         },
         neutronium_vault: {
             id: 'tech-neutronium_vault',
-            title: loc('tech_neutronium_vault_title'),
+            title: loc('tech_neutronium_vault'),
             desc: loc('tech_neutronium_vault_desc'),
             reqs: { vault: 1, gas_moon: 1 },
             grant: ['vault',2],
@@ -4675,7 +4675,7 @@ export const actions = {
         },
         home_safe: {
             id: 'tech-home_safe',
-            title: loc('tech_home_safe_title'),
+            title: loc('tech_home_safe'),
             desc: loc('tech_home_safe_desc'),
             reqs: { banking: 5 },
             grant: ['home_safe',1],
@@ -4694,7 +4694,7 @@ export const actions = {
         },
         fire_proof_safe: {
             id: 'tech-fire_proof_safe',
-            title: loc('tech_fire_proof_safe_title'),
+            title: loc('tech_fire_proof_safe'),
             desc: loc('tech_fire_proof_safe_desc'),
             reqs: { home_safe: 1, space: 3 },
             grant: ['home_safe',2],
@@ -4713,7 +4713,7 @@ export const actions = {
         },
         monument: {
             id: 'tech-monument',
-            title: loc('tech_monument_title'),
+            title: loc('tech_monument'),
             desc: loc('tech_monument_desc'),
             reqs: { high_tech: 6 },
             grant: ['monument',1],
@@ -4734,7 +4734,7 @@ export const actions = {
         },
         tourism: {
             id: 'tech-tourism',
-            title: loc('tech_tourism_title'),
+            title: loc('tech_tourism'),
             desc: loc('tech_tourism_desc'),
             reqs: { monuments: 2 },
             grant: ['monument',2],
@@ -4752,7 +4752,7 @@ export const actions = {
         },
         science: {
             id: 'tech-science',
-            title: loc('tech_science_title'),
+            title: loc('tech_science'),
             desc: loc('tech_science_desc'),
             reqs: { housing: 1 },
             grant: ['science',1],
@@ -4770,7 +4770,7 @@ export const actions = {
         },
         library: {
             id: 'tech-library',
-            title: loc('tech_library_title'),
+            title: loc('tech_library'),
             desc: loc('tech_library_desc'),
             reqs: { science: 1, cement: 1 },
             grant: ['science',2],
@@ -4788,7 +4788,7 @@ export const actions = {
         },
         thesis: {
             id: 'tech-thesis',
-            title: loc('tech_thesis_title'),
+            title: loc('tech_thesis'),
             desc: loc('tech_thesis_desc'),
             reqs: { science: 2 },
             grant: ['science',3],
@@ -4805,7 +4805,7 @@ export const actions = {
         },
         research_grant: {
             id: 'tech-research_grant',
-            title: loc('tech_research_grant_title'),
+            title: loc('tech_research_grant'),
             desc: loc('tech_research_grant_desc'),
             reqs: { science: 3 },
             grant: ['science',4],
@@ -4822,7 +4822,7 @@ export const actions = {
         },
         scientific_journal: {
             id: 'tech-scientific_journal',
-            title: loc('tech_scientific_journal_title'),
+            title: loc('tech_scientific_journal'),
             desc: loc('tech_scientific_journal_desc'),
             reqs: { science: 4, high_tech: 3 },
             grant: ['science',5],
@@ -4839,7 +4839,7 @@ export const actions = {
         },
         adjunct_professor: {
             id: 'tech-adjunct_professor',
-            title: loc('tech_adjunct_professor_title'),
+            title: loc('tech_adjunct_professor'),
             desc: loc('tech_adjunct_professor_desc'),
             reqs: { science: 5 },
             grant: ['science',6],
@@ -4856,7 +4856,7 @@ export const actions = {
         },
         tesla_coil: {
             id: 'tech-tesla_coil',
-            title: loc('tech_tesla_coil_title'),
+            title: loc('tech_tesla_coil'),
             desc: loc('tech_tesla_coil_desc'),
             reqs: { science: 6, high_tech: 3 },
             grant: ['science',7],
@@ -4873,7 +4873,7 @@ export const actions = {
         },
         internet: {
             id: 'tech-internet',
-            title: loc('tech_internet_title'),
+            title: loc('tech_internet'),
             desc: loc('tech_internet_desc'),
             reqs: { science: 7, high_tech: 4 },
             grant: ['science',8],
@@ -4890,7 +4890,7 @@ export const actions = {
         },
         observatory: {
             id: 'tech-observatory',
-            title: loc('tech_observatory_title'),
+            title: loc('tech_observatory'),
             desc: loc('tech_observatory_desc'),
             reqs: { science: 8, space: 3, luna: 1 },
             grant: ['science',9],
@@ -4911,7 +4911,7 @@ export const actions = {
         },
         world_collider: {
             id: 'tech-world_collider',
-            title: loc('tech_world_collider_title'),
+            title: loc('tech_world_collider'),
             desc: loc('tech_world_collider_desc'),
             reqs: { science: 9, elerium: 2 },
             grant: ['science',10],
@@ -4936,7 +4936,7 @@ export const actions = {
         },
         bioscience: {
             id: 'tech-bioscience',
-            title: loc('tech_bioscience_title'),
+            title: loc('tech_bioscience'),
             desc: loc('tech_bioscience_desc'),
             reqs: { science: 8 },
             grant: ['genetics',1],
@@ -4954,7 +4954,7 @@ export const actions = {
         },
         genetics: {
             id: 'tech-genetics',
-            title: loc('tech_genetics_title'),
+            title: loc('tech_genetics'),
             desc: loc('tech_genetics_desc'),
             reqs: { genetics: 1, high_tech: 6 },
             grant: ['genetics',2],
@@ -4975,7 +4975,7 @@ export const actions = {
         },
         crispr: {
             id: 'tech-crispr',
-            title: loc('tech_crispr_title'),
+            title: loc('tech_crispr'),
             desc: loc('tech_crispr_desc'),
             reqs: { genetics: 3 },
             grant: ['genetics',4],
@@ -4998,7 +4998,7 @@ export const actions = {
         },
         mad_science: {
             id: 'tech-mad_science',
-            title: loc('tech_mad_science_title'),
+            title: loc('tech_mad_science'),
             desc: loc('tech_mad_science_desc'),
             reqs: { science: 2, smelting: 2 },
             grant: ['high_tech',1],
@@ -5021,7 +5021,7 @@ export const actions = {
         },
         electricity: {
             id: 'tech-electricity',
-            title: loc('tech_electricity_title'),
+            title: loc('tech_electricity'),
             desc: loc('tech_electricity_desc'),
             reqs: { high_tech: 1 },
             grant: ['high_tech',2],
@@ -5046,7 +5046,7 @@ export const actions = {
         },
         industrialization: {
             id: 'tech-industrialization',
-            title: loc('tech_industrialization_title'),
+            title: loc('tech_industrialization'),
             desc: loc('tech_industrialization_desc'),
             reqs: { high_tech: 2, cement: 2, steel_container: 1 },
             grant: ['high_tech',3],
@@ -5072,7 +5072,7 @@ export const actions = {
         },
         electronics: {
             id: 'tech-electronics',
-            title: loc('tech_electronics_title'),
+            title: loc('tech_electronics'),
             desc: loc('tech_electronics_desc'),
             reqs: { high_tech: 3, titanium: 1 },
             grant: ['high_tech',4],
@@ -5089,7 +5089,7 @@ export const actions = {
         },
         fission: {
             id: 'tech-fission',
-            title: loc('tech_fission_title'),
+            title: loc('tech_fission'),
             desc: loc('tech_fission_desc'),
             reqs: { high_tech: 4, uranium: 1 },
             grant: ['high_tech',5],
@@ -5112,7 +5112,7 @@ export const actions = {
         },
         arpa: {
             id: 'tech-arpa',
-            title: loc('tech_arpa_title'),
+            title: loc('tech_arpa'),
             desc: loc('tech_arpa_desc'),
             reqs: { high_tech: 5 },
             grant: ['high_tech',6],
@@ -5133,7 +5133,7 @@ export const actions = {
         },
         rocketry: {
             id: 'tech-rocketry',
-            title: loc('tech_rocketry_title'),
+            title: loc('tech_rocketry'),
             desc: loc('tech_rocketry_desc'),
             reqs: { high_tech: 6 },
             grant: ['high_tech',7],
@@ -5154,7 +5154,7 @@ export const actions = {
         },
         robotics: {
             id: 'tech-robotics',
-            title: loc('tech_robotics_title'),
+            title: loc('tech_robotics'),
             desc: loc('tech_robotics_desc'),
             reqs: { high_tech: 7 },
             grant: ['high_tech',8],
@@ -5171,7 +5171,7 @@ export const actions = {
         },
         lasers: {
             id: 'tech-lasers',
-            title: loc('tech_lasers_title'),
+            title: loc('tech_lasers'),
             desc: loc('tech_lasers_desc'),
             reqs: { high_tech: 8, space: 3, supercollider: 1, elerium: 1 },
             grant: ['high_tech',9],
@@ -5189,7 +5189,7 @@ export const actions = {
         },
         artifical_intelligence: {
             id: 'tech-artifical_intelligence',
-            title: loc('tech_artifical_intelligence_title'),
+            title: loc('tech_artifical_intelligence'),
             desc: loc('tech_artifical_intelligence_desc'),
             reqs: { high_tech: 9 },
             grant: ['high_tech',10],
@@ -5209,7 +5209,7 @@ export const actions = {
         },
         quantum_computing: {
             id: 'tech-quantum_computing',
-            title: loc('tech_quantum_computing_title'),
+            title: loc('tech_quantum_computing'),
             desc: loc('tech_quantum_computing_desc'),
             reqs: { high_tech: 10, nano: 1 },
             grant: ['high_tech',11],
@@ -5231,7 +5231,7 @@ export const actions = {
         },
         worker_drone: {
             id: 'tech-worker_drone',
-            title: loc('tech_worker_drone_title'),
+            title: loc('tech_worker_drone'),
             desc: loc('tech_worker_drone_desc'),
             reqs: { nano: 1 },
             grant: ['drone',1],
@@ -5249,7 +5249,7 @@ export const actions = {
         },
         uranium: {
             id: 'tech-uranium',
-            title: loc('tech_uranium_title'),
+            title: loc('tech_uranium'),
             desc: loc('tech_uranium_desc'),
             reqs: { high_tech: 4 },
             grant: ['uranium',1],
@@ -5267,7 +5267,7 @@ export const actions = {
         },
         uranium_storage: {
             id: 'tech-uranium_storage',
-            title: loc('tech_uranium_storage_title'),
+            title: loc('tech_uranium_storage'),
             desc: loc('tech_uranium_storage_desc'),
             reqs: { uranium: 1 },
             grant: ['uranium',2],
@@ -5285,7 +5285,7 @@ export const actions = {
         },
         uranium_ash: {
             id: 'tech-uranium_ash',
-            title: loc('tech_uranium_ash_title'),
+            title: loc('tech_uranium_ash'),
             desc: loc('tech_uranium_ash_desc'),
             reqs: { uranium: 2 },
             grant: ['uranium',3],
@@ -5302,7 +5302,7 @@ export const actions = {
         },
         breeder_reactor: {
             id: 'tech-breeder_reactor',
-            title: loc('tech_breeder_reactor_title'),
+            title: loc('tech_breeder_reactor'),
             desc: loc('tech_breeder_reactor_desc'),
             reqs: { high_tech: 5, uranium: 3, space: 3 },
             grant: ['uranium',4],
@@ -5321,7 +5321,7 @@ export const actions = {
         },
         mine_conveyor: {
             id: 'tech-mine_conveyor',
-            title: loc('tech_mine_conveyor_title'),
+            title: loc('tech_mine_conveyor'),
             desc: loc('tech_mine_conveyor_desc'),
             reqs: { high_tech: 2 },
             grant: ['mine_conveyor',1],
@@ -5340,7 +5340,7 @@ export const actions = {
         },
         oil_well: {
             id: 'tech-oil_well',
-            title: loc('tech_oil_well_title'),
+            title: loc('tech_oil_well'),
             desc: loc('tech_oil_well_desc'),
             reqs: { high_tech: 3 },
             grant: ['oil',1],
@@ -5358,7 +5358,7 @@ export const actions = {
         },
         oil_depot: {
             id: 'tech-oil_depot',
-            title: loc('tech_oil_depot_title'),
+            title: loc('tech_oil_depot'),
             desc: loc('tech_oil_depot_desc'),
             reqs: { oil: 1 },
             grant: ['oil',2],
@@ -5376,7 +5376,7 @@ export const actions = {
         },
         oil_power: {
             id: 'tech-oil_power',
-            title: loc('tech_oil_power_title'),
+            title: loc('tech_oil_power'),
             desc: loc('tech_oil_power_desc'),
             reqs: { oil: 2 },
             grant: ['oil',3],
@@ -5394,7 +5394,7 @@ export const actions = {
         },
         titanium_drills: {
             id: 'tech-titanium_drills',
-            title: loc('tech_titanium_drills_title'),
+            title: loc('tech_titanium_drills'),
             desc: loc('tech_titanium_drills_desc'),
             reqs: { oil: 3 },
             grant: ['oil',4],
@@ -5412,7 +5412,7 @@ export const actions = {
         },
         alloy_drills: {
             id: 'tech-alloy_drills',
-            title: loc('tech_alloy_drills_title'),
+            title: loc('tech_alloy_drills'),
             desc: loc('tech_alloy_drills_desc'),
             reqs: { oil: 4 },
             grant: ['oil',5],
@@ -5430,7 +5430,7 @@ export const actions = {
         },
         fracking: {
             id: 'tech-fracking',
-            title: loc('tech_fracking_title'),
+            title: loc('tech_fracking'),
             desc: loc('tech_fracking_desc'),
             reqs: { oil: 5, high_tech: 6 },
             grant: ['oil',6],
@@ -5447,7 +5447,7 @@ export const actions = {
         },
         mythril_drills: {
             id: 'tech-mythril_drills',
-            title: loc('tech_mythril_drills_title'),
+            title: loc('tech_mythril_drills'),
             desc: loc('tech_mythril_drills_desc'),
             reqs: { oil: 6, space: 3 },
             grant: ['oil',7],
@@ -5465,7 +5465,7 @@ export const actions = {
         },
         mass_driver: {
             id: 'tech-mass_driver',
-            title: loc('tech_mass_driver_title'),
+            title: loc('tech_mass_driver'),
             desc: loc('tech_mass_driver_desc'),
             reqs: { oil: 6, space: 3 },
             grant: ['mass',1],
@@ -5486,7 +5486,7 @@ export const actions = {
         },
         polymer: {
             id: 'tech-polymer',
-            title: loc('tech_polymer_title'),
+            title: loc('tech_polymer'),
             desc: loc('tech_polymer_desc'),
             reqs: { genetics: 1 },
             grant: ['polymer',1],
@@ -5507,7 +5507,7 @@ export const actions = {
         },
         fluidized_bed_reactor: {
             id: 'tech-fluidized_bed_reactor',
-            title: loc('tech_fluidized_bed_reactor_title'),
+            title: loc('tech_fluidized_bed_reactor'),
             desc: loc('tech_fluidized_bed_reactor_desc'),
             reqs: { polymer: 1, high_tech: 6 },
             grant: ['polymer',2],
@@ -5524,7 +5524,7 @@ export const actions = {
         },
         nano_tubes: {
             id: 'tech-nano_tubes',
-            title: loc('tech_nano_tubes_title'),
+            title: loc('tech_nano_tubes'),
             desc: loc('tech_nano_tubes_desc'),
             reqs: { high_tech: 10 },
             grant: ['nano',1],
@@ -5546,7 +5546,7 @@ export const actions = {
         },
         stone_axe: {
             id: 'tech-stone_axe',
-            title: loc('tech_stone_axe_title'),
+            title: loc('tech_stone_axe'),
             desc: loc('tech_stone_axe_desc'),
             reqs: { primitive: 3 },
             grant: ['axe',1],
@@ -5567,7 +5567,7 @@ export const actions = {
         },
         copper_axes: {
             id: 'tech-copper_axes',
-            title: loc('tech_copper_axes_title'),
+            title: loc('tech_copper_axes'),
             desc: loc('tech_copper_axes_desc'),
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
@@ -5585,7 +5585,7 @@ export const actions = {
         },
         iron_saw: {
             id: 'tech-iron_saw',
-            title: loc('tech_iron_saw_title'),
+            title: loc('tech_iron_saw'),
             desc: loc('tech_iron_saw_desc'),
             reqs: { axe: 1, mining: 3 },
             grant: ['saw',1],
@@ -5607,7 +5607,7 @@ export const actions = {
         },
         steel_saw: {
             id: 'tech-steel_saw',
-            title: loc('tech_steel_saw_title'),
+            title: loc('tech_steel_saw'),
             desc: loc('tech_steel_saw_desc'),
             reqs: { smelting: 2, saw: 1 },
             grant: ['saw',2],
@@ -5625,7 +5625,7 @@ export const actions = {
         },
         iron_axes: {
             id: 'tech-iron_axes',
-            title: loc('tech_iron_axes_title'),
+            title: loc('tech_iron_axes'),
             desc: loc('tech_iron_axes_desc'),
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
@@ -5643,7 +5643,7 @@ export const actions = {
         },
         steel_axes: {
             id: 'tech-steel_axes',
-            title: loc('tech_steel_axes_title'),
+            title: loc('tech_steel_axes'),
             desc: loc('tech_steel_axes_desc'),
             reqs: { axe: 3, smelting: 2 },
             grant: ['axe',4],
@@ -5661,7 +5661,7 @@ export const actions = {
         },
         titanium_axes: {
             id: 'tech-titanium_axes',
-            title: loc('tech_titanium_axes_title'),
+            title: loc('tech_titanium_axes'),
             desc: loc('tech_titanium_axes_desc'),
             reqs: { axe: 4, high_tech: 3 },
             grant: ['axe',5],
@@ -5679,7 +5679,7 @@ export const actions = {
         },
         copper_sledgehammer: {
             id: 'tech-copper_sledgehammer',
-            title: loc('tech_copper_sledgehammer_title'),
+            title: loc('tech_copper_sledgehammer'),
             desc: loc('tech_copper_sledgehammer_desc'),
             reqs: { mining: 2 },
             grant: ['hammer',1],
@@ -5697,7 +5697,7 @@ export const actions = {
         },
         iron_sledgehammer: {
             id: 'tech-iron_sledgehammer',
-            title: loc('tech_iron_sledgehammer_title'),
+            title: loc('tech_iron_sledgehammer'),
             desc: loc('tech_iron_sledgehammer_desc'),
             reqs: { hammer: 1, mining: 3 },
             grant: ['hammer',2],
@@ -5715,7 +5715,7 @@ export const actions = {
         },
         steel_sledgehammer: {
             id: 'tech-steel_sledgehammer',
-            title: loc('tech_steel_sledgehammer_title'),
+            title: loc('tech_steel_sledgehammer'),
             desc: loc('tech_steel_sledgehammer_desc'),
             reqs: { hammer: 2, smelting: 2 },
             grant: ['hammer',3],
@@ -5733,7 +5733,7 @@ export const actions = {
         },
         titanium_sledgehammer: {
             id: 'tech-titanium_sledgehammer',
-            title: loc('tech_titanium_sledgehammer_title'),
+            title: loc('tech_titanium_sledgehammer'),
             desc: loc('tech_titanium_sledgehammer_desc'),
             reqs: { hammer: 3, high_tech: 3 },
             grant: ['hammer',4],
@@ -5751,7 +5751,7 @@ export const actions = {
         },
         copper_pickaxe: {
             id: 'tech-copper_pickaxe',
-            title: loc('tech_copper_pickaxe_title'),
+            title: loc('tech_copper_pickaxe'),
             desc: loc('tech_copper_pickaxe_desc'),
             reqs: { mining: 2 },
             grant: ['pickaxe',1],
@@ -5769,7 +5769,7 @@ export const actions = {
         },
         iron_pickaxe: {
             id: 'tech-iron_pickaxe',
-            title: loc('tech_iron_pickaxe_title'),
+            title: loc('tech_iron_pickaxe'),
             desc: loc('tech_iron_pickaxe_desc'),
             reqs: { pickaxe: 1, mining: 3 },
             grant: ['pickaxe',2],
@@ -5787,7 +5787,7 @@ export const actions = {
         },
         steel_pickaxe: {
             id: 'tech-steel_pickaxe',
-            title: loc('tech_steel_pickaxe_title'),
+            title: loc('tech_steel_pickaxe'),
             desc: loc('tech_steel_pickaxe_desc'),
             reqs: { pickaxe: 2, smelting: 2},
             grant: ['pickaxe',3],
@@ -5805,7 +5805,7 @@ export const actions = {
         },
         jackhammer: {
             id: 'tech-jackhammer',
-            title: loc('tech_jackhammer_title'),
+            title: loc('tech_jackhammer'),
             desc: loc('tech_jackhammer_desc'),
             reqs: { pickaxe: 3, high_tech: 2},
             grant: ['pickaxe',4],
@@ -5823,7 +5823,7 @@ export const actions = {
         },
         jackhammer_mk2: {
             id: 'tech-jackhammer_mk2',
-            title: loc('tech_jackhammer_mk2_title'),
+            title: loc('tech_jackhammer_mk2'),
             desc: loc('tech_jackhammer_mk2_desc'),
             reqs: { pickaxe: 4, high_tech: 4},
             grant: ['pickaxe',5],
@@ -5842,7 +5842,7 @@ export const actions = {
         },
         copper_hoe: {
             id: 'tech-copper_hoe',
-            title: loc('tech_copper_hoe_title'),
+            title: loc('tech_copper_hoe'),
             desc: loc('tech_copper_hoe_desc'),
             reqs: { mining: 2, agriculture: 1 },
             grant: ['hoe',1],
@@ -5860,7 +5860,7 @@ export const actions = {
         },
         iron_hoe: {
             id: 'tech-iron_hoe',
-            title: loc('tech_iron_hoe_title'),
+            title: loc('tech_iron_hoe'),
             desc: loc('tech_iron_hoe_desc'),
             reqs: { hoe: 1, mining: 3, agriculture: 1 },
             grant: ['hoe',2],
@@ -5878,7 +5878,7 @@ export const actions = {
         },
         steel_hoe: {
             id: 'tech-steel_hoe',
-            title: loc('tech_steel_hoe_title'),
+            title: loc('tech_steel_hoe'),
             desc: loc('tech_steel_hoe_desc'),
             reqs: { hoe: 2, smelting: 2, agriculture: 1 },
             grant: ['hoe',3],
@@ -5896,7 +5896,7 @@ export const actions = {
         },
         titanium_hoe: {
             id: 'tech-titanium_hoe',
-            title: loc('tech_titanium_hoe_title'),
+            title: loc('tech_titanium_hoe'),
             desc: loc('tech_titanium_hoe_desc'),
             reqs: { hoe: 3, high_tech: 3, agriculture: 1 },
             grant: ['hoe',4],
@@ -5914,7 +5914,7 @@ export const actions = {
         },
         garrison: {
             id: 'tech-garrison',
-            title: loc('tech_garrison_title'),
+            title: loc('tech_garrison'),
             desc: loc('tech_garrison_desc'),
             reqs: { science: 1, housing: 1 },
             grant: ['military',1],
@@ -5933,7 +5933,7 @@ export const actions = {
         },
         mercs: {
             id: 'tech-mercs',
-            title: loc('tech_mercs_title'),
+            title: loc('tech_mercs'),
             desc: loc('tech_mercs_desc'),
             reqs: { military: 1 },
             grant: ['mercs',1],
@@ -5952,7 +5952,7 @@ export const actions = {
         },
         signing_bonus: {
             id: 'tech-signing_bonus',
-            title: loc('tech_signing_bonus_title'),
+            title: loc('tech_signing_bonus'),
             desc: loc('tech_signing_bonus_desc'),
             reqs: { mercs: 1, high_tech: 3 },
             grant: ['mercs',2],
@@ -5970,7 +5970,7 @@ export const actions = {
         },
         hospital: {
             id: 'tech-hospital',
-            title: loc('tech_hospital_title'),
+            title: loc('tech_hospital'),
             desc: loc('tech_hospital_desc'),
             reqs: { military: 1, alumina: 1 },
             grant: ['medic',1],
@@ -5988,7 +5988,7 @@ export const actions = {
         },
         boot_camp: {
             id: 'tech-boot_camp',
-            title: loc('tech_boot_camp_title'),
+            title: loc('tech_boot_camp'),
             desc: loc('tech_boot_camp_desc'),
             reqs: { high_tech: 1 },
             grant: ['boot_camp',1],
@@ -6006,7 +6006,7 @@ export const actions = {
         },
         bows: {
             id: 'tech-bows',
-            title: loc('tech_bows_title'),
+            title: loc('tech_bows'),
             desc: loc('tech_bows_desc'),
             reqs: { military: 1 },
             grant: ['military',2],
@@ -6028,7 +6028,7 @@ export const actions = {
         },
         flintlock_rifle: {
             id: 'tech-flintlock_rifle',
-            title: loc('tech_flintlock_rifle_title'),
+            title: loc('tech_flintlock_rifle'),
             desc: loc('tech_flintlock_rifle_desc'),
             reqs: { military: 2, explosives: 1 },
             grant: ['military',3],
@@ -6050,7 +6050,7 @@ export const actions = {
         },
         machine_gun: {
             id: 'tech-machine_gun',
-            title: loc('tech_machine_gun_title'),
+            title: loc('tech_machine_gun'),
             desc: loc('tech_machine_gun_desc'),
             reqs: { military: 3, oil: 1 },
             grant: ['military',4],
@@ -6072,7 +6072,7 @@ export const actions = {
         },
         bunk_beds: {
             id: 'tech-bunk_beds',
-            title: loc('tech_bunk_beds_title'),
+            title: loc('tech_bunk_beds'),
             desc: loc('tech_bunk_beds_desc'),
             reqs: { military: 4, high_tech: 4 },
             grant: ['military',5],
@@ -6091,7 +6091,7 @@ export const actions = {
         },
         rail_guns: {
             id: 'tech-rail_guns',
-            title: loc('tech_rail_guns_title'),
+            title: loc('tech_rail_guns'),
             desc: loc('tech_rail_guns_desc'),
             reqs: { military: 5, mass: 1 },
             grant: ['military',6],
@@ -6113,7 +6113,7 @@ export const actions = {
         },
         laser_rifles: {
             id: 'tech-laser_rifles',
-            title: loc('tech_laser_rifles_title'),
+            title: loc('tech_laser_rifles'),
             desc: loc('tech_laser_rifles_desc'),
             reqs: { military: 6, high_tech: 9, elerium: 1 },
             grant: ['military',7],
@@ -6140,7 +6140,7 @@ export const actions = {
         },
         space_marines: {
             id: 'tech-space_marines',
-            title: loc('tech_space_marines_title'),
+            title: loc('tech_space_marines'),
             desc: loc('tech_space_marines_desc'),
             reqs: { space: 3, mars: 2 },
             grant: ['marines',1],
@@ -6159,7 +6159,7 @@ export const actions = {
         },
         armor: {
             id: 'tech-armor',
-            title: loc('tech_armor_title'),
+            title: loc('tech_armor'),
             desc: loc('tech_armor_desc'),
             reqs: { military: 1 },
             grant: ['armor',1],
@@ -6178,7 +6178,7 @@ export const actions = {
         },
         plate_armor: {
             id: 'tech-plate_armor',
-            title: loc('tech_plate_armor_title'),
+            title: loc('tech_plate_armor'),
             desc: loc('tech_plate_armor_desc'),
             reqs: { armor: 1, mining: 3 },
             grant: ['armor',2],
@@ -6196,7 +6196,7 @@ export const actions = {
         },
         kevlar: {
             id: 'tech-kevlar',
-            title: loc('tech_kevlar_title'),
+            title: loc('tech_kevlar'),
             desc: loc('tech_kevlar_desc'),
             reqs: { armor: 2, polymer: 1 },
             grant: ['armor',3],
@@ -6214,7 +6214,7 @@ export const actions = {
         },
         black_powder: {
             id: 'tech-black_powder',
-            title: loc('tech_black_powder_title'),
+            title: loc('tech_black_powder'),
             desc: loc('tech_black_powder_desc'),
             reqs: { mining: 4 },
             grant: ['explosives',1],
@@ -6232,7 +6232,7 @@ export const actions = {
         },
         dynamite: {
             id: 'tech-dynamite',
-            title: loc('tech_dynamite_title'),
+            title: loc('tech_dynamite'),
             desc: loc('tech_dynamite_desc'),
             reqs: { explosives: 1 },
             grant: ['explosives',2],
@@ -6250,7 +6250,7 @@ export const actions = {
         },
         anfo: {
             id: 'tech-anfo',
-            title: loc('tech_anfo_title'),
+            title: loc('tech_anfo'),
             desc: loc('tech_anfo_desc'),
             reqs: { explosives: 2, oil: 1 },
             grant: ['explosives',3],
@@ -6268,7 +6268,7 @@ export const actions = {
         },
         mad: {
             id: 'tech-mad',
-            title: loc('tech_mad_title'),
+            title: loc('tech_mad'),
             desc: loc('tech_mad_desc'),
             reqs: { uranium: 1, explosives: 3, high_tech: 7 },
             grant: ['mad',1],
@@ -6288,7 +6288,7 @@ export const actions = {
         },
         cement: {
             id: 'tech-cement',
-            title: loc('tech_cement_title'),
+            title: loc('tech_cement'),
             desc: loc('tech_cement_desc'),
             reqs: { mining: 1, storage: 1, science: 1 },
             grant: ['cement',1],
@@ -6309,7 +6309,7 @@ export const actions = {
         },
         rebar: {
             id: 'tech-rebar',
-            title: loc('tech_rebar_title'),
+            title: loc('tech_rebar'),
             desc: loc('tech_rebar_desc'),
             reqs: { mining: 3, cement: 1 },
             grant: ['cement',2],
@@ -6327,7 +6327,7 @@ export const actions = {
         },
         steel_rebar: {
             id: 'tech-steel_rebar',
-            title: loc('tech_steel_rebar_title'),
+            title: loc('tech_steel_rebar'),
             desc: loc('tech_steel_rebar_desc'),
             reqs: { smelting: 2, cement: 2 },
             grant: ['cement',3],
@@ -6345,7 +6345,7 @@ export const actions = {
         },
         portland_cement: {
             id: 'tech-portland_cement',
-            title: loc('tech_portland_cement_title'),
+            title: loc('tech_portland_cement'),
             desc: loc('tech_portland_cement_desc'),
             reqs: { cement: 3, high_tech: 3 },
             grant: ['cement',4],
@@ -6362,7 +6362,7 @@ export const actions = {
         },
         screw_conveyor: {
             id: 'tech-screw_conveyor',
-            title: loc('tech_screw_conveyor_title'),
+            title: loc('tech_screw_conveyor'),
             desc: loc('tech_screw_conveyor_desc'),
             reqs: { cement: 4, high_tech: 4 },
             grant: ['cement',5],
@@ -6379,7 +6379,7 @@ export const actions = {
         },
         hunter_process: {
             id: 'tech-hunter_process',
-            title: loc('tech_hunter_process_title'),
+            title: loc('tech_hunter_process'),
             desc: loc('tech_hunter_process_desc'),
             reqs: { high_tech: 3, smelting: 2 },
             grant: ['titanium',1],
@@ -6398,7 +6398,7 @@ export const actions = {
         },
         kroll_process: {
             id: 'tech-kroll_process',
-            title: loc('tech_kroll_process_title'),
+            title: loc('tech_kroll_process'),
             desc: loc('tech_kroll_process_desc'),
             reqs: { titanium: 1, high_tech: 4 },
             grant: ['titanium',2],
@@ -6416,7 +6416,7 @@ export const actions = {
         },
         cambridge_process: {
             id: 'tech-cambridge_process',
-            title: loc('tech_cambridge_process_title'),
+            title: loc('tech_cambridge_process'),
             desc: loc('tech_cambridge_process_desc'),
             reqs: { titanium: 2, supercollider: 1 },
             grant: ['titanium',3],
@@ -6434,7 +6434,7 @@ export const actions = {
         },
         pynn_partical: {
             id: 'tech-pynn_partical',
-            title: loc('tech_pynn_partical_title'),
+            title: loc('tech_pynn_partical'),
             desc: loc('tech_pynn_partical_desc'),
             reqs: { supercollider: 1 },
             grant: ['particles',1],
@@ -6451,7 +6451,7 @@ export const actions = {
         },
         matter_compression: {
             id: 'tech-matter_compression',
-            title: loc('tech_matter_compression_title'),
+            title: loc('tech_matter_compression'),
             desc: loc('tech_matter_compression_desc'),
             reqs: { particles: 1 },
             grant: ['particles',2],
@@ -6468,7 +6468,7 @@ export const actions = {
         },
         higgs_boson: {
             id: 'tech-higgs_boson',
-            title: loc('tech_higgs_boson_title'),
+            title: loc('tech_higgs_boson'),
             desc: loc('tech_higgs_boson_desc'),
             reqs: { particles: 2, supercollider: 2 },
             grant: ['particles',3],
@@ -6485,7 +6485,7 @@ export const actions = {
         },
         dimensional_compression: {
             id: 'tech-dimensional_compression',
-            title: loc('tech_dimensional_compression_title'),
+            title: loc('tech_dimensional_compression'),
             desc: loc('tech_dimensional_compression_desc'),
             reqs: { particles: 3, science: 11, supercollider: 3 },
             grant: ['particles',4],
@@ -6502,7 +6502,7 @@ export const actions = {
         },
         theology: {
             id: 'tech-theology',
-            title: loc('tech_theology_title'),
+            title: loc('tech_theology'),
             desc: loc('tech_theology_desc'),
             reqs: { theology: 1, housing: 1, cement: 1 },
             grant: ['theology',2],
@@ -6520,7 +6520,7 @@ export const actions = {
         },
         fanaticism: {
             id: 'tech-fanaticism',
-            title: loc('tech_fanaticism_title'),
+            title: loc('tech_fanaticism'),
             desc: loc('tech_fanaticism_desc'),
             reqs: { theology: 2 },
             grant: ['theology',3],
@@ -6676,7 +6676,7 @@ export const actions = {
         },
         indoctrination: {
             id: 'tech-indoctrination',
-            title: loc('tech_indoctrination_title'),
+            title: loc('tech_indoctrination'),
             desc: loc('tech_indoctrination_desc'),
             reqs: { fanaticism: 1 },
             grant: ['fanaticism',2],
@@ -6693,7 +6693,7 @@ export const actions = {
         },
         missionary: {
             id: 'tech-missionary',
-            title: loc('tech_missionary_title'),
+            title: loc('tech_missionary'),
             desc: loc('tech_missionary_desc'),
             reqs: { fanaticism: 2 },
             grant: ['fanaticism',3],
@@ -6710,7 +6710,7 @@ export const actions = {
         },
         zealotry: {
             id: 'tech-zealotry',
-            title: loc('tech_zealotry_title'),
+            title: loc('tech_zealotry'),
             desc: loc('tech_zealotry_desc'),
             reqs: { fanaticism: 3 },
             grant: ['fanaticism',4],
@@ -6727,7 +6727,7 @@ export const actions = {
         },
         anthropology: {
             id: 'tech-anthropology',
-            title: loc('tech_anthropology_title'),
+            title: loc('tech_anthropology'),
             desc: loc('tech_anthropology_desc'),
             reqs: { theology: 2 },
             grant: ['theology',3],
@@ -6745,7 +6745,7 @@ export const actions = {
         },
         mythology: {
             id: 'tech-mythology',
-            title: loc('tech_mythology_title'),
+            title: loc('tech_mythology'),
             desc: loc('tech_mythology_desc'),
             reqs: { anthropology: 1 },
             grant: ['anthropology',2],
@@ -6762,7 +6762,7 @@ export const actions = {
         },
         archaeology: {
             id: 'tech-archaeology',
-            title: loc('tech_archaeology_title'),
+            title: loc('tech_archaeology'),
             desc: loc('tech_archaeology_desc'),
             reqs: { anthropology: 2 },
             grant: ['anthropology',3],
@@ -6779,7 +6779,7 @@ export const actions = {
         },
         merchandising: {
             id: 'tech-merchandising',
-            title: loc('tech_merchandising_title'),
+            title: loc('tech_merchandising'),
             desc: loc('tech_merchandising_desc'),
             reqs: { anthropology: 3 },
             grant: ['anthropology',4],
@@ -6796,7 +6796,7 @@ export const actions = {
         },
         astrophysics: {
             id: 'tech-astrophysics',
-            title: loc('tech_astrophysics_title'),
+            title: loc('tech_astrophysics'),
             desc: loc('tech_astrophysics_desc'),
             reqs: { space: 2 },
             grant: ['space_explore',1],
@@ -6814,7 +6814,7 @@ export const actions = {
         },
         rover: {
             id: 'tech-rover',
-            title: loc('tech_rover_title'),
+            title: loc('tech_rover'),
             desc: loc('tech_rover_desc'),
             reqs: { space_explore: 1 },
             grant: ['space_explore',2],
@@ -6841,7 +6841,7 @@ export const actions = {
         },
         probes: {
             id: 'tech-probes',
-            title: loc('tech_probes_title'),
+            title: loc('tech_probes'),
             desc: loc('tech_probes_desc'),
             reqs: { space_explore: 2 },
             grant: ['space_explore',3],
@@ -6870,7 +6870,7 @@ export const actions = {
         },
         starcharts: {
             id: 'tech-starcharts',
-            title: loc('tech_starcharts_title'),
+            title: loc('tech_starcharts'),
             desc: loc('tech_starcharts_desc'),
             reqs: { space_explore: 3, science: 9 },
             grant: ['space_explore',4],
@@ -6890,7 +6890,7 @@ export const actions = {
         },
         colonization: {
             id: 'tech-colonization',
-            title: loc('tech_colonization_title'),
+            title: loc('tech_colonization'),
             desc: loc('tech_colonization_desc',[races[global.race.species].solar.red]),
             reqs: { space: 4, mars: 1 },
             grant: ['mars',2],
@@ -6908,8 +6908,8 @@ export const actions = {
         },
         red_tower: {
             id: 'tech-red_tower',
-            title: loc('tech_red_tower_title',[races[global.race.species].solar.red]),
-            desc: loc('tech_red_tower_title',[races[global.race.species].solar.red]),
+            title: loc('tech_red_tower',[races[global.race.species].solar.red]),
+            desc: loc('tech_red_tower',[races[global.race.species].solar.red]),
             reqs: { mars: 2 },
             grant: ['mars',3],
             cost: {
@@ -6926,7 +6926,7 @@ export const actions = {
         },
         space_manufacturing: {
             id: 'tech-space_manufacturing',
-            title: loc('tech_space_manufacturing_title'),
+            title: loc('tech_space_manufacturing'),
             desc: loc('tech_space_manufacturing_desc'),
             reqs: { mars: 3 },
             grant: ['mars',4],
@@ -6944,7 +6944,7 @@ export const actions = {
         },
         exotic_lab: {
             id: 'tech-energy_lab',
-            title: loc('tech_exotic_lab_title'),
+            title: loc('tech_exotic_lab'),
             desc: loc('tech_exotic_lab_desc'),
             reqs: { mars: 4, asteroid: 5 },
             grant: ['mars',5],
@@ -6962,7 +6962,7 @@ export const actions = {
         },
         dyson_sphere: {
             id: 'tech-dyson_sphere',
-            title: loc('tech_dyson_sphere_title'),
+            title: loc('tech_dyson_sphere'),
             desc: loc('tech_dyson_sphere_desc'),
             reqs: { solar: 1 },
             grant: ['solar',2],
@@ -6979,7 +6979,7 @@ export const actions = {
         },
         dyson_swarm: {
             id: 'tech-dyson_swarm',
-            title: loc('tech_dyson_swarm_title'),
+            title: loc('tech_dyson_swarm'),
             desc: loc('tech_dyson_swarm_desc'),
             reqs: { solar: 2 },
             grant: ['solar',3],
@@ -6997,7 +6997,7 @@ export const actions = {
         },
         swarm_plant: {
             id: 'tech-swarm_plant',
-            title: loc('tech_swarm_plant_title'),
+            title: loc('tech_swarm_plant'),
             desc: loc('tech_swarm_plant_desc'),
             reqs: { solar: 3, hell: 1, gas_moon: 1 },
             grant: ['solar',4],
@@ -7015,7 +7015,7 @@ export const actions = {
         },
         space_sourced: {
             id: 'tech-space_sourced',
-            title: loc('tech_space_sourced_title'),
+            title: loc('tech_space_sourced'),
             desc: loc('tech_space_sourced_desc'),
             reqs: { solar: 4, asteroid: 3 },
             grant: ['solar',5],
@@ -7032,7 +7032,7 @@ export const actions = {
         },
         swarm_plant_ai: {
             id: 'tech-swarm_plant_ai',
-            title: loc('tech_swarm_plant_ai_title'),
+            title: loc('tech_swarm_plant_ai'),
             desc: loc('tech_swarm_plant_ai_desc'),
             reqs: { solar: 4, high_tech: 10 },
             grant: ['swarm',1],
@@ -7049,7 +7049,7 @@ export const actions = {
         },
         swarm_control_ai: {
             id: 'tech-swarm_control_ai',
-            title: loc('tech_swarm_control_ai_title'),
+            title: loc('tech_swarm_control_ai'),
             desc: loc('tech_swarm_control_ai_desc'),
             reqs: { swarm: 1 },
             grant: ['swarm',2],
@@ -7066,7 +7066,7 @@ export const actions = {
         },
         quantium_swarm: {
             id: 'tech-quantium_swarm',
-            title: loc('tech_quantium_swarm_title'),
+            title: loc('tech_quantium_swarm'),
             desc: loc('tech_quantium_swarm_desc'),
             reqs: { swarm: 2, high_tech: 11 },
             grant: ['swarm',3],
@@ -7083,7 +7083,7 @@ export const actions = {
         },
         gps: {
             id: 'tech-gps',
-            title: loc('tech_gps_title'),
+            title: loc('tech_gps'),
             desc: loc('tech_gps_desc'),
             reqs: { space_explore: 1 },
             grant: ['satellite',1],
@@ -7101,7 +7101,7 @@ export const actions = {
         },
         nav_beacon: {
             id: 'tech-nav_beacon',
-            title: loc('tech_nav_beacon_title'),
+            title: loc('tech_nav_beacon'),
             desc: loc('tech_nav_beacon_desc'),
             reqs: { luna: 1 },
             grant: ['luna',2],
@@ -7122,7 +7122,7 @@ export const actions = {
         },
         atmospheric_mining: {
             id: 'tech-atmospheric_mining',
-            title: loc('tech_atmospheric_mining_title'),
+            title: loc('tech_atmospheric_mining'),
             desc: loc('tech_atmospheric_mining_desc'),
             reqs: { space: 5 },
             grant: ['gas_giant',1],
@@ -7141,7 +7141,7 @@ export const actions = {
         },
         helium_attractor: {
             id: 'tech-helium_attractor',
-            title: loc('tech_helium_attractor_title'),
+            title: loc('tech_helium_attractor'),
             desc: loc('tech_helium_attractor_desc'),
             reqs: { gas_giant: 1, elerium: 1 },
             grant: ['helium',1],
@@ -7159,7 +7159,7 @@ export const actions = {
         },
         zero_g_mining: {
             id: 'tech-zero_g_mining',
-            title: loc('tech_zero_g_mining_title'),
+            title: loc('tech_zero_g_mining'),
             desc: loc('tech_zero_g_mining_desc'),
             reqs: { asteroid: 1, high_tech: 8 },
             grant: ['asteroid',2],
@@ -7179,7 +7179,7 @@ export const actions = {
         },
         elerium_mining: {
             id: 'tech-elerium_mining',
-            title: loc('tech_elerium_mining_title'),
+            title: loc('tech_elerium_mining'),
             desc: loc('tech_elerium_mining_desc'),
             reqs: { asteroid: 4 },
             grant: ['asteroid',5],
@@ -7198,7 +7198,7 @@ export const actions = {
         },
         laser_mining: {
             id: 'tech-laser_mining',
-            title: loc('tech_laser_mining_title'),
+            title: loc('tech_laser_mining'),
             desc: loc('tech_laser_mining_desc'),
             reqs: { asteroid: 5, elerium: 1, high_tech: 9 },
             grant: ['asteroid',6],
@@ -7215,7 +7215,7 @@ export const actions = {
         },
         elerium_tech: {
             id: 'tech-elerium_tech',
-            title: loc('tech_elerium_tech_title'),
+            title: loc('tech_elerium_tech'),
             desc: loc('tech_elerium_tech_desc'),
             reqs: { asteroid: 5 },
             grant: ['elerium',1],
@@ -7233,7 +7233,7 @@ export const actions = {
         },
         elerium_reactor: {
             id: 'tech-elerium_reactor',
-            title: loc('tech_elerium_reactor_title'),
+            title: loc('tech_elerium_reactor'),
             desc: loc('tech_elerium_reactor_desc'),
             reqs: { dwarf: 1, elerium: 1 },
             grant: ['elerium',2],
@@ -7252,7 +7252,7 @@ export const actions = {
         },
         neutronium_housing: {
             id: 'tech-neutronium_housing',
-            title: loc('tech_neutronium_housing_title'),
+            title: loc('tech_neutronium_housing'),
             desc: loc('tech_neutronium_housing_desc'),
             reqs: { gas_moon: 1 },
             grant: ['space_housing',1],
@@ -7270,7 +7270,7 @@ export const actions = {
         },
         unification: {
             id: 'tech-unification',
-            title: loc('tech_unification_title'),
+            title: loc('tech_unification'),
             desc: loc('tech_unification_desc',[races[global.race.species].home]),
             reqs: { mars: 2 },
             grant: ['unify',1],
@@ -7287,7 +7287,7 @@ export const actions = {
         },
         wc_conquest: {
             id: 'tech-wc_conquest',
-            title: loc('tech_wc_conquest_title'),
+            title: loc('tech_wc_conquest'),
             desc(){
                 let military = global.race['no_plasmid'] ? 525 : 600;
                 if (global.race['no_crispr']){
@@ -7316,7 +7316,7 @@ export const actions = {
         },
         wc_morale: {
             id: 'tech-wc_morale',
-            title: loc('tech_wc_morale_title'),
+            title: loc('tech_wc_morale'),
             desc(){
                 let morale = global.race['no_plasmid'] ? 140 : 150;
                 if (global.race['no_crispr']){
@@ -7347,7 +7347,7 @@ export const actions = {
         },
         wc_money: {
             id: 'tech-wc_money',
-            title: loc('tech_wc_money_title'),
+            title: loc('tech_wc_money'),
             desc(){
                 let price = global.race['no_plasmid'] ? 3 : 5;
                 if (global.race['no_crispr']){
@@ -7377,8 +7377,8 @@ export const actions = {
         },
         wc_reject: {
             id: 'tech-wc_reject',
-            title: loc('tech_wc_reject_title'),
-            desc: loc('tech_wc_reject_title'),
+            title: loc('tech_wc_reject'),
+            desc: loc('tech_wc_reject'),
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
@@ -7394,7 +7394,7 @@ export const actions = {
         },
         genesis: {
             id: 'tech-genesis',
-            title: loc('tech_genesis_title'),
+            title: loc('tech_genesis'),
             desc: loc('tech_genesis_desc'),
             reqs: { genesis: 1 },
             grant: ['genesis',2],
@@ -7411,7 +7411,7 @@ export const actions = {
         },
         star_dock: {
             id: 'tech-star_dock',
-            title: loc('tech_star_dock_title'),
+            title: loc('tech_star_dock'),
             desc: loc('tech_star_dock_desc'),
             reqs: { genesis: 2, space: 5 },
             grant: ['genesis',3],
@@ -7434,7 +7434,7 @@ export const actions = {
         },
         interstellar: {
             id: 'tech-interstellar',
-            title: loc('tech_interstellar_title'),
+            title: loc('tech_interstellar'),
             desc: loc('tech_interstellar_desc'),
             reqs: { genesis: 3 },
             grant: ['genesis',4],
@@ -7452,7 +7452,7 @@ export const actions = {
         },
         genesis_ship: {
             id: 'tech-genesis_ship',
-            title: loc('tech_genesis_ship_title'),
+            title: loc('tech_genesis_ship'),
             desc: loc('tech_genesis_ship_desc'),
             reqs: { genesis: 4 },
             grant: ['genesis',5],
@@ -7470,7 +7470,7 @@ export const actions = {
         },
         genetic_decay: {
             id: 'tech-genetic_decay',
-            title: loc('tech_genetic_decay_title'),
+            title: loc('tech_genetic_decay'),
             desc: loc('tech_genetic_decay_desc'),
             reqs: { decay: 1 },
             grant: ['decay',2],
