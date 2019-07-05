@@ -925,7 +925,9 @@ export function spatialReasoning(value){
     if (global.race['no_plasmid']){
         plasmids = global.race.mutation > global.race.Plasmid.count ? global.race.Plasmid.count : global.race.mutation;
     }
-    plasmids += global.race.Phage.count;
+    if (global.genes['store'] && global.genes['store'] >= 4){
+        plasmids += global.race.Phage.count;
+    }
     if (global.genes['store'] && !global.race['no_plasmid']){
         let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
         value *= 1 + (plasmids / divisor);
