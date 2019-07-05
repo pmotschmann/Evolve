@@ -1166,7 +1166,7 @@ const spaceProjects = {
             effect(){
                 let helium = +(fuel_adjust(2.5)).toFixed(2);
                 let food = 10;
-                let elerium_cap = spatialReasoning(4);
+                let elerium_cap = spatialReasoning(5);
                 let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('plus_max_resource',[elerium_cap, loc('resource_Elerium_name')])}</div>` : '';
                 return `<div>${loc('plus_max_space_miners',[3])}</div>${elerium}<div>${loc('space_belt_station_effect3',[helium])}</div><div>${loc('space_belt_station_effect4',[food,spaceProjects.spc_belt.space_station.powered])}</div>`;
             },

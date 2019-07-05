@@ -149,6 +149,7 @@ export function defineResources(){
         loadRouteCounter();
     }
     loadSpecialResource('Plasmid');
+    loadSpecialResource('Phage');
 }
 
 // Load resource function
@@ -924,6 +925,7 @@ export function spatialReasoning(value){
     if (global.race['no_plasmid']){
         plasmids = global.race.mutation > global.race.Plasmid.count ? global.race.Plasmid.count : global.race.mutation;
     }
+    plasmids += global.race.Phage.count;
     if (global.genes['store'] && !global.race['no_plasmid']){
         let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
         value *= 1 + (plasmids / divisor);
@@ -941,11 +943,12 @@ export function plasmidBonus(){
     if (global.race['decayed']){
         plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
     }
-    if (plasmids > 250){
-        plasmid_bonus = 0.625 + (Math.log(plasmids - 249) / Math.LN2 / 250);
+    let p_cap = 250 + global.race.Phage.count;
+    if (plasmids > p_cap){
+        plasmid_bonus = (Math.log10(p_cap + 1) / 3.85) + ((Math.log(plasmids - p_cap - 1) / Math.LN2 / 250));
     }
     else {
-        plasmid_bonus = plasmids / 400;
+        plasmid_bonus = Math.log10(plasmids + 1) / 3.85;
     }
     if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid']){
         let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;

@@ -1546,7 +1546,7 @@ export const actions = {
         cottage: {
             id: 'city-cottage',
             title(){
-                return global.race.species === 'sporgar' ? loc('city_cottage_title2') : loc('city_cottage_title1');
+                return housingLabel('medium');
             },
             desc: loc('city_cottage_desc'),
             reqs: { housing: 2 },
@@ -1577,7 +1577,7 @@ export const actions = {
         apartment: {
             id: 'city-apartment',
             title(){
-                return global.race.species === 'sporgar' ? loc('city_apartment_title2') : loc('city_apartment_title1');
+                return housingLabel('large');
             },
             desc: `<div>${loc('city_apartment_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { housing: 3 },
@@ -1721,6 +1721,29 @@ export const actions = {
                 else {
                     return false;
                 }
+            }
+        },
+        windmill: {
+            id: 'city-windmill',
+            title(){
+                return loc('city_mill_title2');
+            },
+            desc(){
+                return loc('city_windmill_desc');
+            },
+            reqs: { hunting: 3 },
+            cost: { 
+                Money(){ return costMultiplier('windmill', 1000, 1.31); },
+                Lumber(){ return costMultiplier('windmill', 600, 1.33); },
+                Iron(){ return costMultiplier('windmill', 150, 1.33); },
+                Cement(){ return costMultiplier('windmill', 125, 1.33); },
+            },
+            action(){
+                if (payCosts(actions.city.windmill.cost)){
+                    global.city['windmill'].count++;
+                    return true;
+                }
+                return false;
             }
         },
         silo: {
@@ -3048,7 +3071,7 @@ export const actions = {
         cottage: {
             id: 'tech-cottage',
             title(){
-                return global.race.species === 'sporgar' ? loc('tech_cottage_title2') : loc('tech_cottage_title1');
+                return housingLabel('medium');
             },
             desc: loc('tech_cottage_desc'),
             reqs: { housing: 1, cement: 1, mining: 3 },
@@ -3068,10 +3091,10 @@ export const actions = {
         apartment: {
             id: 'tech-apartment',
             title(){
-                return global.race.species === 'sporgar' ? loc('tech_apartment_title2') : loc('tech_apartment_title1');
+                return housingLabel('large');
             },
             desc(){
-                return global.race.species === 'sporgar' ? loc('tech_apartment_title2') : loc('tech_apartment_title1');
+                return housingLabel('large');
             },
             reqs: { housing: 2, high_tech: 2 },
             grant: ['housing',3],
@@ -3093,7 +3116,7 @@ export const actions = {
         steel_beams: {
             id: 'tech-steel_beams',
             title: loc('tech_steel_beams_title'),
-            desc: loc('tech_steel_beams_desc'),
+            desc: loc('tech_housing_cost'),
             reqs: { housing: 2, smelting: 2 },
             grant: ['housing_reduction',1],
             cost: { 
@@ -3101,8 +3124,8 @@ export const actions = {
                 Steel(){ return 2500; }
             },
             effect(){
-                let label = basicHousingLabel();
-                let cLabel = global.race.species === 'sporgar' ? loc('tech_cottage_title2') : loc('tech_cottage_title1');
+                let label = housingLabel('small');
+                let cLabel = housingLabel('medium');
                 return loc('tech_steel_beams_effect',[label,cLabel]);
             },
             action(){
@@ -3115,7 +3138,7 @@ export const actions = {
         mythril_beams: {
             id: 'tech-mythril_beams',
             title: loc('tech_mythril_beams_title'),
-            desc: loc('tech_steel_beams_desc'),
+            desc: loc('tech_housing_cost'),
             reqs: { housing_reduction: 1, space: 3 },
             grant: ['housing_reduction',2],
             cost: { 
@@ -3123,8 +3146,8 @@ export const actions = {
                 Mythril(){ return 1000; }
             },
             effect(){
-                let label = basicHousingLabel();
-                let cLabel = global.race.species === 'sporgar' ? loc('tech_cottage_title2') : loc('tech_cottage_title1');
+                let label = housingLabel('small');
+                let cLabel = housingLabel('medium');
                 return loc('tech_mythril_beams_effect',[label,cLabel]);
             },
             action(){
@@ -3137,7 +3160,7 @@ export const actions = {
         neutronium_walls: {
             id: 'tech-neutronium_walls',
             title: loc('tech_neutronium_walls_title'),
-            desc: loc('tech_neutronium_walls_desc'),
+            desc: loc('tech_housing_cost'),
             reqs: { housing_reduction: 2, gas_moon: 1 },
             grant: ['housing_reduction',3],
             cost: { 
@@ -3145,8 +3168,9 @@ export const actions = {
                 Neutronium(){ return 850; }
             },
             effect(){
-                let label = basicHousingLabel();
-                return loc('tech_neutronium_walls_effect',[label]);
+                let label = housingLabel('small');
+                let cLabel = housingLabel('medium');
+                return loc('tech_neutronium_walls_effect',[label,cLabel]);
             },
             action(){
                 if (payCosts(actions.tech.neutronium_walls.cost)){
@@ -3193,7 +3217,7 @@ export const actions = {
         lodge: {
             id: 'tech-lodge',
             title: loc('tech_lodge_title'),
-            desc: loc('tech_lodge_desc'),
+            desc: loc('tech_lodge_title'),
             reqs: { hunting: 1, housing: 1, currency: 1 },
             grant: ['hunting',2],
             cost: {
@@ -3320,7 +3344,7 @@ export const actions = {
         windturbine: {
             id: 'tech-windturbine',
             title: loc('tech_windturbine_title'),
-            desc: loc('tech_windturbine_desc'),
+            desc: loc('tech_windturbine_title'),
             reqs: { agriculture: 5, high_tech: 4 },
             grant: ['agriculture',6],
             cost: { 
@@ -3329,6 +3353,24 @@ export const actions = {
             effect: loc('tech_windturbine_effect'),
             action(){
                 if (payCosts(actions.tech.windturbine.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        wind_plant: {
+            id: 'tech-wind_plant',
+            title: loc('tech_windmill_title'),
+            desc: loc('tech_windmill_title'),
+            reqs: { hunting: 2, high_tech: 4 },
+            grant: ['hunting',3],
+            cost: { 
+                Knowledge(){ return 66000; }
+            },
+            effect: loc('tech_wind_plant_effect'),
+            action(){
+                if (payCosts(actions.tech.windturbine.cost)){
+                    global.city['windmill'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -3354,7 +3396,7 @@ export const actions = {
         foundry: {
             id: 'tech-foundry',
             title: loc('tech_foundry_title'),
-            desc: loc('tech_foundry_desc'),
+            desc: loc('tech_foundry_title'),
             reqs: { mining: 2 },
             grant: ['foundry',1],
             cost: {
@@ -3381,7 +3423,7 @@ export const actions = {
         artisans: {
             id: 'tech-artisans',
             title: loc('tech_artisans_title'),
-            desc: loc('tech_artisans_desc'),
+            desc: loc('tech_artisans_title'),
             reqs: { foundry: 1 },
             grant: ['foundry',2],
             cost: {
@@ -3398,7 +3440,7 @@ export const actions = {
         apprentices: {
             id: 'tech-apprentices',
             title: loc('tech_apprentices_title'),
-            desc: loc('tech_apprentices_desc'),
+            desc: loc('tech_apprentices_title'),
             reqs: { foundry: 2 },
             grant: ['foundry',3],
             cost: {
@@ -3415,7 +3457,7 @@ export const actions = {
         carpentry: {
             id: 'tech-carpentry',
             title: loc('tech_carpentry_title'),
-            desc: loc('tech_carpentry_desc'),
+            desc: loc('tech_carpentry_title'),
             reqs: { foundry: 3, saw: 1 },
             grant: ['foundry',4],
             cost: {
@@ -3432,7 +3474,7 @@ export const actions = {
         master_craftsman: {
             id: 'tech-master_craftsman',
             title: loc('tech_master_craftsman_title'),
-            desc: loc('tech_master_craftsman_desc'),
+            desc: loc('tech_master_craftsman_title'),
             reqs: { foundry: 4 },
             grant: ['foundry',5],
             cost: {
@@ -3449,7 +3491,7 @@ export const actions = {
         brickworks: {
             id: 'tech-brickworks',
             title: loc('tech_brickworks_title'),
-            desc: loc('tech_brickworks_desc'),
+            desc: loc('tech_brickworks_title'),
             reqs: { foundry: 5 },
             grant: ['foundry',6],
             cost: {
@@ -3466,7 +3508,7 @@ export const actions = {
         machinery: {
             id: 'tech-machinery',
             title: loc('tech_machinery_title'),
-            desc: loc('tech_machinery_desc'),
+            desc: loc('tech_machinery_title'),
             reqs: { foundry: 6, high_tech: 4 },
             grant: ['foundry',7],
             cost: {
@@ -3483,7 +3525,7 @@ export const actions = {
         cnc_machine: {
             id: 'tech-cnc_machine',
             title: loc('tech_cnc_machine_title'),
-            desc: loc('tech_cnc_machine_desc'),
+            desc: loc('tech_cnc_machine_title'),
             reqs: { foundry: 7, high_tech: 8 },
             grant: ['foundry',8],
             cost: {
@@ -3500,7 +3542,7 @@ export const actions = {
         vocational_training: {
             id: 'tech-vocational_training',
             title: loc('tech_vocational_training_title'),
-            desc: loc('tech_vocational_training_desc'),
+            desc: loc('tech_vocational_training_title'),
             reqs: { foundry: 1, high_tech: 3 },
             grant: ['v_train',1],
             cost: {
@@ -3517,14 +3559,14 @@ export const actions = {
         assembly_line: {
             id: 'tech-assembly_line',
             title: loc('tech_assembly_line_title'),
-            desc: loc('tech_assembly_line_desc'),
+            desc: loc('tech_assembly_line_title'),
             reqs: { high_tech: 4 },
             grant: ['factory',1],
             cost: {
                 Knowledge(){ return 72000; },
                 Copper(){ return 125000; }
             },
-            effect: `<span>${loc('tech_assembly_line_effect1')}</span> <span class="has-text-special">${loc('tech_assembly_line_effect2')}</span>`,
+            effect: `<span>${loc('tech_assembly_line_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
             action(){
                 if (payCosts(actions.tech.assembly_line.cost)){
                     return true;
@@ -3535,13 +3577,13 @@ export const actions = {
         automation: {
             id: 'tech-automation',
             title: loc('tech_automation_title'),
-            desc: loc('tech_automation_desc'),
+            desc: loc('tech_automation_title'),
             reqs: { high_tech: 8, factory: 1},
             grant: ['factory',2],
             cost: {
                 Knowledge(){ return 165000; }
             },
-            effect: `<span>${loc('tech_automation_effect1')}</span> <span class="has-text-special">${loc('tech_automation_effect2')}</span>`,
+            effect: `<span>${loc('tech_automation_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
             action(){
                 if (payCosts(actions.tech.automation.cost)){
                     return true;
@@ -3552,14 +3594,14 @@ export const actions = {
         laser_cutters: {
             id: 'tech-laser_cutters',
             title: loc('tech_laser_cutters_title'),
-            desc: loc('tech_laser_cutters_desc'),
+            desc: loc('tech_laser_cutters_title'),
             reqs: { high_tech: 9, factory: 2 },
             grant: ['factory',3],
             cost: {
                 Knowledge(){ return 300000; },
                 Elerium(){ return 200; }
             },
-            effect: `<span>${loc('tech_laser_cutters_effect1')}</span> <span class="has-text-special">${loc('tech_laser_cutters_effect2')}</span>`,
+            effect: `<span>${loc('tech_laser_cutters_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
             action(){
                 if (payCosts(actions.tech.laser_cutters.cost)){
                     return true;
@@ -3570,7 +3612,7 @@ export const actions = {
         theatre: {
             id: 'tech-theatre',
             title: loc('tech_theatre_title'),
-            desc: loc('tech_theatre_desc'),
+            desc: loc('tech_theatre_title'),
             reqs: { housing: 1, currency: 1, cement: 1 },
             grant: ['theatre',1],
             cost: {
@@ -3588,7 +3630,7 @@ export const actions = {
         playwright: {
             id: 'tech-playwright',
             title: loc('tech_playwright_title'),
-            desc: loc('tech_playwright_desc'),
+            desc: loc('tech_playwright_title'),
             reqs: { theatre: 1, science: 2 },
             grant: ['theatre',2],
             cost: {
@@ -3605,7 +3647,7 @@ export const actions = {
         magic: {
             id: 'tech-magic',
             title: loc('tech_magic_title'),
-            desc: loc('tech_magic_desc'),
+            desc: loc('tech_magic_title'),
             reqs: { theatre: 2, high_tech: 1 },
             grant: ['theatre',3],
             cost: {
@@ -3622,7 +3664,7 @@ export const actions = {
         radio: {
             id: 'tech-radio',
             title: loc('tech_radio_title'),
-            desc: loc('tech_radio_desc'),
+            desc: loc('tech_radio_title'),
             reqs: { theatre: 3, high_tech: 2 },
             grant: ['broadcast',1],
             cost: {
@@ -3639,7 +3681,7 @@ export const actions = {
         tv: {
             id: 'tech-tv',
             title: loc('tech_tv_title'),
-            desc: loc('tech_tv_desc'),
+            desc: loc('tech_tv_title'),
             reqs: { broadcast: 1, high_tech: 4 },
             grant: ['broadcast',2],
             cost: {
@@ -3656,7 +3698,7 @@ export const actions = {
         casino: {
             id: 'tech-casino',
             title: loc('tech_casino_title'),
-            desc: loc('tech_casino_desc'),
+            desc: loc('tech_casino_title'),
             reqs: { high_tech: 4, currency: 5 },
             grant: ['gambling',1],
             cost: {
@@ -3674,7 +3716,7 @@ export const actions = {
         casino_vault: {
             id: 'tech-casino_vault',
             title: loc('tech_casino_vault_title'),
-            desc: loc('tech_casino_vault_desc'),
+            desc: loc('tech_casino_vault_title'),
             reqs: { gambling: 1, space: 3 },
             grant: ['gambling',2],
             cost: {
@@ -3779,7 +3821,7 @@ export const actions = {
         blast_furnace: {
             id: 'tech-blast_furnace',
             title: loc('tech_blast_furnace_title'),
-            desc: loc('tech_blast_furnace_desc'),
+            desc: loc('tech_blast_furnace_title'),
             reqs: { smelting: 2 },
             grant: ['smelting',3],
             cost: { 
@@ -3797,7 +3839,7 @@ export const actions = {
         bessemer_process: {
             id: 'tech-bessemer_process',
             title: loc('tech_bessemer_process_title'),
-            desc: loc('tech_bessemer_process_desc'),
+            desc: loc('tech_bessemer_process_title'),
             reqs: { smelting: 3 },
             grant: ['smelting',4],
             cost: { 
@@ -3815,7 +3857,7 @@ export const actions = {
         oxygen_converter: {
             id: 'tech-oxygen_converter',
             title: loc('tech_oxygen_converter_title'),
-            desc: loc('tech_oxygen_converter_desc'),
+            desc: loc('tech_oxygen_converter_title'),
             reqs: { smelting: 4, high_tech: 3 },
             grant: ['smelting',5],
             cost: { 
@@ -3833,7 +3875,7 @@ export const actions = {
         electric_arc_furnace: {
             id: 'tech-electric_arc_furnace',
             title: loc('tech_electric_arc_furnace_title'),
-            desc: loc('tech_electric_arc_furnace_desc'),
+            desc: loc('tech_electric_arc_furnace_title'),
             reqs: { smelting: 5, high_tech: 4 },
             grant: ['smelting',6],
             cost: { 
@@ -3851,7 +3893,7 @@ export const actions = {
         rotary_kiln: {
             id: 'tech-rotary_kiln',
             title: loc('tech_rotary_kiln_title'),
-            desc: loc('tech_rotary_kiln_desc'),
+            desc: loc('tech_rotary_kiln_title'),
             reqs: { smelting: 3, high_tech: 3 },
             grant: ['copper',1],
             cost: { 
@@ -4062,7 +4104,7 @@ export const actions = {
         reinforced_crates: {
             id: 'tech-reinforced_crates',
             title: loc('tech_reinforced_crates_title'),
-            desc: loc('tech_reinforced_crates_desc'),
+            desc: loc('tech_reinforced_crates_title'),
             reqs: { container: 1, smelting: 2 },
             grant: ['container',2],
             cost: {
@@ -4099,7 +4141,7 @@ export const actions = {
         titanium_crates: {
             id: 'tech-titanium_crates',
             title: loc('tech_titanium_crates_title'),
-            desc: loc('tech_titanium_crates_desc'),
+            desc: loc('tech_titanium_crates_title'),
             reqs: { container: 3, titanium: 1 },
             grant: ['container',4],
             cost: {
@@ -4117,7 +4159,7 @@ export const actions = {
         mythril_crates: {
             id: 'tech-mythril_crates',
             title: loc('tech_mythril_crates_title'),
-            desc: loc('tech_mythril_crates_desc'),
+            desc: loc('tech_mythril_crates_title'),
             reqs: { container: 4, space: 3 },
             grant: ['container',5],
             cost: {
@@ -6485,7 +6527,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 2500; }
             },
-            effect: `<div>${loc('tech_fanaticism_effect1')}</div><div class="has-text-special">${loc('tech_fanaticism_effect2')}</div>`,
+            effect: `<div>${loc('tech_fanaticism_effect')}</div><div class="has-text-special">${loc('tech_fanaticism_warning')}</div>`,
             action(){
                 if (payCosts(actions.tech.fanaticism.cost)){
                     global.tech['fanaticism'] = 1;
@@ -6692,7 +6734,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 2500; }
             },
-            effect: `<div>${loc('tech_anthropology_effect1')}</div><div class="has-text-special">${loc('tech_anthropology_effect2')}</div>`,
+            effect: `<div>${loc('tech_anthropology_effect')}</div><div class="has-text-special">${loc('tech_anthropology_warning')}</div>`,
             action(){
                 if (payCosts(actions.tech.anthropology.cost)){
                     global.tech['anthropology'] = 1;
@@ -7256,7 +7298,7 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
-            effect(){ return `<div>${loc('tech_wc_conquest_effect1')}</div><div class="has-text-special">${loc('tech_unification_warn')}</div>`; },
+            effect(){ return `<div>${loc('tech_wc_conquest_effect')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
                 let rating = global.race['no_plasmid'] ? 525 : 600;
                 if (global.race['no_crispr']){
@@ -7286,7 +7328,7 @@ export const actions = {
             grant: ['unify',2],
             cost: {},
             effect(){
-                return `<div>${loc('tech_wc_morale_effect1',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warn')}</div>`;
+                return `<div>${loc('tech_wc_morale_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`;
             }, 
             action(){
                 let morale = global.race['no_plasmid'] ? 140 : 150;
@@ -7340,7 +7382,7 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {},
-            effect(){ return `<div>${loc('tech_wc_reject_effect1')}</div><div class="has-text-special">loc('tech_wc_reject_effect2')</div>`; },
+            effect(){ return `<div>${loc('tech_wc_reject_effect')}</div><div class="has-text-special">loc('tech_wc_reject_warning')</div>`; },
             action(){
                 if (payCosts(actions.tech.wc_reject.cost)){
                     global.tech['m_boost'] = 1;
@@ -7529,7 +7571,8 @@ export const actions = {
                     k_inc *= 1.015;
                 }
                 plasmid = challenge_multiplier(plasmid);
-                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div>`;
+                let phage = Math.floor(Math.log2(plasmid) * Math.E);
+                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
             },
             action(){
                 bioseed();
@@ -8622,6 +8665,35 @@ export function basicHousingLabel(){
     }
 }
 
+function mediumHousingLabel(){
+    switch (global.race.species){
+        case 'sporgar':
+            return loc('city_cottage_title2');
+        default:
+            return loc('city_cottage_title1');
+    }
+}
+
+function largeHousingLabel(){
+    switch (global.race.species){
+        case 'sporgar':
+            return loc('city_apartment_title2');
+        default:
+            return loc('city_apartment_title1');
+    }
+}
+
+function housingLabel(type){
+    switch (type){
+        case 'small':
+            return basicHousingLabel();
+        case 'medium':
+            return mediumHousingLabel();
+        case 'large':
+            return largeHousingLabel();
+    }
+}
+
 function sentience(){
     global.resource.RNA.display = false;
     global.resource.DNA.display = false;
@@ -8693,6 +8765,7 @@ function bioseed(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
+    let phage = global.race.Phage.count;
     let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 3);
     let k_base = global.stats.know;
@@ -8707,6 +8780,8 @@ function bioseed(){
     }
     new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;
+    let new_phage = Math.floor(Math.log2(new_plasmid) * Math.E);
+    phage += new_phage;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
@@ -8717,6 +8792,7 @@ function bioseed(){
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
     global.stats.plasmid += new_plasmid;
+    global.stats.phage += new_phage;
     unlockAchieve(`seeder`);
     let new_biome = unlockAchieve(`biome_${biome}`);
     let new_genus = unlockAchieve(`genus_${genus}`);
@@ -8725,6 +8801,7 @@ function bioseed(){
         gods: god,
         old_gods: old_god,
         Plasmid: { count: plasmid },
+        Phage: { count: phage },
         seeded: true,
         probes: global.starDock.probes.count + 1,
         seed: Math.floor(Math.random(0,10000)),
