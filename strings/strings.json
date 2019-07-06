@@ -1590,6 +1590,7 @@
   "resource_modal_container_assign_desc": "Assign container to this resource (+%0 cap)",
   "resource_modal_container_owned": "Containers Owned:",
   "resource_modal_container_assigned": "Containers Assigned:",
+  "space_mission_title": "%0 Mission",
   "space_mission_desc": "Launch the %0 mission",
   "space_support": "Requires %0 Support",
   "space_used_support": "-1 %0 Support",

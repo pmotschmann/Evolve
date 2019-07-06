@@ -871,10 +871,10 @@ const spaceProjects = {
         gas_mission: {
             id: 'space-gas_mission',
             title(){
-                return loc('space_mission_title',races[global.race.species].solar.gas);
+                return loc('space_mission_title',[races[global.race.species].solar.gas]);
             },
             desc(){
-                return loc('space_mission_desc',races[global.race.species].solar.gas);
+                return loc('space_mission_desc',[races[global.race.species].solar.gas]);
             },
             reqs: { space: 4, space_explore: 4 },
             grant: ['space',5],
