@@ -6666,7 +6666,10 @@ export const actions = {
                             global.race['suction_grip'] = 1;
                             break;
                         case 'balorg':
-                            global.race['suction_grip'] = 1;
+                            global.race['soul_infusion'] = 1;
+                            break;
+                        case 'imp':
+                            global.race['conniving'] = 1;
                             break;
                     }
                     return true;

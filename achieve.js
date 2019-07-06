@@ -388,12 +388,17 @@ export function drawAchieve(){
 }
 
 export function checkAchievements(){
-    if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'] < achieve_level){
+    let a_level = 1;
+    if (global.race['no_plasmid']){ a_level++; }
+    if (global.race['no_trade']){ a_level++; }
+    if (global.race['no_craft']){ a_level++; }
+    if (global.race['no_crispr']){ a_level++; }
+    if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'] < a_level){
         let total = 0;
         const keys = Object.keys(achievements)
         for (const key of keys) {
             if (key.includes('extinct_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key] >= achieve_level){
+                if (global.stats.achieve[key] && global.stats.achieve[key] >= a_level){
                     total++
                 }
             }
