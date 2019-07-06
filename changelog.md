@@ -1,5 +1,6 @@
 #### 0.4.21 - 7/6/2019 ####
 Fixed unlocking of mass extinction achievement<br>
+Fixed potential fuel consumption bug with power plants<br>
 
 #### 0.4.20 - 7/4/2019 ####
 Phage can now be earned from space resets, phage extends the plasmid diminishing return breakpoint<br>

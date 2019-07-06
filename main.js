@@ -660,7 +660,7 @@ function fastLoop(){
             let power = global.city.coal_power.on * actions.city.coal_power.powered;
             let consume = global.city.coal_power.on * 0.35;
             while ((consume * time_multiplier) > global.resource.Coal.amount && consume > 0){
-                power += actions.city.coal_power.powered;
+                power -= actions.city.coal_power.powered;
                 consume -= 0.35;
             }
             breakdown.p.consume.Coal['Powerplant'] = -(consume);
@@ -680,7 +680,7 @@ function fastLoop(){
             let power = global.city.oil_power.on * actions.city.oil_power.powered;
             let consume = global.city.oil_power.on * 0.65;
             while ((consume * time_multiplier) > global.resource.Oil.amount && consume > 0){
-                power += actions.city.oil_power.powered;
+                power -= actions.city.oil_power.powered;
                 consume -= 0.65;
             }
             breakdown.p.consume.Oil['Powerplant'] = -(consume);
@@ -695,7 +695,7 @@ function fastLoop(){
             let power = global.city.fission_power.on * output;
             let consume = global.city.fission_power.on * 0.1;
             while (consume * time_multiplier > global.resource.Uranium.amount && consume > 0){
-                power += output;
+                power -= output;
                 consume -= 0.1;
             }
             breakdown.p.consume.Uranium['Reactor'] = -(consume);
@@ -704,14 +704,14 @@ function fastLoop(){
             max_power += power;
             power_grid -= power;
         }
-        
+
         if (global.space['geothermal'] && global.space.geothermal.on > 0){
             let output = actions.space.spc_hell.geothermal.powered;
             let increment = fuel_adjust(0.5);
             let power = global.space.geothermal.on * output;
             let consume = (global.space.geothermal.on * increment);
             while (consume * time_multiplier > global.resource['Helium_3'].amount && consume > 0){
-                power += output;
+                power -= output;
                 consume -= increment;
             }
             breakdown.p.consume.Helium_3['Geothermal'] = -(consume);
