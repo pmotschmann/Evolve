@@ -284,8 +284,11 @@ if (global.race.species === 'protoplasm'){
             setPlanet();
         }
         else {
+            let hell = false;
             for (let i=0; i<global.race.probes; i++){
-                setPlanet();
+                if (setPlanet(hell) === 'hellscape'){
+                    hell = true;
+                }
             }
         }
     }
@@ -307,7 +310,7 @@ if (global.race.species === 'protoplasm'){
         addAction('evolution','chitin');
     }
     else {
-        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','sentience','bunker','plasmid','trade','craft','crispr'];
+        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','demonic','sentience','bunker','plasmid','trade','craft','crispr'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -3139,7 +3142,7 @@ function longLoop(){
     if (!global.race.seeded || (global.race.seeded && global.race['chose'])){
         if (Math.rand(0,global.event) === 0){
             var event_pool = [];
-            Object.keys(events).forEach(function (event) {
+            Object.keys(events).forEach(function (event){
                 var isOk = true;
                 Object.keys(events[event].reqs).forEach(function (req) {
                     switch(req){

@@ -947,7 +947,7 @@ export function plasmidBonus(){
     }
     let p_cap = 250 + global.race.Phage.count;
     if (plasmids > p_cap){
-        plasmid_bonus = (Math.log10(p_cap + 1) / 3.85) + ((Math.log(plasmids - p_cap - 1) / Math.LN2 / 250));
+        plasmid_bonus = (Math.log10(p_cap) / 3.85) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
     }
     else {
         plasmid_bonus = Math.log10(plasmids + 1) / 3.85;
@@ -959,5 +959,6 @@ export function plasmidBonus(){
         }
         plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
     }
+    console.log(plasmid_bonus);
     return plasmid_bonus;
 }

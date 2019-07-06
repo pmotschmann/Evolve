@@ -1,3 +1,7 @@
+#### 0.4.22 - 7/6/2019 ####
+Fixed issue with having exactly 251 Plasmids that would break your resources<br>
+Fixed issue with planet generation that caused it to always use the same seed<br>
+
 #### 0.4.21 - 7/6/2019 ####
 Fixed unlocking of mass extinction achievement<br>
 Fixed potential fuel consumption bug with power plants<br>

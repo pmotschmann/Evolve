@@ -435,6 +435,10 @@ export const actions = {
                         removeAction(actions.evolution.aquatic.id);
                         delete global.evolution.aquatic;
                     }
+                    if (global.city.biome === 'hellscape'){
+                        global.evolution['demonic'] = { count: 0 };
+                        addAction('evolution','demonic');
+                    }
                     global.evolution['humanoid'] = { count: 0 };
                     global.evolution['gigantism'] = { count: 0 };
                     global.evolution['dwarfism'] = { count: 0 };
@@ -467,6 +471,10 @@ export const actions = {
                     delete global.evolution.gigantism;
                     delete global.evolution.dwarfism;
                     delete global.evolution.animalism;
+                    if (global.city.biome === 'hellscape'){
+                        removeAction(actions.evolution.demonic.id);
+                        delete global.evolution.demonic;
+                    }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -505,6 +513,10 @@ export const actions = {
                     delete global.evolution.humanoid;
                     delete global.evolution.dwarfism;
                     delete global.evolution.animalism;
+                    if (global.city.biome === 'hellscape'){
+                        removeAction(actions.evolution.demonic.id);
+                        delete global.evolution.demonic;
+                    }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -543,6 +555,10 @@ export const actions = {
                     delete global.evolution.humanoid;
                     delete global.evolution.gigantism;
                     delete global.evolution.animalism;
+                    if (global.city.biome === 'hellscape'){
+                        removeAction(actions.evolution.demonic.id);
+                        delete global.evolution.demonic;
+                    }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -553,6 +569,86 @@ export const actions = {
                         addAction('evolution','kobold');
                         addAction('evolution','goblin');
                         addAction('evolution','gnome');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        animalism: {
+            id: 'evo-animalism',
+            title: loc('evo_animalism_title'),
+            desc: loc('evo_animalism_desc'),
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_animalism_effect'),
+            action(){
+                if (payCosts(actions.evolution.animalism.cost)){
+                    global.evolution['animalism'].count++;
+                    removeAction(actions.evolution.humanoid.id);
+                    removeAction(actions.evolution.gigantism.id);
+                    removeAction(actions.evolution.dwarfism.id);
+                    removeAction(actions.evolution.animalism.id);
+                    delete global.evolution.humanoid;
+                    delete global.evolution.gigantism;
+                    delete global.evolution.dwarfism;
+                    if (global.city.biome === 'hellscape'){
+                        removeAction(actions.evolution.demonic.id);
+                        delete global.evolution.demonic;
+                    }
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['cath'] = { count: 0 };
+                        global.evolution['wolven'] = { count: 0 };
+                        global.evolution['centaur'] = { count: 0 };
+                        addAction('evolution','cath');
+                        addAction('evolution','wolven');
+                        addAction('evolution','centaur');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        demonic: {
+            id: 'evo-demonic',
+            title: loc('evo_demonic_title'),
+            desc: loc('evo_demonic_desc'),
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_demonic_effect'),
+            action(){
+                if (payCosts(actions.evolution.demonic.cost)){
+                    global.evolution['demonic'].count++;
+                    removeAction(actions.evolution.humanoid.id);
+                    removeAction(actions.evolution.gigantism.id);
+                    removeAction(actions.evolution.dwarfism.id);
+                    removeAction(actions.evolution.animalism.id);
+                    removeAction(actions.evolution.demonic.id);
+                    delete global.evolution.humanoid;
+                    delete global.evolution.gigantism;
+                    delete global.evolution.dwarfism;
+                    delete global.evolution.animalism;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    if (global.race.seeded){
+                        global.evolution['balorg'] = { count: 0 };
+                        global.evolution['imp'] = { count: 0 };
+                        addAction('evolution','balorg');
+                        addAction('evolution','imp');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -589,44 +685,6 @@ export const actions = {
                         global.evolution['octigoran'] = { count: 0 };
                         addAction('evolution','sharkin');
                         addAction('evolution','octigoran');
-                    }
-                    if (global.genes['challenge']){
-                        global.evolution['bunker'] = { count: 0 };
-                        addAction('evolution','bunker');
-                    }
-                    evoProgress();
-                }
-                return false;
-            }
-        },
-        animalism: {
-            id: 'evo-animalism',
-            title: loc('evo_animalism_title'),
-            desc: loc('evo_animalism_desc'),
-            cost: {
-                DNA(){ return 260; }
-            },
-            effect: loc('evo_animalism_effect'),
-            action(){
-                if (payCosts(actions.evolution.animalism.cost)){
-                    global.evolution['animalism'].count++;
-                    removeAction(actions.evolution.humanoid.id);
-                    removeAction(actions.evolution.gigantism.id);
-                    removeAction(actions.evolution.dwarfism.id);
-                    removeAction(actions.evolution.animalism.id);
-                    delete global.evolution.humanoid;
-                    delete global.evolution.gigantism;
-                    delete global.evolution.dwarfism;
-                    global.evolution['sentience'] = { count: 0 };
-                    global.evolution['final'] = 100;
-                    addAction('evolution','sentience');
-                    if (global.race.seeded){
-                        global.evolution['cath'] = { count: 0 };
-                        global.evolution['wolven'] = { count: 0 };
-                        global.evolution['centaur'] = { count: 0 };
-                        addAction('evolution','cath');
-                        addAction('evolution','wolven');
-                        addAction('evolution','centaur');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -850,6 +908,14 @@ export const actions = {
                         }
                         else {
                             global.race.species = 'octigoran';
+                        }
+                    }
+                    else if (global.evolution['demonic']){
+                        if (path < 50){
+                            global.race.species = 'balorg';
+                        }
+                        else {
+                            global.race.species = 'imp';
                         }
                     }
                     else if (global.evolution['eggshell']){
@@ -7909,9 +7975,11 @@ export function setAction(c_action,action,type,old){
         });
 }
 
-export function setPlanet(){
+export function setPlanet(hell){
     var biome = 'grassland';
-    switch (Math.floor(Math.seededRandom(0,6))){
+    //let max_bound = !hell && global.stats.portals >= 10 ? 7 : 6;
+    let max_bound = 6;
+    switch (Math.floor(Math.seededRandom(0,max_bound))){
         case 0:
             biome = 'grassland';
             break;
@@ -7929,6 +7997,9 @@ export function setPlanet(){
             break;
         case 5:
             biome = 'tundra';
+            break;
+        case 6:
+            biome = 'hellscape';
             break;
         default:
             biome = 'grassland';
@@ -7969,7 +8040,7 @@ export function setPlanet(){
     var id = biome+Math.floor(Math.seededRandom(0,10000));
     id = id.charAt(0).toUpperCase() + id.slice(1);
 
-    var orbit = Math.floor(Math.seededRandom(200,600));
+    var orbit = biome === 'hellscape' ? 666 : Math.floor(Math.seededRandom(200,600));
 
     var parent = $(`<div id="${id}" class="action"></div>`);
     var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${id}</span></a>`);
@@ -8027,6 +8098,7 @@ export function setPlanet(){
             poppers[id].destroy();
             $(`#pop${id}`).remove();
         });
+    return biome;
 }
 
 function actionDesc(parent,c_action,old){
@@ -8807,7 +8879,7 @@ function bioseed(){
         Phage: { count: phage },
         seeded: true,
         probes: global.starDock.probes.count + 1,
-        seed: Math.floor(Math.random(0,10000)),
+        seed: Math.floor(Math.seededRandom(10000)),
     };
     global.city = {
         calendar: {
