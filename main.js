@@ -1975,7 +1975,7 @@ function fastLoop(){
 
         // Tax Income
         if (global.tech['currency'] >= 1){
-            let income_base = global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] ? 0 : global.civic.free);
+            let income_base = global.resource[races[global.race.species].name].amount + global.civic.garrison.workers - (global.race['carnivore'] || global.race['evil'] ? 0 : global.civic.free);
             income_base *= ( global.race['greedy'] ? 1.75 : 2 );
             income_base /= 5;
             
