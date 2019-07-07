@@ -1662,8 +1662,8 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe > 1 ? '$2000' : '$1000');
-                    return `<div>${loc('plus_max_citizens',[2])}</div><div>${loc('plus_max_resource',[safe,loc('resource_Money_name')])}</div>`;
+                    let safe = spatialReasoning(global.tech.home_safe > 1 ? '2000' : '1000');
+                    return `<div>${loc('plus_max_citizens',[2])}</div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
                     return loc('plus_max_citizens',[2]);
@@ -1694,11 +1694,11 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe > 1 ? '$5000' : '$2000');
-                    return `<div>${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[safe,loc('resource_Money_name')])}</div>`;
+                    let safe = spatialReasoning(global.tech.home_safe > 1 ? '5000' : '2000');
+                    return `<div>${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
-                    return loc('plus_max_resource',loc(5,'citizen'));
+                    return `${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}`;
                 }
             },
             powered: 1,
