@@ -67,6 +67,7 @@ const spaceProjects = {
                 }
             },
             reqs: { satellite: 1 },
+            not_trait: ['terrifying'],
             cost: {
                 Money(){ return costMultiplier('gps', 75000, 1.18); },
                 Knowledge(){ return costMultiplier('gps', 50000, 1.18); },

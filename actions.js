@@ -5182,7 +5182,7 @@ export const actions = {
             effect: loc('tech_mad_science_effect'),
             action(){
                 if (payCosts(actions.tech.mad_science.cost)){
-                    if (global.race['evil']){
+                    if (global.race['terrifying']){
                         global.civic['taxes'].display = true;
                     }
                     global.city['wardenclyffe'] = {
@@ -5257,6 +5257,10 @@ export const actions = {
             effect: loc('tech_electronics_effect'),
             action(){
                 if (payCosts(actions.tech.electronics.cost)){
+                    if (global.race['terrifying']){
+                        global.tech['gambling'] = 1;
+                        global.city['casino'] = { count: 0 };
+                    }
                     return true;
                 }
                 return false;
@@ -7267,6 +7271,7 @@ export const actions = {
             title: loc('tech_gps'),
             desc: loc('tech_gps_desc'),
             reqs: { space_explore: 1 },
+            not_trait: ['terrifying'],
             grant: ['satellite',1],
             cost: {
                 Knowledge(){ return 150000; }
