@@ -32,14 +32,14 @@ const arpaProjects = {
             let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? 8 : 4;
             if (global.tech['storage'] >= 6){
                 if (global.tech['particles'] && global.tech['particles'] >= 4){
-                    return loc('arpa_projects_lhc_effect3',[sc]);
+                    return loc('arpa_projects_lhc_effect3',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
                 }
                 else {
-                    return loc('arpa_projects_lhc_effect2',[sc]);
+                    return loc('arpa_projects_lhc_effect2',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
                 }
             }
             else {
-                return loc('arpa_projects_lhc_effect1',[sc]);
+                return loc('arpa_projects_lhc_effect1',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
             }
         },
         cost: {

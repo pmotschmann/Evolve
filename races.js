@@ -502,7 +502,7 @@ export const races = {
         entity: loc('race_balorg_entity'),
         traits: {
             fiery: 1,
-            soul_infusion: 1
+            terrifying: 1
         },
         solar: {
             red: 'Azzagrat',
@@ -520,7 +520,8 @@ export const races = {
         entity: loc('race_imp_entity'),
         traits: {
             compact: 1,
-            conniving: 1
+            conniving: 1,
+            pathetic: 1,
         },
         solar: {
             red: 'Avernus',
@@ -574,7 +575,7 @@ export const genus_traits = {
         low_light: 1
     },
     demonic: {
-        immortal: 1,
+        immoral: 1,
         evil: 1
     }
 };
@@ -658,6 +659,14 @@ export const traits = {
     },
     low_light: { // Farming effectiveness decreased
         desc: loc('trait_low_light'),
+        type: 'genus',
+    },
+    immoral: { // Warmonger is a bonus instead of a penalty
+        desc: loc('trait_immoral'),
+        type: 'genus',
+    },
+    evil: { // You are pure evil
+        desc: loc('trait_evil'),
         type: 'genus',
     },
     creative: { // A.R.P.A. Projects are cheaper
@@ -874,6 +883,26 @@ export const traits = {
     },
     suction_grip: { // Global productivity boost
         desc: loc('trait_suction_grip'),
+        type: 'major',
+    },
+    fiery: { // Major war bonus
+        desc: loc('trait_fiery'),
+        type: 'major',
+    },
+    terrifying: { // No one will trade with you
+        desc: loc('trait_terrifying'),
+        type: 'major',
+    },
+    compact: { // You hardly take up any space at all
+        desc: loc('trait_compact'),
+        type: 'major',
+    },
+    conniving: { // Better trade deals
+        desc: loc('trait_conniving'),
+        type: 'major',
+    },
+    pathetic: { // You suck at combat
+        desc: loc('trait_pathetic'),
         type: 'major',
     },
     tactical: { // War Bonus

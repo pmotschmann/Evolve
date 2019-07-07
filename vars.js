@@ -170,7 +170,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.21';
+global['version'] = '0.4.23';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -526,25 +526,25 @@ export function sizeApproximation(value,precision,fixed){
         return fixed ? +(value / 1000).toFixed(1) + 'K' : (Math.floor(value / 100) / 10) + 'K';
     }
     else if (value <= 1000000000){
-        return fixed ? +(value / 1000000).toFixed(1) + 'M' : (Math.floor(value / 100000) / 10) + 'M';
+        return fixed ? +(value / 1000000).toFixed(1) + 'M' : (Math.floor(value / 10000) / 100) + 'M';
     }
     else if (value <= 1000000000000){
-        return fixed ? +(value / 1000000000).toFixed(1) + 'G' : (Math.floor(value / 100000000) / 10) + 'G';
+        return fixed ? +(value / 1000000000).toFixed(1) + 'G' : (Math.floor(value / 10000000) / 100) + 'G';
     }
     else if (value <= 1000000000000000){
-        return fixed ? +(value / 1000000000000).toFixed(1) + 'T' : (Math.floor(value / 100000000000) / 10) + 'T';
+        return fixed ? +(value / 1000000000000).toFixed(1) + 'T' : (Math.floor(value / 10000000000) / 100) + 'T';
     }
     else if (value <= 1000000000000000000){
-        return fixed ? +(value / 1000000000000000).toFixed(1) + 'P' : (Math.floor(value / 100000000000000) / 10) + 'P';
+        return fixed ? +(value / 1000000000000000).toFixed(1) + 'P' : (Math.floor(value / 10000000000000) / 100) + 'P';
     }
     else if (value <= 1000000000000000000000){
-        return fixed ? +(value / 1000000000000000000).toFixed(1) + 'E' : (Math.floor(value / 100000000000000000) / 10) + 'E';
+        return fixed ? +(value / 1000000000000000000).toFixed(1) + 'E' : (Math.floor(value / 10000000000000000) / 100) + 'E';
     }
     else if (value <= 1000000000000000000000000){
-        return fixed ? +(value / 1000000000000000000000).toFixed(1) + 'Z' : (Math.floor(value / 100000000000000000000) / 10) + 'Z';
+        return fixed ? +(value / 1000000000000000000000).toFixed(1) + 'Z' : (Math.floor(value / 10000000000000000000) / 100) + 'Z';
     }
     else {
-        return fixed ? +(value / 1000000000000000000000000).toFixed(1) + 'Y' : (Math.floor(value / 100000000000000000000000) / 10) + 'Y';
+        return fixed ? +(value / 1000000000000000000000000).toFixed(1) + 'Y' : (Math.floor(value / 10000000000000000000000) / 100) + 'Y';
     }
 }
 
@@ -588,6 +588,7 @@ window.soft_reset = function reset(){
     let replace = {
         species : 'protoplasm', 
         Plasmid: { count: global.race.Plasmid.count },
+        Phage: { count: global.race.Phage.count },
         seeded: global.race.seeded,
         probes: global.race.probes,
         seed: global.race.seed,
