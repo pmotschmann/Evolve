@@ -8934,6 +8934,7 @@ function sentience(){
 
     var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
     if (global.race['evil']){
+        global.city['slaughter'] = 1;
         city_actions = ['slaughter'];
     }
     for (var i = 0; i < city_actions.length; i++) {
