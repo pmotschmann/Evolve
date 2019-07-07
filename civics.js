@@ -966,6 +966,7 @@ function warhead(){
         rapid_mutation: 1,
         ancient_ruins: 1,
         Plasmid: { count: plasmid },
+        Phage: { count: global.race.Phage.count },
         seeded: false,
     };
     global.city = {
