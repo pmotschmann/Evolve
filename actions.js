@@ -6848,7 +6848,7 @@ export const actions = {
                             global.race['suction_grip'] = 1;
                             break;
                         case 'balorg':
-                            global.race['soul_infusion'] = 1;
+                            global.race['fiery'] = 1;
                             break;
                         case 'imp':
                             global.race['conniving'] = 1;
