@@ -1,3 +1,6 @@
+#### 0.4.23 - 7/7/2019 ####
+Resources at the millions breakpoint and above are now shown with 2 significant decimal points<br>
+
 #### 0.4.22 - 7/6/2019 ####
 Fixed issue with having exactly 251 Plasmids that would break your resources<br>
 Fixed issue with planet generation that caused it to always use the same seed<br>
