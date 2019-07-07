@@ -1621,15 +1621,18 @@ export const actions = {
         slaughter: {
             id: 'city-slaughter',
             title: loc('city_evil'),
-            desc(){ return global.tech['primitive'] ? loc('city_evil_desc2') : loc('city_evil_desc1'); },
+            desc(){ return global.tech['primitive'] ? (global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1'); },
             reqs: {},
             trait: ['evil'],
             action(){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',global.race['strong'] ? 2 : 1);
+                    modRes('Lumber',1);
                 }
                 if(global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',global.race['strong'] ? 2 : 1);
+                    modRes('Food',1);
+                }
+                if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
+                    modRes('Furs',1);
                 }
                 return false;
             }
@@ -2038,43 +2041,43 @@ export const actions = {
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
                     let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Lumber_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Lumber.name}. `;
                 }
                 if (global.resource.Stone.display){
                     let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Stone_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Stone.name}. `;
                 }
                 if (global.resource.Furs.display){
                     let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Furs_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Furs.name}. `;
                 }
                 if (global.resource.Copper.display){
                     let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Copper_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Copper.name}. `;
                 }
                 if (global.resource.Iron.display){
                     let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Iron_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Iron.name}. `;
                 }
                 if (global.resource.Aluminium.display){
                     let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Aluminium_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Aluminium.name}. `;
                 }
                 if (global.resource.Cement.display){
                     let val = sizeApproximation(+(spatialReasoning(100) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Cement_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Cement.name}. `;
                 }
                 if (global.resource.Coal.display){
                     let val = sizeApproximation(+(spatialReasoning(75) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Coal_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Coal.name}. `;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
                     let val = sizeApproximation(+(spatialReasoning(40) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Steel_name')}. `;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Steel.name}. `;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
                     let val = sizeApproximation(+(spatialReasoning(20) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${loc('resource_Titanium_name')}.`;
+                    storage = storage + `+${val} ${loc('max')} ${global.resource.Titanium.name}.`;
                 }
                 return storage;
             },
@@ -2259,7 +2262,7 @@ export const actions = {
             effect:  function(){
                 let lum = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('plus_max_resource',[lum,loc('resource_Lumber_name')])}</div>`;
+                return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
             },
             action(){
                 if (payCosts(actions.city.lumber_yard.cost)){
@@ -2285,7 +2288,7 @@ export const actions = {
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = spatialReasoning(200);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
-                let desc = `<div>${loc('plus_max_resource',[lum,loc('resource_Lumber_name')])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
                     desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`; 
                 }
@@ -2323,10 +2326,10 @@ export const actions = {
                 let stone = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole * 0.05))) };
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,loc('resource_Stone_name')])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
                 }
                 else {
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,loc('resource_Stone_name')])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>`;
                 }
             },
             powered: 1,
@@ -8838,6 +8841,12 @@ export function basicHousingLabel(){
             return loc('city_basic_housing_title5');
         case 'sporgar':
             return loc('city_basic_housing_title6');
+        case 'dracnid':
+            return loc('city_basic_housing_title7');
+        case 'balorg':
+            return loc('city_basic_housing_title7');
+        case 'imp':
+            return loc('city_basic_housing_title8');
         default:
             return loc('city_basic_housing_title1');
     }
@@ -8847,6 +8856,10 @@ function mediumHousingLabel(){
     switch (global.race.species){
         case 'sporgar':
             return loc('city_cottage_title2');
+        case 'balorg':
+            return loc('city_basic_housing_title3');
+        case 'imp':
+            return loc('city_basic_housing_title7');
         default:
             return loc('city_cottage_title1');
     }
@@ -8856,6 +8869,10 @@ function largeHousingLabel(){
     switch (global.race.species){
         case 'sporgar':
             return loc('city_apartment_title2');
+        case 'balorg':
+            return loc('city_apartment_title3');
+        case 'imp':
+            return loc('city_apartment_title3');
         default:
             return loc('city_apartment_title1');
     }

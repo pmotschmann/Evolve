@@ -285,7 +285,7 @@ const spaceProjects = {
                 Iridium(){ return costMultiplier('observatory', 1250, 1.32); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}<</div><div>${loc('space_moon_observatory_effect2')}<</div>`;
+                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect2')}</div>`;
             },
             support: -1,
             powered: 1,
@@ -457,14 +457,14 @@ const spaceProjects = {
                 let titanium = +(spatialReasoning(3500) * multiplier).toFixed(0);
                 let alloy = +(spatialReasoning(2500) * multiplier).toFixed(0);
                 
-                let desc = `<div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div><div>${loc('plus_max_resource',[copper,loc('resource_Copper_name')])}</div><div>${loc('plus_max_resource',[iron,loc('resource_Iron_name')])}</div><div>${loc('plus_max_resource',[cement,loc('resource_Cement_name')])}</div><div>${loc('plus_max_resource',[steel,loc('resource_Steel_name')])}</div><div>${loc('plus_max_resource',[titanium,loc('resource_Titanium_name')])}</div><div>${loc('plus_max_resource',[alloy,loc('resource_Alloy_name')])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div><div>${loc('plus_max_resource',[copper,global.resource.Copper.name])}</div><div>${loc('plus_max_resource',[iron,global.resource.Iron.name])}</div><div>${loc('plus_max_resource',[cement,global.resource.Cement.name])}</div><div>${loc('plus_max_resource',[steel,global.resource.Steel.name])}</div><div>${loc('plus_max_resource',[titanium,global.resource.Titanium.name])}</div><div>${loc('plus_max_resource',[alloy,global.resource.Alloy.name])}</div>`;
                 if (global.resource.Nano_Tube.display){
                     let nano = +(spatialReasoning(25000) * multiplier).toFixed(0);
-                    desc = desc + `<div>${loc('plus_max_resource',[nano,loc('resource_Nano_Tube_name')])}</div>`
+                    desc = desc + `<div>${loc('plus_max_resource',[nano,global.resource.Nano_Tube.name])}</div>`
                 }
                 if (global.resource.Neutronium.display){
                     let neutronium = +(spatialReasoning(125) * multiplier).toFixed(0);
-                    desc = desc + `<div>${loc('plus_max_resource',[neutronium,loc('resource_Neutronium_name')])}</div>`
+                    desc = desc + `<div>${loc('plus_max_resource',[neutronium,global.resource.Neutronium.name])}</div>`
                 }
                 return desc;
             },
@@ -501,7 +501,7 @@ const spaceProjects = {
                 Iron(){ return costMultiplier('red_mine', 33000, 1.32); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect1')}</div><div>${loc('space_red_mine_effect2')}</div>`;
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[0.25,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[0.02,global.resource.Titanium.name])}</div>`;
             },
             support: -1,
             powered: 1,

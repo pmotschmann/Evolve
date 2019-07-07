@@ -351,6 +351,8 @@ else {
 setupStats();
 q_check();
 
+global.race['immoral'] = 1;
+
 var fed = true;
 
 var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
@@ -588,12 +590,13 @@ function fastLoop(){
         morale += global.race['submerged'] ? 0 : weather_morale;
 
         let stress = 0;
-        if (!global.race['carnivore']){
+        if (!global.race['carnivore'] && !global.race['evil']){
             morale -= global.civic.free;
             global.city.morale.unemployed = -(global.civic.free);
         }
         else {
             stress -= Math.round(global.civic.free / 5);
+            global.city.morale.unemployed = 0;
         }
 
         if (global.race['optimistic']){
@@ -973,7 +976,8 @@ function fastLoop(){
         morale -= global.civic.taxes.tax_rate - 20;
 
         if (!global.race['frenzy'] && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
-            global.city.morale.warmonger = -(Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue)));
+            let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue));
+            global.city.morale.warmonger = global.race['immoral'] ? warmonger : -(warmonger);
             morale += global.city.morale.warmonger;
         }
         else {
@@ -1023,8 +1027,8 @@ function fastLoop(){
             let food_bd = {};
             let food_base = 0;
             if (global.race['carnivore'] || global.race['evil']){
-                let strength = global.tech['military'] ? global.tech.military : 1;
-                food_base = global.civic.free * strength * 2;
+                let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 1);
                 food_bd['Hunters'] = food_base + 'v';
 
                 if (global.city['soul_well']){
@@ -1218,13 +1222,21 @@ function fastLoop(){
         // Furs
         if (global.resource.Furs.display){
             let fur_bd = {};
+
+            if (global.race['evil']){
+                let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                let hunters = global.civic.free * weapons / 20;
+                fur_bd['Hunters'] = hunters  + 'v';
+                modRes('Furs', hunters * hunger * global_multiplier * time_multiplier);
+            }
+
             let hunting = armyRating(global.civic.garrison.workers,'hunting') / 10;
+            fur_bd['Soldiers'] = hunting  + 'v';
+            fur_bd['Hunger'] = ((hunger - 1) * 100) + '%';
 
             let delta = hunting;
             delta *= hunger * global_multiplier;
 
-            fur_bd['Soldiers'] = hunting  + 'v';
-            fur_bd['Hunger'] = ((hunger - 1) * 100) + '%';
             breakdown.p['Furs'] = fur_bd;
 
             modRes('Furs', delta * time_multiplier);
@@ -1639,31 +1651,43 @@ function fastLoop(){
 
         // Lumber
         { //block scope
-            let lumber_base = global.civic.lumberjack.workers;
-            lumber_base *= global.city.biome === 'forest' ? 1.1 : 1;
-            lumber_base *= global.civic.lumberjack.impact;
-            lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-            lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
+            if (global.race['evil']){
+                let lumber_bd = {};
+                let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                let hunters = global.civic.free * weapons / 2;
 
-            let power_mult = 1;
-            if (global.city.powered && global.city.sawmill && p_on['sawmill']){
-                power_mult += (p_on['sawmill'] * 0.04);
+                lumber_bd['Hunters'] = hunters  + 'v';
+                lumber_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Lumber'] = lumber_bd;
+                modRes('Lumber', hunters * hunger * global_multiplier * time_multiplier);
             }
-            let lumber_yard = 1;
-            if (global.city['lumber_yard']){
-                lumber_yard += global.city['lumber_yard'].count * 0.02;
+            else {
+                let lumber_base = global.civic.lumberjack.workers;
+                lumber_base *= global.city.biome === 'forest' ? 1.1 : 1;
+                lumber_base *= global.civic.lumberjack.impact;
+                lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
+                lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
+
+                let power_mult = 1;
+                if (global.city.powered && global.city.sawmill && p_on['sawmill']){
+                    power_mult += (p_on['sawmill'] * 0.04);
+                }
+                let lumber_yard = 1;
+                if (global.city['lumber_yard']){
+                    lumber_yard += global.city['lumber_yard'].count * 0.02;
+                }
+
+                let delta = lumber_base * power_mult * lumber_yard;
+                delta *= hunger * global_multiplier;
+
+                let lumber_bd = {};
+                lumber_bd['Lumberjacks'] = lumber_base + 'v';
+                lumber_bd['Lumber_Yard'] = ((lumber_yard - 1) * 100) + '%';
+                lumber_bd['Sawmill'] = ((power_mult - 1) * 100) + '%';
+                lumber_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Lumber'] = lumber_bd;
+                modRes('Lumber', delta * time_multiplier);
             }
-
-            let delta = lumber_base * power_mult * lumber_yard;
-            delta *= hunger * global_multiplier;
-
-            let lumber_bd = {};
-            lumber_bd['Lumberjacks'] = lumber_base + 'v';
-            lumber_bd['Lumber_Yard'] = ((lumber_yard - 1) * 100) + '%';
-            lumber_bd['Sawmill'] = ((power_mult - 1) * 100) + '%';
-            lumber_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            breakdown.p['Lumber'] = lumber_bd;
-            modRes('Lumber', delta * time_multiplier);
         }
         
         // Stone
@@ -3182,6 +3206,11 @@ function longLoop(){
                             break;
                         case 'trait':
                             if (!global.race[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'notrait':
+                            if (global.race[events[event].reqs[req]]){
                                 isOk = false;
                             }
                             break;
