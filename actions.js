@@ -194,7 +194,7 @@ export const actions = {
             cost: {
                 DNA(){ return 175; }
             },
-            effect: loc('evo_chloroplasts_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_chloroplasts_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_chloroplasts_effect'); },
             action(){
                 if (payCosts(actions.evolution.chloroplasts.cost)){
                     global.evolution['chloroplasts'].count++;
@@ -218,7 +218,7 @@ export const actions = {
             cost: {
                 DNA(){ return 175; }
             },
-            effect: loc('evo_chitin_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_chitin_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_chitin_effect'); },
             action(){
                 if (payCosts(actions.evolution.chitin.cost)){
                     global.evolution['chitin'].count++;
@@ -377,12 +377,12 @@ export const actions = {
         },
         athropods: {
             id: 'evo-athropods',
-            title: loc('evo_bryophyte_title'),
+            title: loc('evo_athropods_title'),
             desc: loc('evo_athropods_desc'),
             cost: {
                 DNA(){ return 260; }
             },
-            effect: loc('evo_athropods_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_athropods_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_athropods_effect'); },
             action(){
                 if (payCosts(actions.evolution.athropods.cost)){
                     global.evolution['athropods'].count++;
@@ -460,7 +460,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect: loc('evo_humanoid_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_humanoid_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_humanoid_effect'); },
             action(){
                 if (payCosts(actions.evolution.humanoid.cost)){
                     global.evolution['humanoid'].count++;
@@ -502,7 +502,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect: loc('evo_gigantism_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_gigantism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_gigantism_effect'); },
             action(){
                 if (payCosts(actions.evolution.gigantism.cost)){
                     global.evolution['gigantism'].count++;
@@ -544,7 +544,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect: loc('evo_dwarfism_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_dwarfism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_dwarfism_effect'); },
             action(){
                 if (payCosts(actions.evolution.dwarfism.cost)){
                     global.evolution['dwarfism'].count++;
@@ -586,7 +586,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect: loc('evo_animalism_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_animalism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_animalism_effect'); },
             action(){
                 if (payCosts(actions.evolution.animalism.cost)){
                     global.evolution['animalism'].count++;
@@ -702,7 +702,7 @@ export const actions = {
             cost: {
                 DNA(){ return 245; }
             },
-            effect: loc('evo_eggshell_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_eggshell_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_eggshell_effect'); },
             action(){
                 if (payCosts(actions.evolution.eggshell.cost)){
                     global.evolution['eggshell'].count++;
