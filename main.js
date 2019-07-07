@@ -3078,6 +3078,9 @@ function longLoop(){
                     if (global.city.calendar.season === 1 && new_temp === 0){
                         new_temp = 1;
                     }
+                    if (new_temp === 0 && global.city.biome === 'hellscape'){
+                        new_temp = 1;
+                    }
                     global.city.calendar.temp = new_temp;
                 }
                 else if (temp === 2){
