@@ -706,12 +706,9 @@ function drawModal(name,color){
         },
         methods: {
             buildCrateLabel: function(){
-                if (global.race['kindling_kindred']){
-                    return loc('resource_modal_crate_construct_kind_desc');
-                }
-                else {
-                    return loc('resource_modal_crate_construct_desc');
-                }
+                let material = global.race['kindling_kindred'] ? global.resource.Stone.name : global.resource.Plywood.name;
+                let cost = global.race['kindling_kindred'] ? 200 : 10
+                return loc('resource_modal_crate_construct_desc',[cost,material]);
             },
             removeCrateLabel: function(){
                 let cap = crateValue();

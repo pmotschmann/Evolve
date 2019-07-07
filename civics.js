@@ -507,7 +507,7 @@ export function buildGarrison(garrison){
                     if (titanium > 0){
                         titanium = lootModify(titanium);
                         global.resource.Titanium.display = true;
-                        loot = loot + loc('civics_garrison_quant_res',[steel,global.resource.Titanium.name]);
+                        loot = loot + loc('civics_garrison_quant_res',[titanium,global.resource.Titanium.name]);
                         modRes('Titanium',titanium);
                     }
 
@@ -802,11 +802,11 @@ export function armyRating(val,type){
         if (global.race['apex_predator']){
             army = Math.floor(army * 1.25);
         }
+        if (global.race['fiery']){
+            army = Math.floor(army * 1.65);
+        }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
-        }
-        if (global.race['fiery']){
-            army = Math.floor(army * 1.5);
         }
         if (global.race['parasite']){
             if (val === 1){

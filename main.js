@@ -1540,7 +1540,8 @@ function fastLoop(){
                     iron_smelter--;
                 }
             }
-            while (consume_wood * time_multiplier > global.resource.Lumber.amount && consume_wood > 0){
+            let l_type = global.race['evil'] ? 'Food' : 'Lumber';
+            while (consume_wood * time_multiplier > global.resource[l_type].amount && consume_wood > 0){
                 consume_wood -= 3;
                 if (steel_smelter > 0){
                     steel_smelter--;
@@ -1579,11 +1580,16 @@ function fastLoop(){
                 iron_smelter *= 1 + (oil_bonus / 200);
             }
 
-            breakdown.p.consume.Lumber['Smelter'] = -(consume_wood);
+            if (global.race['evil']){
+                breakdown.p.consume.Food['Smelter'] = -(consume_wood);
+            }
+            else {
+                breakdown.p.consume.Lumber['Smelter'] = -(consume_wood);
+            }
             breakdown.p.consume.Coal['Smelter'] = -(consume_coal);
             breakdown.p.consume.Oil['Smelter'] = -(consume_oil);
 
-            modRes('Lumber', -(consume_wood * time_multiplier));
+            modRes(l_type, -(consume_wood * time_multiplier));
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
 

@@ -8486,7 +8486,8 @@ function smelterModal(modal){
     modal.append(fuelTypes);
 
     if (!global.race['kindling_kindred']){
-        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">${loc('resource_Lumber_name')} {{ Wood }}</span></b-tooltip>`);
+        let f_label = global.race['evil'] ? global.resource.Food.name : global.resource.Lumber.name;
+        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">${f_label} {{ Wood }}</span></b-tooltip>`);
         let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
         let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
         fuelTypes.append(subWood);
@@ -8495,7 +8496,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">${loc('resource_Coal_name')} {{ Coal }}</span></b-tooltip>`);
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
         let subCoal = $('<span class="sub" @click="subCoal">&laquo;</span>');
         let addCoal = $('<span class="add" @click="addCoal">&raquo;</span>');
         fuelTypes.append(subCoal);
@@ -8504,7 +8505,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">${loc('resource_Oil_name')} {{ Oil }}</span></b-tooltip>`);
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
         let subOil = $('<span class="sub" @click="subOil">&laquo;</span>');
         let addOil = $('<span class="add" @click="addOil">&raquo;</span>');
         fuelTypes.append(subOil);
@@ -8672,7 +8673,7 @@ function smelterModal(modal){
             buildLabel: function(type){
                 switch(type){
                     case 'wood':
-                        return loc('modal_build_wood',[loc('resource_Lumber_name')]);
+                        return loc('modal_build_wood',[global.race['evil'] ? loc('resource_Souls_name') : loc('resource_Lumber_name')]);
                     case 'coal':
                         let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
                         if (global.tech['uranium'] && global.tech['uranium'] >= 3){
