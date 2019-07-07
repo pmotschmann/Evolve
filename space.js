@@ -278,11 +278,11 @@ const spaceProjects = {
             desc: `<div>${loc('space_moon_observatory_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
             reqs: { science: 9, luna: 1 },
             cost: {
-                Money(){ return costMultiplier('observatory', 200000, 1.32); },
-                Knowledge(){ return costMultiplier('observatory', 72000, 1.32); },
-                Stone(){ return costMultiplier('observatory', 125000, 1.32); },
-                Iron(){ return costMultiplier('observatory', 65000, 1.32); },
-                Iridium(){ return costMultiplier('observatory', 1250, 1.32); }
+                Money(){ return costMultiplier('observatory', 200000, 1.3); },
+                Knowledge(){ return costMultiplier('observatory', 69000, 1.3); },
+                Stone(){ return costMultiplier('observatory', 125000, 1.3); },
+                Iron(){ return costMultiplier('observatory', 65000, 1.3); },
+                Iridium(){ return costMultiplier('observatory', 1250, 1.3); }
             },
             effect(){
                 return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect2')}</div>`;
@@ -1556,9 +1556,11 @@ export function space(){
 }
 
 function costMultiplier(action,base,mutiplier){
-    if (global.genes['creep']){
+    if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }
+    if (global.race['small']){ mutiplier -= 0.005; }
+    if (global.race['compact']){ mutiplier -= 0.01; }
     if (mutiplier < 0.01){
         mutiplier = 0.01;
     }
