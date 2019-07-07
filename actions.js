@@ -1978,7 +1978,7 @@ export const actions = {
                 Money(){ return costMultiplier('boot_camp', 50000, 1.32); },
                 Lumber(){ return costMultiplier('boot_camp', 21500, 1.32); },
                 Aluminium(){ return costMultiplier('boot_camp', 12000, 1.32); },
-                Brick(){ return costMultiplier('boot_camp', 2800, 1.32); }
+                Brick(){ return costMultiplier('boot_camp', 1400, 1.32); }
             },
             effect(){
                 return loc('city_boot_camp_effect',[5]);
@@ -8088,8 +8088,7 @@ export function setAction(c_action,action,type,old){
 
 export function setPlanet(hell){
     var biome = 'grassland';
-    //let max_bound = !hell && global.stats.portals >= 10 ? 7 : 6;
-    let max_bound = 6;
+    let max_bound = !hell && global.stats.portals >= 10 ? 7 : 6;
     switch (Math.floor(Math.seededRandom(0,max_bound))){
         case 0:
             biome = 'grassland';
