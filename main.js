@@ -1028,7 +1028,7 @@ function fastLoop(){
             let food_base = 0;
             if (global.race['carnivore'] || global.race['evil']){
                 let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 1);
+                food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 0.5);
                 food_bd['Hunters'] = food_base + 'v';
 
                 if (global.city['soul_well']){
@@ -1656,10 +1656,14 @@ function fastLoop(){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.free * weapons / 2;
 
+                let soldiers = armyRating(global.civic.garrison.workers,'hunting') / 3;
+
                 lumber_bd['Hunters'] = hunters  + 'v';
+                lumber_bd['Soldiers'] = soldiers  + 'v';
                 lumber_bd['Hunger'] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Lumber'] = lumber_bd;
                 modRes('Lumber', hunters * hunger * global_multiplier * time_multiplier);
+                modRes('Lumber', soldiers * hunger * global_multiplier * time_multiplier);
             }
             else {
                 let lumber_base = global.civic.lumberjack.workers;

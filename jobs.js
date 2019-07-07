@@ -246,7 +246,7 @@ export function loadFoundry(){
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
-                let name = res.replace("_", " ");
+                let name = global.resource[res].name;
                 let resource = $(`<div class="job"></div>`);
                 $('#foundry').append(resource);
 
@@ -300,7 +300,7 @@ export function loadFoundry(){
                 hover(res){
                     var popper = $(`<div id="popCraft${res}" class="popper has-background-light has-text-dark"></div>`);
                     $('#main').append(popper);
-                    let name = res.replace("_", " ");
+                    let name = global.resource[res].name;
                     let multiplier = craftingRatio(res);
                     if (global.tech['v_train']){
                         multiplier *= 2;
@@ -315,7 +315,7 @@ export function loadFoundry(){
                     popper.append($(`<div>+${final} ${name}/cycle</div>`));
                     for (let i=0; i<craftCost[res].length; i++){
                         let cost = +(craftCost[res][i].a * global.city.foundry[res]).toFixed(2);
-                        popper.append($(`<div>-${cost} ${craftCost[res][i].r}/cycle<div>`));
+                        popper.append($(`<div>-${cost} ${global.resource[craftCost[res][i].r].name}/cycle<div>`));
                     }
     
                     popper.show();

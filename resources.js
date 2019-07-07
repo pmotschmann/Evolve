@@ -185,6 +185,9 @@ function loadResource(name,max,rate,tradable,stackable,color){
             case 'Food':
                 global['resource'][name].name = 'Souls';
                 break;
+            case 'Plywood':
+                global['resource'][name].name = 'Boneweave';
+                break;
         }
     }
 
@@ -303,7 +306,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 let costs = '';
                 for (let i=0; i<craftCost[res].length; i++){
                     let num = vol * craftCost[res][i].a * keyMultiplier();
-                    costs = costs + `<div>${craftCost[res][i].r} ${num}</div>`;
+                    costs = costs + `<div>${global.resource[craftCost[res][i].r].name} ${num}</div>`;
                 }
                 return costs;
             },
@@ -316,7 +319,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
 
                 for (let i=0; i<craftCost[res].length; i++){
                     let num = typeof vol === 'number' ? vol * craftCost[res][i].a : vol;
-                    popper.append($(`<div>${craftCost[res][i].r} <span class="craft" data-val="${num}">${num}</span></div>`));
+                    popper.append($(`<div>${global.resource[craftCost[res][i].r].name} <span class="craft" data-val="${num}">${num}</span></div>`));
                 }
 
                 popper.show();

@@ -116,6 +116,8 @@ export function buildGarrison(garrison){
     var bunks = $('<div class="column"></div>');
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+    
+    
     bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>`));
     bunks.append($('<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>Wounded</span></b-tooltip> <span>{{ wounded }}</span></div>'));
 
@@ -639,29 +641,6 @@ export function buildGarrison(garrison){
                 else {
                     return loc('civics_garrison_advantage',[+((1 - (enemy / army)) * 100).toFixed(1)]);
                 }
-
-                /*
-                if (army * 2 < enemy){
-                    return loc('civics_garrison_advice1');
-                }
-                else if (army * 1.5 < enemy){
-                    return loc('civics_garrison_advice2');
-                }
-                else if (army * 1.1 < enemy){
-                    return loc('civics_garrison_advice3');
-                }
-                else if (army > enemy * 2){
-                    return loc('civics_garrison_advice7');
-                }
-                else if (army > enemy * 1.5){
-                    return loc('civics_garrison_advice6');
-                }
-                else if (army > enemy * 1.1){
-                    return loc('civics_garrison_advice5');
-                }
-                else {
-                    return loc('civics_garrison_advice4');
-                }*/
             },
             armyLabel(){
                 return loc('civics_garrison_army_label');
@@ -670,9 +649,15 @@ export function buildGarrison(garrison){
                 let rating = armyRating(global.civic.garrison.workers,'hunting');
                 let food = +(rating / 3).toFixed(2);
                 let fur = +(rating / 10).toFixed(2);
-                return global.race['herbivore']
-                    ? loc('civics_garrison_soldier_desc_herb',[fur])
-                    : loc('civics_garrison_soldier_desc',[food,fur]);
+                if (global.race['evil']){
+                    let bones = +(armyRating(global.civic.garrison.workers,'hunting') / 3).toFixed(2);
+                    return loc('civics_garrison_evil_soldier_desc',[food,fur,bones]);
+                }
+                else {
+                    return global.race['herbivore']
+                        ? loc('civics_garrison_soldier_desc_herb',[fur])
+                        : loc('civics_garrison_soldier_desc',[food,fur]);
+                }
             },
             woundedDesc(){
                 return loc('civics_garrison_wounded_desc');
