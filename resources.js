@@ -174,6 +174,20 @@ function loadResource(name,max,rate,tradable,stackable,color){
         global['resource'][name].name = name === races[global.race.species].name? name : (name === 'Money' ? '$' : loc(`resource_${name}_name`));
     }
 
+    if (global.race['evil']){
+        switch(name){
+            case 'Lumber':
+                global['resource'][name].name = 'Bones';
+                break;
+            case 'Furs':
+                global['resource'][name].name = 'Flesh';
+                break;
+            case 'Food':
+                global['resource'][name].name = 'Souls';
+                break;
+        }
+    }
+
     if (vues[`res_${name}`]){
         vues[`res_${name}`].$destroy();
     }
@@ -959,6 +973,5 @@ export function plasmidBonus(){
         }
         plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
     }
-    console.log(plasmid_bonus);
     return plasmid_bonus;
 }

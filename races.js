@@ -502,7 +502,7 @@ export const races = {
         entity: loc('race_balorg_entity'),
         traits: {
             fiery: 1,
-            soul_infusion: 1
+            terrifying: 1
         },
         solar: {
             red: 'Azzagrat',
@@ -574,7 +574,7 @@ export const genus_traits = {
         low_light: 1
     },
     demonic: {
-        immortal: 1,
+        immoral: 1,
         evil: 1
     }
 };

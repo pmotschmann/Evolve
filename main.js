@@ -1022,15 +1022,22 @@ function fastLoop(){
         if (global.resource[races[global.race.species].name].amount >= 1 || global.city['farm'] || global.city['tourist_center']){
             let food_bd = {};
             let food_base = 0;
-            if (global.race['carnivore']){
+            if (global.race['carnivore'] || global.race['evil']){
                 let strength = global.tech['military'] ? global.tech.military : 1;
                 food_base = global.civic.free * strength * 2;
                 food_bd['Hunters'] = food_base + 'v';
+
+                if (global.city['soul_well']){
+                    let souls = global.city['soul_well'].count * 2;
+                    food_bd['Soul_Well'] = souls + 'v';
+                    food_base += souls;
+                }
             }
             else {
                 let farmers_base = global.civic.farmer.workers * global.civic.farmer.impact;
                 farmers_base *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
                 farmers_base *= global.city.biome === 'grassland' ? 1.1 : 1;
+                farmers_base *= global.city.biome === 'hellscape' ? 0.25 : 1;
                 farmers_base *= racialTrait(global.civic.farmer.workers,'farmer');
                 farmers_base *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                 farmers_base *= global.race['low_light'] ? 0.9 : 1;
@@ -1061,6 +1068,7 @@ function fastLoop(){
                 if (global.city['farm']){
                     farm = global.city['farm'].count * (global.tech['agriculture'] >= 2 ? 1.25 : 0.75);
                     farm *= global.city.biome === 'grassland' ? 1.1 : 1;
+                    farm *= global.city.biome === 'hellscape' ? 0.25 : 1;
                     farm *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                     farm *= global.race['low_light'] ? 0.9 : 1;
                 }
@@ -2392,6 +2400,12 @@ function midLoop(){
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
             caps['Food'] += gain;
             bd_Food['Silo'] = gain+'v';
+        }
+        if (global.city['soul_well']){
+            let gain = (global.city['soul_well'].count * spatialReasoning(500));
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            caps['Food'] += gain;
+            bd_Food['Soul_Well'] = gain+'v';
         }
         if (global.city['smokehouse']){
             let gain = (global.city['smokehouse'].count * spatialReasoning(500));
