@@ -805,6 +805,9 @@ export function armyRating(val,type){
         if (global.race['fiery']){
             army = Math.floor(army * 1.65);
         }
+        if (global.race['pathetic']){
+            army = Math.floor(army * 0.75);
+        }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
         }

@@ -427,6 +427,9 @@ function marketItem(vue,mount,market_item,name,color,full){
                 if (!global.race['no_trade']){
                     let qty = Number(vues['market_qty'].qty);
                     let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+                    if (global.race['conniving']){
+                        value *= 0.95;
+                    } 
                     var price = Math.round(value * qty);
                     if (global.resource.Money.amount >= price){
                         global.resource[res].amount += qty;
@@ -441,6 +444,9 @@ function marketItem(vue,mount,market_item,name,color,full){
                     var qty = Number(vues['market_qty'].qty);
                     if (global.resource[res].amount >= qty){
                         let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                        if (global.race['conniving']){
+                            value -= 0.5;
+                        } 
                         let price = Math.round(global.resource[res].value * qty / divide);
                         global.resource[res].amount -= qty;
                         global.resource.Money.amount += price;
@@ -522,8 +528,11 @@ function marketItem(vue,mount,market_item,name,color,full){
     vues[vue].$mount(mount);
 }
 
-function tradeSellPrice(res){
+export function tradeSellPrice(res){
     let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+    if (global.race['conniving']){
+        divide--;
+    }
     let price = Math.round(global.resource[res].value * tradeRatio[res] / divide);
     
     if (global.city['wharf']){
@@ -535,8 +544,11 @@ function tradeSellPrice(res){
     return price;
 }
 
-function tradeBuyPrice(res){
+export function tradeBuyPrice(res){
     let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+    if (global.race['conniving']){
+        rate *= 0.9;
+    }    
     let price = Math.round(rate * tradeRatio[res]);
 
     if (global.city['wharf']){

@@ -2,7 +2,7 @@ import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultip
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
 import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate, setPlanet } from './actions.js';
@@ -618,15 +618,7 @@ function fastLoop(){
         if (global.tech['trade']){
             Object.keys(global.resource).forEach(function (res){
                 if (global.resource[res].trade > 0){
-                    let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
-                    let price = Math.round(global.resource[res].trade * rate * tradeRatio[res]);
-
-                    if (global.city['wharf']){
-                        price = Math.round(price * (0.99 ** global.city['wharf'].count));
-                    }
-                    if (global.space['gps'] && global.space['gps'].count > 3){
-                        price = Math.round(price * (0.99 ** global.space['gps'].count));
-                    }
+                    let price = tradeBuyPrice(res) * global.resource[res].trade;
 
                     if (global.resource.Money.amount >= price * time_multiplier){
                         modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
@@ -637,15 +629,7 @@ function fastLoop(){
                     steelCheck();
                 }
                 else if (global.resource[res].trade < 0){
-                    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
-                    let price = Math.round(global.resource[res].value * global.resource[res].trade * tradeRatio[res] / divide);
-                    
-                    if (global.city['wharf']){
-                        price = Math.round(price * (1 + (global.city['wharf'].count * 0.01)));
-                    }
-                    if (global.space['gps'] && global.space['gps'].count > 3){
-                        price = Math.round(price * (1 + (global.space['gps'].count * 0.01)));
-                    }
+                    let price = tradeSellPrice(res) * global.resource[res].trade;
 
                     if (global.resource[res].amount >= time_multiplier){
                         modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
