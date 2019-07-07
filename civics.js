@@ -306,6 +306,7 @@ export function buildGarrison(garrison){
                     let aluminium = 0;
                     let cement = 0;
                     let steel = 0;
+                    let titanium = 0;
                     switch(global.civic.garrison.tactic){
                         case 0:
                             money = Math.floor(Math.seededRandom(50,250));
@@ -360,6 +361,9 @@ export function buildGarrison(garrison){
                             if (Math.floor(Math.seededRandom(0,10)) <= 1){
                                 steel = Math.floor(Math.seededRandom(100,250));
                             }
+                            if (global.race['terrifying'] && Math.floor(Math.seededRandom(0,10)) <= 1){
+                                titanium = Math.floor(Math.seededRandom(50,158));
+                            }
                             break;
                         case 2:
                             money = Math.floor(Math.seededRandom(5000,10000));
@@ -386,6 +390,9 @@ export function buildGarrison(garrison){
                             }
                             if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 steel = Math.floor(Math.seededRandom(1000,2500));
+                            }
+                            if (global.race['terrifying'] && Math.floor(Math.seededRandom(0,10)) <= 1){
+                                titanium = Math.floor(Math.seededRandom(500,1000));
                             }
                             break;
                         case 3:
@@ -414,6 +421,9 @@ export function buildGarrison(garrison){
                             if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 steel = Math.floor(Math.seededRandom(2000,5000));
                             }
+                            if (global.race['terrifying'] && Math.floor(Math.seededRandom(0,10)) <= 1){
+                                titanium = Math.floor(Math.seededRandom(1000,2500));
+                            }
                             break;
                         case 4:
                             money = Math.floor(Math.seededRandom(50000,250000));
@@ -441,6 +451,9 @@ export function buildGarrison(garrison){
                             if (Math.floor(Math.seededRandom(0,10)) <= 2){
                                 steel = Math.floor(Math.seededRandom(5000,25000));
                             }
+                            if (global.race['terrifying'] && Math.floor(Math.seededRandom(0,10)) <= 1){
+                                titanium = Math.floor(Math.seededRandom(4000,7500));
+                            }
                             break;
                     }
 
@@ -452,44 +465,50 @@ export function buildGarrison(garrison){
                     }
                     if (global.resource.Food.display && food > 0){
                         food = lootModify(food);
-                        loot = loot + loc('civics_garrison_quant_food',[food]);
+                        loot = loot + loc('civics_garrison_quant_res',[food,global.resource.Food.name]);
                         modRes('Food',food);
                     }
                     if (global.resource.Lumber.display && lumber > 0){
                         lumber = lootModify(lumber);
-                        loot = loot + loc('civics_garrison_quant_lumber',[lumber]);
+                        loot = loot + loc('civics_garrison_quant_res',[lumber,global.resource.Lumber.name]);
                         modRes('Lumber',lumber);
                     }
                     if (global.resource.Stone.display && stone > 0){
                         stone = lootModify(stone);
-                        loot = loot + loc('civics_garrison_quant_stone',[stone]);
+                        loot = loot + loc('civics_garrison_quant_res',[stone,global.resource.Stone.name]);
                         modRes('Stone',stone);
                     }
                     if (global.resource.Copper.display && copper > 0){
                         copper = lootModify(copper);
-                        loot = loot + loc('civics_garrison_quant_copper',[copper]);
+                        loot = loot + loc('civics_garrison_quant_res',[copper,global.resource.Copper.name]);
                         modRes('Copper',copper);
                     }
                     if (global.resource.Iron.display && iron > 0){
                         iron = lootModify(iron);
-                        loot = loot + loc('civics_garrison_quant_iron',[iron]);
+                        loot = loot + loc('civics_garrison_quant_res',[iron,global.resource.Iron.name]);
                         modRes('Iron',iron);
                     }
                     if (global.resource.Aluminium.display && aluminium > 0){
                         aluminium = lootModify(aluminium);
-                        loot = loot + loc('civics_garrison_quant_aluminium',[aluminium]);
+                        loot = loot + loc('civics_garrison_quant_res',[aluminium,global.resource.Aluminium.name]);
                         modRes('Aluminium',aluminium);
                     }
                     if (global.resource.Cement.display && cement > 0){
                         cement = lootModify(cement);
-                        loot = loot + loc('civics_garrison_quant_cement',[cement]);
+                        loot = loot + loc('civics_garrison_quant_res',[cement,global.resource.Cement.name]);
                         modRes('Cement',cement);
                     }
                     if (steel > 0){
                         steel = lootModify(steel);
                         global.resource.Steel.display = true;
-                        loot = loot + loc('civics_garrison_quant_steel',[steel]);
+                        loot = loot + loc('civics_garrison_quant_res',[steel,global.resource.Steel.name]);
                         modRes('Steel',steel);
+                    }
+                    if (titanium > 0){
+                        titanium = lootModify(titanium);
+                        global.resource.Titanium.display = true;
+                        loot = loot + loc('civics_garrison_quant_res',[steel,global.resource.Titanium.name]);
+                        modRes('Titanium',titanium);
                     }
 
                     loot = loot.slice(0,-2);
@@ -786,6 +805,9 @@ export function armyRating(val,type){
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
         }
+        if (global.race['fiery']){
+            army = Math.floor(army * 1.5);
+        }
         if (global.race['parasite']){
             if (val === 1){
                 army += 2;
@@ -804,6 +826,9 @@ export function armyRating(val,type){
         }
         if (global.race['apex_predator']){
             army = Math.floor(army * 1.5);
+        }
+        if (global.race['fiery']){
+            army = Math.floor(army * 1.25);
         }
         if (global.race['cunning']){
             let bonus = 1 + (global.race['cunning'] / 20);

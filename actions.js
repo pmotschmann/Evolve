@@ -4441,6 +4441,7 @@ export const actions = {
             title: loc('tech_market'),
             desc: loc('tech_market_desc'),
             reqs: { banking: 1, currency: 1 },
+            not_trait: ['terrifying'],
             grant: ['currency',2],
             cost: {
                 Knowledge(){ return 1800; }
@@ -8857,7 +8858,7 @@ function mediumHousingLabel(){
         case 'sporgar':
             return loc('city_cottage_title2');
         case 'balorg':
-            return loc('city_basic_housing_title3');
+            return loc('city_cottage_title3');
         case 'imp':
             return loc('city_basic_housing_title7');
         default:
