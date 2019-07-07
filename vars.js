@@ -588,6 +588,7 @@ window.soft_reset = function reset(){
     let replace = {
         species : 'protoplasm', 
         Plasmid: { count: global.race.Plasmid.count },
+        Phage: { count: global.race.Phage.count },
         seeded: global.race.seeded,
         probes: global.race.probes,
         seed: global.race.seed,

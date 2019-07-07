@@ -1443,6 +1443,44 @@ export const actions = {
                 return false;
             }
         },
+        balorg: {
+            id: 'evo-balorg',
+            title(){ return races.balorg.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.balorg.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.balorg.name]); },
+            action(){
+                if (payCosts(actions.evolution.balorg.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'balorg';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        imp: {
+            id: 'evo-imp',
+            title(){ return races.imp.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.imp.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.imp.name]); },
+            action(){
+                if (payCosts(actions.evolution.imp.cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'imp';
+                    sentience();
+                }
+                return false;
+            }
+        },
         bunker: {
             id: 'evo-bunker',
             title: 'Bunker Gene',
