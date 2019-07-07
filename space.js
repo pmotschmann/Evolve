@@ -45,7 +45,7 @@ const spaceProjects = {
                 Oil(){ return costMultiplier('satellite', fuel_adjust(3200), 1.25); },
                 Alloy(){ return costMultiplier('satellite', 10000, 1.25); }
             },
-            effect: `<div>${loc('plus_max_resource',[750,loc('resource_Knowledge_name')])}</div><div>${loc('space_home_satellite_effect2')}</div><div>${loc('space_home_satellite_effect3')}</div>`,
+            effect: `<div>${loc('plus_max_resource',[750,loc('resource_Knowledge_name')])}</div><div>${loc('space_home_satellite_effect2',[global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')])}</div><div>${loc('space_home_satellite_effect3')}</div>`,
             action(){
                 if (payCosts(spaceProjects.spc_home.satellite.cost)){
                     incrementStruct('satellite');

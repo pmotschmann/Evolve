@@ -2936,7 +2936,7 @@ export const actions = {
         },
         wardenclyffe: {
             id: 'city-wardenclyffe',
-            title: loc('city_wardenclyffe'),
+            title(){ return global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe'); },
             desc: loc('city_wardenclyffe_desc'),
             reqs: { high_tech: 1 },
             cost: { 
@@ -3840,7 +3840,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 16200; }
             },
-            effect: loc('tech_radio_effect'),
+            effect(){ return loc('tech_radio_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
             action(){
                 if (payCosts(actions.tech.radio.cost)){
                     return true;
@@ -3857,7 +3857,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 67500; }
             },
-            effect: loc('tech_tv_effect'),
+            effect(){ return loc('tech_tv_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
             action(){
                 if (payCosts(actions.tech.tv.cost)){
                     return true;
@@ -5017,7 +5017,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 36000; }
             },
-            effect: loc('tech_adjunct_professor_effect'),
+            effect(){ return loc('tech_adjunct_professor_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
             action(){
                 if (payCosts(actions.tech.adjunct_professor.cost)){
                     return true;
@@ -5035,6 +5035,7 @@ export const actions = {
                 Knowledge(){ return 51750; }
             },
             effect: loc('tech_tesla_coil_effect'),
+            effect(){ return loc('tech_tesla_coil_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
             action(){
                 if (payCosts(actions.tech.tesla_coil.cost)){
                     return true;
@@ -5181,6 +5182,9 @@ export const actions = {
             effect: loc('tech_mad_science_effect'),
             action(){
                 if (payCosts(actions.tech.mad_science.cost)){
+                    if (global.race['evil']){
+                        global.civic['taxes'].display = true;
+                    }
                     global.city['wardenclyffe'] = {
                         count: 0,
                         on: 0
