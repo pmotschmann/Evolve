@@ -171,6 +171,11 @@ var achievements = {
         desc: loc("achieve_genus_aquatic_desc"),
         flair: loc("achieve_genus_aquatic_flair")
     },
+    genus_demonic: {
+        name: loc("achieve_genus_demonic_name"),
+        desc: loc("achieve_genus_demonic_desc"),
+        flair: loc("achieve_genus_demonic_flair")
+    },
     mass_extinction: {
         name: loc("achieve_mass_extinction_name"),
         desc: loc("achieve_mass_extinction_desc"),
@@ -310,6 +315,16 @@ var achievements = {
         name: loc("achieve_extinct_octigoran_name"),
         desc: loc("achieve_extinct_octigoran_desc"),
         flair: loc("achieve_extinct_octigoran_flair")
+    },
+    extinct_balorg: {
+        name: loc("achieve_extinct_balorg_name"),
+        desc: loc("achieve_extinct_balorg_desc"),
+        flair: loc("achieve_extinct_balorg_flair")
+    },
+    extinct_imp: {
+        name: loc("achieve_extinct_imp_name"),
+        desc: loc("achieve_extinct_imp_desc"),
+        flair: loc("achieve_extinct_imp_flair")
     }
 };
 

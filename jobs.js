@@ -124,7 +124,7 @@ function loadUnemployed(){
     
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job = global.race['carnivore'] ? loc('job_hunter1') : loc('job_unemployed1');
+    let job = global.race['carnivore'] || global.race['evil'] ? loc('job_hunter1') : loc('job_unemployed1');
     let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">${job}</h3><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
@@ -135,7 +135,7 @@ function loadUnemployed(){
     vues['civ_free'].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
-            let text = global.race['carnivore'] ? loc('job_hunter2') : loc('job_unemployed2');
+            let text = global.race['carnivore'] || global.race['evil'] ? (global.race['evil'] ? loc('job_evil_hunter') : loc('job_hunter2')) : loc('job_unemployed2');
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
             $('#main').append(popper);
             popper.show();
@@ -246,7 +246,7 @@ export function loadFoundry(){
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
-                let name = res.replace("_", " ");
+                let name = global.resource[res].name;
                 let resource = $(`<div class="job"></div>`);
                 $('#foundry').append(resource);
 
@@ -300,7 +300,7 @@ export function loadFoundry(){
                 hover(res){
                     var popper = $(`<div id="popCraft${res}" class="popper has-background-light has-text-dark"></div>`);
                     $('#main').append(popper);
-                    let name = res.replace("_", " ");
+                    let name = global.resource[res].name;
                     let multiplier = craftingRatio(res);
                     if (global.tech['v_train']){
                         multiplier *= 2;
@@ -315,7 +315,7 @@ export function loadFoundry(){
                     popper.append($(`<div>+${final} ${name}/cycle</div>`));
                     for (let i=0; i<craftCost[res].length; i++){
                         let cost = +(craftCost[res][i].a * global.city.foundry[res]).toFixed(2);
-                        popper.append($(`<div>-${cost} ${craftCost[res][i].r}/cycle<div>`));
+                        popper.append($(`<div>-${cost} ${global.resource[craftCost[res][i].r].name}/cycle<div>`));
                     }
     
                     popper.show();

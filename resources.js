@@ -174,6 +174,23 @@ function loadResource(name,max,rate,tradable,stackable,color){
         global['resource'][name].name = name === races[global.race.species].name? name : (name === 'Money' ? '$' : loc(`resource_${name}_name`));
     }
 
+    if (global.race['evil']){
+        switch(name){
+            case 'Lumber':
+                global['resource'][name].name = 'Bones';
+                break;
+            case 'Furs':
+                global['resource'][name].name = 'Flesh';
+                break;
+            case 'Food':
+                global['resource'][name].name = 'Souls';
+                break;
+            case 'Plywood':
+                global['resource'][name].name = 'Boneweave';
+                break;
+        }
+    }
+
     if (vues[`res_${name}`]){
         vues[`res_${name}`].$destroy();
     }
@@ -289,7 +306,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 let costs = '';
                 for (let i=0; i<craftCost[res].length; i++){
                     let num = vol * craftCost[res][i].a * keyMultiplier();
-                    costs = costs + `<div>${craftCost[res][i].r} ${num}</div>`;
+                    costs = costs + `<div>${global.resource[craftCost[res][i].r].name} ${num}</div>`;
                 }
                 return costs;
             },
@@ -302,7 +319,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
 
                 for (let i=0; i<craftCost[res].length; i++){
                     let num = typeof vol === 'number' ? vol * craftCost[res][i].a : vol;
-                    popper.append($(`<div>${craftCost[res][i].r} <span class="craft" data-val="${num}">${num}</span></div>`));
+                    popper.append($(`<div>${global.resource[craftCost[res][i].r].name} <span class="craft" data-val="${num}">${num}</span></div>`));
                 }
 
                 popper.show();
@@ -410,6 +427,9 @@ function marketItem(vue,mount,market_item,name,color,full){
                 if (!global.race['no_trade']){
                     let qty = Number(vues['market_qty'].qty);
                     let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+                    if (global.race['conniving']){
+                        value *= 0.95;
+                    } 
                     var price = Math.round(value * qty);
                     if (global.resource.Money.amount >= price){
                         global.resource[res].amount += qty;
@@ -424,6 +444,9 @@ function marketItem(vue,mount,market_item,name,color,full){
                     var qty = Number(vues['market_qty'].qty);
                     if (global.resource[res].amount >= qty){
                         let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                        if (global.race['conniving']){
+                            value -= 0.5;
+                        } 
                         let price = Math.round(global.resource[res].value * qty / divide);
                         global.resource[res].amount -= qty;
                         global.resource.Money.amount += price;
@@ -505,8 +528,11 @@ function marketItem(vue,mount,market_item,name,color,full){
     vues[vue].$mount(mount);
 }
 
-function tradeSellPrice(res){
+export function tradeSellPrice(res){
     let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+    if (global.race['conniving']){
+        divide--;
+    }
     let price = Math.round(global.resource[res].value * tradeRatio[res] / divide);
     
     if (global.city['wharf']){
@@ -518,8 +544,11 @@ function tradeSellPrice(res){
     return price;
 }
 
-function tradeBuyPrice(res){
+export function tradeBuyPrice(res){
     let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+    if (global.race['conniving']){
+        rate *= 0.9;
+    }    
     let price = Math.round(rate * tradeRatio[res]);
 
     if (global.city['wharf']){
@@ -689,12 +718,9 @@ function drawModal(name,color){
         },
         methods: {
             buildCrateLabel: function(){
-                if (global.race['kindling_kindred']){
-                    return loc('resource_modal_crate_construct_kind_desc');
-                }
-                else {
-                    return loc('resource_modal_crate_construct_desc');
-                }
+                let material = global.race['kindling_kindred'] ? global.resource.Stone.name : global.resource.Plywood.name;
+                let cost = global.race['kindling_kindred'] ? 200 : 10
+                return loc('resource_modal_crate_construct_desc',[cost,material]);
             },
             removeCrateLabel: function(){
                 let cap = crateValue();
@@ -828,9 +854,11 @@ function drawModal(name,color){
         
         containers.append($(`<div class="crateHead"><span>${loc('resource_modal_container_owned')} {{ containers.amount }}/{{ containers.max }}</span><span>${loc('resource_modal_container_assigned')} {{ res.containers }}</span></div>`));
         
-        let buildContainer = $(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" animated><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
-        let removeContainer = $(`<b-tooltip :label="removeContainerLabel()" position="is-bottom" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
-        let addContainer = $(`<b-tooltip :label="addContainerLabel()" position="is-bottom" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
+        let position = global.race['terrifying'] ? 'is-top' : 'is-bottom';
+
+        let buildContainer = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
+        let removeContainer = $(`<b-tooltip :label="removeContainerLabel()" position="${position}" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
+        let addContainer = $(`<b-tooltip :label="addContainerLabel()" position="${position}" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
         
         containers.append(buildContainer);
         containers.append(removeContainer);
@@ -959,6 +987,5 @@ export function plasmidBonus(){
         }
         plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
     }
-    console.log(plasmid_bonus);
     return plasmid_bonus;
 }
