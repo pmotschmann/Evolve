@@ -1530,7 +1530,7 @@
   "civics_garrison_hire_mercenary_cost": "Hire a mercenary: $%0",
   "civics_garrison_advantage": "%0% advantage",
   "civics_garrison_disadvantage": "%0% disadvantage",
-  "civics_garrison_army_label": "Number of soldiers to commit to millitary campaigns.",
+  "civics_garrison_army_label": "Number of soldiers to commit to military campaigns.",
   "civics_garrison_soldier_desc_herb": "Idle soldiers spend their time hunting, they are currently bringing in %0 furs per trip.",
   "civics_garrison_soldier_desc": "Idle soldiers spend their time hunting, they are currently bringing in %0 food worth of meat per trip and %1 furs.",
   "civics_garrison_evil_soldier_desc": "Idle soldiers spend their time trapping mortals, they are currently bringing in %0 souls, %1 flesh, and %2 bones per second.",
