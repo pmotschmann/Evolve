@@ -653,6 +653,32 @@ const spaceProjects = {
                 return `<div>${loc('space_red_exotic_lab_flair1')}</div><div>${loc('space_red_exotic_lab_flair2')}</div>`;
             }
         },
+        ziggurat: {
+            id: 'space-ziggurat',
+            title: loc('space_red_ziggurat_title'),
+            desc(){
+                return `<div>${loc('space_red_ziggurat_desc',[races[global.race.old_gods.toLowerCase()].entity])}</div>`;
+            },
+            reqs: { theology: 4 },
+            cost: {
+                Money(){ return costMultiplier('ziggurat', 750000, 1.28); },
+                Steel(){ return costMultiplier('ziggurat', 100000, 1.28); },
+                Mythril(){ return costMultiplier('ziggurat', 1000, 1.28); },
+                Elerium(){ return costMultiplier('ziggurat', 20, 1.28) - 4; }
+            },
+            effect(){
+                let elerium = spatialReasoning(10);
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[500])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
+            },
+            refresh: true,
+            action(){
+                if (payCosts(spaceProjects.spc_red.ziggurat.cost)){
+                    incrementStruct('ziggurat');
+                    return true;
+                }
+                return false;
+            }
+        },
         space_barracks: {
             id: 'space-space_barracks',
             title: loc('space_red_space_barracks_title'),
@@ -1459,6 +1485,7 @@ const structDefinitions = {
     fabrication: { count: 0, on: 0 },
     red_factory: { count: 0, on: 0 },
     exotic_lab: { count: 0, on: 0 },
+    ziggurat: { count: 0 },
     space_barracks: { count: 0, on: 0 },
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },

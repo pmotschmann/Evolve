@@ -378,7 +378,7 @@ const genePool = {
         id: 'genes-ancients',
         title: loc('arpa_genepool_ancients_title'),
         desc: loc('arpa_genepool_ancients_desc'),
-        reqs: { evolve: 2, old_gods: 1, locked: 1 },
+        reqs: { evolve: 2, old_gods: 1 },
         grant: ['ancients',1],
         cost: 120,
         effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>120</span></div>`,
