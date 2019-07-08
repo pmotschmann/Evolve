@@ -1314,7 +1314,7 @@ function fastLoop(){
 
                 breakdown.p.consume.Furs['Factory'] = -(fur_cost);
                 modRes('Furs', -(fur_cost * time_multiplier));
-
+                
                 let demand = global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]);
                 let delta = workDone * demand;
                 if (global.race['toxic']){
@@ -1477,7 +1477,7 @@ function fastLoop(){
                 workDone--;
             }
 
-            breakdown.p.consume.Stone['Factory'] = -(stone_cost);
+            breakdown.p.consume.Stone['C.Factory'] = -(stone_cost);
             modRes('Stone', -(stone_cost * time_multiplier));
 
             let cement_base = global.tech['cement'] >= 4 ? 1.2 : 1;
@@ -1498,7 +1498,7 @@ function fastLoop(){
             delta *= hunger * global_multiplier;
 
             let cement_bd = {};
-            cement_bd['Factory'] = factory_output + 'v';
+            cement_bd['C.Factory'] = factory_output + 'v';
             cement_bd['Power'] = ((powered_mult - 1) * 100) + '%';
             cement_bd['Hunger'] = ((hunger - 1) * 100) + '%';
             breakdown.p['Cement'] = cement_bd;
