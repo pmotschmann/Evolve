@@ -170,7 +170,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.23';
+global['version'] = '0.4.24';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -400,6 +400,13 @@ if (global.city['factory']){
 
 if (!global.race['mutation']){
     global.race['mutation'] = 0;
+}
+
+if (global.race['old_gods'] && global.race['old_gods'] != 'none'){
+    global.genes['old_gods'] = 1;
+}
+else {
+    delete global.genes['old_gods'];
 }
 
 global.settings.animated = true;

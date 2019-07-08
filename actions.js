@@ -5408,6 +5408,23 @@ export const actions = {
                 return `It's as cool as it sounds.`;
             }
         },
+        thermomechanics: {
+            id: 'tech-thermomechanics',
+            title: loc('tech_thermomechanics'),
+            desc: loc('tech_thermomechanics_desc'),
+            reqs: { high_tech: 4 },
+            grant: ['alloy',1],
+            cost: {
+                Knowledge(){ return 60000; },
+            },
+            effect(){ return loc('tech_thermomechanics_effect'); },
+            action(){
+                if (payCosts(actions.tech.thermomechanics.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         worker_drone: {
             id: 'tech-worker_drone',
             title: loc('tech_worker_drone'),

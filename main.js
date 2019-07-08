@@ -1359,6 +1359,9 @@ function fastLoop(){
                 if (global.race['toxic']){
                     factory_output *= 1.20;
                 }
+                if (global.tech['alloy']){
+                    factory_output *= 1.37;
+                }
 
                 let delta = factory_output;
                 delta *= hunger * global_multiplier;
