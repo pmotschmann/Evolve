@@ -2041,43 +2041,43 @@ export const actions = {
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
                     let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Lumber.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Lumber.name])}. `;
                 }
                 if (global.resource.Stone.display){
                     let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Stone.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Stone.name])}. `;
                 }
                 if (global.resource.Furs.display){
                     let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Furs.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Furs.name])}. `;
                 }
                 if (global.resource.Copper.display){
                     let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Copper.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Copper.name])}. `;
                 }
                 if (global.resource.Iron.display){
                     let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Iron.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Iron.name])}. `;
                 }
                 if (global.resource.Aluminium.display){
                     let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Aluminium.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Aluminium.name])}. `;
                 }
                 if (global.resource.Cement.display){
                     let val = sizeApproximation(+(spatialReasoning(100) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Cement.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Cement.name])}. `;
                 }
                 if (global.resource.Coal.display){
                     let val = sizeApproximation(+(spatialReasoning(75) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Coal.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Coal.name])}. `;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
                     let val = sizeApproximation(+(spatialReasoning(40) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Steel.name'])}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Steel.name])}. `;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
                     let val = sizeApproximation(+(spatialReasoning(20) * multiplier).toFixed(0),1);
-                    storage = storage + `${loc('plus_max_resource',[val,'global.resource.Titanium.name'])}.`;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Titanium.name])}.`;
                 }
                 return storage;
             },

@@ -103,7 +103,7 @@ export const job_desc = {
 export function defineJobs(){
     $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
     loadUnemployed();
-    loadJob('farmer','Farmer',1.35);
+    loadJob('farmer','Farmer',1.35); //TODO: localize this
     loadJob('lumberjack','Lumberjack',1);
     loadJob('quarry_worker','Quarry Worker',1);
     loadJob('miner','Miner',1);
