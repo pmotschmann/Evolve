@@ -65,5 +65,5 @@ function getString(locale) {
 export const locales = {
     'en-US': 'English (US)',
     //'es-US': 'Spanish (US/Latin-America)',
-    'pt-BR': 'Português Brasileiro [28%]',
+    'pt-BR': 'Português Brasileiro [34%]',
 };
