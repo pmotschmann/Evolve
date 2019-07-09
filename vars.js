@@ -288,6 +288,10 @@ if (!global.race['old_gods']){
     global.race['old_gods'] = 'none';
 }
 
+if (!global.race['evil'] && global.race['immoral']){
+    delete global.race['immoral'];
+}
+
 $('html').addClass(global.settings.theme);
 
 if (!global.city['morale']){

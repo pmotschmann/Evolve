@@ -351,8 +351,6 @@ else {
 setupStats();
 q_check();
 
-global.race['immoral'] = 1;
-
 var fed = true;
 
 var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
