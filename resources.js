@@ -445,7 +445,7 @@ function marketItem(vue,mount,market_item,name,color,full){
                     if (global.resource[res].amount >= qty){
                         let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
                         if (global.race['conniving']){
-                            value -= 0.5;
+                            divide -= 0.5;
                         } 
                         let price = Math.round(global.resource[res].value * qty / divide);
                         global.resource[res].amount -= qty;
