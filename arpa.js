@@ -384,6 +384,8 @@ const genePool = {
         effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>120</span></div>`,
         action(){
             if (payPlasmids('ancients')){
+                global.genes['ancients'] = 1;
+                drawTech();
                 return true;
             }
             return false;

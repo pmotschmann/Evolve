@@ -1,4 +1,4 @@
-#### 0.4.24 - 7/8/2019 ####
+#### 0.4.24 - 7/9/2019 ####
 Thermomechanics upgrade for alloy production<br>
 
 #### 0.4.23 - 7/7/2019 ####

@@ -1673,11 +1673,9 @@
   "space_red_exotic_lab_effect1": "+%0 Max Knowledge per colonist",
   "space_red_exotic_lab_flair1": "We're throwing science at",
   "space_red_exotic_lab_flair2": "the wall here to see what sticks.",
-
   "space_red_ziggurat_title": "Ziggurat",
   "space_red_ziggurat_desc": "Ziggurat dedicated to an ancient race of %0",
-  "space_red_ziggurat_effect": "Exotic Materials Laboratory",
-
+  "space_red_ziggurat_effect": "Space production +%0% per colonist",
   "space_red_space_barracks_title": "Marine Garrison",
   "space_red_space_barracks_desc": "Space Marine Garrison",
   "space_red_space_barracks_desc_req": "Requires Oil",

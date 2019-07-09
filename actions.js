@@ -7862,6 +7862,9 @@ export function setAction(c_action,action,type,old){
             }
         }
     }
+    if (type === 'ancient_theology' && !global.genes['ancients']){
+        return;
+    }
     if (c_action['powered'] && !global[action][type]['on']){
         global[action][type]['on'] = 0;
     }

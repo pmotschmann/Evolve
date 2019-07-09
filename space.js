@@ -661,14 +661,13 @@ const spaceProjects = {
             },
             reqs: { theology: 4 },
             cost: {
-                Money(){ return costMultiplier('ziggurat', 750000, 1.28); },
-                Steel(){ return costMultiplier('ziggurat', 100000, 1.28); },
-                Mythril(){ return costMultiplier('ziggurat', 1000, 1.28); },
-                Elerium(){ return costMultiplier('ziggurat', 20, 1.28) - 4; }
+                Money(){ return costMultiplier('ziggurat', 600000, 1.28); },
+                Stone(){ return costMultiplier('ziggurat', 250000, 1.28); },
+                Aluminium(){ return costMultiplier('ziggurat', 70000, 1.28); },
+                Mythril(){ return costMultiplier('ziggurat', 250, 1.28); }
             },
             effect(){
-                let elerium = spatialReasoning(10);
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[500])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
+                return `<div>${loc('space_red_ziggurat_effect',[1])}</div></div>`;
             },
             refresh: true,
             action(){
