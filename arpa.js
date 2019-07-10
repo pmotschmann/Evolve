@@ -374,14 +374,31 @@ const genePool = {
             return false;
         }
     },
+    ancients: {
+        id: 'genes-ancients',
+        title: loc('arpa_genepool_ancients_title'),
+        desc: loc('arpa_genepool_ancients_desc'),
+        reqs: { evolve: 2, old_gods: 1 },
+        grant: ['ancients',1],
+        cost: 120,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>120</span></div>`,
+        action(){
+            if (payPlasmids('ancients')){
+                global.genes['ancients'] = 1;
+                drawTech();
+                return true;
+            }
+            return false;
+        }
+    },
     transcendence: {
         id: 'genes-transcendence',
         title: loc('arpa_genepool_transcendence_title'),
         desc: loc('arpa_genepool_transcendence_desc'),
-        reqs: { creep: 1, birth: 1, store: 1, locked: 1 },
-        grant: ['transcendence',1],
-        cost: 5000,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>5000</span></div>`,
+        reqs: { ancients: 1, creep: 5, locked: 1 },
+        grant: ['ancients',2],
+        cost: 1500,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>1500</span></div>`,
         action(){
             if (payPlasmids('transcendence')){
                 return true;

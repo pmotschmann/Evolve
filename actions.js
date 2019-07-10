@@ -5408,6 +5408,23 @@ export const actions = {
                 return `It's as cool as it sounds.`;
             }
         },
+        thermomechanics: {
+            id: 'tech-thermomechanics',
+            title: loc('tech_thermomechanics'),
+            desc: loc('tech_thermomechanics_desc'),
+            reqs: { high_tech: 4 },
+            grant: ['alloy',1],
+            cost: {
+                Knowledge(){ return 60000; },
+            },
+            effect(){ return loc('tech_thermomechanics_effect'); },
+            action(){
+                if (payCosts(actions.tech.thermomechanics.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         worker_drone: {
             id: 'tech-worker_drone',
             title: loc('tech_worker_drone'),
@@ -6684,7 +6701,7 @@ export const actions = {
         theology: {
             id: 'tech-theology',
             title: loc('tech_theology'),
-            desc: loc('tech_theology_desc'),
+            desc: loc('tech_theology'),
             reqs: { theology: 1, housing: 1, cement: 1 },
             grant: ['theology',2],
             cost: {
@@ -6702,7 +6719,7 @@ export const actions = {
         fanaticism: {
             id: 'tech-fanaticism',
             title: loc('tech_fanaticism'),
-            desc: loc('tech_fanaticism_desc'),
+            desc: loc('tech_fanaticism'),
             reqs: { theology: 2 },
             not_trait: ['herbivore'],
             grant: ['theology',3],
@@ -6718,142 +6735,66 @@ export const actions = {
                         randomMinorTrait();
                         return true;
                     }
-                    switch (global.race.gods){
-                        case 'human':
-                            global.race['creative'] = 1;
-                            break;
-                        case 'elven':
-                            global.race['studious'] = 1;
-                            break;
-                        case 'orc':
-                            global.race['brute'] = 1;
-                            break;
-                        case 'cath':
-                            global.race['carnivore'] = 1;
-                            if (global.tech['farm'] >= 1){
-                                global.tech['hunting'] = 2;
-                            }
-                            else if (global.tech['agriculture'] >= 3){
-                                global.tech['hunting'] = 1;
-                            }
-                            if (global.city['farm']){
-                                global.city['lodge'] = { count: global.city.farm.count };
-                                delete global.city['farm'];
-                            }
-                            if (global.city['silo']){
-                                global.city['smokehouse'] = { count: global.city.silo.count };
-                                delete global.city['silo'];
-                            }
-                            if (global.city['mill']){
-                                delete global.city['mill'];
-                            }
-                            delete global.tech['agriculture'];
-                            delete global.tech['farm'];
-                            global.civic.farmer.workers = 0;
-                            global.civic.farmer.max = 0;
-                            global.civic.farmer.display = false;
-                            if (global.race.species === 'entish'){
-                                unlockAchieve(`madagascar_tree`);
-                            }
-                            break;
-                        case 'wolven':
-                            global.race['tracker'] = 1;
-                            break;
-                        case 'centaur':
-                            global.race['beast_of_burden'] = 1;
-                            break;
-                        case 'kobold':
-                            global.race['pack_rat'] = 1;
-                            break;
-                        case 'goblin':
-                            global.race['merchant'] = 1;
-                            break;
-                        case 'gnome':
-                            global.race['smart'] = 1;
-                            break;
-                        case 'orge':
-                            global.race['tough'] = 1;
-                            break;
-                        case 'cyclops':
-                            global.race['intelligent'] = 1;
-                            break;
-                        case 'troll':
-                            global.race['regenerative'] = 1;
-                            break;
-                        case 'tortoisan':
-                            global.race['armored'] = 1;
-                            break;
-                        case 'gecko':
-                            global.race['optimistic'] = 1;
-                            break;
-                        case 'slitheryn':
-                            global.race['slow_digestion'] = 1;
-                            break;
-                        case 'arraak':
-                            global.race['resourceful'] = 1;
-                            break;
-                        case 'pterodacti':
-                            global.race['leathery'] = 1;
-                            break;
-                        case 'dracnid':
-                            global.race['hoarder'] = 1;
-                            break;
-                        case 'entish':
-                            global.race['kindling_kindred'] = 1;
-                            global.resource.Lumber.display = false;
-                            global.resource.Plywood.display = false;
-                            global.city['lumber'] = 0;
-                            if (global.city['sawmill']){
-                                delete global.city['sawmill'];
-                            }
-                            if (global.city['lumber_yard']){
-                                delete global.city['lumber_yard'];
-                            }
-                            delete global.tech['axe'];
-                            delete global.tech['saw'];
-                            global.civic.lumberjack.display = false;
-                            global.civic.lumberjack.workers = 0;
-                            if (global.tech['foundry']){
-                                global.civic.craftsman.workers -= global.city.foundry['Plywood'];
-                                global.city.foundry.crafting -= global.city.foundry['Plywood'];
-                                global.city.foundry['Plywood'] = 0;
-                                loadFoundry();
-                            }
-                            break;
-                        case 'cacti':
-                            global.race['hyper'] = 1;
-                            break;
-                        case 'sporgar':
-                            global.race['infectious'] = 1;
-                            if (global.race.species === 'human'){
-                                unlockAchieve(`infested`);
-                            }
-                            break;
-                        case 'shroomi':
-                            global.race['toxic'] = 1;
-                            break;
-                        case 'mantis':
-                            global.race['malnutrition'] = 1;
-                            break;
-                        case 'scorpid':
-                            global.race['claws'] = 1;
-                            break;
-                        case 'antid':
-                            global.race['hivemind'] = 1;
-                            break;
-                        case 'sharkin':
-                            global.race['frenzy'] = 1;
-                            break;
-                        case 'octigoran':
-                            global.race['suction_grip'] = 1;
-                            break;
-                        case 'balorg':
-                            global.race['fiery'] = 1;
-                            break;
-                        case 'imp':
-                            global.race['conniving'] = 1;
-                            break;
+                    fanaticism(global.race.gods);
+                    return true;
+                }
+                return false;
+            }
+        },
+        ancient_theology: {
+            id: 'tech-ancient_theology',
+            title: loc('tech_ancient_theology'),
+            desc: loc('tech_ancient_theology'),
+            reqs: { theology: 3, mars: 2 },
+            grant: ['theology',4],
+            cost: {
+                Knowledge(){ return 180000; }
+            },
+            effect(){ return loc('tech_ancient_theology_effect',[races[global.race.old_gods.toLowerCase()].entity,races[global.race.gods.toLowerCase()].entity]); },
+            action(){
+                if (payCosts(actions.tech.ancient_theology.cost)){
+                    global.space['ziggurat'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        study: {
+            id: 'tech-study',
+            title: loc('tech_study'),
+            desc: loc('tech_study_desc'),
+            reqs: { theology: 4 },
+            grant: ['theology',5],
+            cost: {
+                Knowledge(){ return 195000; }
+            },
+            effect(){ return `<div>${loc('tech_study_effect',[races[global.race.old_gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_study_warning')}</div>`; },
+            action(){
+                if (payCosts(actions.tech.study.cost)){
+                    global.tech['ancient_study'] = 1;
+                    return true;
+                }
+                return false;
+            }
+        },
+        deify: {
+            id: 'tech-deify',
+            title: loc('tech_deify'),
+            desc: loc('tech_deify_desc'),
+            reqs: { theology: 4 },
+            grant: ['theology',5],
+            cost: {
+                Knowledge(){ return 195000; }
+            },
+            effect(){ return `<div>${loc('tech_deify_effect',[races[global.race.old_gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_deify_warning')}</div>`; },
+            action(){
+                if (payCosts(actions.tech.deify.cost)){
+                    global.tech['ancient_deify'] = 1;
+                    if (global.race.old_gods === global.race.species){
+                        randomMinorTrait();
+                        return true;
                     }
+                    fanaticism(global.race.old_gods);
                     return true;
                 }
                 return false;
@@ -6862,7 +6803,7 @@ export const actions = {
         indoctrination: {
             id: 'tech-indoctrination',
             title: loc('tech_indoctrination'),
-            desc: loc('tech_indoctrination_desc'),
+            desc: loc('tech_indoctrination'),
             reqs: { fanaticism: 1 },
             grant: ['fanaticism',2],
             cost: {
@@ -6879,7 +6820,7 @@ export const actions = {
         missionary: {
             id: 'tech-missionary',
             title: loc('tech_missionary'),
-            desc: loc('tech_missionary_desc'),
+            desc: loc('tech_missionary'),
             reqs: { fanaticism: 2 },
             grant: ['fanaticism',3],
             cost: {
@@ -6896,7 +6837,7 @@ export const actions = {
         zealotry: {
             id: 'tech-zealotry',
             title: loc('tech_zealotry'),
-            desc: loc('tech_zealotry_desc'),
+            desc: loc('tech_zealotry'),
             reqs: { fanaticism: 3 },
             grant: ['fanaticism',4],
             cost: {
@@ -6913,7 +6854,7 @@ export const actions = {
         anthropology: {
             id: 'tech-anthropology',
             title: loc('tech_anthropology'),
-            desc: loc('tech_anthropology_desc'),
+            desc: loc('tech_anthropology'),
             reqs: { theology: 2 },
             grant: ['theology',3],
             cost: {
@@ -6931,7 +6872,7 @@ export const actions = {
         mythology: {
             id: 'tech-mythology',
             title: loc('tech_mythology'),
-            desc: loc('tech_mythology_desc'),
+            desc: loc('tech_mythology'),
             reqs: { anthropology: 1 },
             grant: ['anthropology',2],
             cost: {
@@ -6948,7 +6889,7 @@ export const actions = {
         archaeology: {
             id: 'tech-archaeology',
             title: loc('tech_archaeology'),
-            desc: loc('tech_archaeology_desc'),
+            desc: loc('tech_archaeology'),
             reqs: { anthropology: 2 },
             grant: ['anthropology',3],
             cost: {
@@ -6965,7 +6906,7 @@ export const actions = {
         merchandising: {
             id: 'tech-merchandising',
             title: loc('tech_merchandising'),
-            desc: loc('tech_merchandising_desc'),
+            desc: loc('tech_merchandising'),
             reqs: { anthropology: 3 },
             grant: ['anthropology',4],
             cost: {
@@ -7000,7 +6941,7 @@ export const actions = {
         rover: {
             id: 'tech-rover',
             title: loc('tech_rover'),
-            desc: loc('tech_rover_desc'),
+            desc: loc('tech_rover'),
             reqs: { space_explore: 1 },
             grant: ['space_explore',2],
             cost: {
@@ -7027,7 +6968,7 @@ export const actions = {
         probes: {
             id: 'tech-probes',
             title: loc('tech_probes'),
-            desc: loc('tech_probes_desc'),
+            desc: loc('tech_probes'),
             reqs: { space_explore: 2 },
             grant: ['space_explore',3],
             cost: {
@@ -7056,7 +6997,7 @@ export const actions = {
         starcharts: {
             id: 'tech-starcharts',
             title: loc('tech_starcharts'),
-            desc: loc('tech_starcharts_desc'),
+            desc: loc('tech_starcharts'),
             reqs: { space_explore: 3, science: 9 },
             grant: ['space_explore',4],
             cost: {
@@ -7148,7 +7089,7 @@ export const actions = {
         dyson_sphere: {
             id: 'tech-dyson_sphere',
             title: loc('tech_dyson_sphere'),
-            desc: loc('tech_dyson_sphere_desc'),
+            desc: loc('tech_dyson_sphere'),
             reqs: { solar: 1 },
             grant: ['solar',2],
             cost: {
@@ -7165,7 +7106,7 @@ export const actions = {
         dyson_swarm: {
             id: 'tech-dyson_swarm',
             title: loc('tech_dyson_swarm'),
-            desc: loc('tech_dyson_swarm_desc'),
+            desc: loc('tech_dyson_swarm'),
             reqs: { solar: 2 },
             grant: ['solar',3],
             cost: {
@@ -7183,7 +7124,7 @@ export const actions = {
         swarm_plant: {
             id: 'tech-swarm_plant',
             title: loc('tech_swarm_plant'),
-            desc: loc('tech_swarm_plant_desc'),
+            desc: loc('tech_swarm_plant'),
             reqs: { solar: 3, hell: 1, gas_moon: 1 },
             grant: ['solar',4],
             cost: {
@@ -7218,7 +7159,7 @@ export const actions = {
         swarm_plant_ai: {
             id: 'tech-swarm_plant_ai',
             title: loc('tech_swarm_plant_ai'),
-            desc: loc('tech_swarm_plant_ai_desc'),
+            desc: loc('tech_swarm_plant_ai'),
             reqs: { solar: 4, high_tech: 10 },
             grant: ['swarm',1],
             cost: {
@@ -7235,7 +7176,7 @@ export const actions = {
         swarm_control_ai: {
             id: 'tech-swarm_control_ai',
             title: loc('tech_swarm_control_ai'),
-            desc: loc('tech_swarm_control_ai_desc'),
+            desc: loc('tech_swarm_control_ai'),
             reqs: { swarm: 1 },
             grant: ['swarm',2],
             cost: {
@@ -7252,7 +7193,7 @@ export const actions = {
         quantium_swarm: {
             id: 'tech-quantium_swarm',
             title: loc('tech_quantium_swarm'),
-            desc: loc('tech_quantium_swarm_desc'),
+            desc: loc('tech_quantium_swarm'),
             reqs: { swarm: 2, high_tech: 11 },
             grant: ['swarm',3],
             cost: {
@@ -7269,7 +7210,7 @@ export const actions = {
         gps: {
             id: 'tech-gps',
             title: loc('tech_gps'),
-            desc: loc('tech_gps_desc'),
+            desc: loc('tech_gps'),
             reqs: { space_explore: 1 },
             not_trait: ['terrifying'],
             grant: ['satellite',1],
@@ -7288,7 +7229,7 @@ export const actions = {
         nav_beacon: {
             id: 'tech-nav_beacon',
             title: loc('tech_nav_beacon'),
-            desc: loc('tech_nav_beacon_desc'),
+            desc: loc('tech_nav_beacon'),
             reqs: { luna: 1 },
             grant: ['luna',2],
             cost: {
@@ -7309,7 +7250,7 @@ export const actions = {
         atmospheric_mining: {
             id: 'tech-atmospheric_mining',
             title: loc('tech_atmospheric_mining'),
-            desc: loc('tech_atmospheric_mining_desc'),
+            desc: loc('tech_atmospheric_mining'),
             reqs: { space: 5 },
             grant: ['gas_giant',1],
             cost: {
@@ -7328,7 +7269,7 @@ export const actions = {
         helium_attractor: {
             id: 'tech-helium_attractor',
             title: loc('tech_helium_attractor'),
-            desc: loc('tech_helium_attractor_desc'),
+            desc: loc('tech_helium_attractor'),
             reqs: { gas_giant: 1, elerium: 1 },
             grant: ['helium',1],
             cost: {
@@ -7346,7 +7287,7 @@ export const actions = {
         zero_g_mining: {
             id: 'tech-zero_g_mining',
             title: loc('tech_zero_g_mining'),
-            desc: loc('tech_zero_g_mining_desc'),
+            desc: loc('tech_zero_g_mining'),
             reqs: { asteroid: 1, high_tech: 8 },
             grant: ['asteroid',2],
             cost: {
@@ -7366,7 +7307,7 @@ export const actions = {
         elerium_mining: {
             id: 'tech-elerium_mining',
             title: loc('tech_elerium_mining'),
-            desc: loc('tech_elerium_mining_desc'),
+            desc: loc('tech_elerium_mining'),
             reqs: { asteroid: 4 },
             grant: ['asteroid',5],
             cost: {
@@ -7385,7 +7326,7 @@ export const actions = {
         laser_mining: {
             id: 'tech-laser_mining',
             title: loc('tech_laser_mining'),
-            desc: loc('tech_laser_mining_desc'),
+            desc: loc('tech_laser_mining'),
             reqs: { asteroid: 5, elerium: 1, high_tech: 9 },
             grant: ['asteroid',6],
             cost: {
@@ -7402,7 +7343,7 @@ export const actions = {
         elerium_tech: {
             id: 'tech-elerium_tech',
             title: loc('tech_elerium_tech'),
-            desc: loc('tech_elerium_tech_desc'),
+            desc: loc('tech_elerium_tech'),
             reqs: { asteroid: 5 },
             grant: ['elerium',1],
             cost: {
@@ -7420,7 +7361,7 @@ export const actions = {
         elerium_reactor: {
             id: 'tech-elerium_reactor',
             title: loc('tech_elerium_reactor'),
-            desc: loc('tech_elerium_reactor_desc'),
+            desc: loc('tech_elerium_reactor'),
             reqs: { dwarf: 1, elerium: 1 },
             grant: ['elerium',2],
             cost: {
@@ -7439,7 +7380,7 @@ export const actions = {
         neutronium_housing: {
             id: 'tech-neutronium_housing',
             title: loc('tech_neutronium_housing'),
-            desc: loc('tech_neutronium_housing_desc'),
+            desc: loc('tech_neutronium_housing'),
             reqs: { gas_moon: 1 },
             grant: ['space_housing',1],
             cost: {
@@ -7581,7 +7522,7 @@ export const actions = {
         genesis: {
             id: 'tech-genesis',
             title: loc('tech_genesis'),
-            desc: loc('tech_genesis_desc'),
+            desc: loc('tech_genesis'),
             reqs: { genesis: 1 },
             grant: ['genesis',2],
             cost: {
@@ -7598,7 +7539,7 @@ export const actions = {
         star_dock: {
             id: 'tech-star_dock',
             title: loc('tech_star_dock'),
-            desc: loc('tech_star_dock_desc'),
+            desc: loc('tech_star_dock'),
             reqs: { genesis: 2, space: 5 },
             grant: ['genesis',3],
             cost: {
@@ -7621,7 +7562,7 @@ export const actions = {
         interstellar: {
             id: 'tech-interstellar',
             title: loc('tech_interstellar'),
-            desc: loc('tech_interstellar_desc'),
+            desc: loc('tech_interstellar'),
             reqs: { genesis: 3 },
             grant: ['genesis',4],
             cost: {
@@ -7639,7 +7580,7 @@ export const actions = {
         genesis_ship: {
             id: 'tech-genesis_ship',
             title: loc('tech_genesis_ship'),
-            desc: loc('tech_genesis_ship_desc'),
+            desc: loc('tech_genesis_ship'),
             reqs: { genesis: 4 },
             grant: ['genesis',5],
             cost: {
@@ -7657,7 +7598,7 @@ export const actions = {
         genetic_decay: {
             id: 'tech-genetic_decay',
             title: loc('tech_genetic_decay'),
-            desc: loc('tech_genetic_decay_desc'),
+            desc: loc('tech_genetic_decay'),
             reqs: { decay: 1 },
             grant: ['decay',2],
             cost: {
@@ -7920,6 +7861,9 @@ export function setAction(c_action,action,type,old){
                 return;
             }
         }
+    }
+    if (type === 'ancient_theology' && !global.genes['ancients']){
+        return;
     }
     if (c_action['powered'] && !global[action][type]['on']){
         global[action][type]['on'] = 0;
@@ -8963,6 +8907,145 @@ function sentience(){
     }
 
     defineGarrison();
+}
+
+function fanaticism(god){
+    switch (god){
+        case 'human':
+            global.race['creative'] = 1;
+            break;
+        case 'elven':
+            global.race['studious'] = 1;
+            break;
+        case 'orc':
+            global.race['brute'] = 1;
+            break;
+        case 'cath':
+            global.race['carnivore'] = 1;
+            if (global.tech['farm'] >= 1){
+                global.tech['hunting'] = 2;
+            }
+            else if (global.tech['agriculture'] >= 3){
+                global.tech['hunting'] = 1;
+            }
+            if (global.city['farm']){
+                global.city['lodge'] = { count: global.city.farm.count };
+                delete global.city['farm'];
+            }
+            if (global.city['silo']){
+                global.city['smokehouse'] = { count: global.city.silo.count };
+                delete global.city['silo'];
+            }
+            if (global.city['mill']){
+                delete global.city['mill'];
+            }
+            delete global.tech['agriculture'];
+            delete global.tech['farm'];
+            global.civic.farmer.workers = 0;
+            global.civic.farmer.max = 0;
+            global.civic.farmer.display = false;
+            if (global.race.species === 'entish'){
+                unlockAchieve(`madagascar_tree`);
+            }
+            break;
+        case 'wolven':
+            global.race['tracker'] = 1;
+            break;
+        case 'centaur':
+            global.race['beast_of_burden'] = 1;
+            break;
+        case 'kobold':
+            global.race['pack_rat'] = 1;
+            break;
+        case 'goblin':
+            global.race['merchant'] = 1;
+            break;
+        case 'gnome':
+            global.race['smart'] = 1;
+            break;
+        case 'orge':
+            global.race['tough'] = 1;
+            break;
+        case 'cyclops':
+            global.race['intelligent'] = 1;
+            break;
+        case 'troll':
+            global.race['regenerative'] = 1;
+            break;
+        case 'tortoisan':
+            global.race['armored'] = 1;
+            break;
+        case 'gecko':
+            global.race['optimistic'] = 1;
+            break;
+        case 'slitheryn':
+            global.race['slow_digestion'] = 1;
+            break;
+        case 'arraak':
+            global.race['resourceful'] = 1;
+            break;
+        case 'pterodacti':
+            global.race['leathery'] = 1;
+            break;
+        case 'dracnid':
+            global.race['hoarder'] = 1;
+            break;
+        case 'entish':
+            global.race['kindling_kindred'] = 1;
+            global.resource.Lumber.display = false;
+            global.resource.Plywood.display = false;
+            global.city['lumber'] = 0;
+            if (global.city['sawmill']){
+                delete global.city['sawmill'];
+            }
+            if (global.city['lumber_yard']){
+                delete global.city['lumber_yard'];
+            }
+            delete global.tech['axe'];
+            delete global.tech['saw'];
+            global.civic.lumberjack.display = false;
+            global.civic.lumberjack.workers = 0;
+            if (global.tech['foundry']){
+                global.civic.craftsman.workers -= global.city.foundry['Plywood'];
+                global.city.foundry.crafting -= global.city.foundry['Plywood'];
+                global.city.foundry['Plywood'] = 0;
+                loadFoundry();
+            }
+            break;
+        case 'cacti':
+            global.race['hyper'] = 1;
+            break;
+        case 'sporgar':
+            global.race['infectious'] = 1;
+            if (global.race.species === 'human'){
+                unlockAchieve(`infested`);
+            }
+            break;
+        case 'shroomi':
+            global.race['toxic'] = 1;
+            break;
+        case 'mantis':
+            global.race['malnutrition'] = 1;
+            break;
+        case 'scorpid':
+            global.race['claws'] = 1;
+            break;
+        case 'antid':
+            global.race['hivemind'] = 1;
+            break;
+        case 'sharkin':
+            global.race['frenzy'] = 1;
+            break;
+        case 'octigoran':
+            global.race['suction_grip'] = 1;
+            break;
+        case 'balorg':
+            global.race['fiery'] = 1;
+            break;
+        case 'imp':
+            global.race['conniving'] = 1;
+            break;
+    }
 }
 
 function bioseed(){
