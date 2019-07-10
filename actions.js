@@ -6759,19 +6759,19 @@ export const actions = {
                 return false;
             }
         },
-        suppress: {
-            id: 'tech-suppress',
-            title: loc('tech_suppress'),
-            desc: loc('tech_suppress_desc'),
+        study: {
+            id: 'tech-study',
+            title: loc('tech_study'),
+            desc: loc('tech_study_desc'),
             reqs: { theology: 4 },
             grant: ['theology',5],
             cost: {
                 Knowledge(){ return 195000; }
             },
-            effect(){ return `<div>${loc('tech_suppress_effect',[races[global.race.gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_suppress_warning')}</div>`; },
+            effect(){ return `<div>${loc('tech_study_effect',[races[global.race.old_gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_study_warning')}</div>`; },
             action(){
-                if (payCosts(actions.tech.suppress.cost)){
-                    global.tech['ancient_suppress'] = 1;
+                if (payCosts(actions.tech.study.cost)){
+                    global.tech['ancient_study'] = 1;
                     return true;
                 }
                 return false;

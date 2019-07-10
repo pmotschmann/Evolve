@@ -227,7 +227,8 @@ const spaceProjects = {
                 Titanium(){ return costMultiplier('iridium_mine', 17500, 1.35); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect')}</div>`;
+                let iridium = +(0.035 * zigguratBonus()).toFixed(3);
+                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -258,7 +259,8 @@ const spaceProjects = {
             },
             effect(){
                 let storage = spatialReasoning(100);
-                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_helium_mine_effect1')}</div><div>${loc('plus_max_resource',[storage,loc('resource_Helium_3_name')])}</div>`;
+                let helium = +(0.18 * zigguratBonus()).toFixed(3);
+                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_helium_mine_effect',[helium])}</div><div>${loc('plus_max_resource',[storage,loc('resource_Helium_3_name')])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -502,7 +504,9 @@ const spaceProjects = {
                 Iron(){ return costMultiplier('red_mine', 33000, 1.32); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[0.25,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[0.02,global.resource.Titanium.name])}</div>`;
+                let copper = +(0.25 * zigguratBonus()).toFixed(3);
+                let titanium = +(0.02 * zigguratBonus()).toFixed(3);
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -600,7 +604,8 @@ const spaceProjects = {
                 Brick(){ return costMultiplier('biodome', 1000, 1.28); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_biodome_effect')}</div>`;
+                let food = +(2 * zigguratBonus()).toFixed(2);
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_biodome_effect',[food])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -667,7 +672,8 @@ const spaceProjects = {
                 Mythril(){ return costMultiplier('ziggurat', 250, 1.28); }
             },
             effect(){
-                return `<div>${loc('space_red_ziggurat_effect',[1])}</div></div>`;
+                let bonus = global.tech['ancient_study'] ? 0.6 : 0.4;
+                return `<div>${loc('space_red_ziggurat_effect',[bonus])}</div></div>`;
             },
             refresh: true,
             action(){
@@ -936,7 +942,7 @@ const spaceProjects = {
                 Mythril(){ return costMultiplier('gas_mining', 25, 1.32); }
             },
             effect(){
-                let helium = (global.tech['helium'] ? 0.65 : 0.5);
+                let helium = +((global.tech['helium'] ? 0.65 : 0.5) * zigguratBonus()).toFixed(2);
                 return `<div>${loc('space_gas_mining_effect1',[helium])}</div><div>${loc('space_gas_mining_effect2',[spaceProjects.spc_gas.gas_mining.powered])}</div>`;
             },
             powered: 2,
@@ -1059,7 +1065,7 @@ const spaceProjects = {
                 if (global.tech['drone']){
                     neutronium *= 1 + (global.space.drone.count * 0.06);
                 }
-                neutronium = +neutronium.toFixed(3);
+                neutronium = +(neutronium * zigguratBonus()).toFixed(3);
                 let max = spatialReasoning(500);
                 let oil = +(fuel_adjust(2)).toFixed(2);
                 return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max,loc('resource_Neutronium_name')])}</div><div>${loc('space_gas_moon_outpost_effect3',[oil,spaceProjects.spc_gas_moon.outpost.powered])}</div>`;
@@ -1229,7 +1235,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('elerium_ship', fuel_adjust(5000), 1.3); }
             },
             effect(){
-                let elerium = global.tech.asteroid >= 6 ? 0.0075 : 0.005;
+                let elerium = +((global.tech.asteroid >= 6 ? 0.0075 : 0.005) * zigguratBonus()).toFixed(4);
                 return `<div>${loc('space_belt_elerium_ship_effect1')}</div><div>${loc('space_belt_elerium_ship_effect2',[elerium])}</div>`;
             },
             support: -2,
@@ -1260,7 +1266,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('iridium_ship', fuel_adjust(1800), 1.3); }
             },
             effect(){
-                let iridium = global.tech.asteroid >= 6 ? 0.08 : 0.055;
+                let iridium = +((global.tech.asteroid >= 6 ? 0.08 : 0.055) * zigguratBonus()).toFixed(3);
                 return `<div>${loc('space_belt_iridium_ship_effect1')}</div><div>${loc('space_belt_iridium_ship_effect2',[iridium])}</div>`;
             },
             support: -1,
@@ -1291,7 +1297,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('iron_ship', fuel_adjust(1200), 1.3); }
             },
             effect(){
-                let iron = global.tech.asteroid >= 6 ? 3 : 2;
+                let iron = +((global.tech.asteroid >= 6 ? 3 : 2) * zigguratBonus()).toFixed(2);
                 if (global.tech['solar'] && global.tech['solar'] >= 5){
                     return `<div>${loc('space_belt_iron_ship_effect1')}</div><div>${loc('space_belt_iron_ship_effect2',[iron])}</div><div>${loc('space_belt_iron_ship_effect3')}</div>`;
                 }
@@ -1625,4 +1631,13 @@ export function fuel_adjust(fuel){
         fuel *= 0.95 ** p_on['mass_driver'];
     }
     return fuel;
+}
+
+export function zigguratBonus(){
+    let bonus = 1;
+    if (global.space['ziggurat'] && global.space['ziggurat'].count > 0){
+        let study = global.tech['ancient_study'] ? 0.006 : 0.004;
+        bonus += (global.space.ziggurat.count * global.civic.colonist.workers * study);
+    }
+    return bonus;
 }

@@ -395,10 +395,10 @@ const genePool = {
         id: 'genes-transcendence',
         title: loc('arpa_genepool_transcendence_title'),
         desc: loc('arpa_genepool_transcendence_desc'),
-        reqs: { ancients: 1, creep: 5, birth: 1, store: 1, locked: 1 },
+        reqs: { ancients: 1, creep: 5, locked: 1 },
         grant: ['ancients',2],
-        cost: 5000,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>5000</span></div>`,
+        cost: 1500,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>1500</span></div>`,
         action(){
             if (payPlasmids('transcendence')){
                 return true;

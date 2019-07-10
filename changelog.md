@@ -1,5 +1,6 @@
-#### 0.4.24 - 7/9/2019 ####
+#### 0.4.24 - 7/10/2019 ####
 Thermomechanics upgrade for alloy production<br>
+Tier 2 Religion unlockable<br>
 
 #### 0.4.23 - 7/7/2019 ####
 Resources at the millions breakpoint and above are now shown with 2 significant decimal points<br>
