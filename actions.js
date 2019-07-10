@@ -6788,7 +6788,7 @@ export const actions = {
             },
             effect(){ return `<div>${loc('tech_deify_effect',[races[global.race.old_gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_deify_warning')}</div>`; },
             action(){
-                if (payCosts(actions.tech.embrace.cost)){
+                if (payCosts(actions.tech.deify.cost)){
                     global.tech['ancient_deify'] = 1;
                     if (global.race.old_gods === global.race.species){
                         randomMinorTrait();
