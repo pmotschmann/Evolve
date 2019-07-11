@@ -26,10 +26,10 @@ export var p_on = {};
 export var red_on = {};
 export var moon_on = {};
 export var belt_on = {};
-export var quantium_level = 0;
+export var quantum_level = 0;
 export var achieve_level = 0;
 export function set_qlevel(q_level){
-    quantium_level = q_level;
+    quantum_level = q_level;
 }
 export function set_alevel(a_level){
     achieve_level = a_level;
@@ -170,7 +170,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.24';
+global['version'] = '0.4.25';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

@@ -966,6 +966,8 @@
   "tech_swarm_control_ai_effect": "With AI controlling your solar swarm, you can operate up to 6 satellites per control station.",
   "tech_quantium_swarm": "Quantum Swarm",
   "tech_quantium_swarm_effect": "By upgrading your swarm plant AI with quantum processors the efficiency of the plants are limited only by your capacity for knowledge.",
+  "tech_quantum_manufacturing": "Quantum Manufacturing",
+  "tech_quantum_manufacturing_effect": "AI powered by quantum processors can improve the output of your factories. Efficiency scales with your maximum capacity for knowledge.",
   "tech_gps": "GPS Constellation",
   "tech_gps_effect": "Design a network of navigation satellites.",
   "tech_nav_beacon": "Navigation Beacon",

@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, p_on, belt_on, quantium_level } from './vars.js';
+import { global, vues, poppers, messageQueue, p_on, belt_on, quantum_level } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -789,7 +789,7 @@ const spaceProjects = {
             effect(){
                 let reduce = global.tech['swarm'] ? 0.92 : 0.95;
                 if (global.tech['swarm'] >= 3){
-                    reduce -= quantium_level / 100;
+                    reduce -= quantum_level / 100;
                 }
                 reduce = +((1 - reduce) * 100).toFixed(2);
                 return loc('space_hell_swarm_plant_effect1',[reduce]);
@@ -1619,7 +1619,7 @@ export function swarm_adjust(res){
     if (global.space['swarm_plant']){
         let reduce = global.tech['swarm'] ? 0.92 : 0.95;
         if (global.tech['swarm'] >= 3){
-            reduce -= quantium_level / 100;
+            reduce -= quantum_level / 100;
         }
         res *= reduce ** global.space.swarm_plant.count;
     }
