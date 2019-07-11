@@ -5731,7 +5731,7 @@ export const actions = {
             },
             effect: loc('tech_nano_tubes_effect'),
             action(){
-                if (payCosts(actions.tech.polymer.cost)){
+                if (payCosts(actions.tech.nano_tubes.cost)){
                     global.resource.Nano_Tube.display = true;
                     global.city.factory['Nano'] = 0;
                     messageQueue('Nano Tubes are now available for manufacture');
