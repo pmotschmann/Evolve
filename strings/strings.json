@@ -1739,7 +1739,7 @@
   "space_belt_station_title": "Space Station",
   "space_belt_station_desc": "Deep Space Mining Station",
   "space_belt_station_effect3": "-%0 Helium-3/s",
-  "space_belt_station_effect4": "-%0 Food/s, -%1kW/s",
+  "space_belt_station_effect4": "-%0 Food/s, -%1kW.",
   "space_belt_elerium_ship_title": "Elerium Mining Ship",
   "space_belt_elerium_ship_desc": "Elerium Mining Ship",
   "space_belt_elerium_ship_effect1": "Requires 2 Space Miners",
