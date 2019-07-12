@@ -2731,7 +2731,7 @@ export const actions = {
                 Plywood(){ return costMultiplier('tourist_center', 5000, 1.36); },
             },
             effect(){
-                return `<div>${loc('city_tourist_center_effect1')}</div><div>${loc('city_tourist_center_effect2')}</div><div>${loc('city_tourist_center_effect3')}</div><div>${loc('city_tourist_center_effect4')}</div>`; 
+                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2')}</div><div>${loc('city_tourist_center_effect3')}</div><div>${loc('city_tourist_center_effect4')}</div>`; 
             },
             powered: 1,
             action(){
