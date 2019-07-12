@@ -988,7 +988,7 @@ const spaceProjects = {
             id: 'space-star_dock',
             title(){ return loc('space_gas_star_dock_title'); },
             desc(){
-                return `<div>${loc('space_gas_star_dock_desc')}<div><div class="has-text-special">${loc('space_gas_star_dock_desc_req')}</div>`;
+                return `<div>${loc('space_gas_star_dock_title')}<div><div class="has-text-special">${loc('space_gas_star_dock_desc_req')}</div>`;
             },
             reqs: { genesis: 3 },
             cost: {
@@ -1112,7 +1112,7 @@ const spaceProjects = {
             id: 'space-oil_extractor',
             title: loc('space_gas_moon_oil_extractor_title'),
             desc(){
-                return `<div>${loc('space_gas_moon_oil_extractor_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('space_gas_moon_oil_extractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { gas_moon: 2 },
             cost: {
@@ -1224,7 +1224,7 @@ const spaceProjects = {
             id: 'space-elerium_ship',
             title: loc('space_belt_elerium_ship_title'),
             desc(){
-                return loc('space_belt_elerium_ship_desc');
+                return loc('space_belt_elerium_ship_title');
             },
             reqs: { asteroid: 5 },
             cost: {
@@ -1255,7 +1255,7 @@ const spaceProjects = {
             id: 'space-iridium_ship',
             title: loc('space_belt_iridium_ship_title'),
             desc(){
-                return loc('space_belt_iridium_ship_desc');
+                return loc('space_belt_iridium_ship_title');
             },
             reqs: { asteroid: 3 },
             cost: {
@@ -1286,7 +1286,7 @@ const spaceProjects = {
             id: 'space-iron_ship',
             title: loc('space_belt_iron_ship_title'),
             desc(){
-                return loc('space_belt_iron_ship_desc');
+                return loc('space_belt_iron_ship_title');
             },
             reqs: { asteroid: 3 },
             cost: {
@@ -1357,7 +1357,7 @@ const spaceProjects = {
             id: 'space-elerium_contain',
             title: loc('space_dwarf_elerium_contain_title'),
             desc(){
-                return `<div>${loc('space_dwarf_elerium_contain_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('space_dwarf_elerium_contain_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { dwarf: 1 },
             cost: {
@@ -1386,7 +1386,7 @@ const spaceProjects = {
             id: 'space-e_reactor',
             title: loc('space_dwarf_reactor_title'),
             desc(){
-                return `<div>${loc('space_dwarf_reactor_desc')}</div><div class="has-text-special">${loc('space_dwarf_reactor_desc_req')}</div>`;
+                return `<div>${loc('space_dwarf_reactor_title')}</div><div class="has-text-special">${loc('space_dwarf_reactor_desc_req')}</div>`;
             },
             reqs: { elerium: 2 },
             cost: {
