@@ -739,8 +739,7 @@ function addProject(parent,project){
                 Object.keys(costs).forEach(function (res){
                     var res_cost = (costs[res]() * (inc / 100)).toFixed(0);
                     if (res_cost > 0){
-                        var label = res === 'Money' ? '$' : res+': ';
-                        label = label.replace("_", " ");
+                        var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
                         var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${res_cost}</div>`));
                     }
