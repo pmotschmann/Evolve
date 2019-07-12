@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel, achieve_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
@@ -1366,6 +1366,11 @@ function fastLoop(){
 
                 let alloy_bd = {};
                 alloy_bd['Factory'] = factory_output + 'v';
+                if (global.tech['q_factory']){
+                    let q_bonus = (quantum_level - 1) / 2 + 1;
+                    delta *= q_bonus;
+                    alloy_bd['Quantum'] = ((q_bonus - 1) * 100) + '%';
+                }
                 alloy_bd['Hunger'] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Alloy'] = alloy_bd;
                 modRes('Alloy', delta * time_multiplier);
@@ -1413,6 +1418,11 @@ function fastLoop(){
 
                 let polymer_bd = {};
                 polymer_bd['Factory'] = factory_output + 'v';
+                if (global.tech['q_factory']){
+                    let q_bonus = (quantum_level - 1) / 2 + 1;
+                    delta *= q_bonus;
+                    polymer_bd['Quantum'] = ((q_bonus - 1) * 100) + '%';
+                }
                 polymer_bd['Hunger'] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Polymer'] = polymer_bd;
                 modRes('Polymer', delta * time_multiplier);
@@ -1460,6 +1470,11 @@ function fastLoop(){
 
                 let nano_bd = {};
                 nano_bd['Factory'] = factory_output + 'v';
+                if (global.tech['q_factory']){
+                    let q_bonus = (quantum_level - 1) / 2 + 1;
+                    delta *= q_bonus;
+                    nano_bd['Quantum'] = ((q_bonus - 1) * 100) + '%';
+                }
                 nano_bd['Hunger'] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Nano_Tube'] = nano_bd;
                 modRes('Nano_Tube', delta * time_multiplier);

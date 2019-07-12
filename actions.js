@@ -2731,7 +2731,7 @@ export const actions = {
                 Plywood(){ return costMultiplier('tourist_center', 5000, 1.36); },
             },
             effect(){
-                return `<div>${loc('city_tourist_center_effect1')}</div><div>${loc('city_tourist_center_effect2')}</div><div>${loc('city_tourist_center_effect3')}</div><div>${loc('city_tourist_center_effect4')}</div>`; 
+                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2')}</div><div>${loc('city_tourist_center_effect3')}</div><div>${loc('city_tourist_center_effect4')}</div>`; 
             },
             powered: 1,
             action(){
@@ -5425,6 +5425,23 @@ export const actions = {
                 return false;
             }
         },
+        quantum_manufacturing: {
+            id: 'tech-quantum_manufacturing',
+            title: loc('tech_quantum_manufacturing'),
+            desc: loc('tech_quantum_manufacturing'),
+            reqs: { high_tech: 11 },
+            grant: ['q_factory',1],
+            cost: {
+                Knowledge(){ return 465000; }
+            },
+            effect: loc('tech_quantum_manufacturing_effect'),
+            action(){
+                if (payCosts(actions.tech.quantum_manufacturing.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         worker_drone: {
             id: 'tech-worker_drone',
             title: loc('tech_worker_drone'),
@@ -5731,7 +5748,7 @@ export const actions = {
             },
             effect: loc('tech_nano_tubes_effect'),
             action(){
-                if (payCosts(actions.tech.polymer.cost)){
+                if (payCosts(actions.tech.nano_tubes.cost)){
                     global.resource.Nano_Tube.display = true;
                     global.city.factory['Nano'] = 0;
                     messageQueue('Nano Tubes are now available for manufacture');
@@ -7190,18 +7207,18 @@ export const actions = {
                 return false;
             }
         },
-        quantium_swarm: {
-            id: 'tech-quantium_swarm',
+        quantum_swarm: {
+            id: 'tech-quantum_swarm',
             title: loc('tech_quantium_swarm'),
             desc: loc('tech_quantium_swarm'),
             reqs: { swarm: 2, high_tech: 11 },
             grant: ['swarm',3],
             cost: {
-                Knowledge(){ return 465000; }
+                Knowledge(){ return 450000; }
             },
             effect: loc('tech_quantium_swarm_effect'),
             action(){
-                if (payCosts(actions.tech.quantium_swarm.cost)){
+                if (payCosts(actions.tech.quantum_swarm.cost)){
                     return true;
                 }
                 return false;
