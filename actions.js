@@ -6749,7 +6749,6 @@ export const actions = {
                     global.tech['fanaticism'] = 1;
                     if (global.race.gods === global.race.species){
                         unlockAchieve(`second_evolution`);
-                        randomMinorTrait();
                         return true;
                     }
                     fanaticism(global.race.gods);
@@ -6807,10 +6806,6 @@ export const actions = {
             action(){
                 if (payCosts(actions.tech.deify.cost)){
                     global.tech['ancient_deify'] = 1;
-                    if (global.race.old_gods === global.race.species){
-                        randomMinorTrait();
-                        return true;
-                    }
                     fanaticism(global.race.old_gods);
                     return true;
                 }
@@ -8929,16 +8924,16 @@ function sentience(){
 function fanaticism(god){
     switch (god){
         case 'human':
-            global.race['creative'] = 1;
+            fanaticTrait('creative');
             break;
         case 'elven':
-            global.race['studious'] = 1;
+            fanaticTrait('studious');
             break;
         case 'orc':
-            global.race['brute'] = 1;
+            fanaticTrait('brute');
             break;
         case 'cath':
-            global.race['carnivore'] = 1;
+            fanaticTrait('carnivore');
             if (global.tech['farm'] >= 1){
                 global.tech['hunting'] = 2;
             }
@@ -8966,49 +8961,49 @@ function fanaticism(god){
             }
             break;
         case 'wolven':
-            global.race['tracker'] = 1;
+            fanaticTrait('tracker');
             break;
         case 'centaur':
-            global.race['beast_of_burden'] = 1;
+            fanaticTrait('beast_of_burden');
             break;
         case 'kobold':
-            global.race['pack_rat'] = 1;
+            fanaticTrait('pack_rat');
             break;
         case 'goblin':
-            global.race['merchant'] = 1;
+            fanaticTrait('merchant');
             break;
         case 'gnome':
-            global.race['smart'] = 1;
+            fanaticTrait('smart');
             break;
         case 'orge':
-            global.race['tough'] = 1;
+            fanaticTrait('tough');
             break;
         case 'cyclops':
-            global.race['intelligent'] = 1;
+            fanaticTrait('intelligent');
             break;
         case 'troll':
-            global.race['regenerative'] = 1;
+            fanaticTrait('regenerative');
             break;
         case 'tortoisan':
-            global.race['armored'] = 1;
+            fanaticTrait('armored');
             break;
         case 'gecko':
-            global.race['optimistic'] = 1;
+            fanaticTrait('optimistic');
             break;
         case 'slitheryn':
-            global.race['slow_digestion'] = 1;
+            fanaticTrait('slow_digestion');
             break;
         case 'arraak':
-            global.race['resourceful'] = 1;
+            fanaticTrait('resourceful');
             break;
         case 'pterodacti':
-            global.race['leathery'] = 1;
+            fanaticTrait('leathery');
             break;
         case 'dracnid':
-            global.race['hoarder'] = 1;
+            fanaticTrait('hoarder');
             break;
         case 'entish':
-            global.race['kindling_kindred'] = 1;
+            fanaticTrait('kindling_kindred');
             global.resource.Lumber.display = false;
             global.resource.Plywood.display = false;
             global.city['lumber'] = 0;
@@ -9030,38 +9025,47 @@ function fanaticism(god){
             }
             break;
         case 'cacti':
-            global.race['hyper'] = 1;
+            fanaticTrait('hyper');
             break;
         case 'sporgar':
-            global.race['infectious'] = 1;
+            fanaticTrait('infectious');
             if (global.race.species === 'human'){
                 unlockAchieve(`infested`);
             }
             break;
         case 'shroomi':
-            global.race['toxic'] = 1;
+            fanaticTrait('toxic');
             break;
         case 'mantis':
-            global.race['malnutrition'] = 1;
+            fanaticTrait('malnutrition');
             break;
         case 'scorpid':
-            global.race['claws'] = 1;
+            fanaticTrait('claws');
             break;
         case 'antid':
-            global.race['hivemind'] = 1;
+            fanaticTrait('hivemind');
             break;
         case 'sharkin':
-            global.race['frenzy'] = 1;
+            fanaticTrait('frenzy');
             break;
         case 'octigoran':
-            global.race['suction_grip'] = 1;
+            fanaticTrait('suction_grip');
             break;
         case 'balorg':
-            global.race['fiery'] = 1;
+            fanaticTrait('fiery');
             break;
         case 'imp':
-            global.race['conniving'] = 1;
+            fanaticTrait('conniving');
             break;
+    }
+}
+
+function fanaticTrait(trait){
+    if (global.race[trait]){
+        randomMinorTrait();
+    }
+    else {
+        global.race[trait] = 1;
     }
 }
 
