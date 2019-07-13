@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, modRes, sizeApproximation, moon_on } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, srSpeak, modRes, sizeApproximation, moon_on } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
@@ -7893,7 +7893,7 @@ export function setAction(c_action,action,type,old){
         parent.append(element);
     }
     else {
-        var element = $('<a class="button is-dark" v-on:click="action"><span class="aTitle">{{ title }}</span></a>');
+        var element = $('<a class="button is-dark" v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>');
         parent.append(element);
     }
 
@@ -7994,6 +7994,9 @@ export function setAction(c_action,action,type,old){
                             break;
                     }
                 }
+            },
+            describe(){
+                srSpeak(srDesc(c_action,old));
             },
             trigModal(){
                 this.$modal.open({
@@ -8182,6 +8185,39 @@ export function setPlanet(hell){
             $(`#pop${id}`).remove();
         });
     return biome;
+}
+
+function srDesc(c_action,old){
+    let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
+    desc = desc + '. ';
+    if (c_action.cost && !old){ 
+        desc = desc + 'Costs: ';
+        var costs = adjustCosts(c_action.cost);
+        Object.keys(costs).forEach(function (res) {
+            var res_cost = costs[res]();
+            if (res_cost > 0){
+                let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                label = label.replace("_", " ");
+                let display_cost = sizeApproximation(res_cost,1);
+                desc = desc + `${label}${display_cost}. `;
+            }
+        });
+    }
+
+    if (c_action.effect){
+        let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
+        if (effect){
+            desc = desc + effect + '. ';
+        }
+    }
+    if (c_action.flair){
+        let flair = typeof c_action.flair === 'string' ? c_action.flair : c_action.flair();
+        if (effect){
+            desc = desc + flair + '.';
+        }
+    }
+
+    return desc;
 }
 
 function actionDesc(parent,c_action,old){

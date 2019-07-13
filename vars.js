@@ -170,7 +170,7 @@ if (convertVersion(global['version']) < 2060){
     });
 }
 
-global['version'] = '0.4.26';
+global['version'] = '0.4.27';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -580,6 +580,23 @@ window.importGame = function importGame(){
             window.location.reload();
         }
     }
+}
+
+export function srSpeak(text, priority) {
+    var el = document.createElement("div");
+    var id = "speak-" + Date.now();
+    el.setAttribute("id", id);
+    el.setAttribute("aria-live", priority || "polite");            
+    el.classList.add("sr-only");
+    document.body.appendChild(el);
+    
+    window.setTimeout(function () {
+      document.getElementById(id).innerHTML = text;      
+    }, 100);
+    
+    window.setTimeout(function () {
+        document.body.removeChild(document.getElementById(id));
+    }, 1000);
 }
 
 // executes a hard reset
