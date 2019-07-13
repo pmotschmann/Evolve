@@ -8161,7 +8161,6 @@ export function setPlanet(hell){
                 }
             }
             
-            //console.log(array);
             switch (array.length){
                 case 2:
                     popper.append($(`<div>${loc('set_planet_extra1',[array[0],array[1]])}</div>`));
@@ -8212,12 +8211,12 @@ function srDesc(c_action,old){
     }
     if (c_action.flair){
         let flair = typeof c_action.flair === 'string' ? c_action.flair : c_action.flair();
-        if (effect){
+        if (flair){
             desc = desc + flair + '.';
         }
     }
 
-    return desc;
+    return desc.replace("..",".");
 }
 
 function actionDesc(parent,c_action,old){
