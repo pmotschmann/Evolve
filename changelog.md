@@ -1,3 +1,6 @@
+#### 0.4.26 - 7/12/2019 ####
+Unlocked CRISPR upgrades are now listed as perks<br>
+
 #### 0.4.25 - 7/11/2019 ####
 Quantum Manufacturing upgrade<br>
 Quantum Swarm cost lowered from 465k to 450k<br>
