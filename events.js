@@ -129,7 +129,7 @@ export const events = {
         effect: function(){
             unlockAchieve('doomed');
             global.stats.portals++;
-            return loc('event_doom',[races[global.race.species].solar.dwarf]);
+            return loc(global.race['evil'] ? 'event_doom_alt' : 'event_doom',[races[global.race.species].solar.dwarf]);
         }
     },
     ruins: {

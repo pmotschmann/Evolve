@@ -97,6 +97,7 @@
   "event_terrorist1": "%0 soldiers were wounded by a terrorist attack against your security forces.",
   "event_terrorist2": "%0 soldiers were wounded and %1 soldiers were killed by a terrorist attack against your security forces.",
   "event_doom": "A portal to hell was accidentally opened on %0, a lone space marine wearing green armor somehow managed to stop the demonic invasion.",
+  "event_doom_alt": "A portal to heaven was accidentally opened on %0, a lone space marine wearing green armor somehow managed to stop the angelic invasion.",
   "event_ruins": "An ancient cache of resources has been discovered.",
   "event_tax_revolt": "Riots have broken out due to the excessively high taxes, widespread damage has resulted in the loss of some resources.",
   "evo_rna": "Creates %0 RNA",
