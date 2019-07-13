@@ -8015,13 +8015,25 @@ export function setAction(c_action,action,type,old){
                 return `off: ${global[action][type].count - global[action][type].on}`;
             },
             power_on(){
-                if (global[action][type].on < global[action][type].count){
-                    global[action][type].on++;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on < global[action][type].count){
+                        global[action][type].on++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             power_off(){
-                if (global[action][type].on > 0){
-                    global[action][type].on--;
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on > 0){
+                        global[action][type].on--;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
         },
