@@ -428,7 +428,7 @@ export function checkAchievements(){
     if (global.stats.starved >= 100){
         unlockAchieve('mass_starvation');
     }
-    if (Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue) >= 8)){
+    if (Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue)) >= 8){
         unlockAchieve('warmonger');
     }
     if (global.stats.died >= 250){
