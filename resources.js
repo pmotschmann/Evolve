@@ -956,7 +956,7 @@ export function spatialReasoning(value){
     if (global.genes['store'] && global.genes['store'] >= 4){
         plasmids += global.race.Phage.count;
     }
-    if (global.genes['store'] && !global.race['no_plasmid']){
+    if (global.genes['store']){
         let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
         value *= 1 + (plasmids / divisor);
         value = Math.round(value);

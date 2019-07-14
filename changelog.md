@@ -1,3 +1,10 @@
+#### 0.4.27 - 7/13/2019 ####
+Added special action description buttons for screen readers<br>
+
+#### 0.4.26 - 7/12/2019 ####
+Unlocked CRISPR upgrades are now listed as perks<br>
+Control/Shift/Alt click now works with power on and off buttons<br>
+
 #### 0.4.25 - 7/11/2019 ####
 Quantum Manufacturing upgrade<br>
 Quantum Swarm cost lowered from 465k to 450k<br>
