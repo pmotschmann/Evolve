@@ -7843,13 +7843,19 @@ export function evalAffordable(){
 }
 
 export function oldTech(tech){
-    if (tech !== 'fanaticism' && tech !== 'anthropology'){
+    if (tech !== 'fanaticism' && tech !== 'anthropology' && tech !== 'deify' && tech !== 'study'){
         addAction('tech',tech,true);
     }
     else if (tech === 'fanaticism' && global.tech['fanaticism']){
         addAction('tech',tech,true);
     }
     else if (tech === 'anthropology' && global.tech['anthropology']){
+        addAction('tech',tech,true);
+    }
+    else if (tech === 'deify' && global.tech['ancient_deify']){
+        addAction('tech',tech,true);
+    }
+    else if (tech === 'study' && global.tech['ancient_study']){
         addAction('tech',tech,true);
     }
 }
