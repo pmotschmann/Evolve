@@ -1,3 +1,8 @@
+#### 0.4.28 - 7/16/2019 ####
+Added missing hellscape achievement<br>
+Fixed spatial reasoning and phage interaction<br>
+Fixed warmonger unlocking requirement<br>
+
 #### 0.4.27 - 7/13/2019 ####
 Added special action description buttons for screen readers<br>
 
