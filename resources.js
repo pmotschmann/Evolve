@@ -140,9 +140,7 @@ export function defineResources(){
         loadResource('Neutronium',0,1,false,false,'special');
         loadResource('Elerium',1,1,false,false,'special');
         loadResource('Nano_Tube',0,1,false,false,'special');
-
         loadResource('Genes',-2,0,false,false,'special');
-
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');

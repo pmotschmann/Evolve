@@ -2846,10 +2846,11 @@ function midLoop(){
                 else {
                     global.race.mutation++;
                     let trait = randomMinorTrait();
-                    messageQueue(loc('gene_therapy',[trait,global.race.mutation]),'success');
+                    let gene = global.genes['synthesis'] ? global.race.mutation * (global.genes['synthesis'] + 1) : global.race.mutation;
+                    messageQueue(loc('gene_therapy',[trait,gene]),'success');
                     global.stats.plasmid++;
                     global.race.Plasmid.count++;
-                    global.resource.Genes.amount += global.race.mutation;
+                    global.resource.Genes.amount += gene;
                     global.resource.Genes.display = true;
                 }
                 arpa('Genetics');

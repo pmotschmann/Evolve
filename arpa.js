@@ -284,6 +284,51 @@ const genePool = {
             return false;
         }
     },
+    synthesis: {
+        id: 'genes-synthesis',
+        title: loc('arpa_genepool_synthesis_title'),
+        desc: loc('arpa_genepool_synthesis_desc',[2]),
+        reqs: { evolve: 1 },
+        grant: ['synthesis',1],
+        cost: 25,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>25</span></div>`,
+        action(){
+            if (payPlasmids('synthesis')){
+                return true;
+            }
+            return false;
+        }
+    },
+    karyokinesis: {
+        id: 'genes-karyokinesis',
+        title: loc('arpa_genepool_karyokinesis_title'),
+        desc: loc('arpa_genepool_synthesis_desc',[3]),
+        reqs: { synthesis: 1 },
+        grant: ['synthesis',2],
+        cost: 40,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>40</span></div>`,
+        action(){
+            if (payPlasmids('karyokinesis')){
+                return true;
+            }
+            return false;
+        }
+    },
+    cytokinesis: {
+        id: 'genes-cytokinesis',
+        title: loc('arpa_genepool_cytokinesis_title'),
+        desc: loc('arpa_genepool_synthesis_desc',[4]),
+        reqs: { synthesis: 2 },
+        grant: ['synthesis',3],
+        cost: 55,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>55</span></div>`,
+        action(){
+            if (payPlasmids('cytokinesis')){
+                return true;
+            }
+            return false;
+        }
+    },
     replication: {
         id: 'genes-replication',
         title: loc('arpa_genepool_replication_title'),
