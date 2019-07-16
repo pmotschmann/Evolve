@@ -1328,6 +1328,7 @@
   "arpa_genepool_transcendence_desc": "Can unlock both fanaticism and anthropology",
   "arpa_crispr_desc": "Permanently alter your DNA. These upgrades carry over across resets.",
   "arpa_race_genetic_traids": "%0 Genetic Traits",
+  "arpa_race_genetic_minor_traits": "%0 Minor Traits",
   "arpa_gene_mutation": "Gene Mutation",
   "arpa_sequence_genome": "Sequence Genome",
   "arpa_to_complete": "To Complete:",

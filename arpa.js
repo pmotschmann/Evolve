@@ -608,20 +608,35 @@ function genetics(){
         vues[`arpaSequence`].$mount(`#arpaSequence`);
     }
     if (global.tech['genetics'] > 2){
-        let breakdown = $('<div id="geneticBreakdown"></div>');
+        let breakdown = $('<div id="geneticBreakdown" class="geneticTraits"></div>');
         $('#arpaGenetics').append(breakdown);
-        breakdown.append(`<div class="trait has-text-success">${loc('arpa_race_genetic_traids',[races[global.race.species].name])}</div>`)
-        
+
+        let minor = false;
         Object.keys(global.race).forEach(function (trait){
-            if (traits[trait]){
-                if (global.race[trait]> 1){
-                    breakdown.append(`<div class="trait has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</div>`);
+            if (traits[trait] && traits[trait].type === 'minor'){
+                minor = true;
+                let m_trait = $(`<div class="trait"></div>`);
+                if (global.race[trait] > 1){
+                    m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
                 }
                 else {
-                    breakdown.append(`<div class="trait has-text-warning">${traits[trait].desc}</div>`);
+                    m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
                 }
+                breakdown.append(m_trait);
             }
         });
+
+        breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[races[global.race.species].name])}</div>`)
+        
+        Object.keys(global.race).forEach(function (trait){
+            if (traits[trait] && traits[trait].type !== 'minor'){
+                breakdown.append(`<div class="trait has-text-warning">${traits[trait].desc}</div>`);
+            }
+        });
+        
+        if (minor){
+            breakdown.prepend(`<div class="trait minor has-text-success">${loc('arpa_race_genetic_minor_traits',[races[global.race.species].name])}</div>`)
+        }
     }
 }
 
