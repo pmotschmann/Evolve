@@ -3,6 +3,8 @@ Satellite and Observatory cost reductions<br>
 Fibroblast minor trait<br>
 Randomly gained minor traits will no longer stack unless they have all been unlocked<br>
 Genes are now gained from random mutations<br>
+Iridium is now unlocked by construction an irdium mine instead of the moon base<br>
+Helium-3 is now unlocked by construction a helium-3 mine instead of the moon base<br>
 Fixed spatial reasoning and phage interaction<br>
 Fixed warmonger unlocking requirement<br>
 

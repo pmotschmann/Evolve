@@ -200,8 +200,6 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_base.cost)){
                     incrementStruct('moon_base');
-                    global.resource.Iridium.display = true;
-                    global.resource['Helium_3'].display = true;
                     if (global.city.power >= 5){
                         global.space['moon_base'].on++;
                     }
@@ -234,6 +232,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_moon.iridium_mine.cost)){
+                    global.resource.Iridium.display = true;
                     incrementStruct('iridium_mine');
                     if (!global.resource['Mythril'].display){
                         global.resource['Mythril'].display = true;
@@ -266,6 +265,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_moon.helium_mine.cost)){
+                    global.resource['Helium_3'].display = true;
                     incrementStruct('helium_mine');
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['helium_mine'].on++;
