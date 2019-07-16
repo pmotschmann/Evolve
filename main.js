@@ -11,7 +11,6 @@ import { events } from './events.js';
 import { arpa } from './arpa.js';
 
 var intervals = {};
-delete global.resource['Genes'];
 
 if (Object.keys(locales).length > 1){
     $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="locale"></select></span>`));
