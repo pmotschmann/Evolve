@@ -11,6 +11,7 @@ import { events } from './events.js';
 import { arpa } from './arpa.js';
 
 var intervals = {};
+delete global.resource['Genes'];
 
 if (Object.keys(locales).length > 1){
     $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="locale"></select></span>`));
@@ -2845,10 +2846,12 @@ function midLoop(){
                 }
                 else {
                     global.race.mutation++;
-                    randomMinorTrait();
-                    messageQueue(loc('gene_therapy'),'success');
+                    let trait = randomMinorTrait();
+                    messageQueue(loc('gene_therapy',[trait,global.race.mutation]),'success');
                     global.stats.plasmid++;
                     global.race.Plasmid.count++;
+                    global.resource.Genes.amount += global.race.mutation;
+                    global.resource.Genes.display = true;
                 }
                 arpa('Genetics');
                 drawTech();

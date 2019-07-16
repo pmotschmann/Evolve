@@ -1,6 +1,8 @@
-#### 0.4.28 - 7/15/2019 ####
+#### 0.4.28 - 7/16/2019 ####
 Satellite and Observatory cost reductions<br>
 Fibroblast minor trait<br>
+Randomly gained minor traits will no longer stack unless they have all been unlocked<br>
+Genes are now gained from random mutations<br>
 Fixed spatial reasoning and phage interaction<br>
 Fixed warmonger unlocking requirement<br>
 

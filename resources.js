@@ -140,6 +140,9 @@ export function defineResources(){
         loadResource('Neutronium',0,1,false,false,'special');
         loadResource('Elerium',1,1,false,false,'special');
         loadResource('Nano_Tube',0,1,false,false,'special');
+
+        loadResource('Genes',-2,0,false,false,'special');
+
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         loadResource('Bronze',-1,0,false,false,'danger');
@@ -210,7 +213,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
     }
 
     var res_container;
-    if (global.resource[name].max === -1){
+    if (global.resource[name].max === -1 || global.resource[name].max === -2){
         res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div>`);
     }
     else {

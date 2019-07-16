@@ -1027,6 +1027,7 @@ export function randomMinorTrait(){
     else {
         global.race[trait] = 1;
     }
+    return trait;
 }
 
 export const biomes = {
