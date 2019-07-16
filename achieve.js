@@ -121,6 +121,11 @@ var achievements = {
         desc: loc("achieve_biome_tundra_desc"),
         flair: loc("achieve_biome_tundra_flair")
     },
+    biome_hellscape: {
+        name: loc("achieve_biome_hellscape_name"),
+        desc: loc("achieve_biome_hellscape_desc"),
+        flair: loc("achieve_biome_hellscape_flair")
+    },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
         desc: loc("achieve_genus_humanoid_desc"),

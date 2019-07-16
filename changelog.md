@@ -1,4 +1,4 @@
-#### 0.4.28 - 7/16/2019 ####
+#### 0.4.29 - 7/16/2019 ####
 Satellite and Observatory cost reductions<br>
 Fibroblast minor trait<br>
 Randomly gained minor traits will no longer stack unless they have all been unlocked<br>
@@ -6,6 +6,9 @@ Genes are now gained from random mutations<br>
 Synthesis line of CRISPR upgrades<br>
 Iridium is now unlocked by constructing an irdium mine instead of the moon base<br>
 Helium-3 is now unlocked by constructing a helium-3 mine instead of the moon base<br>
+
+#### 0.4.28 - 7/16/2019 ####
+Added missing hellscape achievement<br>
 Fixed spatial reasoning and phage interaction<br>
 Fixed warmonger unlocking requirement<br>
 

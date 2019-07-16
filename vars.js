@@ -70,6 +70,10 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+if (convertVersion(global['version']) < 4028 && global.stats['achieve'] && global.stats.achieve['genus_demonic']){
+    global.stats.achieve['biome_hellscape'] = global.stats.achieve['genus_demonic'];
+}
+
 if (convertVersion(global['version']) < 4003 && global.stats['achieve']){
     Object.keys(global.stats.achieve).forEach(function (key){
         global.stats.achieve[key] = 1;
