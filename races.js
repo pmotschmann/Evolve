@@ -941,6 +941,14 @@ export const traits = {
         desc: loc('trait_content'),
         type: 'minor',
     },
+    content: { // Morale Bonus
+        desc: loc('trait_content'),
+        type: 'minor',
+    },
+    fibroblast: { // Healing Bonus
+        desc: loc('trait_fibroblast'),
+        type: 'minor',
+    }
 };
 
 /*

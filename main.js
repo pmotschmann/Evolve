@@ -2975,8 +2975,11 @@ function longLoop(){
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? 4 : 1;
-            if (global.city['hospital']){
-                let hc = global.city['hospital'].count;
+            let hc = global.city['hospital'] ? global.city['hospital'].count : 0;
+            if (global.race['fibroblast']){
+                hc += global.race['fibroblast'] * 2;
+            }
+            if (hc > 0){
                 while (hc >= 20){
                     healed++;
                     hc -= 20;
