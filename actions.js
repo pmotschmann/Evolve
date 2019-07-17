@@ -5453,7 +5453,7 @@ export const actions = {
             },
             effect(){ return loc('tech_worker_drone_effect',[races[global.race.species].solar.gas_moon]); },
             action(){
-                if (payCosts(actions.tech.polymer.cost)){
+                if (payCosts(actions.tech.worker_drone.cost)){
                     global.space['drone'] = { count: 0 };
                     return true;
                 }
