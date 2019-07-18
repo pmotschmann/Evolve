@@ -170,7 +170,7 @@ export const races = {
             dwarf: 'Napoleon',
         }
     },
-    orge: {
+    ogre: {
         name: loc('race_ogre'),
         desc: loc('race_ogre_desc'),
         type: 'giant',
