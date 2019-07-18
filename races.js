@@ -3,14 +3,14 @@ import { loc } from './locale.js';
 
 export const races = {
     protoplasm: {
-        name: 'Protoplasm',
-        desc: loc('race_protoplasm'),
+        name: loc('race_protoplasm'),
+        desc: loc('race_protoplasm_desc'),
         type: 'organism',
         home: 'Prehistoric'
     },
     human: {
-        name: 'Human',
-        desc: loc('race_human'),
+        name: loc('race_human'),
+        desc: loc('race_human_desc'),
         type: 'humanoid',
         home: 'Terra',
         entity: loc('race_human_entity'),
@@ -27,8 +27,8 @@ export const races = {
         }
     },
     elven: {
-        name: 'Elf',
-        desc: loc('race_elven'),
+        name: loc('race_elven'),
+        desc: loc('race_elven_desc'),
         type: 'humanoid',
         home: 'Valinor',
         entity: loc('race_elven_entity'),
@@ -45,8 +45,8 @@ export const races = {
         }
     },
     orc: {
-        name: 'Orc',
-        desc: loc('race_orc'),
+        name: loc('race_orc'),
+        desc: loc('race_orc_desc'),
         type: 'humanoid',
         home: 'Roneard',
         entity: loc('race_orc_entity'),
@@ -63,8 +63,8 @@ export const races = {
         }
     },
     cath: {
-        name: 'Cath',
-        desc: loc('race_cath'),
+        name: loc('race_cath'),
+        desc: loc('race_cath_desc'),
         type: 'animal',
         home: 'Cathar',
         entity: loc('race_cath_entity'),
@@ -81,8 +81,8 @@ export const races = {
         }
     },
     wolven: {
-        name: 'Wolven',
-        desc: loc('race_wolven'),
+        name: loc('race_wolven'),
+        desc: loc('race_wolven_desc'),
         type: 'animal',
         home: 'Wolvar',
         entity: loc('race_wolven_entity'),
@@ -99,8 +99,8 @@ export const races = {
         }
     },
     centaur: {
-        name: 'Centaur',
-        desc: loc('race_centaur'),
+        name: loc('race_centaur'),
+        desc: loc('race_centaur_desc'),
         type: 'animal',
         home: 'Sagittarius',
         entity: loc('race_centaur_entity'),
@@ -117,8 +117,8 @@ export const races = {
         }
     },
     kobold: {
-        name: 'Kobold',
-        desc: loc('race_kobold'),
+        name: loc('race_kobold'),
+        desc: loc('race_kobold_desc'),
         type: 'small',
         home: 'Wax',
         entity: loc('race_kobold_entity'),
@@ -135,8 +135,8 @@ export const races = {
         }
     },
     goblin: {
-        name: 'Goblin',
-        desc: loc('race_goblin'),
+        name: loc('race_goblin'),
+        desc: loc('race_goblin_desc'),
         type: 'small',
         home: 'Crassus',
         entity: loc('race_goblin_entity'),
@@ -153,8 +153,8 @@ export const races = {
         }
     },
     gnome: {
-        name: 'Gnome',
-        desc: loc('race_gnome'),
+        name: loc('race_gnome'),
+        desc: loc('race_gnome_desc'),
         type: 'small',
         home: 'Lawn',
         entity: loc('race_gnome_entity'),
@@ -171,8 +171,8 @@ export const races = {
         }
     },
     orge: {
-        name: 'Ogre',
-        desc: loc('race_ogre'),
+        name: loc('race_ogre'),
+        desc: loc('race_ogre_desc'),
         type: 'giant',
         home: 'Mourn',
         entity: loc('race_ogre_entity'),
@@ -189,8 +189,8 @@ export const races = {
         }
     },
     cyclops: {
-        name: 'Cyclops',
-        desc: loc('race_cyclops'),
+        name: loc('race_cyclops'),
+        desc: loc('race_cyclops_desc'),
         type: 'giant',
         home: 'Unus',
         entity: loc('race_cyclops_entity'),
@@ -207,8 +207,8 @@ export const races = {
         }
     },
     troll: {
-        name: 'Troll',
-        desc: loc('race_troll'),
+        name: loc('race_troll'),
+        desc: loc('race_troll_desc'),
         type: 'giant',
         home: 'Brücke',
         entity: loc('race_troll_entity'),
@@ -225,8 +225,8 @@ export const races = {
         }
     },
     tortoisan: {
-        name: 'Tortoisan',
-        desc: loc('race_tortoisan'),
+        name: loc('race_tortoisan'),
+        desc: loc('race_tortoisan_desc'),
         type: 'reptilian',
         home: 'Splinter',
         entity: loc('race_tortoisan_entity'),
@@ -243,8 +243,8 @@ export const races = {
         }
     },
     gecko: {
-        name: 'Gecko',
-        desc: loc('race_gecko'),
+        name: loc('race_gecko'),
+        desc: loc('race_gecko_desc'),
         type: 'reptilian',
         home: 'Ijsabom',
         entity: loc('race_gecko_entity'),
@@ -261,8 +261,8 @@ export const races = {
         }
     },
     slitheryn: {
-        name: 'Slitheryn',
-        desc: loc('race_slitheryn'),
+        name: loc('race_slitheryn'),
+        desc: loc('race_slitheryn_desc'),
         type: 'reptilian',
         home: 'Viper',
         entity: loc('race_slitheryn_entity'),
@@ -279,8 +279,8 @@ export const races = {
         }
     },
     arraak: {
-        name: 'Arraak',
-        desc: loc('race_arraak'),
+        name: loc('race_arraak'),
+        desc: loc('race_arraak_desc'),
         type: 'avian',
         home: 'Daphne',
         entity: loc('race_arraak_entity'),
@@ -297,8 +297,8 @@ export const races = {
         }
     },
     pterodacti: {
-        name: 'Pterodacti',
-        desc: loc('race_pterodacti'),
+        name: loc('race_pterodacti'),
+        desc: loc('race_pterodacti_desc'),
         type: 'avian',
         home: 'Crichton',
         entity: loc('race_pterodacti_entity'),
@@ -315,8 +315,8 @@ export const races = {
         }
     },
     dracnid: {
-        name: 'Dracnid',
-        desc: loc('race_dracnid'),
+        name: loc('race_dracnid'),
+        desc: loc('race_dracnid_desc'),
         type: 'avian',
         home: 'Draco',
         entity: loc('race_dracnid_entity'),
@@ -333,8 +333,8 @@ export const races = {
         }
     },
     entish: {
-        name: 'Ent',
-        desc: loc('race_entish'),
+        name: loc('race_entish'),
+        desc: loc('race_entish_desc'),
         type: 'plant',
         home: 'Fangorn',
         entity: loc('race_entish_entity'),
@@ -351,8 +351,8 @@ export const races = {
         }
     },
     cacti: {
-        name: 'Cacti',
-        desc: loc('race_cacti'),
+        name: loc('race_cacti'),
+        desc: loc('race_cacti_desc'),
         type: 'plant',
         home: 'Bikanel',
         entity: loc('race_cacti_entity'),
@@ -369,8 +369,8 @@ export const races = {
         }
     },
     sporgar: {
-        name: 'Sporgar',
-        desc: loc('race_sporgar'),
+        name: loc('race_sporgar'),
+        desc: loc('race_sporgar_desc'),
         type: 'fungi',
         home: 'Zanger',
         entity: loc('race_sporgar_entity'),
@@ -387,8 +387,8 @@ export const races = {
         }
     },
     shroomi: {
-        name: 'Shroomi',
-        desc: loc('race_shroomi'),
+        name: loc('race_shroomi'),
+        desc: loc('race_shroomi_desc'),
         type: 'fungi',
         home: 'Armillaria',
         entity: loc('race_shroomi_entity'),
@@ -405,8 +405,8 @@ export const races = {
         }
     },
     mantis: {
-        name: 'Mantis',
-        desc: loc('race_mantis'),
+        name: loc('race_mantis'),
+        desc: loc('race_mantis_desc'),
         type: 'insectoid',
         home: 'Chryssalid',
         entity: loc('race_mantis_entity'),
@@ -423,8 +423,8 @@ export const races = {
         }
     },
     scorpid: {
-        name: 'Scorpid',
-        desc: loc('race_scorpid'),
+        name: loc('race_scorpid'),
+        desc: loc('race_scorpid_desc'),
         type: 'insectoid',
         home: 'Scorpio',
         entity: loc('race_scorpid_entity'),
@@ -441,8 +441,8 @@ export const races = {
         }
     },
     antid: {
-        name: 'Antid',
-        desc: loc('race_antid'),
+        name: loc('race_antid'),
+        desc: loc('race_antid_desc'),
         type: 'insectoid',
         home: 'Menzel',
         entity: loc('race_antid_entity'),
@@ -459,8 +459,8 @@ export const races = {
         }
     },
     sharkin: {
-        name: 'Sharkin',
-        desc: loc('race_sharkin'),
+        name: loc('race_sharkin'),
+        desc: loc('race_sharkin_desc'),
         type: 'aquatic',
         home: 'Baidam',
         entity: loc('race_sharkin_entity'),
@@ -477,8 +477,8 @@ export const races = {
         }
     },
     octigoran: {
-        name: 'Octigoran',
-        desc: loc('race_octigoran'),
+        name: loc('race_octigoran'),
+        desc: loc('race_octigoran_desc'),
         type: 'aquatic',
         home: 'Cetus',
         entity: loc('race_octigoran_entity'),
@@ -495,8 +495,8 @@ export const races = {
         }
     },
     balorg: {
-        name: 'Balorg',
-        desc: loc('race_balorg'),
+        name: loc('race_balorg'),
+        desc: loc('race_balorg_desc'),
         type: 'demonic',
         home: 'Abyss',
         entity: loc('race_balorg_entity'),
@@ -513,8 +513,8 @@ export const races = {
         }
     },
     imp: {
-        name: 'Imp',
-        desc: loc('race_imp'),
+        name: loc('race_imp'),
+        desc: loc('race_imp_desc'),
         type: 'demonic',
         home: 'Baator',
         entity: loc('race_imp_entity'),
