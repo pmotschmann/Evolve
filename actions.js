@@ -8960,6 +8960,10 @@ function sentience(){
         global.tech['religion'] = 1;
     }
 
+    Object.keys(global.genes.minor).forEach(function (trait){
+        global.race[trait] = global.genes.minor[trait];
+    });
+
     if (global.genes['evolve'] && global.genes['evolve'] >= 2){
         randomMinorTrait();
     }
