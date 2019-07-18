@@ -1508,12 +1508,12 @@ export const actions = {
         },
         plasmid: {
             id: 'evo-plasmid',
-            title: loc('evo_challenge_pladmid'),
-            desc: loc('evo_challenge_pladmid'),
+            title: loc('evo_challenge_plasmid'),
+            desc: loc('evo_challenge_plasmid'),
             cost: {
                 DNA(){ return 10; }
             },
-            effect: loc('evo_challenge_pladmid_effect'),
+            effect: loc('evo_challenge_plasmid_effect'),
             action(){
                 if (payCosts(actions.evolution.plasmid.cost)){
                     global.race['no_plasmid'] = 1;
@@ -5368,14 +5368,14 @@ export const actions = {
         },
         artifical_intelligence: {
             id: 'tech-artifical_intelligence',
-            title: loc('tech_artifical_intelligence'),
-            desc: loc('tech_artifical_intelligence_desc'),
+            title: loc('tech_artificial_intelligence'),
+            desc: loc('tech_artificial_intelligence_desc'),
             reqs: { high_tech: 9 },
             grant: ['high_tech',10],
             cost: {
                 Knowledge(){ return 325000; }
             },
-            effect: loc('tech_artifical_intelligence_effect'),
+            effect: loc('tech_artificial_intelligence_effect'),
             action(){
                 if (payCosts(actions.tech.artifical_intelligence.cost)){
                     return true;
