@@ -292,6 +292,14 @@ if (!global.race['old_gods']){
     global.race['old_gods'] = 'none';
 }
 
+if (!global.genes['minor']){
+    global.genes['minor'] = {};
+}
+
+if (!global.race['minor']){
+    global.race['minor'] = {};
+}
+
 if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
 }

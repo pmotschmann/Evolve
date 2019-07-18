@@ -660,7 +660,11 @@ function genetics(){
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type === 'minor'){
                 minor = true;
-                let m_trait = $(`<div class="trait"></div>`);
+                let m_trait = $(`<div class="trait t-${trait}"></div>`);
+                let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name}</span></b-tooltip>`);
+                let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage</span></b-tooltip>`);
+                m_trait.append(gene);
+                m_trait.append(phage);
                 if (global.race[trait] > 1){
                     m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
                 }
@@ -682,7 +686,53 @@ function genetics(){
         if (minor){
             breakdown.prepend(`<div class="trait minor has-text-success">${loc('arpa_race_genetic_minor_traits',[races[global.race.species].name])}</div>`)
         }
+
+        if (vues[`arpaGenes`]){
+            vues[`arpaGenes`].$destroy();
+        }
+        vues[`arpaGenes`] = new Vue({
+            data: {
+                genes: global.genes,
+                race: global.race
+            },
+            methods: {
+                gene(t){
+                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    if (global.resource.Genes.amount >= cost){
+                        global.resource.Genes.amount -= cost;
+                        global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
+                        global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                        genetics();
+                    }
+                },
+                phage(t){
+                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    if (global.race.Phage.count >= cost){
+                        global.race.Phage.count -= cost;
+                        global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
+                        global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                        genetics();
+                    }
+                },
+                geneCost(t){
+                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    return loc('arpa_gene_buy',[t,cost]);
+                },
+                phageCost(t){
+                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    return loc('arpa_phage_buy',[t,cost]);
+                }
+            }
+        });
+        vues[`arpaGenes`].$mount(`#geneticBreakdown`);
     }
+}
+
+function fibonacci(num, memo){
+    memo = memo || {};
+    if (memo[num]) return memo[num];
+    if (num <= 1) return 1;
+    return memo[num] = fibonacci(num - 1, memo) + fibonacci(num - 2, memo);
 }
 
 function crispr(){

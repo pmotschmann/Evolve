@@ -1343,6 +1343,8 @@
   "arpa_sequence": "Sequence",
   "arpa_mutate_desc": "Research beneficial gene mutations. More Bio Labs will make this go faster",
   "arpa_sequence_desc": "Sequence your genome, this will unlock the secrets of DNA. More Bio Labs will make this go faster",
+  "arpa_gene_buy": "Purchase a rank of %0 for %1 genes, ranks purchased with genes last only for the current species.",
+  "arpa_phage_buy": "Purchase a rank of %0 for %1 phage, ranks purchases with phage carry over to all future species.",
   "time_never": "Never",
   "race_protoplasm": "Your race has yet to evolve into a complex lifeform, currently you're nothing but protoplasm in the primordial ooze.",
   "race_human": "Humans are versatile creatures who are adept at bending the environment around them to suit their needs. They are an ambitious race who seek to expand their knowledge of the universe around them and build great empires.",
