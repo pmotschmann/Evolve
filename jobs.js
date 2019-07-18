@@ -12,14 +12,14 @@ export const job_desc = {
         multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
         let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
         let gain = +(impact * multiplier).toFixed(1);
-        return loc('job_farmer',[gain]);
+        return loc('job_farmer_desc',[gain]);
     },
     lumberjack: function(){
         let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
         multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
         let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
         let gain = +(impact * multiplier).toFixed(1);
-        return loc('job_lumberjack',[gain]);
+        return loc('job_lumberjack_desc',[gain]);
     },
     quarry_worker: function(){
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
@@ -28,44 +28,44 @@ export const job_desc = {
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
-        return loc('job_quarry_worker',[gain]);
+        return loc('job_quarry_worker_desc',[gain]);
     },
     miner: function(){
         if (global.tech['mining'] >= 3){
-            return loc('job_miner2');
+            return loc('job_miner_desc2');
         }
         else {
-            return loc('job_miner1');
+            return loc('job_miner_desc1');
         }
     },
     coal_miner: function(){
         if (global.tech['uranium']){
-            return loc('job_coal_miner2');
+            return loc('job_coal_miner_desc2');
         }
         else {
-            return loc('job_coal_miner1');
+            return loc('job_coal_miner_desc1');
         }
     },
     craftsman: function(){
-        return loc('job_craftsman');
+        return loc('job_craftsman_desc');
     },
     cement_worker: function(){
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
         let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
         gain = +(gain).toFixed(2);
-        return loc('job_cement_worker',[gain]);
+        return loc('job_cement_worker_desc',[gain]);
     },
     banker: function(){
         let interest = global.civic.banker.impact * 100;
         if (global.tech['banking'] >= 10){
             interest += 2 * global.tech['stock_exchange'];
         }
-        return loc('job_banker',[interest]);
+        return loc('job_banker_desc',[interest]);
     },
     entertainer: function(){
         let morale = global.tech['theatre'];
-        return loc('job_entertainer',[morale]);
+        return loc('job_entertainer_desc',[morale]);
     },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
@@ -77,7 +77,7 @@ export const job_desc = {
             impact *= 1 + (global.city.temple.count * 0.05);
         }
         impact = +impact.toFixed(2);
-        return loc('job_professor',[impact]);
+        return loc('job_professor_desc',[impact]);
     },
     scientist: function(){
         let impact = global.civic.scientist.impact;
@@ -89,13 +89,13 @@ export const job_desc = {
             impact *= 1 + (global.space.satellite.count * 0.01);
         }
         impact = +impact.toFixed(2);
-        return loc('job_scientist',[impact]);
+        return loc('job_scientist_desc',[impact]);
     },
     colonist(){
-        return loc('job_colonist',[races[global.race.species].solar.red]);
+        return loc('job_colonist_desc',[races[global.race.species].solar.red]);
     },
     space_miner(){
-        return loc('job_space_miner');
+        return loc('job_space_miner_desc');
     }
 }
 
@@ -103,19 +103,19 @@ export const job_desc = {
 export function defineJobs(){
     $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
     loadUnemployed();
-    loadJob('farmer','Farmer',1.35); //TODO: localize this
-    loadJob('lumberjack','Lumberjack',1);
-    loadJob('quarry_worker','Quarry Worker',1);
-    loadJob('miner','Miner',1);
-    loadJob('coal_miner','Coal Miner',0.2);
-    loadJob('craftsman','Craftsman',1);
-    loadJob('cement_worker','Cement Plant Worker',0.4);
-    loadJob('entertainer','Entertainer',1);
-    loadJob('professor','Professor',0.5);
-    loadJob('scientist','Scientist',1);
-    loadJob('banker','Banker',0.1);
-    loadJob('colonist','Colonist',1);
-    loadJob('space_miner','Space Miner',1);
+    loadJob('farmer',1.35); //TODO: localize this
+    loadJob('lumberjack',1);
+    loadJob('quarry_worker',1);
+    loadJob('miner',1);
+    loadJob('coal_miner',0.2);
+    loadJob('craftsman',1);
+    loadJob('cement_worker',0.4);
+    loadJob('entertainer',1);
+    loadJob('professor',0.5);
+    loadJob('scientist',1);
+    loadJob('banker',0.1);
+    loadJob('colonist',1);
+    loadJob('space_miner',1);
     loadFoundry();
 }
 
@@ -124,7 +124,7 @@ function loadUnemployed(){
     
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job = global.race['carnivore'] || global.race['evil'] ? loc('job_hunter1') : loc('job_unemployed1');
+    let job = global.race['carnivore'] || global.race['evil'] ? loc('job_hunter') : loc('job_unemployed');
     let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">${job}</h3><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
@@ -135,7 +135,7 @@ function loadUnemployed(){
     vues['civ_free'].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
-            let text = global.race['carnivore'] || global.race['evil'] ? (global.race['evil'] ? loc('job_evil_hunter') : loc('job_hunter2')) : loc('job_unemployed2');
+            let text = global.race['carnivore'] || global.race['evil'] ? (global.race['evil'] ? loc('job_evil_hunter_desc') : loc('job_hunter_desc')) : loc('job_unemployed_desc');
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
             $('#main').append(popper);
             popper.show();
@@ -148,17 +148,20 @@ function loadUnemployed(){
         });
 }
 
-function loadJob(job, name, impact, color){
+function loadJob(job, impact, color){
     color = color || 'info';
     if (!global['civic'][job]){
         global['civic'][job] = {
             job: job,
-            name: name,
+            name: loc('job_' + job),
             display: false,
             workers: 0,
             max: 0,
             impact: impact
         };
+    }
+    else{
+        global['civic'][job].name = loc('job_' + job);
     }
 
     global.civic[job].impact = impact;
@@ -334,10 +337,10 @@ export function loadFoundry(){
             var popper = $(`<div id="popFoundry" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
             if (global.genes['crafty']){
-                popper.html(loc('job_craftsman2'));
+                popper.html(loc('job_craftsman_desc2'));
             }
             else {
-                popper.html(loc('job_craftsman1'));
+                popper.html(loc('job_craftsman_desc1'));
             }
             popper.show();
             poppers['popFoundry'] = new Popper($(`#foundry .foundry`),popper);
