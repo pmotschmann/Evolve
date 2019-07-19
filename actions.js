@@ -5189,6 +5189,26 @@ export const actions = {
                 return false;
             }
         },
+        de_novo_sequencing: {
+            id: 'tech-de_novo_sequencing',
+            title: loc('tech_de_novo_sequencing'),
+            desc: loc('tech_de_novo_sequencing'),
+            reqs: { genetics: 5 },
+            grant: ['genetics',6],
+            cost: {
+                Knowledge(){ return 220000; }
+            },
+            effect: loc('tech_de_novo_sequencing_effect'),
+            action(){
+                if (payCosts(actions.tech.de_novo_sequencing.cost)){
+                    var tech = actions.tech.de_novo_sequencing.grant[0];
+                    global.tech[tech] = actions.tech.de_novo_sequencing.grant[1];
+                    arpa('Genetics');
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: loc('tech_mad_science'),

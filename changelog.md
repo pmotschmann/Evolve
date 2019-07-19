@@ -8,6 +8,7 @@ Satellite and Observatory cost reductions<br>
 Fibroblast minor trait<br>
 Iridium is now unlocked by constructing an irdium mine instead of the moon base<br>
 Helium-3 is now unlocked by constructing a helium-3 mine instead of the moon base<br>
+Genome sequencing now defaults to on when first unlocked<br>
 
 #### 0.4.28 - 7/16/2019 ####
 Added missing hellscape achievement<br>

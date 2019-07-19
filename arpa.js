@@ -1,4 +1,4 @@
-import { global, vues, poppers } from './vars.js';
+import { global, vues, poppers, keyMultiplier } from './vars.js';
 import { actions, drawTech, addAction, removeAction } from './actions.js';
 import { races, traits } from './races.js';
 import { space } from './space.js';
@@ -622,6 +622,11 @@ function genetics(){
             let boost = $(`<b-tooltip :label="boostLabel()" position="is-bottom" animated multilined><button class="button boost" @click="booster" :aria-label="boostLabel()">${loc('arpa_boost')}</button></b-tooltip>`);
             genome.append(boost);
         }
+
+        if (global.tech['genetics'] >= 6){
+            let boost = $(`<b-tooltip :label="novoLabel()" position="is-bottom" animated multilined><button class="button novo" @click="novo" :aria-label="novoLabel()">${loc('arpa_novo')}</button></b-tooltip>`);
+            genome.append(boost);
+        }
         
         if (global.arpa.sequence.on){
             $('#arpaSequence button.seq').addClass('has-text-success');
@@ -664,6 +669,21 @@ function genetics(){
                 },
                 boostLabel(){
                     return loc('arpa_boost_label');
+                },
+                novo(){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.resource.Knowledge.amount >= 125000){
+                            global.resource.Knowledge.amount -= 125000;
+                            global.resource.Genes.amount++;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                },
+                novoLabel(){
+                    return loc('arpa_novo_label',['125k']);
                 }
             },
             filters: {
