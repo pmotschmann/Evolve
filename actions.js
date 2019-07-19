@@ -2630,16 +2630,16 @@ export const actions = {
             effect() { 
                 let oil = spatialReasoning(1000);
                 oil *= global.tech['world_control'] ? 1.5 : 1;
-                let effect = `<div>${loc('plus_max_resource',[oil,'resource_Oil_name'])}.</div>`;
+                let effect = `<div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}.</div>`;
                 if (global.resource['Helium_3'].display){
                     let val = spatialReasoning(400);
                     val *= global.tech['world_control'] ? 1.5 : 1;
-                    effect = effect + `<div>${loc('plus_max_resource',[val,'resource_Helium_3_name'])}.</div>`;
+                    effect = effect + `<div>${loc('plus_max_resource',[val,loc('resource_Helium_3_name')])}.</div>`;
                 }
                 if (global.tech['uranium'] >= 2){
                     let val = spatialReasoning(250);
                     val *= global.tech['world_control'] ? 1.5 : 1;
-                    effect = effect + `<div>${loc('plus_max_resource',[val,'resource_Uranium_name'])}.</div>`;
+                    effect = effect + `<div>${loc('plus_max_resource',[val,loc('resource_Uranium_name')])}.</div>`;
                 }
                 return effect;
             },
