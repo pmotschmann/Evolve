@@ -714,9 +714,11 @@ function genetics(){
                 minor = true;
                 let m_trait = $(`<div class="trait t-${trait}"></div>`);
                 let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name}</span></b-tooltip>`);
-                let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage</span></b-tooltip>`);
                 m_trait.append(gene);
-                m_trait.append(phage);
+                if (global.race.Phage.count > 0){
+                    let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage</span></b-tooltip>`);
+                    m_trait.append(phage);
+                }
                 if (global.race[trait] > 1){
                     m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
                 }
