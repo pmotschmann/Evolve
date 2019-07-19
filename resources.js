@@ -24,6 +24,7 @@ export const resource_values = {
     Elerium: 2000,
     Neutronium: 1500,
     Nano_Tube: 750,
+    Genes: 0,
 };
 
 export const tradeRatio = {
