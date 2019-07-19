@@ -931,7 +931,7 @@ function fastLoop(){
         let total = 0;
         let stress_level = 5;
         if (global.race['content']){
-            stress_level += global.race['content'] * 0.5;
+            stress_level += global.race['content'] * 0.4;
         }
         Object.keys(job_desc).forEach(function (job) {
             total += global.civic[job].workers;
