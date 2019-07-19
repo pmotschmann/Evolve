@@ -3154,6 +3154,9 @@ function longLoop(){
                     if (global.genes['crafty']){
                         craft_ratio *= 1 + ((global.genes.crafty - 1) * 0.5);
                     }
+                    if (global.race['ambidextrous']){
+                        craft_ratio *= 1 + (global.race['ambidextrous'] * 0.02);
+                    }
 
                     let volume = Math.floor(global.resource[craftCost[craft][0].r].amount / (craftCost[craft][0].a * craft_costs));
                     for (let i=1; i<craftCost[craft].length; i++){

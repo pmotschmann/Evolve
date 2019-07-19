@@ -84,7 +84,7 @@ export function craftingRatio(res){
         multiplier += 0.03;
     }
     if (global.race['ambidextrous']){
-        multiplier += (global.race['ambidextrous'] / 100);
+        multiplier += (global.race['ambidextrous'] * 0.03);
     }
     if (global.race['rigid']){
         multiplier -= 0.01;
