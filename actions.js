@@ -5168,6 +5168,47 @@ export const actions = {
                 return false;
             }
         },
+        shotgun_sequencing: {
+            id: 'tech-shotgun_sequencing',
+            title: loc('tech_shotgun_sequencing'),
+            desc: loc('tech_shotgun_sequencing_desc'),
+            reqs: { genetics: 4 },
+            grant: ['genetics',5],
+            cost: {
+                Knowledge(){ return 165000; }
+            },
+            effect: loc('tech_shotgun_sequencing_effect'),
+            action(){
+                if (payCosts(actions.tech.shotgun_sequencing.cost)){
+                    var tech = actions.tech.shotgun_sequencing.grant[0];
+                    global.tech[tech] = actions.tech.shotgun_sequencing.grant[1];
+                    global.arpa.sequence.boost = true;
+                    arpa('Genetics');
+                    return true;
+                }
+                return false;
+            }
+        },
+        de_novo_sequencing: {
+            id: 'tech-de_novo_sequencing',
+            title: loc('tech_de_novo_sequencing'),
+            desc: loc('tech_de_novo_sequencing'),
+            reqs: { genetics: 5 },
+            grant: ['genetics',6],
+            cost: {
+                Knowledge(){ return 220000; }
+            },
+            effect: loc('tech_de_novo_sequencing_effect'),
+            action(){
+                if (payCosts(actions.tech.de_novo_sequencing.cost)){
+                    var tech = actions.tech.de_novo_sequencing.grant[0];
+                    global.tech[tech] = actions.tech.de_novo_sequencing.grant[1];
+                    arpa('Genetics');
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: loc('tech_mad_science'),
@@ -8959,6 +9000,10 @@ function sentience(){
     if (global.race.gods !== 'none'){
         global.tech['religion'] = 1;
     }
+
+    Object.keys(global.genes.minor).forEach(function (trait){
+        global.race[trait] = global.genes.minor[trait];
+    });
 
     if (global.genes['evolve'] && global.genes['evolve'] >= 2){
         randomMinorTrait();

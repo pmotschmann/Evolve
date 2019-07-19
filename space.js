@@ -40,10 +40,10 @@ const spaceProjects = {
             desc: loc('space_home_satellite_desc'),
             reqs: { space: 2 },
             cost: {
-                Money(){ return costMultiplier('satellite', 75000, 1.25); },
-                Knowledge(){ return costMultiplier('satellite', 40000, 1.25); },
-                Oil(){ return costMultiplier('satellite', fuel_adjust(3200), 1.25); },
-                Alloy(){ return costMultiplier('satellite', 10000, 1.25); }
+                Money(){ return costMultiplier('satellite', 72000, 1.22); },
+                Knowledge(){ return costMultiplier('satellite', 28000, 1.22); },
+                Oil(){ return costMultiplier('satellite', fuel_adjust(3200), 1.22); },
+                Alloy(){ return costMultiplier('satellite', 8000, 1.22); }
             },
             effect: `<div>${loc('plus_max_resource',[750,loc('resource_Knowledge_name')])}</div><div>${loc('space_home_satellite_effect2',[global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')])}</div><div>${loc('space_home_satellite_effect3')}</div>`,
             action(){
@@ -200,8 +200,6 @@ const spaceProjects = {
             action(){
                 if (payCosts(spaceProjects.spc_moon.moon_base.cost)){
                     incrementStruct('moon_base');
-                    global.resource.Iridium.display = true;
-                    global.resource['Helium_3'].display = true;
                     if (global.city.power >= 5){
                         global.space['moon_base'].on++;
                     }
@@ -234,6 +232,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_moon.iridium_mine.cost)){
+                    global.resource.Iridium.display = true;
                     incrementStruct('iridium_mine');
                     if (!global.resource['Mythril'].display){
                         global.resource['Mythril'].display = true;
@@ -266,6 +265,7 @@ const spaceProjects = {
             powered: 1,
             action(){
                 if (payCosts(spaceProjects.spc_moon.helium_mine.cost)){
+                    global.resource['Helium_3'].display = true;
                     incrementStruct('helium_mine');
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['helium_mine'].on++;
@@ -281,11 +281,11 @@ const spaceProjects = {
             desc: `<div>${loc('space_moon_observatory_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
             reqs: { science: 9, luna: 1 },
             cost: {
-                Money(){ return costMultiplier('observatory', 200000, 1.3); },
-                Knowledge(){ return costMultiplier('observatory', 69000, 1.3); },
-                Stone(){ return costMultiplier('observatory', 125000, 1.3); },
-                Iron(){ return costMultiplier('observatory', 65000, 1.3); },
-                Iridium(){ return costMultiplier('observatory', 1250, 1.3); }
+                Money(){ return costMultiplier('observatory', 200000, 1.28); },
+                Knowledge(){ return costMultiplier('observatory', 69000, 1.28); },
+                Stone(){ return costMultiplier('observatory', 125000, 1.28); },
+                Iron(){ return costMultiplier('observatory', 65000, 1.28); },
+                Iridium(){ return costMultiplier('observatory', 1250, 1.28); }
             },
             effect(){
                 return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect2')}</div>`;

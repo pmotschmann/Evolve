@@ -104,6 +104,24 @@ a {
     margin-bottom: 1rem;
 }
 
+.basic-button {
+    display: inline-block;
+    font-size: .875rem;
+    margin: 0 .25rem;
+    padding-top: .125rem;
+    border-radius: .375rem;
+    line-height: 1rem;
+    height: 1.375rem;
+    min-width: 4rem;
+    text-align: center;
+    cursor: pointer;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .main {
     margin: 1rem 1rem 1.25rem;
 
@@ -245,8 +263,8 @@ a {
 
             a.button,
             span.oldTech {
-                width: 12rem;
-                margin: 1rem 1rem 0 0;
+                width: 12.5rem;
+                margin: .5rem .5rem 0 0;
                 
                 span.count {
                     position: absolute;
@@ -282,7 +300,7 @@ a {
             div.special {
                 height: 1.125rem;
                 line-height: .9375rem;
-                top: 1rem;
+                top: .5rem;
                 left: 0;
                 border-radius: .25rem 0 .4375rem 0;
                 width: 1.1875rem;
@@ -295,7 +313,7 @@ a {
 
             span.on {
                 bottom: 0;
-                right: 1rem;
+                right: .5rem;
                 border-radius: .4375rem 0 .25rem 0;
             }
 
@@ -552,21 +570,7 @@ a {
     }
     
     .order {
-        display: inline-block;
-        font-size: .875rem;
-        margin: 0 .25rem;
-        padding-top: .125rem;
-        border-radius: .375rem;
-        line-height: 1rem;
-        height: 1.375rem;
-        min-width: 4rem;
-        text-align: center;
-        cursor: pointer;
-        -moz-user-select: none;
-        -khtml-user-select: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
+        .basic-button();
     }
 
     .trade {
@@ -853,6 +857,16 @@ body .modal > div.popper {
         margin-top: .25rem;
         margin-bottom: .5rem;
     }
+    .boost,
+    .novo {
+        margin-left: .5rem;
+    }
+}
+
+.geneticTraits {
+    .trait.major {
+        margin-top: .5rem;
+    }
 }
 
 body.nuke {
@@ -993,6 +1007,13 @@ html.dark {
         &.neutral {
             color: #c0ce00;
         }
+    }
+    .basic-button {
+        border: #ccc solid .0625rem;
+    }
+    .basic-button:hover {
+        border: #eee solid .0625rem;
+        background-color: #3a4344;
     }
     .main {
         .content {
@@ -1219,6 +1240,13 @@ html.light {
         &.neutral {
             color: #c0ce00;
         }
+    }
+    .basic-button {
+        border: #000 solid .0625rem;
+    }
+    .basic-button:hover {
+        border: #333 solid .0625rem;
+        background-color: #ccc;
     }
     .main {
         .content {
