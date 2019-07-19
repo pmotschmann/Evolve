@@ -2,7 +2,7 @@
 Portuguese translation by Rodrigodd<br>
 DNA Sequencer upgrade<br>
 Gene Assembly cost increase to 200k<br>
-Synthesis now applies a bonus to auto crafting<br>
+Synthesis now applies a bonus to auto crafted genes<br>
 Ambidextrous buffed<br>
 Ambidextrous now has a greater effect on auto crafting<br>
 
