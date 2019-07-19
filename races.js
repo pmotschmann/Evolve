@@ -12,18 +12,18 @@ export const races = {
         name: loc('race_human'),
         desc: loc('race_human_desc'),
         type: 'humanoid',
-        home: 'Terra',
+        home: loc('race_solar_home'),
         entity: loc('race_human_entity'),
         traits: {
             creative: 1,
             diverse: 1
         },
         solar: {
-            red: 'Mars',
-            hell: 'Mercury',
-            gas: 'Jupiter',
-            gas_moon: 'Ganymede',
-            dwarf: 'Ceres',
+            red: loc('race_solar_red'),
+            hell: loc('race_solar_hell'),
+            gas: loc('race_solar_gas'),
+            gas_moon: loc('race_solar_gas_moon'),
+            dwarf: loc('race_solar_dwarf'),
         }
     },
     elven: {

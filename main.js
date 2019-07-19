@@ -430,7 +430,7 @@ function fastLoop(){
         global_multiplier *= 1 + (bonus / 100);
     }
 
-    breakdown.p['consume'] = {
+    breakdown.p['consume'] = { //TODO: find a way to localize this
         Money: {},
         Knowledge: {},
         Food: {},
