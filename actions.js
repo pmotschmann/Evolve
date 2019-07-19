@@ -5168,6 +5168,27 @@ export const actions = {
                 return false;
             }
         },
+        shotgun_sequencing: {
+            id: 'tech-shotgun_sequencing',
+            title: loc('tech_shotgun_sequencing'),
+            desc: loc('tech_shotgun_sequencing_desc'),
+            reqs: { genetics: 4 },
+            grant: ['genetics',5],
+            cost: {
+                Knowledge(){ return 165000; }
+            },
+            effect: loc('tech_shotgun_sequencing_effect'),
+            action(){
+                if (payCosts(actions.tech.shotgun_sequencing.cost)){
+                    var tech = actions.tech.shotgun_sequencing.grant[0];
+                    global.tech[tech] = actions.tech.shotgun_sequencing.grant[1];
+                    global.arpa.sequence.boost = true;
+                    arpa('Genetics');
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: loc('tech_mad_science'),

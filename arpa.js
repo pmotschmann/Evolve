@@ -601,8 +601,12 @@ function genetics(){
                 max: 50000,
                 progress: 0,
                 time: 50000,
-                on: false
+                on: true
             };
+        }
+
+        if (!global.arpa.sequence['boost']){
+            global.arpa.sequence['boost'] = false;
         }
 
         let label = global.tech.genetics > 2 ? loc('arpa_gene_mutation') : loc('arpa_sequence_genome');
@@ -611,10 +615,20 @@ function genetics(){
         let progress = $(`<progress class="progress" :value="progress" max="${global.arpa.sequence.max}">{{ progress }}%</progress>`);
         genome.append(progress);
         let b_label = global.tech.genetics > 2 ? loc('arpa_mutate') : loc('arpa_sequence');
-        let button = $(`<button class="button" @click="toggle">${b_label}</button>`);
+        let button = $(`<button class="button seq" @click="toggle">${b_label}</button>`);
         genome.append(button);
+
+        if (global.tech['genetics'] >= 5){
+            let boost = $(`<b-tooltip :label="boostLabel()" position="is-bottom" animated multilined><button class="button boost" @click="booster" :aria-label="boostLabel()">${loc('arpa_boost')}</button></b-tooltip>`);
+            genome.append(boost);
+        }
+        
         if (global.arpa.sequence.on){
-            $('#arpaSequence button').addClass('has-text-success');
+            $('#arpaSequence button.seq').addClass('has-text-success');
+        }
+
+        if (global.arpa.sequence.boost){
+            $('#arpaSequence button.boost').addClass('has-text-success');
         }
 
         vues[`arpaSequence`] = new Vue({
@@ -631,18 +645,36 @@ function genetics(){
                 toggle(){
                     if (global.arpa.sequence.on){
                         global.arpa.sequence.on = false;
-                        $('#arpaSequence button').removeClass('has-text-success');
+                        $('#arpaSequence button.seq').removeClass('has-text-success');
                     }
                     else {
                         global.arpa.sequence.on = true;
-                        $('#arpaSequence button').addClass('has-text-success');
+                        $('#arpaSequence button.seq').addClass('has-text-success');
                     }
                 },
+                booster(){
+                    if (global.arpa.sequence.boost){
+                        global.arpa.sequence.boost = false;
+                        $('#arpaSequence button.boost').removeClass('has-text-success');
+                    }
+                    else {
+                        global.arpa.sequence.boost = true;
+                        $('#arpaSequence button.boost').addClass('has-text-success');
+                    }
+                },
+                boostLabel(){
+                    return loc('arpa_boost_label');
+                }
             },
             filters: {
                 timer(val){
                     if (global.city.biolab.on > 0){
-                        return (val / global.city.biolab.on).toFixed(0) + 's';
+                        if (global.arpa.sequence.boost){
+                            return (val / (global.city.biolab.on * 2)).toFixed(0) + 's';
+                        }
+                        else {
+                            return (val / global.city.biolab.on).toFixed(0) + 's';
+                        }
                     }
                     else {
                         return loc('time_never');
