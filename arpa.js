@@ -287,7 +287,7 @@ const genePool = {
     synthesis: {
         id: 'genes-synthesis',
         title: loc('arpa_genepool_synthesis_title'),
-        desc: loc('arpa_genepool_synthesis_desc',[2]),
+        desc: loc('arpa_genepool_synthesis_desc',[2,10]),
         reqs: { evolve: 1 },
         grant: ['synthesis',1],
         cost: 25,
@@ -302,7 +302,7 @@ const genePool = {
     karyokinesis: {
         id: 'genes-karyokinesis',
         title: loc('arpa_genepool_karyokinesis_title'),
-        desc: loc('arpa_genepool_synthesis_desc',[3]),
+        desc: loc('arpa_genepool_synthesis_desc',[3,25]),
         reqs: { synthesis: 1 },
         grant: ['synthesis',2],
         cost: 40,
@@ -317,7 +317,7 @@ const genePool = {
     cytokinesis: {
         id: 'genes-cytokinesis',
         title: loc('arpa_genepool_cytokinesis_title'),
-        desc: loc('arpa_genepool_synthesis_desc',[4]),
+        desc: loc('arpa_genepool_synthesis_desc',[4,50]),
         reqs: { synthesis: 2 },
         grant: ['synthesis',3],
         cost: 55,
@@ -609,6 +609,10 @@ function genetics(){
             global.arpa.sequence['boost'] = false;
         }
 
+        if (!global.arpa.sequence['auto']){
+            global.arpa.sequence['auto'] = false;
+        }
+
         let label = global.tech.genetics > 2 ? loc('arpa_gene_mutation') : loc('arpa_sequence_genome');
         let sequence = $(`<div><b-tooltip class="has-text-warning" :label="seq()" position="is-bottom" size="is-small" multilined animated>${label}</b-tooltip> - ${loc('arpa_to_complete')} {{ time | timer }}</div>`);
         genome.append(sequence);
@@ -619,12 +623,17 @@ function genetics(){
         genome.append(button);
 
         if (global.tech['genetics'] >= 5){
-            let boost = $(`<b-tooltip :label="boostLabel()" position="is-bottom" animated multilined><button class="button boost" @click="booster" :aria-label="boostLabel()">${loc('arpa_boost')}</button></b-tooltip>`);
+            let boost = $(`<b-tooltip :label="boostLabel(false)" position="is-bottom" animated multilined><button class="button boost" @click="booster" :aria-label="boostLabel(true)">${loc('arpa_boost')}</button></b-tooltip>`);
             genome.append(boost);
         }
 
         if (global.tech['genetics'] >= 6){
             let boost = $(`<b-tooltip :label="novoLabel()" position="is-bottom" animated multilined><button class="button" @click="novo" :aria-label="novoLabel()">${loc('arpa_novo')}</button></b-tooltip>`);
+            genome.append(boost);
+        }
+
+        if (global.tech['genetics'] >= 7){
+            let boost = $(`<b-tooltip :label="autoLabel(false)" position="is-bottom" animated multilined><button class="button auto" @click="auto_seq" :aria-label="autoLabel(true)">${loc('arpa_auto_sequence')}</button></b-tooltip>`);
             genome.append(boost);
         }
         
@@ -635,6 +644,11 @@ function genetics(){
         if (global.arpa.sequence.boost){
             $('#arpaSequence button.boost').addClass('has-text-success');
         }
+
+        if (global.arpa.sequence.auto){
+            $('#arpaSequence button.auto').addClass('has-text-success');
+        }
+
 
         vues[`arpaSequence`] = new Vue({
             data: global.arpa.sequence,
@@ -667,14 +681,14 @@ function genetics(){
                         $('#arpaSequence button.boost').addClass('has-text-success');
                     }
                 },
-                boostLabel(){
-                    return loc('arpa_boost_label');
+                boostLabel(sr){
+                    return loc('arpa_boost_label') + (sr ? (global.arpa.sequence.boost ? loc('city_on') : loc('city_off')) : '');
                 },
                 novo(){
                     let keyMult = keyMultiplier();
                     for (let i=0; i<keyMult; i++){
-                        if (global.resource.Knowledge.amount >= 125000){
-                            global.resource.Knowledge.amount -= 125000;
+                        if (global.resource.Knowledge.amount >= 200000){
+                            global.resource.Knowledge.amount -= 200000;
                             global.resource.Genes.amount++;
                         }
                         else {
@@ -683,7 +697,20 @@ function genetics(){
                     }
                 },
                 novoLabel(){
-                    return loc('arpa_novo_label',['125k']);
+                    return loc('arpa_novo_label',['200k']);
+                },
+                auto_seq(){
+                    if (global.arpa.sequence.auto){
+                        global.arpa.sequence.auto = false;
+                        $('#arpaSequence button.auto').removeClass('has-text-success');
+                    }
+                    else {
+                        global.arpa.sequence.auto = true;
+                        $('#arpaSequence button.auto').addClass('has-text-success');
+                    }
+                },
+                autoLabel(sr){
+                    return loc('arpa_auto_seq_label') + (sr ? (global.arpa.sequence.boost ? loc('city_on') : loc('city_off')) : '');
                 }
             },
             filters: {

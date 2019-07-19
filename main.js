@@ -2934,9 +2934,23 @@ function midLoop(){
     });
 }
 
+let sythMap = {
+    1: 1.1,
+    2: 1.25,
+    3: 1.5,
+};
+
 function longLoop(){
     if (global.race.species !== 'protoplasm'){
         
+        if (global.arpa.sequence && global.arpa.sequence['auto']){
+            if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - 10000){
+                global.resource.Knowledge.amount -= 200000;
+                let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
+                global.resource.Genes.amount += gene;
+            }
+        }
+
         // Market price fluctuation
         if (global.tech['currency'] && global.tech['currency'] >= 2){
             Object.keys(resource_values).forEach(function (res) {

@@ -5213,7 +5213,7 @@ export const actions = {
             id: 'tech-dna_sequencer',
             title: loc('tech_dna_sequencer'),
             desc: loc('tech_dna_sequencer'),
-            reqs: { genetics: 6, locked: 1 },
+            reqs: { genetics: 6 },
             grant: ['genetics',7],
             cost: {
                 Knowledge(){ return 300000; }
@@ -5223,6 +5223,7 @@ export const actions = {
                 if (payCosts(actions.tech.dna_sequencer.cost)){
                     var tech = actions.tech.dna_sequencer.grant[0];
                     global.tech[tech] = actions.tech.dna_sequencer.grant[1];
+                    global.arpa.sequence.auto = true;
                     arpa('Genetics');
                     return true;
                 }

@@ -1,3 +1,9 @@
+#### 0.4.30 - 7/19/2019 ####
+Portuguese translation by Rodrigodd<br>
+DNA Sequencer upgrade<br>
+Gene Assembly cost increase to 200k<br>
+Synthesis now applies a bonus to auto crafting<br>
+
 #### 0.4.29 - 7/18/2019 ####
 Genetic modification system, customize your race with minor traits<br>
 Shotgun Sequencing upgrade for genome research<br>

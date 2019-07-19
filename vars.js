@@ -193,7 +193,7 @@ if (convertVersion(global['version']) < 4029 && global.race['mutation'] && globa
     }
 }
 
-global['version'] = '0.4.29';
+global['version'] = '0.4.30';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

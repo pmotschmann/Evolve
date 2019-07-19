@@ -486,6 +486,13 @@ export function drawPerks(){
         }
     }
 
+    if (global.genes['synthesis']){
+        unlocked++;
+        let base = global.genes['synthesis'] >= 2 ? (global.genes['synthesis'] >= 3 ? 4 : 3) : 2;
+        let auto = global.genes['synthesis'] >= 2 ? (global.genes['synthesis'] >= 3 ? 50 : 25) : 10;
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_synthesis_desc",[base,auto])}</span></div>`);
+    }
+
     if (global.genes['challenge']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge")}</span></div>`);
