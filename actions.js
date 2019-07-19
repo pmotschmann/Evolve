@@ -5209,6 +5209,26 @@ export const actions = {
                 return false;
             }
         },
+        dna_sequencer: {
+            id: 'tech-dna_sequencer',
+            title: loc('tech_dna_sequencer'),
+            desc: loc('tech_dna_sequencer'),
+            reqs: { genetics: 6, locked: 1 },
+            grant: ['genetics',7],
+            cost: {
+                Knowledge(){ return 300000; }
+            },
+            effect: loc('tech_dna_sequencer_effect'),
+            action(){
+                if (payCosts(actions.tech.dna_sequencer.cost)){
+                    var tech = actions.tech.dna_sequencer.grant[0];
+                    global.tech[tech] = actions.tech.dna_sequencer.grant[1];
+                    arpa('Genetics');
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: loc('tech_mad_science'),

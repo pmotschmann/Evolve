@@ -624,7 +624,7 @@ function genetics(){
         }
 
         if (global.tech['genetics'] >= 6){
-            let boost = $(`<b-tooltip :label="novoLabel()" position="is-bottom" animated multilined><button class="button novo" @click="novo" :aria-label="novoLabel()">${loc('arpa_novo')}</button></b-tooltip>`);
+            let boost = $(`<b-tooltip :label="novoLabel()" position="is-bottom" animated multilined><button class="button" @click="novo" :aria-label="novoLabel()">${loc('arpa_novo')}</button></b-tooltip>`);
             genome.append(boost);
         }
         

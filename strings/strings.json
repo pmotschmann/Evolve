@@ -666,6 +666,8 @@
   "tech_shotgun_sequencing_effect": "Unlock a faster brute force method of genome sequencing.",
   "tech_de_novo_sequencing": "De Novo Sequencing",
   "tech_de_novo_sequencing_effect": "Unlock an option to produce genetic material from excess knowledge.",
+  "tech_dna_sequencer": "DNA sequencer",
+  "tech_dna_sequencer_effect": "BIO Labs will automaticaly convert excess knowledge into genes.",
   "tech_mad_science": "Mad Science",
   "tech_mad_science_desc": "Mad Science",
   "tech_mad_science_effect": "The greatest leaps in science are often made by \"misunderstood\" individuals.",
