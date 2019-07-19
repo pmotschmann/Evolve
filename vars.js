@@ -70,22 +70,56 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
-if (convertVersion(global['version']) < 4028 && global.stats['achieve'] && global.stats.achieve['genus_demonic']){
-    global.stats.achieve['biome_hellscape'] = global.stats.achieve['genus_demonic'];
-}
-
-if (convertVersion(global['version']) < 4003 && global.stats['achieve']){
-    Object.keys(global.stats.achieve).forEach(function (key){
-        global.stats.achieve[key] = 1;
+if (convertVersion(global['version']) < 2060){
+    Object.keys(global.resource).forEach(function (res){
+        if (global.resource[res].crates){
+            global.resource[res].crates = Math.ceil(global.resource[res].crates / 5);
+        }
+        if (global.resource[res].containers){
+            global.resource[res].containers = Math.ceil(global.resource[res].containers / 5);
+        }
     });
 }
 
-if (convertVersion(global['version']) < 4001 && global['city'] && global.city['factory'] && !global.city.factory['Nano']){
-    global.city.factory['Nano'] = 0;
+if (convertVersion(global['version']) < 2062 && global.civic.taxes !== undefined){
+    switch(Number(global.civic.taxes.tax_rate)){
+        case 0:
+            global.civic.taxes.tax_rate = 0;
+            break;
+        case 1:
+            global.civic.taxes.tax_rate = 10;
+            break;
+        case 2:
+            global.civic.taxes.tax_rate = 20;
+            break;
+        case 3:
+            global.civic.taxes.tax_rate = 30;
+            break;
+        case 4:
+            global.civic.taxes.tax_rate = 40;
+            break;
+        case 5:
+            global.civic.taxes.tax_rate = 50;
+            break;
+    }
 }
 
-if (convertVersion(global['version']) < 3004 && global['settings'] && global.settings['space'] && global.settings.space.belt){
-    global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
+if (convertVersion(global['version']) === 2062 && global.civic.taxes !== undefined){
+    if (global.civic.taxes.tax_rate == 2){
+        global.civic.taxes.tax_rate = 20;
+    }
+}
+
+if (convertVersion(global['version']) < 2065 && global.race !== undefined && global.race.species === 'sporgar'){
+    delete global.race['crafty'];
+    delete global.race['hydrophilic'];
+    global.race['infectious'] = 1;
+    global.race['parasite'] = 1;
+    if (!global.tech['military'] && global.tech['primitive'] && global.tech['primitive'] >= 3){
+        global.civic['garrison'].display = true;
+        global.settings.showCivic = true;
+        global.city['garrison'] = { count: 0 };
+    }
 }
 
 if (convertVersion(global['version']) < 3002 && global['space']){
@@ -123,58 +157,43 @@ if (convertVersion(global['version']) < 3002 && global['space']){
     }
 }
 
-if (convertVersion(global['version']) < 2065 && global.race !== undefined && global.race.species === 'sporgar'){
-    delete global.race['crafty'];
-    delete global.race['hydrophilic'];
-    global.race['infectious'] = 1;
-    global.race['parasite'] = 1;
-    if (!global.tech['military'] && global.tech['primitive'] && global.tech['primitive'] >= 3){
-        global.civic['garrison'].display = true;
-        global.settings.showCivic = true;
-        global.city['garrison'] = { count: 0 };
-    }
+if (convertVersion(global['version']) < 3004 && global['settings'] && global.settings['space'] && global.settings.space.belt){
+    global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
 }
 
-if (convertVersion(global['version']) === 2062 && global.civic.taxes !== undefined){
-    if (global.civic.taxes.tax_rate == 2){
-        global.civic.taxes.tax_rate = 20;
-    }
+if (convertVersion(global['version']) < 4001 && global['city'] && global.city['factory'] && !global.city.factory['Nano']){
+    global.city.factory['Nano'] = 0;
 }
 
-if (convertVersion(global['version']) < 2062 && global.civic.taxes !== undefined){
-    switch(Number(global.civic.taxes.tax_rate)){
-        case 0:
-            global.civic.taxes.tax_rate = 0;
-            break;
-        case 1:
-            global.civic.taxes.tax_rate = 10;
-            break;
-        case 2:
-            global.civic.taxes.tax_rate = 20;
-            break;
-        case 3:
-            global.civic.taxes.tax_rate = 30;
-            break;
-        case 4:
-            global.civic.taxes.tax_rate = 40;
-            break;
-        case 5:
-            global.civic.taxes.tax_rate = 50;
-            break;
-    }
-}
-if (convertVersion(global['version']) < 2060){
-    Object.keys(global.resource).forEach(function (res){
-        if (global.resource[res].crates){
-            global.resource[res].crates = Math.ceil(global.resource[res].crates / 5);
-        }
-        if (global.resource[res].containers){
-            global.resource[res].containers = Math.ceil(global.resource[res].containers / 5);
-        }
+if (convertVersion(global['version']) < 4003 && global.stats['achieve']){
+    Object.keys(global.stats.achieve).forEach(function (key){
+        global.stats.achieve[key] = 1;
     });
 }
 
-global['version'] = '0.4.28';
+if (convertVersion(global['version']) < 4028 && global.stats['achieve'] && global.stats.achieve['genus_demonic']){
+    global.stats.achieve['biome_hellscape'] = global.stats.achieve['genus_demonic'];
+}
+
+if (convertVersion(global['version']) < 4029 && global.race['mutation'] && global.race['mutation'] > 0){
+    global['resource']['Genes'] = {
+        name: 'Genes',
+        display: true,
+        value: 0,
+        amount: 0,
+        crates: 0,
+        diff: 0,
+        delta: 0,
+        max: -2,
+        rate: 0
+    };
+    
+    for (let i=0; i<global.race.mutation; i++){
+        global.resource.Genes.amount += i + 1;
+    }
+}
+
+global['version'] = '0.4.29';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -290,6 +309,14 @@ if (!global.race['gene_fortify']){
 
 if (!global.race['old_gods']){
     global.race['old_gods'] = 'none';
+}
+
+if (!global.genes['minor']){
+    global.genes['minor'] = {};
+}
+
+if (!global.race['minor']){
+    global.race['minor'] = {};
 }
 
 if (!global.race['evil'] && global.race['immoral']){

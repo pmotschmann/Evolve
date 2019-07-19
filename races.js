@@ -941,6 +941,10 @@ export const traits = {
         desc: loc('trait_content'),
         type: 'minor',
     },
+    fibroblast: { // Healing Bonus
+        desc: loc('trait_fibroblast'),
+        type: 'minor',
+    }
 };
 
 /*
@@ -1001,10 +1005,17 @@ export function racialTrait(workers,type){
 export function randomMinorTrait(){
     let trait_list = [];
     Object.keys(traits).forEach(function (t){
-        if (traits[t].type === 'minor'){
+        if (traits[t].type === 'minor' && !global.race[t]){
             trait_list.push(t);
         }
     });
+    if (trait_list.length === 0){
+        Object.keys(traits).forEach(function (t){
+            if (traits[t].type === 'minor'){
+                trait_list.push(t);
+            }
+        });
+    }
     let trait = trait_list[Math.floor(Math.seededRandom(0,trait_list.length))];
     if (global.race[trait]){
         global.race[trait]++;
@@ -1012,6 +1023,7 @@ export function randomMinorTrait(){
     else {
         global.race[trait] = 1;
     }
+    return trait;
 }
 
 export const biomes = {

@@ -931,7 +931,7 @@ function fastLoop(){
         let total = 0;
         let stress_level = 5;
         if (global.race['content']){
-            stress_level += global.race['content'] * 0.5;
+            stress_level += global.race['content'] * 0.4;
         }
         Object.keys(job_desc).forEach(function (job) {
             total += global.civic[job].workers;
@@ -1253,6 +1253,9 @@ function fastLoop(){
             let gene_consume = 0;
             if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
                 let gene_cost = 50 + (global.race.mutation * 10);
+                if (global.arpa.sequence.boost){
+                    gene_cost *= 4;
+                }
                 if (gene_cost * time_multiplier <= global.resource.Knowledge.amount){
                     gene_consume = gene_cost;
                     gene_sequence = true;
@@ -2830,7 +2833,7 @@ function midLoop(){
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
-            global.arpa.sequence.time -= global.city.biolab.on;
+            global.arpa.sequence.time -= global.arpa.sequence.boost ? global.city.biolab.on * 2 : global.city.biolab.on;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
             if (global.arpa.sequence.time <= 0){
                 global.arpa.sequence.max = 50000 * (1 + (global.race.mutation ** 2));
@@ -2845,10 +2848,13 @@ function midLoop(){
                 }
                 else {
                     global.race.mutation++;
-                    randomMinorTrait();
-                    messageQueue(loc('gene_therapy'),'success');
+                    let trait = randomMinorTrait();
+                    let gene = global.genes['synthesis'] ? global.race.mutation * (global.genes['synthesis'] + 1) : global.race.mutation;
+                    messageQueue(loc('gene_therapy',[trait,gene]),'success');
                     global.stats.plasmid++;
                     global.race.Plasmid.count++;
+                    global.resource.Genes.amount += gene;
+                    global.resource.Genes.display = true;
                 }
                 arpa('Genetics');
                 drawTech();
@@ -2975,8 +2981,11 @@ function longLoop(){
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? 4 : 1;
-            if (global.city['hospital']){
-                let hc = global.city['hospital'].count;
+            let hc = global.city['hospital'] ? global.city['hospital'].count : 0;
+            if (global.race['fibroblast']){
+                hc += global.race['fibroblast'] * 2;
+            }
+            if (hc > 0){
                 while (hc >= 20){
                     healed++;
                     hc -= 20;
