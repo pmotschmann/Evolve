@@ -249,7 +249,7 @@ const spaceProjects = {
         helium_mine: {
             id: 'space-helium_mine',
             title: loc('space_moon_helium_mine_title'),
-            desc: `<div>${loc('space_moon_helium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`, //TODO: the description here was separated in two div's
+            desc: `<div>${loc('space_moon_helium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
             reqs: { space: 3, luna: 1 },
             cost: {
                 Money(){ return costMultiplier('helium_mine', 38000, 1.35); },

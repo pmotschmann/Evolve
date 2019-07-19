@@ -37,33 +37,35 @@ function getString(locale) {
     $.ajaxSetup({ async: false });
 
     let defaultString;
-    let localeString;
     $.getJSON("strings/strings.json", (data) => { defaultString = data; });
-    const defSize = defaultString.length;
-    try {
-        $.getJSON(`strings/strings.${locale}.json`, (data) => { localeString = data; })
-    }
-    catch (e) {
-        if (locale != 'en-US') {
-            console.error(e,e.stack);
+
+    if (locale != "en-US"){
+        let localeString;
+        try {
+            $.getJSON(`strings/strings.${locale}.json`, (data) => { localeString = data; })
+        }
+        catch (e) {
+            if (locale != 'en-US') {
+                console.error(e,e.stack);
+            }
+        }
+        const defSize = defaultString.length;
+
+        if (localeString) {
+            Object.assign(defaultString, localeString);
+        }
+
+        if(defaultString.length != defSize){
+            console.error(`string.${locale}.json has extra keys.`);
         }
     }
 
     $.ajaxSetup({ async: true });
-
-    if (localeString) {
-        Object.assign(defaultString, localeString);
-    }
-
-    if(defaultString.length != defSize){
-        console.error(`string.${locale}.json has extra keys.`);
-    }
-
     strings = defaultString;
 }
 
 export const locales = {
     'en-US': 'English (US)',
     //'es-US': 'Spanish (US/Latin-America)',
-    //'pt-BR': 'Português Brasileiro',
+    'pt-BR': 'Português (BR)',
 };

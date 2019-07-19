@@ -1483,12 +1483,12 @@ export const actions = {
         },
         bunker: {
             id: 'evo-bunker',
-            title: 'Bunker Gene',
-            desc(){ return `<div>Bunker Gene</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
+            title: loc('evo_bunker'),
+            desc(){ return `<div>${loc('evo_bunker')}</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
             cost: {
                 DNA(){ return 10; }
             },
-            effect: loc('evo_bunker'),
+            effect: loc('evo_bunker_effect'),
             action(){
                 if (payCosts(actions.evolution.bunker.cost)){
                     global.evolution['bunker'] = { count: 1 };
@@ -1508,12 +1508,12 @@ export const actions = {
         },
         plasmid: {
             id: 'evo-plasmid',
-            title: loc('evo_challenge_pladmid'),
-            desc: loc('evo_challenge_pladmid'),
+            title: loc('evo_challenge_plasmid'),
+            desc: loc('evo_challenge_plasmid'),
             cost: {
                 DNA(){ return 10; }
             },
-            effect: loc('evo_challenge_pladmid_effect'),
+            effect: loc('evo_challenge_plasmid_effect'),
             action(){
                 if (payCosts(actions.evolution.plasmid.cost)){
                     global.race['no_plasmid'] = 1;
@@ -2041,43 +2041,43 @@ export const actions = {
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
                     let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Lumber.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Lumber.name])}. `;
                 }
                 if (global.resource.Stone.display){
                     let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Stone.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Stone.name])}. `;
                 }
                 if (global.resource.Furs.display){
                     let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Furs.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Furs.name])}. `;
                 }
                 if (global.resource.Copper.display){
                     let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Copper.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Copper.name])}. `;
                 }
                 if (global.resource.Iron.display){
                     let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Iron.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Iron.name])}. `;
                 }
                 if (global.resource.Aluminium.display){
                     let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Aluminium.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Aluminium.name])}. `;
                 }
                 if (global.resource.Cement.display){
                     let val = sizeApproximation(+(spatialReasoning(100) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Cement.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Cement.name])}. `;
                 }
                 if (global.resource.Coal.display){
                     let val = sizeApproximation(+(spatialReasoning(75) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Coal.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Coal.name])}. `;
                 }
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
                     let val = sizeApproximation(+(spatialReasoning(40) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Steel.name}. `;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Steel.name])}. `;
                 }
                 if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
                     let val = sizeApproximation(+(spatialReasoning(20) * multiplier).toFixed(0),1);
-                    storage = storage + `+${val} ${loc('max')} ${global.resource.Titanium.name}.`;
+                    storage = storage + `${loc('plus_max_resource',[val,global.resource.Titanium.name])}.`;
                 }
                 return storage;
             },
@@ -2630,16 +2630,16 @@ export const actions = {
             effect() { 
                 let oil = spatialReasoning(1000);
                 oil *= global.tech['world_control'] ? 1.5 : 1;
-                let effect = `<div>+${oil} ${loc('max')} ${loc('resource_Oil_name')}.</div>`;
+                let effect = `<div>${loc('plus_max_resource',[oil,'resource_Oil_name'])}.</div>`;
                 if (global.resource['Helium_3'].display){
                     let val = spatialReasoning(400);
                     val *= global.tech['world_control'] ? 1.5 : 1;
-                    effect = effect + `<div>+${val} ${loc('max')} ${loc('resource_Helium_3_name')}.</div>`;
+                    effect = effect + `<div>${loc('plus_max_resource',[val,'resource_Helium_3_name'])}.</div>`;
                 }
                 if (global.tech['uranium'] >= 2){
                     let val = spatialReasoning(250);
                     val *= global.tech['world_control'] ? 1.5 : 1;
-                    effect = effect + `<div>+${val} ${loc('max')} ${loc('resource_Uranium_name')}.</div>`;
+                    effect = effect + `<div>${loc('plus_max_resource',[val,'resource_Uranium_name'])}.</div>`;
                 }
                 return effect;
             },
@@ -2671,7 +2671,7 @@ export const actions = {
             },
             effect(){
                 let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-                return loc('city_trade_routes',[routes]); 
+                return loc('city_trade_effect',[routes]); 
             },
             action(){
                 if (payCosts(actions.city.trade.cost)){
@@ -2702,7 +2702,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>${loc('city_trade_routes',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`; 
+                return `<div>${loc('city_trade_effect',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`; 
             },
             action(){
                 if (payCosts(actions.city.wharf.cost)){
@@ -5429,14 +5429,14 @@ export const actions = {
         },
         artifical_intelligence: {
             id: 'tech-artifical_intelligence',
-            title: loc('tech_artifical_intelligence'),
-            desc: loc('tech_artifical_intelligence_desc'),
+            title: loc('tech_artificial_intelligence'),
+            desc: loc('tech_artificial_intelligence_desc'),
             reqs: { high_tech: 9 },
             grant: ['high_tech',10],
             cost: {
                 Knowledge(){ return 325000; }
             },
-            effect: loc('tech_artifical_intelligence_effect'),
+            effect: loc('tech_artificial_intelligence_effect'),
             action(){
                 if (payCosts(actions.tech.artifical_intelligence.cost)){
                     return true;
@@ -8911,17 +8911,17 @@ export function evoProgress(){
 export function basicHousingLabel(){
     switch (global.race.species){
         case 'orc':
-            return loc('city_basic_housing_title2');
+            return loc('city_basic_housing_orc_title');
         case 'wolven':
-            return loc('city_basic_housing_title3');
+            return loc('city_basic_housing_wolven_title');
         case 'entish':
-            return loc('city_basic_housing_title4');
+            return loc('city_basic_housing_entish_title');
         case 'arraak':
-            return loc('city_basic_housing_title5');
+            return loc('city_basic_housing_nest_title');
         case 'pterodacti':
-            return loc('city_basic_housing_title5');
+            return loc('city_basic_housing_nest_title');
         case 'sporgar':
-            return loc('city_basic_housing_title6');
+            return loc('city_basic_housing_sporgar_title');
         case 'dracnid':
             return loc('city_basic_housing_title7');
         case 'balorg':
@@ -8929,7 +8929,7 @@ export function basicHousingLabel(){
         case 'imp':
             return loc('city_basic_housing_title8');
         default:
-            return loc('city_basic_housing_title1');
+            return loc('city_basic_housing_title');
     }
 }
 

@@ -133,7 +133,7 @@ $('#morale').on('mouseover',function(){
         popper.append(`<p>${loc('morale_entertainment')}<span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
     }
     if (global.city.morale.season !== 0){
-        let season = global.city.calendar.season === 0 ? 'Spring' : 'Winter';
+        let season = global.city.calendar.season === 0 ? loc('morale_spring') : loc('morale_winter');
         let type = global.city.morale.season > 0 ? 'success' : 'danger';
         popper.append(`<p>${season}<span class="has-text-${type}"> ${global.city.morale.season}%</span></p>`);
     }
@@ -430,7 +430,7 @@ function fastLoop(){
         global_multiplier *= 1 + (bonus / 100);
     }
 
-    breakdown.p['consume'] = {
+    breakdown.p['consume'] = { //TODO: find a way to localize this
         Money: {},
         Knowledge: {},
         Food: {},
