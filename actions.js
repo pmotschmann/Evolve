@@ -522,10 +522,10 @@ export const actions = {
                     addAction('evolution','sentience');
                     if (global.race.seeded){
                         global.evolution['troll'] = { count: 0 };
-                        global.evolution['ogre'] = { count: 0 };
+                        global.evolution['orge'] = { count: 0 };
                         global.evolution['cyclops'] = { count: 0 };
                         addAction('evolution','troll');
-                        addAction('evolution','ogre');
+                        addAction('evolution','orge');
                         addAction('evolution','cyclops');
                     }
                     if (global.genes['challenge']){
@@ -825,7 +825,7 @@ export const actions = {
                             global.race.species = 'troll';
                         }
                         else if (path < 67){
-                            global.race.species = 'ogre';
+                            global.race.species = 'orge';
                         }
                         else {
                             global.race.species = 'cyclops';
@@ -1006,20 +1006,20 @@ export const actions = {
                 return false;
             }
         },
-        ogre: {
-            id: 'evo-ogre',
-            title(){ return races.ogre.name; },
-            desc(){ return `${loc("evo_evolve")} ${races.ogre.name}`; },
+        orge: {
+            id: 'evo-orge',
+            title(){ return races.orge.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.orge.name}`; },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
             },
-            effect(){ return loc('evo_pick_race',[races.ogre.name]); },
+            effect(){ return loc('evo_pick_race',[races.orge.name]); },
             action(){
-                if (payCosts(actions.evolution.ogre.cost)){
+                if (payCosts(actions.evolution.orge.cost)){
                     global.evolution['sentience'].count++;
                     removeAction(actions.evolution.sentience.id);
-                    global.race.species = 'ogre';
+                    global.race.species = 'orge';
                     sentience();
                 }
                 return false;
@@ -9073,7 +9073,7 @@ function fanaticism(god){
         case 'gnome':
             fanaticTrait('smart');
             break;
-        case 'ogre':
+        case 'orge':
             fanaticTrait('tough');
             break;
         case 'cyclops':
