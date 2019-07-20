@@ -7829,7 +7829,7 @@ export const actions = {
             reqs: { genesis: 6 },
             cost: {},
             effect(){
-                let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
+                let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
                 let plasmid = Math.round(pop / 3);
                 let k_base = global.stats.know;
                 let k_inc = 50000;
@@ -9308,7 +9308,7 @@ function bioseed(){
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
     let phage = global.race.Phage.count;
-    let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
+    let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 3);
     let k_base = global.stats.know;
     let k_inc = 50000;
