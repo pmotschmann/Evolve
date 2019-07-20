@@ -3934,7 +3934,7 @@ export const actions = {
             }
         },
         dazzle: {
-            id: 'tech-casino_vault',
+            id: 'tech-dazzle',
             title: loc('tech_dazzle'),
             desc: loc('tech_dazzle'),
             reqs: { gambling: 1 },
