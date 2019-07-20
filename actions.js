@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, srSpeak, modRes, sizeApproximation, moon_on } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, demoIsPressed, srSpeak, modRes, sizeApproximation, moon_on } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
@@ -7836,7 +7836,7 @@ export function checkCityRequirements(action){
         return true;
     }
     var isMet = true;
-    Object.keys(actions.city[action].reqs).forEach(function (req) {
+    Object.keys(actions.city[action].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < actions.city[action].reqs[req]){
             isMet = false;
         }
@@ -7846,7 +7846,7 @@ export function checkCityRequirements(action){
 
 export function checkTechRequirements(tech){
     var isMet = true;
-    Object.keys(actions.tech[tech].reqs).forEach(function (req) {
+    Object.keys(actions.tech[tech].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
             isMet = false;
         }
@@ -7868,7 +7868,7 @@ export function checkOldTech(tech){
 function checkPowerRequirements(c_action){
     var isMet = true;
     if (c_action['power_reqs']){
-        Object.keys(c_action.power_reqs).forEach(function (req) {
+        Object.keys(c_action.power_reqs).forEach(function (req){
             if (!global.tech[req] || global.tech[req] < c_action.power_reqs[req]){
                 isMet = false;
             }
@@ -8056,37 +8056,61 @@ export function setAction(c_action,action,type,old){
                             }
                             break;
                         default:
-                            let keyMult = keyMultiplier();
-                            if (c_action['grant']){
-                                keyMult = 1;
-                            }
-                            let grant = false;
-                            for (var i=0; i<keyMult; i++){
-                                if (!c_action.action()){
-                                    break;
+                            if (demoIsPressed){
+                                if (global[action][type]['count'] && global[action][type]['count'] > 0){
+                                    global[action][type]['count']--;
+                                    if (global[action][type]['on'] && global[action][type]['on'] > global[action][type]['count']){
+                                        global[action][type]['on']--;
+                                    }
+                                    if (global[action][type]['count'] === 0){
+                                        drawCity();
+                                        space();
+                                        var id = c_action.id;
+                                        $(`#pop${id}`).hide();
+                                        if (poppers[id]){
+                                            poppers[id].destroy();
+                                        }
+                                        $(`#pop${id}`).remove();
+                                    }
+                                    else {
+                                        updateDesc(c_action,action,type);
+                                    }
                                 }
-                                grant = true;
+                                break;
                             }
-                            if (!checkAffordable(c_action)){
-                                let id = c_action.id;
-                                $(`#${id}`).addClass('cna');
+                            else {
+                                let keyMult = keyMultiplier();
+                                if (c_action['grant']){
+                                    keyMult = 1;
+                                }
+                                let grant = false;
+                                for (var i=0; i<keyMult; i++){
+                                    if (!c_action.action()){
+                                        break;
+                                    }
+                                    grant = true;
+                                }
+                                if (!checkAffordable(c_action)){
+                                    let id = c_action.id;
+                                    $(`#${id}`).addClass('cna');
+                                }
+                                if (c_action['grant'] && grant){
+                                    let tech = c_action.grant[0];
+                                    global.tech[tech] = c_action.grant[1];
+                                    removeAction(c_action.id);
+                                    drawCity();
+                                    drawTech();
+                                    space();
+                                }
+                                else if (c_action['refresh']){
+                                    removeAction(c_action.id);
+                                    drawCity();
+                                    drawTech();
+                                    space();
+                                }
+                                updateDesc(c_action,action,type);
+                                break;
                             }
-                            if (c_action['grant'] && grant){
-                                let tech = c_action.grant[0];
-                                global.tech[tech] = c_action.grant[1];
-                                removeAction(c_action.id);
-                                drawCity();
-                                drawTech();
-                                space();
-                            }
-                            else if (c_action['refresh']){
-                                removeAction(c_action.id);
-                                drawCity();
-                                drawTech();
-                                space();
-                            }
-                            updateDesc(c_action,action,type);
-                            break;
                     }
                 }
             },
@@ -8152,7 +8176,9 @@ export function setAction(c_action,action,type,old){
         });
     $('#'+id).on('mouseout',function(){
             $(`#pop${id}`).hide();
-            poppers[id].destroy();
+            if (poppers[id]){
+                poppers[id].destroy();
+            }
             $(`#pop${id}`).remove();
         });
 }
@@ -8236,7 +8262,9 @@ export function setPlanet(hell){
         global.city.geology = geology;
         $('#evolution').empty();
         $(`#pop${id}`).hide();
-        poppers[id].destroy();
+        if (poppers[id]){
+            poppers[id].destroy();
+        }
         $(`#pop${id}`).remove();
         addAction('evolution','rna');
     });
@@ -8275,7 +8303,9 @@ export function setPlanet(hell){
         });
     $('#'+id).on('mouseout',function(){
             $(`#pop${id}`).hide();
-            poppers[id].destroy();
+            if (poppers[id]){
+                poppers[id].destroy();
+            }
             $(`#pop${id}`).remove();
         });
     return biome;

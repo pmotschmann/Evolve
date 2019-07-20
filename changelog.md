@@ -5,6 +5,7 @@ Gambler minor trait, buffs casinos<br>
 A.R.P.A. projects now use resource approximations for large numbers<br>
 Cement Factory renamed to Cement Plant to reduce confusion with the regular Factory<br>
 Key multipliers now work inside the factory modal<br>
+Experimental demolish mode, hold "D" and click to destroy structures. Use at your own risk.<br>
 
 #### 0.4.30 - 7/19/2019 ####
 Portuguese translation by Rodrigodd<br>

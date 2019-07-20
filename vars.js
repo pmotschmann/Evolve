@@ -499,21 +499,25 @@ export function modRes(res,val){
 export var shiftIsPressed = false;
 export var cntrlIsPressed = false;
 export var altIsPressed = false;
+export var demoIsPressed = false;
 $(document).keydown(function(e){
     cntrlIsPressed = e.ctrlKey ? true : false;
     shiftIsPressed = e.shiftKey ? true : false;
     altIsPressed = e.altKey ? true : false;
+    demoIsPressed = e.keyCode === 68 ? true : false;
 });
 $(document).keyup(function(e){
     cntrlIsPressed = e.ctrlKey ? true : false;
     shiftIsPressed = e.shiftKey ? true : false;
     altIsPressed = e.altKey ? true : false;
+    demoIsPressed = e.keyCode === 68  ? false : true;
 });
 
 window.onmousemove = function(e){
     cntrlIsPressed = e.ctrlKey ? true : false;
     shiftIsPressed = e.shiftKey ? true : false;
     altIsPressed = e.altKey ? true : false;
+    demoIsPressed = e.keyCode === 68  ? true : false;
 }
 
 export var keyMultiplierNumber = 1;
