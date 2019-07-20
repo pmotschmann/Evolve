@@ -1,4 +1,4 @@
-import { global, vues, poppers, keyMultiplier } from './vars.js';
+import { global, vues, poppers, keyMultiplier, sizeApproximation } from './vars.js';
 import { actions, drawTech, addAction, removeAction } from './actions.js';
 import { races, traits } from './races.js';
 import { space } from './space.js';
@@ -928,11 +928,11 @@ function addProject(parent,project){
                 var cost = $('<div></div>');
                 var costs = adjustCosts(arpaProjects[project].cost);
                 Object.keys(costs).forEach(function (res){
-                    var res_cost = (costs[res]() * (inc / 100)).toFixed(0);
+                    var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
                     if (res_cost > 0){
                         var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
                         var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
-                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${res_cost}</div>`));
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${sizeApproximation(res_cost,2)}</div>`));
                     }
                 });
                 var popper = $(`<div id="popArpa${project}" class="popper has-background-light has-text-dark"></div>`);

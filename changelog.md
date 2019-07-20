@@ -1,7 +1,8 @@
 #### 0.4.31 - 7/20/2019 ####
 Extreme Dazzle casino upgrade<br>
-Metallurgist minor trait<br>
-Gambler minor trait<br>
+Metallurgist minor trait, buffs alloy<br>
+Gambler minor trait, buffs casinos<br>
+A.R.P.A. projects now use resource approximations for large numbers<br>
 
 #### 0.4.30 - 7/19/2019 ####
 Portuguese translation by Rodrigodd<br>
