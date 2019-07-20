@@ -1659,8 +1659,8 @@ export const actions = {
             effect: loc('plus_max_resource',[1,loc('citizen')]),
             action(){
                 if (payCosts(actions.city.basic_housing.cost)){
-                    global['resource'][races[global.race.species].name].display = true;
-                    global['resource'][races[global.race.species].name].max += 1;
+                    global['resource'][global.race.species].display = true;
+                    global['resource'][global.race.species].max += 1;
                     global.city['basic_housing'].count++;
                     global.settings.showCivic = true;
                     return true;
@@ -1692,7 +1692,7 @@ export const actions = {
             },
             action(){
                 if (payCosts(actions.city.cottage.cost)){
-                    global['resource'][races[global.race.species].name].max += 2;
+                    global['resource'][global.race.species].max += 2;
                     global.city['cottage'].count++;
                     return true;
                 }
@@ -1727,7 +1727,7 @@ export const actions = {
                 if (payCosts(actions.city.apartment.cost)){
                     global.city['apartment'].count++;
                     if (global.city.power > 0){
-                        global['resource'][races[global.race.species].name].max += 5;
+                        global['resource'][global.race.species].max += 5;
                         global.city['apartment'].on++;
                     }
                     return true;
@@ -1749,7 +1749,7 @@ export const actions = {
             action(){
                 if (payCosts(actions.city.lodge.cost)){
                     global.city['lodge'].count++;
-                    global['resource'][races[global.race.species].name].max += 1;
+                    global['resource'][global.race.species].max += 1;
                     return true;
                 }
                 return false;
@@ -1824,7 +1824,7 @@ export const actions = {
                     global.city['farm'].count++;
                     global.civic.farmer.display = true;
                     if (global.tech['farm']){
-                        global['resource'][races[global.race.species].name].max += 1;
+                        global['resource'][global.race.species].max += 1;
                     }
                     return true;
                 }
