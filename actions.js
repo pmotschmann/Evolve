@@ -8879,14 +8879,26 @@ function factoryModal(modal){
         data: global.city['factory'],
         methods: {
             subItem: function(item){
-                if (global.city.factory[item] > 0){
-                    global.city.factory[item]--;
+                let keyMult = keyMultiplier();
+                for (var i=0; i<keyMult; i++){
+                    if (global.city.factory[item] > 0){
+                        global.city.factory[item]--;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             addItem: function(item){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
-                if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano < max){
-                    global.city.factory[item]++;
+                let keyMult = keyMultiplier();
+                for (var i=0; i<keyMult; i++){
+                    if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano < max){
+                        global.city.factory[item]++;
+                    }
+                    else {
+                        break;
+                    }
                 }
             },
             buildLabel: function(type){
