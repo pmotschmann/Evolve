@@ -193,7 +193,14 @@ if (convertVersion(global['version']) < 4029 && global.race['mutation'] && globa
     }
 }
 
-global['version'] = '0.4.30';
+if (convertVersion(global['version']) < 4031){
+    if (global.tech && global.tech['gambling'] && global.tech['gambling'] === 2){
+        global.tech['gambling'] = 3;
+        global.city.casino['on'] = 0;
+    }
+}
+
+global['version'] = '0.4.31';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

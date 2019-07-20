@@ -2220,7 +2220,7 @@ export const actions = {
                     vault *= 1 + (global.civic.banker.workers * 0.05);
                 }
                 if (global.tech['banking'] >= 8){
-                    vault += 25 * global.resource[races[global.race.species].name].amount;
+                    vault += 25 * global.resource[global.race.species].amount;
                 }
                 if (global.tech['stock_exchange']){
                     vault *= 1 + (global.tech['stock_exchange'] * 0.1);
@@ -2777,13 +2777,23 @@ export const actions = {
                 Brick(){ return costMultiplier('casino', 6000, 1.35); }
             },
             effect(){
-                let money = spatialReasoning(global.tech['gambling'] >= 2 ? 60000 : 40000);
+                let money = spatialReasoning(global.tech['gambling'] >= 3 ? 60000 : 40000);
+                if (global.race['gambler']){
+                    money *= 1 + (global.race['gambler'] * 0.04);
+                }
                 if (global.tech['world_control']){
                     money = Math.round(money * 1.25);
                 }
                 money = '$'+money;
-                return `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
+                if (global.tech['gambling'] >= 2){
+                    let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+                    desc = desc + `<div>${loc('tech_casino_effect2',[actions.city.casino.powered,cash])}</div>`
+                }
+                return desc;
             },
+            powered: 5,
+            power_reqs: { gambling: 2 },
             action(){
                 if (payCosts(actions.city.casino.cost)){
                     global.city['casino'].count++;
@@ -3877,7 +3887,24 @@ export const actions = {
             effect: loc('tech_casino_effect'),
             action(){
                 if (payCosts(actions.tech.casino.cost)){
-                    global.city['casino'] = { count: 0 };
+                    global.city['casino'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        dazzle: {
+            id: 'tech-casino_vault',
+            title: loc('tech_dazzle'),
+            desc: loc('tech_dazzle'),
+            reqs: { gambling: 1 },
+            grant: ['gambling',2],
+            cost: {
+                Knowledge(){ return 125000; }
+            },
+            effect: loc('tech_dazzle_effect'),
+            action(){
+                if (payCosts(actions.tech.casino_vault.cost)){
                     return true;
                 }
                 return false;
@@ -3887,8 +3914,8 @@ export const actions = {
             id: 'tech-casino_vault',
             title: loc('tech_casino_vault'),
             desc: loc('tech_casino_vault'),
-            reqs: { gambling: 1, space: 3 },
-            grant: ['gambling',2],
+            reqs: { gambling: 2, space: 3 },
+            grant: ['gambling',3],
             cost: {
                 Knowledge(){ return 145000; },
                 Iridium(){ return 2500; }
@@ -8866,7 +8893,7 @@ function factoryModal(modal){
                 let assembly = global.tech['factory'] ? true : false;
                 switch(type){
                     case 'Lux':
-                        let demand = +(global.resource[races[global.race.species].name].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
+                        let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
                         let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
                         return loc('modal_factory_lux_label',[fur,loc('resource_Furs_name'),demand]);
                     case 'Alloy':

@@ -534,11 +534,11 @@ export function buildGarrison(garrison){
                                 infected = Math.floor(Math.seededRandom(0,25));
                                 break;
                         }
-                        let zombies = global.resource[races[global.race.species].name].amount + infected;
-                        if (zombies > global.resource[races[global.race.species].name].max){
-                            zombies = global.resource[races[global.race.species].name].max;
+                        let zombies = global.resource[global.race.species].amount + infected;
+                        if (zombies > global.resource[global.race.species].max){
+                            zombies = global.resource[global.race.species].max;
                         }
-                        global.resource[races[global.race.species].name].amount = zombies;
+                        global.resource[global.race.species].amount = zombies;
                         if (infected === 1){
                             messageQueue(loc('civics_garrison_soldier_infected'),'special');
                         }
@@ -900,7 +900,7 @@ function defineMad(){
                     : loc('civics_mad_missiles_desc');
             },
             warning(){
-                let plasma = Math.round((global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers) / 3);
+                let plasma = Math.round((global['resource'][global.race.species].amount + global.civic.garrison.workers) / 3);
                 let k_base = global.stats.know;
                 let k_inc = 100000;
                 while (k_base > k_inc){
@@ -945,7 +945,7 @@ function warhead(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
-    let pop = global['resource'][races[global.race.species].name].amount + global.civic.garrison.workers;
+    let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 3);
     let k_base = global.stats.know;
     let k_inc = 100000;

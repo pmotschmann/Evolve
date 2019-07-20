@@ -944,6 +944,14 @@ export const traits = {
     fibroblast: { // Healing Bonus
         desc: loc('trait_fibroblast'),
         type: 'minor',
+    },
+    metallurgist: { // Alloy bonus
+        desc: loc('trait_metallurgist'),
+        type: 'minor',
+    },
+    gambler: { // Alloy bonus
+        desc: loc('trait_gambler'),
+        type: 'minor',
     }
 };
 
