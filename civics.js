@@ -57,7 +57,8 @@ function taxRates(govern){
         methods: {
             add(){
                 let inc = keyMultiplier();
-                if (global.tech['currency'] && global.tech['currency'] >= 5 && global.civic.taxes.tax_rate < 50){
+                let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
+                if ((extreme || global.race['terrifying']) && global.civic.taxes.tax_rate < 50){
                     global.civic.taxes.tax_rate += inc;
                     if (global.civic.taxes.tax_rate > 50){
                         global.civic.taxes.tax_rate = 50;
@@ -72,7 +73,8 @@ function taxRates(govern){
             },
             sub(){
                 let dec = keyMultiplier();
-                if (global.tech['currency'] && global.tech['currency'] >= 5 && global.civic.taxes.tax_rate > 0){
+                let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
+                if ((extreme || global.race['terrifying']) && global.civic.taxes.tax_rate > 0){
                     global.civic.taxes.tax_rate -= dec;
                     if (global.civic.taxes.tax_rate < 0){
                         global.civic.taxes.tax_rate = 0;

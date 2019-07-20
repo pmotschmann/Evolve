@@ -7,6 +7,7 @@ Cement Factory renamed to Cement Plant to reduce confusion with the regular Fact
 Key multipliers now work inside the factory modal<br>
 Imps and Balorg now have access to advanced crafting tech<br>
 Imps and Balorg now have access to windmills<br>
+Balorg can now set their taxes below 10% and above 30%<br>
 Experimental demolish mode, hold "D" and click to destroy structures. Use at your own risk.<br>
 
 #### 0.4.30 - 7/19/2019 ####
