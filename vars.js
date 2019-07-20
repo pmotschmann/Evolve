@@ -198,6 +198,10 @@ if (convertVersion(global['version']) < 4031){
         global.tech['gambling'] = 3;
         global.city.casino['on'] = 0;
     }
+    if (global.tech['hunting'] && global.tech['hunting'] >= 3){
+        global.tech['wind_plant'] = 1;
+        global.tech['hunting'] = 2;
+    }
 }
 
 global['version'] = '0.4.31';

@@ -743,7 +743,7 @@ function fastLoop(){
             power_grid -= power;
         }
 
-        if (global.city['windmill'] && global.tech['hunting'] && global.tech['hunting'] >= 3){
+        if (global.city['windmill'] && global.tech['wind_plant']){
             max_power -= global.city.windmill.count;
             power_grid += global.city.windmill.count;
         }

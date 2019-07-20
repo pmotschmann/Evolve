@@ -1879,7 +1879,7 @@ export const actions = {
             desc(){
                 return loc('city_windmill_desc');
             },
-            reqs: { hunting: 3 },
+            reqs: { wind_plant: 1 },
             cost: { 
                 Money(){ return costMultiplier('windmill', 1000, 1.31); },
                 Lumber(){ return costMultiplier('windmill', 600, 1.33); },
@@ -3543,7 +3543,27 @@ export const actions = {
             title: loc('tech_windmill'),
             desc: loc('tech_windmill'),
             reqs: { hunting: 2, high_tech: 4 },
-            grant: ['hunting',3],
+            grant: ['wind_plant',1],
+            not_trait: ['evil'],
+            cost: { 
+                Knowledge(){ return 66000; }
+            },
+            effect: loc('tech_wind_plant_effect'),
+            action(){
+                if (payCosts(actions.tech.windturbine.cost)){
+                    global.city['windmill'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        evil_wind_plant: {
+            id: 'tech-evil_wind_plant',
+            title: loc('tech_windmill'),
+            desc: loc('tech_windmill'),
+            reqs: { high_tech: 4 },
+            grant: ['wind_plant',1],
+            trait: ['evil'],
             cost: { 
                 Knowledge(){ return 66000; }
             },
@@ -3640,6 +3660,7 @@ export const actions = {
             desc: loc('tech_carpentry'),
             reqs: { foundry: 3, saw: 1 },
             grant: ['foundry',4],
+            not_trait: ['evil'],
             cost: {
                 Knowledge(){ return 5200; }
             },
@@ -3651,12 +3672,31 @@ export const actions = {
                 return false;
             }
         },
+        demonic_craftsman: {
+            id: 'tech-master_craftsman',
+            title: loc('tech_master_craftsman'),
+            desc: loc('tech_master_craftsman'),
+            reqs: { foundry: 3 },
+            grant: ['foundry',5],
+            trait: ['evil'],
+            cost: {
+                Knowledge(){ return 12000; }
+            },
+            effect: loc('tech_master_craftsman_effect'),
+            action(){
+                if (payCosts(actions.tech.master_craftsman.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         master_craftsman: {
             id: 'tech-master_craftsman',
             title: loc('tech_master_craftsman'),
             desc: loc('tech_master_craftsman'),
             reqs: { foundry: 4 },
             grant: ['foundry',5],
+            not_trait: ['evil'],
             cost: {
                 Knowledge(){ return 12000; }
             },
