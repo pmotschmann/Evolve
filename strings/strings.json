@@ -291,7 +291,7 @@
   "city_rock_quarry_desc": "Allows workers to quarry for stone",
   "city_rock_quarry_effect1": "+%0% Quarry Efficiency",
   "city_rock_quarry_effect2": "If powered consumes 1kW but increases rock yield by %0%",
-  "city_cement_plant": "Cement Factory",
+  "city_cement_plant": "Cement Plant",
   "city_cement_plant_desc": "Employs cement plant workers",
   "city_cement_plant_effect1": "+%0 Max Cement Plant Workers",
   "city_cement_plant_effect2": "If powered consumes %0kW but increases cement production by %1%",
