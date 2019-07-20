@@ -8096,7 +8096,7 @@ export function setAction(c_action,action,type,old){
                             }
                             break;
                         default:
-                            if (demoIsPressed){
+                            if (demoIsPressed && 1 === 2){
                                 if (global[action][type]['count'] && global[action][type]['count'] > 0){
                                     global[action][type]['count']--;
                                     if (global[action][type]['on'] && global[action][type]['on'] > global[action][type]['count']){
