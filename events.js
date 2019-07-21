@@ -63,7 +63,7 @@ export const events = {
         },
         effect: function(){
             let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
-            let enemy = global['resource'][races[global.race.species].name].amount / Math.rand(1,4);
+            let enemy = global['resource'][global.race.species].amount / Math.rand(1,4);
             
             let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
             let wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
