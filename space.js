@@ -425,7 +425,7 @@ const spaceProjects = {
                     global.civic.colonist.display = true;
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['living_quarters'].on++;
-                        global['resource'][races[global.race.species].name].max += 1;
+                        global['resource'][global.race.species].max += 1;
                     }
                     return true;
                 }
