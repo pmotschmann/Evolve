@@ -517,6 +517,19 @@ export function buildGarrison(garrison){
                     loot = loot + '.';
                     messageQueue(loot,'warning');
                     messageQueue(loc('civics_garrison_victorious',[death]),'success');
+                    if (global.race['slaver'] && global.city['slave_pen']){
+                        let max = global.city.slave_pen.count * 5;
+                        if (max > global.city.slave_pen.slaves){
+                            let slaves = Math.floor(Math.seededRandom(0,global.civic.garrison.tactic + 2));
+                            if (slaves + global.city.slave_pen.slaves > max){
+                                slaves = max - global.city.slave_pen.slaves;
+                            }
+                            if (slaves > 0){
+                                global.city.slave_pen.slaves += slaves;
+                                messageQueue(loc('civics_garrison_capture',[slaves]),'success');
+                            }
+                        }
+                    }
                     if (global.race['infectious']){
                         let infected = 0;
                         switch(global.civic.garrison.tactic){

@@ -1802,6 +1802,29 @@ export const actions = {
                 return false;
             }
         },
+        slave_pen: {
+            id: 'city-slave_pen',
+            title: loc('city_slave_pen'),
+            desc: loc('city_slave_pen'),
+            reqs: { slaves: 1 },
+            cost: { 
+                Money(){ return costMultiplier('slave_pen', 250, 1.32); },
+                Lumber(){ return costMultiplier('slave_pen', 100, 1.36); },
+                Stone(){ return costMultiplier('slave_pen', 75, 1.36); },
+                Copper(){ return costMultiplier('slave_pen', 10, 1.36); }
+            },
+            effect(){
+                let max = global.city.slave_pen.count * 5;
+                return `<div>${loc('city_slave_pen_effect',[5])}</div><div>${loc('city_slave_pen_effect2',[global.city.slave_pen.slaves,max])}</div>`; 
+            },
+            action(){
+                if (payCosts(actions.city.slave_pen.cost)){
+                    global.city['slave_pen'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
         farm: {
             id: 'city-farm',
             title: loc('city_farm'),
@@ -6253,6 +6276,25 @@ export const actions = {
             effect: loc('tech_titanium_hoe_effect'),
             action(){
                 if (payCosts(actions.tech.titanium_hoe.cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        slave_pens: {
+            id: 'tech-slave_pens',
+            title: loc('tech_slave_pens'),
+            desc: loc('tech_slave_pens'),
+            reqs: { military: 1, mining: 1 },
+            grant: ['slaves',1],
+            trait: ['slaver'],
+            cost: {
+                Knowledge(){ return 150; }
+            },
+            effect: loc('tech_slave_pens_effect'),
+            action(){
+                if (payCosts(actions.tech.slave_pens.cost)){
+                    global.city['slave_pen'] = { count: 0, slaves: 0 };
                     return true;
                 }
                 return false;

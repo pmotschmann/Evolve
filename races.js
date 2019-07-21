@@ -502,7 +502,8 @@ export const races = {
         entity: loc('race_balorg_entity'),
         traits: {
             fiery: 1,
-            terrifying: 1
+            terrifying: 1,
+            slaver: 1
         },
         solar: {
             red: 'Azzagrat',
@@ -891,6 +892,10 @@ export const traits = {
     },
     terrifying: { // No one will trade with you
         desc: loc('trait_terrifying'),
+        type: 'major',
+    },
+    slaver: { // You capture victims and force them to work for you
+        desc: loc('trait_slaver'),
         type: 'major',
     },
     compact: { // You hardly take up any space at all

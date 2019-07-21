@@ -432,6 +432,10 @@ if (!global['arpa']){
     global['arpa'] = {};
 }
 
+if (global.race.species === 'balorg'){
+    global.race['slaver'] = 1;
+}
+
 if (global.city['factory']){
     if (!global.city.factory['Lux']){
         global.city.factory['Lux'] = 0;

@@ -429,6 +429,11 @@ function fastLoop(){
         breakdown.p['Global']['Intelligence'] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
+    if (global.race['slaver'] && global.city['slave_pen'] && global.city['slave_pen']){
+        let bonus = (global.city.slave_pen.slaves * 0.3);
+        breakdown.p['Global']['Slaves'] = bonus+'%';
+        global_multiplier *= 1 + (bonus / 100);
+    }
 
     breakdown.p['consume'] = { //TODO: find a way to localize this
         Money: {},
