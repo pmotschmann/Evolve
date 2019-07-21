@@ -6883,7 +6883,7 @@ export const actions = {
             },
             effect: loc('tech_dimensional_compression_effect'),
             action(){
-                if (payCosts(actions.tech.higgs_boson.cost)){
+                if (payCosts(actions.tech.dimensional_compression.cost)){
                     return true;
                 }
                 return false;

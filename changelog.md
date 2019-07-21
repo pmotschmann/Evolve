@@ -5,6 +5,7 @@ Geology Oil rich/poor no longer applies to oil extractor<br>
 Added resource alternate row coloring<br>
 Added an affordability hint for screen readers<br>
 Fixed some bugs with awarding a random minor trait from fanatiscm<br>
+Dimensional Compression now charges the correct cost<br>
 
 #### 0.4.31 - 7/20/2019 ####
 Extreme Dazzle casino upgrade<br>
