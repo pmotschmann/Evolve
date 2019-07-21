@@ -3944,7 +3944,7 @@ export const actions = {
             },
             effect: loc('tech_dazzle_effect'),
             action(){
-                if (payCosts(actions.tech.casino_vault.cost)){
+                if (payCosts(actions.tech.dazzle.cost)){
                     return true;
                 }
                 return false;
