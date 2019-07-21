@@ -1914,11 +1914,12 @@ function fastLoop(){
             else if (global.tech['oil'] >= 5){
                 oil_base *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
             }
+            let oil_extractor = oil_base * p_on['oil_extractor'] * zigguratBonus();
+
             if (global.city.geology['Oil']){
                 oil_base *= global.city.geology['Oil'] + 1;
             }
             let oil_well = oil_base * global.city.oil_well.count;
-            let oil_extractor = oil_base * p_on['oil_extractor'];
 
             let delta = oil_well + oil_extractor;
             delta *= hunger * global_multiplier;

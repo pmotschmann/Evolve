@@ -1,4 +1,6 @@
 #### 0.4.32 - 7/21/2019 ####
+Ziggurat bonus now applies to the oil extractor<br>
+Geology Oil rich/poor no longer applies to oil extractor<br>
 Added resource alternate row coloring<br>
 Added an affordability hint for screen readers<br>
 

@@ -2602,6 +2602,9 @@ export const actions = {
                 else if (global.tech['oil'] >= 5){
                     oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
                 }
+                if (global.city.geology['Oil']){
+                    oil *= global.city.geology['Oil'] + 1;
+                }
                 oil = +oil.toFixed(2);
                 let oc = spatialReasoning(500);
                 return loc('city_oil_well_effect',[oil,oc]);
