@@ -116,6 +116,8 @@
   "event_doom_alt": "A portal to heaven was accidentally opened on %0, a lone space marine wearing green armor somehow managed to stop the angelic invasion.",
   "event_ruins": "An ancient cache of resources has been discovered.",
   "event_tax_revolt": "Riots have broken out due to the excessively high taxes, widespread damage has resulted in the loss of some resources.",
+  "event_slave_death": "A slave has died.",
+  "event_slave_none": "Your underlings are plotting to overthrow you, you are weak. Prove your worth.",
   "evo_rna": "Creates %0 RNA",
   "evo_dna_title": "Form DNA",
   "evo_dna_desc": "Creates a new strand of DNA",

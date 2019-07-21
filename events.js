@@ -162,7 +162,22 @@ export const events = {
         effect: function(){
             return tax_revolt();
         }
-    }
+    },
+    slave_death: {
+        reqs: { 
+            trait: 'slaver',
+            tech: 'slaves'
+        },
+        effect: function(){
+            if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){
+                global.city.slave_pen.slaves--;
+                return loc('event_slave_death');
+            }
+            else {
+                return loc('event_slave_none');
+            }
+        }
+    },
 };
 
 function tax_revolt(){
