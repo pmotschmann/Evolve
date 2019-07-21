@@ -3,6 +3,7 @@ Ziggurat bonus now applies to the oil extractor<br>
 Geology Oil rich/poor no longer applies to oil extractor<br>
 Added resource alternate row coloring<br>
 Added an affordability hint for screen readers<br>
+Fixed some bugs with awarding a random minor trait from fanatiscm<br>
 
 #### 0.4.31 - 7/20/2019 ####
 Extreme Dazzle casino upgrade<br>

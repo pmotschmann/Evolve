@@ -6881,7 +6881,6 @@ export const actions = {
                     global.tech['fanaticism'] = 1;
                     if (global.race.gods === global.race.species){
                         unlockAchieve(`second_evolution`);
-                        return true;
                     }
                     fanaticism(global.race.gods);
                     return true;
@@ -9300,6 +9299,7 @@ function fanaticism(god){
 function fanaticTrait(trait){
     if (global.race[trait]){
         randomMinorTrait();
+        arpa('Genetics')
     }
     else {
         global.race[trait] = 1;
