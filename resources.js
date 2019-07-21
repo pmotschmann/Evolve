@@ -53,7 +53,7 @@ export const tradeRatio = {
 export const craftCost = {
     Plywood: [{ r: 'Lumber', a: 100 }],
     Brick: [{ r: 'Cement', a: 40 }],
-    Bronze: [{ r: 'Copper', a: 80 }],
+    //Bronze: [{ r: 'Copper', a: 80 }],
     Wrought_Iron: [{ r: 'Iron', a: 80 }],
     Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
     Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
@@ -150,7 +150,7 @@ export function defineResources(){
         loadResource('Genes',-2,0,false,false,'special');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
-        loadResource('Bronze',-1,0,false,false,'danger');
+        //loadResource('Bronze',-1,0,false,false,'danger');
         loadResource('Wrought_Iron',-1,0,false,false,'danger');
         loadResource('Sheet_Metal',-1,0,false,false,'danger');
         loadResource('Mythril',-1,0,false,false,'danger');
