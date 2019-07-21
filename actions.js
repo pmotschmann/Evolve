@@ -8354,7 +8354,13 @@ export function setPlanet(hell){
 function srDesc(c_action,old){
     let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     desc = desc + '. ';
-    if (c_action.cost && !old){ 
+    if (c_action.cost && !old){
+        if (checkAffordable(c_action)){
+            desc = desc + loc('affordable') + '. ';
+        }
+        else {
+            desc = desc + loc('not_affordable') + '. ';
+        }
         desc = desc + 'Costs: ';
         var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res) {
