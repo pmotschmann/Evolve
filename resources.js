@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
+import { global, vues, keyMultiplier, modRes, poppers, breakdown, highlight, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
 import { races } from './races.js';
 import { loc } from './locale.js'
 
@@ -677,6 +677,7 @@ function breakdownPopover(id,name,type){
             }
         });
         vues[`res_${id}_temp`].$mount(`#resBreak${id} > div`);
+        highlight['h'] = name;
     });
     $(`#${id}`).on('mouseout',function(){
         $(`#resBreak${id}`).hide();
@@ -685,6 +686,7 @@ function breakdownPopover(id,name,type){
         }
         $(`#resBreak${id}`).remove();
         vues[`res_${id}_temp`].$destroy();
+        highlight['h'] = "";
     });
 }
 

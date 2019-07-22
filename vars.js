@@ -22,6 +22,7 @@ export var breakdown = {
     c: {},
     p: {}
 };
+export var highlight = {};
 export var p_on = {};
 export var red_on = {};
 export var moon_on = {};

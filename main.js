@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, highlight, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
@@ -2156,6 +2156,14 @@ function midLoop(){
                     else if (!element.hasClass('cnam')){
                         element.addClass('cnam');
                     }
+                    if (Object.keys(c_action.cost).includes(highlight['h'])){
+                        if (!element.hasClass('cnr')){
+                            element.addClass('cnr');
+                        }
+                    } 
+                    else if (element.hasClass('cnr')){
+                        element.removeClass('cnr');
+                    }
                 }
             }
         });
@@ -2796,6 +2804,14 @@ function midLoop(){
                 else if (!element.hasClass('cnam')){
                     element.addClass('cnam');
                 }
+                if (Object.keys(c_action.cost).includes(highlight['h'])){
+                    if (!element.hasClass('cnr')){
+                        element.addClass('cnr');
+                    }
+                } 
+                else if (element.hasClass('cnr')){
+                    element.removeClass('cnr');
+                }
             }
         });
 
@@ -2819,6 +2835,14 @@ function midLoop(){
                     }
                     else if (!element.hasClass('cnam')){
                         element.addClass('cnam');
+                    }
+                    if (Object.keys(c_action.cost).includes(highlight['h'])){
+                        if (!element.hasClass('cnr')){
+                            element.addClass('cnr');
+                        }
+                    } 
+                    else if (element.hasClass('cnr')){
+                        element.removeClass('cnr');
                     }
                 }
             }
@@ -2844,6 +2868,14 @@ function midLoop(){
                     }
                     else if (!element.hasClass('cnam')){
                         element.addClass('cnam');
+                    }
+                    if (Object.keys(c_action.cost).includes(highlight['h'])){
+                        if (!element.hasClass('cnr')){
+                            element.addClass('cnr');
+                        }
+                    } 
+                    else if (element.hasClass('cnr')){
+                        element.removeClass('cnr');
                     }
                 }
             });
