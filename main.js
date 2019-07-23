@@ -391,6 +391,8 @@ else {
     }, long_timer);
 }
 
+resourceAlt();
+
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 function fastLoop(){
     keyMultiplier();
@@ -2945,6 +2947,9 @@ function midLoop(){
 
         checkAchievements();
     }
+
+    resourceAlt();
+
     Object.keys(global.resource).forEach(function (res){
         $(`[data-${res}]`).each(function (i,v){
             let fail_max = global.resource[res].max >= 0 && $(this).attr(`data-${res}`) > global.resource[res].max ? true : false;
@@ -3519,4 +3524,29 @@ function setWeather(){
         weather = global.city.calendar.wind === 0 ? 'wi-day-sunny' : 'wi-day-windy';
     }
     $('#weather').addClass(weather);
+}
+
+function resourceAlt(){
+    let alt = false;
+    $('#resources .resource:visible').each(function(){
+        if (alt){
+            $(this).addClass('alt');
+            alt = false;
+        }
+        else {
+            $(this).removeClass('alt');
+            alt = true;
+        }
+    });
+    alt = false;
+    $('#market .market-item:visible').each(function(){
+        if (alt){
+            $(this).addClass('alt');
+            alt = false;
+        }
+        else {
+            $(this).removeClass('alt');
+            alt = true;
+        }
+    });
 }

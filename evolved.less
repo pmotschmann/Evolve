@@ -1112,9 +1112,11 @@ html.dark {
         }
     }
 
-    .market-item:nth-child(odd),
-    .resource:nth-child(odd){
-        background-color: #0f1414;
+    .market-item,
+    .resource {
+        &.alt {
+            background-color: #0f1414;
+        }
     }
 
     .modalBox {
@@ -1350,9 +1352,11 @@ html.light {
             background-color: #ccc;
         }
     }
-    .market-item:nth-child(odd),
-    .resource:nth-child(odd){
-        background-color: #dddddd;
+    .market-item,
+    .resource {
+        &.alt {
+            background-color: #dddddd;
+        }
     }
 
     .modalBox {
@@ -1436,9 +1440,11 @@ html.night {
             color: #fff !important;
         }
     }
-    .market-item:nth-child(odd),
-    .resource:nth-child(odd){
-        background-color: #222222;
+    .market-item,
+    .resource {
+        &.alt {
+            background-color: #1b1b1b;
+        }
     }
     .b-tooltip.is-right:before {
         border-right: 5px solid #999;
