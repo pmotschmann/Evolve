@@ -8072,7 +8072,17 @@ export function setAction(c_action,action,type,old){
         parent.append(element);
     }
     else {
-        var element = $('<a class="button is-dark" v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>');
+        let cst = '';
+        let data = '';
+        if (c_action['cost']){
+            var costs = adjustCosts(c_action.cost);
+            Object.keys(costs).forEach(function (res){
+                cst = cst + ` res-${res}`;
+                data = data + ` data-${res}="${costs[res]()}"`;
+            });
+        }
+
+        var element = $(`<a class="button is-dark${cst}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
         parent.append(element);
     }
 

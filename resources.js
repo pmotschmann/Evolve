@@ -1,6 +1,7 @@
 import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
 import { races } from './races.js';
-import { loc } from './locale.js'
+import { actions } from './actions.js';
+import { loc } from './locale.js';
 
 export const resource_values = {
     Food: 5,
@@ -371,6 +372,23 @@ function loadResource(name,max,rate,tradable,stackable,color){
         $('#market').append(market_item);
         marketItem(`market_${name}`,`#market-${name}`,market_item,name,color,true);
     }
+
+    $(`#res${name}`).on('mouseover',function(){
+        $(`.res-${name}`).each(function(){
+            if (global.resource[name].amount >= $(this).attr(`data-${name}`)){
+                $(this).addClass('hl-ca');
+            }
+            else {
+                $(this).addClass('hl-cna');
+            }
+        });
+    });
+    $(`#res${name}`).on('mouseout',function(){
+        $(`.res-${name}`).each(function(){
+            $(this).removeClass('hl-ca');
+            $(this).removeClass('hl-cna');
+        });
+    });
 }
 
 function loadSpecialResource(name,color) {
