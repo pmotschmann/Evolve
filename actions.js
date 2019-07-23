@@ -9283,6 +9283,9 @@ function fanaticism(god){
         case 'entish':
             fanaticTrait('kindling_kindred');
             global.resource.Lumber.display = false;
+            global.resource.Lumber.crates = 0;
+            global.resource.Lumber.containers = 0;
+            global.resource.Lumber.trade = 0;
             global.resource.Plywood.display = false;
             global.city['lumber'] = 0;
             if (global.city['sawmill']){
