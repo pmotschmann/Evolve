@@ -876,7 +876,9 @@ function addProject(parent,project){
                                     global.settings.showSpace = true;
                                     global.tech['space'] = 1;
                                     $(`#popArpa${pro}`).hide();
-                                    poppers[`popArpa${pro}`].destroy();
+                                    if (poppers[`popArpa${pro}`]){
+                                        poppers[`popArpa${pro}`].destroy();
+                                    }
                                     $(`#popArpa${pro}`).remove();
                                     physics();
                                     space();
@@ -903,7 +905,9 @@ function addProject(parent,project){
         });
         $(`#arpa${project} .head .desc`).on('mouseout',function(){
             $(`#popArpa${project}`).hide();
-            poppers[`popArpa${project}`].destroy();
+            if (poppers[`popArpa${project}`]){
+                poppers[`popArpa${project}`].destroy();
+            }
             $(`#popArpa${project}`).remove();
         });
 
@@ -916,7 +920,9 @@ function addProject(parent,project){
         });
         $(`#arpa${project} .head .rank`).on('mouseout',function(){
             $(`#popArpa${project}`).hide();
-            poppers[`popArpa${project}`].destroy();
+            if (poppers[`popArpa${project}`]){
+                poppers[`popArpa${project}`].destroy();
+            }
             $(`#popArpa${project}`).remove();
         });
 
@@ -943,7 +949,9 @@ function addProject(parent,project){
             });
             $(`#arpa${project} .buy .x${id}`).on('mouseout',function(){
                 $(`#popArpa${project}`).hide();
-                poppers[`popArpa${project}`].destroy();
+                if (poppers[`popArpa${project}`]){
+                    poppers[`popArpa${project}`].destroy();
+                }
                 $(`#popArpa${project}`).remove();
             });
         }
