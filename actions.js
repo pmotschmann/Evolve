@@ -8412,8 +8412,12 @@ function srDesc(c_action,old){
             if (res_cost > 0){
                 let label = res === 'Money' ? '$' : global.resource[res].name+': ';
                 label = label.replace("_", " ");
+                
                 let display_cost = sizeApproximation(res_cost,1);
                 desc = desc + `${label}${display_cost}. `;
+                if (global.resource[res].amount < res_cost){
+                    desc = desc + `${insufficient} ${global.resource[res].name}. `;
+                }
             }
         });
     }

@@ -68,6 +68,7 @@
   "power_available": "Available",
   "affordable": "Affordable",
   "not_affordable": "Not Affordable",
+  "insufficient": "Insufficient",
   "job_farmer": "Farmer",
   "job_farmer_desc": "Farmers create food to feed your population. Each farmer generates %0 food per second.",
   "job_lumberjack": "Lumberjack",

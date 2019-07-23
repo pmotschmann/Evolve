@@ -1,6 +1,7 @@
 #### 0.4.33 - 7/22/2019 ####
 Fixes for Ent Fanaticism not releasing some resources<br>
 Aria improvements for the smelter modal<br>
+Improved screen reader resource affordability description of buildings/research<br>
 
 #### 0.4.32 - 7/21/2019 ####
 Balorg slaver trait added<br>
