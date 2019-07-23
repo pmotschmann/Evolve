@@ -8714,27 +8714,27 @@ function smelterModal(modal){
 
     if (!global.race['kindling_kindred']){
         let f_label = global.race['evil'] ? global.resource.Food.name : global.resource.Lumber.name;
-        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">${f_label} {{ Wood }}</span></b-tooltip>`);
-        let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
-        let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
+        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ Wood }}</span></b-tooltip>`);
+        let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel">&laquo;</span>`);
+        let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel">&raquo;</span>`);
         fuelTypes.append(subWood);
         fuelTypes.append(wood);
         fuelTypes.append(addWood);
     }
 
     if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
-        let subCoal = $('<span class="sub" @click="subCoal">&laquo;</span>');
-        let addCoal = $('<span class="add" @click="addCoal">&raquo;</span>');
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
+        let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel">&laquo;</span>`);
+        let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel">&raquo;</span>`);
         fuelTypes.append(subCoal);
         fuelTypes.append(coal);
         fuelTypes.append(addCoal);
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
-        let subOil = $('<span class="sub" @click="subOil">&laquo;</span>');
-        let addOil = $('<span class="add" @click="addOil">&raquo;</span>');
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
+        let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel">&laquo;</span>`);
+        let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel">&raquo;</span>`);
         fuelTypes.append(subOil);
         fuelTypes.append(oil);
         fuelTypes.append(addOil);
@@ -8742,8 +8742,8 @@ function smelterModal(modal){
 
     if (global.resource.Steel.display && global.tech.smelting >= 2){
         let smelt = $('<div class="smelting"></div>');
-        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ Iron }}</button></b-tooltip>`);
-        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ Steel }}</button></b-tooltip>`);
+        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ Iron }}</button></b-tooltip>`);
+        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ Steel }}</button></b-tooltip>`);
         modal.append(smelt);
         smelt.append(ironSmelt);
         smelt.append(steelSmelt);
@@ -8897,7 +8897,7 @@ function smelterModal(modal){
                     }
                 }
             },
-            buildLabel: function(type){
+            buildLabel(type){
                 switch(type){
                     case 'wood':
                         return loc('modal_build_wood',[global.race['evil'] ? loc('resource_Souls_name') : loc('resource_Lumber_name')]);
@@ -8912,6 +8912,12 @@ function smelterModal(modal){
                     case 'oil':
                         return loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
                 }
+            },
+            ariaCount(fuel){
+                return ` ${global.city.smelter[fuel]} ${fuel} fueled.`;
+            },
+            ariaProd(res){
+                return `. ${global.city.smelter[res]} producing ${res}.`;
             }
         },
         filters: {
