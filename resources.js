@@ -1,6 +1,5 @@
 import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
 import { races } from './races.js';
-import { actions } from './actions.js';
 import { loc } from './locale.js';
 
 export const resource_values = {

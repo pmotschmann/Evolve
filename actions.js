@@ -2808,8 +2808,9 @@ export const actions = {
                     money *= 1 + (global.race['gambler'] * 0.04);
                 }
                 if (global.tech['world_control']){
-                    money = Math.round(money * 1.25);
+                    money = money * 1.25;
                 }
+                money = Math.round(money);
                 money = '$'+money;
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
                 if (global.tech['gambling'] >= 2){
@@ -8077,8 +8078,11 @@ export function setAction(c_action,action,type,old){
         if (c_action['cost']){
             var costs = adjustCosts(c_action.cost);
             Object.keys(costs).forEach(function (res){
-                cst = cst + ` res-${res}`;
-                data = data + ` data-${res}="${costs[res]()}"`;
+                let cost = costs[res]();
+                if (cost > 0){
+                    cst = cst + ` res-${res}`;
+                    data = data + ` data-${res}="${cost}"`;
+                }
             });
         }
 
@@ -8426,7 +8430,7 @@ function srDesc(c_action,old){
                 let display_cost = sizeApproximation(res_cost,1);
                 desc = desc + `${label}${display_cost}. `;
                 if (global.resource[res].amount < res_cost){
-                    desc = desc + `${insufficient} ${global.resource[res].name}. `;
+                    desc = desc + `${loc('insufficient')} ${global.resource[res].name}. `;
                 }
             }
         });
