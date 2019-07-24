@@ -1129,6 +1129,7 @@ const spaceProjects = {
                 else if (global.tech['oil'] >= 5){
                     oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
                 }
+                oil *= zigguratBonus();
                 oil = +oil.toFixed(2);
                 return loc('space_gas_moon_oil_extractor_effect1',[oil, spaceProjects.spc_gas_moon.oil_extractor.powered]);
             },

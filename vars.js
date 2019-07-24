@@ -204,7 +204,7 @@ if (convertVersion(global['version']) < 4031){
     }
 }
 
-global['version'] = '0.4.31';
+global['version'] = '0.4.34';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -430,6 +430,10 @@ if (!global.settings.arpa['crispr']){
 
 if (!global['arpa']){
     global['arpa'] = {};
+}
+
+if (global.race.species === 'balorg'){
+    global.race['slaver'] = 1;
 }
 
 if (global.city['factory']){

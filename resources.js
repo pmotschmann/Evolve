@@ -1,6 +1,6 @@
 import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
 import { races } from './races.js';
-import { loc } from './locale.js'
+import { loc } from './locale.js';
 
 export const resource_values = {
     Food: 5,
@@ -53,7 +53,7 @@ export const tradeRatio = {
 export const craftCost = {
     Plywood: [{ r: 'Lumber', a: 100 }],
     Brick: [{ r: 'Cement', a: 40 }],
-    Bronze: [{ r: 'Copper', a: 80 }],
+    //Bronze: [{ r: 'Copper', a: 80 }],
     Wrought_Iron: [{ r: 'Iron', a: 80 }],
     Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
     Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
@@ -150,7 +150,7 @@ export function defineResources(){
         loadResource('Genes',-2,0,false,false,'special');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
-        loadResource('Bronze',-1,0,false,false,'danger');
+        //loadResource('Bronze',-1,0,false,false,'danger');
         loadResource('Wrought_Iron',-1,0,false,false,'danger');
         loadResource('Sheet_Metal',-1,0,false,false,'danger');
         loadResource('Mythril',-1,0,false,false,'danger');
@@ -371,6 +371,23 @@ function loadResource(name,max,rate,tradable,stackable,color){
         $('#market').append(market_item);
         marketItem(`market_${name}`,`#market-${name}`,market_item,name,color,true);
     }
+
+    $(`#res${name}`).on('mouseover',function(){
+        $(`.res-${name}`).each(function(){
+            if (global.resource[name].amount >= $(this).attr(`data-${name}`)){
+                $(this).addClass('hl-ca');
+            }
+            else {
+                $(this).addClass('hl-cna');
+            }
+        });
+    });
+    $(`#res${name}`).on('mouseout',function(){
+        $(`.res-${name}`).each(function(){
+            $(this).removeClass('hl-ca');
+            $(this).removeClass('hl-cna');
+        });
+    });
 }
 
 function loadSpecialResource(name,color) {

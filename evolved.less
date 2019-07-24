@@ -1021,6 +1021,12 @@ html.dark {
         .content {
             .action {
                 a.button {
+                    &.hl-ca .aTitle {
+                        color: #00af0f;
+                    }
+                    &.hl-cna .aTitle {
+                        color: #c20000;
+                    }
                     span.count {
                         background: #1f2424;
                     }
@@ -1060,6 +1066,12 @@ html.dark {
             .action.cna {
                 a.button {
                     background: #181818;
+                    &.hl-ca .aTitle {
+                        color: #00af0f;
+                    }
+                    &.hl-cna .aTitle {
+                        color: #c20000;
+                    }
                 }
                 .special,
                 .on,
@@ -1112,8 +1124,11 @@ html.dark {
         }
     }
 
-    .market-item:nth-child(odd){
-        background-color: #0f1414;
+    .market-item,
+    .resource {
+        &.alt {
+            background-color: #0f1414;
+        }
     }
 
     .modalBox {
@@ -1349,8 +1364,11 @@ html.light {
             background-color: #ccc;
         }
     }
-    .market-item:nth-child(odd){
-        background-color: #dddddd;
+    .market-item,
+    .resource {
+        &.alt {
+            background-color: #dddddd;
+        }
     }
 
     .modalBox {
@@ -1434,8 +1452,11 @@ html.night {
             color: #fff !important;
         }
     }
-    .market-item:nth-child(odd){
-        background-color: #222222;
+    .market-item,
+    .resource {
+        &.alt {
+            background-color: #1b1b1b;
+        }
     }
     .b-tooltip.is-right:before {
         border-right: 5px solid #999;

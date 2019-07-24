@@ -78,6 +78,10 @@ if (global['new']){
     global['new'] = false;
 }
 
+if (global.city['mass_driver']){
+    p_on['mass_driver'] = global.city['mass_driver'].on;
+}
+
 // Load Resources
 defineResources();
 $('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
@@ -391,6 +395,8 @@ else {
     }, long_timer);
 }
 
+resourceAlt();
+
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 function fastLoop(){
     keyMultiplier();
@@ -427,6 +433,11 @@ function fastLoop(){
     if (global.race['intelligent']){
         let bonus = (global.civic.scientist.workers * 0.25) + (global.civic.professor.workers * 0.125);
         breakdown.p['Global']['Intelligence'] = bonus+'%';
+        global_multiplier *= 1 + (bonus / 100);
+    }
+    if (global.race['slaver'] && global.city['slave_pen'] && global.city['slave_pen']){
+        let bonus = (global.city.slave_pen.slaves * 0.28);
+        breakdown.p['Global']['Slaves'] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
 
@@ -614,8 +625,10 @@ function fastLoop(){
 
         // trade routes
         if (global.tech['trade']){
+            let used_trade = 0;
             Object.keys(global.resource).forEach(function (res){
                 if (global.resource[res].trade > 0){
+                    used_trade += global.resource[res].trade;
                     let price = tradeBuyPrice(res) * global.resource[res].trade;
 
                     if (global.resource.Money.amount >= price * time_multiplier){
@@ -627,6 +640,7 @@ function fastLoop(){
                     steelCheck();
                 }
                 else if (global.resource[res].trade < 0){
+                    used_trade -= global.resource[res].trade;
                     let price = tradeSellPrice(res) * global.resource[res].trade;
 
                     if (global.resource[res].amount >= time_multiplier){
@@ -638,6 +652,7 @@ function fastLoop(){
                     steelCheck();
                 }
             });
+            global.city.market.trade = used_trade;
         }
 
         let power_grid = 0;
@@ -1914,11 +1929,12 @@ function fastLoop(){
             else if (global.tech['oil'] >= 5){
                 oil_base *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
             }
+            let oil_extractor = oil_base * p_on['oil_extractor'] * zigguratBonus();
+
             if (global.city.geology['Oil']){
                 oil_base *= global.city.geology['Oil'] + 1;
             }
             let oil_well = oil_base * global.city.oil_well.count;
-            let oil_extractor = oil_base * p_on['oil_extractor'];
 
             let delta = oil_well + oil_extractor;
             delta *= hunger * global_multiplier;
@@ -2901,10 +2917,13 @@ function midLoop(){
             global.civic.farmer.max = 0;
         }
 
-        if (global.race['kindling_kindred'] && global.civic.lumberjack.workers > 0){
+        if (global.race['kindling_kindred']){
             global.civic.lumberjack.workers = 0;
+            global.resource.Lumber.crates = 0;
+            global.resource.Lumber.containers = 0;
+            global.resource.Lumber.trade = 0;
         }
-        if (global.race['kindling_kindred'] && global.city.foundry['Plywood'] > 0){
+        if (global.race['kindling_kindred'] && global.city['foundry'] && global.city.foundry['Plywood']){
             global.city.foundry['Plywood'] = 0;
         }
 
@@ -2932,6 +2951,9 @@ function midLoop(){
 
         checkAchievements();
     }
+
+    resourceAlt();
+
     Object.keys(global.resource).forEach(function (res){
         $(`[data-${res}]`).each(function (i,v){
             let fail_max = global.resource[res].max >= 0 && $(this).attr(`data-${res}`) > global.resource[res].max ? true : false;
@@ -3506,4 +3528,29 @@ function setWeather(){
         weather = global.city.calendar.wind === 0 ? 'wi-day-sunny' : 'wi-day-windy';
     }
     $('#weather').addClass(weather);
+}
+
+function resourceAlt(){
+    let alt = false;
+    $('#resources .resource:visible').each(function(){
+        if (alt){
+            $(this).addClass('alt');
+            alt = false;
+        }
+        else {
+            $(this).removeClass('alt');
+            alt = true;
+        }
+    });
+    alt = false;
+    $('#market .market-item:visible').each(function(){
+        if (alt){
+            $(this).addClass('alt');
+            alt = false;
+        }
+        else {
+            $(this).removeClass('alt');
+            alt = true;
+        }
+    });
 }

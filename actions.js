@@ -1802,6 +1802,29 @@ export const actions = {
                 return false;
             }
         },
+        slave_pen: {
+            id: 'city-slave_pen',
+            title: loc('city_slave_pen'),
+            desc: loc('city_slave_pen'),
+            reqs: { slaves: 1 },
+            cost: { 
+                Money(){ return costMultiplier('slave_pen', 250, 1.32); },
+                Lumber(){ return costMultiplier('slave_pen', 100, 1.36); },
+                Stone(){ return costMultiplier('slave_pen', 75, 1.36); },
+                Copper(){ return costMultiplier('slave_pen', 10, 1.36); }
+            },
+            effect(){
+                let max = global.city.slave_pen.count * 5;
+                return `<div>${loc('city_slave_pen_effect',[5])}</div><div>${loc('city_slave_pen_effect2',[global.city.slave_pen.slaves,max])}</div>`; 
+            },
+            action(){
+                if (payCosts(actions.city.slave_pen.cost)){
+                    global.city['slave_pen'].count++;
+                    return true;
+                }
+                return false;
+            }
+        },
         farm: {
             id: 'city-farm',
             title: loc('city_farm'),
@@ -2602,6 +2625,9 @@ export const actions = {
                 else if (global.tech['oil'] >= 5){
                     oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
                 }
+                if (global.city.geology['Oil']){
+                    oil *= global.city.geology['Oil'] + 1;
+                }
                 oil = +oil.toFixed(2);
                 let oc = spatialReasoning(500);
                 return loc('city_oil_well_effect',[oil,oc]);
@@ -2782,8 +2808,9 @@ export const actions = {
                     money *= 1 + (global.race['gambler'] * 0.04);
                 }
                 if (global.tech['world_control']){
-                    money = Math.round(money * 1.25);
+                    money = money * 1.25;
                 }
+                money = Math.round(money);
                 money = '$'+money;
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
                 if (global.tech['gambling'] >= 2){
@@ -6255,6 +6282,25 @@ export const actions = {
                 return false;
             }
         },
+        slave_pens: {
+            id: 'tech-slave_pens',
+            title: loc('tech_slave_pens'),
+            desc: loc('tech_slave_pens'),
+            reqs: { military: 1, mining: 1 },
+            grant: ['slaves',1],
+            trait: ['slaver'],
+            cost: {
+                Knowledge(){ return 150; }
+            },
+            effect: loc('tech_slave_pens_effect'),
+            action(){
+                if (payCosts(actions.tech.slave_pens.cost)){
+                    global.city['slave_pen'] = { count: 0, slaves: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         garrison: {
             id: 'tech-garrison',
             title: loc('tech_garrison'),
@@ -6838,7 +6884,7 @@ export const actions = {
             },
             effect: loc('tech_dimensional_compression_effect'),
             action(){
-                if (payCosts(actions.tech.higgs_boson.cost)){
+                if (payCosts(actions.tech.dimensional_compression.cost)){
                     return true;
                 }
                 return false;
@@ -6878,7 +6924,6 @@ export const actions = {
                     global.tech['fanaticism'] = 1;
                     if (global.race.gods === global.race.species){
                         unlockAchieve(`second_evolution`);
-                        return true;
                     }
                     fanaticism(global.race.gods);
                     return true;
@@ -8028,7 +8073,20 @@ export function setAction(c_action,action,type,old){
         parent.append(element);
     }
     else {
-        var element = $('<a class="button is-dark" v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>');
+        let cst = '';
+        let data = '';
+        if (c_action['cost']){
+            var costs = adjustCosts(c_action.cost);
+            Object.keys(costs).forEach(function (res){
+                let cost = costs[res]();
+                if (cost > 0){
+                    cst = cst + ` res-${res}`;
+                    data = data + ` data-${res}="${cost}"`;
+                }
+            });
+        }
+
+        var element = $(`<a class="button is-dark${cst}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
         parent.append(element);
     }
 
@@ -8354,7 +8412,13 @@ export function setPlanet(hell){
 function srDesc(c_action,old){
     let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     desc = desc + '. ';
-    if (c_action.cost && !old){ 
+    if (c_action.cost && !old){
+        if (checkAffordable(c_action)){
+            desc = desc + loc('affordable') + '. ';
+        }
+        else {
+            desc = desc + loc('not_affordable') + '. ';
+        }
         desc = desc + 'Costs: ';
         var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res) {
@@ -8362,8 +8426,12 @@ function srDesc(c_action,old){
             if (res_cost > 0){
                 let label = res === 'Money' ? '$' : global.resource[res].name+': ';
                 label = label.replace("_", " ");
+                
                 let display_cost = sizeApproximation(res_cost,1);
                 desc = desc + `${label}${display_cost}. `;
+                if (global.resource[res].amount < res_cost){
+                    desc = desc + `${loc('insufficient')} ${global.resource[res].name}. `;
+                }
             }
         });
     }
@@ -8664,27 +8732,27 @@ function smelterModal(modal){
 
     if (!global.race['kindling_kindred']){
         let f_label = global.race['evil'] ? global.resource.Food.name : global.resource.Lumber.name;
-        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span class="current">${f_label} {{ Wood }}</span></b-tooltip>`);
-        let subWood = $('<span class="sub" @click="subWood">&laquo;</span>');
-        let addWood = $('<span class="add" @click="addWood">&raquo;</span>');
+        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ Wood }}</span></b-tooltip>`);
+        let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel">&laquo;</span>`);
+        let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel">&raquo;</span>`);
         fuelTypes.append(subWood);
         fuelTypes.append(wood);
         fuelTypes.append(addWood);
     }
 
     if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
-        let subCoal = $('<span class="sub" @click="subCoal">&laquo;</span>');
-        let addCoal = $('<span class="add" @click="addCoal">&raquo;</span>');
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
+        let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel">&laquo;</span>`);
+        let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel">&raquo;</span>`);
         fuelTypes.append(subCoal);
         fuelTypes.append(coal);
         fuelTypes.append(addCoal);
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
-        let subOil = $('<span class="sub" @click="subOil">&laquo;</span>');
-        let addOil = $('<span class="add" @click="addOil">&raquo;</span>');
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
+        let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel">&laquo;</span>`);
+        let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel">&raquo;</span>`);
         fuelTypes.append(subOil);
         fuelTypes.append(oil);
         fuelTypes.append(addOil);
@@ -8692,8 +8760,8 @@ function smelterModal(modal){
 
     if (global.resource.Steel.display && global.tech.smelting >= 2){
         let smelt = $('<div class="smelting"></div>');
-        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ Iron }}</button></b-tooltip>`);
-        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ Steel }}</button></b-tooltip>`);
+        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ Iron }}</button></b-tooltip>`);
+        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ Steel }}</button></b-tooltip>`);
         modal.append(smelt);
         smelt.append(ironSmelt);
         smelt.append(steelSmelt);
@@ -8847,7 +8915,7 @@ function smelterModal(modal){
                     }
                 }
             },
-            buildLabel: function(type){
+            buildLabel(type){
                 switch(type){
                     case 'wood':
                         return loc('modal_build_wood',[global.race['evil'] ? loc('resource_Souls_name') : loc('resource_Lumber_name')]);
@@ -8862,6 +8930,12 @@ function smelterModal(modal){
                     case 'oil':
                         return loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
                 }
+            },
+            ariaCount(fuel){
+                return ` ${global.city.smelter[fuel]} ${fuel} fueled.`;
+            },
+            ariaProd(res){
+                return `. ${global.city.smelter[res]} producing ${res}.`;
             }
         },
         filters: {
@@ -9233,6 +9307,9 @@ function fanaticism(god){
         case 'entish':
             fanaticTrait('kindling_kindred');
             global.resource.Lumber.display = false;
+            global.resource.Lumber.crates = 0;
+            global.resource.Lumber.containers = 0;
+            global.resource.Lumber.trade = 0;
             global.resource.Plywood.display = false;
             global.city['lumber'] = 0;
             if (global.city['sawmill']){
@@ -9291,6 +9368,7 @@ function fanaticism(god){
 function fanaticTrait(trait){
     if (global.race[trait]){
         randomMinorTrait();
+        arpa('Genetics')
     }
     else {
         global.race[trait] = 1;
