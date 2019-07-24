@@ -78,6 +78,10 @@ if (global['new']){
     global['new'] = false;
 }
 
+if (global.city['mass_driver']){
+    p_on['mass_driver'] = global.city['mass_driver'].on;
+}
+
 // Load Resources
 defineResources();
 $('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
