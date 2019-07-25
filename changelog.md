@@ -1,3 +1,6 @@
+#### 0.4.35 - 7/25/2019 ####
+Centaur can now pick Fanaticism<br>
+
 #### 0.4.34 - 7/23/2019 ####
 Fixed SR descriptions of buildings that lack affordability<br>
 Fixed resource highlighting of buildings that have zero costs<br>
