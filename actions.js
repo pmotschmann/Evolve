@@ -7883,7 +7883,7 @@ export const actions = {
                     k_inc *= 1.015;
                 }
                 plasmid = challenge_multiplier(plasmid);
-                let phage = Math.floor(Math.log2(plasmid) * Math.E);
+                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E));
                 return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
             },
             action(){
@@ -9405,7 +9405,7 @@ function bioseed(){
     }
     new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;
-    let new_phage = Math.floor(Math.log2(new_plasmid) * Math.E);
+    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E));
     phage += new_phage;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
