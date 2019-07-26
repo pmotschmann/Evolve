@@ -144,10 +144,10 @@ export function defineResources(){
         loadResource('Iridium',0,1,true,true);
         //loadResource('Deuterium',0,1,true,false);
         loadResource('Helium_3',0,1,true,false);
-        loadResource('Neutronium',0,1,false,false,'special');
-        loadResource('Elerium',1,1,false,false,'special');
-        loadResource('Nano_Tube',0,1,false,false,'special');
-        loadResource('Genes',-2,0,false,false,'special');
+        loadResource('Neutronium',0,1,false,false,'advanced');
+        loadResource('Elerium',1,1,false,false,'advanced');
+        loadResource('Nano_Tube',0,1,false,false,'advanced');
+        loadResource('Genes',-2,0,false,false,'advanced');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         //loadResource('Bronze',-1,0,false,false,'danger');
