@@ -1,3 +1,12 @@
+#### 0.4.36 - 7/27/2019 ####
+Slow and Hyper traits can now combine<br>
+Added new achievements: Creator & Explorer<br>
+Added perks for Mass Extinction, Creator, and Explorer<br>
+
+#### 0.4.35 - 7/25/2019 ####
+Centaur can now pick Fanaticism<br>
+Challenge multiplier is now applied to phage gain<br>
+
 #### 0.4.34 - 7/23/2019 ####
 Fixed SR descriptions of buildings that lack affordability<br>
 Fixed resource highlighting of buildings that have zero costs<br>

@@ -321,7 +321,7 @@ if (global.race.species === 'protoplasm'){
             }
         }
 
-        if (global.race.seeded){
+        if (global.race.seeded || global.stats.achieve['creator']){
             var race_options = ['human','orc','elven','troll','orge','cyclops','kobold','goblin','gnome','cath','wolven','centaur','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','mantis','scorpid','antid','entish','cacti','sharkin','octigoran'];
             for (var i = 0; i < race_options.length; i++){
                 if (global.evolution[race_options[i]] && global.evolution[race_options[i]].count == 0){
@@ -357,9 +357,14 @@ q_check();
 
 var fed = true;
 
-var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
-var mid_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
-var long_timer = global.race['slow'] ? 5500 : (global.race['hyper'] ? 4750 : 5000);
+var main_timer = global.race['slow'] ? 275 : 250;
+var mid_timer = global.race['slow'] ? 1100 : 1000;
+var long_timer = global.race['slow'] ? 5500 : 5000;
+if (global.race['hyper']){
+    main_timer = Math.floor(main_timer * 0.95);
+    mid_timer = Math.floor(mid_timer * 0.95);
+    long_timer = Math.floor(long_timer * 0.95);
+}
 
 if (window.Worker){
     var worker = new Worker("evolve.js");
@@ -497,6 +502,10 @@ function fastLoop(){
             global.evolution['dna'] = 1;
             addAction('evolution','dna');
             global.resource.DNA.display = true;
+            if (global.stats.achieve['creator'] && global.stats.achieve['creator'] > 1){
+                modRes('RNA', global.resource.RNA.max);
+                modRes('DNA', global.resource.RNA.max);
+            }
         }
         else if (global['resource']['RNA'].amount >= 10 && !global.evolution['membrane']){
             global.evolution['membrane'] = { count: 0 };
@@ -2129,9 +2138,13 @@ function fastLoop(){
 
 function midLoop(){
     if (global.race.species === 'protoplasm'){
+        let base = 100;
+        if (global.stats.achieve['creator'] && global.stats.achieve['creator'] > 1){
+            base += 50 * (global.stats.achieve['creator'] - 1);
+        }
         var caps = {
-            RNA: 100,
-            DNA: 100
+            RNA: base,
+            DNA: base
         };
         if (global.evolution['membrane']){
             let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
@@ -2880,7 +2893,10 @@ function midLoop(){
                 else {
                     global.race.mutation++;
                     let trait = randomMinorTrait();
-                    let gene = global.genes['synthesis'] ? global.race.mutation * (global.genes['synthesis'] + 1) : global.race.mutation;
+                    let gene = global.genes['synthesis'] ? (2 ** (global.race.mutation - 1)) * (global.genes['synthesis'] + 1) : global.race.mutation;
+                    if (global.stats.achieve['mass_extinction']){
+                        gene *= global.stats.achieve['mass_extinction'] + 1;
+                    }
                     messageQueue(loc('gene_therapy',[trait,gene]),'success');
                     global.stats.plasmid++;
                     global.race.Plasmid.count++;

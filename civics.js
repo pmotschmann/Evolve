@@ -931,7 +931,7 @@ function defineMad(){
     vues['mad'].$mount('#mad');
 }
 
-export function challenge_multiplier(plasmid){
+export function challenge_multiplier(value){
     let challenge_level = 0;
     if (global.race['no_plasmid']){ challenge_level++; }
     if (global.race['no_trade']){ challenge_level++; }
@@ -939,15 +939,15 @@ export function challenge_multiplier(plasmid){
     if (global.race['no_crispr']){ challenge_level++; }
     switch (challenge_level){
         case 1:
-            return Math.round(plasmid * 1.05);
+            return Math.round(value * 1.05);
         case 2:
-            return Math.round(plasmid * 1.10);
+            return Math.round(value * 1.10);
         case 3:
-            return Math.round(plasmid * 1.20);
+            return Math.round(value * 1.20);
         case 4:
-            return Math.round(plasmid * 1.35);
+            return Math.round(value * 1.35);
         default:
-            return plasmid;
+            return value;
     }
 }
 

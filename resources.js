@@ -116,8 +116,12 @@ if (global.resource[races[global.race.species].name]){
 // Sets up resource definitions
 export function defineResources(){
     if (global.race.species === 'protoplasm'){
-        loadResource('RNA',100,1,false);
-        loadResource('DNA',100,1,false);
+        let base = 100;
+        if (global.stats.achieve['creator'] && global.stats.achieve['creator'] > 1){
+            base += 50 * (global.stats.achieve['creator'] - 1);
+        }
+        loadResource('RNA',base,1,false);
+        loadResource('DNA',base,1,false);
     }
     else {
         initMarket();
@@ -144,10 +148,10 @@ export function defineResources(){
         loadResource('Iridium',0,1,true,true);
         //loadResource('Deuterium',0,1,true,false);
         loadResource('Helium_3',0,1,true,false);
-        loadResource('Neutronium',0,1,false,false,'special');
-        loadResource('Elerium',1,1,false,false,'special');
-        loadResource('Nano_Tube',0,1,false,false,'special');
-        loadResource('Genes',-2,0,false,false,'special');
+        loadResource('Neutronium',0,1,false,false,'advanced');
+        loadResource('Elerium',1,1,false,false,'advanced');
+        loadResource('Nano_Tube',0,1,false,false,'advanced');
+        loadResource('Genes',-2,0,false,false,'advanced');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         //loadResource('Bronze',-1,0,false,false,'danger');
