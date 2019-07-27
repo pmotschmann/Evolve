@@ -321,7 +321,7 @@ if (global.race.species === 'protoplasm'){
             }
         }
 
-        if (global.race.seeded){
+        if (global.race.seeded || global.stats.achieve['creator']){
             var race_options = ['human','orc','elven','troll','orge','cyclops','kobold','goblin','gnome','cath','wolven','centaur','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','mantis','scorpid','antid','entish','cacti','sharkin','octigoran'];
             for (var i = 0; i < race_options.length; i++){
                 if (global.evolution[race_options[i]] && global.evolution[race_options[i]].count == 0){
@@ -502,6 +502,10 @@ function fastLoop(){
             global.evolution['dna'] = 1;
             addAction('evolution','dna');
             global.resource.DNA.display = true;
+            if (global.stats.achieve['creator'] && global.stats.achieve['creator'] > 1){
+                modRes('RNA', global.resource.RNA.max);
+                modRes('DNA', global.resource.RNA.max);
+            }
         }
         else if (global['resource']['RNA'].amount >= 10 && !global.evolution['membrane']){
             global.evolution['membrane'] = { count: 0 };
@@ -2134,9 +2138,13 @@ function fastLoop(){
 
 function midLoop(){
     if (global.race.species === 'protoplasm'){
+        let base = 100;
+        if (global.stats.achieve['creator'] && global.stats.achieve['creator'] > 1){
+            base += 50 * (global.stats.achieve['creator'] - 1);
+        }
         var caps = {
-            RNA: 100,
-            DNA: 100
+            RNA: base,
+            DNA: base
         };
         if (global.evolution['membrane']){
             let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
@@ -2886,6 +2894,9 @@ function midLoop(){
                     global.race.mutation++;
                     let trait = randomMinorTrait();
                     let gene = global.genes['synthesis'] ? global.race.mutation * (global.genes['synthesis'] + 1) : global.race.mutation;
+                    if (global.stats.achieve['mass_extinction']){
+                        gene *= global.stats.achieve['mass_extinction'] + 1;
+                    }
                     messageQueue(loc('gene_therapy',[trait,gene]),'success');
                     global.stats.plasmid++;
                     global.race.Plasmid.count++;

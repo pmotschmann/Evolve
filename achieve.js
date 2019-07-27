@@ -490,6 +490,26 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_blackhole",[bonus])}</span></div>`);
     }
 
+    if (global.stats.achieve['mass_extinction']){
+        unlocked++;
+        let bonus = global.stats.achieve['mass_extinction'] + 1
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction",[bonus])}</span></div>`);
+    }
+
+    if (global.stats.achieve['creator']){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator")}</span></div>`);
+        if (global.stats.achieve['creator'] > 1){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator2")}</span></div>`);
+        }
+    }
+
+    if (global.stats.achieve['explorer']){
+        unlocked++;
+        let bonus = global.stats.achieve['explorer'] + 1
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_explorer",[bonus])}</span></div>`);
+    }
+
     if (global.genes['creep']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_creep",[global.genes.creep])}</span></div>`);

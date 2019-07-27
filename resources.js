@@ -116,8 +116,12 @@ if (global.resource[races[global.race.species].name]){
 // Sets up resource definitions
 export function defineResources(){
     if (global.race.species === 'protoplasm'){
-        loadResource('RNA',100,1,false);
-        loadResource('DNA',100,1,false);
+        let base = 100;
+        if (global.stats.achieve['creator'] && global.stats.achieve['creator'] > 1){
+            base += 50 * (global.stats.achieve['creator'] - 1);
+        }
+        loadResource('RNA',base,1,false);
+        loadResource('DNA',base,1,false);
     }
     else {
         initMarket();
