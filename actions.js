@@ -7797,6 +7797,57 @@ export const actions = {
                 return false;
             }
         },
+        tachyon: {
+            id: 'tech-tachyon',
+            title: loc('tech_tachyon'),
+            desc: loc('tech_tachyon'),
+            reqs: { wsc: 1 },
+            grant: ['ftl',1],
+            cost: {
+                Knowledge(){ return 435000; }
+            },
+            effect: loc('tech_tachyon_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        warp_drive: {
+            id: 'tech-warp_drive',
+            title: loc('tech_warp_drive'),
+            desc: loc('tech_warp_drive'),
+            reqs: { ftl: 1, locked: 1 },
+            grant: ['ftl',2],
+            cost: {
+                Knowledge(){ return 450000; }
+            },
+            effect: loc('tech_warp_drive_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        wormholes: {
+            id: 'tech-wormholes',
+            title: loc('tech_wormholes'),
+            desc: loc('tech_wormholes'),
+            reqs: { ftl: 1, gravity: 1, locked: 1 },
+            grant: ['stargate',1],
+            cost: {
+                Knowledge(){ return 485000; }
+            },
+            effect: loc('tech_wormholes_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),

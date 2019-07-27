@@ -2106,10 +2106,14 @@ function fastLoop(){
         }
 
         if (p_on['world_controller'] && p_on['world_controller'] > 0){
-            global.tech['wsc'] = 1;
+            if (global.tech['wsc'] === 0){
+                global.tech['wsc'] = 1;
+                drawTech();
+            }
         }
-        else {
+        else if (global.tech['wsc'] !== 0){
             global.tech['wsc'] = 0;
+            drawTech();
         }
     }
     

@@ -1055,6 +1055,8 @@
   "tech_genesis_ship_effect": "Design the genesis ship which will be used to bioseed a far away planet.",
   "tech_genetic_decay": "Gene Therapy",
   "tech_genetic_decay_effect": "Research the genetic decay problem and try to find a solution.",
+  "tech_tachyon": "Tachyon Particles",
+  "tech_tachyon_effect": "Tachyon particles are a fascinating discovery of particles that move faster then light, this could revolutionize space travel.",
   "space": "Space",
   "star_dock_probe": "Space Probe",
   "star_dock_probe_desc": "Interstellar Probe",
