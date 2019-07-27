@@ -7818,7 +7818,7 @@ export const actions = {
             id: 'tech-warp_drive',
             title: loc('tech_warp_drive'),
             desc: loc('tech_warp_drive'),
-            reqs: { ftl: 1, locked: 1 },
+            reqs: { ftl: 1 },
             grant: ['ftl',2],
             cost: {
                 Knowledge(){ return 450000; }
@@ -7841,6 +7841,40 @@ export const actions = {
                 Knowledge(){ return 485000; }
             },
             effect: loc('tech_wormholes_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        portal: {
+            id: 'tech-portal',
+            title: loc('tech_portal'),
+            desc: loc('tech_portal_desc'),
+            reqs: { wsc: 1 },
+            grant: ['portal',1],
+            cost: {
+                Knowledge(){ return 500000; }
+            },
+            effect: loc('tech_portal_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        fortifications: {
+            id: 'tech-fort',
+            title: loc('tech_fort'),
+            desc: loc('tech_fort_desc'),
+            reqs: { portal: 1 },
+            grant: ['portal',2],
+            cost: {
+                Knowledge(){ return 550000; }
+            },
+            effect: loc('tech_fort_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
