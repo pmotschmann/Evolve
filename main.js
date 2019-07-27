@@ -2893,7 +2893,7 @@ function midLoop(){
                 else {
                     global.race.mutation++;
                     let trait = randomMinorTrait();
-                    let gene = global.genes['synthesis'] ? global.race.mutation * (global.genes['synthesis'] + 1) : global.race.mutation;
+                    let gene = global.genes['synthesis'] ? (2 ** (global.race.mutation - 1)) * (global.genes['synthesis'] + 1) : global.race.mutation;
                     if (global.stats.achieve['mass_extinction']){
                         gene *= global.stats.achieve['mass_extinction'] + 1;
                     }
