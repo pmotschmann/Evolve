@@ -1,7 +1,9 @@
+#### 0.?.?? - 7/??/2019 ####
+Slow and Hyper traits can now combine<br>
+
 #### 0.4.35 - 7/25/2019 ####
 Centaur can now pick Fanaticism<br>
 Challenge multiplier is now applied to phage gain<br>
-Advanced resources are now a different color from permanent resources<br>
 
 #### 0.4.34 - 7/23/2019 ####
 Fixed SR descriptions of buildings that lack affordability<br>

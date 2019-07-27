@@ -357,9 +357,14 @@ q_check();
 
 var fed = true;
 
-var main_timer = global.race['slow'] ? 275 : (global.race['hyper'] ? 240 : 250);
-var mid_timer = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
-var long_timer = global.race['slow'] ? 5500 : (global.race['hyper'] ? 4750 : 5000);
+var main_timer = global.race['slow'] ? 275 : 250;
+var mid_timer = global.race['slow'] ? 1100 : 1000;
+var long_timer = global.race['slow'] ? 5500 : 5000;
+if (global.race['hyper']){
+    main_timer = Math.floor(main_timer * 0.95);
+    mid_timer = Math.floor(mid_timer * 0.95);
+    long_timer = Math.floor(long_timer * 0.95);
+}
 
 if (window.Worker){
     var worker = new Worker("evolve.js");
