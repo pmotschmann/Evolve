@@ -91,6 +91,11 @@ var achievements = {
         desc: loc("achieve_seeder_desc"),
         flair: loc("achieve_seeder_flair")
     },
+    explorer: {
+        name: loc("achieve_biome_explorer_name"),
+        desc: loc("achieve_biome_explorer_desc"),
+        flair: loc("achieve_biome_explorer_flair")
+    },
     biome_grassland: {
         name: loc("achieve_biome_grassland_name"),
         desc: loc("achieve_biome_grassland_desc"),
@@ -125,6 +130,11 @@ var achievements = {
         name: loc("achieve_biome_hellscape_name"),
         desc: loc("achieve_biome_hellscape_desc"),
         flair: loc("achieve_biome_hellscape_flair")
+    },
+    creator: {
+        name: loc("achieve_creator_name"),
+        desc: loc("achieve_creator_desc"),
+        flair: loc("achieve_creator_flair")
     },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
@@ -425,6 +435,34 @@ export function checkAchievements(){
         }
         if (total >= 25){
             unlockAchieve('mass_extinction');
+        }
+    }
+    if (!global.stats.achieve['creator'] || global.stats.achieve['creator'] < a_level){
+        let total = 0;
+        const keys = Object.keys(achievements)
+        for (const key of keys) {
+            if (key.includes('genus_')){
+                if (global.stats.achieve[key] && global.stats.achieve[key] >= a_level){
+                    total++
+                }
+            }
+        }
+        if (total >= 9){
+            unlockAchieve('creator');
+        }
+    }
+    if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'] < a_level){
+        let total = 0;
+        const keys = Object.keys(achievements)
+        for (const key of keys) {
+            if (key.includes('biome_')){
+                if (global.stats.achieve[key] && global.stats.achieve[key] >= a_level){
+                    total++
+                }
+            }
+        }
+        if (total >= 6){
+            unlockAchieve('explorer');
         }
     }
     if (global.tech['supercollider'] && global.tech['supercollider'] >= 99){
