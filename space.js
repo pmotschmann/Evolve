@@ -1474,6 +1474,55 @@ const spaceProjects = {
     }
 };
 
+const interstellarProjects = {
+    spc_alpha: {
+        info: {
+            name: loc('interstellar_alpha_name'),
+            desc(){ return global.tech['alpha'] ? loc('interstellar_alpha_desc2',[races[global.race.species].home]) : loc('interstellar_alpha_desc1',[races[global.race.species].home]); },
+        },
+        alpha_mission: {
+            id: 'interstellar-alpha_mission',
+            title: loc('interstellar_alpha_mission'),
+            desc: loc('interstellar_alpha_mission'),
+            reqs: { ftl: 2 },
+            grant: ['alpha',1],
+            cost: { 
+                Helium_3(){ return 40000; }
+            },
+            effect: loc('interstellar_alpha_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_proxima: {
+        info: {
+            name: loc('interstellar_proxima_name'),
+            desc(){ return global.tech['proxima'] ? loc('interstellar_proxima_desc2') : loc('interstellar_proxima_desc1'); },
+        },
+        alpha_mission: {
+            id: 'interstellar-alpha_mission',
+            title: loc('interstellar_proxima_mission'),
+            desc: loc('interstellar_proxima_mission'),
+            reqs: { alpha: 1 },
+            grant: ['proxima',1],
+            cost: { 
+                Helium_3(){ return 45000; }
+            },
+            effect: loc('interstellar_proxima_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    }
+};
+
 const structDefinitions = {
     satellite: { count: 0 },
     propellant_depot: { count: 0 },
@@ -1526,14 +1575,18 @@ export function spaceTech(){
     return spaceProjects;
 }
 
-function checkRequirements(region,action){
+export function interstellarTech(){
+    return interstellarProjects;
+}
+
+function checkRequirements(action_set,region,action){
     var isMet = true;
-    Object.keys(spaceProjects[region][action].reqs).forEach(function (req){
-        if (!global.tech[req] || global.tech[req] < spaceProjects[region][action].reqs[req]){
+    Object.keys(action_set[region][action].reqs).forEach(function (req){
+        if (!global.tech[req] || global.tech[req] < action_set[region][action].reqs[req]){
             isMet = false;
         }
     });
-    if (isMet && spaceProjects[region][action].grant && (global.tech[spaceProjects[region][action].grant[0]] && global.tech[spaceProjects[region][action].grant[0]] >= spaceProjects[region][action].grant[1])){
+    if (isMet && action_set[region][action].grant && (global.tech[action_set[region][action].grant[0]] && global.tech[action_set[region][action].grant[0]] >= action_set[region][action].grant[1])){
         isMet = false;
     }
     return isMet;
@@ -1542,7 +1595,7 @@ function checkRequirements(region,action){
 export function space(){
     let parent = $('#space');
     parent.empty();
-    parent.append($(`<h2 class="is-sr-only">${loc('space')}</h2>`));
+    parent.append($(`<h2 class="is-sr-only">${loc('tab_space')}</h2>`));
     if (!global.settings.showSpace){
         return false;
     }
@@ -1580,9 +1633,59 @@ export function space(){
             });
 
             Object.keys(spaceProjects[region]).forEach(function (tech){
-                if (tech !== 'info' && checkRequirements(region,tech)){
+                if (tech !== 'info' && checkRequirements(spaceProjects,region,tech)){
                     let c_action = spaceProjects[region][tech];
                     setAction(c_action,'space',tech);
+                }
+            });
+        }
+    });
+}
+
+export function deepSpace(){
+    let parent = $('#interstellar');
+    parent.empty();
+    parent.append($(`<h2 class="is-sr-only">${loc('tab_interstellar')}</h2>`));
+    if (!global.settings.showDeep){
+        return false;
+    }
+
+    Object.keys(interstellarProjects).forEach(function (region){
+        let show = region.replace("spc_","");
+        if (global.settings.space[`${show}`]){
+            let name = typeof interstellarProjects[region].info.name === 'string' ? interstellarProjects[region].info.name : interstellarProjects[region].info.name();
+            let desc = typeof interstellarProjects[region].info.desc === 'string' ? interstellarProjects[region].info.desc : interstellarProjects[region].info.desc();
+            
+            if (interstellarProjects[region].info['support']){
+                let support = interstellarProjects[region].info['support'];
+                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
+                vues[`sr${region}`] = new Vue({
+                    data: global.space[support]
+                });
+                vues[`sr${region}`].$mount(`#sr${region}`);
+            }
+            else {
+                parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
+            }
+            
+            $(`#${region} h3.name`).on('mouseover',function(){
+                var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);
+                $('#main').append(popper);
+                
+                popper.append($(`<div>${desc}</div>`));
+                popper.show();
+                poppers[region] = new Popper($(`#${region} h3.name`),popper);
+            });
+            $(`#${region} h3.name`).on('mouseout',function(){
+                $(`#pop${region}`).hide();
+                poppers[region].destroy();
+                $(`#pop${region}`).remove();
+            });
+
+            Object.keys(interstellarProjects[region]).forEach(function (tech){
+                if (tech !== 'info' && checkRequirements(interstellarProjects,region,tech)){
+                    let c_action = interstellarProjects[region][tech];
+                    setAction(c_action,'interstellar',tech);
                 }
             });
         }

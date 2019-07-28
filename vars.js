@@ -6,6 +6,7 @@ export var global = {
     tech: {},
     city: {},
     space: {},
+    interstellar: {},
     civic: { free: 0 },
     race: {},
     genes: {},
@@ -246,6 +247,14 @@ if (!global.settings['space']){
     }
 }
 
+if (!global.settings.space['alpha']){
+    global.settings.space['alpha'] = false;
+    global.settings.space['proxima'] = false;
+    global.settings.space['nebula'] = false;
+    global.settings.space['neutron'] = false;
+    global.settings.space['blackhole'] = false;
+}
+
 if (!global.settings['showDeep']){
     global.settings['showDeep'] = false;
 }
@@ -260,6 +269,10 @@ if (!global['space']){
 
 if (!global['starDock']){
     global['starDock'] = {};
+}
+
+if (!global['interstellar']){
+    global['interstellar'] = {};
 }
 
 if (!global.settings['showAchieve']){

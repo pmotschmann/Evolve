@@ -5,7 +5,7 @@ import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison, buildGarrison, armyRating, challenge_multiplier } from './civics.js';
-import { spaceTech, space } from './space.js';
+import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
 import { arpa, gainGene } from './arpa.js';
 
 export const actions = {
@@ -3158,7 +3158,7 @@ export const actions = {
                 Iridium(){ return costMultiplier('mass_driver', 2200, 1.32); }
             },
             effect(){
-                return loc('city_mass_driver_effect',[5,actions.city.mass_driver.powered]);
+                return loc('city_mass_driver_effect',[5,actions.city.mass_driver.powered,races[global.race.species].name]);
             },
             powered: 5,
             action(){
@@ -7827,6 +7827,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.settings.showDeep = true;
+                    global.settings.space.alpha = true;
                     return true;
                 }
                 return false;
@@ -7887,6 +7888,7 @@ export const actions = {
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
+    interstellar: interstellarTech(),
     starDock: {
         probes: {
             id: 'spcdock-probes',
@@ -8062,6 +8064,7 @@ function gainTech(action){
     drawCity();
     drawTech();
     space();
+    deepSpace();
 }
 
 export function drawCity(){
@@ -8285,12 +8288,14 @@ export function setAction(c_action,action,type,old){
                                     drawCity();
                                     drawTech();
                                     space();
+                                    deepSpace();
                                 }
                                 else if (c_action['refresh']){
                                     removeAction(c_action.id);
                                     drawCity();
                                     drawTech();
                                     space();
+                                    deepSpace();
                                 }
                                 updateDesc(c_action,action,type);
                                 break;
