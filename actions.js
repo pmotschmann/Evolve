@@ -9061,45 +9061,45 @@ function factoryModal(modal){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>`);
     modal.append(fuel);
 
-    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" position="is-left" size="is-small" multilined animated><span>${loc('modal_factory_lux')}</span></b-tooltip></div>`);
+    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" :aria-label="buildLabel('Lux') + ariaProd('Lux')" position="is-left" size="is-small" multilined animated><span>${loc('modal_factory_lux')}</span></b-tooltip></div>`);
     modal.append(lux);
 
     let luxCount = $(`<span class="current">{{ Lux }}</span>`);
-    let subLux = $(`<span class="sub" @click="subItem('Lux')">&laquo;</span>`);
-    let addLux = $(`<span class="add" @click="addItem('Lux')">&raquo;</span>`);
+    let subLux = $(`<span class="sub" @click="subItem('Lux')" role="button" aria-label="Decrease Lux production">&laquo;</span>`);
+    let addLux = $(`<span class="add" @click="addItem('Lux')" role="button" aria-label="Increase Lux production">&raquo;</span>`);
     lux.append(subLux);
     lux.append(luxCount);
     lux.append(addLux);
 
-    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Alloy_name')}</span></b-tooltip></div>`);
+    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" :aria-label="buildLabel('Alloy') + ariaProd('Alloy')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Alloy_name')}</span></b-tooltip></div>`);
     modal.append(alloy);
 
     let alloyCount = $(`<span class="current">{{ Alloy }}</span>`);
-    let subAlloy = $(`<span class="sub" @click="subItem('Alloy')">&laquo;</span>`);
-    let addAlloy = $(`<span class="add" @click="addItem('Alloy')">&raquo;</span>`);
+    let subAlloy = $(`<span class="sub" @click="subItem('Alloy')" role="button" aria-label="Decrease Alloy production">&laquo;</span>`);
+    let addAlloy = $(`<span class="add" @click="addItem('Alloy')" role="button" aria-label="Increase Alloy production">&raquo;</span>`);
     alloy.append(subAlloy);
     alloy.append(alloyCount);
     alloy.append(addAlloy);
 
     if (global.tech['polymer']){
-        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Polymer_name')}</span></b-tooltip></div>`);
+        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" :aria-label="buildLabel('Polymer') + ariaProd('Polymer')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Polymer_name')}</span></b-tooltip></div>`);
         modal.append(polymer);
 
         let polymerCount = $(`<span class="current">{{ Polymer }}</span>`);
-        let subPolymer= $(`<span class="sub" @click="subItem('Polymer')">&laquo;</span>`);
-        let addPolymer = $(`<span class="add" @click="addItem('Polymer')">&raquo;</span>`);
+        let subPolymer= $(`<span class="sub" @click="subItem('Polymer')" role="button" aria-label="Decrease Polymer production">&laquo;</span>`);
+        let addPolymer = $(`<span class="add" @click="addItem('Polymer')" role="button" aria-label="Increase Polymer production">&raquo;</span>`);
         polymer.append(subPolymer);
         polymer.append(polymerCount);
         polymer.append(addPolymer);
     }
 
     if (global.tech['nano']){
-        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Nano_Tube_name')}</span></b-tooltip></div>`);
+        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" :aria-label="buildLabel('Nano') + ariaProd('Nano')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Nano_Tube_name')}</span></b-tooltip></div>`);
         modal.append(nano);
 
         let nanoCount = $(`<span class="current">{{ Nano }}</span>`);
-        let subNano= $(`<span class="sub" @click="subItem('Nano')">&laquo;</span>`);
-        let addNano = $(`<span class="add" @click="addItem('Nano')">&raquo;</span>`);
+        let subNano= $(`<span class="sub" @click="subItem('Nano')" role="button" aria-label="Decrease Nanotube production">&laquo;</span>`);
+        let addNano = $(`<span class="add" @click="addItem('Nano')" role="button" aria-label="Increase Nanotube production">&raquo;</span>`);
         nano.append(subNano);
         nano.append(nanoCount);
         nano.append(addNano);
@@ -9157,7 +9157,10 @@ function factoryModal(modal){
                         let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
                         return loc('modal_factory_nano_label',[coal,loc('resource_Coal_name'),neutronium,loc('resource_Neutronium_name'),loc('resource_Nano_Tube_name')]);
                 }
-            }
+            },
+            ariaProd(prod){
+                return `. ${global.city.factory[prod]} factories producing ${prod}.`;
+            },
         },
         filters: {
             on(){
