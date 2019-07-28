@@ -94,6 +94,8 @@ let settings = {
                     else {
                         return loc('tab_city8');
                     }
+                case 'local_space':
+                    return loc('sol_system',[races[global.race.species].name]);
                 case 'old':
                     return loc('tab_old_res');
                 case 'new':

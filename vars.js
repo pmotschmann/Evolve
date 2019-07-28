@@ -246,6 +246,14 @@ if (!global.settings['space']){
     }
 }
 
+if (!global.settings['showDeep']){
+    global.settings['showDeep'] = false;
+}
+
+if (!global.settings['showPortal']){
+    global.settings['showPortal'] = false;
+}
+
 if (!global['space']){
     global['space'] = {};
 }
@@ -259,6 +267,9 @@ if (!global.settings['showAchieve']){
 }
 if (!global.settings['resTabs']){
     global.settings['resTabs'] = 0;
+}
+if (!global.settings['spaceTabs']){
+    global.settings['spaceTabs'] = 0;
 }
 if (!global.settings['locale']){
     global.settings['locale'] = 'en-us';
@@ -739,6 +750,7 @@ window.soft_reset = function reset(){
     global.settings.space.blackhole = false;
     global.settings.arpa = false;
     global.settings.resTabs = 0;
+    global.settings.spaceTabs = 0;
     global.settings.disableReset = false;
     global.arpa = {};
     global.lastMsg = false;

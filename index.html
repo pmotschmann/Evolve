@@ -64,15 +64,30 @@
                                 <span aria-hidden="true">{{ 'city' | label }}</span>
                             </template>
                         </b-tab-item>
-                        <b-tab-item id="space" :visible="showSpace">
+                        <b-tab-item :visible="showSpace">
                             <template slot="header">
                                 {{ 'tab_space' | label }}
                             </template>
-                            <!--<b-tabs class="spaceTabs" v-model="resTabs" :animated="animated">
-                                <b-tab-item id="space" label="Space"><h2 class="is-sr-only">Space</h2></b-tab-item>
-                                <b-tab-item id="deepSpace" label="Completed"><h2 class="is-sr-only">Deep Space</h2></b-tab-item>
-                                <b-tab-item id="hell" label="Completed"><h2 class="is-sr-only">Hell</h2></b-tab-item>
-                            </b-tabs>-->
+                            <b-tabs class="resTabs" v-model="spaceTabs" :animated="animated">
+                                <b-tab-item id="space" :visible="showSpace">
+                                    <template slot="header">
+                                        <h2 class="is-sr-only">{{ 'local_space' | label }}</h2>
+                                        <span aria-hidden="true">{{ 'local_space' | label }}</span>
+                                    </template>
+                                </b-tab-item>
+                                <b-tab-item id="deepSpace" :visible="showDeep">
+                                    <template slot="header">
+                                        <h2 class="is-sr-only">{{ 'tab_deep_space' | label }}</h2>
+                                        <span aria-hidden="true">{{ 'tab_deep_space' | label }}</span>
+                                    </template>
+                                </b-tab-item>
+                                <b-tab-item id="hellDim" :visible="showPortal">
+                                    <template slot="header">
+                                        <h2 class="is-sr-only">{{ 'tab_portal' | label }}</h2>
+                                        <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
+                                    </template>
+                                </b-tab-item>
+                            </b-tabs>
                         </b-tab-item>
                         <b-tab-item id="civic" :visible="showCivic" class="columns">
                             <template slot="header">
