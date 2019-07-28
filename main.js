@@ -66,6 +66,55 @@ let settings = {
             return name.replace(/(?:^|\s)\w/g, function(match) {
                 return match.toUpperCase();
             });
+        },
+        label(lbl){
+            switch (lbl){
+                case 'city':
+                    if (global.resource[global.race.species].amount <= 5){
+                        return loc('tab_city1');
+                    }
+                    else if (global.resource[global.race.species].amount <= 20){
+                        return loc('tab_city2');
+                    }
+                    else if (global.resource[global.race.species].amount <= 75){
+                        return loc('tab_city3');
+                    }
+                    else if (global.resource[global.race.species].amount <= 250){
+                        return loc('tab_city4');
+                    }
+                    else if (global.resource[global.race.species].amount <= 600){
+                        return loc('tab_city5');
+                    }
+                    else if (global.resource[global.race.species].amount <= 1200){
+                        return loc('tab_city6');
+                    }
+                    else if (global.resource[global.race.species].amount <= 2500){
+                        return loc('tab_city7');
+                    }
+                    else {
+                        return loc('tab_city8');
+                    }
+                case 'space':
+                    return loc('tab_space');
+                case 'civics':
+                    return loc('tab_civics');
+                case 'research':
+                    return loc('tab_research');
+                case 'market':
+                    return loc('tab_market');
+                case 'stats':
+                    return loc('tab_stats');
+                case 'settings':
+                    return loc('tab_settings');
+                case 'old':
+                    return loc('tab_old_res');
+                case 'new':
+                    return loc('tab_new_res');
+                case 'old_sr':
+                    return loc('tab_old_sr_res');
+                case 'new_sr':
+                    return loc('tab_new_sr_res');
+            }
         }
     }
 }
@@ -354,6 +403,8 @@ else {
 
 setupStats();
 q_check();
+
+$('#lbl_city').html('Village');
 
 var fed = true;
 

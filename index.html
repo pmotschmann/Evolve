@@ -58,17 +58,52 @@
                     <h2 class="is-sr-only">Tab Navigation</h2>
                     <b-tabs v-model="civTabs" :animated="animated">
                         <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
-                        <b-tab-item id="city" :visible="showCity" label="Village"><h2 class="is-sr-only">City</h2></b-tab-item>
-                        <b-tab-item id="space" :visible="showSpace" label="Space"></b-tab-item>
-                        <b-tab-item id="civic" :visible="showCivic" label="Civics" class="columns"></b-tab-item>
+                        <b-tab-item id="city" :visible="showCity">
+                            <template slot="header">
+                                <h2 class="is-sr-only">{{ 'city' | label }}</h2>
+                                <span aria-hidden="true">{{ 'city' | label }}</span>
+                            </template>
+                        </b-tab-item>
+                        <b-tab-item id="space" :visible="showSpace">
+                            <template slot="header">
+                                {{ 'space' | label }}
+                            </template>
+                            <!--<b-tabs class="spaceTabs" v-model="resTabs" :animated="animated">
+                                <b-tab-item id="space" label="Space"><h2 class="is-sr-only">Space</h2></b-tab-item>
+                                <b-tab-item id="deepSpace" label="Completed"><h2 class="is-sr-only">Deep Space</h2></b-tab-item>
+                                <b-tab-item id="hell" label="Completed"><h2 class="is-sr-only">Hell</h2></b-tab-item>
+                            </b-tabs>-->
+                        </b-tab-item>
+                        <b-tab-item id="civic" :visible="showCivic" class="columns">
+                            <template slot="header">
+                                {{ 'civics' | label }}
+                            </template>
+                        </b-tab-item>
                         <b-tab-item id="industry" :visible="showIndustry" label="Industry" class="columns"></b-tab-item>
-                        <b-tab-item id="research" :visible="showResearch" label="Research">
+                        <b-tab-item id="research" :visible="showResearch">
+                            <template slot="header">
+                                {{ 'research' | label }}
+                            </template>
                             <b-tabs class="resTabs" v-model="resTabs" :animated="animated">
-                                <b-tab-item id="tech" label="New"><h2 class="is-sr-only">New Research</h2></b-tab-item>
-                                <b-tab-item id="oldTech" label="Completed"><h2 class="is-sr-only">Completed Research</h2></b-tab-item>
+                                <b-tab-item id="tech">
+                                    <template slot="header">
+                                        <h2 class="is-sr-only">{{ 'new_sr' | label }}</h2>
+                                        <span aria-hidden="true">{{ 'new' | label }}</span>
+                                    </template>
+                                </b-tab-item>
+                                <b-tab-item id="oldTech">
+                                    <template slot="header">
+                                        <h2 class="is-sr-only">{{ 'old_sr' | label }}</h2>
+                                        <span aria-hidden="true">{{ 'old' | label }}</span>
+                                    </template>
+                                </b-tab-item>
                             </b-tabs>
                         </b-tab-item>
-                        <b-tab-item id="market" :visible="showMarket" label="Market"></b-tab-item>
+                        <b-tab-item id="market" :visible="showMarket">
+                            <template slot="header">
+                                {{ 'market' | label }}
+                            </template>
+                        </b-tab-item>
                         <b-tab-item id="genetics" :visible="showGenetics" label="A.R.P.A.">
                             <div id="apra" class="arpa">
                                 <b-tabs v-model="arpa.arpaTabs" :animated="animated">
@@ -78,8 +113,15 @@
                                 </b-tabs>
                             </div>
                         </b-tab-item>
-                        <b-tab-item id="achieve" :visible="showAchieve" label="Stats"></b-tab-item>
-                        <b-tab-item id="settings" label="Settings">
+                        <b-tab-item id="achieve" :visible="showAchieve">
+                            <template slot="header">
+                                {{ 'stats' | label }}
+                            </template>
+                        </b-tab-item>
+                        <b-tab-item id="settings">
+                            <template slot="header">
+                                {{ 'settings' | label }}
+                            </template>
                             <div class="theme">
                                 <span>Theme </span>
                                 <b-dropdown hoverable>
