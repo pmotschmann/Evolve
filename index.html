@@ -66,7 +66,7 @@
                         </b-tab-item>
                         <b-tab-item id="space" :visible="showSpace">
                             <template slot="header">
-                                {{ 'space' | label }}
+                                {{ 'tab_space' | label }}
                             </template>
                             <!--<b-tabs class="spaceTabs" v-model="resTabs" :animated="animated">
                                 <b-tab-item id="space" label="Space"><h2 class="is-sr-only">Space</h2></b-tab-item>
@@ -76,13 +76,13 @@
                         </b-tab-item>
                         <b-tab-item id="civic" :visible="showCivic" class="columns">
                             <template slot="header">
-                                {{ 'civics' | label }}
+                                {{ 'tab_civics' | label }}
                             </template>
                         </b-tab-item>
                         <b-tab-item id="industry" :visible="showIndustry" label="Industry" class="columns"></b-tab-item>
                         <b-tab-item id="research" :visible="showResearch">
                             <template slot="header">
-                                {{ 'research' | label }}
+                                {{ 'tab_research' | label }}
                             </template>
                             <b-tabs class="resTabs" v-model="resTabs" :animated="animated">
                                 <b-tab-item id="tech">
@@ -101,7 +101,7 @@
                         </b-tab-item>
                         <b-tab-item id="market" :visible="showMarket">
                             <template slot="header">
-                                {{ 'market' | label }}
+                                {{ 'tab_market' | label }}
                             </template>
                         </b-tab-item>
                         <b-tab-item id="genetics" :visible="showGenetics" label="A.R.P.A.">
@@ -115,24 +115,24 @@
                         </b-tab-item>
                         <b-tab-item id="achieve" :visible="showAchieve">
                             <template slot="header">
-                                {{ 'stats' | label }}
+                                {{ 'tab_stats' | label }}
                             </template>
                         </b-tab-item>
                         <b-tab-item id="settings">
                             <template slot="header">
-                                {{ 'settings' | label }}
+                                {{ 'tab_settings' | label }}
                             </template>
                             <div class="theme">
-                                <span>Theme </span>
+                                <span>{{ 'theme' | label }} </span>
                                 <b-dropdown hoverable>
                                     <button class="button is-primary" slot="trigger">
                                         <span>{{ theme | namecase }}</span>
                                         <i class="fas fa-sort-down"></i>
                                     </button>
-                                    <b-dropdown-item v-on:click="dark">Dark</b-dropdown-item>
-                                    <b-dropdown-item v-on:click="light">Light</b-dropdown-item>
-                                    <b-dropdown-item v-on:click="night">Night</b-dropdown-item>
-                                    <b-dropdown-item v-on:click="redgreen">Red Green CB</b-dropdown-item>
+                                    <b-dropdown-item v-on:click="dark">{{ 'theme_dark' | label }}</b-dropdown-item>
+                                    <b-dropdown-item v-on:click="light">{{ 'theme_light' | label }}</b-dropdown-item>
+                                    <b-dropdown-item v-on:click="night">{{ 'theme_night' | label }}</b-dropdown-item>
+                                    <b-dropdown-item v-on:click="redgreen">{{ 'theme_redgreen' | label }}</b-dropdown-item>
                                 </b-dropdown>
                             </div>
                             <div id="localization" class="localization"></div>
@@ -141,20 +141,20 @@
                                 <b-field label="Import/Export Save">
                                     <b-input id="importExport" type="textarea"></b-input>
                                 </b-field>
-                                <button class="button" onclick="importGame()">Import Game</button>
-                                <button class="button" onclick="exportGame()">Export Game</button>
+                                <button class="button" onclick="importGame()">{{ 'import' | label }}</button>
+                                <button class="button" onclick="exportGame()">{{ 'export' | label }}</button>
                             </div>
                             <div class="reset">
                                 <b-collapse :open="false">
-                                    <b-switch v-model="disableReset" slot="trigger">Enable Reset Buttons</b-switch>
+                                    <b-switch v-model="disableReset" slot="trigger">{{ 'enable_reset' | label }}</b-switch>
                                     <div class="notification">
                                         <div class="content">
                                             <h4 class="has-text-danger">
-                                                Warning: This completely resets all your progress and can not be undone
+                                                {{ 'reset_warn' | label }}
                                             </h4>
                                             <p>
-                                                <button class="button" :disabled="!disableReset" @click="soft_reset()"><b-tooltip :label="soft()" position="is-top" size="is-small" multilined animated>Soft Reset Game</b-tooltip></button>
-                                                <button class="button" :disabled="!disableReset" @click="reset()"><b-tooltip :label="hard()" position="is-top" size="is-small" multilined animated>Hard Reset Game</b-tooltip></button>
+                                                <button class="button" :disabled="!disableReset" @click="soft_reset()"><b-tooltip :label="soft()" position="is-top" size="is-small" multilined animated>{{ 'reset_soft' | label }}</b-tooltip></button>
+                                                <button class="button" :disabled="!disableReset" @click="reset()"><b-tooltip :label="hard()" position="is-top" size="is-small" multilined animated>{{ 'reset_hard' | label }}</b-tooltip></button>
                                             </p>
                                         </div>
                                     </div>

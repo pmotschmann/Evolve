@@ -94,18 +94,6 @@ let settings = {
                     else {
                         return loc('tab_city8');
                     }
-                case 'space':
-                    return loc('tab_space');
-                case 'civics':
-                    return loc('tab_civics');
-                case 'research':
-                    return loc('tab_research');
-                case 'market':
-                    return loc('tab_market');
-                case 'stats':
-                    return loc('tab_stats');
-                case 'settings':
-                    return loc('tab_settings');
                 case 'old':
                     return loc('tab_old_res');
                 case 'new':
@@ -114,6 +102,8 @@ let settings = {
                     return loc('tab_old_sr_res');
                 case 'new_sr':
                     return loc('tab_new_sr_res');
+                default:
+                    return loc(lbl);
             }
         }
     }
