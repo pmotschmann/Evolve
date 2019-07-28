@@ -541,8 +541,8 @@ function fastLoop(){
             global.city.morale.season = 5;
         }
         else if (global.city.calendar.season === 3){
-            morale -= global.race['leathery'] ? 4 : 5; // Winter
-            global.city.morale.season = global.race['leathery'] ? -4 : -5;
+            morale -= global.race['leathery'] ? 2 : 5; // Winter
+            global.city.morale.season = global.race['leathery'] ? -2 : -5;
         }
         else {
             global.city.morale.season = 0;
@@ -577,12 +577,12 @@ function fastLoop(){
                         weather_morale = -12;
                     }
                     else {
-                        weather_morale = global.race['leathery'] ? -4 : -5;
+                        weather_morale = global.race['leathery'] ? -2 : -5;
                     }
                 }
                 else {
                     // Rain
-                    weather_morale = global.race['leathery'] ? -1 : -2;
+                    weather_morale = global.race['leathery'] ? 0 : -2;
                 }
             }
         }
