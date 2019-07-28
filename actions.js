@@ -7826,6 +7826,7 @@ export const actions = {
             effect: loc('tech_warp_drive_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.settings.showDeep = true;
                     return true;
                 }
                 return false;
@@ -7877,6 +7878,7 @@ export const actions = {
             effect: loc('tech_fort_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.settings.showPortal = true;
                     return true;
                 }
                 return false;
