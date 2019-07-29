@@ -23,7 +23,11 @@ export const resource_values = {
     Helium_3: 620,
     Elerium: 2000,
     Neutronium: 1500,
+    Adamantite: 2250,
+    Infernite: 2750,
     Nano_Tube: 750,
+    Graphene: 3000,
+    Stanene: 3600,
     Genes: 0,
 };
 
@@ -47,7 +51,11 @@ export const tradeRatio = {
     Helium_3: 0.1,
     Elerium: 0.1,
     Neutronium: 0.1,
+    Adamantite: 0.1,
+    Infernite: 0.1,
     Nano_Tube: 0.1,
+    Graphene: 0.1,
+    Stanene: 0.1,
 }
 
 export const craftCost = {
@@ -57,6 +65,7 @@ export const craftCost = {
     Wrought_Iron: [{ r: 'Iron', a: 80 }],
     Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
     Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
+    Aerogel: [{ r: 'Graphene', a: 500 },{ r: 'Infernite', a: 1000 }],
 };
 
 export function craftingRatio(res){
@@ -149,15 +158,21 @@ export function defineResources(){
         //loadResource('Deuterium',0,1,true,false);
         loadResource('Helium_3',0,1,true,false);
         loadResource('Neutronium',0,1,false,false,'advanced');
+        //loadResource('Adamantite',0,1,false,false,'advanced');
+        //loadResource('Infernite',0,1,false,false,'advanced');
         loadResource('Elerium',1,1,false,false,'advanced');
         loadResource('Nano_Tube',0,1,false,false,'advanced');
+        //loadResource('Graphene',0,1,false,false,'advanced');
+        //loadResource('Stanene',0,1,false,false,'advanced');
         loadResource('Genes',-2,0,false,false,'advanced');
+        //loadResource('Soul_Gem',-2,0,false,false,'advanced');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         //loadResource('Bronze',-1,0,false,false,'danger');
         loadResource('Wrought_Iron',-1,0,false,false,'danger');
         loadResource('Sheet_Metal',-1,0,false,false,'danger');
         loadResource('Mythril',-1,0,false,false,'danger');
+        //loadResource('Aerogel',-1,0,false,false,'danger');
         loadRouteCounter();
     }
     loadSpecialResource('Plasmid');
