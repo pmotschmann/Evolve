@@ -2895,30 +2895,34 @@ function midLoop(){
             }
         });
 
-        Object.keys(actions.space).forEach(function (region){
-            Object.keys(actions.space[region]).forEach(function (action){
-                if ((global.space[action] || actions.space[region][action].grant) && actions.space[region][action] && actions.space[region][action].cost){
-                    let c_action = actions.space[region][action];
-                    let element = $('#'+c_action.id);
-                    if (checkAffordable(c_action)){
-                        if (element.hasClass('cna')){
-                            element.removeClass('cna');
+        let spc_locations = ['space','interstellar'];
+        for (let i=0; i<spc_locations.length; i++){
+            let location = spc_locations[i];
+            Object.keys(actions[location]).forEach(function (region){
+                Object.keys(actions[location][region]).forEach(function (action){
+                    if ((global[location][action] || actions[location][region][action].grant) && actions[location][region][action] && actions[location][region][action].cost){
+                        let c_action = actions[location][region][action];
+                        let element = $('#'+c_action.id);
+                        if (checkAffordable(c_action)){
+                            if (element.hasClass('cna')){
+                                element.removeClass('cna');
+                            }
+                        }
+                        else if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
+                        if (checkAffordable(c_action,true)){
+                            if (element.hasClass('cnam')){
+                                element.removeClass('cnam');
+                            }
+                        }
+                        else if (!element.hasClass('cnam')){
+                            element.addClass('cnam');
                         }
                     }
-                    else if (!element.hasClass('cna')){
-                        element.addClass('cna');
-                    }
-                    if (checkAffordable(c_action,true)){
-                        if (element.hasClass('cnam')){
-                            element.removeClass('cnam');
-                        }
-                    }
-                    else if (!element.hasClass('cnam')){
-                        element.addClass('cnam');
-                    }
-                }
+                });
             });
-        });
+        }
 
         if (global.space['swarm_control']){
             global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 6 : 4);
