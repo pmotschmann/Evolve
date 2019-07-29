@@ -1795,7 +1795,7 @@
   "space_moon_observatory_effect2": "+5% University Max Knowledge",
   "space_red_info_desc": "The red planet %0 orbits the sun at a distance of about 1.4AU.",
   "space_red_mission_effect": "Launch a mission to survey the red planet %0",
-  "space_red_mission_action": "%0 doesn't offer much in the way of rare resources but you're scientists consider it to be the best prospect for an off world colony.",
+  "space_red_mission_action": "%0 doesn't offer much in the way of rare resources but your scientists consider it to be the best prospect for an off world colony.",
   "space_red_spaceport_title": "Spaceport",
   "space_red_spaceport_desc": "Build a Spaceport",
   "space_red_spaceport_effect1": "+3 %0 Support",
