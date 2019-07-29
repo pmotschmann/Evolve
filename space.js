@@ -1475,10 +1475,11 @@ const spaceProjects = {
 };
 
 const interstellarProjects = {
-    spc_alpha: {
+    int_alpha: {
         info: {
             name: loc('interstellar_alpha_name'),
             desc(){ return global.tech['alpha'] ? loc('interstellar_alpha_desc2',[races[global.race.species].home]) : loc('interstellar_alpha_desc1',[races[global.race.species].home]); },
+            support: 'starport'
         },
         alpha_mission: {
             id: 'interstellar-alpha_mission',
@@ -1497,8 +1498,38 @@ const interstellarProjects = {
                 return false;
             }
         },
+        starport: {
+            id: 'interstellar-starport',
+            title: loc('interstellar_alpha_starport_title'),
+            desc: `<div>${loc('interstellar_alpha_starport_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { alpha: 1 },
+            cost: {
+                Money(){ return costMultiplier('starport', 1000000, 1.3, 'interstellar'); },
+                Aluminium(){ return costMultiplier('starport', 400000, 1.3, 'interstellar'); },
+                Neutronium(){ return costMultiplier('starport', 1000, 1.3, 'interstellar'); },
+                Elerium(){ return costMultiplier('starport', 100, 1.3, 'interstellar'); }
+            },
+            effect(){
+                let helium = +(5).toFixed(2);
+                let food = 100;
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
+            },
+            support: 5,
+            powered: 10,
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('starport','interstellar');
+                    if (global.city.power >= 10){
+                        global.interstellar['starport'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
-    spc_proxima: {
+    int_proxima: {
         info: {
             name: loc('interstellar_proxima_name'),
             desc(){ return global.tech['proxima'] ? loc('interstellar_proxima_desc2') : loc('interstellar_proxima_desc1'); },
@@ -1521,7 +1552,7 @@ const interstellarProjects = {
             }
         },
     },
-    spc_nebula: {
+    int_nebula: {
         info: {
             name: loc('interstellar_nebula_name'),
             desc(){ return global.tech['nebula'] ? loc('interstellar_nebula_desc2') : loc('interstellar_nebula_desc1'); },
@@ -1544,7 +1575,7 @@ const interstellarProjects = {
             }
         },
     },
-    spc_neutron: {
+    int_neutron: {
         info: {
             name: loc('interstellar_neutron_name'),
             desc(){ return global.tech['neutron'] ? loc('interstellar_neutron_desc2',[races[global.race.species].home]) : loc('interstellar_neutron_desc1'); },
@@ -1567,7 +1598,7 @@ const interstellarProjects = {
             }
         },
     },
-    spc_blackhole: {
+    int_blackhole: {
         info: {
             name: loc('interstellar_blackhole_name'),
             desc(){ return global.tech['blackhole'] ? loc('interstellar_blackhole_desc2',[races[global.race.species].home]) : loc('interstellar_blackhole_desc1',[races[global.race.species].home]); },
@@ -1631,13 +1662,17 @@ const structDefinitions = {
     e_reactor: { count: 0, on: 0 },
     world_collider: { count: 0 },
     world_controller: { count: 0, on: 0 },
+    starport: { count: 0, on: 0, support: 0, s_max: 0 },
 };
 
-function incrementStruct(struct){
-    if (!global.space[struct]){
-        global.space[struct] = structDefinitions[struct];
+function incrementStruct(struct,sector){
+    if (!sector){
+        sector = 'space';
     }
-    global.space[struct].count++;
+    if (!global[sector][struct]){
+        global[sector][struct] = structDefinitions[struct];
+    }
+    global[sector][struct].count++;
 }
 
 export function spaceTech(){
@@ -1720,7 +1755,7 @@ export function deepSpace(){
     }
 
     Object.keys(interstellarProjects).forEach(function (region){
-        let show = region.replace("spc_","");
+        let show = region.replace("int_","");
         if (global.settings.space[`${show}`]){
             let name = typeof interstellarProjects[region].info.name === 'string' ? interstellarProjects[region].info.name : interstellarProjects[region].info.name();
             let desc = typeof interstellarProjects[region].info.desc === 'string' ? interstellarProjects[region].info.desc : interstellarProjects[region].info.desc();
@@ -1729,7 +1764,7 @@ export function deepSpace(){
                 let support = interstellarProjects[region].info['support'];
                 parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
                 vues[`sr${region}`] = new Vue({
-                    data: global.space[support]
+                    data: global.interstellar[support]
                 });
                 vues[`sr${region}`].$mount(`#sr${region}`);
             }
@@ -1761,7 +1796,10 @@ export function deepSpace(){
     });
 }
 
-function costMultiplier(action,base,mutiplier){
+function costMultiplier(action,base,mutiplier,sector){
+    if (!sector){
+        sector = 'space';
+    }
     if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }
@@ -1770,7 +1808,7 @@ function costMultiplier(action,base,mutiplier){
     if (mutiplier < 0.01){
         mutiplier = 0.01;
     }
-    var count = global.space[action] ? global.space[action].count : 0;
+    var count = global[sector][action] ? global[sector][action].count : 0;
     return Math.round((mutiplier ** count) * base);
 }
 

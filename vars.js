@@ -27,6 +27,7 @@ export var p_on = {};
 export var red_on = {};
 export var moon_on = {};
 export var belt_on = {};
+export var alpha_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
 export function set_qlevel(q_level){
@@ -730,6 +731,8 @@ window.soft_reset = function reset(){
     global.stats.died = 0;
 
     global.space = {};
+    global.interstellar = {};
+    global.starDock = {};
     global.civic = { free: 0 };
     global.resource = {};
     global.evolution = {};

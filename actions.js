@@ -7828,6 +7828,12 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.settings.showDeep = true;
                     global.settings.space.alpha = true;
+                    global.interstellar['starport'] = {
+                        count: 0,
+                        on: 0,
+                        support: 0,
+                        s_max: 0
+                    };
                     return true;
                 }
                 return false;
@@ -9543,6 +9549,7 @@ function bioseed(){
         biome: biome
     };
     global.space = {};
+    global.interstellar = {};
     global.starDock = {};
     global.civic = { free: 0 };
     global.resource = {};

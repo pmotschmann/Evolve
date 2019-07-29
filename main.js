@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, alpha_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
@@ -817,11 +817,12 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
+        let p_structs = ['city:apartment','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
-            let region = parts[0] === 'city' ? parts[0] : 'space';
-            let c_action = parts[0] === 'city' ? actions.city : actions['space'][parts[0]];
+            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : 'interstellar';
+            let region = parts[0] === 'city' ? parts[0] : space;
+            let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
             if (global[region][parts[1]] && global[region][parts[1]]['on']){
                 let power = global[region][parts[1]].on * c_action[parts[1]].powered;
                 p_on[parts[1]] = global[region][parts[1]].on;
@@ -941,6 +942,45 @@ function fastLoop(){
                 }
             }
             global.space.spaceport.support = used_support;
+        }
+
+        // starports
+        if (global.interstellar['starport'] && global.interstellar['starport'].count > 0){
+            let fuel_cost = 5;
+            let mb_consume = p_on['starport'] * fuel_cost;
+            breakdown.p.consume.Helium_3['Starport'] = -(mb_consume);
+            for (let i=0; i<p_on['starport']; i++){
+                if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
+                    mb_consume -= (p_on['starport'] * fuel_cost) - (i * fuel_cost);
+                    p_on['starport'] -= i;
+                    break;
+                }
+            }
+            global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support;
+        }
+
+        if (global.interstellar['starport']){
+            let used_support = 0;
+            let structs = [];
+            for (var i = 0; i < structs.length; i++){
+                if (global.interstellar[structs[i]]){
+                    let operating = global.interstellar[structs[i]].on;
+                    let id = actions.interstellar.int_alpha[structs[i]].id;
+                    if (used_support + operating > global.interstellar.starport.s_max){
+                        operating -=  (used_support + operating) - global.interstellar.starport.s_max;
+                        $(`#${id} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${id} .on`).removeClass('warn');
+                    }
+                    used_support += operating;
+                    alpha_on[structs[i]] = operating;
+                }
+                else {
+                    alpha_on[structs[i]] = 0;
+                }
+            }
+            global.interstellar.starport.support = used_support;
         }
 
         // Space Station
@@ -1187,6 +1227,12 @@ function fastLoop(){
             if (global.space['spaceport']){
                 spaceport = p_on['spaceport'] * 25;
                 breakdown.p.consume.Food['Spaceport'] = -(spaceport);
+            }
+
+            let starport = 0;
+            if (global.interstellar['starport']){
+                starport = p_on['starport'] * 100;
+                breakdown.p.consume.Food['Starport'] = -(starport);
             }
 
             let space_station = 0;

@@ -1010,6 +1010,7 @@ function warhead(){
         biome: biome
     };
     global.space = {};
+    global.interstellar = {};
     global.starDock = {};
     global.civic = { free: 0 };
     global.resource = {};
