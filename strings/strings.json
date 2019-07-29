@@ -1938,5 +1938,20 @@
   "interstellar_proxima_desc1": "Proxima Centauri is red dwarf located about 0.12 light years from the Alpha Centauri system.",
   "interstellar_proxima_desc2": "Proxima Centauri is red dwarf located about 0.12 light years from the Alpha Centauri system. It contains a lone rocky planet orbiting it.",
   "interstellar_proxima_mission": "Proxima Centauri Mission",
-  "interstellar_proxima_mission_effect": "Send a ship to the Proxima Centauri system to determine if it has any value."
+  "interstellar_proxima_mission_effect": "Send a ship to the Proxima Centauri system to determine if it has any value.",
+  "interstellar_nebula_name": "Helix Nebula",
+  "interstellar_nebula_desc1": "The Helix nebula is quite far away at 694 light years, but this could be a very rich source of Helium-3 to fuel your expansion.",
+  "interstellar_nebula_desc2": "The Helix nebula is quite far away at 694 light years, it is rich in valuable Helium-3.",
+  "interstellar_nebula_mission": "Helix Nebula Mission",
+  "interstellar_nebula_mission_effect": "Send a ship to the Helix Nebula to evaluate it for possible gas mining operations.",
+  "interstellar_neutron_name": "Neutron Star",
+  "interstellar_neutron_desc1": "A neutron star has been detected roughly 320 light years away.",
+  "interstellar_neutron_desc2": "The Neutron Star is roughly 320 lighy years from %0.",
+  "interstellar_neutron_mission": "Neutron Star Mission",
+  "interstellar_neutron_mission_effect": "Embark on a dangerous mission to study the neutron star.",
+  "interstellar_blackhole_name": "Blackhole",
+  "interstellar_blackhole_desc1": "A small black hole has been detected 487 light years from %0.",
+  "interstellar_blackhole_desc2": "The blackhole is located 487 light years from %0, it is small as far as blackholes go with a mass of only 8 solar masses.",
+  "interstellar_blackhole_mission": "Blackhole Mission",
+  "interstellar_blackhole_mission_effect": "Scout the blackhole... for science!"
 }

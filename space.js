@@ -1503,8 +1503,8 @@ const interstellarProjects = {
             name: loc('interstellar_proxima_name'),
             desc(){ return global.tech['proxima'] ? loc('interstellar_proxima_desc2') : loc('interstellar_proxima_desc1'); },
         },
-        alpha_mission: {
-            id: 'interstellar-alpha_mission',
+        proxima_mission: {
+            id: 'interstellar-proxima_mission',
             title: loc('interstellar_proxima_mission'),
             desc: loc('interstellar_proxima_mission'),
             reqs: { alpha: 1 },
@@ -1513,6 +1513,75 @@ const interstellarProjects = {
                 Helium_3(){ return 45000; }
             },
             effect: loc('interstellar_proxima_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_nebula: {
+        info: {
+            name: loc('interstellar_nebula_name'),
+            desc(){ return global.tech['nebula'] ? loc('interstellar_nebula_desc2') : loc('interstellar_nebula_desc1'); },
+        },
+        nebula_mission: {
+            id: 'interstellar-nebula_mission',
+            title: loc('interstellar_nebula_mission'),
+            desc: loc('interstellar_nebula_mission'),
+            reqs: { alpha: 1 },
+            grant: ['nebula',1],
+            cost: { 
+                Helium_3(){ return 60000; }
+            },
+            effect: loc('interstellar_nebula_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_neutron: {
+        info: {
+            name: loc('interstellar_neutron_name'),
+            desc(){ return global.tech['neutron'] ? loc('interstellar_neutron_desc2',[races[global.race.species].home]) : loc('interstellar_neutron_desc1'); },
+        },
+        neutron_mission: {
+            id: 'interstellar-neutron_mission',
+            title: loc('interstellar_nebula_mission'),
+            desc: loc('interstellar_nebula_mission'),
+            reqs: { nebula: 1 },
+            grant: ['neutron',1],
+            cost: { 
+                Helium_3(){ return 75000; }
+            },
+            effect: loc('interstellar_neutron_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    spc_blackhole: {
+        info: {
+            name: loc('interstellar_blackhole_name'),
+            desc(){ return global.tech['blackhole'] ? loc('interstellar_blackhole_desc2',[races[global.race.species].home]) : loc('interstellar_blackhole_desc1',[races[global.race.species].home]); },
+        },
+        blackhole_mission: {
+            id: 'interstellar-blackhole_mission',
+            title: loc('interstellar_blackhole_mission'),
+            desc: loc('interstellar_blackhole_mission'),
+            reqs: { nebula: 1 },
+            grant: ['blackhole',1],
+            cost: { 
+                Helium_3(){ return 100000; }
+            },
+            effect: loc('interstellar_blackhole_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
