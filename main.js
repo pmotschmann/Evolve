@@ -961,7 +961,7 @@ function fastLoop(){
 
         if (global.interstellar['starport']){
             let used_support = 0;
-            let structs = [];
+            let structs = ['mining_droid'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -2302,6 +2302,7 @@ function midLoop(){
             Iridium: 0,
             "Helium_3": 0,
             Neutronium: 0,
+            Adamantite: 0,
             Elerium: 1,
             Nano_Tube: 0
         };
@@ -2344,6 +2345,7 @@ function midLoop(){
         var bd_Iridium = { Base: caps['Iridium']+'v' };
         var bd_Helium = { Base: caps['Helium_3']+'v' };
         var bd_Neutronium = { Base: caps['Neutronium']+'v' };
+        var bd_Adamantite = { Base: caps['Adamantite']+'v' };
         var bd_Elerium = { Base: caps['Elerium']+'v' };
         var bd_Nano_Tube = { Base: caps['Nano_Tube']+'v' };
 
@@ -2847,6 +2849,7 @@ function midLoop(){
             Iridium: bd_Iridium,
             "Helium_3": bd_Helium,
             Neutronium: bd_Neutronium,
+            Adamantite: bd_Adamantite,
             Elerium: bd_Elerium,
             Nano_Tube: bd_Nano_Tube,
         };

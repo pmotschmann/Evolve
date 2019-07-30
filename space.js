@@ -1523,6 +1523,42 @@ const interstellarProjects = {
                     if (global.city.power >= 10){
                         global.interstellar['starport'].on++;
                     }
+                    if (global.tech['alpha'] === 1){
+                        global.tech['alpha'] = 2;
+                        global.interstellar['mining_droid'] = { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 };
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        mining_droid: {
+            id: 'interstellar-mining_droid',
+            title: loc('interstellar_mining_droid_title'),
+            desc: `<div>${loc('interstellar_mining_droid_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            reqs: { alpha: 2 },
+            cost: {
+                Money(){ return costMultiplier('mining_droid', 650000, 1.28, 'interstellar'); },
+                Steel(){ return costMultiplier('mining_droid', 120000, 1.28, 'interstellar'); },
+                Nano_Tube(){ return costMultiplier('mining_droid', 75000, 1.28, 'interstellar'); },
+                Elerium(){ return costMultiplier('mining_droid', 50, 1.28, 'interstellar'); }
+            },
+            effect(){
+                return `<div>${loc('interstellar_mining_droid_effect')}</div>`;
+            },
+            support: -1,
+            powered: 1,
+            special: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('mining_droid','interstellar');
+                    global.resource.Adamantite.display = true;
+                    if (global.interstellar.starport.support < global.interstellar.starport.s_max){
+                        global.interstellar['mining_droid'].on++;
+                    }
+                    if (global.tech['alpha'] === 1){
+                        global.tech['alpha'] = 2;
+                    }
                     return true;
                 }
                 return false;
@@ -1663,6 +1699,7 @@ const structDefinitions = {
     world_collider: { count: 0 },
     world_controller: { count: 0, on: 0 },
     starport: { count: 0, on: 0, support: 0, s_max: 0 },
+    mining_droid: { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 },
 };
 
 function incrementStruct(struct,sector){
