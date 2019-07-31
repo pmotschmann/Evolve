@@ -1135,6 +1135,7 @@
   "modal_factory_polymer_label1": "Consume %0 %1 and %2 %3/s to produce %4",
   "modal_factory_polymer_label2": "Consume %0 %1/s to produce %2",
   "modal_factory_nano_label": "Consume %0 %1 and %2 %3/s to produce %4s",
+  "modal_droid_res_label": "Assign a droid to mine %0.",
   "stardock_warn": "You must complete plans for your interstellar craft first",
   "sentience": "Congratulations! You have evolved into a %0 species of %1 called %2",
   "achieve_unlock_achieve": "Achievement Unlocked! %0",

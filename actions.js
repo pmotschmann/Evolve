@@ -9193,58 +9193,50 @@ function droidModal(modal){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>`);
     modal.append(fuel);
 
-    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" :aria-label="buildLabel('Lux') + ariaProd('Lux')" position="is-left" size="is-small" multilined animated><span>${loc('modal_factory_lux')}</span></b-tooltip></div>`);
-    modal.append(lux);
+    let adam = $(`<div class="factory"><b-tooltip :label="buildLabel('adam')" :aria-label="buildLabel('adam') + ariaProd('adam')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Adamantite_name')}</span></b-tooltip></div>`);
+    modal.append(adam);
+    let adamCount = $(`<span class="current">{{ adam }}</span>`);
+    let adamSub = $(`<span class="sub" @click="subItem('adam')" role="button" aria-label="Decrease Adamantite production">&laquo;</span>`);
+    let adamAdd = $(`<span class="add" @click="addItem('adam')" role="button" aria-label="Increase Adamantite production">&raquo;</span>`);
+    adam.append(adamSub);
+    adam.append(adamCount);
+    adam.append(adamAdd);
 
-    let luxCount = $(`<span class="current">{{ Lux }}</span>`);
-    let subLux = $(`<span class="sub" @click="subItem('Lux')" role="button" aria-label="Decrease Lux production">&laquo;</span>`);
-    let addLux = $(`<span class="add" @click="addItem('Lux')" role="button" aria-label="Increase Lux production">&raquo;</span>`);
-    lux.append(subLux);
-    lux.append(luxCount);
-    lux.append(addLux);
+    let uran = $(`<div class="factory"><b-tooltip :label="buildLabel('uran')" :aria-label="buildLabel('uran') + ariaProd('uran')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Uranium_name')}</span></b-tooltip></div>`);
+    modal.append(uran);
+    let uranCount = $(`<span class="current">{{ uran }}</span>`);
+    let uranSub = $(`<span class="sub" @click="subItem('uran')" role="button" aria-label="Decrease Uranium production">&laquo;</span>`);
+    let uranAdd = $(`<span class="add" @click="addItem('uran')" role="button" aria-label="Increase Uranium production">&raquo;</span>`);
+    uran.append(uranSub);
+    uran.append(uranCount);
+    uran.append(uranAdd);
 
-    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" :aria-label="buildLabel('Alloy') + ariaProd('Alloy')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Alloy_name')}</span></b-tooltip></div>`);
-    modal.append(alloy);
+    let coal = $(`<div class="factory"><b-tooltip :label="buildLabel('coal')" :aria-label="buildLabel('coal') + ariaProd('coal')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Coal_name')}</span></b-tooltip></div>`);
+    modal.append(coal);
+    let coalCount = $(`<span class="current">{{ coal }}</span>`);
+    let coalSub = $(`<span class="sub" @click="subItem('coal')" role="button" aria-label="Decrease Coal production">&laquo;</span>`);
+    let coalAdd = $(`<span class="add" @click="addItem('coal')" role="button" aria-label="Increase Coal production">&raquo;</span>`);
+    coal.append(coalSub);
+    coal.append(coalCount);
+    coal.append(coalAdd);
 
-    let alloyCount = $(`<span class="current">{{ Alloy }}</span>`);
-    let subAlloy = $(`<span class="sub" @click="subItem('Alloy')" role="button" aria-label="Decrease Alloy production">&laquo;</span>`);
-    let addAlloy = $(`<span class="add" @click="addItem('Alloy')" role="button" aria-label="Increase Alloy production">&raquo;</span>`);
-    alloy.append(subAlloy);
-    alloy.append(alloyCount);
-    alloy.append(addAlloy);
-
-    if (global.tech['polymer']){
-        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" :aria-label="buildLabel('Polymer') + ariaProd('Polymer')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Polymer_name')}</span></b-tooltip></div>`);
-        modal.append(polymer);
-
-        let polymerCount = $(`<span class="current">{{ Polymer }}</span>`);
-        let subPolymer= $(`<span class="sub" @click="subItem('Polymer')" role="button" aria-label="Decrease Polymer production">&laquo;</span>`);
-        let addPolymer = $(`<span class="add" @click="addItem('Polymer')" role="button" aria-label="Increase Polymer production">&raquo;</span>`);
-        polymer.append(subPolymer);
-        polymer.append(polymerCount);
-        polymer.append(addPolymer);
-    }
-
-    if (global.tech['nano']){
-        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" :aria-label="buildLabel('Nano') + ariaProd('Nano')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Nano_Tube_name')}</span></b-tooltip></div>`);
-        modal.append(nano);
-
-        let nanoCount = $(`<span class="current">{{ Nano }}</span>`);
-        let subNano= $(`<span class="sub" @click="subItem('Nano')" role="button" aria-label="Decrease Nanotube production">&laquo;</span>`);
-        let addNano = $(`<span class="add" @click="addItem('Nano')" role="button" aria-label="Increase Nanotube production">&raquo;</span>`);
-        nano.append(subNano);
-        nano.append(nanoCount);
-        nano.append(addNano);
-    }
+    let alum = $(`<div class="factory"><b-tooltip :label="buildLabel('alum')" :aria-label="buildLabel('alum') + ariaProd('alum')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Aluminium_name')}</span></b-tooltip></div>`);
+    modal.append(alum);
+    let alumCount = $(`<span class="current">{{ alum }}</span>`);
+    let alumSub = $(`<span class="sub" @click="subItem('alum')" role="button" aria-label="Decrease Aluminium production">&laquo;</span>`);
+    let alumAdd = $(`<span class="add" @click="addItem('alum')" role="button" aria-label="Increase Aluminium production">&raquo;</span>`);
+    alum.append(alumSub);
+    alum.append(alumCount);
+    alum.append(alumAdd);
 
     vues['specialModal'] = new Vue({
-        data: global.city['factory'],
+        data: global.interstellar['mining_droid'],
         methods: {
             subItem: function(item){
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
-                    if (global.city.factory[item] > 0){
-                        global.city.factory[item]--;
+                    if (global.interstellar.mining_droid[item] > 0){
+                        global.interstellar.mining_droid[item]--;
                     }
                     else {
                         break;
@@ -9252,11 +9244,10 @@ function droidModal(modal){
                 }
             },
             addItem: function(item){
-                let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
-                    if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano < max){
-                        global.city.factory[item]++;
+                    if (global.interstellar.mining_droid.adam + global.interstellar.mining_droid.uran + global.interstellar.mining_droid.coal + global.interstellar.mining_droid.alum < global.interstellar.mining_droid.on){
+                        global.interstellar.mining_droid[item]++;
                     }
                     else {
                         break;
@@ -9264,42 +9255,27 @@ function droidModal(modal){
                 }
             },
             buildLabel: function(type){
-                let assembly = global.tech['factory'] ? true : false;
                 switch(type){
-                    case 'Lux':
-                        let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
-                        let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
-                        return loc('modal_factory_lux_label',[fur,loc('resource_Furs_name'),demand]);
-                    case 'Alloy':
-                        let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
-                        let aluminium = assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0];
-                        return loc('modal_factory_alloy_label',[copper,loc('resource_Copper_name'),aluminium,loc('resource_Aluminium_name'),loc('resource_Alloy_name')]);
-                    case 'Polymer':
-                        if (global.race['kindling_kindred']){
-                            let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
-                            return loc('modal_factory_polymer_label2',[oil,loc('resource_Oil_name'),loc('resource_Polymer_name')]);
-                        }
-                        else {
-                            let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
-                            let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
-                            return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,loc('resource_Lumber_name'),loc('resource_Polymer_name')]);
-                        }
-                    case 'Nano':
-                        let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
-                        let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
-                        return loc('modal_factory_nano_label',[coal,loc('resource_Coal_name'),neutronium,loc('resource_Neutronium_name'),loc('resource_Nano_Tube_name')]);
+                    case 'adam':
+                        return loc('modal_droid_res_label',[loc('resource_Adamantite_name')]);
+                    case 'uran':
+                        return loc('modal_droid_res_label',[loc('resource_Uranium_name')]);
+                    case 'coal':
+                        return loc('modal_droid_res_label',[loc('resource_Coal_name')]);
+                    case 'alum':
+                        return loc('modal_droid_res_label',[loc('resource_Aluminium_name')]);
                 }
             },
             ariaProd(prod){
-                return `. ${global.city.factory[prod]} factories producing ${prod}.`;
+                return `. ${global.interstellar.mining_droid[prod]} driod mining ${prod}.`;
             },
         },
         filters: {
             on(){
-                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano;
+                return global.interstellar.mining_droid.adam + global.interstellar.mining_droid.uran + global.interstellar.mining_droid.coal + global.interstellar.mining_droid.alum;
             },
             max(){
-                return global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                return global.interstellar.mining_droid.on;
             }
         }
     });

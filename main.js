@@ -959,6 +959,14 @@ function fastLoop(){
             global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support;
         }
 
+        // Droids
+        let miner_droids = {
+            adam: 0,
+            uran: 0,
+            coal: 0,
+            alum: 0,
+        };
+
         if (global.interstellar['starport']){
             let used_support = 0;
             let structs = ['mining_droid'];
@@ -981,6 +989,21 @@ function fastLoop(){
                 }
             }
             global.interstellar.starport.support = used_support;
+
+            if (alpha_on['mining_droid'] > 0){
+                let max = alpha_on['mining_droid'];
+                let segments = ['adam','uran','coal','alum'];
+                for (let i=0; i<segments.length; i++){
+                    if (global.interstellar.mining_droid[segments[i]] <= max){
+                        miner_droids[segments[i]] = global.interstellar.mining_droid[segments[i]];
+                        max -= miner_droids[segments[i]];
+                    }
+                    else {
+                        miner_droids[segments[i]] = max;
+                        max = 0;
+                    }
+                }
+            }
         }
 
         // Space Station
@@ -1851,6 +1874,8 @@ function fastLoop(){
             modRes('Stone', delta * time_multiplier);
 
             // Aluminium
+            let alumina_bd = {};
+            let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
             if (global.city['metal_refinery'] && global.city['metal_refinery'].count > 0){
                 let base = stone_base * rock_quarry * power_mult * 0.08;
                 if (global.city.geology['Aluminium']){
@@ -1858,16 +1883,28 @@ function fastLoop(){
                 }
                 let delta = base * hunger * global_multiplier;
 
-                let refinery = global.city['metal_refinery'].count * 6;
                 delta *= 1 + (refinery / 100);
 
-                let alumina_bd = {};
                 alumina_bd['Workers'] = base + 'v';
-                alumina_bd['Refinery'] = refinery + '%';
                 alumina_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-                breakdown.p['Aluminium'] = alumina_bd;
+                
                 modRes('Aluminium', delta * time_multiplier);
             }
+
+            if (global.interstellar['mining_droid'] && miner_droids['alum'] > 0){
+                let base = miner_droids['alum'] * 3.5;
+                let delta = base * global_multiplier;
+                delta *= 1 + (refinery / 100);
+
+                alumina_bd['Droids'] = base + 'v';
+                
+                modRes('Aluminium', delta * time_multiplier);
+            }
+
+            if (refinery > 0){
+                alumina_bd['Refinery'] = refinery + '%';
+            }
+            breakdown.p['Aluminium'] = alumina_bd;
         }
         
         // Miners
@@ -2004,6 +2041,14 @@ function fastLoop(){
             coal_bd['Miners'] = coal_base + 'v';
             coal_bd['Power'] = ((power_mult - 1) * 100) + '%';
             coal_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+
+            if (global.interstellar['mining_droid'] && miner_droids['coal'] > 0){
+                let driod_base = miner_droids['coal'] * 6.25;
+                let driod_delta = driod_base * global_multiplier;
+                coal_bd['Droids'] = driod_base + 'v';
+                modRes('Coal', driod_delta * time_multiplier);
+            }
+
             breakdown.p['Coal'] = coal_bd;
             modRes('Coal', delta * time_multiplier);
 
@@ -2017,6 +2062,15 @@ function fastLoop(){
                 uranium_bd['Miners'] = uranium / global_multiplier + 'v';
             }
         }
+
+        // Space Uranium
+        if (global.interstellar['mining_droid'] && miner_droids['uran'] > 0){
+            let driod_base = miner_droids['uran'] * 0.25;
+            let driod_delta = driod_base * global_multiplier;
+            uranium_bd['Droids'] = driod_base + 'v';
+            modRes('Uranium', driod_delta * time_multiplier);
+        }
+
         breakdown.p['Uranium'] = uranium_bd;
         
         // Oil
@@ -2109,6 +2163,16 @@ function fastLoop(){
         }
         elerium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
         breakdown.p['Elerium'] = elerium_bd;
+
+        // Adamantite
+        let adamantite_bd = {};
+        if (global.resource.Adamantite.display && global.interstellar['mining_droid'] && miner_droids['adam'] > 0){
+            let driod_base = miner_droids['adam'] * 0.075;
+            let driod_delta = driod_base * global_multiplier;
+            adamantite_bd['Droids'] = driod_base + 'v';
+            modRes('Adamantite', driod_delta * time_multiplier);
+        }
+        breakdown.p['Adamantite'] = adamantite_bd;
 
         // Income
         if (global.tech['currency'] >= 1){

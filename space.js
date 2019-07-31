@@ -1554,7 +1554,8 @@ const interstellarProjects = {
                     incrementStruct('mining_droid','interstellar');
                     global.resource.Adamantite.display = true;
                     if (global.interstellar.starport.support < global.interstellar.starport.s_max){
-                        global.interstellar['mining_droid'].on++;
+                        global.interstellar.mining_droid.on++;
+                        global.interstellar.mining_droid.adam++;
                     }
                     if (global.tech['alpha'] === 1){
                         global.tech['alpha'] = 2;
