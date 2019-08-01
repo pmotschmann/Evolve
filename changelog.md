@@ -1,3 +1,6 @@
+#### 0.4.37 - 7/31/2019 ####
+ARIA Improvements for Factory and A.R.P.A.<br>
+
 #### 0.4.36 - 7/27/2019 ####
 Slow and Hyper traits can now combine<br>
 Added new achievements: Creator & Explorer<br>
