@@ -1603,12 +1603,13 @@ const interstellarProjects = {
             reqs: { droids: 1 },
             cost: {
                 Money(){ return costMultiplier('processing', 350000, 1.28, 'interstellar'); },
-                Aluminium(){ return costMultiplier('processing', 180000, 1.28, 'interstellar'); },
-                Iridium(){ return costMultiplier('processing', 5000, 1.28, 'interstellar'); },
-                Neutronium(){ return costMultiplier('processing', 500, 1.28, 'interstellar'); }
+                Iron(){ return costMultiplier('processing', 180000, 1.28, 'interstellar'); },
+                Aluminium(){ return costMultiplier('processing', 60000, 1.28, 'interstellar'); },
+                Iridium(){ return costMultiplier('processing', 5000, 1.28, 'interstellar'); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_processing_effect')}</div>`;
+                let bonus = 12;
+                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_processing_effect',[bonus])}</div>`;
             },
             support: -1,
             powered: 1,

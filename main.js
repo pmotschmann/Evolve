@@ -2174,6 +2174,12 @@ function fastLoop(){
             let driod_base = miner_droids['adam'] * 0.075;
             let driod_delta = driod_base * global_multiplier;
             adamantite_bd['Droids'] = driod_base + 'v';
+            if (global.interstellar['processing'] && alpha_on['processing']){
+                let bonus = alpha_on['processing'] * 0.12;
+                driod_delta *= 1 + bonus;
+                adamantite_bd['Processing'] = (bonus * 100) + '%';
+            }
+
             modRes('Adamantite', driod_delta * time_multiplier);
         }
         breakdown.p['Adamantite'] = adamantite_bd;

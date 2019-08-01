@@ -1943,7 +1943,7 @@
   "interstellar_mining_droid_title": "Mining Droid",
   "interstellar_mining_droid_effect": "Mining Droids can be tasked to extract valuable materials from the ground. Can be set to mine Adamantite, Uranium, Coal, or Aluminium.",
   "interstellar_processing_title": "Processing Facility",
-  "interstellar_processing_effect": "The processing facility purifies adamantite ore increasing the usuable amount of adamantite retrieved by mining droids.",
+  "interstellar_processing_effect": "Increases droid adamantite yield by %0%.",
   "interstellar_habitat_title": "Habitat",
   "interstellar_habitat_desc": "Centauri Habitat",
   "interstellar_habitat_effect": "+%0 Citizens, -%1kW",
