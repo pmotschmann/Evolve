@@ -819,7 +819,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : 'interstellar';
@@ -959,6 +959,7 @@ function fastLoop(){
                 }
             }
             global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support;
+            global.interstellar.starport.s_max += p_on['habitat'];
         }
 
         // Droids
@@ -971,7 +972,7 @@ function fastLoop(){
 
         if (global.interstellar['starport']){
             let used_support = 0;
-            let structs = ['mining_droid'];
+            let structs = ['mining_droid','processing'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -2541,6 +2542,10 @@ function midLoop(){
             lCaps['colonist'] += red_on['living_quarters'];
             bd_Citizen[`${races[global.race.species].solar.red}`] = red_on['living_quarters'] + 'v';
         }
+        if (global.interstellar['habitat'] && p_on['habitat']){
+            caps[global.race.species] += p_on['habitat'];
+            bd_Citizen[loc('interstellar_habitat_title')] = p_on['habitat'] + 'v';
+        }
         if (global.city['lodge']){
             caps[global.race.species] += global.city['lodge'].count;
         }
@@ -2896,7 +2901,7 @@ function midLoop(){
 
         breakdown.c = {
             Money: bd_Money,
-            [races[global.race.species].name]: bd_Citizen,
+            [global.race.species]: bd_Citizen,
             Knowledge: bd_Knowledge,
             Food: bd_Food,
             Lumber: bd_Lumber,

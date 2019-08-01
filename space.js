@@ -425,7 +425,7 @@ const spaceProjects = {
                     global.civic.colonist.display = true;
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['living_quarters'].on++;
-                        global['resource'][global.race.species].max += 1;
+                        global.resource[global.race.species].max += 1;
                     }
                     return true;
                 }
@@ -1532,6 +1532,35 @@ const interstellarProjects = {
                 return false;
             }
         },
+        habitat: {
+            id: 'interstellar-habitat',
+            title: loc('interstellar_habitat_title'),
+            desc: `<div>${loc('interstellar_habitat_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { alpha: 3 },
+            cost: {
+                Money(){ return costMultiplier('habitat', 800000, 1.25, 'interstellar'); },
+                Furs(){ return costMultiplier('habitat', 38000, 1.25, 'interstellar'); },
+                Adamantite(){ return costMultiplier('habitat', 3200, 1.25, 'interstellar'); },
+                Plywood(){ return costMultiplier('habitat', 10000, 1.25, 'interstellar'); },
+            },
+            effect(){
+                let citizens = 1;
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('interstellar_habitat_effect',[citizens,$(this)[0].powered])}</div>`;
+            },
+            support: 1,
+            powered: 2,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('habitat','interstellar');
+                    if (global.city.power >= 2){
+                        global.interstellar['habitat'].on++;
+                        global.resource[global.race.species].max += 1;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         mining_droid: {
             id: 'interstellar-mining_droid',
             title: loc('interstellar_mining_droid_title'),
@@ -1544,11 +1573,12 @@ const interstellarProjects = {
                 Elerium(){ return costMultiplier('mining_droid', 50, 1.28, 'interstellar'); }
             },
             effect(){
-                return `<div>${loc('interstellar_mining_droid_effect')}</div>`;
+                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_mining_droid_effect')}</div>`;
             },
             support: -1,
             powered: 1,
             special: true,
+            refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('mining_droid','interstellar');
@@ -1557,8 +1587,37 @@ const interstellarProjects = {
                         global.interstellar.mining_droid.on++;
                         global.interstellar.mining_droid.adam++;
                     }
-                    if (global.tech['alpha'] === 1){
-                        global.tech['alpha'] = 2;
+                    if (!global.tech['droids']){
+                        global.tech['droids'] = 1;
+                        global.interstellar['processing'] = { count: 0, on: 0 };
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        processing: {
+            id: 'interstellar-processing',
+            title: loc('interstellar_processing_title'),
+            desc: `<div>${loc('interstellar_processing_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            reqs: { droids: 1 },
+            cost: {
+                Money(){ return costMultiplier('processing', 350000, 1.28, 'interstellar'); },
+                Aluminium(){ return costMultiplier('processing', 180000, 1.28, 'interstellar'); },
+                Iridium(){ return costMultiplier('processing', 5000, 1.28, 'interstellar'); },
+                Neutronium(){ return costMultiplier('processing', 500, 1.28, 'interstellar'); }
+            },
+            effect(){
+                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_processing_effect')}</div>`;
+            },
+            support: -1,
+            powered: 1,
+            special: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('processing','interstellar');
+                    if (global.interstellar.starport.support < global.interstellar.starport.s_max){
+                        global.interstellar.processing.on++;
                     }
                     return true;
                 }
@@ -1701,6 +1760,8 @@ const structDefinitions = {
     world_controller: { count: 0, on: 0 },
     starport: { count: 0, on: 0, support: 0, s_max: 0 },
     mining_droid: { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 },
+    processing: { count: 0, on: 0 },
+    habitat: { count: 0, on: 0 },
 };
 
 function incrementStruct(struct,sector){

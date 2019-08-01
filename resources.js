@@ -385,7 +385,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
         containerItem(`stack_${name}`,`#stack-${name}`,market_item,name,color,true);
     }
 
-    if (name !== races[global.race.species].name && name !== 'Crates' && name !== 'Containers'){
+    if (name !== global.race.species && name !== 'Crates' && name !== 'Containers'){
         breakdownPopover(`inc${name}`,name,'p');
     }
 

@@ -7858,6 +7858,24 @@ export const actions = {
                 return false;
             }
         },
+        habitat: {
+            id: 'tech-habitat',
+            title: loc('tech_habitat'),
+            desc: loc('tech_habitat_desc'),
+            reqs: { alpha: 2, droids: 1 },
+            grant: ['alpha',3],
+            cost: {
+                Knowledge(){ return 480000; }
+            },
+            effect: loc('tech_habitat_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['habitat'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         wormholes: {
             id: 'tech-wormholes',
             title: loc('tech_wormholes'),
