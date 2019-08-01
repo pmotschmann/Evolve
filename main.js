@@ -1649,7 +1649,8 @@ function fastLoop(){
 
             let powered_mult = 1;
             if (global.city.powered && p_on['cement_plant']){
-                powered_mult += (p_on['cement_plant'] * 0.05);
+                let rate = global.tech['cement'] >= 6 ? 0.08 : 0.05;
+                powered_mult += (p_on['cement_plant'] * rate);
             }
             
             let delta = factory_output * powered_mult;

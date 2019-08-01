@@ -2382,7 +2382,8 @@ export const actions = {
             },
             effect(){ 
                 if (global.tech['cement'] >= 5){
-                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div>${loc('city_cement_plant_effect2',[actions.city.cement_plant.powered,5])}</div>`;
+                    let screws = global.tech['cement'] >= 6 ? 8 : 5;
+                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div>${loc('city_cement_plant_effect2',[actions.city.cement_plant.powered,screws])}</div>`;
                 }
                 else {
                     return loc('city_cement_plant_effect1',[2]);
@@ -6623,7 +6624,7 @@ export const actions = {
         dynamite: {
             id: 'tech-dynamite',
             title: loc('tech_dynamite'),
-            desc: loc('tech_dynamite_desc'),
+            desc: loc('tech_dynamite'),
             reqs: { explosives: 1 },
             grant: ['explosives',2],
             cost: {
@@ -6641,7 +6642,7 @@ export const actions = {
         anfo: {
             id: 'tech-anfo',
             title: loc('tech_anfo'),
-            desc: loc('tech_anfo_desc'),
+            desc: loc('tech_anfo'),
             reqs: { explosives: 2, oil: 1 },
             grant: ['explosives',3],
             cost: {
@@ -6700,7 +6701,7 @@ export const actions = {
         rebar: {
             id: 'tech-rebar',
             title: loc('tech_rebar'),
-            desc: loc('tech_rebar_desc'),
+            desc: loc('tech_rebar'),
             reqs: { mining: 3, cement: 1 },
             grant: ['cement',2],
             cost: {
@@ -6718,7 +6719,7 @@ export const actions = {
         steel_rebar: {
             id: 'tech-steel_rebar',
             title: loc('tech_steel_rebar'),
-            desc: loc('tech_steel_rebar_desc'),
+            desc: loc('tech_steel_rebar'),
             reqs: { smelting: 2, cement: 2 },
             grant: ['cement',3],
             cost: {
@@ -6736,7 +6737,7 @@ export const actions = {
         portland_cement: {
             id: 'tech-portland_cement',
             title: loc('tech_portland_cement'),
-            desc: loc('tech_portland_cement_desc'),
+            desc: loc('tech_portland_cement'),
             reqs: { cement: 3, high_tech: 3 },
             grant: ['cement',4],
             cost: {
@@ -6753,7 +6754,7 @@ export const actions = {
         screw_conveyor: {
             id: 'tech-screw_conveyor',
             title: loc('tech_screw_conveyor'),
-            desc: loc('tech_screw_conveyor_desc'),
+            desc: loc('tech_screw_conveyor'),
             reqs: { cement: 4, high_tech: 4 },
             grant: ['cement',5],
             cost: {
@@ -6767,10 +6768,28 @@ export const actions = {
                 return false;
             }
         },
+        adamantite_screws: {
+            id: 'tech-adamantite_screws',
+            title: loc('tech_adamantite_screws'),
+            desc: loc('tech_adamantite_screws'),
+            reqs: { cement: 5, alpha: 2 },
+            grant: ['cement',6],
+            cost: {
+                Knowledge(){ return 500000; },
+                Adamantite(){ return 10000; }
+            },
+            effect: loc('tech_adamantite_screws_effect',[3]),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         hunter_process: {
             id: 'tech-hunter_process',
             title: loc('tech_hunter_process'),
-            desc: loc('tech_hunter_process_desc'),
+            desc: loc('tech_hunter_process'),
             reqs: { high_tech: 3, smelting: 2 },
             grant: ['titanium',1],
             cost: {
@@ -6789,7 +6808,7 @@ export const actions = {
         kroll_process: {
             id: 'tech-kroll_process',
             title: loc('tech_kroll_process'),
-            desc: loc('tech_kroll_process_desc'),
+            desc: loc('tech_kroll_process'),
             reqs: { titanium: 1, high_tech: 4 },
             grant: ['titanium',2],
             cost: {
@@ -6807,7 +6826,7 @@ export const actions = {
         cambridge_process: {
             id: 'tech-cambridge_process',
             title: loc('tech_cambridge_process'),
-            desc: loc('tech_cambridge_process_desc'),
+            desc: loc('tech_cambridge_process'),
             reqs: { titanium: 2, supercollider: 1 },
             grant: ['titanium',3],
             cost: {
@@ -6825,7 +6844,7 @@ export const actions = {
         pynn_partical: {
             id: 'tech-pynn_partical',
             title: loc('tech_pynn_partical'),
-            desc: loc('tech_pynn_partical_desc'),
+            desc: loc('tech_pynn_partical'),
             reqs: { supercollider: 1 },
             grant: ['particles',1],
             cost: {
@@ -6842,7 +6861,7 @@ export const actions = {
         matter_compression: {
             id: 'tech-matter_compression',
             title: loc('tech_matter_compression'),
-            desc: loc('tech_matter_compression_desc'),
+            desc: loc('tech_matter_compression'),
             reqs: { particles: 1 },
             grant: ['particles',2],
             cost: {
@@ -6859,7 +6878,7 @@ export const actions = {
         higgs_boson: {
             id: 'tech-higgs_boson',
             title: loc('tech_higgs_boson'),
-            desc: loc('tech_higgs_boson_desc'),
+            desc: loc('tech_higgs_boson'),
             reqs: { particles: 2, supercollider: 2 },
             grant: ['particles',3],
             cost: {
@@ -6876,7 +6895,7 @@ export const actions = {
         dimensional_compression: {
             id: 'tech-dimensional_compression',
             title: loc('tech_dimensional_compression'),
-            desc: loc('tech_dimensional_compression_desc'),
+            desc: loc('tech_dimensional_compression'),
             reqs: { particles: 3, science: 11, supercollider: 3 },
             grant: ['particles',4],
             cost: {
