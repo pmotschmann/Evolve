@@ -819,7 +819,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : 'interstellar';
@@ -959,7 +959,8 @@ function fastLoop(){
                 }
             }
             global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support;
-            global.interstellar.starport.s_max += p_on['habitat'];
+            global.interstellar.starport.s_max += p_on['habitat'] * actions.interstellar.int_alpha.habitat.support;
+            global.interstellar.starport.s_max += p_on['xfer_station'] * actions.interstellar.int_proxima.xfer_station.support;
         }
 
         // Droids
@@ -1045,6 +1046,20 @@ function fastLoop(){
                 }
             }
             global.space.space_station.support = used_support;
+        }
+
+        // Transfer Station
+        if (global.interstellar['xfer_station'] && p_on['xfer_station']){
+            let fuel_cost = 0.35;
+            let xfer_consume = p_on['xfer_station'] * fuel_cost;
+            breakdown.p.consume.Uranium['Xfer_Station'] = -(xfer_consume);
+            for (let i=0; i<p_on['xfer_station']; i++){
+                if (!modRes('Uranium', -(time_multiplier * fuel_cost))){
+                    xfer_consume -= (p_on['xfer_station'] * fuel_cost) - (i * fuel_cost);
+                    p_on['xfer_station'] -= i;
+                    break;
+                }
+            }
         }
 
         // Outpost
@@ -2716,10 +2731,15 @@ function midLoop(){
             caps['Uranium'] += gain;
             bd_Uranium[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
         }
+        if (p_on['xfer_station']){
+            let gain = (p_on['xfer_station'] * spatialReasoning(5000));
+            caps['Helium_3'] += gain;
+            bd_Helium['Xfer_Station'] = gain+'v';
+        }
         if (global.space['helium_mine']){
             let gain = (global.space['helium_mine'].count * spatialReasoning(100));
             caps['Helium_3'] += gain;
-            bd_Helium['Helium Mine'] = gain+'v';
+            bd_Helium['Helium_Mine'] = gain+'v';
         }
         if (global.city['university']){
             let multiplier = 1;

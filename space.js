@@ -1520,6 +1520,8 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('starport','interstellar');
+                    global.settings.space.proxima = true;
+                    global.settings.space.nebula = true;
                     if (global.city.power >= 10){
                         global.interstellar['starport'].on++;
                     }
@@ -1613,7 +1615,6 @@ const interstellarProjects = {
             },
             support: -1,
             powered: 1,
-            special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('processing','interstellar');
@@ -1642,7 +1643,6 @@ const interstellarProjects = {
             },
             support: -1,
             powered: 1,
-            special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('laboratory','interstellar');
@@ -1673,6 +1673,38 @@ const interstellarProjects = {
             effect: loc('interstellar_proxima_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.interstellar['xfer_station'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        xfer_station: {
+            id: 'interstellar-xfer_station',
+            title: loc('interstellar_xfer_station_title'),
+            desc: `<div>${loc('interstellar_xfer_station_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Uranium.name])}</div>`,
+            reqs: { proxima: 1 },
+            cost: {
+                Money(){ return costMultiplier('xfer_station', 1200000, 1.28, 'interstellar'); },
+                Neutronium(){ return costMultiplier('xfer_station', 1500, 1.28, 'interstellar'); },
+                Adamantite(){ return costMultiplier('xfer_station', 6000, 1.28, 'interstellar'); },
+                Polymer(){ return costMultiplier('xfer_station', 12000, 1.28, 'interstellar'); },
+                Wrought_Iron(){ return costMultiplier('xfer_station', 3500, 1.28, 'interstellar'); },
+            },
+            effect(){
+                let fuel = 0.35;
+                let helium = spatialReasoning(5000);
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+            },
+            support: 1,
+            powered: 4,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('xfer_station','interstellar');
+                    if (global.city.power >= 4){
+                        global.interstellar['xfer_station'].on++;
+                        global['resource']['Helium_3'].max += spatialReasoning(5000);
+                    }
                     return true;
                 }
                 return false;
