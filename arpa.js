@@ -1,4 +1,4 @@
-import { global, vues, poppers, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, vues, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
 import { actions, drawTech, addAction, removeAction } from './actions.js';
 import { races, traits } from './races.js';
 import { space } from './space.js';
@@ -840,7 +840,7 @@ function addProject(parent,project){
         parent.append(current);
 
         let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
-        let head = $(`<div class="head"><span class="desc has-text-warning">${title}</span><span v-show="rank" class="rank">Level - {{ rank }}</span></div>`);
+        let head = $(`<div class="head"><span aria-hidden="true" class="desc has-text-warning">${title}</span><a v-on:click="srDesc" class="is-sr-only">${title}</a><span aria-hidden="true" v-show="rank" class="rank">Level - {{ rank }}</span><a v-on:click="srLevel" class="is-sr-only">Level - {{ rank }}</a></div>`);
         current.append(head);
 
         let progress = $(`<div class="pbar"><progress class="progress" :value="complete" max="100"></progress><span class="progress-value has-text-danger">{{ complete }}%</span></div>`);
@@ -849,10 +849,10 @@ function addProject(parent,project){
         let buy = $('<div class="buy"></div>');
         current.append(buy);
 
-        buy.append($(`<button class="button x1" @click="build('${project}',1)">1%</button>`));
-        buy.append($(`<button class="button x10" @click="build('${project}',10)">10%</button>`));
-        buy.append($(`<button class="button x25" @click="build('${project}',25)">25%</button>`));
-        buy.append($(`<button class="button x100" @click="build('${project}',100)">{{ complete | remain }}%</button>`));
+        buy.append($(`<button :aria-label="arpaProjectSRCosts('1','${project}')" class="button x1" @click="build('${project}',1)">1%</button>`));
+        buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
+        buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
+        buy.append($(`<button :aria-label="arpaProjectSRCosts('100','${project}')" class="button x100" @click="build('${project}',100)">{{ complete | remain }}%</button>`));
 
         vues[`arpa${project}`] = new Vue({
             data: global.arpa[project],
@@ -887,6 +887,26 @@ function addProject(parent,project){
                             }
                         }
                     }
+                },
+                srDesc(){
+                    return srSpeak(arpaProjects[project].desc);
+                },
+                srLevel(){
+                    return srSpeak(arpaProjects[project].effect());
+                },
+                arpaProjectSRCosts(id,project){
+                    let inc = id === '100' ? 100 - global.arpa[project].complete : id;
+                    var cost = `Construct ${inc}%. Costs:`;
+                    var costs = adjustCosts(arpaProjects[project].cost);
+                    Object.keys(costs).forEach(function (res){
+                        var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
+                        if (res_cost > 0){
+                            var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
+                            var afford = global.resource[res].amount >= res_cost ? '' : ` ${loc('insufficient')} ${global.resource[res].name}.`;
+                            cost = cost + ` ${label} ${sizeApproximation(res_cost,2)}.${afford}`;
+                        }
+                    });
+                    return cost;
                 }
             },
             filters: {
@@ -930,17 +950,7 @@ function addProject(parent,project){
         for (let i=0; i<classes.length; i++){
             let id = classes[i];
             $(`#arpa${project} .buy .x${id}`).on('mouseover',function(){
-                let inc = id === '100' ? 100 - global.arpa[project].complete : id;
-                var cost = $('<div></div>');
-                var costs = adjustCosts(arpaProjects[project].cost);
-                Object.keys(costs).forEach(function (res){
-                    var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
-                    if (res_cost > 0){
-                        var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
-                        var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
-                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${sizeApproximation(res_cost,2)}</div>`));
-                    }
-                });
+                var cost = arpaProjectCosts(id,project);
                 var popper = $(`<div id="popArpa${project}" class="popper has-background-light has-text-dark"></div>`);
                 popper.append(cost);
                 $('#main').append(popper);
@@ -956,4 +966,19 @@ function addProject(parent,project){
             });
         }
     }
+}
+
+function arpaProjectCosts(id,project){
+    let inc = id === '100' ? 100 - global.arpa[project].complete : id;
+    var cost = $('<div></div>');
+    var costs = adjustCosts(arpaProjects[project].cost);
+    Object.keys(costs).forEach(function (res){
+        var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
+        if (res_cost > 0){
+            var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
+            var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
+            cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${sizeApproximation(res_cost,2)}</div>`));
+        }
+    });
+    return cost;
 }
