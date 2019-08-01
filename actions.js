@@ -4439,6 +4439,24 @@ export const actions = {
                 return false;
             }
         },
+        infernite_crates: {
+            id: 'tech-infernite_crates',
+            title: loc('tech_infernite_crates'),
+            desc: loc('tech_infernite_crates_desc'),
+            reqs: { container: 5, infernite: 1 },
+            grant: ['container',6],
+            cost: {
+                Knowledge(){ return 575000; },
+                Infernite(){ return 2500; }
+            },
+            effect: loc('tech_infernite_crates_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         steel_containers: {
             id: 'tech-steel_containers',
             title: loc('tech_steel_containers'),
@@ -4505,6 +4523,24 @@ export const actions = {
                 Mythril(){ return 500; }
             },
             effect: loc('tech_mythril_containers_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        adamantite_containers: {
+            id: 'tech-adamantite_containers',
+            title: loc('tech_adamantite_containers'),
+            desc: loc('tech_adamantite_containers_desc'),
+            reqs: { steel_container: 4, alpha: 2 },
+            grant: ['steel_container',5],
+            cost: {
+                Knowledge(){ return 525000; },
+                Adamantite(){ return 17500; }
+            },
+            effect: loc('tech_adamantite_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5199,7 +5235,29 @@ export const actions = {
                 }
                 return false;
             },
-            flair: `<div>Despite its dramatic name,</div><div>this does not smash actual worlds together.</div>`
+            flair: `<div>${loc('tech_world_collider_flair1')}</div><div>${loc('tech_world_collider_flair2')}</div>`
+        },
+        laboratory: {
+            id: 'tech-laboratory',
+            title: loc('tech_laboratory'),
+            desc: loc('tech_laboratory_desc'),
+            reqs: { science: 11, alpha: 2 },
+            grant: ['science',12],
+            cost: {
+                Knowledge(){ return 500000; }
+            },
+            effect(){ return loc('tech_laboratory_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['laboratory'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('tech_laboratory_flair')
         },
         bioscience: {
             id: 'tech-bioscience',

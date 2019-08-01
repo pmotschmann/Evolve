@@ -972,7 +972,7 @@ function fastLoop(){
 
         if (global.interstellar['starport']){
             let used_support = 0;
-            let structs = ['mining_droid','processing'];
+            let structs = ['mining_droid','processing','laboratory'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -2784,6 +2784,11 @@ function midLoop(){
             let gain = (moon_on['observatory'] * 5000);
             caps['Knowledge'] += gain;
             bd_Knowledge['Observatory'] = gain+'v';
+        }
+        if (global.interstellar['laboratory'] && alpha_on['laboratory'] > 0){
+            let gain = (alpha_on['laboratory'] * 10000);
+            caps['Knowledge'] += gain;
+            bd_Knowledge['Laboratory'] = gain+'v';
         }
         if (global.city['biolab']){
             caps['Knowledge'] += (p_on['biolab'] * 3000);

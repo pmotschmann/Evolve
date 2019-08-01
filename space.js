@@ -1625,6 +1625,36 @@ const interstellarProjects = {
                 return false;
             }
         },
+        laboratory: {
+            id: 'interstellar-laboratory',
+            title: loc('interstellar_laboratory_title'),
+            desc: `<div>${loc('interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            reqs: { science: 12 },
+            cost: {
+                Money(){ return costMultiplier('laboratory', 750000, 1.28, 'interstellar'); },
+                Titanium(){ return costMultiplier('laboratory', 120000, 1.28, 'interstellar'); },
+                Alloy(){ return costMultiplier('laboratory', 95000, 1.28, 'interstellar'); },
+                Mythril(){ return costMultiplier('laboratory', 8500, 1.28, 'interstellar'); }
+            },
+            effect(){
+                let know = 10000;
+                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
+            },
+            support: -1,
+            powered: 1,
+            special: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('laboratory','interstellar');
+                    if (global.interstellar.starport.support < global.interstellar.starport.s_max){
+                        global.interstellar.laboratory.on++;
+                        global.resource.Knowledge.max += 10000;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     int_proxima: {
         info: {
@@ -1763,6 +1793,7 @@ const structDefinitions = {
     mining_droid: { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 },
     processing: { count: 0, on: 0 },
     habitat: { count: 0, on: 0 },
+    laboratory: { count: 0, on: 0 },
 };
 
 function incrementStruct(struct,sector){

@@ -24,7 +24,7 @@ export const resource_values = {
     Elerium: 2000,
     Neutronium: 1500,
     Adamantite: 2250,
-    //Infernite: 2750,
+    Infernite: 2750,
     Nano_Tube: 750,
     //Graphene: 3000,
     //Stanene: 3600,
@@ -159,7 +159,7 @@ export function defineResources(){
         loadResource('Helium_3',0,1,true,false);
         loadResource('Neutronium',0,1,false,false,'advanced');
         loadResource('Adamantite',0,1,false,true,'advanced');
-        //loadResource('Infernite',0,1,false,false,'advanced');
+        loadResource('Infernite',0,1,false,false,'advanced');
         loadResource('Elerium',1,1,false,false,'advanced');
         loadResource('Nano_Tube',0,1,false,false,'advanced');
         //loadResource('Graphene',0,1,false,true,'advanced');
@@ -1030,6 +1030,9 @@ export function crateValue(){
     if (global.tech['container'] && global.tech['container'] >= 4){
         create_value += global.tech['container'] >= 5 ? 500 : 250;
     }
+    if (global.tech['container'] && global.tech['container'] >= 6){
+        create_value += 500;
+    }
     create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
     return spatialReasoning(Math.round(create_value));
 }
@@ -1040,7 +1043,7 @@ export function containerValue(){
         container_value += global.tech.steel_container >= 3 ? 100 : 50;
     }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 4){
-        container_value += 400;
+        container_value += global.tech['steel_container'] >= 5 ? 1000 : 400;
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
     return spatialReasoning(Math.round(container_value));
