@@ -1,6 +1,7 @@
 #### 0.5.0 - ??? ####
 Deep Space is now unlockable<br>
 Interdimensional Travel is now unlockable<br>
+New mangement tab for Crates & Containers<br>
 Leathery trait buffed<br>
 
 #### 0.4.36 - 7/27/2019 ####

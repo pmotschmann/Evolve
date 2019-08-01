@@ -282,6 +282,9 @@ if (!global.settings['showAchieve']){
 if (!global.settings['resTabs']){
     global.settings['resTabs'] = 0;
 }
+if (!global.settings['marketTabs']){
+    global.settings['marketTabs'] = 0;
+}
 if (!global.settings['spaceTabs']){
     global.settings['spaceTabs'] = 0;
 }

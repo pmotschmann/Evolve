@@ -116,7 +116,6 @@ export function craftingRatio(res){
     return multiplier;
 }
 
-
 if (global.resource[races[global.race.species].name]){
     global.resource[global.race.species] = global.resource[races[global.race.species].name];
     delete global.resource[races[global.race.species].name];
@@ -134,6 +133,7 @@ export function defineResources(){
     }
     else {
         initMarket();
+        initStorage();
         loadResource('Money',1000,1,false,false,'success');
         loadResource(global.race.species,0,0,false,false,'warning');
         loadResource('Knowledge',100,1,false,false,'warning');
@@ -174,6 +174,7 @@ export function defineResources(){
         loadResource('Mythril',-1,0,false,false,'danger');
         //loadResource('Aerogel',-1,0,false,false,'danger');
         loadRouteCounter();
+        loadContainerCounter();
     }
     loadSpecialResource('Plasmid');
     loadSpecialResource('Phage');
@@ -379,6 +380,9 @@ function loadResource(name,max,rate,tradable,stackable,color){
             poppers[name].destroy();
             $(`#popContainer${name}`).remove();
         });
+        var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
+        $('#resStorage').append(market_item);
+        containerItem(`stack_${name}`,`#stack-${name}`,market_item,name,color,true);
     }
 
     if (name !== races[global.race.species].name && name !== 'Crates' && name !== 'Containers'){
@@ -572,6 +576,104 @@ function marketItem(vue,mount,market_item,name,color,full){
     vues[vue].$mount(mount);
 }
 
+function unassignCrate(res){
+    let keyMutipler = keyMultiplier();
+    let cap = crateValue();
+    if (keyMutipler > global.resource[res].crates){
+        keyMutipler = global.resource[res].crates;
+    }
+    if (keyMutipler > 0){
+        global.resource.Crates.amount += keyMutipler;
+        global.resource.Crates.max += keyMutipler;
+        global.resource[res].crates -= keyMutipler;
+        global.resource[res].max -= (cap * keyMutipler);
+    }
+}
+
+function assignCrate(res){
+    let keyMutipler = keyMultiplier();
+    let cap = crateValue();
+    if (keyMutipler > global.resource.Crates.amount){
+        keyMutipler = global.resource.Crates.amount;
+    }
+    if (keyMutipler > 0){
+        global.resource.Crates.amount -= keyMutipler;
+        global.resource.Crates.max -= keyMutipler;
+        global.resource[res].crates += keyMutipler;
+        global.resource[res].max += (cap * keyMutipler);
+    }
+}
+
+function unassignContainer(res){
+    let keyMutipler = keyMultiplier();
+    let cap = containerValue();
+    if (keyMutipler > global.resource[res].containers){
+        keyMutipler = global.resource[res].containers;
+    }
+    if (keyMutipler > 0){
+        global.resource.Containers.amount += keyMutipler;
+        global.resource.Containers.max += keyMutipler;
+        global.resource[res].containers -= keyMutipler;
+        global.resource[res].max -= (cap * keyMutipler);
+    }
+}
+
+function assignContainer(res){
+    let keyMutipler = keyMultiplier();
+    let cap = containerValue();
+    if (keyMutipler > global.resource.Containers.amount){
+        keyMutipler = global.resource.Containers.amount;
+    }
+    if (keyMutipler > 0){
+        global.resource.Containers.amount -= keyMutipler;
+        global.resource.Containers.max -= keyMutipler;
+        global.resource[res].containers += keyMutipler;
+        global.resource[res].max += (cap * keyMutipler);
+    }
+}
+
+function containerItem(vue,mount,market_item,name,color){
+
+    market_item.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
+
+    if (global.resource.Crates.display){
+        let crate = $(`<span class="trade"><span class="has-text-warning">${loc('resource_Crates_name')}</span></span>`);
+        market_item.append(crate);
+
+        crate.append($(`<span role="button" aria-label="remove ${name} ${loc('resource_Crates_name')}" class="sub has-text-danger" @click="subCrate('${name}')">&laquo;</span>`));
+        crate.append($(`<span class="current">{{ crates }}</span>`));
+        crate.append($(`<span role="button" aria-label="add ${name} ${loc('resource_Crates_name')}" class="add has-text-success" @click="addCrate('${name}')">&raquo;</span>`));
+    }
+
+    if (global.resource.Containers.display){
+        let container = $(`<span class="trade"><span class="has-text-warning">${loc('resource_Containers_name')}</span></span>`);
+        market_item.append(container);
+
+        container.append($(`<span role="button" aria-label="remove ${name} ${loc('resource_Containers_name')}" class="sub has-text-danger" @click="subCon('${name}')">&laquo;</span>`));
+        container.append($(`<span class="current">{{ containers }}</span>`));
+        container.append($(`<span role="button" aria-label="add ${name} ${loc('resource_Containers_name')}" class="add has-text-success" @click="addCon('${name}')">&raquo;</span>`));
+    }
+
+    vues[vue] = new Vue({
+        data: global.resource[name],
+        methods: {
+            addCrate(res){
+                assignCrate(res);
+            },
+            subCrate(res){
+                unassignCrate(res);
+            },
+            addCon(res){
+                assignContainer(res);
+            },
+            subCon(res){
+                unassignContainer(res);
+            }
+        }
+    });
+    vues[vue].$mount(mount);
+}
+
 export function tradeSellPrice(res){
     let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
     if (global.race['conniving']){
@@ -734,6 +836,19 @@ function loadRouteCounter(){
     vues['market_totals'].$mount('#tradeTotal');
 }
 
+function loadContainerCounter(){
+    var market_item = $(`<div id="crateTotal" class="market-item"><span v-show="cr.display" class="crtTotal"><span class="has-text-warning">${loc('resource_Crates_name')}</span><span>{{ cr.amount }} / {{ cr.max }}</span></span><span v-show="cn.display" class="cntTotal"><span class="has-text-warning">${loc('resource_Containers_name')}</span><span>{{ cn.amount }} / {{ cn.max }}</span></span></div>`);
+    $('#resStorage').append(market_item);
+
+    vues['crate_totals'] = new Vue({
+        data: {
+            cr: global.resource.Crates,
+            cn: global.resource.Containers
+        }
+    });
+    vues['crate_totals'].$mount('#crateTotal');
+}
+
 function tradeRouteColor(res){
     $(`#market-${res} .trade .current`).removeClass('has-text-warning');
     $(`#market-${res} .trade .current`).removeClass('has-text-danger');
@@ -749,6 +864,46 @@ function tradeRouteColor(res){
     }
 }
 
+function buildCrateLabel(){
+    let material = global.race['kindling_kindred'] ? global.resource.Stone.name : global.resource.Plywood.name;
+    let cost = global.race['kindling_kindred'] ? 200 : 10
+    return loc('resource_modal_crate_construct_desc',[cost,material]);
+}
+
+function buildContainerLabel(){
+    return loc('resource_modal_container_construct_desc');
+}
+
+function buildCrate(){
+    let keyMutipler = keyMultiplier();
+    let material = global.race['kindling_kindred'] ? 'Stone' : 'Plywood';
+    let cost = global.race['kindling_kindred'] ? 200 : 10;
+    if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
+        keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;
+    }
+    if (global.resource[material].amount < cost * keyMutipler){
+        keyMutipler = Math.floor(global.resource[material].amount / cost);
+    }
+    if (global.resource[material].amount >= (cost * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
+        modRes(material,-(cost * keyMutipler));
+        global.resource.Crates.amount += keyMutipler;
+    }
+}
+
+function buildContainer(){
+    let keyMutipler = keyMultiplier();
+    if (keyMutipler + global.resource.Containers.amount > global.resource.Containers.max){
+        keyMutipler = global.resource.Containers.max - global.resource.Containers.amount;
+    }
+    if (global.resource['Steel'].amount < 125 * keyMutipler){
+        keyMutipler = Math.floor(global.resource['Steel'].amount / 125);
+    }
+    if (global.resource['Steel'].amount >= (125 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
+        modRes('Steel',-(125 * keyMutipler));
+        global.resource.Containers.amount += keyMutipler;
+    }
+}
+
 function drawModal(name,color){
     $('#modalBox').append($('<p id="modalBoxTitle" class="has-text-warning modalTitle">{{ name }} - {{ amount | size }}/{{ max | size }}</p>'));
     
@@ -761,59 +916,25 @@ function drawModal(name,color){
             res: global['resource'][name],
         },
         methods: {
-            buildCrateLabel: function(){
-                let material = global.race['kindling_kindred'] ? global.resource.Stone.name : global.resource.Plywood.name;
-                let cost = global.race['kindling_kindred'] ? 200 : 10
-                return loc('resource_modal_crate_construct_desc',[cost,material]);
+            buildCrateLabel(){
+                return buildCrateLabel();
             },
-            removeCrateLabel: function(){
+            removeCrateLabel(){
                 let cap = crateValue();
                 return loc('resource_modal_crate_unassign_desc',[cap]);
             },
-            addCrateLabel: function(){
+            addCrateLabel(){
                 let cap = crateValue();
                 return loc('resource_modal_crate_assign_desc',[cap]);
             },
-            buildCrate: function(){
-                let keyMutipler = keyMultiplier();
-                let material = global.race['kindling_kindred'] ? 'Stone' : 'Plywood';
-                let cost = global.race['kindling_kindred'] ? 200 : 10;
-                if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
-                    keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;
-                }
-                if (global.resource[material].amount < cost * keyMutipler){
-                    keyMutipler = Math.floor(global.resource[material].amount / cost);
-                }
-                if (global.resource[material].amount >= (cost * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
-                    modRes(material,-(cost * keyMutipler));
-                    global.resource.Crates.amount += keyMutipler;
-                }
+            buildCrate(){
+                buildCrate();
             },
-            removeCrate: function(res){
-                let keyMutipler = keyMultiplier();
-                let cap = crateValue();
-                if (keyMutipler > global.resource[res].crates){
-                    keyMutipler = global.resource[res].crates;
-                }
-                if (keyMutipler > 0){
-                    global.resource.Crates.amount += keyMutipler;
-                    global.resource.Crates.max += keyMutipler;
-                    global.resource[res].crates -= keyMutipler;
-                    global.resource[res].max -= (cap * keyMutipler);
-                }
+            subCrate(res){
+                unassignCrate(res);
             },
-            addCrate: function(res){
-                let keyMutipler = keyMultiplier();
-                let cap = crateValue();
-                if (keyMutipler > global.resource.Crates.amount){
-                    keyMutipler = global.resource.Crates.amount;
-                }
-                if (keyMutipler > 0){
-                    global.resource.Crates.amount -= keyMutipler;
-                    global.resource.Crates.max -= keyMutipler;
-                    global.resource[res].crates += keyMutipler;
-                    global.resource[res].max += (cap * keyMutipler);
-                }
+            addCrate(res){
+                assignCrate(res);
             }
         }
     });
@@ -824,7 +945,7 @@ function drawModal(name,color){
     crates.append($(`<div class="crateHead"><span>${loc('resource_modal_crate_owned')} {{ crates.amount }}/{{ crates.max }}</span><span>${loc('resource_modal_crate_assigned')} {{ res.crates }}</span></div>`));
     
     let buildCrate = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
-    let removeCrate = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="removeCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
+    let removeCrate = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
     let addCrate = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button></b-tooltip>`);
     
     crates.append(buildCrate);
@@ -840,55 +961,25 @@ function drawModal(name,color){
                 res: global['resource'][name],
             },
             methods: {
-                buildContainerLabel: function(){
-                    return loc('resource_modal_container_construct_desc');
+                buildContainerLabel(){
+                    return buildContainerLabel();
                 },
-                removeContainerLabel: function(){
+                removeContainerLabel(){
                     let cap = containerValue();
                     return loc('resource_modal_container_unassign_desc',[cap]);
                 },
-                addContainerLabel: function(){
+                addContainerLabel(){
                     let cap = containerValue();
                     return loc('resource_modal_container_assign_desc',[cap]);
                 },
-                buildContainer: function(){
-                    let keyMutipler = keyMultiplier();
-                    if (keyMutipler + global.resource.Containers.amount > global.resource.Containers.max){
-                        keyMutipler = global.resource.Containers.max - global.resource.Containers.amount;
-                    }
-                    if (global.resource['Steel'].amount < 125 * keyMutipler){
-                        keyMutipler = Math.floor(global.resource['Steel'].amount / 125);
-                    }
-                    if (global.resource['Steel'].amount >= (125 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
-                        modRes('Steel',-(125 * keyMutipler));
-                        global.resource.Containers.amount += keyMutipler;
-                    }
+                buildContainer(){
+                    buildContainer();
                 },
-                removeContainer: function(res){
-                    let keyMutipler = keyMultiplier();
-                    let cap = containerValue();
-                    if (keyMutipler > global.resource[res].containers){
-                        keyMutipler = global.resource[res].containers;
-                    }
-                    if (keyMutipler > 0){
-                        global.resource.Containers.amount += keyMutipler;
-                        global.resource.Containers.max += keyMutipler;
-                        global.resource[res].containers -= keyMutipler;
-                        global.resource[res].max -= (cap * keyMutipler);
-                    }
+                removeContainer(res){
+                    unassignContainer(res);
                 },
-                addContainer: function(res){
-                    let keyMutipler = keyMultiplier();
-                    let cap = containerValue();
-                    if (keyMutipler > global.resource.Containers.amount){
-                        keyMutipler = global.resource.Containers.amount;
-                    }
-                    if (keyMutipler > 0){
-                        global.resource.Containers.amount -= keyMutipler;
-                        global.resource.Containers.max -= keyMutipler;
-                        global.resource[res].containers += keyMutipler;
-                        global.resource[res].max += (cap * keyMutipler);
-                    }
+                addContainer(res){
+                    assignContainer(res);
                 }
             }
         });
@@ -960,6 +1051,41 @@ export function initMarket(){
     $('#market').empty();
     $('#market').append(market);
     loadMarket();
+}
+
+export function initStorage(){
+    let store = $(`<div id="createHead" class="storage-header"><h2 class="is-sr-only">${loc('tab_storage')}</h2</div>`);
+    $('#resStorage').empty();
+    $('#resStorage').append(store);
+    
+    store.append($(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" class="crate" animated><button :aria-label="buildCrateLabel()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
+    store.append($(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" class="container" animated><button :aria-label="buildContainerLabel()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
+
+    if (vues['store_head']){
+        vues['store_head'].$destroy();
+    }
+
+    vues['store_head'] = new Vue({
+        data: {
+            cr: global.resource.Crates,
+            cn: global.resource.Containers
+        },
+        methods: {
+            crate(){
+                buildCrate();
+            },
+            container(){
+                buildContainer();
+            },
+            buildCrateLabel(){
+                return buildCrateLabel();
+            },
+            buildContainerLabel(){
+                return buildContainerLabel();
+            },
+        }
+    });
+    vues['store_head'].$mount('#createHead');
 }
 
 export function loadMarket(){

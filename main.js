@@ -21,6 +21,7 @@ if (Object.keys(locales).length > 1){
 }
 
 let settings = {
+    el: '#mainColumn div:first-child',
     data: global.settings,
     methods: {
         lChange(){
@@ -112,7 +113,6 @@ let settings = {
 }
 
 vues['vue_tabs'] = new Vue(settings);
-vues['vue_tabs'].$mount('#tabs');
 
 if (global['new']){
     messageQueue(loc('new'), 'warning');
@@ -154,82 +154,84 @@ vues['race'] = new Vue({
 vues['race'].$mount('#race');
 
 var moraleCap = 125;
+var moralePopper;
 $('#morale').on('mouseover',function(){
-    var popper = $(`<div id="popMorale" class="popper has-background-light has-text-dark"></div>`);
-    $('#main').append(popper);
+    moralePopper = $(`<div class="popper has-background-light has-text-dark"></div>`);
+    $('#main').append(moralePopper);
     if (global.city.morale.unemployed !== 0){
         let type = global.city.morale.unemployed > 0 ? 'success' : 'danger';
-        popper.append(`<p>${loc('morale_unemployed')}<span class="has-text-${type}"> ${global.city.morale.unemployed}%</span></p>`);
+        moralePopper.append(`<p>${loc('morale_unemployed')}<span class="has-text-${type}"> ${global.city.morale.unemployed}%</span></p>`);
     }
     if (global.city.morale.stress !== 0){
         let type = global.city.morale.stress > 0 ? 'success' : 'danger';
-        popper.append(`<p>${loc('morale_stress')}<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
+        moralePopper.append(`<p>${loc('morale_stress')}<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
     }
     if (global.city.morale.leadership !== 0){
         let type = global.city.morale.leadership > 0 ? 'success' : 'danger';
-        popper.append(`<p>${loc('morale_leadership')}<span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
+        moralePopper.append(`<p>${loc('morale_leadership')}<span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
     }
     if (global.city.morale.warmonger !== 0){
         let type = global.city.morale.warmonger > 0 ? 'success' : 'danger';
-        popper.append(`<p>${loc('morale_warmonger')}<span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
+        moralePopper.append(`<p>${loc('morale_warmonger')}<span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
     }
     if (global.city.morale.entertain !== 0){
         let type = global.city.morale.entertain > 0 ? 'success' : 'danger';
-        popper.append(`<p>${loc('morale_entertainment')}<span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
+        moralePopper.append(`<p>${loc('morale_entertainment')}<span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
     }
     if (global.city.morale.season !== 0){
         let season = global.city.calendar.season === 0 ? loc('morale_spring') : loc('morale_winter');
         let type = global.city.morale.season > 0 ? 'success' : 'danger';
-        popper.append(`<p>${season}<span class="has-text-${type}"> ${global.city.morale.season}%</span></p>`);
+        moralePopper.append(`<p>${season}<span class="has-text-${type}"> ${global.city.morale.season}%</span></p>`);
     }
     if (global.city.morale.weather !== 0){
         let type = global.city.morale.weather > 0 ? 'success' : 'danger';
-        popper.append(`<p>${loc('morale_weather')}<span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
+        moralePopper.append(`<p>${loc('morale_weather')}<span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
     }
     if (global.city.morale.tax !== 0){
         let type = global.city.morale.tax > 0 ? 'success' : 'danger';
-        popper.append(`<p>${loc('morale_taxes')}<span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
+        moralePopper.append(`<p>${loc('morale_taxes')}<span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
     }
     let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership;
     if (global.city.morale['frenzy']){
         let type = global.city.morale.frenzy > 0 ? 'success' : 'danger';
-        popper.append(`<p>${loc('morale_frenzy')}<span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
+        moralePopper.append(`<p>${loc('morale_frenzy')}<span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
     }
     
     if (total > moraleCap || total < 50){
-        popper.append(`<div>${loc('morale_current')}<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
+        moralePopper.append(`<div>${loc('morale_current')}<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
     }
     else {
-        popper.append(`<div>${loc('morale_current')}<span class="has-text-warning"> ${global.city.morale.current}%</span></div>`);
+        moralePopper.append(`<div>${loc('morale_current')}<span class="has-text-warning"> ${global.city.morale.current}%</span></div>`);
     }
-    popper.show();
-    poppers['morale'] = new Popper($('#morale'),popper);
+    moralePopper.show();
+    poppers['morale'] = new Popper($('#morale'),moralePopper);
 });
 $('#morale').on('mouseout',function(){
-    $(`#popMorale`).hide();
+    moralePopper.hide();
     poppers['morale'].destroy();
-    $(`#popMorale`).remove();
+    moralePopper.remove();
 });
 
+var powerPopper;
 $('#powerStatus').on('mouseover',function(){
-    var popper = $(`<div id="popPowerStatus" class="popper has-background-light has-text-dark"></div>`);
-    $('#main').append(popper);
+    powerPopper = $(`<div class="popper has-background-light has-text-dark"></div>`);
+    $('#main').append(powerPopper);
     let drain = global.city.power_total - global.city.power;
-    popper.append(`<p>${loc('power_generated')}<span class="has-text-success"> +${global.city.power_total}</span></p>`);
-    popper.append(`<p>${loc('power_consumed')}<span class="has-text-danger"> -${drain}</span></p>`);
+    powerPopper.append(`<p>${loc('power_generated')}<span class="has-text-success"> +${global.city.power_total}</span></p>`);
+    powerPopper.append(`<p>${loc('power_consumed')}<span class="has-text-danger"> -${drain}</span></p>`);
     if (global.city.power > 0){
-        popper.append(`<div>${loc('power_available')} <span class="has-text-success">${global.city.power}</span></div>`);
+        powerPopper.append(`<div>${loc('power_available')} <span class="has-text-success">${global.city.power}</span></div>`);
     }
     else {
-        popper.append(`<div>${loc('power_available')} <span class="has-text-danger">${global.city.power}</span></div>`);
+        powerPopper.append(`<div>${loc('power_available')} <span class="has-text-danger">${global.city.power}</span></div>`);
     }
-    popper.show();
-    poppers['PowerStatus'] = new Popper($('#powerStatus'),popper);
+    powerPopper.show();
+    poppers['PowerStatus'] = new Popper($('#powerStatus'),powerPopper);
 });
 $('#powerStatus').on('mouseout',function(){
-    $(`#popPowerStatus`).hide();
+    powerPopper.hide();
     poppers['PowerStatus'].destroy();
-    $(`#popPowerStatus`).remove();
+    powerPopper.remove();
 });
 
 vues['topBar'] = new Vue({
@@ -3725,6 +3727,16 @@ function resourceAlt(){
     });
     alt = false;
     $('#market .market-item:visible').each(function(){
+        if (alt){
+            $(this).addClass('alt');
+            alt = false;
+        }
+        else {
+            $(this).removeClass('alt');
+            alt = true;
+        }
+    });
+    $('#resStorage .market-item:visible').each(function(){
         if (alt){
             $(this).addClass('alt');
             alt = false;
