@@ -1026,6 +1026,8 @@ function warhead(){
     global.settings.showMarket = false;
     global.settings.showGenetics = false;
     global.settings.showSpace = false;
+    global.settings.showDeep = false;
+    global.settings.showPortal = false;
     global.settings.space.home = true;
     global.settings.space.moon = false;
     global.settings.space.red = false;

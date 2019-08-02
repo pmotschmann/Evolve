@@ -58,17 +58,17 @@
                     <h2 class="is-sr-only">Tab Navigation</h2>
                     <b-tabs v-model="civTabs" :animated="animated">
                         <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
-                        <b-tab-item id="city" :visible="showCity">
+                        <b-tab-item id="civilization" :visible="showCity">
                             <template slot="header">
-                                <h2 class="is-sr-only">{{ 'city' | label }}</h2>
-                                <span aria-hidden="true">{{ 'city' | label }}</span>
-                            </template>
-                        </b-tab-item>
-                        <b-tab-item :visible="showSpace">
-                            <template slot="header">
-                                {{ 'tab_space' | label }}
+                                {{ 'tab_civil' | label }}
                             </template>
                             <b-tabs class="resTabs" v-model="spaceTabs" :animated="animated">
+                                <b-tab-item id="city" :visible="showCity">
+                                    <template slot="header">
+                                        <h2 class="is-sr-only">{{ 'city' | label }}</h2>
+                                        <span aria-hidden="true">{{ 'city' | label }}</span>
+                                    </template>
+                                </b-tab-item>
                                 <b-tab-item id="space" :visible="showSpace">
                                     <template slot="header">
                                         <h2 class="is-sr-only">{{ 'local_space' | label }}</h2>

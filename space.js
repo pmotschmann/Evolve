@@ -1682,7 +1682,7 @@ const interstellarProjects = {
         xfer_station: {
             id: 'interstellar-xfer_station',
             title: loc('interstellar_xfer_station_title'),
-            desc: `<div>${loc('interstellar_xfer_station_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Uranium.name])}</div>`,
+            desc(){ return `<div>${loc('interstellar_xfer_station_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Uranium.name])}</div>`; },
             reqs: { proxima: 1 },
             cost: {
                 Money(){ return costMultiplier('xfer_station', 1200000, 1.28, 'interstellar'); },

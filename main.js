@@ -71,29 +71,34 @@ let settings = {
         label(lbl){
             switch (lbl){
                 case 'city':
-                    if (global.resource[global.race.species].amount <= 5){
-                        return loc('tab_city1');
-                    }
-                    else if (global.resource[global.race.species].amount <= 20){
-                        return loc('tab_city2');
-                    }
-                    else if (global.resource[global.race.species].amount <= 75){
-                        return loc('tab_city3');
-                    }
-                    else if (global.resource[global.race.species].amount <= 250){
-                        return loc('tab_city4');
-                    }
-                    else if (global.resource[global.race.species].amount <= 600){
-                        return loc('tab_city5');
-                    }
-                    else if (global.resource[global.race.species].amount <= 1200){
-                        return loc('tab_city6');
-                    }
-                    else if (global.resource[global.race.species].amount <= 2500){
-                        return loc('tab_city7');
+                    if (global.resource[global.race.species]){
+                        if (global.resource[global.race.species].amount <= 5){
+                            return loc('tab_city1');
+                        }
+                        else if (global.resource[global.race.species].amount <= 20){
+                            return loc('tab_city2');
+                        }
+                        else if (global.resource[global.race.species].amount <= 75){
+                            return loc('tab_city3');
+                        }
+                        else if (global.resource[global.race.species].amount <= 250){
+                            return loc('tab_city4');
+                        }
+                        else if (global.resource[global.race.species].amount <= 600){
+                            return loc('tab_city5');
+                        }
+                        else if (global.resource[global.race.species].amount <= 1200){
+                            return loc('tab_city6');
+                        }
+                        else if (global.resource[global.race.species].amount <= 2500){
+                            return loc('tab_city7');
+                        }
+                        else {
+                            return loc('tab_city8');
+                        }
                     }
                     else {
-                        return loc('tab_city8');
+                        return loc('tab_city1');
                     }
                 case 'local_space':
                     return loc('sol_system',[races[global.race.species].name]);
