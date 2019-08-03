@@ -57,8 +57,12 @@
                 <div class="content">
                     <h2 class="is-sr-only">Tab Navigation</h2>
                     <b-tabs v-model="civTabs" :animated="animated">
-                        <b-tab-item id="evolution" :visible="showEvolve" label="Evolve"></b-tab-item>
-                        <b-tab-item id="civilization" :visible="showCity">
+                        <b-tab-item id="evolution" :visible="showEvolve">
+                            <template slot="header">
+                                {{ 'tab_evolve' | label }}
+                            </template>
+                        </b-tab-item>
+                        <b-tab-item :visible="showCity">
                             <template slot="header">
                                 {{ 'tab_civil' | label }}
                             </template>
@@ -94,7 +98,7 @@
                                 {{ 'tab_civics' | label }}
                             </template>
                         </b-tab-item>
-                        <b-tab-item id="research" :visible="showResearch">
+                        <b-tab-item :visible="showResearch">
                             <template slot="header">
                                 {{ 'tab_research' | label }}
                             </template>
@@ -130,7 +134,7 @@
                                 </b-tab-item>
                             </b-tabs>
                         </b-tab-item>
-                        <b-tab-item id="genetics" :visible="showGenetics" label="A.R.P.A.">
+                        <b-tab-item :visible="showGenetics" label="A.R.P.A.">
                             <div id="apra" class="arpa">
                                 <b-tabs v-model="arpa.arpaTabs" :animated="animated">
                                     <b-tab-item id="arpaPhysics" :visible="arpa.physics" label="Projects"></b-tab-item>
@@ -144,7 +148,7 @@
                                 {{ 'tab_stats' | label }}
                             </template>
                         </b-tab-item>
-                        <b-tab-item id="settings">
+                        <b-tab-item>
                             <template slot="header">
                                 {{ 'tab_settings' | label }}
                             </template>
