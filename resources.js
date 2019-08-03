@@ -944,13 +944,13 @@ function drawModal(name,color){
     
     crates.append($(`<div class="crateHead"><span>${loc('resource_modal_crate_owned')} {{ crates.amount }}/{{ crates.max }}</span><span>${loc('resource_modal_crate_assigned')} {{ res.crates }}</span></div>`));
     
-    let buildCrate = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
-    let removeCrate = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
-    let addCrate = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button></b-tooltip>`);
+    let buildCr = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
+    let removeCr = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
+    let addCr = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button></b-tooltip>`);
     
-    crates.append(buildCrate);
-    crates.append(removeCrate);
-    crates.append(addCrate);
+    crates.append(buildCr);
+    crates.append(removeCr);
+    crates.append(addCr);
     
     vues['modalCrates'].$mount('#modalCrates');
     
@@ -991,13 +991,13 @@ function drawModal(name,color){
         
         let position = global.race['terrifying'] ? 'is-top' : 'is-bottom';
 
-        let buildContainer = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
-        let removeContainer = $(`<b-tooltip :label="removeContainerLabel()" position="${position}" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
-        let addContainer = $(`<b-tooltip :label="addContainerLabel()" position="${position}" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
+        let buildCon = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
+        let removeCon = $(`<b-tooltip :label="removeContainerLabel()" position="${position}" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
+        let addCon = $(`<b-tooltip :label="addContainerLabel()" position="${position}" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
         
-        containers.append(buildContainer);
-        containers.append(removeContainer);
-        containers.append(addContainer);
+        containers.append(buildCon);
+        containers.append(removeCon);
+        containers.append(addCon);
         
         vues['modalContainer'].$mount('#modalContainers');
     }
