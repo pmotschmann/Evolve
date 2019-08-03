@@ -1011,6 +1011,7 @@ function warhead(){
     };
     global.space = {};
     global.interstellar = {};
+    global.portal = {};
     global.starDock = {};
     global.civic = { free: 0 };
     global.resource = {};

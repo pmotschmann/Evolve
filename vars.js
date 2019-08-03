@@ -7,6 +7,7 @@ export var global = {
     city: {},
     space: {},
     interstellar: {},
+    portal: {},
     civic: { free: 0 },
     race: {},
     genes: {},
@@ -204,6 +205,10 @@ if (convertVersion(global['version']) < 4031){
         global.tech['wind_plant'] = 1;
         global.tech['hunting'] = 2;
     }
+}
+
+if (convertVersion(global['version']) < 5000){
+    global['portal'] = {};
 }
 
 global['version'] = '0.5.0';
@@ -735,6 +740,7 @@ window.soft_reset = function reset(){
 
     global.space = {};
     global.interstellar = {};
+    global.portal = {};
     global.starDock = {};
     global.civic = { free: 0 };
     global.resource = {};

@@ -6,6 +6,7 @@ import { defineResources, loadMarket, spatialReasoning, resource_values } from '
 import { loadFoundry } from './jobs.js';
 import { defineGarrison, buildGarrison, armyRating, challenge_multiplier } from './civics.js';
 import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
+import { renderFortress } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
 
 export const actions = {
@@ -7981,6 +7982,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.settings.showPortal = true;
+                    var tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    renderFortress();
                     return true;
                 }
                 return false;
@@ -9742,6 +9746,7 @@ function bioseed(){
     };
     global.space = {};
     global.interstellar = {};
+    global.portal = {};
     global.starDock = {};
     global.civic = { free: 0 };
     global.resource = {};
