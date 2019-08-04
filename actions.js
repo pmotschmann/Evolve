@@ -7986,6 +7986,14 @@ export const actions = {
                     global.civic.hell_surveyor.display = true;
                     var tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
+                    global.portal['fortress'] = {
+                        threat: 10000,
+                        garrison: 0,
+                        walls: 100,
+                        patrols: 0,
+                        patrol_size: 1,
+                        notify: true,
+                    };
                     renderFortress();
                     return true;
                 }
@@ -8935,8 +8943,8 @@ function smelterModal(modal){
     if (!global.race['kindling_kindred']){
         let f_label = global.race['evil'] ? global.resource.Food.name : global.resource.Lumber.name;
         let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ Wood }}</span></b-tooltip>`);
-        let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel">&laquo;</span>`);
-        let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel">&raquo;</span>`);
+        let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
+        let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subWood);
         fuelTypes.append(wood);
         fuelTypes.append(addWood);
@@ -8944,8 +8952,8 @@ function smelterModal(modal){
 
     if (global.resource.Coal.display){
         let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
-        let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel">&laquo;</span>`);
-        let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel">&raquo;</span>`);
+        let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
+        let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subCoal);
         fuelTypes.append(coal);
         fuelTypes.append(addCoal);
@@ -8953,8 +8961,8 @@ function smelterModal(modal){
 
     if (global.resource.Oil.display){
         let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
-        let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel">&laquo;</span>`);
-        let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel">&raquo;</span>`);
+        let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
+        let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subOil);
         fuelTypes.append(oil);
         fuelTypes.append(addOil);

@@ -80,20 +80,29 @@ a {
 .add {
     display: inline-block;
     margin-right: .25rem;
-    padding: 0 .375rem .25rem;
+    padding: 0 .375rem;
     border-radius: 0 .375rem .375rem 0;
-    line-height: .75rem;
+    line-height: 1rem;
     cursor: pointer;
+    span:first-child {
+        position: relative;
+        bottom: .0625rem;
+    }
 }
 .sub {
     outline: none;
     display: inline-block;
     margin-left: .25rem;
-    padding: 0 .375rem .25rem;
+    padding: 0 .375rem;
     border-radius: .375rem 0 0 .375rem;
-    line-height: .75rem;
+    line-height: 1rem;
     cursor: pointer;
+    span:first-child {
+        position: relative;
+        bottom: .0625rem;
+    }
 }
+
 .current {
     width: 5rem;
     text-align: center;
@@ -383,6 +392,42 @@ a {
         }
     }
 
+    .fort {
+        width: 100%;
+        min-height: 1rem;
+        margin: .25rem 0;
+        padding: .25rem 0;
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+
+        .current {
+            position: relative;
+            bottom: .0625rem;
+        }
+
+        > div {
+            margin-top: .25rem;
+        }
+        > div:first-child {
+            margin-top: 0;
+        }
+
+        .defense {
+            margin-right: .5rem;
+        }
+
+        .training {
+            span {
+                display: inline-block;
+                width: 10%;
+            }
+            progress {
+                display: inline-block;
+                width: 80%;
+            };
+        }
+    }
+
     .garrison {
         .header {
             margin-bottom: .5rem;
@@ -582,7 +627,7 @@ a {
     }
     .route {
         position: relative;
-        top: 1px;
+        bottom: 1px;
     }
     
     .order {
@@ -598,7 +643,9 @@ a {
         .add,
         .sub {
             position: relative;
-            bottom: 0.0625rem;
+            top: .0625rem;
+            padding: 0 .375rem;
+            line-height: 1rem;
         }
     }
 
@@ -731,7 +778,7 @@ body .modal > div.popper {
     }
     .current {
         position: relative;
-        top: .0625rem;
+        bottom: .0625rem;
     }
     .smelting {
         margin: .5rem 0 .75rem;

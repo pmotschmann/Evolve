@@ -1,8 +1,9 @@
 #### 0.5.0 - ??? ####
-Deep Space is now unlockable<br>
-Interdimensional Travel is now unlockable<br>
+Interstellar space is now unlockable<br>
+Interdimensional travel is now unlockable<br>
 New mangement tab for Crates & Containers<br>
 Leathery trait buffed<br>
+Chameleon trait now adds a combat rating bonus<br> 
 
 #### 0.4.37 - 7/31/2019 ####
 ARIA Improvements for Factory and A.R.P.A.<br>

@@ -4,7 +4,7 @@ import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
-import { defineGovernment, defineGarrison, armyRating } from './civics.js';
+import { defineGovernment, defineGarrison, garrisonSize, armyRating } from './civics.js';
 import { renderFortress } from './portal.js';
 import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate, setPlanet } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
@@ -1229,7 +1229,7 @@ function fastLoop(){
 
             let hunting = 0;
             if (global.tech['military']){
-                hunting = global.race['herbivore'] ? 0 : armyRating(global.civic.garrison.workers,'hunting') / 3;
+                hunting = global.race['herbivore'] ? 0 : armyRating(garrisonSize(),'hunting') / 3;
             }
 
             let biodome = 0;
@@ -1377,7 +1377,7 @@ function fastLoop(){
                 modRes('Furs', hunters * hunger * global_multiplier * time_multiplier);
             }
 
-            let hunting = armyRating(global.civic.garrison.workers,'hunting') / 10;
+            let hunting = armyRating(garrisonSize(),'hunting') / 10;
             fur_bd['Soldiers'] = hunting  + 'v';
             fur_bd['Hunger'] = ((hunger - 1) * 100) + '%';
 
@@ -1834,7 +1834,7 @@ function fastLoop(){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.free * weapons / 2;
 
-                let soldiers = armyRating(global.civic.garrison.workers,'hunting') / 3;
+                let soldiers = armyRating(garrisonSize(),'hunting') / 3;
 
                 lumber_bd['Hunters'] = hunters  + 'v';
                 lumber_bd['Soldiers'] = soldiers  + 'v';

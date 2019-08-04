@@ -1846,7 +1846,7 @@ export function interstellarTech(){
     return interstellarProjects;
 }
 
-function checkRequirements(action_set,region,action){
+export function checkRequirements(action_set,region,action){
     var isMet = true;
     Object.keys(action_set[region][action].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < action_set[region][action].reqs[req]){
@@ -1963,7 +1963,7 @@ export function deepSpace(){
     });
 }
 
-function costMultiplier(action,base,mutiplier,sector){
+export function costMultiplier(action,base,mutiplier,sector){
     if (!sector){
         sector = 'space';
     }

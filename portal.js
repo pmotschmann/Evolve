@@ -1,6 +1,8 @@
 import { global, vues, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
 import { spatialReasoning } from './resources.js';
+import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
+import { costMultiplier, checkRequirements } from './space.js';
 import { loc } from './locale.js';
 
 const fortressModules = {
@@ -8,6 +10,83 @@ const fortressModules = {
         info: {
             name: loc('portal_fortress_name'),
             desc: loc('portal_fortress_desc'),
+        },
+        turret: {
+            id: 'portal-turret',
+            title(){
+                return loc('portal_turret_title1');
+            },
+            desc(){
+                return `${loc('portal_turret_title1')}`;
+            },
+            reqs: { gas_moon: 1, drone: 1 },
+            cost: {
+                Money(){ return costMultiplier('turret', 250000, 1.3, 'portal'); },
+                Steel(){ return costMultiplier('turret', 20000, 1.3, 'portal'); },
+                Neutronium(){ return costMultiplier('turret', 500, 1.3, 'portal'); },
+                Elerium(){ return costMultiplier('turret', 25, 1.3, 'portal'); },
+                Nano_Tube(){ return costMultiplier('turret', 45000, 1.3, 'portal'); }
+            },
+            effect(){
+                return `${loc('portal_turret_effect',[0])}`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('turret');
+                    return true;
+                }
+                return false;
+            }
+        },
+        war_drone: {
+            id: 'portal-war_drone',
+            title: loc('portal_war_drone_title'),
+            desc(){
+                return `${loc('portal_war_drone_title')}`;
+            },
+            reqs: { gas_moon: 1, drone: 1 },
+            cost: {
+                Money(){ return costMultiplier('war_drone', 250000, 1.3, 'portal'); },
+                Steel(){ return costMultiplier('war_drone', 20000, 1.3, 'portal'); },
+                Neutronium(){ return costMultiplier('war_drone', 500, 1.3, 'portal'); },
+                Elerium(){ return costMultiplier('war_drone', 25, 1.3, 'portal'); },
+                Nano_Tube(){ return costMultiplier('war_drone', 45000, 1.3, 'portal'); }
+            },
+            effect(){
+                return `${loc('portal_war_drone_effect')}`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('war_drone');
+                    return true;
+                }
+                return false;
+            }
+        },
+        carport: {
+            id: 'portal-carport',
+            title: loc('portal_carport_title'),
+            desc(){
+                return `${loc('portal_carport_desc')}`;
+            },
+            reqs: { gas_moon: 1, drone: 1 },
+            cost: {
+                Money(){ return costMultiplier('carport', 250000, 1.3, 'portal'); },
+                Steel(){ return costMultiplier('carport', 20000, 1.3, 'portal'); },
+                Neutronium(){ return costMultiplier('carport', 500, 1.3, 'portal'); },
+                Elerium(){ return costMultiplier('carport', 25, 1.3, 'portal'); },
+                Nano_Tube(){ return costMultiplier('carport', 45000, 1.3, 'portal'); }
+            },
+            effect(){
+                return `${loc('portal_carport_effect')}`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('carport');
+                    return true;
+                }
+                return false;
+            }
         },
     },
 };
@@ -58,7 +137,7 @@ export function renderFortress(){
                 $(`#pop${region}`).remove();
             });
 
-            if (region === 'fortress'){
+            if (region === 'prtl_fortress'){
                 buildFortress(parent);
             } 
 
@@ -75,4 +154,136 @@ export function renderFortress(){
 function buildFortress(parent){
     let fort = $(`<div id="fort" class="fort"></div>`);
     parent.append(fort);
+
+    let status = $('<div></div>');
+    fort.append(status);
+
+    let defense = $(`<span class="defense has-text-success" :aria-label="defense()">${loc('fortress_defense')} {{ f.garrison | defensive }}</span>`);
+    status.append(defense);
+    let activity = $(`<b-tooltip :label="hostiles()" position="is-bottom" multilined animated><span class="has-text-danger" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span></b-tooltip>`);
+    status.append(activity);
+
+    let wallStatus = $('<div></div>');
+    fort.append(wallStatus);
+
+    wallStatus.append($(`<span class="has-text-warning" :aria-label="defense()">${loc('fortress_wall')} <span :class="wall()">{{ f.walls }}%</span></span>`))
+
+    let station = $(`<div></div>`);
+    fort.append(station);
+    
+    station.append($(`<span>${loc('fortress_army')}</span>`));
+    station.append($('<span role="button" aria-label="remove soldiers from the fortress" class="sub has-text-danger" @click="aLast"><span>&laquo;</span></span>'));
+    station.append($('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ f.garrison }}</span></b-tooltip>'));
+    station.append($('<span role="button" aria-label="add soldiers to the fortress" class="add has-text-success" @click="aNext"><span>&raquo;</span></span>'));
+    
+    station.append($(`<span>${loc('fortress_patrol')}</span>`));
+    station.append($('<span role="button" aria-label="reduce number of patrols" class="sub has-text-danger" @click="patDec"><span>&laquo;</span></span>'));
+    station.append($('<b-tooltip :label="patLabel()" position="is-bottom" multilined animated><span class="current">{{ f.patrols }}</span></b-tooltip>'));
+    station.append($('<span role="button" aria-label="increase number of patrols" class="add has-text-success" @click="patInc"><span>&raquo;</span></span>'));
+
+    station.append($(`<span>${loc('fortress_patrol_size')}</span>`));
+    station.append($('<span role="button" aria-label="reduce size of each patrol" class="sub has-text-danger" @click="patSizeDec"><span>&laquo;</span></span>'));
+    station.append($('<b-tooltip :label="patSizeLabel()" position="is-bottom" multilined animated><span class="current">{{ f.patrol_size }}</span></b-tooltip>'));
+    station.append($('<span role="button" aria-label="increase size of each patrol" class="add has-text-success" @click="patSizeInc"><span>&raquo;</span></span>'));
+
+    fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+
+    vues['civ_fortress'] = new Vue({
+        el: '#fort',
+        data: {
+            f: global.portal.fortress,
+            g: global.civic.garrison
+        },
+        methods: {
+            defense(){
+                return loc('fortress_defense');
+            },
+            hostiles(){
+                return loc('fortress_threat',[global.portal.fortress.threat]);
+            },
+            armyLabel(){
+                return loc('fortress_stationed');
+            },
+            patLabel(){
+                return loc('fortress_patrol_desc',[global.portal.fortress.patrols]);
+            },
+            patSizeLabel(){
+                return loc('fortress_patrol_size_desc',[global.portal.fortress.patrol_size]);
+            },
+            aNext(){
+                let inc = keyMultiplier();
+                if (global.portal.fortress.garrison < global.civic.garrison.workers){
+                    global.portal.fortress.garrison += inc;
+                    if (global.portal.fortress.garrison > global.civic.garrison.workers){
+                        global.portal.fortress.garrison = global.civic.garrison.workers;
+                    }
+                }
+            },
+            aLast(){
+                let dec = keyMultiplier();
+                if (global.portal.fortress.garrison > 0){
+                    global.portal.fortress.garrison -= dec;
+                    if (global.portal.fortress.garrison < 0){
+                        global.portal.fortress.garrison = 0;
+                    }
+                    if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+                        global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+                    }
+                }
+            },
+            patInc(){
+                let inc = keyMultiplier();
+                if (global.portal.fortress.patrols * global.portal.fortress.patrol_size < global.portal.fortress.garrison){
+                    global.portal.fortress.patrols += inc;
+                    if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+                        global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+                    }
+                }
+            },
+            patDec(){
+                let dec = keyMultiplier();
+                if (global.portal.fortress.patrols > 0){
+                    global.portal.fortress.patrols -= dec;
+                    if (global.portal.fortress.patrols < 0){
+                        global.portal.fortress.patrols = 0;
+                    }
+                }
+            },
+            patSizeInc(){
+                let inc = keyMultiplier();
+                if (global.portal.fortress.patrol_size < global.portal.fortress.garrison){
+                    global.portal.fortress.patrol_size += inc;
+                    if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+                        global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+                    }
+                }
+            },
+            patSizeDec(){
+                let dec = keyMultiplier();
+                if (global.portal.fortress.patrol_size > 1){
+                    global.portal.fortress.patrol_size -= dec;
+                    if (global.portal.fortress.patrol_size < 1){
+                        global.portal.fortress.patrol_size = 1;
+                    }
+                }
+            },
+            wall(){
+                let val = global.portal.fortress.walls;
+                if (val >= 75){
+                    return "has-text-success";
+                }
+                else if (val <= 25){
+                    return "has-text-danger";
+                }
+                else {
+                    return "has-text-warning";
+                }
+            }
+        },
+        filters: {
+            defensive(val){
+                return Math.round(armyRating(global.portal.fortress.garrison,'army'));
+            }
+        }
+    });
 }

@@ -109,17 +109,17 @@ export function defineJobs(){
     loadJob('farmer',1.35,5);
     loadJob('lumberjack',1,5);
     loadJob('quarry_worker',1,5);
-    loadJob('miner',1,4);
-    loadJob('coal_miner',0.2,4);
-    loadJob('craftsman',1,5);
-    loadJob('cement_worker',0.4,5);
-    loadJob('entertainer',1,10);
-    loadJob('professor',0.5,6);
-    loadJob('scientist',1,5);
-    loadJob('banker',0.1,6);
-    loadJob('colonist',1,5);
-    loadJob('space_miner',1,5);
-    loadJob('hell_surveyor',1,1);
+    loadJob('miner',1,4,'advanced');
+    loadJob('coal_miner',0.2,4,'advanced');
+    loadJob('craftsman',1,5,'advanced');
+    loadJob('cement_worker',0.4,5,'advanced');
+    loadJob('entertainer',1,10,'advanced');
+    loadJob('professor',0.5,6,'advanced');
+    loadJob('scientist',1,5,'advanced');
+    loadJob('banker',0.1,6,'advanced');
+    loadJob('colonist',1,5,'advanced');
+    loadJob('space_miner',1,5,'advanced');
+    loadJob('hell_surveyor',1,1,'advanced');
     loadFoundry();
 }
 
@@ -190,8 +190,8 @@ function loadJob(job, impact, stress, color){
     civ_container.append(controls);
     $('#jobs').append(civ_container);
     
-    var sub = $(`<span role="button" aria-label="remove ${job}" class="sub" @click="sub">&laquo;</span>`);
-    var add = $(`<span role="button" aria-label="add ${job}" class="add" @click="add">&raquo;</span>`);
+    var sub = $(`<span role="button" aria-label="remove ${job}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
+    var add = $(`<span role="button" aria-label="add ${job}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
     
     controls.append(sub);
     controls.append(add);
@@ -264,8 +264,8 @@ export function loadFoundry(){
                 resource.append(controls);
                 $('#foundry').append(resource);
                 
-                let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub" @click="sub('${res}')">&laquo;</span>`);
-                let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add" @click="add('${res}')">&raquo;</span>`);
+                let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></span>`);
+                let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></span>`);
                 
                 controls.append(sub);
                 controls.append(add);
