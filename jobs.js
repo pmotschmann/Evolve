@@ -96,6 +96,9 @@ export const job_desc = {
     },
     space_miner(){
         return loc('job_space_miner_desc');
+    },
+    hell_surveyor(){
+        return loc('job_hell_surveyor_desc');
     }
 }
 
@@ -103,19 +106,20 @@ export const job_desc = {
 export function defineJobs(){
     $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
     loadUnemployed();
-    loadJob('farmer',1.35);
-    loadJob('lumberjack',1);
-    loadJob('quarry_worker',1);
-    loadJob('miner',1);
-    loadJob('coal_miner',0.2);
-    loadJob('craftsman',1);
-    loadJob('cement_worker',0.4);
-    loadJob('entertainer',1);
-    loadJob('professor',0.5);
-    loadJob('scientist',1);
-    loadJob('banker',0.1);
-    loadJob('colonist',1);
-    loadJob('space_miner',1);
+    loadJob('farmer',1.35,5);
+    loadJob('lumberjack',1,5);
+    loadJob('quarry_worker',1,5);
+    loadJob('miner',1,4);
+    loadJob('coal_miner',0.2,4);
+    loadJob('craftsman',1,5);
+    loadJob('cement_worker',0.4,5);
+    loadJob('entertainer',1,10);
+    loadJob('professor',0.5,6);
+    loadJob('scientist',1,5);
+    loadJob('banker',0.1,6);
+    loadJob('colonist',1,5);
+    loadJob('space_miner',1,5);
+    loadJob('hell_surveyor',1,1);
     loadFoundry();
 }
 
@@ -148,7 +152,7 @@ function loadUnemployed(){
         });
 }
 
-function loadJob(job, impact, color){
+function loadJob(job, impact, stress, color){
     color = color || 'info';
     if (!global['civic'][job]){
         global['civic'][job] = {
@@ -160,10 +164,11 @@ function loadJob(job, impact, color){
             impact: impact
         };
     }
-    else{
+    else {
         global['civic'][job].name = loc('job_' + job);
     }
 
+    global.civic[job]['stress'] = stress;
     global.civic[job].impact = impact;
     
     if (job === 'craftsman'){

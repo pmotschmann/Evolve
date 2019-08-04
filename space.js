@@ -1895,7 +1895,9 @@ export function space(){
             });
             $(`#${region} h3.name`).on('mouseout',function(){
                 $(`#pop${region}`).hide();
-                poppers[region].destroy();
+                if (poppers[region]){
+                    poppers[region].destroy();
+                }
                 $(`#pop${region}`).remove();
             });
 
@@ -1945,7 +1947,9 @@ export function deepSpace(){
             });
             $(`#${region} h3.name`).on('mouseout',function(){
                 $(`#pop${region}`).hide();
-                poppers[region].destroy();
+                if (poppers[region]){
+                    poppers[region].destroy();
+                }
                 $(`#pop${region}`).remove();
             });
 

@@ -269,6 +269,14 @@ if (!global.settings['showPortal']){
     global.settings['showPortal'] = false;
 }
 
+if (!global.settings['portal']){
+    global.settings['portal'] = {
+        fortress : false,
+        badlands : false,
+        pit : false,
+    };
+}
+
 if (!global['space']){
     global['space'] = {};
 }
@@ -279,6 +287,14 @@ if (!global['starDock']){
 
 if (!global['interstellar']){
     global['interstellar'] = {};
+}
+
+if (!global.settings.space['alpha']){
+    global.settings.space['alpha'] = false;
+    global.settings.space['proxima'] = false;
+    global.settings.space['nebula'] = false;
+    global.settings.space['neutron'] = false;
+    global.settings.space['blackhole'] = false;
 }
 
 if (!global.settings['showAchieve']){

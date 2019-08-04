@@ -5,6 +5,7 @@ import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, armyRating } from './civics.js';
+import { renderFortress } from './portal.js';
 import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate, setPlanet } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
@@ -398,6 +399,7 @@ else {
     });
     space();
     deepSpace();
+    renderFortress()    
     setWeather();
 }
 
@@ -677,7 +679,7 @@ function fastLoop(){
         }
 
         if (global.civic['garrison']){
-            stress -= Math.round(global.civic.garrison.workers / 2);
+            stress -= Math.round(global.civic.garrison.max / 2);
         }
 
         let money_bd = {};
@@ -1083,15 +1085,18 @@ function fastLoop(){
 
         // Detect labor anomalies
         let total = 0;
-        let stress_level = 5;
-        if (global.race['content']){
-            stress_level += global.race['content'] * 0.4;
-        }
         Object.keys(job_desc).forEach(function (job) {
             total += global.civic[job].workers;
             if (total > global.resource[global.race.species].amount){
                 global.civic[job].workers -= total - global.resource[global.race.species].amount;
             }
+
+            let stress_level = global.civic[job].stress;
+            if (global.race['content']){
+                let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
+                stress_level += global.race['content'] * effectiveness;
+            }
+
             stress -= +(global.civic[job].workers / stress_level).toFixed(0);
         });
         global.civic.free = global.resource[global.race.species].amount - total;

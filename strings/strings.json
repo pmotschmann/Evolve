@@ -134,6 +134,8 @@
   "job_colonist_desc": "Colonists work hard to keep your %0 colony running smoothly and enhance various aspects of the colony.",
   "job_space_miner": "Space Miner",
   "job_space_miner_desc": "Space miners work in zero G mining asteroids. Each Space Miner increases the maximum number of mining ships that can be operated by one.",
+  "job_hell_surveyor": "Surveyor",
+  "job_hell_surveyor_desc": "Surveyors are tasked scouting the hell dimension for exploitable resources, workers are routinely killed by demonic creatures. This is pretty much the worst job in the empire.",
   "job_unemployed": "Unemployed",
   "job_unemployed_desc": "The number of unemployed citizens. Unemployed citizens lower morale and do not pay taxes however they also consume half rations.",
   "job_hunter": "Hunter",
@@ -1966,10 +1968,8 @@
   "interstellar_proxima_desc2": "Proxima Centauri is a red dwarf located about 0.12 light years from the Alpha Centauri system. A lone worthless rocky planet orbits the system but proxima's strategic position makes it a great place for a space based base of operations.",
   "interstellar_proxima_mission": "Proxima Centauri Mission",
   "interstellar_proxima_mission_effect": "Send a ship to the Proxima Centauri system to determine if it has any value.",
-
   "interstellar_xfer_station_title": "Transfer Station",
   "interstellar_xfer_station_desc": "A deep space station used as a hub for the region",
-
   "interstellar_nebula_name": "Helix Nebula",
   "interstellar_nebula_desc1": "The Helix nebula is quite far away at 694 light years, but this could be a very rich source of Helium-3 to fuel your expansion.",
   "interstellar_nebula_desc2": "The Helix nebula is quite far away at 694 light years, it is rich in valuable Helium-3.",
@@ -1984,5 +1984,7 @@
   "interstellar_blackhole_desc1": "A small black hole has been detected 487 light years from %0.",
   "interstellar_blackhole_desc2": "The blackhole is located 487 light years from %0, it is small as far as blackholes go with a mass of only 8 solar masses.",
   "interstellar_blackhole_mission": "Blackhole Mission",
-  "interstellar_blackhole_mission_effect": "Scout the blackhole... for science!"
+  "interstellar_blackhole_mission_effect": "Scout the blackhole... for science!",
+  "portal_fortress_name": "Fortress",
+  "portal_fortress_desc": "A large fortress constructed in the hell deminsion to gaurd the portal."
 }
