@@ -1,8 +1,8 @@
-import { global, vues, poppers, messageQueue, keyMultiplier, modRes } from './vars.js';
+import { global, vues, poppers, messageQueue, keyMultiplier, p_on } from './vars.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
-import { costMultiplier, checkRequirements } from './space.js';
+import { costMultiplier, checkRequirements, incrementStruct } from './space.js';
 import { loc } from './locale.js';
 
 const fortressModules = {
@@ -14,25 +14,40 @@ const fortressModules = {
         turret: {
             id: 'portal-turret',
             title(){
-                return loc('portal_turret_title1');
+                let type = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 'portal_turret_title3' : 'portal_turret_title2') : 'portal_turret_title1';
+                return loc(type);
             },
             desc(){
-                return `${loc('portal_turret_title1')}`;
+                let type = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 'portal_turret_title3' : 'portal_turret_title2') : 'portal_turret_title1';
+                return `<div>${loc(type)}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
-            reqs: { gas_moon: 1, drone: 1 },
+            reqs: { portal: 2 },
             cost: {
-                Money(){ return costMultiplier('turret', 250000, 1.3, 'portal'); },
-                Steel(){ return costMultiplier('turret', 20000, 1.3, 'portal'); },
-                Neutronium(){ return costMultiplier('turret', 500, 1.3, 'portal'); },
-                Elerium(){ return costMultiplier('turret', 25, 1.3, 'portal'); },
-                Nano_Tube(){ return costMultiplier('turret', 45000, 1.3, 'portal'); }
+                Money(){ return costMultiplier('turret', 350000, 1.28, 'portal'); },
+                Copper(){ return costMultiplier('turret', 50000, 1.28, 'portal'); },
+                Adamantite(){ return costMultiplier('turret', 8000, 1.28, 'portal'); },
+                Elerium(){ return costMultiplier('turret', 15, 1.28, 'portal'); },
+                Nano_Tube(){ return costMultiplier('turret', 28000, 1.28, 'portal'); }
+            },
+            powered: 3,
+            postPower(){
+                p_on['turret'] = global.portal.turret.on;
+                vues['civ_fortress'].$forceUpdate();
             },
             effect(){
-                return `${loc('portal_turret_effect',[0])}`;
+                let rating = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
+                return `<div>${loc('portal_turret_effect',[rating])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    incrementStruct('turret');
+                    incrementStruct('turret','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered){
+                        global.portal.turret.on++;
+                        if (vues['civ_fortress']){
+                            p_on['turret']++;
+                            vues['civ_fortress'].$forceUpdate();
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -42,9 +57,9 @@ const fortressModules = {
             id: 'portal-war_drone',
             title: loc('portal_war_drone_title'),
             desc(){
-                return `${loc('portal_war_drone_title')}`;
+                return loc('portal_war_drone_title');
             },
-            reqs: { gas_moon: 1, drone: 1 },
+            reqs: { portal: 3 },
             cost: {
                 Money(){ return costMultiplier('war_drone', 250000, 1.3, 'portal'); },
                 Steel(){ return costMultiplier('war_drone', 20000, 1.3, 'portal'); },
@@ -57,7 +72,7 @@ const fortressModules = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    incrementStruct('war_drone');
+                    incrementStruct('war_drone','portal');
                     return true;
                 }
                 return false;
@@ -67,22 +82,23 @@ const fortressModules = {
             id: 'portal-carport',
             title: loc('portal_carport_title'),
             desc(){
-                return `${loc('portal_carport_desc')}`;
+                return loc('portal_carport_desc');
             },
-            reqs: { gas_moon: 1, drone: 1 },
+            reqs: { portal: 2 },
             cost: {
                 Money(){ return costMultiplier('carport', 250000, 1.3, 'portal'); },
-                Steel(){ return costMultiplier('carport', 20000, 1.3, 'portal'); },
-                Neutronium(){ return costMultiplier('carport', 500, 1.3, 'portal'); },
-                Elerium(){ return costMultiplier('carport', 25, 1.3, 'portal'); },
-                Nano_Tube(){ return costMultiplier('carport', 45000, 1.3, 'portal'); }
+                Cement(){ return costMultiplier('carport', 18000, 1.3, 'portal'); },
+                Oil(){ return costMultiplier('carport', 6500, 1.3, 'portal'); },
+                Plywood(){ return costMultiplier('carport', 8500, 1.3, 'portal'); }
             },
             effect(){
                 return `${loc('portal_carport_effect')}`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    incrementStruct('carport');
+                    incrementStruct('carport','portal');
+                    global.civic.hell_surveyor.display = true;
+                    global.resource.Infernite.display = true;
                     return true;
                 }
                 return false;
@@ -173,7 +189,7 @@ function buildFortress(parent){
     
     station.append($(`<span>${loc('fortress_army')}</span>`));
     station.append($('<span role="button" aria-label="remove soldiers from the fortress" class="sub has-text-danger" @click="aLast"><span>&laquo;</span></span>'));
-    station.append($('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ f.garrison }}</span></b-tooltip>'));
+    station.append($('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ f.garrison | patrolling }}</span></b-tooltip>'));
     station.append($('<span role="button" aria-label="add soldiers to the fortress" class="add has-text-success" @click="aNext"><span>&raquo;</span></span>'));
     
     station.append($(`<span>${loc('fortress_patrol')}</span>`));
@@ -281,8 +297,13 @@ function buildFortress(parent){
             }
         },
         filters: {
-            defensive(val){
-                return Math.round(armyRating(global.portal.fortress.garrison,'army'));
+            defensive(v){
+                let army = v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+                let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
+                return Math.round(armyRating(army,'army')) + (p_on['turret'] ? p_on['turret'] * turret : 0);
+            },
+            patrolling(v){
+                return v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
             }
         }
     });

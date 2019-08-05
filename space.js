@@ -469,6 +469,10 @@ const spaceProjects = {
                     let neutronium = +(spatialReasoning(125) * multiplier).toFixed(0);
                     desc = desc + `<div>${loc('plus_max_resource',[neutronium,global.resource.Neutronium.name])}</div>`
                 }
+                if (global.resource.Infernite.display){
+                    let infernite = +(spatialReasoning(75) * multiplier).toFixed(0);
+                    desc = desc + `<div>${loc('plus_max_resource',[infernite,global.resource.Infernite.name])}</div>`
+                }
                 return desc;
             },
             action(){
@@ -1826,9 +1830,11 @@ const structDefinitions = {
     processing: { count: 0, on: 0 },
     habitat: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
+    turret: { count: 0, on: 0 },
+    carport: { count: 0 },
 };
 
-function incrementStruct(struct,sector){
+export function incrementStruct(struct,sector){
     if (!sector){
         sector = 'space';
     }

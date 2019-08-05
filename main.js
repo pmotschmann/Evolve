@@ -128,6 +128,9 @@ if (global['new']){
 if (global.city['mass_driver']){
     p_on['mass_driver'] = global.city['mass_driver'].on;
 }
+if (global.portal['turret']){
+    p_on['turret'] = global.portal.turret.on;
+}
 
 // Load Resources
 defineResources();
@@ -520,6 +523,8 @@ function fastLoop(){
         Iridium: {},
         Helium_3: {},
         Neutronium: {},
+        Adamantite: {},
+        Infernite: {},
         Elerium: {},
         Nano_Tube: {}
     };
@@ -826,10 +831,10 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
-            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : 'interstellar';
+            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : 'interstellar');
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
             if (global[region][parts[1]] && global[region][parts[1]]['on']){
@@ -2204,10 +2209,19 @@ function fastLoop(){
                 driod_delta *= 1 + bonus;
                 adamantite_bd['Processing'] = (bonus * 100) + '%';
             }
-
             modRes('Adamantite', driod_delta * time_multiplier);
         }
         breakdown.p['Adamantite'] = adamantite_bd;
+
+        // Infernite
+        let infernite_bd = {};
+        if (global.resource.Infernite.display && global.civic.hell_surveyor.workers > 0){
+            let surveyor_base = global.civic.hell_surveyor.workers * 0.01;
+            let surveyor_delta = surveyor_base * global_multiplier;
+            infernite_bd['Surveyor'] = surveyor_base + 'v';
+            modRes('Infernite', surveyor_delta * time_multiplier);
+        }
+        breakdown.p['Infernite'] = infernite_bd;
 
         // Income
         if (global.tech['currency'] >= 1){
@@ -2402,6 +2416,7 @@ function midLoop(){
             "Helium_3": 0,
             Neutronium: 0,
             Adamantite: 0,
+            Infernite: 0,
             Elerium: 1,
             Nano_Tube: 0
         };
@@ -2420,7 +2435,8 @@ function midLoop(){
             scientist: 0,
             garrison: 0,
             colonist: 0,
-            space_miner: 0
+            space_miner: 0,
+            hell_surveyor: 0
         };
 
         var bd_Money = { Base: caps['Money']+'v' };
@@ -2445,6 +2461,7 @@ function midLoop(){
         var bd_Helium = { Base: caps['Helium_3']+'v' };
         var bd_Neutronium = { Base: caps['Neutronium']+'v' };
         var bd_Adamantite = { Base: caps['Adamantite']+'v' };
+        var bd_Infernite = { Base: caps['Infernite']+'v' };
         var bd_Elerium = { Base: caps['Elerium']+'v' };
         var bd_Nano_Tube = { Base: caps['Nano_Tube']+'v' };
 
@@ -2670,6 +2687,12 @@ function midLoop(){
                 gain = (global.space.garage.count * (spatialReasoning(125) * multiplier));
                 caps['Neutronium'] += gain;
                 bd_Neutronium['Garage'] = gain+'v';
+            }
+
+            if (global.resource.Infernite.display){
+                gain = (global.space.garage.count * (spatialReasoning(75) * multiplier));
+                caps['Infernite'] += gain;
+                bd_Infernite['Garage'] = gain+'v';
             }
         }
         if (global.city['silo']){
@@ -2912,6 +2935,9 @@ function midLoop(){
         if (red_on['fabrication']){
             lCaps['craftsman'] += red_on['fabrication'];
         }
+        if (global.portal['carport']){
+            lCaps['hell_surveyor'] += global.portal.carport.count;
+        }
 
         if (global.city['trade']){
             let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
@@ -2963,6 +2989,7 @@ function midLoop(){
             "Helium_3": bd_Helium,
             Neutronium: bd_Neutronium,
             Adamantite: bd_Adamantite,
+            Infernite: bd_Infernite,
             Elerium: bd_Elerium,
             Nano_Tube: bd_Nano_Tube,
         };

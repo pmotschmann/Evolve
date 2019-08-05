@@ -7983,7 +7983,6 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.settings.showPortal = true;
                     global.settings.portal.fortress = true;
-                    global.civic.hell_surveyor.display = true;
                     var tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     global.portal['fortress'] = {
@@ -7991,9 +7990,11 @@ export const actions = {
                         garrison: 0,
                         walls: 100,
                         patrols: 0,
-                        patrol_size: 1,
+                        patrol_size: 4,
                         notify: true,
                     };
+                    global.portal['turret'] = { count: 0, on: 0 };
+                    global.portal['carport'] = { count: 0 };
                     renderFortress();
                     return true;
                 }
@@ -8451,6 +8452,9 @@ export function setAction(c_action,action,type,old){
                         break;
                     }
                 }
+                if (c_action['postPower']){
+                    c_action.postPower();
+                }
             },
             power_off(){
                 let keyMult = keyMultiplier();
@@ -8461,6 +8465,9 @@ export function setAction(c_action,action,type,old){
                     else {
                         break;
                     }
+                }
+                if (c_action['postPower']){
+                    c_action.postPower();
                 }
             },
         },
