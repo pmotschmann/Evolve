@@ -31,8 +31,10 @@ const fortressModules = {
             },
             powered: 3,
             postPower(){
-                p_on['turret'] = global.portal.turret.on;
-                vues['civ_fortress'].$forceUpdate();
+                if (vues['civ_fortress']){
+                    p_on['turret'] = global.portal.turret.on;
+                    vues['civ_fortress'].$forceUpdate();
+                }
             },
             effect(){
                 let rating = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
@@ -233,6 +235,9 @@ function buildFortress(parent){
                     if (global.portal.fortress.garrison > global.civic.garrison.workers){
                         global.portal.fortress.garrison = global.civic.garrison.workers;
                     }
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
                 }
             },
             aLast(){
@@ -244,6 +249,9 @@ function buildFortress(parent){
                     }
                     if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
                         global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+                    }
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
                     }
                 }
             },
