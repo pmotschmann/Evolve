@@ -3084,7 +3084,7 @@ function midLoop(){
             }
         });
 
-        let spc_locations = ['space','interstellar'];
+        let spc_locations = ['space','interstellar','portal'];
         for (let i=0; i<spc_locations.length; i++){
             let location = spc_locations[i];
             Object.keys(actions[location]).forEach(function (region){

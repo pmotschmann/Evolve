@@ -7996,6 +7996,12 @@ export const actions = {
                     global.portal['turret'] = { count: 0, on: 0 };
                     global.portal['carport'] = { count: 0 };
                     renderFortress();
+                    if (global.race['evil']){
+                        unlockAchieve('blood_war');
+                    }
+                    else {
+                        unlockAchieve('pandemonium');
+                    }
                     return true;
                 }
                 return false;

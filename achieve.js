@@ -86,6 +86,16 @@ var achievements = {
         desc: loc("achieve_doomed_desc"),
         flair: loc("achieve_doomed_flair")
     },
+    pandemonium: {
+        name: loc("achieve_pandemonium_name"),
+        desc: loc("achieve_pandemonium_desc"),
+        flair: loc("achieve_pandemonium_flair")
+    },
+    blood_war: {
+        name: loc("achieve_blood_war_name"),
+        desc: loc("achieve_blood_war_desc"),
+        flair: loc("achieve_blood_war_flair")
+    },
     seeder: {
         name: loc("achieve_seeder_name"),
         desc: loc("achieve_seeder_desc"),
