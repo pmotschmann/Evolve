@@ -6468,8 +6468,9 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.bows.grant[0];
                     global.tech[tech] = actions.tech.bows.grant[1];
-                    global.civic['garrison'].workers--;
-                    global.civic['garrison'].workers++;
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
                     return true;
                 }
                 return false;
@@ -6490,8 +6491,9 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.flintlock_rifle.grant[0];
                     global.tech[tech] = actions.tech.flintlock_rifle.grant[1];
-                    global.civic['garrison'].workers--;
-                    global.civic['garrison'].workers++;
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
                     return true;
                 }
                 return false;
@@ -6512,8 +6514,9 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.machine_gun.grant[0];
                     global.tech[tech] = actions.tech.machine_gun.grant[1];
-                    global.civic['garrison'].workers--;
-                    global.civic['garrison'].workers++;
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
                     return true;
                 }
                 return false;
@@ -6553,8 +6556,9 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.rail_guns.grant[0];
                     global.tech[tech] = actions.tech.rail_guns.grant[1];
-                    global.civic['garrison'].workers--;
-                    global.civic['garrison'].workers++;
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
                     return true;
                 }
                 return false;
@@ -6575,8 +6579,9 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.laser_rifles.grant[0];
                     global.tech[tech] = actions.tech.laser_rifles.grant[1];
-                    global.civic['garrison'].workers--;
-                    global.civic['garrison'].workers++;
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
 
                     if (global.race.species === 'sharkin'){
                         unlockAchieve('laser_shark');
@@ -6677,6 +6682,9 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
+                    if (vues['civ_fortress']){
+                        vues['civ_fortress'].$forceUpdate();
+                    }
                     return true;
                 }
                 return false;

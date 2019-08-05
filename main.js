@@ -838,13 +838,18 @@ function fastLoop(){
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
             if (global[region][parts[1]] && global[region][parts[1]]['on']){
-                let power = global[region][parts[1]].on * c_action[parts[1]].powered;
+                let watts = c_action[parts[1]].powered;
+                if (c_action[parts[1]]['powerInc']){
+                    watts += c_action[parts[1]].powerInc();
+                }
+                let power = global[region][parts[1]].on * watts;
+                
                 p_on[parts[1]] = global[region][parts[1]].on;
                 while (power > power_grid && power > 0){
                     power -= c_action[parts[1]].powered;
                     p_on[parts[1]]--;
                 }
-                power_grid -= global[region][parts[1]].on * c_action[parts[1]].powered;
+                power_grid -= global[region][parts[1]].on * watts;
                 if (p_on[parts[1]] !== global[region][parts[1]].on){
                     $(`#${region}-${parts[1]} .on`).addClass('warn');
                 }
