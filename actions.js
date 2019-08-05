@@ -6662,6 +6662,26 @@ export const actions = {
                 return false;
             }
         },
+        laser_turret: {
+            id: 'tech-laser_turret',
+            title: loc('tech_laser_turret'),
+            desc: loc('tech_laser_turret'),
+            reqs: { high_tech: 9, portal: 2 },
+            grant: ['turret',1],
+            cost: {
+                Knowledge(){ return 600000; },
+                Elerium(){ return 100; }
+            },
+            effect(){ return `<div>${loc('tech_laser_turret_effect1')}</div><div class="has-text-special">${loc('tech_laser_turret_effect2')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    var tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    return true;
+                }
+                return false;
+            }
+        },
         black_powder: {
             id: 'tech-black_powder',
             title: loc('tech_black_powder'),
