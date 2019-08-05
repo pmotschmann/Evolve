@@ -3,7 +3,10 @@ Interstellar space is now unlockable<br>
 Interdimensional travel is now unlockable<br>
 New mangement tab for Crates & Containers<br>
 Leathery trait buffed<br>
-Chameleon trait now adds a combat rating bonus<br> 
+Chameleon trait now adds a combat rating bonus<br>
+
+#### 0.4.38 - 8/5/2019 ####
+Special action icon is now peroperly flagged as a button<br>
 
 #### 0.4.37 - 7/31/2019 ####
 ARIA Improvements for Factory and A.R.P.A.<br>
