@@ -372,7 +372,7 @@ export function bloodwar(){
     for (let i=0; i<global.portal.fortress.patrols; i++){
         let pat_rating = Math.round(armyRating(global.portal.fortress.patrol_size,'army'));
 
-        if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,global.portal.fortress.siege)){
+        if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
             if (Math.rand(0,global.race['chameleon'] ? 45 : 30) === 0){
@@ -411,5 +411,29 @@ export function bloodwar(){
 
     if (global.portal.fortress.threat < 10000){
         global.portal.fortress.threat += Math.rand(0,100);
+    }
+
+    if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
+        let danger = global.portal.fortress.threat / 1000;
+        let exposure = global.civic.hell_surveyor.workers > 10 ? 10 : global.civic.hell_surveyor.workers;
+        let risk = 10 - (Math.rand(0,exposure));
+
+        if (danger > risk){
+            let cap = Math.round(danger);
+            let dead = Math.rand(0,cap);
+            if (dead > global.civic.hell_surveyor.workers){
+                dead = global.civic.hell_surveyor.workers;
+            }
+            if (dead === 1){
+                messageQueue(loc('fortress_killed'));
+            }
+            else if (dead > 1){
+                messageQueue(loc('fortress_eviscerated',[dead]));
+            }
+            if (dead > 0){
+                global.civic.hell_surveyor.workers -= dead;
+                global.resource[global.race.species].amount -= dead;
+            }
+        }
     }
 }
