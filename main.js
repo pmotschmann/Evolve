@@ -5,7 +5,7 @@ import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating } from './civics.js';
-import { renderFortress } from './portal.js';
+import { renderFortress, bloodwar } from './portal.js';
 import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate, setPlanet } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
@@ -3248,6 +3248,10 @@ function longLoop(){
                 let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
                 global.resource.Genes.amount += gene;
             }
+        }
+
+        if (global.portal['fortress']){
+            bloodwar();
         }
 
         // Market price fluctuation

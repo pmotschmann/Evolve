@@ -8004,7 +8004,8 @@ export const actions = {
             reqs: { portal: 1 },
             grant: ['portal',2],
             cost: {
-                Knowledge(){ return 550000; }
+                Knowledge(){ return 550000; },
+                Stone(){ return 1000000; }
             },
             effect: loc('tech_fort_effect'),
             action(){
@@ -8019,11 +8020,11 @@ export const actions = {
                         walls: 100,
                         patrols: 0,
                         patrol_size: 4,
+                        siege: 999,
                         notify: true,
                     };
                     global.portal['turret'] = { count: 0, on: 0 };
                     global.portal['carport'] = { count: 0 };
-                    renderFortress();
                     if (global.race['evil']){
                         unlockAchieve('blood_war');
                     }
@@ -8440,6 +8441,7 @@ export function setAction(c_action,action,type,old){
                                     drawTech();
                                     space();
                                     deepSpace();
+                                    renderFortress();
                                 }
                                 else if (c_action['refresh']){
                                     removeAction(c_action.id);
@@ -8447,6 +8449,7 @@ export function setAction(c_action,action,type,old){
                                     drawTech();
                                     space();
                                     deepSpace();
+                                    renderFortress();
                                 }
                                 updateDesc(c_action,action,type);
                                 break;

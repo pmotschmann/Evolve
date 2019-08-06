@@ -6,7 +6,7 @@ Leathery trait buffed<br>
 Chameleon trait now adds a combat rating bonus<br>
 
 #### 0.4.38 - 8/5/2019 ####
-Special action icon is now peroperly flagged as a button<br>
+Special action icon is now properly flagged as a button<br>
 
 #### 0.4.37 - 7/31/2019 ####
 ARIA Improvements for Factory and A.R.P.A.<br>

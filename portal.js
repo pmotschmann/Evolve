@@ -311,13 +311,88 @@ function buildFortress(parent){
         },
         filters: {
             defensive(v){
-                let army = v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
-                let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
-                return Math.round(armyRating(army,'army')) + (p_on['turret'] ? p_on['turret'] * turret : 0);
+                return fortressDefenseRating(v);
             },
             patrolling(v){
                 return v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
             }
         }
     });
+}
+
+function fortressDefenseRating(v){
+    let army = v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+    let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
+    return Math.round(armyRating(army,'army')) + (p_on['turret'] ? p_on['turret'] * turret : 0);
+}
+
+function casualties(demons,pat_armor){
+    let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / pat_armor)) - Math.rand(0,pat_armor);
+    if (casualties > 0){
+        if (casualties > global.portal.fortress.patrol_size){
+            casualties = global.portal.fortress.patrol_size;
+        }
+        casualties = Math.rand(0,casualties);
+        let dead = Math.rand(0,casualties);
+        let wounded = casualties - dead;
+        global.civic.garrison.wounded += wounded;
+        global.civic.garrison.workers -= dead;
+        global.stats.died += dead;
+        if (dead === global.portal.fortress.patrol_size){
+            messageQueue(loc('fortress_patrol_killed',[dead]));
+        }
+        else if (dead > 0){
+            messageQueue(loc('fortress_patrol_casualties',[dead]));
+        }
+    }
+}
+
+export function bloodwar(){
+    let pat_armor = global.tech['armor'] ? global.tech['armor'] : 0;
+    if (global.race['armored']){
+        pat_armor += 2;
+    }
+    if (global.race['scales']){
+        pat_armor += 1;
+    }
+
+    // Patrols
+    for (let i=0; i<global.portal.fortress.patrols; i++){
+        let pat_rating = Math.round(armyRating(global.portal.fortress.patrol_size,'army'));
+
+        if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,global.portal.fortress.siege)){
+            let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
+
+            if (Math.rand(0,global.race['chameleon'] ? 45 : 30) === 0){
+                casualties(demons,pat_armor);
+                let remain = demons - Math.round(pat_rating / 2);
+                if (remain > 0){
+                    global.portal.fortress.threat -= demons - remain;
+                }
+                else {
+                    global.portal.fortress.threat -= demons;
+                }
+            }
+            else {
+                let remain = demons - pat_rating;
+                if (remain > 0){
+                    global.portal.fortress.threat -= demons - remain;
+                    casualties(remain,pat_armor);
+                }
+                else {
+                    global.portal.fortress.threat -= demons;
+                }
+            }
+        }
+    }
+
+    // Siege Chance
+    if (global.portal.fortress.siege > 0){
+        //global.fortress.siege--;
+    }
+    if (global.portal.fortress.threat >= fortressDefenseRating(global.portal.fortress.garrison) * 2 && 1 > Math.rand(0,global.portal.fortress.siege)){
+        global.portal.fortress.siege = 999;
+    }
+
+    global.portal.fortress.threat += Math.rand(0,100);
 }
