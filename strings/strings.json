@@ -2018,7 +2018,7 @@
   "fortress_patrol_size": "Patrol Size",
   "fortress_patrol_size_desc": "%0 soldiers assigned to each patrol.",
   "fortress_patrol_killed": "A patrol was wiped out, all %0 soldiers were killed.",
-  "fortress_patrol_casualties": "A patrol suffered %0 casualties.",
+  "fortress_patrol_casualties": "Your patrols suffered %0 casualties.",
   "fortress_killed": "A surveyor was killed by demonic creatures.",
   "fortress_eviscerated": "%0 surveyors were eviscerated by demonic creatures."
 }
