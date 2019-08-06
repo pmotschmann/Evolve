@@ -327,7 +327,7 @@ function fortressDefenseRating(v){
 }
 
 function casualties(demons,pat_armor){
-    let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / pat_armor)) - Math.rand(0,pat_armor);
+    let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / (pat_armor || 1))) - Math.rand(0,pat_armor);
     let dead = 0;
     if (casualties > 0){
         if (casualties > global.portal.fortress.patrol_size){
@@ -376,7 +376,7 @@ export function bloodwar(){
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
             if (Math.rand(0,global.race['chameleon'] ? 45 : 30) === 0){
-                dead += casualties(demons,pat_armor);
+                dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0);
                 let remain = demons - Math.round(pat_rating / 2);
                 if (remain > 0){
                     global.portal.fortress.threat -= demons - remain;
@@ -389,7 +389,7 @@ export function bloodwar(){
                 let remain = demons - pat_rating;
                 if (remain > 0){
                     global.portal.fortress.threat -= demons - remain;
-                    casualties(remain,pat_armor);
+                    dead += casualties(remain,pat_armor);
                 }
                 else {
                     global.portal.fortress.threat -= demons;
