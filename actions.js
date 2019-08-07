@@ -1498,10 +1498,12 @@ export const actions = {
                     global.evolution['trade'] = { count: 0 };
                     global.evolution['craft'] = { count: 0 };
                     global.evolution['crispr'] = { count: 0 };
+                    global.evolution['junker'] = { count: 0 };
                     addAction('evolution','plasmid');
                     addAction('evolution','trade');
                     addAction('evolution','craft');
                     addAction('evolution','crispr');
+                    addAction('evolution','junker');
                     evoProgress();
                 }
                 return false;
@@ -1578,6 +1580,28 @@ export const actions = {
                 }
                 return false;
             }
+        },
+        junker: {
+            id: 'evo-junker',
+            title: loc('evo_challenge_junker'),
+            desc: loc('evo_challenge_junker_desc'),
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect: loc('evo_challenge_junker_effect'),
+            action(){
+                if (payCosts(actions.evolution.crispr.cost)){
+                    global.race.species = 'junker';
+                    global.race['junker'] = 1;
+                    global.race['no_plasmid'] = 1;
+                    global.race['no_trade'] = 1;
+                    global.race['no_craft'] = 1;
+                    global.race['no_crispr'] = 1;
+                    sentience();
+                }
+                return false;
+            },
+            flair: loc('evo_challenge_junker_flair')
         },
     },
     city: {
@@ -9718,6 +9742,10 @@ function fanaticism(god){
             break;
         case 'imp':
             fanaticTrait('conniving');
+            break;
+        default:
+            randomMinorTrait();
+            arpa('Genetics');
             break;
     }
 }
