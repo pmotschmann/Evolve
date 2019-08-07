@@ -1332,6 +1332,18 @@ function fastLoop(){
             }
         }
 
+        // Fortress Repair
+        if (global.portal.fortress.walls < 100){
+            if (modRes('Stone', -(40 * time_multiplier))){
+                global.portal.fortress.repair++;
+                breakdown.p.consume.Stone['Fortress'] = -40;
+            }
+            if (global.portal.fortress.repair >= 200){
+                global.portal.fortress.repair = 0;
+                global.portal.fortress.walls++;
+            }
+        }
+
         // Citizen Growth
         if (fed && global['resource']['Food'].amount > 0 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
             if (global.race['spongy'] && global.city.calendar.weather === 0){

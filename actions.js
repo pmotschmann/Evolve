@@ -8042,6 +8042,7 @@ export const actions = {
                         threat: 10000,
                         garrison: 0,
                         walls: 100,
+                        repair: 0,
                         patrols: 0,
                         patrol_size: 4,
                         siege: 999,
