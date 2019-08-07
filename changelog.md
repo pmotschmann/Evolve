@@ -4,6 +4,7 @@ Interdimensional travel is now unlockable<br>
 New mangement tab for Crates & Containers<br>
 Leathery trait buffed<br>
 Chameleon trait now adds a combat rating bonus<br>
+Smarter Smelter fuel switching<br>
 
 #### 0.4.39 - 8/6/2019 ####
 Genetic Disaster Challenge<br>

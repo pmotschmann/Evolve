@@ -9074,6 +9074,15 @@ function smelterModal(modal){
                         global.city.smelter.Wood++;
                         global.city.smelter.Iron++;
                     }
+                    else if (global.city.smelter.Coal + global.city.smelter.Oil > 0){
+                        if (global.city.smelter.Oil > global.city.smelter.Coal){
+                            global.city.smelter.Coal > 0 ? global.city.smelter.Coal-- : global.city.smelter.Oil--;
+                        }
+                        else {
+                            global.city.smelter.Oil > 0 ? global.city.smelter.Oil-- : global.city.smelter.Coal--;
+                        }
+                        global.city.smelter.Wood++;
+                    }
                     else {
                         break;
                     }
@@ -9105,6 +9114,15 @@ function smelterModal(modal){
                         global.city.smelter.Coal++;
                         global.city.smelter.Iron++;
                     }
+                    else if (global.city.smelter.Wood + global.city.smelter.Oil > 0){
+                        if (global.city.smelter.Wood > 0){
+                            global.city.smelter.Wood--;
+                        }
+                        else {
+                            global.city.smelter.Oil--;
+                        }
+                        global.city.smelter.Coal++;
+                    }
                     else {
                         break;
                     }
@@ -9135,6 +9153,15 @@ function smelterModal(modal){
                     if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
                         global.city.smelter.Oil++;
                         global.city.smelter.Iron++;
+                    }
+                    else if (global.city.smelter.Wood + global.city.smelter.Coal > 0){
+                        if (global.city.smelter.Wood > 0){
+                            global.city.smelter.Wood--;
+                        }
+                        else {
+                            global.city.smelter.Coal--;
+                        }
+                        global.city.smelter.Oil++;
                     }
                     else {
                         break;
