@@ -403,9 +403,42 @@ export function bloodwar(){
 
     // Siege Chance
     if (global.portal.fortress.siege > 0){
-        //global.fortress.siege--;
+        global.fortress.siege--;
     }
-    if (global.portal.fortress.threat >= fortressDefenseRating(global.portal.fortress.garrison) * 2 && 1 > Math.rand(0,global.portal.fortress.siege)){
+    if (1 > Math.rand(0,global.portal.fortress.siege)){
+        let defense = fortressDefenseRating(global.portal.fortress.garrison);
+        let siege = Math.round(global.portal.fortress.threat / 2);
+
+        let damage = 0;
+        let killed = 0;
+        let destroyed = false;
+        while (siege > 0 || global.portal.fortress.walls > 0){
+            killed += Math.round(defense / 10);
+            siege -= killed;
+            global.portal.fortress.threat -= killed;
+            if (siege > 0){
+                damage++;
+                global.portal.fortress.walls--;
+                if (global.portal.fortress.walls === 0){
+                    destroyed = true;
+                }
+            }
+        }
+
+        if (destroyed){
+            messageQueue(loc('fortress_lost'));
+            global.resource[global.race.species].amount -= global.civic.hell_surveyor.workers;
+            global.civic.hell_surveyor.workers = 0;
+
+            global.portal.fortress.patrols = 0;
+            global.stats.died += global.portal.fortress.garrison;
+            global.civic.garrison.workers -= global.portal.fortress.garrison;
+            global.portal.fortress.garrison = 0;
+        }
+        else {
+            messageQueue(loc('fortress_sieged',[killed,damage]));
+        }
+
         global.portal.fortress.siege = 999;
     }
 
