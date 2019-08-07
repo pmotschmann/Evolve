@@ -314,7 +314,7 @@ if (global.race.species === 'protoplasm'){
         addAction('evolution','chitin');
     }
     else {
-        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','demonic','sentience','bunker','plasmid','trade','craft','crispr'];
+        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','demonic','sentience','bunker','plasmid','trade','craft','crispr','junker'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -1254,6 +1254,9 @@ function fastLoop(){
             if (global.race['ancient_ruins']){
                 sundial_base++;
             }
+            if (global.stats.achieve['extinct_junker']){
+                sundial_base++;
+            }
 
             let professors_base = global.civic.professor.workers;
             professors_base *= global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
@@ -2187,7 +2190,7 @@ function midLoop(){
         // Resource caps
         var caps = {
             Money: 1000,
-            Knowledge: 100,
+            Knowledge: global.stats.achieve['extinct_junker'] ? 1000 : 100,
             Food: 1000,
             Crates: 0,
             Containers: 0,
