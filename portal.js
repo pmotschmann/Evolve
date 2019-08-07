@@ -326,14 +326,14 @@ function fortressDefenseRating(v){
     return Math.round(armyRating(army,'army')) + (p_on['turret'] ? p_on['turret'] * turret : 0);
 }
 
-function casualties(demons,pat_armor){
+function casualties(demons,pat_armor,ambush){
     let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / (pat_armor || 1))) - Math.rand(0,pat_armor);
     let dead = 0;
     if (casualties > 0){
         if (casualties > global.portal.fortress.patrol_size){
             casualties = global.portal.fortress.patrol_size;
         }
-        casualties = Math.rand(0,casualties);
+        casualties = Math.rand(ambush ? 1 : 0,casualties);
         dead = Math.rand(0,casualties);
         let wounded = casualties - dead;
         global.civic.garrison.wounded += wounded;
@@ -376,7 +376,7 @@ export function bloodwar(){
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
             if (Math.rand(0,global.race['chameleon'] ? 45 : 30) === 0){
-                dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0);
+                dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true);
                 let remain = demons - Math.round(pat_rating / 2);
                 if (remain > 0){
                     global.portal.fortress.threat -= demons - remain;
@@ -389,7 +389,7 @@ export function bloodwar(){
                 let remain = demons - pat_rating;
                 if (remain > 0){
                     global.portal.fortress.threat -= demons - remain;
-                    dead += casualties(remain,pat_armor);
+                    dead += casualties(remain,pat_armor,false);
                 }
                 else {
                     global.portal.fortress.threat -= demons;
@@ -402,8 +402,9 @@ export function bloodwar(){
     }
 
     // Siege Chance
+    global.portal.fortress.siege 
     if (global.portal.fortress.siege > 0){
-        global.fortress.siege--;
+        global.portal.fortress.siege--;
     }
     if (1 > Math.rand(0,global.portal.fortress.siege)){
         let defense = fortressDefenseRating(global.portal.fortress.garrison);
@@ -412,15 +413,20 @@ export function bloodwar(){
         let damage = 0;
         let killed = 0;
         let destroyed = false;
-        while (siege > 0 || global.portal.fortress.walls > 0){
-            killed += Math.round(defense / 10);
-            siege -= killed;
-            global.portal.fortress.threat -= killed;
+        while (siege > 0 && global.portal.fortress.walls > 0){
+            let terminated = Math.round(defense / 10);
+            if (terminated > siege){
+                terminated = siege;
+            }
+            siege -= terminated;
+            global.portal.fortress.threat -= terminated;
+            killed += terminated;
             if (siege > 0){
                 damage++;
                 global.portal.fortress.walls--;
                 if (global.portal.fortress.walls === 0){
                     destroyed = true;
+                    break;
                 }
             }
         }

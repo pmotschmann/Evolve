@@ -2022,7 +2022,7 @@
   "fortress_army": "Stationed",
   "fortress_stationed": "Number of soldiers stationed at the fortress.",
   "fortress_wall": "Wall Strength:",
-  "fortress_sieged": "Your fortress was sieged by demonic creatures, %0 demons were killed but the walls lost %0 integrity.",
+  "fortress_sieged": "Your fortress was sieged by demonic creatures, %0 demons were killed but the walls lost %1% integrity.",
   "fortress_lost": "Your fortress was overrun by demonic creatures. All the soldiers and surveyors working there were killed.",
   "fortress_patrol": "Patrols",
   "fortress_patrol_desc": "%0 patrols roaming the demonic wasteland.",
