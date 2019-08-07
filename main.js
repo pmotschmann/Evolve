@@ -2627,90 +2627,97 @@ function midLoop(){
             let gain = 0;
             let label = global.tech['storage'] <= 2 ? 'Shed' : (global.tech['storage'] >= 4 ? 'Warehouse' : 'Barn');
             if (global.tech['storage'] >= 3){
-                gain = (global.city['shed'].count * (spatialReasoning(40) * multiplier));
+                gain = (global.city['shed'].count * (spatialReasoning(40 * multiplier)));
                 caps['Steel'] += gain;
                 bd_Steel[label] = gain+'v';
             }
             if (global.tech['storage'] >= 4){
-                gain = (global.city['shed'].count * (spatialReasoning(20) * multiplier));
+                gain = (global.city['shed'].count * (spatialReasoning(20 * multiplier)));
                 caps['Titanium'] += gain;
                 bd_Titanium[label] = gain+'v';
             }
-            gain = (global.city['shed'].count * (spatialReasoning(300) * multiplier));
+            gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
             caps['Lumber'] += gain;
             bd_Lumber[label] = gain+'v';
             
-            gain = (global.city['shed'].count * (spatialReasoning(300) * multiplier));
+            gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
             caps['Stone'] += gain;
             bd_Stone[label] = gain+'v';
             
-            gain = (global.city['shed'].count * (spatialReasoning(125) * multiplier));
+            gain = (global.city['shed'].count * (spatialReasoning(125 * multiplier)));
             caps['Furs'] += gain;
             bd_Furs[label] = gain+'v';
             
-            gain = (global.city['shed'].count * (spatialReasoning(90) * multiplier));
+            gain = (global.city['shed'].count * (spatialReasoning(90 * multiplier)));
             caps['Copper'] += gain;
             bd_Copper[label] = gain+'v';
             
-            gain = (global.city['shed'].count * (spatialReasoning(125) * multiplier));
+            gain = (global.city['shed'].count * (spatialReasoning(125 * multiplier)));
             caps['Iron'] += gain;
             bd_Iron[label] = gain+'v';
             
-            gain = (global.city['shed'].count * (spatialReasoning(90) * multiplier));
+            gain = (global.city['shed'].count * (spatialReasoning(90 * multiplier)));
             caps['Aluminium'] += gain;
             bd_Aluminium[label] = gain+'v';
             
-            gain = (global.city['shed'].count * (spatialReasoning(100) * multiplier));
+            gain = (global.city['shed'].count * (spatialReasoning(100 * multiplier)));
             caps['Cement'] += gain;
             bd_Cement[label] = gain+'v';
             
-            gain = (global.city['shed'].count * (spatialReasoning(75) * multiplier));
+            gain = (global.city['shed'].count * (spatialReasoning(75 * multiplier)));
             caps['Coal'] += gain;
             bd_Coal[label] = gain+'v';
+        }
+        if (global.resource.Infernite.display && global.portal['fortress']){
+            let gain = spatialReasoning(1000);
+            caps['Infernite'] += gain;
+            bd_Infernite['Fortress'] = gain+'v';
         }
         if (global.space['garage']){
             let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
             multiplier *= global.tech['world_control'] ? 2 : 1;
             multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
 
-            let gain = (global.space.garage.count * (spatialReasoning(6500) * multiplier));
+            let gain = (global.space.garage.count * (spatialReasoning(6500 * multiplier)));
             caps['Copper'] += gain;
             bd_Copper['Garage'] = gain+'v';
 
-            gain = (global.space.garage.count * (spatialReasoning(5500) * multiplier));
+            gain = (global.space.garage.count * (spatialReasoning(5500 * multiplier)));
             caps['Iron'] += gain;
             bd_Iron['Garage'] = gain+'v';
 
-            gain = (global.space.garage.count * (spatialReasoning(6000) * multiplier));
+            gain = (global.space.garage.count * (spatialReasoning(6000 * multiplier)));
             caps['Cement'] += gain;
             bd_Cement['Garage'] = gain+'v';
 
-            gain = (global.space.garage.count * (spatialReasoning(4500) * multiplier));
+            gain = (global.space.garage.count * (spatialReasoning(4500 * multiplier)));
             caps['Steel'] += gain;
             bd_Steel['Garage'] = gain+'v';
 
-            gain = (global.space.garage.count * (spatialReasoning(3500) * multiplier));
+            gain = (global.space.garage.count * (spatialReasoning(3500 * multiplier)));
             caps['Titanium'] += gain;
             bd_Titanium['Garage'] = gain+'v';
 
-            gain = (global.space.garage.count * (spatialReasoning(2500) * multiplier));
+            gain = (global.space.garage.count * (spatialReasoning(2500 * multiplier)));
             caps['Alloy'] += gain;
             bd_Alloy['Garage'] = gain+'v';
 
             if (global.resource.Nano_Tube.display){
-                gain = (global.space.garage.count * (spatialReasoning(25000) * multiplier));
+                gain = (global.space.garage.count * (spatialReasoning(25000 * multiplier)));
                 caps['Nano_Tube'] += gain;
                 bd_Nano_Tube['Garage'] = gain+'v';
             }
 
             if (global.resource.Neutronium.display){
-                gain = (global.space.garage.count * (spatialReasoning(125) * multiplier));
+                gain = (global.space.garage.count * (spatialReasoning(125 * multiplier)));
                 caps['Neutronium'] += gain;
                 bd_Neutronium['Garage'] = gain+'v';
             }
 
             if (global.resource.Infernite.display){
-                gain = (global.space.garage.count * (spatialReasoning(75) * multiplier));
+                gain = (global.space.garage.count * (spatialReasoning(75 * multiplier)));
+
+                console.log(multiplier);
                 caps['Infernite'] += gain;
                 bd_Infernite['Garage'] = gain+'v';
             }
