@@ -398,7 +398,7 @@ export function bloodwar(){
                     global.portal.fortress.threat -= demons;
                 }
                 if (Math.rand(0,9999) === 0){
-                    modRes('Soul_Gem',1);
+                    global.resource.Soul_Gem.amount++;
                     global.resource.Soul_Gem.display = true;
                 }
             }
