@@ -4472,7 +4472,7 @@ export const actions = {
             grant: ['container',6],
             cost: {
                 Knowledge(){ return 575000; },
-                Infernite(){ return 2500; }
+                Infernite(){ return 1000; }
             },
             effect: loc('tech_infernite_crates_effect'),
             action(){

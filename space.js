@@ -1497,6 +1497,8 @@ const interstellarProjects = {
             effect: loc('interstellar_alpha_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('interstellar_alpha_mission_result'),'success');
+                    global.interstellar['nexus'] = { count: 0, on: 0, support: 0, s_max: 0 };
                     return true;
                 }
                 return false;
@@ -1672,12 +1674,13 @@ const interstellarProjects = {
             reqs: { alpha: 1 },
             grant: ['proxima',1],
             cost: { 
-                Helium_3(){ return 45000; }
+                Helium_3(){ return 42000; }
             },
             effect: loc('interstellar_proxima_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.interstellar['xfer_station'] = { count: 0, on: 0 };
+                    messageQueue(loc('interstellar_proxima_mission_result'),'success');
                     return true;
                 }
                 return false;
@@ -1708,6 +1711,7 @@ const interstellarProjects = {
                     if (global.city.power >= 4){
                         global.interstellar['xfer_station'].on++;
                         global['resource']['Helium_3'].max += spatialReasoning(5000);
+                        global['resource']['Deuterium'].max += spatialReasoning(2000);
                     }
                     return true;
                 }
@@ -1719,6 +1723,7 @@ const interstellarProjects = {
         info: {
             name: loc('interstellar_nebula_name'),
             desc(){ return global.tech['nebula'] ? loc('interstellar_nebula_desc2') : loc('interstellar_nebula_desc1'); },
+            support: 'nexus'
         },
         nebula_mission: {
             id: 'interstellar-nebula_mission',
@@ -1727,11 +1732,45 @@ const interstellarProjects = {
             reqs: { alpha: 1 },
             grant: ['nebula',1],
             cost: { 
-                Helium_3(){ return 60000; }
+                Helium_3(){ return 55000; }
             },
             effect: loc('interstellar_nebula_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('interstellar_nebula_mission_result'),'success');
+                    return true;
+                }
+                return false;
+            }
+        },
+        nexus: {
+            id: 'interstellar-nexus',
+            title: loc('interstellar_nexus_title'),
+            desc(){ return `<div>${loc('interstellar_nexus_title')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Money.name])}</div>`; },
+            reqs: { nebula: 1 },
+            cost: {
+                Money(){ return costMultiplier('nexus', 1200000, 1.28, 'interstellar'); },
+                Neutronium(){ return costMultiplier('nexus', 1500, 1.28, 'interstellar'); },
+                Adamantite(){ return costMultiplier('nexus', 6000, 1.28, 'interstellar'); },
+                Polymer(){ return costMultiplier('nexus', 12000, 1.28, 'interstellar'); },
+                Wrought_Iron(){ return costMultiplier('nexus', 3500, 1.28, 'interstellar'); },
+            },
+            effect(){
+                let helium = spatialReasoning(4000);
+                let deuterium = spatialReasoning(3000);
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+            },
+            support: 1,
+            powered: 3,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('nexus','interstellar');
+                    global.resource.Deuterium.display = true;
+                    if (global.city.power >= 3){
+                        global.interstellar['nexus'].on++;
+                        global['resource']['Helium_3'].max += spatialReasoning(4000);
+                        global['resource']['Deuterium'].max += spatialReasoning(3000);
+                    }
                     return true;
                 }
                 return false;

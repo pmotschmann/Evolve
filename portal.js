@@ -106,6 +106,9 @@ const fortressModules = {
                     incrementStruct('carport','portal');
                     global.civic.hell_surveyor.display = true;
                     global.resource.Infernite.display = true;
+                    if (!global.tech['infernite']){
+                        global.tech['infernite'] = 1;
+                    }
                     return true;
                 }
                 return false;
@@ -414,7 +417,7 @@ export function bloodwar(){
         let killed = 0;
         let destroyed = false;
         while (siege > 0 && global.portal.fortress.walls > 0){
-            let terminated = Math.round(defense / 10);
+            let terminated = Math.round(defense / 16);
             if (terminated > siege){
                 terminated = siege;
             }
@@ -452,6 +455,7 @@ export function bloodwar(){
         global.portal.fortress.threat += Math.rand(0,100);
     }
 
+    // Surveyor threats
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
         let danger = global.portal.fortress.threat / 1000;
         let exposure = global.civic.hell_surveyor.workers > 10 ? 10 : global.civic.hell_surveyor.workers;

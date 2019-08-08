@@ -1334,9 +1334,9 @@ function fastLoop(){
 
         // Fortress Repair
         if (global.portal.fortress.walls < 100){
-            if (modRes('Stone', -(40 * time_multiplier))){
+            if (modRes('Stone', -(200 * time_multiplier))){
                 global.portal.fortress.repair++;
-                breakdown.p.consume.Stone['Fortress'] = -40;
+                breakdown.p.consume.Stone['Fortress'] = -200;
             }
             if (global.portal.fortress.repair >= 200){
                 global.portal.fortress.repair = 0;
@@ -2716,8 +2716,6 @@ function midLoop(){
 
             if (global.resource.Infernite.display){
                 gain = (global.space.garage.count * (spatialReasoning(75 * multiplier)));
-
-                console.log(multiplier);
                 caps['Infernite'] += gain;
                 bd_Infernite['Garage'] = gain+'v';
             }

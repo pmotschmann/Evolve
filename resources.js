@@ -19,16 +19,17 @@ export const resource_values = {
     Alloy: 350,
     Polymer: 250,
     Iridium: 420,
-    //Deuterium: 450,
     Helium_3: 620,
+    Deuterium: 950,
     Elerium: 2000,
     Neutronium: 1500,
     Adamantite: 2250,
     Infernite: 2750,
     Nano_Tube: 750,
     //Graphene: 3000,
-    //Stanene: 3600,
+    Stanene: 3600,
     Genes: 0,
+    Soul_Gem: 0,
 };
 
 export const tradeRatio = {
@@ -42,17 +43,18 @@ export const tradeRatio = {
     Cement: 1,
     Coal: 1,
     Oil: 0.5,
-    Uranium: 0.25,
+    Uranium: 0.15,
     Steel: 0.5,
     Titanium: 0.25,
     Alloy: 0.2,
     Polymer: 0.2,
     Iridium: 0.1,
     Helium_3: 0.1,
-    Elerium: 0.1,
-    Neutronium: 0.1,
-    Adamantite: 0.1,
-    Infernite: 0.1,
+    Deuterium: 0.1,
+    Elerium: 0.02,
+    Neutronium: 0.05,
+    Adamantite: 0.05,
+    Infernite: 0.01,
     Nano_Tube: 0.1,
     Graphene: 0.1,
     Stanene: 0.1,
@@ -155,17 +157,17 @@ export function defineResources(){
         loadResource('Alloy',50,1,true,true);
         loadResource('Polymer',50,1,true,true);
         loadResource('Iridium',0,1,true,true);
-        //loadResource('Deuterium',0,1,true,false);
         loadResource('Helium_3',0,1,true,false);
+        loadResource('Deuterium',0,1,false,false,'advanced');
         loadResource('Neutronium',0,1,false,false,'advanced');
         loadResource('Adamantite',0,1,false,true,'advanced');
         loadResource('Infernite',0,1,false,false,'advanced');
         loadResource('Elerium',1,1,false,false,'advanced');
         loadResource('Nano_Tube',0,1,false,false,'advanced');
         //loadResource('Graphene',0,1,false,true,'advanced');
-        //loadResource('Stanene',0,1,false,true,'advanced');
+        loadResource('Stanene',0,1,false,true,'advanced');
         loadResource('Genes',-2,0,false,false,'advanced');
-        //loadResource('Soul_Gem',-2,0,false,false,'advanced');
+        loadResource('Soul_Gem',-2,0,false,false,'advanced');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
         //loadResource('Bronze',-1,0,false,false,'danger');
