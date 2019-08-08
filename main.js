@@ -831,7 +831,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : 'interstellar');
@@ -1065,9 +1065,47 @@ function fastLoop(){
             global.space.space_station.support = used_support;
         }
 
+        if (global.interstellar['nexus'] && global.interstellar['nexus'].count > 0){
+            let cash_cost = 350;
+            let mb_consume = p_on['nexus'] * cash_cost;
+            breakdown.p.consume.Money['Nexus'] = -(mb_consume);
+            for (let i=0; i<p_on['nexus']; i++){
+                if (!modRes('Money', -(time_multiplier * cash_cost))){
+                    mb_consume -= (p_on['nexus'] * cash_cost) - (i * cash_cost);
+                    p_on['nexus'] -= i;
+                    break;
+                }
+            }
+            global.interstellar.nexus.s_max = p_on['nexus'] * actions.interstellar.int_nebula.nexus.support;
+        }
+
+        if (global.interstellar['nexus']){
+            let used_support = 0;
+            let structs = [];
+            for (var i = 0; i < structs.length; i++){
+                if (global.interstellar[structs[i]]){
+                    let operating = global.interstellar[structs[i]].on;
+                    let id = actions.interstellar.int_nebula[structs[i]].id;
+                    if (used_support + operating > global.interstellar.nexus.s_max){
+                        operating -=  (used_support + operating) - global.interstellar.nexus.s_max;
+                        $(`#${id} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${id} .on`).removeClass('warn');
+                    }
+                    used_support += operating;
+                    alpha_on[structs[i]] = operating;
+                }
+                else {
+                    alpha_on[structs[i]] = 0;
+                }
+            }
+            global.interstellar.nexus.support = used_support;
+        }
+
         // Transfer Station
         if (global.interstellar['xfer_station'] && p_on['xfer_station']){
-            let fuel_cost = 0.35;
+            let fuel_cost = 0.28;
             let xfer_consume = p_on['xfer_station'] * fuel_cost;
             breakdown.p.consume.Uranium['Xfer_Station'] = -(xfer_consume);
             for (let i=0; i<p_on['xfer_station']; i++){
@@ -2434,6 +2472,7 @@ function midLoop(){
             Polymer: 50,
             Iridium: 0,
             "Helium_3": 0,
+            Deuterium: 0,
             Neutronium: 0,
             Adamantite: 0,
             Infernite: 0,
@@ -2479,6 +2518,7 @@ function midLoop(){
         var bd_Polymer = { Base: caps['Polymer']+'v' };
         var bd_Iridium = { Base: caps['Iridium']+'v' };
         var bd_Helium = { Base: caps['Helium_3']+'v' };
+        var bd_Deuterium = { Base: caps['Deuterium']+'v' };
         var bd_Neutronium = { Base: caps['Neutronium']+'v' };
         var bd_Adamantite = { Base: caps['Adamantite']+'v' };
         var bd_Infernite = { Base: caps['Infernite']+'v' };
@@ -2793,6 +2833,12 @@ function midLoop(){
             let gain = (p_on['xfer_station'] * spatialReasoning(5000));
             caps['Helium_3'] += gain;
             bd_Helium['Xfer_Station'] = gain+'v';
+
+            if (global.resource.Deuterium.display){
+                let deuterium_gain = p_on['nexus'] * spatialReasoning(3000);
+                caps['Deuterium'] += deuterium_gain;
+                bd_Deuterium['Xfer_Station'] = deuterium_gain+'v';
+            }
         }
         if (global.space['helium_mine']){
             let gain = (global.space['helium_mine'].count * spatialReasoning(100));
@@ -2962,6 +3008,15 @@ function midLoop(){
         }
         if (global.portal['carport']){
             lCaps['hell_surveyor'] += global.portal.carport.count;
+        }
+        if (p_on['nexus']){
+            let helium_gain = p_on['nexus'] * spatialReasoning(4000);
+            caps['Helium_3'] += helium_gain;
+            bd_Helium['Nexus'] = helium_gain+'v';
+
+            let deuterium_gain = p_on['nexus'] * spatialReasoning(3000);
+            caps['Deuterium'] += deuterium_gain;
+            bd_Deuterium['Nexus'] = deuterium_gain+'v';
         }
 
         if (global.city['trade']){

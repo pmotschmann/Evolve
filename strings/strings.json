@@ -2000,6 +2000,8 @@
   "interstellar_nebula_mission_result": "The helix nebula is rich in Helium-3 as expected, it also contains Deuterium and deposits of Elerium have been detected.",
   "interstellar_nexus_title": "Nexus Station",
   "interstellar_nexus_desc": "A deep space station used as a hub for the region",
+  "interstellar_nexus_effect1": "+%0 Nebula Support",
+  "interstellar_nexus_effect2": "-%0kW, -$%1/s",
   "interstellar_neutron_name": "Neutron Star",
   "interstellar_neutron_desc1": "A neutron star has been detected roughly 320 light years away.",
   "interstellar_neutron_desc2": "The Neutron Star is roughly 320 lighy years from %0.",

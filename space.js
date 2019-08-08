@@ -1699,12 +1699,16 @@ const interstellarProjects = {
                 Wrought_Iron(){ return costMultiplier('xfer_station', 3500, 1.28, 'interstellar'); },
             },
             effect(){
-                let fuel = 0.35;
+                let fuel = 0.28;
                 let helium = spatialReasoning(5000);
-                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+                let det = '';
+                if (global.resource.Deuterium.display){
+                    det = `<div>${loc('plus_max_resource',[spatialReasoning(2000),loc('resource_Deuterium_name')])}</div>`;
+                }
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div>${det}<div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
             },
             support: 1,
-            powered: 4,
+            powered: 1,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('xfer_station','interstellar');
@@ -1749,19 +1753,19 @@ const interstellarProjects = {
             desc(){ return `<div>${loc('interstellar_nexus_title')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Money.name])}</div>`; },
             reqs: { nebula: 1 },
             cost: {
-                Money(){ return costMultiplier('nexus', 1200000, 1.28, 'interstellar'); },
-                Neutronium(){ return costMultiplier('nexus', 1500, 1.28, 'interstellar'); },
-                Adamantite(){ return costMultiplier('nexus', 6000, 1.28, 'interstellar'); },
-                Polymer(){ return costMultiplier('nexus', 12000, 1.28, 'interstellar'); },
-                Wrought_Iron(){ return costMultiplier('nexus', 3500, 1.28, 'interstellar'); },
+                Money(){ return costMultiplier('nexus', 900000, 1.24, 'interstellar'); },
+                Adamantite(){ return costMultiplier('nexus', 7500, 1.24, 'interstellar'); },
+                Infernite(){ return costMultiplier('nexus', 250, 1.24, 'interstellar'); },
+                Sheet_Metal(){ return costMultiplier('nexus', 14000, 1.24, 'interstellar'); },
+                Nano_Tube(){ return costMultiplier('nexus', 17500, 1.24, 'interstellar'); },
             },
             effect(){
                 let helium = spatialReasoning(4000);
                 let deuterium = spatialReasoning(3000);
-                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+                return `<div>${loc('interstellar_nexus_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('interstellar_nexus_effect2',[$(this)[0].powered,350])}</div>`;
             },
-            support: 1,
-            powered: 3,
+            support: 2,
+            powered: 8,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('nexus','interstellar');
