@@ -26,7 +26,7 @@ export const resource_values = {
     Adamantite: 2250,
     Infernite: 2750,
     Nano_Tube: 750,
-    //Graphene: 3000,
+    Graphene: 3000,
     Stanene: 3600,
     Genes: 0,
     Soul_Gem: 0,
@@ -164,7 +164,7 @@ export function defineResources(){
         loadResource('Infernite',0,1,false,false,'advanced');
         loadResource('Elerium',1,1,false,false,'advanced');
         loadResource('Nano_Tube',0,1,false,false,'advanced');
-        //loadResource('Graphene',0,1,false,true,'advanced');
+        loadResource('Graphene',0,1,false,true,'advanced');
         loadResource('Stanene',0,1,false,true,'advanced');
         loadResource('Genes',-2,0,false,false,'advanced');
         loadResource('Soul_Gem',-2,0,false,false,'advanced');

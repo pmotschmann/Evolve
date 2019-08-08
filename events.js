@@ -124,12 +124,23 @@ export const events = {
     },
     doom: {
         reqs: {
-            tech: 'wsc'
+            tech: 'wsc',
+            notech: 'portal_guard'
         },
         effect: function(){
             unlockAchieve('doomed');
             global.stats.portals++;
             return loc(global.race['evil'] ? 'event_doom_alt' : 'event_doom',[races[global.race.species].solar.dwarf]);
+        }
+    },
+    demon_influx: {
+        reqs: {
+            tech: 'portal_guard'
+        },
+        effect: function(){
+            let surge = Math.rand(2500,5000);
+            global.portal.fortress.threat += surge;
+            return loc('event_demon_influx',[surge]);
         }
     },
     ruins: {

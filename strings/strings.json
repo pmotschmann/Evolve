@@ -160,6 +160,7 @@
   "event_slave_death2": "A slave was beaten to death.",
   "event_slave_death3": "A slave was executed as example to the others.",
   "event_slave_none": "Your underlings are plotting to overthrow you, you are weak. Prove your worth.",
+  "event_demon_influx": "A horde of %0 new demonic creatures has appeared around the fortress.",
   "evo_rna": "Creates %0 RNA",
   "evo_dna_title": "Form DNA",
   "evo_dna_desc": "Creates a new strand of DNA",

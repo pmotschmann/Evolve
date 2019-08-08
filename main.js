@@ -502,7 +502,7 @@ function fastLoop(){
         global_multiplier *= 1 + (bonus / 100);
     }
 
-    breakdown.p['consume'] = { //TODO: find a way to localize this
+    breakdown.p['consume'] = {
         Money: {},
         Knowledge: {},
         Food: {},
@@ -526,7 +526,9 @@ function fastLoop(){
         Adamantite: {},
         Infernite: {},
         Elerium: {},
-        Nano_Tube: {}
+        Nano_Tube: {},
+        Graphene: {},
+        Stanene: {}
     };
     
     var time_multiplier = 0.25;
@@ -2375,6 +2377,15 @@ function fastLoop(){
         else if (global.tech['wsc'] !== 0){
             global.tech['wsc'] = 0;
             drawTech();
+        }
+
+        if (global.tech['portal'] >= 2){
+            if (global.portal.fortress.garrison > 0){
+                global.tech['portal_guard'] = 1;
+            }
+            else {
+                global.tech['portal_guard'] = 0;
+            }
         }
     }
     
