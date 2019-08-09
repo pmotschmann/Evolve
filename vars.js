@@ -234,7 +234,7 @@ if (!global['settings']){
         animated: true,
         disableReset: false,
         theme: 'dark',
-        locale: 'en-us',
+        locale: 'en-US',
     }
 }
 

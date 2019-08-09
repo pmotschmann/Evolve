@@ -459,7 +459,7 @@ export function bloodwar(){
     }
 
     if (global.portal.fortress.threat < 10000){
-        global.portal.fortress.threat += Math.rand(25,150);
+        global.portal.fortress.threat += Math.rand(50,250);
     }
 
     // Surveyor threats

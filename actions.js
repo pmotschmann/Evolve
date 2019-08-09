@@ -4817,7 +4817,7 @@ export const actions = {
         bonds: {
             id: 'tech-bonds',
             title: loc('tech_bonds'),
-            desc: loc('tech_bonds_desc'),
+            desc: loc('tech_bonds'),
             reqs: { banking: 3 },
             grant: ['banking',4],
             cost: {
@@ -4835,7 +4835,7 @@ export const actions = {
         steel_vault: {
             id: 'tech-steel_vault',
             title: loc('tech_steel_vault'),
-            desc: loc('tech_steel_vault_desc'),
+            desc: loc('tech_steel_vault'),
             reqs: { banking: 4, smelting: 2 },
             grant: ['banking',5],
             cost: {
@@ -4854,7 +4854,7 @@ export const actions = {
         eebonds: {
             id: 'tech-eebonds',
             title: loc('tech_eebonds'),
-            desc: loc('tech_eebonds_desc'),
+            desc: loc('tech_eebonds'),
             reqs: { banking: 5, high_tech: 1 },
             grant: ['banking',6],
             cost: {
@@ -4872,7 +4872,7 @@ export const actions = {
         swiss_banking: {
             id: 'tech-swiss_banking',
             title: loc('tech_swiss_banking'),
-            desc: loc('tech_swiss_banking_desc'),
+            desc: loc('tech_swiss_banking'),
             reqs: { banking: 6 },
             grant: ['banking',7],
             cost: {
@@ -4890,7 +4890,7 @@ export const actions = {
         safety_deposit: {
             id: 'tech-safety_deposit',
             title: loc('tech_safety_deposit'),
-            desc: loc('tech_safety_deposit_desc'),
+            desc: loc('tech_safety_deposit'),
             reqs: { banking: 7, high_tech: 4 },
             grant: ['banking',8],
             cost: {
@@ -4908,7 +4908,7 @@ export const actions = {
         stock_market: {
             id: 'tech-stock_market',
             title: loc('tech_stock_market'),
-            desc: loc('tech_stock_market_desc'),
+            desc: loc('tech_stock_market'),
             reqs: { banking: 8, high_tech: 6 },
             grant: ['banking',9],
             cost: {
@@ -4929,7 +4929,7 @@ export const actions = {
         hedge_funds: {
             id: 'tech-hedge_funds',
             title: loc('tech_hedge_funds'),
-            desc: loc('tech_hedge_funds_desc'),
+            desc: loc('tech_hedge_funds'),
             reqs: { banking: 9, stock_exchange: 1 },
             grant: ['banking',10],
             cost: {
@@ -4947,7 +4947,7 @@ export const actions = {
         four_oh_one: {
             id: 'tech-four_oh_one',
             title: loc('tech_four_oh_one'),
-            desc: loc('tech_four_oh_one_desc'),
+            desc: loc('tech_four_oh_one'),
             reqs: { banking: 10 },
             grant: ['banking',11],
             cost: {
@@ -4960,6 +4960,9 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            flair(){
+                return loc('tech_four_oh_one_flair');
             }
         },
         mythril_vault: {
@@ -5003,7 +5006,7 @@ export const actions = {
         home_safe: {
             id: 'tech-home_safe',
             title: loc('tech_home_safe'),
-            desc: loc('tech_home_safe_desc'),
+            desc: loc('tech_home_safe'),
             reqs: { banking: 5 },
             grant: ['home_safe',1],
             cost: {
@@ -5022,7 +5025,7 @@ export const actions = {
         fire_proof_safe: {
             id: 'tech-fire_proof_safe',
             title: loc('tech_fire_proof_safe'),
-            desc: loc('tech_fire_proof_safe_desc'),
+            desc: loc('tech_fire_proof_safe'),
             reqs: { home_safe: 1, space: 3 },
             grant: ['home_safe',2],
             cost: {
@@ -5041,7 +5044,7 @@ export const actions = {
         monument: {
             id: 'tech-monument',
             title: loc('tech_monument'),
-            desc: loc('tech_monument_desc'),
+            desc: loc('tech_monument'),
             reqs: { high_tech: 6 },
             grant: ['monument',1],
             cost: {
@@ -5062,7 +5065,7 @@ export const actions = {
         tourism: {
             id: 'tech-tourism',
             title: loc('tech_tourism'),
-            desc: loc('tech_tourism_desc'),
+            desc: loc('tech_tourism'),
             reqs: { monuments: 2 },
             grant: ['monument',2],
             cost: {
@@ -5202,7 +5205,7 @@ export const actions = {
         internet: {
             id: 'tech-internet',
             title: loc('tech_internet'),
-            desc: loc('tech_internet_desc'),
+            desc: loc('tech_internet'),
             reqs: { science: 7, high_tech: 4 },
             grant: ['science',8],
             cost: {
@@ -5219,7 +5222,7 @@ export const actions = {
         observatory: {
             id: 'tech-observatory',
             title: loc('tech_observatory'),
-            desc: loc('tech_observatory_desc'),
+            desc: loc('tech_observatory'),
             reqs: { science: 8, space: 3, luna: 1 },
             grant: ['science',9],
             cost: {
@@ -5240,7 +5243,7 @@ export const actions = {
         world_collider: {
             id: 'tech-world_collider',
             title: loc('tech_world_collider'),
-            desc: loc('tech_world_collider_desc'),
+            desc: loc('tech_world_collider'),
             reqs: { science: 9, elerium: 2 },
             grant: ['science',10],
             cost: {
@@ -5305,7 +5308,7 @@ export const actions = {
         genetics: {
             id: 'tech-genetics',
             title: loc('tech_genetics'),
-            desc: loc('tech_genetics_desc'),
+            desc: loc('tech_genetics'),
             reqs: { genetics: 1, high_tech: 6 },
             grant: ['genetics',2],
             cost: {
@@ -5326,7 +5329,7 @@ export const actions = {
         crispr: {
             id: 'tech-crispr',
             title: loc('tech_crispr'),
-            desc: loc('tech_crispr_desc'),
+            desc: loc('tech_crispr'),
             reqs: { genetics: 3 },
             grant: ['genetics',4],
             cost: {
@@ -5411,7 +5414,7 @@ export const actions = {
         mad_science: {
             id: 'tech-mad_science',
             title: loc('tech_mad_science'),
-            desc: loc('tech_mad_science_desc'),
+            desc: loc('tech_mad_science'),
             reqs: { science: 2, smelting: 2 },
             grant: ['high_tech',1],
             cost: {
@@ -5462,7 +5465,7 @@ export const actions = {
         industrialization: {
             id: 'tech-industrialization',
             title: loc('tech_industrialization'),
-            desc: loc('tech_industrialization_desc'),
+            desc: loc('tech_industrialization'),
             reqs: { high_tech: 2, cement: 2, steel_container: 1 },
             grant: ['high_tech',3],
             cost: {
@@ -5488,7 +5491,7 @@ export const actions = {
         electronics: {
             id: 'tech-electronics',
             title: loc('tech_electronics'),
-            desc: loc('tech_electronics_desc'),
+            desc: loc('tech_electronics'),
             reqs: { high_tech: 3, titanium: 1 },
             grant: ['high_tech',4],
             cost: {
@@ -5509,7 +5512,7 @@ export const actions = {
         fission: {
             id: 'tech-fission',
             title: loc('tech_fission'),
-            desc: loc('tech_fission_desc'),
+            desc: loc('tech_fission'),
             reqs: { high_tech: 4, uranium: 1 },
             grant: ['high_tech',5],
             cost: {
@@ -5553,7 +5556,7 @@ export const actions = {
         rocketry: {
             id: 'tech-rocketry',
             title: loc('tech_rocketry'),
-            desc: loc('tech_rocketry_desc'),
+            desc: loc('tech_rocketry'),
             reqs: { high_tech: 6 },
             grant: ['high_tech',7],
             cost: {
@@ -5574,7 +5577,7 @@ export const actions = {
         robotics: {
             id: 'tech-robotics',
             title: loc('tech_robotics'),
-            desc: loc('tech_robotics_desc'),
+            desc: loc('tech_robotics'),
             reqs: { high_tech: 7 },
             grant: ['high_tech',8],
             cost: {
@@ -5609,7 +5612,7 @@ export const actions = {
         artifical_intelligence: {
             id: 'tech-artifical_intelligence',
             title: loc('tech_artificial_intelligence'),
-            desc: loc('tech_artificial_intelligence_desc'),
+            desc: loc('tech_artificial_intelligence'),
             reqs: { high_tech: 9 },
             grant: ['high_tech',10],
             cost: {
@@ -5629,7 +5632,7 @@ export const actions = {
         quantum_computing: {
             id: 'tech-quantum_computing',
             title: loc('tech_quantum_computing'),
-            desc: loc('tech_quantum_computing_desc'),
+            desc: loc('tech_quantum_computing'),
             reqs: { high_tech: 10, nano: 1 },
             grant: ['high_tech',11],
             cost: {
@@ -5685,7 +5688,7 @@ export const actions = {
         worker_drone: {
             id: 'tech-worker_drone',
             title: loc('tech_worker_drone'),
-            desc: loc('tech_worker_drone_desc'),
+            desc: loc('tech_worker_drone'),
             reqs: { nano: 1 },
             grant: ['drone',1],
             cost: {
@@ -5703,7 +5706,7 @@ export const actions = {
         uranium: {
             id: 'tech-uranium',
             title: loc('tech_uranium'),
-            desc: loc('tech_uranium_desc'),
+            desc: loc('tech_uranium'),
             reqs: { high_tech: 4 },
             grant: ['uranium',1],
             cost: {
@@ -5721,7 +5724,7 @@ export const actions = {
         uranium_storage: {
             id: 'tech-uranium_storage',
             title: loc('tech_uranium_storage'),
-            desc: loc('tech_uranium_storage_desc'),
+            desc: loc('tech_uranium_storage'),
             reqs: { uranium: 1 },
             grant: ['uranium',2],
             cost: {
@@ -5739,7 +5742,7 @@ export const actions = {
         uranium_ash: {
             id: 'tech-uranium_ash',
             title: loc('tech_uranium_ash'),
-            desc: loc('tech_uranium_ash_desc'),
+            desc: loc('tech_uranium_ash'),
             reqs: { uranium: 2 },
             grant: ['uranium',3],
             cost: {
@@ -5756,7 +5759,7 @@ export const actions = {
         breeder_reactor: {
             id: 'tech-breeder_reactor',
             title: loc('tech_breeder_reactor'),
-            desc: loc('tech_breeder_reactor_desc'),
+            desc: loc('tech_breeder_reactor'),
             reqs: { high_tech: 5, uranium: 3, space: 3 },
             grant: ['uranium',4],
             cost: {
@@ -5775,7 +5778,7 @@ export const actions = {
         mine_conveyor: {
             id: 'tech-mine_conveyor',
             title: loc('tech_mine_conveyor'),
-            desc: loc('tech_mine_conveyor_desc'),
+            desc: loc('tech_mine_conveyor'),
             reqs: { high_tech: 2 },
             grant: ['mine_conveyor',1],
             cost: {
@@ -5794,7 +5797,7 @@ export const actions = {
         oil_well: {
             id: 'tech-oil_well',
             title: loc('tech_oil_well'),
-            desc: loc('tech_oil_well_desc'),
+            desc: loc('tech_oil_well'),
             reqs: { high_tech: 3 },
             grant: ['oil',1],
             cost: {
@@ -5812,7 +5815,7 @@ export const actions = {
         oil_depot: {
             id: 'tech-oil_depot',
             title: loc('tech_oil_depot'),
-            desc: loc('tech_oil_depot_desc'),
+            desc: loc('tech_oil_depot'),
             reqs: { oil: 1 },
             grant: ['oil',2],
             cost: {
@@ -5830,7 +5833,7 @@ export const actions = {
         oil_power: {
             id: 'tech-oil_power',
             title: loc('tech_oil_power'),
-            desc: loc('tech_oil_power_desc'),
+            desc: loc('tech_oil_power'),
             reqs: { oil: 2 },
             grant: ['oil',3],
             cost: {
@@ -5848,7 +5851,7 @@ export const actions = {
         titanium_drills: {
             id: 'tech-titanium_drills',
             title: loc('tech_titanium_drills'),
-            desc: loc('tech_titanium_drills_desc'),
+            desc: loc('tech_titanium_drills'),
             reqs: { oil: 3 },
             grant: ['oil',4],
             cost: {
@@ -5866,7 +5869,7 @@ export const actions = {
         alloy_drills: {
             id: 'tech-alloy_drills',
             title: loc('tech_alloy_drills'),
-            desc: loc('tech_alloy_drills_desc'),
+            desc: loc('tech_alloy_drills'),
             reqs: { oil: 4 },
             grant: ['oil',5],
             cost: {
@@ -5884,7 +5887,7 @@ export const actions = {
         fracking: {
             id: 'tech-fracking',
             title: loc('tech_fracking'),
-            desc: loc('tech_fracking_desc'),
+            desc: loc('tech_fracking'),
             reqs: { oil: 5, high_tech: 6 },
             grant: ['oil',6],
             cost: {
@@ -5901,7 +5904,7 @@ export const actions = {
         mythril_drills: {
             id: 'tech-mythril_drills',
             title: loc('tech_mythril_drills'),
-            desc: loc('tech_mythril_drills_desc'),
+            desc: loc('tech_mythril_drills'),
             reqs: { oil: 6, space: 3 },
             grant: ['oil',7],
             cost: {
@@ -5919,7 +5922,7 @@ export const actions = {
         mass_driver: {
             id: 'tech-mass_driver',
             title: loc('tech_mass_driver'),
-            desc: loc('tech_mass_driver_desc'),
+            desc: loc('tech_mass_driver'),
             reqs: { oil: 6, space: 3 },
             grant: ['mass',1],
             cost: {
@@ -5940,7 +5943,7 @@ export const actions = {
         polymer: {
             id: 'tech-polymer',
             title: loc('tech_polymer'),
-            desc: loc('tech_polymer_desc'),
+            desc: loc('tech_polymer'),
             reqs: { genetics: 1 },
             grant: ['polymer',1],
             cost: {
@@ -5961,7 +5964,7 @@ export const actions = {
         fluidized_bed_reactor: {
             id: 'tech-fluidized_bed_reactor',
             title: loc('tech_fluidized_bed_reactor'),
-            desc: loc('tech_fluidized_bed_reactor_desc'),
+            desc: loc('tech_fluidized_bed_reactor'),
             reqs: { polymer: 1, high_tech: 6 },
             grant: ['polymer',2],
             cost: {
@@ -5978,7 +5981,7 @@ export const actions = {
         nano_tubes: {
             id: 'tech-nano_tubes',
             title: loc('tech_nano_tubes'),
-            desc: loc('tech_nano_tubes_desc'),
+            desc: loc('tech_nano_tubes'),
             reqs: { high_tech: 10 },
             grant: ['nano',1],
             cost: {
