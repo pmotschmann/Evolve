@@ -345,7 +345,7 @@ function casualties(demons,pat_armor,ambush){
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
-        if (dead === global.portal.fortress.patrol_size && global.portal.fortress.notify){
+        if (dead === global.portal.fortress.patrol_size && global.portal.fortress.notify === 'Yes'){
             messageQueue(loc('fortress_patrol_killed',[dead]));
         }
     }
@@ -372,6 +372,8 @@ export function bloodwar(){
     if (global.race['scales']){
         pat_armor += 1;
     }
+
+    console.log(global.portal.fortress.notify);
 
     // Patrols
     let dead = 0;
@@ -407,16 +409,15 @@ export function bloodwar(){
             }
         }
     }
-    if (dead > 0 && global.portal.fortress.notify){
+    if (dead > 0 && global.portal.fortress.notify === 'Yes'){
         messageQueue(loc('fortress_patrol_casualties',[dead]));
     }
 
     // Siege Chance
-    global.portal.fortress.siege 
-    if (global.portal.fortress.siege > 0){
+    if (global.portal.fortress.garrison > 0 && global.portal.fortress.siege > 0){
         global.portal.fortress.siege--;
     }
-    if (1 > Math.rand(0,global.portal.fortress.siege)){
+    if (global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
         let defense = fortressDefenseRating(global.portal.fortress.garrison);
         let siege = Math.round(global.portal.fortress.threat / 2);
 
@@ -459,7 +460,7 @@ export function bloodwar(){
     }
 
     if (global.portal.fortress.threat < 10000){
-        global.portal.fortress.threat += Math.rand(50,250);
+        global.portal.fortress.threat += Math.rand(40,225);
     }
 
     // Surveyor threats

@@ -8106,7 +8106,7 @@ export const actions = {
                         patrols: 0,
                         patrol_size: 4,
                         siege: 999,
-                        notify: true,
+                        notify: 'Yes',
                     };
                     global.portal['turret'] = { count: 0, on: 0 };
                     global.portal['carport'] = { count: 0 };
