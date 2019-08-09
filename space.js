@@ -1593,6 +1593,9 @@ function costMultiplier(action,base,mutiplier){
     if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }
+    else if (global.genes['creep'] && global.race['no_crispr']){
+        mutiplier -= global.genes['creep'] * 0.002;
+    }
     if (global.race['small']){ mutiplier -= 0.005; }
     if (global.race['compact']){ mutiplier -= 0.01; }
     if (mutiplier < 0.01){
