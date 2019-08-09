@@ -1766,14 +1766,49 @@ const interstellarProjects = {
             },
             support: 2,
             powered: 8,
+            refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('nexus','interstellar');
                     global.resource.Deuterium.display = true;
+                    if (global.tech['nebula'] === 1){
+                        global.interstellar['harvester'] = { count: 0, on: 0 };
+                        global.tech['nebula'] = 2;
+                    }
                     if (global.city.power >= 3){
                         global.interstellar['nexus'].on++;
                         global['resource']['Helium_3'].max += spatialReasoning(4000);
                         global['resource']['Deuterium'].max += spatialReasoning(3000);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        harvester: {
+            id: 'interstellar-harvester',
+            title: loc('interstellar_harvester_title'),
+            desc: `<div>${loc('interstellar_harvester_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_nebula_name')])}</div>`,
+            reqs: { nebula: 2 },
+            cost: {
+                Money(){ return costMultiplier('harvester', 650000, 1.28, 'interstellar'); },
+                Copper(){ return costMultiplier('harvester', 80000, 1.28, 'interstellar'); },
+                Alloy(){ return costMultiplier('harvester', 45000, 1.28, 'interstellar'); },
+                Iridium(){ return costMultiplier('harvester', 8000, 1.28, 'interstellar'); }
+            },
+            effect(){
+                let helium = +(0.85 * zigguratBonus()).toFixed(3);
+                let deuterium = +(0.15 * zigguratBonus()).toFixed(3);
+                let ram = global.tech['ram_scoop'] ? `<div>${loc('interstellar_harvester_effect',[deuterium])}</div>` : '';
+                return `<div>${loc('space_used_support',[loc('interstellar_nebula_name')])}</div><div>${loc('space_gas_mining_effect1',[helium])}</div>${ram}`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('harvester','interstellar');
+                    if (global.interstellar.nexus.support < global.interstellar.nexus.s_max){
+                        global.interstellar.harvester.on++;
                     }
                     return true;
                 }
@@ -1873,6 +1908,9 @@ const structDefinitions = {
     processing: { count: 0, on: 0 },
     habitat: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
+    graphene: { count: 0, on: 0 },
+    nexus: { count: 0, on: 0, support: 0, s_max: 0 },
+    harvester: { count: 0, on: 0 },
     turret: { count: 0, on: 0 },
     carport: { count: 0 },
 };

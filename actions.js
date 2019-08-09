@@ -5440,7 +5440,7 @@ export const actions = {
         electricity: {
             id: 'tech-electricity',
             title: loc('tech_electricity'),
-            desc: loc('tech_electricity_desc'),
+            desc: loc('tech_electricity'),
             reqs: { high_tech: 1 },
             grant: ['high_tech',2],
             cost: {
@@ -5955,7 +5955,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.resource.Polymer.display = true;
-                    messageQueue('Polymer is now available for manufacture');
+                    messageQueue(loc('tech_polymer_avail'));
                     return true;
                 }
                 return false;
@@ -5973,6 +5973,27 @@ export const actions = {
             effect: loc('tech_fluidized_bed_reactor_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        stanene: {
+            id: 'tech-polymer',
+            title: loc('tech_stanene'),
+            desc: loc('tech_stanene'),
+            reqs: { infernite: 1 },
+            grant: ['stanene',1],
+            cost: {
+                Knowledge(){ return 600000; },
+                Aluminium(){ return 500000; },
+                Infernite(){ return 1000; }
+            },
+            effect: loc('tech_stanene_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Stanene.display = true;
+                    messageQueue(loc('tech_stanene_avail'));
                     return true;
                 }
                 return false;
@@ -7602,6 +7623,23 @@ export const actions = {
                 return false;
             }
         },
+        ram_scoops: {
+            id: 'tech-ram_scoops',
+            title: loc('tech_ram_scoops'),
+            desc: loc('tech_ram_scoops'),
+            reqs: { nebula: 2 },
+            grant: ['ram_scoop',1],
+            cost: {
+                Knowledge(){ return 580000; }
+            },
+            effect(){ return loc('tech_ram_scoops_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         zero_g_mining: {
             id: 'tech-zero_g_mining',
             title: loc('tech_zero_g_mining'),
@@ -7985,6 +8023,25 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.interstellar['habitat'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        graphene: {
+            id: 'tech-graphene',
+            title: loc('tech_graphene'),
+            desc: loc('tech_graphene'),
+            reqs: { alpha: 3 },
+            grant: ['graphene',1],
+            cost: {
+                Knowledge(){ return 540000; },
+                Adamantite(){ return 10000; }
+            },
+            effect: loc('tech_graphene_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['g_factory'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;

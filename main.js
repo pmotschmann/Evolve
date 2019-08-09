@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, alpha_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
@@ -1005,16 +1005,16 @@ function fastLoop(){
                         $(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating;
-                    alpha_on[structs[i]] = operating;
+                    int_on[structs[i]] = operating;
                 }
                 else {
-                    alpha_on[structs[i]] = 0;
+                    int_on[structs[i]] = 0;
                 }
             }
             global.interstellar.starport.support = used_support;
 
-            if (alpha_on['mining_droid'] > 0){
-                let max = alpha_on['mining_droid'];
+            if (int_on['mining_droid'] > 0){
+                let max = int_on['mining_droid'];
                 let segments = ['adam','uran','coal','alum'];
                 for (let i=0; i<segments.length; i++){
                     if (global.interstellar.mining_droid[segments[i]] <= max){
@@ -1083,7 +1083,7 @@ function fastLoop(){
 
         if (global.interstellar['nexus']){
             let used_support = 0;
-            let structs = [];
+            let structs = ['harvester'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -1096,10 +1096,10 @@ function fastLoop(){
                         $(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating;
-                    alpha_on[structs[i]] = operating;
+                    int_on[structs[i]] = operating;
                 }
                 else {
-                    alpha_on[structs[i]] = 0;
+                    int_on[structs[i]] = 0;
                 }
             }
             global.interstellar.nexus.support = used_support;
@@ -2229,6 +2229,26 @@ function fastLoop(){
             helium_bd['Gas_Collector'] = gas_mining + 'v';
             modRes('Helium_3', delta * time_multiplier);
         }
+
+        if (global.interstellar['harvester'] && int_on['harvester']){
+            let gas_mining = int_on['harvester'] * 0.85 * zigguratBonus();
+            let delta = gas_mining * hunger * global_multiplier;
+
+            helium_bd['Harvester'] = gas_mining + 'v';
+            modRes('Helium_3', delta * time_multiplier);
+
+            if (global.tech['ram_scoop']){
+                let deuterium_bd = {};
+                let deut_mining = int_on['harvester'] * 0.15 * zigguratBonus();
+                let deut_delta = deut_mining * hunger * global_multiplier;
+
+                deuterium_bd['Harvester'] = deut_mining + 'v';
+                modRes('Deuterium', deut_delta * time_multiplier);
+
+                deuterium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Deuterium'] = deuterium_bd;
+            }
+        }
         
         helium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
         breakdown.p['Helium_3'] = helium_bd;
@@ -2264,8 +2284,8 @@ function fastLoop(){
             let driod_base = miner_droids['adam'] * 0.075;
             let driod_delta = driod_base * global_multiplier;
             adamantite_bd['Droids'] = driod_base + 'v';
-            if (global.interstellar['processing'] && alpha_on['processing']){
-                let bonus = alpha_on['processing'] * 0.12;
+            if (global.interstellar['processing'] && int_on['processing']){
+                let bonus = int_on['processing'] * 0.12;
                 driod_delta *= 1 + bonus;
                 adamantite_bd['Processing'] = (bonus * 100) + '%';
             }
@@ -2920,8 +2940,8 @@ function midLoop(){
             caps['Knowledge'] += gain;
             bd_Knowledge['Observatory'] = gain+'v';
         }
-        if (global.interstellar['laboratory'] && alpha_on['laboratory'] > 0){
-            let gain = (alpha_on['laboratory'] * 10000);
+        if (global.interstellar['laboratory'] && int_on['laboratory'] > 0){
+            let gain = (int_on['laboratory'] * 10000);
             caps['Knowledge'] += gain;
             bd_Knowledge['Laboratory'] = gain+'v';
         }
