@@ -212,6 +212,9 @@ function buildFortress(parent){
     station.append($('<b-tooltip :label="patSizeLabel()" position="is-bottom" multilined animated><span class="current">{{ f.patrol_size }}</span></b-tooltip>'));
     station.append($('<span role="button" aria-label="increase size of each patrol" class="add has-text-success" @click="patSizeInc"><span>&raquo;</span></span>'));
 
+    let color = global.settings.theme === 'light' ? ` type="is-light"` : ` type="is-dark"`;
+    station.append($(`<b-checkbox class="patrol" v-model="f.notify" true-value="Yes" false-value="No"${color}>Patrol Reports</b-checkbox>`));
+
     fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
 
     vues['civ_fortress'] = new Vue({
@@ -342,7 +345,7 @@ function casualties(demons,pat_armor,ambush){
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
-        if (dead === global.portal.fortress.patrol_size){
+        if (dead === global.portal.fortress.patrol_size && global.portal.fortress.notify){
             messageQueue(loc('fortress_patrol_killed',[dead]));
         }
     }
@@ -404,7 +407,7 @@ export function bloodwar(){
             }
         }
     }
-    if (dead > 0){
+    if (dead > 0 && global.portal.fortress.notify){
         messageQueue(loc('fortress_patrol_casualties',[dead]));
     }
 
@@ -456,7 +459,7 @@ export function bloodwar(){
     }
 
     if (global.portal.fortress.threat < 10000){
-        global.portal.fortress.threat += Math.rand(0,100);
+        global.portal.fortress.threat += Math.rand(25,150);
     }
 
     // Surveyor threats
