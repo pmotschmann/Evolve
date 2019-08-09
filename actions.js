@@ -8691,6 +8691,9 @@ function costMultiplier(structure,base,mutiplier,cat){
     if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }
+    else if (global.genes['creep'] && global.race['no_crispr']){
+        mutiplier -= global.genes['creep'] * 0.002;
+    }
     if (mutiplier < 0.01){
         mutiplier = 0.01;
     }
@@ -9198,6 +9201,20 @@ function sentience(){
     Object.keys(races[global.race.species].traits).forEach(function (trait) {
         global.race[trait] = races[global.race.species].traits[trait];
     });
+
+    if (global.race['no_crispr']){
+        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','fraile','atrophy','invertebrate','pathetic'];
+        for (let i=0; i<10; i++){
+            let trait = bad[Math.rand(0,bad.length)];
+            if (global.race['carnivore'] && trait === 'herbivore'){
+                continue;
+            }
+            if (!global.race[trait]){
+                global.race[trait] = 1;
+                break;
+            }
+        }
+    }
 
     defineResources();
     if (!global.race['kindling_kindred']){

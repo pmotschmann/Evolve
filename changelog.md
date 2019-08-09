@@ -1,3 +1,6 @@
+#### 0.4.40 - 8/9/2019 ####
+Changed No Cripser gene into the Weak Crisper gene<br>
+
 #### 0.4.39 - 8/6/2019 ####
 Genetic Disaster Challenge<br>
 
