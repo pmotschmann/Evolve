@@ -2007,7 +2007,8 @@ export const actions = {
                 Aluminium(){ return costMultiplier('hospital', 10000, 1.32); }
             },
             effect(){
-                return loc('city_hospital_effect',[5]);
+                let healing = global.tech['medic'] >= 2 ? 10 : 5;
+                return loc('city_hospital_effect',[healing]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2250,7 +2251,7 @@ export const actions = {
             effect(){ 
                 let vault = 1800;
                 if (global.tech['vault'] >= 1){
-                    vault = global.tech['vault'] >= 2 ? 22500 : 15000;
+                    vault = (global.tech['vault'] + 1) * 7500;
                 } 
                 else if (global.tech['banking'] >= 5){
                     vault = 9000;
@@ -4968,7 +4969,7 @@ export const actions = {
         mythril_vault: {
             id: 'tech-mythril_vault',
             title: loc('tech_mythril_vault'),
-            desc: loc('tech_mythril_vault_desc'),
+            desc: loc('tech_mythril_vault'),
             reqs: { banking: 5, space: 3 },
             grant: ['vault',1],
             cost: {
@@ -4987,7 +4988,7 @@ export const actions = {
         neutronium_vault: {
             id: 'tech-neutronium_vault',
             title: loc('tech_neutronium_vault'),
-            desc: loc('tech_neutronium_vault_desc'),
+            desc: loc('tech_neutronium_vault'),
             reqs: { vault: 1, gas_moon: 1 },
             grant: ['vault',2],
             cost: {
@@ -4996,6 +4997,25 @@ export const actions = {
                 Neutronium(){ return 650; }
             },
             effect: loc('tech_neutronium_vault_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        adamantite_vault: {
+            id: 'tech-adamantite_vault',
+            title: loc('tech_adamantite_vault'),
+            desc: loc('tech_adamantite_vault'),
+            reqs: { vault: 2, alpha: 2 },
+            grant: ['vault',3],
+            cost: {
+                Money(){ return 2000000; },
+                Knowledge(){ return 560000; },
+                Adamantite(){ return 20000; }
+            },
+            effect: loc('tech_adamantite_vault_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5170,7 +5190,7 @@ export const actions = {
         adjunct_professor: {
             id: 'tech-adjunct_professor',
             title: loc('tech_adjunct_professor'),
-            desc: loc('tech_adjunct_professor_desc'),
+            desc: loc('tech_adjunct_professor'),
             reqs: { science: 5 },
             grant: ['science',6],
             cost: {
@@ -6302,7 +6322,7 @@ export const actions = {
         jackhammer_mk2: {
             id: 'tech-jackhammer_mk2',
             title: loc('tech_jackhammer_mk2'),
-            desc: loc('tech_jackhammer_mk2_desc'),
+            desc: loc('tech_jackhammer_mk2'),
             reqs: { pickaxe: 4, high_tech: 4},
             grant: ['pickaxe',5],
             cost: {
@@ -6311,6 +6331,24 @@ export const actions = {
                 Alloy(){ return 500; }
             },
             effect: loc('tech_jackhammer_mk2_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        adamantite_hammer: {
+            id: 'tech-adamantite_hammer',
+            title: loc('tech_adamantite_hammer'),
+            desc: loc('tech_adamantite_hammer'),
+            reqs: { pickaxe: 5, alpha: 2},
+            grant: ['pickaxe',6],
+            cost: {
+                Knowledge(){ return 535000; },
+                Adamantite(){ return 12500; }
+            },
+            effect: loc('tech_adamantite_hammer_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -6468,7 +6506,7 @@ export const actions = {
         hospital: {
             id: 'tech-hospital',
             title: loc('tech_hospital'),
-            desc: loc('tech_hospital_desc'),
+            desc: loc('tech_hospital'),
             reqs: { military: 1, alumina: 1 },
             grant: ['medic',1],
             cost: {
@@ -6478,6 +6516,24 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['hospital'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        bac_tanks: {
+            id: 'tech-bac_tanks',
+            title: loc('tech_bac_tanks'),
+            desc: loc('tech_bac_tanks_desc'),
+            reqs: { medic: 1, infernite: 1 },
+            grant: ['medic',2],
+            cost: {
+                Knowledge(){ return 600000; },
+                Infernite(){ return 250; }
+            },
+            effect: loc('tech_bac_tanks_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;

@@ -373,8 +373,6 @@ export function bloodwar(){
         pat_armor += 1;
     }
 
-    console.log(global.portal.fortress.notify);
-
     // Patrols
     let dead = 0;
     for (let i=0; i<global.portal.fortress.patrols; i++){
@@ -460,7 +458,8 @@ export function bloodwar(){
     }
 
     if (global.portal.fortress.threat < 10000){
-        global.portal.fortress.threat += Math.rand(40,225);
+        let influx = ((10000 - global.portal.fortress.threat) / 2500) + 1;
+        global.portal.fortress.threat += Math.rand(Math.round(10 * influx),Math.round(50 * influx));
     }
 
     // Surveyor threats

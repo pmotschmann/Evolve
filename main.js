@@ -2952,7 +2952,7 @@ function midLoop(){
         if (global.city['bank']){
             let vault = 1800;
             if (global.tech['vault'] >= 1){
-                vault = global.tech['vault'] >= 2 ? 22500 : 15000;
+                vault = (global.tech['vault'] + 1) * 7500;
             }
             else if (global.tech['banking'] >= 5){
                 vault = 9000;
@@ -3406,6 +3406,9 @@ function longLoop(){
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? 4 : 1;
             let hc = global.city['hospital'] ? global.city['hospital'].count : 0;
+            if (global.tech['medic'] && global.tech['medic'] >= 2){
+                hc *= 2;
+            }
             if (global.race['fibroblast']){
                 hc += global.race['fibroblast'] * 2;
             }
