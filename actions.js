@@ -5694,6 +5694,24 @@ export const actions = {
                 return loc('tech_virtual_reality_flair');
             }
         },
+        fusion_power: {
+            id: 'tech-fusion_power',
+            title: loc('tech_fusion_power'),
+            desc: loc('tech_fusion_power'),
+            reqs: { ram_scoop: 1 },
+            grant: ['fusion',1],
+            cost: {
+                Knowledge(){ return 640000; }
+            },
+            effect: loc('tech_fusion_power_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['fusion'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         thermomechanics: {
             id: 'tech-thermomechanics',
             title: loc('tech_thermomechanics'),

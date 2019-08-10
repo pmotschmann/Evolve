@@ -131,6 +131,9 @@ if (global.city['mass_driver']){
 if (global.portal['turret']){
     p_on['turret'] = global.portal.turret.on;
 }
+if (global.interstellar['fusion']){
+    int_on['fusion'] = global.interstellar.fusion.on;
+}
 
 // Load Resources
 defineResources();
@@ -522,6 +525,7 @@ function fastLoop(){
         Polymer: {},
         Iridium: {},
         Helium_3: {},
+        Deuterium: {},
         Neutronium: {},
         Adamantite: {},
         Infernite: {},
@@ -777,6 +781,21 @@ function fastLoop(){
             power_grid -= power;
         }
 
+        if (global.interstellar['fusion']){
+            let output = actions.interstellar.int_alpha.fusion.powered;
+            let power = global.interstellar.fusion.on * output;
+            let consume = global.interstellar.fusion.on * 1.25;
+            while (consume * time_multiplier > global.resource.Deuterium.amount && consume > 0){
+                power -= output;
+                consume -= 1.25;
+            }
+            breakdown.p.consume.Deuterium['Reactor'] = -(consume);
+            modRes('Deuterium', -(consume * time_multiplier));
+
+            max_power += power;
+            power_grid -= power;
+        }
+
         if (global.space['geothermal'] && global.space.geothermal.on > 0){
             let output = actions.space.spc_hell.geothermal.powered;
             let increment = fuel_adjust(0.5);
@@ -992,7 +1011,7 @@ function fastLoop(){
 
         if (global.interstellar['starport']){
             let used_support = 0;
-            let structs = ['mining_droid','processing','laboratory','g_factory'];
+            let structs = ['fusion','mining_droid','processing','laboratory','g_factory'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -2674,6 +2693,18 @@ function midLoop(){
             }
             caps['Crates'] += (global.city['wharf'].count * vol);
             caps['Containers'] += (global.city['wharf'].count * vol);
+        }
+        if (global.interstellar['cargo_yard']){
+            caps['Crates'] += (global.interstellar['cargo_yard'].count * 50);
+            caps['Containers'] += (global.interstellar['cargo_yard'].count * 50);
+
+            let gain = (global.interstellar['cargo_yard'].count * spatialReasoning(200));
+            caps['Neutronium'] += gain;
+            bd_Neutronium['Cargo_Yard'] = gain+'v';
+
+            gain = (global.interstellar['cargo_yard'].count * spatialReasoning(150));
+            caps['Infernite'] += gain;
+            bd_Infernite['Cargo_Yard'] = gain+'v';
         }
         if (global.city['storage_yard']){
             let size = global.tech.container >= 3 ? 20 : 10;

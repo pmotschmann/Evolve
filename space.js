@@ -1632,6 +1632,34 @@ const interstellarProjects = {
                 return false;
             }
         },
+        fusion: {
+            id: 'interstellar-fusion',
+            title: loc('interstellar_fusion_title'),
+            desc: `<div>${loc('interstellar_fusion_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            reqs: { fusion: 1 },
+            cost: {
+                Money(){ return costMultiplier('fusion', 750000, 1.28, 'interstellar'); },
+                Titanium(){ return costMultiplier('fusion', 120000, 1.28, 'interstellar'); },
+                Alloy(){ return costMultiplier('fusion', 95000, 1.28, 'interstellar'); },
+                Mythril(){ return costMultiplier('fusion', 8500, 1.28, 'interstellar'); }
+            },
+            effect(){
+                let det = 1.25;
+                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_fusion_effect',[-($(this)[0].powered),det])}</div>`;
+            },
+            support: -1,
+            powered: -22,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('fusion','interstellar');
+                    if (global.interstellar.starport.support < global.interstellar.starport.s_max){
+                        global.interstellar.fusion.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         laboratory: {
             id: 'interstellar-laboratory',
             title: loc('interstellar_laboratory_title'),
@@ -1684,6 +1712,7 @@ const interstellarProjects = {
                     global.resource.Graphene.display = true;
                     if (global.interstellar.starport.support < global.interstellar.starport.s_max){
                         global.interstellar.g_factory.on++;
+                        global.interstellar.g_factory.Lumber++;
                     }
                     return true;
                 }
@@ -1728,6 +1757,10 @@ const interstellarProjects = {
                 Wrought_Iron(){ return costMultiplier('xfer_station', 3500, 1.28, 'interstellar'); },
             },
             effect(){
+                if (global.tech['proxima'] === 1){
+                    global.tech['proxima'] = 2;
+                    global.interstellar['cargo_yard'] = { count: 0 };
+                }
                 let fuel = 0.28;
                 let helium = spatialReasoning(5000);
                 let det = '';
@@ -1738,6 +1771,7 @@ const interstellarProjects = {
             },
             support: 1,
             powered: 1,
+            refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('xfer_station','interstellar');
@@ -1746,6 +1780,32 @@ const interstellarProjects = {
                         global['resource']['Helium_3'].max += spatialReasoning(5000);
                         global['resource']['Deuterium'].max += spatialReasoning(2000);
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        cargo_yard: {
+            id: 'interstellar-cargo_yard',
+            title: loc('interstellar_cargo_yard_title'),
+            desc: loc('interstellar_cargo_yard_title'),
+            reqs: { proxima: 2 },
+            cost: {
+                Money(){ return costMultiplier('cargo_yard', 275000, 1.28, 'interstellar'); },
+                Graphene(){ return costMultiplier('cargo_yard', 7500, 1.28, 'interstellar'); },
+                Mythril(){ return costMultiplier('cargo_yard', 6000, 1.28, 'interstellar'); },
+            },
+            effect(){
+                let containers = 50;
+                let neutronium = spatialReasoning(200);
+                let infernite = spatialReasoning(150);
+                let desc = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[neutronium,loc('resource_Neutronium_name')])}</div><div>${loc('plus_max_resource',[infernite,loc('resource_Infernite_name')])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('cargo_yard','interstellar');
                     return true;
                 }
                 return false;
@@ -1936,8 +1996,11 @@ const structDefinitions = {
     mining_droid: { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 },
     processing: { count: 0, on: 0 },
     habitat: { count: 0, on: 0 },
+    fusion: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     g_factory: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
+    xfer_station: { count: 0, on: 0 },
+    cargo_yard: { count: 0 },
     nexus: { count: 0, on: 0, support: 0, s_max: 0 },
     harvester: { count: 0, on: 0 },
     turret: { count: 0, on: 0 },
