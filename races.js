@@ -531,6 +531,44 @@ export const races = {
             gas_moon: 'Phlegethos',
             dwarf: 'Stygia',
         }
+    },
+    junker: {
+        name: loc('race_junker'),
+        desc: loc('race_junker_desc'),
+        type: 'humanoid',
+        home: 'Syndrome',
+        entity: loc('race_junker_entity'),
+        traits: {
+            diverse: 1,
+            arrogant: 1,
+            angry: 1,
+            lazy: 1,
+            herbivore: 1,
+            paranoid: 1,
+            greedy: 1,
+            puny: 1,
+            dumb: 1,
+            nearsighted: 1,
+            gluttony: 1,
+            slow: 1,
+            hard_of_hearing: 1,
+            pessimistic: 1,
+            solitary: 1,
+            pyrophobia: 1,
+            skittish: 1,
+            nyctophilia: 1,
+            fraile: 1,
+            atrophy: 1,
+            invertebrate: 1,
+            pathetic: 1,
+        },
+        solar: {
+            red: 'Anemia',
+            hell: 'Cancer',
+            gas: 'Fibrosis',
+            gas_moon: 'Thalassemia',
+            dwarf: 'Malform',
+        }
     }
 };
 

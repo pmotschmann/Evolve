@@ -1,3 +1,15 @@
+#### 0.4.40 - 8/9/2019 ####
+Changed No Cripser gene into the Weak Crisper gene<br>
+
+#### 0.4.39 - 8/6/2019 ####
+Genetic Disaster Challenge<br>
+
+#### 0.4.38 - 8/5/2019 ####
+Special action icon is now peroperly flagged as a button<br>
+
+#### 0.4.37 - 7/31/2019 ####
+ARIA Improvements for Factory and A.R.P.A.<br>
+
 #### 0.4.36 - 7/27/2019 ####
 Slow and Hyper traits can now combine<br>
 Added new achievements: Creator & Explorer<br>

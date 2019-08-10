@@ -1497,10 +1497,12 @@ export const actions = {
                     global.evolution['trade'] = { count: 0 };
                     global.evolution['craft'] = { count: 0 };
                     global.evolution['crispr'] = { count: 0 };
+                    global.evolution['junker'] = { count: 0 };
                     addAction('evolution','plasmid');
                     addAction('evolution','trade');
                     addAction('evolution','craft');
                     addAction('evolution','crispr');
+                    addAction('evolution','junker');
                     evoProgress();
                 }
                 return false;
@@ -1577,6 +1579,28 @@ export const actions = {
                 }
                 return false;
             }
+        },
+        junker: {
+            id: 'evo-junker',
+            title: loc('evo_challenge_junker'),
+            desc: loc('evo_challenge_junker_desc'),
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect: loc('evo_challenge_junker_effect'),
+            action(){
+                if (payCosts(actions.evolution.crispr.cost)){
+                    global.race.species = 'junker';
+                    global.race['junker'] = 1;
+                    global.race['no_plasmid'] = 1;
+                    global.race['no_trade'] = 1;
+                    global.race['no_craft'] = 1;
+                    global.race['no_crispr'] = 1;
+                    sentience();
+                }
+                return false;
+            },
+            flair: loc('evo_challenge_junker_flair')
         },
     },
     city: {
@@ -8090,7 +8114,7 @@ export function setAction(c_action,action,type,old){
     }
 
     if (c_action['special']){
-        var special = $(`<div class="special" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
+        var special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
                 L362.75,199.5l18.667,25.666c-4.083,7.584-7.583,15.75-9.917,24.5l-31.5,4.667v51.333l31.5,5.25
@@ -8667,6 +8691,9 @@ function costMultiplier(structure,base,mutiplier,cat){
     if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }
+    else if (global.genes['creep'] && global.race['no_crispr']){
+        mutiplier -= global.genes['creep'] * 0.002;
+    }
     if (mutiplier < 0.01){
         mutiplier = 0.01;
     }
@@ -9175,6 +9202,20 @@ function sentience(){
         global.race[trait] = races[global.race.species].traits[trait];
     });
 
+    if (global.race['no_crispr']){
+        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','fraile','atrophy','invertebrate','pathetic'];
+        for (let i=0; i<10; i++){
+            let trait = bad[Math.rand(0,bad.length)];
+            if (global.race['carnivore'] && trait === 'herbivore'){
+                continue;
+            }
+            if (!global.race[trait]){
+                global.race[trait] = 1;
+                break;
+            }
+        }
+    }
+
     defineResources();
     if (!global.race['kindling_kindred']){
         global.resource.Lumber.display = true;
@@ -9369,6 +9410,10 @@ function fanaticism(god){
             break;
         case 'imp':
             fanaticTrait('conniving');
+            break;
+        default:
+            randomMinorTrait();
+            arpa('Genetics');
             break;
     }
 }
