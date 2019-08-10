@@ -4181,6 +4181,25 @@ export const actions = {
                 return false;
             }
         },
+        hellfire_furnace: {
+            id: 'tech-hellfire_furnace',
+            title: loc('tech_hellfire_furnace'),
+            desc: loc('tech_hellfire_furnace'),
+            reqs: { smelting: 6, infernite: 1 },
+            grant: ['smelting',7],
+            cost: { 
+                Knowledge(){ return 615000; },
+                Infernite(){ return 2000; },
+                Soul_Gem(){ return 2; }
+            },
+            effect: loc('tech_hellfire_furnace_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         rotary_kiln: {
             id: 'tech-rotary_kiln',
             title: loc('tech_rotary_kiln'),
@@ -9371,7 +9390,7 @@ function smelterModal(modal){
                 }
             },
             ironLabel(){
-                let boost = global.tech['smelting'] >= 3 ? 12 : 10;
+                let boost = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
                 if (global.race['pyrophobia']){
                     boost *= 0.9;
                 }
@@ -9384,6 +9403,9 @@ function smelterModal(modal){
                 }
                 if (global.tech['smelting'] >= 6){
                     boost *= 1.2;
+                }
+                if (global.tech['smelting'] >= 7){
+                    boost *= 1.25;
                 }
                 if (global.race['pyrophobia']){
                     boost *= 0.9;

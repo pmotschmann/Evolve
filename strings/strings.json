@@ -558,6 +558,8 @@
   "tech_oxygen_converter_effect": "Increases Steel output of smelters by 20%.",
   "tech_electric_arc_furnace": "Electric Arc Furnace",
   "tech_electric_arc_furnace_effect": "Increases Steel output of smelters by 20%.",
+  "tech_hellfire_furnace": "Hellfire Furnace",
+  "tech_hellfire_furnace_effect": "Infusing your smelters with the fury of hell will boost their output by 25%.",
   "tech_rotary_kiln": "Rotary Kiln",
   "tech_rotary_kiln_effect": "Advanced smelting processes improve copper refinement by 20%.",
   "tech_metal_working": "Metal Working",

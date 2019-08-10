@@ -1872,7 +1872,7 @@ function fastLoop(){
                 }
             }
 
-            iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
+            iron_smelter *= global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
 
             if (global.race['pyrophobia']){
                 iron_smelter *= 0.9;
@@ -1925,6 +1925,9 @@ function fastLoop(){
                     if (global.tech['smelting'] >= i) {
                         steel_base *= 1.2;
                     }
+                }
+                if (global.tech['smelting'] >= 7) {
+                    steel_base *= 1.25;
                 }
 
                 if (oil_bonus > 0){
