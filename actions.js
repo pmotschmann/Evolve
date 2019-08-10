@@ -6216,6 +6216,26 @@ export const actions = {
                 return false;
             }
         },
+        chainsaws: {
+            id: 'tech-chainsaws',
+            title: loc('tech_chainsaws'),
+            desc: loc('tech_chainsaws_desc'),
+            reqs: { axe: 5, alpha: 2 },
+            grant: ['axe',6],
+            cost: {
+                Knowledge(){ return 560000; },
+                Oil(){ return 10000; },
+                Adamantite(){ return 2000; },
+            },
+            effect: loc('tech_chainsaws_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            },
+            flair(){ return `<div>${loc('tech_chainsaws_flair1')}</div><div>${loc('tech_chainsaws_flair2')}</div>`; }
+        },
         copper_sledgehammer: {
             id: 'tech-copper_sledgehammer',
             title: loc('tech_copper_sledgehammer'),
@@ -6462,6 +6482,24 @@ export const actions = {
                 Titanium(){ return 500; }
             },
             effect: loc('tech_titanium_hoe_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        adamantite_hoe: {
+            id: 'tech-adamantite_hoe',
+            title: loc('tech_adamantite_hoe'),
+            desc: loc('tech_adamantite_hoe_desc'),
+            reqs: { hoe: 4, alpha: 2 },
+            grant: ['hoe',5],
+            cost: {
+                Knowledge(){ return 530000; },
+                Adamantite(){ return 1000; }
+            },
+            effect: loc('tech_adamantite_hoe_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
