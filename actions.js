@@ -2030,7 +2030,8 @@ export const actions = {
                 Brick(){ return costMultiplier('boot_camp', 1400, 1.32); }
             },
             effect(){
-                return loc('city_boot_camp_effect',[5]);
+                let rate = global.tech['boot_camp'] >= 2 ? 8 : 5;
+                return loc('city_boot_camp_effect',[rate]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3969,6 +3970,24 @@ export const actions = {
                 return false;
             }
         },
+        vr_center: {
+            id: 'tech-vr_center',
+            title: loc('tech_vr_center'),
+            desc: loc('tech_vr_center'),
+            reqs: { broadcast: 2, high_tech: 12, stanene: 1 },
+            grant: ['broadcast',3],
+            cost: {
+                Knowledge(){ return 620000; }
+            },
+            effect(){ return loc('tech_vr_center_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.space['vr_center'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         casino: {
             id: 'tech-casino',
             title: loc('tech_casino'),
@@ -5326,6 +5345,23 @@ export const actions = {
             },
             flair: loc('tech_laboratory_flair')
         },
+        virtual_assistant: {
+            id: 'tech-virtual_assistant',
+            title: loc('tech_virtual_assistant'),
+            desc: loc('tech_virtual_assistant'),
+            reqs: { science: 12, high_tech: 12 },
+            grant: ['science',13],
+            cost: {
+                Knowledge(){ return 635000; }
+            },
+            effect(){ return loc('tech_virtual_assistant_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         bioscience: {
             id: 'tech-bioscience',
             title: loc('tech_bioscience'),
@@ -6650,6 +6686,23 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['boot_camp'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        vr_training: {
+            id: 'tech-vr_training',
+            title: loc('tech_vr_training'),
+            desc: loc('tech_vr_training'),
+            reqs: { boot_camp: 1, high_tech: 12 },
+            grant: ['boot_camp',2],
+            cost: {
+                Knowledge(){ return 625000; }
+            },
+            effect(){ return loc('tech_vr_training_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;

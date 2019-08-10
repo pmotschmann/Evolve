@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, p_on, belt_on, quantum_level } from './vars.js';
+import { global, vues, poppers, messageQueue, p_on, belt_on, int_on, quantum_level } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -432,6 +432,34 @@ const spaceProjects = {
                 return false;
             }
         },
+        vr_center: {
+            id: 'space-vr_center',
+            title: loc('space_red_vr_center_title'),
+            desc(){
+                return `<div>${loc('space_red_vr_center_desc')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`;
+            },
+            reqs: { mars: 1, broadcast: 3 },
+            cost: {
+                Money(){ return costMultiplier('vr_center', house_adjust(38000), 1.28); },
+                Steel(){ return costMultiplier('vr_center', house_adjust(15000), 1.28); },
+                Polymer(){ return costMultiplier('vr_center', house_adjust(9500), 1.28); }
+            },
+            effect(){
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[3])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('vr_center');
+                    if (global.space.spaceport.support < global.space.spaceport.s_max){
+                        global.space['vr_center'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         garage: {
             id: 'space-garage',
             title: loc('space_red_garage_title'),
@@ -642,8 +670,12 @@ const spaceProjects = {
                 Elerium(){ return costMultiplier('exotic_lab', 20, 1.28) - 4; }
             },
             effect(){
+                let sci = 500;
+                if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
+                    sci += int_on['laboratory'] * 25;
+                }
                 let elerium = spatialReasoning(10);
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[500])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -1673,7 +1705,11 @@ const interstellarProjects = {
             },
             effect(){
                 let know = 10000;
-                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
+                let desc = `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
+                if (global.tech['science'] >= 13){
+                    desc = desc + `<div>${loc('interstellar_laboratory_effect',[5])}</div>`;
+                }
+                return desc;
             },
             support: -1,
             powered: 1,
@@ -1965,6 +2001,7 @@ const structDefinitions = {
     spaceport: { count: 0, on: 0, support: 0, s_max: 0 },
     red_tower: { count: 0, on: 0 },
     living_quarters: { count: 0, on: 0 },
+    vr_center: { count: 0, on: 0 },
     garage: { count: 0 },
     red_mine: { count: 0, on: 0 },
     fabrication: { count: 0, on: 0 },

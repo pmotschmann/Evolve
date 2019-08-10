@@ -962,7 +962,7 @@ function fastLoop(){
 
         if (global.space['spaceport']){
             let used_support = 0;
-            let red_structs = ['living_quarters','exotic_lab','red_mine','fabrication','biodome'];
+            let red_structs = ['living_quarters','exotic_lab','red_mine','fabrication','biodome','vr_center'];
             for (var i = 0; i < red_structs.length; i++){
                 if (global.space[red_structs[i]]){
                     let operating = global.space[red_structs[i]].on;
@@ -1177,6 +1177,9 @@ function fastLoop(){
         if (global.tech['broadcast']){
             entertainment += global.city.wardenclyffe.on * global.tech.broadcast;
         }
+        if (red_on['vr_center']){
+            entertainment += red_on['vr_center'] * 3;
+        }
         global.city.morale.entertain = entertainment;
         morale += entertainment;
         global.city.morale.stress = stress;
@@ -1196,7 +1199,11 @@ function fastLoop(){
 
         let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
         mBaseCap += global.city['casino'] ? global.city['casino'].count : 0;
+        if (red_on['vr_center']){
+            mBaseCap += red_on['vr_center'] * 2;
+        }
         moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
+
         if (global.civic.taxes.tax_rate < 20){
             moraleCap += 10 - Math.floor(global.civic.taxes.tax_rate / 2);
         }
@@ -1367,7 +1374,7 @@ function fastLoop(){
                 breakdown.p.consume.Food['Marines'] = -(space_marines);
             }
 
-            let delta = generated - consume - tourism - spaceport - space_station - space_marines;
+            let delta = generated - consume - tourism - spaceport - starport - space_station - space_marines;
 
             food_bd['Biodome'] = biodome + 'v';
             food_bd['Soldiers'] = hunting + 'v';
@@ -2534,7 +2541,7 @@ function fastLoop(){
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
         let rate = global.race['diverse'] ? 2 : 2.5;
         if (global.city['boot_camp']){
-            rate *= 1 + (global.city['boot_camp'].count * 0.05);
+            rate *= 1 + (global.city['boot_camp'].count * (global.tech['boot_camp'] >= 2 ? 0.08 : 0.05));
         }
         global.civic.garrison.progress += rate * time_multiplier;
         if (global.race['brute']){
@@ -3160,7 +3167,11 @@ function midLoop(){
             let el_gain = red_on['exotic_lab'] * spatialReasoning(10);
             caps['Elerium'] += el_gain;
             bd_Elerium['Exotic_Lab'] = el_gain+'v';
-            let gain = red_on['exotic_lab'] * global.civic.colonist.workers * 500;
+            let sci = 500;
+            if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
+                sci += int_on['laboratory'] * 25;
+            }
+            let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;
             bd_Knowledge['Exotic_Lab'] = gain+'v';
         }
