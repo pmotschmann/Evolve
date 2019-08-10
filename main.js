@@ -992,7 +992,7 @@ function fastLoop(){
 
         if (global.interstellar['starport']){
             let used_support = 0;
-            let structs = ['mining_droid','processing','laboratory'];
+            let structs = ['mining_droid','processing','laboratory','g_factory'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -1715,6 +1715,52 @@ function fastLoop(){
                 breakdown.p['Nano_Tube'] = nano_bd;
                 modRes('Nano_Tube', delta * time_multiplier);
             }
+
+            if (global.city.factory['Stanene'] && global.city.factory['Stanene'] > 0){
+                operating += global.city.factory.Stanene;
+                while (operating > on_factories && operating > 0){
+                    operating--;
+                    global.city.factory.Stanene--;
+                }
+
+                let alumIncrement = (assembly ? f_rate.Stanene.aluminium[global.tech['factory']] : f_rate.Stanene.aluminium[0]);
+                let nanoIncrement = (assembly ? f_rate.Stanene.nano[global.tech['factory']] : f_rate.Stanene.nano[0]);
+                let alum_cost = global.city.factory.Stanene * alumIncrement;
+                let nano_cost = global.city.factory.Stanene * nanoIncrement;
+                let workDone = global.city.factory.Stanene;
+                
+                while (alum_cost * time_multiplier > global.resource.Aluminium.amount && alum_cost > 0){
+                    nano_cost -= nanoIncrement;
+                    alum_cost -= alumIncrement;
+                    workDone--;
+                }
+                while (nano_cost * time_multiplier > global.resource.Nano_Tube.amount && nano_cost > 0){
+                    nano_cost -= nanoIncrement;
+                    alum_cost -= alumIncrement;
+                    workDone--;
+                }
+
+                breakdown.p.consume.Aluminium['Factory'] = breakdown.p.consume.Aluminium['Factory'] ? breakdown.p.consume.Aluminium['Factory'] - alum_cost : -(alum_cost);
+                breakdown.p.consume.Nano_Tube['Factory'] = -(nano_cost);
+                modRes('Aluminium', -(alum_cost * time_multiplier));
+                modRes('Nano_Tube', -(nano_cost * time_multiplier));
+
+                let factory_output = workDone * (assembly ? f_rate.Stanene.output[global.tech['factory']] : f_rate.Stanene.output[0]);
+
+                let delta = factory_output;
+                delta *= hunger * global_multiplier;
+
+                let stanene_bd = {};
+                stanene_bd['Factory'] = factory_output + 'v';
+                if (global.tech['q_factory']){
+                    let q_bonus = (quantum_level - 1) / 2 + 1;
+                    delta *= q_bonus;
+                    stanene_bd['Quantum'] = ((q_bonus - 1) * 100) + '%';
+                }
+                stanene_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Stanene'] = stanene_bd;
+                modRes('Stanene', delta * time_multiplier);
+            }
         }
 
         // Cement
@@ -1890,6 +1936,60 @@ function fastLoop(){
                     titanium_bd['Steel'] = (titanium / divisor) + 'v';
                 }
             }
+        }
+
+        // Graphene
+        if (global.interstellar['g_factory'] && int_on['g_factory'] > 0){
+            if (global.race['kindling_kindred']){
+                global.interstellar.g_factory.Lumber = 0;
+            }
+
+            let consume_wood = global.interstellar.g_factory.Lumber * 250;
+            let consume_coal = global.interstellar.g_factory.Coal * 25;
+            let consume_oil = global.interstellar.g_factory.Oil * 15;
+
+            while (int_on['g_factory'] < global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
+                if (global.interstellar.g_factory.Oil > 0){
+                    global.interstellar.g_factory.Oil--;
+                }
+                else if (global.interstellar.g_factory.Coal > 0){
+                    global.interstellar.g_factory.Coal--;
+                }
+                else if (global.interstellar.g_factory.Lumber > 0){
+                    global.interstellar.g_factory.Lumber--;
+                }
+            }
+
+            let graphene_production = global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
+
+            while (consume_wood * time_multiplier > global.resource.Lumber.amount && consume_wood > 0){
+                consume_wood -= 250;
+                graphene_production--;
+            }
+            while (consume_coal * time_multiplier > global.resource.Coal.amount && consume_coal > 0){
+                consume_coal -= 25;
+                graphene_production--;
+            }
+            while (consume_oil * time_multiplier > global.resource.Oil.amount && consume_oil > 0){
+                consume_oil -= 15;
+                graphene_production--;
+            }
+            
+            breakdown.p.consume.Lumber['G.Plant'] = -(consume_wood);
+            breakdown.p.consume.Coal['G.Plant'] = -(consume_coal);
+            breakdown.p.consume.Oil['G.Plant'] = -(consume_oil);
+
+            modRes('Lumber', -(consume_wood * time_multiplier));
+            modRes('Coal', -(consume_coal * time_multiplier));
+            modRes('Oil', -(consume_oil * time_multiplier));
+
+            let delta = graphene_production * hunger * global_multiplier;
+
+            let graphene_bd = {};
+            graphene_bd['G.Plant'] = graphene_production + 'v';
+            graphene_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            breakdown.p['Graphene'] = graphene_bd;
+            modRes('Graphene', delta * time_multiplier);
         }
 
         // Lumber
@@ -2508,7 +2608,9 @@ function midLoop(){
             Adamantite: 0,
             Infernite: 0,
             Elerium: 1,
-            Nano_Tube: 0
+            Nano_Tube: 0,
+            Graphene: 0,
+            Stanene: 0
         };
         // labor caps
         var lCaps = {
@@ -2555,6 +2657,8 @@ function midLoop(){
         var bd_Infernite = { Base: caps['Infernite']+'v' };
         var bd_Elerium = { Base: caps['Elerium']+'v' };
         var bd_Nano_Tube = { Base: caps['Nano_Tube']+'v' };
+        var bd_Graphene = { Base: caps['Graphene']+'v' };
+        var bd_Stanene = { Base: caps['Stanene']+'v' };
 
         caps[global.race.species] = 0;
         if (global.city['farm']){
@@ -3104,6 +3208,8 @@ function midLoop(){
             Infernite: bd_Infernite,
             Elerium: bd_Elerium,
             Nano_Tube: bd_Nano_Tube,
+            Graphene: bd_Graphene,
+            Stanene: bd_Stanene,
         };
 
         let create_value = crateValue();

@@ -209,6 +209,9 @@ if (convertVersion(global['version']) < 4031){
 
 if (convertVersion(global['version']) < 5000){
     global['portal'] = {};
+    if (global['city'] && global.city['factory'] && !global.city.factory['Stanene']){
+        global.city.factory['Stanene'] = 0;
+    }
 }
 
 global['version'] = '0.5.0';

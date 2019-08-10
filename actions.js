@@ -5501,7 +5501,8 @@ export const actions = {
                         Lux: 0,
                         Alloy: 0,
                         Polymer: 0,
-                        Nano: 0
+                        Nano: 0,
+                        Stanene: 0
                     };
                     return true;
                 }
@@ -5542,7 +5543,7 @@ export const actions = {
             effect: loc('tech_fission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue('Your scientists have unlocked the secrets of the atom, the atomic age has begun.','success');
+                    messageQueue(loc('tech_fission_msg'),'success');
                     global.city['fission_power'] = {
                         count: 0,
                         on: 0
@@ -5646,7 +5647,7 @@ export const actions = {
                 return false;
             },
             flair(){
-                return `When the testing is over, you will be missed.`;
+                return loc('tech_artificial_intelligence_flair');
             }
         },
         quantum_computing: {
@@ -5668,7 +5669,29 @@ export const actions = {
                 return false;
             },
             flair(){
-                return `It's as cool as it sounds.`;
+                return loc('tech_quantum_computing_flair');
+            }
+        },
+        virtual_reality: {
+            id: 'tech-virtual_reality',
+            title: loc('tech_virtual_reality'),
+            desc: loc('tech_virtual_reality'),
+            reqs: { high_tech: 11, alpha: 2, infernite: 1, stanene: 1 },
+            grant: ['high_tech',12],
+            cost: {
+                Knowledge(){ return 600000; },
+                Stanene(){ return 1250 },
+                Soul_Gem(){ return 1 }
+            },
+            effect: loc('tech_virtual_reality_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return loc('tech_virtual_reality_flair');
             }
         },
         thermomechanics: {
@@ -6005,7 +6028,7 @@ export const actions = {
             reqs: { infernite: 1 },
             grant: ['stanene',1],
             cost: {
-                Knowledge(){ return 600000; },
+                Knowledge(){ return 590000; },
                 Aluminium(){ return 500000; },
                 Infernite(){ return 1000; }
             },
@@ -8088,7 +8111,7 @@ export const actions = {
             id: 'tech-graphene',
             title: loc('tech_graphene'),
             desc: loc('tech_graphene'),
-            reqs: { alpha: 3 },
+            reqs: { alpha: 3, infernite: 1 },
             grant: ['graphene',1],
             cost: {
                 Knowledge(){ return 540000; },
@@ -8097,7 +8120,7 @@ export const actions = {
             effect: loc('tech_graphene_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.interstellar['g_factory'] = { count: 0, on: 0 };
+                    global.interstellar['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
                     return true;
                 }
                 return false;
@@ -9004,7 +9027,7 @@ function checkMaxCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
         var testCost = Number(costs[res]()) || 0;
-        if (testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1) {
+        if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1) {
             test = false;
             return false;
         }
@@ -9093,6 +9116,9 @@ function drawModal(c_action,type){
             break;
         case 'mining_droid':
             droidModal(body);
+            break;
+        case 'g_factory':
+            grapheneModal(body);
             break;
     }
 }
@@ -9393,6 +9419,11 @@ export const f_rate = {
         coal: [8,12,16,20],
         neutronium: [0.05,0.075,0.1,0.125],
         output: [0.2,0.3,0.4,0.5],
+    },
+    Stanene: {
+        aluminium: [20,30,40,50],
+        nano: [0.02,0.03,0.04,0.05],
+        output: [0.8,1.2,1.6,2],
     }
 };
 
@@ -9444,6 +9475,18 @@ function factoryModal(modal){
         nano.append(addNano);
     }
 
+    if (global.tech['stanene']){
+        let stanene = $(`<div class="factory"><b-tooltip :label="buildLabel('Stanene')" :aria-label="buildLabel('Stanene') + ariaProd('Stanene')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Stanene_name')}</span></b-tooltip></div>`);
+        modal.append(stanene);
+
+        let staneneCount = $(`<span class="current">{{ Stanene }}</span>`);
+        let subStanene= $(`<span class="sub" @click="subItem('Stanene')" role="button" aria-label="Decrease Stanene production">&laquo;</span>`);
+        let addStanene = $(`<span class="add" @click="addItem('Stanene')" role="button" aria-label="Increase Stanene production">&raquo;</span>`);
+        stanene.append(subStanene);
+        stanene.append(staneneCount);
+        stanene.append(addStanene);
+    }
+
     vues['specialModal'] = new Vue({
         data: global.city['factory'],
         methods: {
@@ -9462,7 +9505,7 @@ function factoryModal(modal){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
-                    if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano < max){
+                    if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene < max){
                         global.city.factory[item]++;
                     }
                     else {
@@ -9473,15 +9516,17 @@ function factoryModal(modal){
             buildLabel: function(type){
                 let assembly = global.tech['factory'] ? true : false;
                 switch(type){
-                    case 'Lux':
+                    case 'Lux':{
                         let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
                         let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
                         return loc('modal_factory_lux_label',[fur,loc('resource_Furs_name'),demand]);
-                    case 'Alloy':
+                    }
+                    case 'Alloy':{
                         let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
                         let aluminium = assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0];
                         return loc('modal_factory_alloy_label',[copper,loc('resource_Copper_name'),aluminium,loc('resource_Aluminium_name'),loc('resource_Alloy_name')]);
-                    case 'Polymer':
+                    }
+                    case 'Polymer':{
                         if (global.race['kindling_kindred']){
                             let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
                             return loc('modal_factory_polymer_label2',[oil,loc('resource_Oil_name'),loc('resource_Polymer_name')]);
@@ -9491,10 +9536,17 @@ function factoryModal(modal){
                             let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
                             return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,loc('resource_Lumber_name'),loc('resource_Polymer_name')]);
                         }
-                    case 'Nano':
+                    }
+                    case 'Nano':{
                         let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
                         let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
                         return loc('modal_factory_nano_label',[coal,loc('resource_Coal_name'),neutronium,loc('resource_Neutronium_name'),loc('resource_Nano_Tube_name')]);
+                    }
+                    case 'Stanene':{
+                        let aluminium = assembly ? f_rate.Stanene.aluminium[global.tech['factory']] : f_rate.Stanene.aluminium[0];
+                        let nano = assembly ? f_rate.Stanene.nano[global.tech['factory']] : f_rate.Stanene.nano[0];
+                        return loc('modal_factory_stanene_label',[aluminium,loc('resource_Aluminium_name'),nano,loc('resource_Nano_Tube_name'),loc('resource_Stanene_name')]);
+                    }
                 }
             },
             ariaProd(prod){
@@ -9503,7 +9555,7 @@ function factoryModal(modal){
         },
         filters: {
             on(){
-                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano;
+                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
             },
             max(){
                 return global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
@@ -9601,6 +9653,191 @@ function droidModal(modal){
             },
             max(){
                 return global.interstellar.mining_droid.on;
+            }
+        }
+    });
+
+    vues['specialModal'].$mount('#specialModal');
+}
+
+function grapheneModal(modal){
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>`);
+    modal.append(fuel);
+
+    let fuelTypes = $('<div></div>');
+    modal.append(fuelTypes);
+
+    if (!global.race['kindling_kindred']){
+        let f_label = global.resource.Lumber.name;
+        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ Lumber }}</span></b-tooltip>`);
+        let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
+        let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
+        fuelTypes.append(subWood);
+        fuelTypes.append(wood);
+        fuelTypes.append(addWood);
+    }
+
+    if (global.resource.Coal.display){
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
+        let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
+        let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
+        fuelTypes.append(subCoal);
+        fuelTypes.append(coal);
+        fuelTypes.append(addCoal);
+    }
+
+    if (global.resource.Oil.display){
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
+        let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
+        let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
+        fuelTypes.append(subOil);
+        fuelTypes.append(oil);
+        fuelTypes.append(addOil);
+    }
+
+    vues['specialModal'] = new Vue({
+        data: global.interstellar['g_factory'],
+        methods: {
+            subWood(){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.interstellar.g_factory.Lumber > 0){
+                        global.interstellar.g_factory.Lumber--;
+                        if (global.interstellar.g_factory.Iron + global.interstellar.g_factory.Steel > global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
+                            if (global.interstellar.g_factory.Steel > 0){
+                                global.interstellar.g_factory.Steel--;
+                            }
+                            else {
+                                global.interstellar.g_factory.Iron--;
+                            }
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            addWood(){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.count){
+                        global.interstellar.g_factory.Lumber++;
+                        global.interstellar.g_factory.Iron++;
+                    }
+                    else if (global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil > 0){
+                        if (global.interstellar.g_factory.Oil > global.interstellar.g_factory.Coal){
+                            global.interstellar.g_factory.Coal > 0 ? global.interstellar.g_factory.Coal-- : global.interstellar.g_factory.Oil--;
+                        }
+                        else {
+                            global.interstellar.g_factory.Oil > 0 ? global.interstellar.g_factory.Oil-- : global.interstellar.g_factory.Coal--;
+                        }
+                        global.interstellar.g_factory.Lumber++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            subCoal(){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.interstellar.g_factory.Coal > 0){
+                        global.interstellar.g_factory.Coal--;
+                        if (global.interstellar.g_factory.Iron + global.interstellar.g_factory.Steel > global.interstellar.g_factory.Wood + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
+                            if (global.interstellar.g_factory.Steel > 0){
+                                global.interstellar.g_factory.Steel--;
+                            }
+                            else {
+                                global.interstellar.g_factory.Iron--;
+                            }
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            addCoal(){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.count){
+                        global.interstellar.g_factory.Coal++;
+                        global.interstellar.g_factory.Iron++;
+                    }
+                    else if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Oil > 0){
+                        if (global.interstellar.g_factory.Lumber > 0){
+                            global.interstellar.g_factory.Lumber--;
+                        }
+                        else {
+                            global.interstellar.g_factory.Oil--;
+                        }
+                        global.interstellar.g_factory.Coal++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            subOil(){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.interstellar.g_factory.Oil > 0){
+                        global.interstellar.g_factory.Oil--;
+                        if (global.interstellar.g_factory.Iron + global.interstellar.g_factory.Steel > global.interstellar.g_factory.Wood + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
+                            if (global.interstellar.g_factory.Steel > 0){
+                                global.interstellar.g_factory.Steel--;
+                            }
+                            else {
+                                global.interstellar.g_factory.Iron--;
+                            }
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            addOil(){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.count){
+                        global.interstellar.g_factory.Oil++;
+                        global.interstellar.g_factory.Iron++;
+                    }
+                    else if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal > 0){
+                        if (global.interstellar.g_factory.Lumber > 0){
+                            global.interstellar.g_factory.Lumber--;
+                        }
+                        else {
+                            global.interstellar.g_factory.Coal--;
+                        }
+                        global.interstellar.g_factory.Oil++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            buildLabel(type){
+                switch(type){
+                    case 'wood':
+                        return loc('modal_graphene_produce',[250,loc('resource_Lumber_name'),loc('resource_Graphene_name')]);
+                    case 'coal':
+                        return loc('modal_graphene_produce',[25,loc('resource_Coal_name'),loc('resource_Graphene_name')]);
+                    case 'oil':
+                        return loc('modal_graphene_produce',[15,loc('resource_Oil_name'),loc('resource_Graphene_name')]);
+                }
+            },
+            ariaCount(fuel){
+                return ` ${global.interstellar.g_factory[fuel]} ${fuel} fueled.`;
+            },
+            ariaProd(res){
+                return `. ${global.interstellar.g_factory[res]} producing ${res}.`;
+            }
+        },
+        filters: {
+            on: function(count){
+                return global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
             }
         }
     });

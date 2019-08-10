@@ -1661,6 +1661,35 @@ const interstellarProjects = {
                 return false;
             }
         },
+        g_factory: {
+            id: 'interstellar-g_factory',
+            title: loc('interstellar_g_factory_title'),
+            desc: `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            reqs: { graphene: 1 },
+            cost: {
+                Money(){ return costMultiplier('g_factory', 950000, 1.28, 'interstellar'); },
+                Copper(){ return costMultiplier('g_factory', 165000, 1.28, 'interstellar'); },
+                Cement(){ return costMultiplier('g_factory', 220000, 1.28, 'interstellar'); },
+                Infernite(){ return costMultiplier('g_factory', 750, 1.28, 'interstellar'); }
+            },
+            effect(){
+                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
+            },
+            support: -1,
+            powered: 1,
+            special: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('g_factory','interstellar');
+                    global.resource.Graphene.display = true;
+                    if (global.interstellar.starport.support < global.interstellar.starport.s_max){
+                        global.interstellar.g_factory.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     int_proxima: {
         info: {
@@ -1908,7 +1937,7 @@ const structDefinitions = {
     processing: { count: 0, on: 0 },
     habitat: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
-    graphene: { count: 0, on: 0 },
+    g_factory: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
     nexus: { count: 0, on: 0, support: 0, s_max: 0 },
     harvester: { count: 0, on: 0 },
     turret: { count: 0, on: 0 },
