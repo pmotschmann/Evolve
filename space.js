@@ -1853,6 +1853,43 @@ const interstellarProjects = {
                 return false;
             }
         },
+        dyson: {
+            id: 'interstellar-dyson',
+            title: loc('interstellar_dyson_title'),
+            desc(){
+                if (global.interstellar.dyson.count < 100){
+                    return `<div>${loc('interstellar_dyson_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_dyson_title')}</div>`;
+                }
+            },
+            reqs: { proxima: 3 },
+            cost: {
+                Money(){ return global.interstellar.dyson.count < 100 ? 250000 : 0; },
+                Adamantite(){ return global.interstellar.dyson.count < 100 ? 10000 : 0; },
+                Infernite(){ return global.interstellar.dyson.count < 100 ? 25 : 0; },
+                Stanene(){ return global.interstellar.dyson.count < 100 ? 100000 : 0; }
+            },
+            effect(){
+                if (global.interstellar.dyson.count < 100){
+                    let remain = 100 - global.interstellar.dyson.count;
+                    return `<div>${loc('interstellar_dyson_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return loc('interstellar_dyson_complete',[175]);
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.dyson.count < 100){
+                        incrementStruct('dyson','interstellar');
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     int_nebula: {
         info: {
@@ -2044,6 +2081,7 @@ const structDefinitions = {
     g_factory: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
     xfer_station: { count: 0, on: 0 },
     cargo_yard: { count: 0 },
+    dyson: { count: 0 },
     nexus: { count: 0, on: 0, support: 0, s_max: 0 },
     harvester: { count: 0, on: 0 },
     turret: { count: 0, on: 0 },

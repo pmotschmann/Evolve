@@ -731,6 +731,11 @@ function fastLoop(){
         let power_grid = 0;
         let max_power = 0;
 
+        if (global.interstellar['dyson'] && global.interstellar.dyson.count >= 100){
+            max_power -= 175;
+            power_grid += 175;
+        }
+
         let uranium_bd = {};
         if (global.city['coal_power']){
             let power = global.city.coal_power.on * actions.city.coal_power.powered;
@@ -3111,8 +3116,12 @@ function midLoop(){
             bd_Knowledge['Laboratory'] = gain+'v';
         }
         if (global.city['biolab']){
-            caps['Knowledge'] += (p_on['biolab'] * 3000);
-            bd_Knowledge['Bio_Lab'] = (p_on['biolab'] * 3000)+'v';
+            let gain = 3000;
+            if (global.portal['sensor_drone']){
+                gain *= 1 + (p_on['sensor_drone'] * 0.02);
+            }
+            caps['Knowledge'] += (p_on['biolab'] * gain);
+            bd_Knowledge['Bio_Lab'] = (p_on['biolab'] * gain)+'v';
         }
         if (global.city['bank']){
             let vault = 1800;

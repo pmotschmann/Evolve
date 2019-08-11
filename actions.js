@@ -3083,6 +3083,9 @@ export const actions = {
             },
             effect(){
                 let gain = 3000;
+                if (global.portal['sensor_drone']){
+                    gain *= 1 + (p_on['sensor_drone'] * 0.02);
+                }
                 return `${loc('city_max_knowledge',[gain])}, -${actions.city.biolab.powered}kW`;
             },
             powered: 2,
@@ -7932,16 +7935,34 @@ export const actions = {
         },
         quantum_swarm: {
             id: 'tech-quantum_swarm',
-            title: loc('tech_quantium_swarm'),
-            desc: loc('tech_quantium_swarm'),
+            title: loc('tech_quantum_swarm'),
+            desc: loc('tech_quantum_swarm'),
             reqs: { swarm: 2, high_tech: 11 },
             grant: ['swarm',3],
             cost: {
                 Knowledge(){ return 450000; }
             },
-            effect: loc('tech_quantium_swarm_effect'),
+            effect: loc('tech_quantum_swarm_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        dyson_net: {
+            id: 'tech-dyson_net',
+            title: loc('tech_dyson_net'),
+            desc: loc('tech_dyson_net'),
+            reqs: { solar: 3, proxima: 2, stanene: 1 },
+            grant: ['proxima',3],
+            cost: {
+                Knowledge(){ return 800000; }
+            },
+            effect: loc('tech_dyson_net_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['dyson'] = { count: 0 };
                     return true;
                 }
                 return false;
