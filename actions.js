@@ -5784,6 +5784,25 @@ export const actions = {
                 return loc('tech_virtual_reality_flair');
             }
         },
+        plasma: {
+            id: 'tech-plasma',
+            title: loc('tech_plasma'),
+            desc: loc('tech_plasma_desc'),
+            reqs: { high_tech: 12 },
+            grant: ['high_tech',13],
+            cost: {
+                Knowledge(){ return 755000; },
+                Infernite(){ return 1000; },
+                Stanene(){ return 250000 }
+            },
+            effect: loc('tech_plasma_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         fusion_power: {
             id: 'tech-fusion_power',
             title: loc('tech_fusion_power'),
@@ -6769,7 +6788,7 @@ export const actions = {
         flintlock_rifle: {
             id: 'tech-flintlock_rifle',
             title: loc('tech_flintlock_rifle'),
-            desc: loc('tech_flintlock_rifle_desc'),
+            desc: loc('tech_flintlock_rifle'),
             reqs: { military: 2, explosives: 1 },
             grant: ['military',3],
             cost: {
@@ -6792,7 +6811,7 @@ export const actions = {
         machine_gun: {
             id: 'tech-machine_gun',
             title: loc('tech_machine_gun'),
-            desc: loc('tech_machine_gun_desc'),
+            desc: loc('tech_machine_gun'),
             reqs: { military: 3, oil: 1 },
             grant: ['military',4],
             cost: {
@@ -6815,7 +6834,7 @@ export const actions = {
         bunk_beds: {
             id: 'tech-bunk_beds',
             title: loc('tech_bunk_beds'),
-            desc: loc('tech_bunk_beds_desc'),
+            desc: loc('tech_bunk_beds'),
             reqs: { military: 4, high_tech: 4 },
             grant: ['military',5],
             cost: {
@@ -6834,7 +6853,7 @@ export const actions = {
         rail_guns: {
             id: 'tech-rail_guns',
             title: loc('tech_rail_guns'),
-            desc: loc('tech_rail_guns_desc'),
+            desc: loc('tech_rail_guns'),
             reqs: { military: 5, mass: 1 },
             grant: ['military',6],
             cost: {
@@ -6857,7 +6876,7 @@ export const actions = {
         laser_rifles: {
             id: 'tech-laser_rifles',
             title: loc('tech_laser_rifles'),
-            desc: loc('tech_laser_rifles_desc'),
+            desc: loc('tech_laser_rifles'),
             reqs: { military: 6, high_tech: 9, elerium: 1 },
             grant: ['military',7],
             cost: {
@@ -6877,6 +6896,29 @@ export const actions = {
                         unlockAchieve('laser_shark');
                     }
 
+                    return true;
+                }
+                return false;
+            }
+        },
+        plasma_rifles: {
+            id: 'tech-plasma_rifles',
+            title: loc('tech_plasma_rifles'),
+            desc: loc('tech_plasma_rifles'),
+            reqs: { military: 7, high_tech: 13 },
+            grant: ['military',8],
+            cost: {
+                Knowledge(){ return 780000; },
+                Elerium(){ return 500; }
+            },
+            effect: loc('tech_plasma_rifles_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    var tech = actions.tech.plasma_rifles.grant[0];
+                    global.tech[tech] = actions.tech.plasma_rifles.grant[1];
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
                     return true;
                 }
                 return false;
@@ -6968,6 +7010,29 @@ export const actions = {
                 Elerium(){ return 100; }
             },
             effect(){ return `<div>${loc('tech_laser_turret_effect1')}</div><div class="has-text-special">${loc('tech_laser_turret_effect2')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    var tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    if (vues['civ_fortress']){
+                        vues['civ_fortress'].$forceUpdate();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        plasma_turret: {
+            id: 'tech-plasma_turret',
+            title: loc('tech_plasma_turret'),
+            desc: loc('tech_plasma_turret'),
+            reqs: { high_tech: 13, portal: 2 },
+            grant: ['turret',2],
+            cost: {
+                Knowledge(){ return 760000; },
+                Elerium(){ return 350; }
+            },
+            effect(){ return `<div>${loc('tech_plasma_turret_effect')}</div><div class="has-text-special">${loc('tech_laser_turret_effect2')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     var tech = $(this)[0].grant[0];
