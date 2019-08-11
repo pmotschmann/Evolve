@@ -3668,7 +3668,8 @@ export const actions = {
                         Bronze: 0,
                         Wrought_Iron: 0,
                         Sheet_Metal: 0,
-                        Mythril: 0
+                        Mythril: 0,
+                        Aerogel: 0
                     };
                     return true;
                 }
@@ -4640,6 +4641,24 @@ export const actions = {
                 Adamantite(){ return 17500; }
             },
             effect: loc('tech_adamantite_containers_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        aerogel_containers: {
+            id: 'tech-aerogel_containers',
+            title: loc('tech_aerogel_containers'),
+            desc: loc('tech_aerogel_containers'),
+            reqs: { steel_container: 5, aerogel: 1 },
+            grant: ['steel_container',6],
+            cost: {
+                Knowledge(){ return 775000; },
+                Aerogel(){ return 500; }
+            },
+            effect: loc('tech_aerogel_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -8384,6 +8403,27 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.interstellar['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        aerogel: {
+            id: 'tech-aerogel',
+            title: loc('tech_aerogel'),
+            desc: loc('tech_aerogel'),
+            reqs: { graphene: 1, science: 13 },
+            grant: ['aerogel',1],
+            cost: {
+                Knowledge(){ return 750000; },
+                Graphene(){ return 50000; },
+                Infernite(){ return 500; }
+            },
+            effect: loc('tech_aerogel_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Aerogel.display = true;
+                    loadFoundry();
                     return true;
                 }
                 return false;

@@ -468,6 +468,10 @@ if (global.city['foundry'] && !global.city.foundry['Mythril']){
     global.city.foundry['Mythril'] = 0;
 }
 
+if (global.city['foundry'] && !global.city.foundry['Aerogel']){
+    global.city.foundry['Aerogel'] = 0;
+}
+
 if (!global.settings['arpa']){
     global.settings['arpa'] = {
         arpaTabs: 0,

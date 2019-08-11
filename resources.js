@@ -63,11 +63,10 @@ export const tradeRatio = {
 export const craftCost = {
     Plywood: [{ r: 'Lumber', a: 100 }],
     Brick: [{ r: 'Cement', a: 40 }],
-    //Bronze: [{ r: 'Copper', a: 80 }],
     Wrought_Iron: [{ r: 'Iron', a: 80 }],
     Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
     Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
-    //Aerogel: [{ r: 'Graphene', a: 500 },{ r: 'Infernite', a: 1000 }],
+    Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
 };
 
 export function craftingRatio(res){
@@ -170,11 +169,10 @@ export function defineResources(){
         loadResource('Soul_Gem',-2,0,false,false,'advanced');
         loadResource('Plywood',-1,0,false,false,'danger');
         loadResource('Brick',-1,0,false,false,'danger');
-        //loadResource('Bronze',-1,0,false,false,'danger');
         loadResource('Wrought_Iron',-1,0,false,false,'danger');
         loadResource('Sheet_Metal',-1,0,false,false,'danger');
         loadResource('Mythril',-1,0,false,false,'danger');
-        //loadResource('Aerogel',-1,0,false,false,'danger');
+        loadResource('Aerogel',-1,0,false,false,'danger');
         loadRouteCounter();
         loadContainerCounter();
     }
@@ -1046,6 +1044,9 @@ export function containerValue(){
     }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 4){
         container_value += global.tech['steel_container'] >= 5 ? 1000 : 400;
+    }
+    if (global.tech['steel_container'] && global.tech['steel_container'] >= 6){
+        container_value += 1000;
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
     return spatialReasoning(Math.round(container_value));
