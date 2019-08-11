@@ -8540,6 +8540,24 @@ export const actions = {
                 return false;
             }
         },
+        sensor_drone: {
+            id: 'tech-sensor_drone',
+            title: loc('tech_sensor_drone'),
+            desc: loc('tech_sensor_drone'),
+            reqs: { portal: 3, infernite: 1, stanene: 1, graphene: 1 },
+            grant: ['infernite',2],
+            cost: {
+                Knowledge(){ return 725000; },
+            },
+            effect: loc('tech_sensor_drone_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['sensor_drone'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
