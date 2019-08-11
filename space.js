@@ -443,7 +443,8 @@ const spaceProjects = {
             cost: {
                 Money(){ return costMultiplier('vr_center', 380000, 1.25); },
                 Copper(){ return costMultiplier('vr_center', 55000, 1.25); },
-                Stanene(){ return costMultiplier('vr_center', 100000, 1.25); }
+                Stanene(){ return costMultiplier('vr_center', 100000, 1.25); },
+                Soul_Gem(){ return costMultiplier('vr_center', 1, 1.25); }
             },
             effect(){
                 return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[1])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
@@ -1273,7 +1274,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('elerium_ship', fuel_adjust(5000), 1.3); }
             },
             effect(){
-                let elerium = +((global.tech.asteroid >= 6 ? 0.0075 : 0.005) * zigguratBonus()).toFixed(4);
+                let elerium = +((global.tech.asteroid >= 6 ?  (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005) * zigguratBonus()).toFixed(4);
                 return `<div>${loc('space_belt_elerium_ship_effect1')}</div><div>${loc('space_belt_elerium_ship_effect2',[elerium])}</div>`;
             },
             support: -2,
@@ -1304,7 +1305,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('iridium_ship', fuel_adjust(1800), 1.3); }
             },
             effect(){
-                let iridium = +((global.tech.asteroid >= 6 ? 0.08 : 0.055) * zigguratBonus()).toFixed(3);
+                let iridium = +((global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus()).toFixed(3);
                 return `<div>${loc('space_belt_iridium_ship_effect1')}</div><div>${loc('space_belt_iridium_ship_effect2',[iridium])}</div>`;
             },
             support: -1,
@@ -1335,7 +1336,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('iron_ship', fuel_adjust(1200), 1.3); }
             },
             effect(){
-                let iron = +((global.tech.asteroid >= 6 ? 3 : 2) * zigguratBonus()).toFixed(2);
+                let iron = +((global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2) * zigguratBonus()).toFixed(2);
                 if (global.tech['solar'] && global.tech['solar'] >= 5){
                     return `<div>${loc('space_belt_iron_ship_effect1')}</div><div>${loc('space_belt_iron_ship_effect2',[iron])}</div><div>${loc('space_belt_iron_ship_effect3')}</div>`;
                 }

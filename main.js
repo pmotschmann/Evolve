@@ -852,7 +852,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','prtl_badlands:attractor','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : 'interstellar');
@@ -2187,16 +2187,16 @@ function fastLoop(){
                 let space_iron = 0;
                 
                 if (belt_on['iron_ship']){
-                    space_iron = belt_on['iron_ship'] * (global.tech.asteroid >= 6 ? 3 : 2) * zigguratBonus();
+                    space_iron = belt_on['iron_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2) * zigguratBonus();
                 }
 
-                let delta = (iron_base + space_iron) * smelter_mult * power_mult;
+                let delta = ((iron_base * power_mult) + space_iron) * smelter_mult;
                 delta *= hunger * global_multiplier;
                 
                 iron_bd['Miners'] = (iron_base) + 'v';
+                iron_bd['Power'] = ((power_mult - 1) * 100) + '%';
                 iron_bd['Space_Miners'] = space_iron + 'v';
                 iron_bd['Smelter'] = ((smelter_mult - 1) * 100) + '%';
-                iron_bd['Power'] = ((power_mult - 1) * 100) + '%';
                 iron_bd['Hunger'] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Iron'] = iron_bd;
                 modRes('Iron', delta * time_multiplier);
@@ -2334,7 +2334,7 @@ function fastLoop(){
         }
 
         if (belt_on['iridium_ship']){
-            let iridium_base = belt_on['iridium_ship'] * (global.tech.asteroid >= 6 ? 0.08 : 0.055) * zigguratBonus();
+            let iridium_base = belt_on['iridium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus();
             let delta = iridium_base * hunger * global_multiplier;
             iridium_bd['Iridium_Ship'] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
@@ -2400,7 +2400,7 @@ function fastLoop(){
         // Elerium
         let elerium_bd = {};
         if (belt_on['elerium_ship']){
-            let elerium_base = belt_on['elerium_ship'] * (global.tech.asteroid >= 6 ? 0.0075 : 0.005) * zigguratBonus();
+            let elerium_base = belt_on['elerium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005) * zigguratBonus();
             let delta = elerium_base * hunger * global_multiplier;
             elerium_bd['Elerium_Ship'] = elerium_base + 'v';
             modRes('Elerium', delta * time_multiplier);

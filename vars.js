@@ -714,7 +714,6 @@ window.soft_reset = function reset(){
         vues[v].$destroy();
     });
 
-    global.space = {};
     let replace = {
         species : 'protoplasm', 
         Plasmid: { count: global.race.Plasmid.count },
@@ -757,14 +756,6 @@ window.soft_reset = function reset(){
     global.stats.starved = 0;
     global.stats.died = 0;
 
-    global.space = {};
-    global.interstellar = {};
-    global.portal = {};
-    global.starDock = {};
-    global.civic = { free: 0 };
-    global.resource = {};
-    global.evolution = {};
-
     if (global.tech['theology'] && global.tech['theology'] >= 1){
         global.tech = { theology: 1 };
     }
@@ -772,6 +763,23 @@ window.soft_reset = function reset(){
         global.tech = {};
     }
 
+    clearStates();
+    global.lastMsg = false;
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
+export function clearStates(){
+    global.space = {};
+    global.interstellar = {};
+    global.portal = {};
+    global.starDock = {};
+    global.civic = { free: 0 };
+    global.resource = {};
+    global.evolution = {};
     global.event = 100;
     global.settings.civTabs = 0;
     global.settings.showEvolve = true;
@@ -793,16 +801,17 @@ window.soft_reset = function reset(){
     global.settings.space.gas_moon = false;
     global.settings.space.belt = false;
     global.settings.space.dwarf = false;
+    global.settings.space.alpha = false;
+    global.settings.space.proxima = false;
+    global.settings.space.nebula = false;
+    global.settings.space.neutron = false;
     global.settings.space.blackhole = false;
+    global.settings.portal.fortress = false;
+    global.settings.portal.badlands = false;
+    global.settings.portal.pit = false;
     global.settings.arpa = false;
     global.settings.resTabs = 0;
     global.settings.spaceTabs = 0;
     global.settings.disableReset = false;
     global.arpa = {};
-    global.lastMsg = false;
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
 }

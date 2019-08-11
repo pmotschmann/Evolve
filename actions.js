@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, demoIsPressed, srSpeak, modRes, sizeApproximation, moon_on, quantum_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
@@ -2516,7 +2516,7 @@ export const actions = {
                 Iron(){ return costMultiplier('smelter', 500, 1.33); }
             },
             effect(){ 
-                var iron_yield = global.tech['smelting'] >= 3 ? 12 : 10;
+                var iron_yield = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
                 if (global.race['pyrophobia']){
                     iron_yield *= 0.9;
                 }
@@ -8021,6 +8021,23 @@ export const actions = {
                 return false;
             }
         },
+        plasma_mining: {
+            id: 'tech-plasma_mining',
+            title: loc('tech_plasma_mining'),
+            desc: loc('tech_plasma_mining'),
+            reqs: { asteroid: 6, high_tech: 13 },
+            grant: ['asteroid',7],
+            cost: {
+                Knowledge(){ return 825000; },
+            },
+            effect: loc('tech_plasma_mining_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         elerium_tech: {
             id: 'tech-elerium_tech',
             title: loc('tech_elerium_tech'),
@@ -8446,6 +8463,43 @@ export const actions = {
                 return false;
             }
         },
+        war_drones: {
+            id: 'tech-war_drones',
+            title: loc('tech_war_drones'),
+            desc: loc('tech_war_drones'),
+            reqs: { portal: 2, graphene: 1 },
+            grant: ['portal',3],
+            cost: {
+                Knowledge(){ return 700000; },
+            },
+            effect: loc('tech_war_drones_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.settings.portal.badlands = true;
+                    global.portal['war_drone'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        demon_attractor: {
+            id: 'tech-demon_attractor',
+            title: loc('tech_demon_attractor'),
+            desc: loc('tech_demon_attractor'),
+            reqs: { portal: 3, stanene: 1 },
+            grant: ['portal',4],
+            cost: {
+                Knowledge(){ return 750000; },
+            },
+            effect: loc('tech_demon_attractor_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['attractor'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
@@ -8630,6 +8684,7 @@ function gainTech(action){
     drawTech();
     space();
     deepSpace();
+    renderFortress();
 }
 
 export function drawCity(){
@@ -10477,39 +10532,8 @@ function bioseed(){
         },
         biome: biome
     };
-    global.space = {};
-    global.interstellar = {};
-    global.portal = {};
-    global.starDock = {};
-    global.civic = { free: 0 };
-    global.resource = {};
-    global.evolution = {};
     global.tech = { theology: 1 };
-    global.event = 100;
-    global.settings.civTabs = 0;
-    global.settings.showEvolve = true;
-    global.settings.showCity = false;
-    global.settings.showIndustry = false;
-    global.settings.showResearch = false;
-    global.settings.showCivic = false;
-    global.settings.showMarket = false;
-    global.settings.showGenetics = false;
-    global.settings.showSpace = false;
-    global.settings.showDeep = false;
-    global.settings.showPortal = false;
-    global.settings.space.home = true;
-    global.settings.space.moon = false;
-    global.settings.space.red = false;
-    global.settings.space.hell = false;
-    global.settings.space.sun = false;
-    global.settings.space.gas = false;
-    global.settings.space.gas_moon = false;
-    global.settings.space.belt = false;
-    global.settings.space.dwarf = false;
-    global.settings.space.blackhole = false;
-    global.settings.arpa = false;
-    global.settings.resTabs = 0;
-    global.arpa = {};
+    clearStates();
     if (!new_biome && !new_genus){
         global.lastMsg = false;
     }

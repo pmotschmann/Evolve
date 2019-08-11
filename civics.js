@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, modRes, save, keyMultiplier } from './vars.js';
+import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier } from './vars.js';
 import { unlockAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
@@ -1025,38 +1025,8 @@ function warhead(){
         },
         biome: biome
     };
-    global.space = {};
-    global.interstellar = {};
-    global.portal = {};
-    global.starDock = {};
-    global.civic = { free: 0 };
-    global.resource = {};
-    global.evolution = {};
     global.tech = { theology: 1 };
-    global.event = 100;
-    global.settings.civTabs = 0;
-    global.settings.showEvolve = true;
-    global.settings.showCity = false;
-    global.settings.showIndustry = false;
-    global.settings.showResearch = false;
-    global.settings.showCivic = false;
-    global.settings.showMarket = false;
-    global.settings.showGenetics = false;
-    global.settings.showSpace = false;
-    global.settings.showDeep = false;
-    global.settings.showPortal = false;
-    global.settings.space.home = true;
-    global.settings.space.moon = false;
-    global.settings.space.red = false;
-    global.settings.space.hell = false;
-    global.settings.space.sun = false;
-    global.settings.space.gas = false;
-    global.settings.space.gas_moon = false;
-    global.settings.space.belt = false;
-    global.settings.space.dwarf = false;
-    global.settings.space.blackhole = false;
-    global.settings.arpa = false;
-    global.settings.resTabs = 0;
+    clearStates();
     global.arpa = {};
     if (!new_achieve){
         global.lastMsg = false;

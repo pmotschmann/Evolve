@@ -60,31 +60,6 @@ const fortressModules = {
                 return false;
             }
         },
-        war_drone: {
-            id: 'portal-war_drone',
-            title: loc('portal_war_drone_title'),
-            desc(){
-                return loc('portal_war_drone_title');
-            },
-            reqs: { portal: 3 },
-            cost: {
-                Money(){ return costMultiplier('war_drone', 250000, 1.3, 'portal'); },
-                Steel(){ return costMultiplier('war_drone', 20000, 1.3, 'portal'); },
-                Neutronium(){ return costMultiplier('war_drone', 500, 1.3, 'portal'); },
-                Elerium(){ return costMultiplier('war_drone', 25, 1.3, 'portal'); },
-                Nano_Tube(){ return costMultiplier('war_drone', 45000, 1.3, 'portal'); }
-            },
-            effect(){
-                return `${loc('portal_war_drone_effect')}`;
-            },
-            action(){
-                if (payCosts($(this)[0].cost)){
-                    incrementStruct('war_drone','portal');
-                    return true;
-                }
-                return false;
-            }
-        },
         carport: {
             id: 'portal-carport',
             title: loc('portal_carport_title'),
@@ -115,6 +90,68 @@ const fortressModules = {
             }
         },
     },
+    prtl_badlands: {
+        info: {
+            name: loc('portal_badlands_name'),
+            desc: loc('portal_badlands_desc'),
+        },
+        war_drone: {
+            id: 'portal-war_drone',
+            title: loc('portal_war_drone_title'),
+            desc(){
+                return `<div>${loc('portal_war_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { portal: 3 },
+            powered: 5,
+            cost: {
+                Money(){ return costMultiplier('war_drone', 650000, 1.28, 'portal'); },
+                Alloy(){ return costMultiplier('war_drone', 60000, 1.28, 'portal'); },
+                Graphene(){ return costMultiplier('war_drone', 100000, 1.28, 'portal'); },
+                Elerium(){ return costMultiplier('war_drone', 25, 1.28, 'portal'); },
+                Soul_Gem(){ return costMultiplier('war_drone', 1, 1.28, 'portal'); }
+            },
+            effect(){
+                return `<div>${loc('portal_war_drone_effect')}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('war_drone','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered){
+                        global.portal.war_drone.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        attractor: {
+            id: 'portal-attractor',
+            title: loc('portal_attractor_title'),
+            desc(){
+                return `<div>${loc('portal_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { portal: 4 },
+            powered: 3,
+            cost: {
+                Money(){ return costMultiplier('attractor', 350000, 1.25, 'portal'); },
+                Aluminium(){ return costMultiplier('attractor', 175000, 1.25, 'portal'); },
+                Stanene(){ return costMultiplier('attractor', 90000, 1.25, 'portal'); },
+            },
+            effect(){
+                return `<div>${loc('portal_attractor_effect1')}</div><div>${loc('portal_attractor_effect2')}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('attractor','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered){
+                        global.portal.attractor.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+    }
 };
 
 export function fortressTech(){
@@ -373,6 +410,29 @@ export function bloodwar(){
         pat_armor += 1;
     }
 
+    // Drones
+    if (global.tech['portal'] >= 3 && p_on['war_drone']){
+        for (let i=0; i<p_on['war_drone']; i++){
+            if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
+                let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
+                let remain = demons - Math.rand(25,75);
+                if (remain > 0){
+                    global.portal.fortress.threat -= demons - remain;
+                }
+                else {
+                    global.portal.fortress.threat -= demons;
+                }
+            }
+        }
+    }
+
+    let gem_chance = 9999;
+    if (global.tech['portal'] >= 4 && p_on['attractor']){
+        for (let i=0; i<p_on['attractor']; i++){
+            gem_chance = Math.round(gem_chance * 0.95);
+        }
+    }
+
     // Patrols
     let dead = 0;
     for (let i=0; i<global.portal.fortress.patrols; i++){
@@ -400,7 +460,7 @@ export function bloodwar(){
                 else {
                     global.portal.fortress.threat -= demons;
                 }
-                if (Math.rand(0,9999) === 0){
+                if (Math.rand(0,gem_chance) === 0){
                     global.resource.Soul_Gem.amount++;
                     global.resource.Soul_Gem.display = true;
                 }
@@ -459,6 +519,9 @@ export function bloodwar(){
 
     if (global.portal.fortress.threat < 10000){
         let influx = ((10000 - global.portal.fortress.threat) / 2500) + 1;
+        if (global.tech['portal'] >= 4 && p_on['attractor']){
+            influx *= 1 + (p_on['attractor'] * 0.2);
+        }
         global.portal.fortress.threat += Math.rand(Math.round(10 * influx),Math.round(50 * influx));
     }
 
