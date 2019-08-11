@@ -1716,7 +1716,7 @@
   "space_moon_helium_mine_effect": "+%0 Produão de Hélio-3",
   "space_moon_observatory_title": "Observatório",
   "space_moon_observatory_desc": "Observatório ergido na Lua",
-  "space_moon_observatory_effect2": "+5% Conhecimento Máximo das Universidades",
+  "space_moon_observatory_effect": "+%0% Conhecimento Máximo das Universidades",
   "space_red_info_desc": "O planeta vermelho %0 orbita o sol a uma distância de cerca de 1.4UA.",
   "space_red_mission_effect": "Lança uma missão para pesquisar o planeta vermelho %0",
   "space_red_mission_action": "%0 não oferece muito recursos raros, mas os cientistas consideram que é a melhor perspectiva para uma colônia de outro mundo.",

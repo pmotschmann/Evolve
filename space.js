@@ -289,7 +289,7 @@ const spaceProjects = {
                 Iridium(){ return costMultiplier('observatory', 1250, 1.28); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect2')}</div>`;
+                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect',[5])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -2049,8 +2049,8 @@ const structDefinitions = {
     turret: { count: 0, on: 0 },
     carport: { count: 0 },
     war_drones: { count: 0, on: 0 },
-    attractor: { count: 0, on: 0 },
     sensor_drone: { count: 0, on: 0 },
+    attractor: { count: 0, on: 0 },
 };
 
 export function incrementStruct(struct,sector){

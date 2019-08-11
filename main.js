@@ -2819,7 +2819,7 @@ function midLoop(){
             caps[global.race.species] += global.city['cottage'].count * 2;
             bd_Citizen['Cottage'] = (global.city['cottage'].count * 2) + 'v';
             if (global.tech['home_safe']){
-                let gain = (global.city['cottage'].count * spatialReasoning(global.tech.home_safe > 1 ? 2000 : 1000));
+                let gain = (global.city['cottage'].count * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000));
                 caps['Money'] += gain;
                 bd_Money['Cottage'] = gain+'v';
             }
@@ -2828,7 +2828,7 @@ function midLoop(){
             caps[global.race.species] += global.city['apartment'].on * 5;
             bd_Citizen['Apartment'] = (global.city['apartment'].on * 5)+'v';
             if (global.tech['home_safe']){
-                let gain = (global.city['apartment'].on * spatialReasoning(global.tech.home_safe > 1 ? 5000 : 2000));
+                let gain = (global.city['apartment'].on * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000));
                 caps['Money'] += gain;
                 bd_Money['Apartment'] = gain+'v';
             }
@@ -3042,6 +3042,9 @@ function midLoop(){
             if (global.space['observatory'] && global.space.observatory.count > 0){
                 multiplier += (moon_on['observatory'] * 0.05);
             }
+            if (global.portal['sensor_drone']){
+                multiplier += (p_on['sensor_drone'] * 0.02);
+            }
             if (global.race['hard_of_hearing']){
                 multiplier *= 0.95;
             }
@@ -3086,6 +3089,11 @@ function midLoop(){
             }
             caps['Knowledge'] += gain;
             bd_Knowledge['Wardenclyffe'] = gain+'v';
+        }
+        if (global.portal['sensor_drone']){
+            let gain = p_on['sensor_drone'] * 1000;
+            caps['Knowledge'] += gain;
+            bd_Knowledge['Sensors'] = gain+'v';
         }
         if (global.space['satellite']){
             let gain = (global.space.satellite.count * 750);

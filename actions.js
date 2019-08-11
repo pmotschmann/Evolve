@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, moon_on, quantum_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
@@ -1708,7 +1708,7 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe > 1 ? '2000' : '1000');
+                    let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '5000' : '2000') : '1000');
                     return `<div>${loc('plus_max_citizens',[2])}</div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
@@ -1740,7 +1740,7 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe > 1 ? '5000' : '2000');
+                    let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '10000' : '5000') : '2000');
                     return `<div>${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
@@ -2927,6 +2927,9 @@ export const actions = {
                 }
                 if (global.space['observatory'] && global.space.observatory.count > 0){
                     multiplier += (moon_on['observatory'] * 0.05);
+                }
+                if (global.portal['sensor_drone']){
+                    multiplier += (p_on['sensor_drone'] * 0.02);
                 }
                 if (global.race['hard_of_hearing']){
                     multiplier *= 0.95;
@@ -5132,6 +5135,25 @@ export const actions = {
                 return false;
             }
         },
+        graphene_vault: {
+            id: 'tech-graphene_vault',
+            title: loc('tech_graphene_vault'),
+            desc: loc('tech_graphene_vault'),
+            reqs: { vault: 3, graphene: 1 },
+            grant: ['vault',4],
+            cost: {
+                Money(){ return 3000000; },
+                Knowledge(){ return 750000; },
+                Graphene(){ return 400000; }
+            },
+            effect: loc('tech_graphene_vault_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         home_safe: {
             id: 'tech-home_safe',
             title: loc('tech_home_safe'),
@@ -5161,6 +5183,25 @@ export const actions = {
                 Money(){ return 250000; },
                 Knowledge(){ return 120000; },
                 Iridium(){ return 1000; }
+            },
+            effect: loc('tech_fire_proof_safe_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        tamper_proof_safe: {
+            id: 'tech-tamper_proof_safe',
+            title: loc('tech_tamper_proof_safe'),
+            desc: loc('tech_tamper_proof_safe'),
+            reqs: { home_safe: 2, infernite: 1 },
+            grant: ['home_safe',3],
+            cost: {
+                Money(){ return 2500000; },
+                Knowledge(){ return 600000; },
+                Infernite(){ return 800; }
             },
             effect: loc('tech_fire_proof_safe_effect'),
             action(){
@@ -5426,6 +5467,23 @@ export const actions = {
                 Knowledge(){ return 635000; }
             },
             effect(){ return loc('tech_virtual_assistant_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        dimensional_readings: {
+            id: 'tech-dimensional_readings',
+            title: loc('tech_dimensional_readings'),
+            desc: loc('tech_dimensional_readings'),
+            reqs: { science: 13, infernite: 2 },
+            grant: ['science',14],
+            cost: {
+                Knowledge(){ return 750000; }
+            },
+            effect(){ return loc('tech_dimensional_readings_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;

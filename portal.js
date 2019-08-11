@@ -124,6 +124,36 @@ const fortressModules = {
                 return false;
             }
         },
+        sensor_drone: {
+            id: 'portal-sensor_drone',
+            title: loc('portal_sensor_drone_title'),
+            desc(){
+                return `<div>${loc('portal_sensor_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { infernite: 2 },
+            powered: 3,
+            cost: {
+                Money(){ return costMultiplier('sensor_drone', 500000, 1.25, 'portal'); },
+                Polymer(){ return costMultiplier('sensor_drone', 25000, 1.25, 'portal'); },
+                Adamantite(){ return costMultiplier('sensor_drone', 12500, 1.25, 'portal'); },
+                Infernite(){ return costMultiplier('sensor_drone', 100, 1.25, 'portal'); }
+            },
+            effect(){
+                let bonus = 10;
+                let sci = global.tech['science'] >= 14 ? `<div>${loc('city_max_knowledge',[1000])}</div><div>${loc('space_moon_observatory_effect',[2])}</div>` : '';
+                return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div>${sci}<div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('sensor_drone','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered){
+                        global.portal.sensor_drone.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         attractor: {
             id: 'portal-attractor',
             title: loc('portal_attractor_title'),
@@ -145,35 +175,6 @@ const fortressModules = {
                     incrementStruct('attractor','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered){
                         global.portal.attractor.on++;
-                    }
-                    return true;
-                }
-                return false;
-            }
-        },
-        sensor_drone: {
-            id: 'portal-sensor_drone',
-            title: loc('portal_sensor_drone_title'),
-            desc(){
-                return `<div>${loc('portal_sensor_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
-            },
-            reqs: { infernite: 2 },
-            powered: 3,
-            cost: {
-                Money(){ return costMultiplier('sensor_drone', 500000, 1.25, 'portal'); },
-                Polymer(){ return costMultiplier('sensor_drone', 25000, 1.25, 'portal'); },
-                Adamantite(){ return costMultiplier('sensor_drone', 12500, 1.25, 'portal'); },
-                Infernite(){ return costMultiplier('sensor_drone', 100, 1.25, 'portal'); }
-            },
-            effect(){
-                let bonus = 10;
-                return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
-            },
-            action(){
-                if (payCosts($(this)[0].cost)){
-                    incrementStruct('sensor_drone','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered){
-                        global.portal.sensor_drone.on++;
                     }
                     return true;
                 }
