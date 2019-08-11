@@ -550,7 +550,7 @@ export function bloodwar(){
     if (global.portal.fortress.threat < 10000){
         let influx = ((10000 - global.portal.fortress.threat) / 2500) + 1;
         if (global.tech['portal'] >= 4 && p_on['attractor']){
-            influx *= 1 + (p_on['attractor'] * 0.2);
+            influx *= 1 + (p_on['attractor'] * 0.22);
         }
         global.portal.fortress.threat += Math.rand(Math.round(10 * influx),Math.round(50 * influx));
     }

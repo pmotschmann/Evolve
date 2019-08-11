@@ -6273,7 +6273,7 @@ export const actions = {
             }
         },
         stanene: {
-            id: 'tech-polymer',
+            id: 'tech-stanene',
             title: loc('tech_stanene'),
             desc: loc('tech_stanene'),
             reqs: { infernite: 1 },
@@ -9909,7 +9909,7 @@ export const f_rate = {
         output: [0.2,0.3,0.4,0.5],
     },
     Stanene: {
-        aluminium: [20,30,40,50],
+        aluminium: [30,45,60,75],
         nano: [0.02,0.03,0.04,0.05],
         output: [0.8,1.2,1.6,2],
     }

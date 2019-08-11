@@ -1408,7 +1408,7 @@ function fastLoop(){
         }
 
         // Fortress Repair
-        if (global.portal.fortress.walls < 100){
+        if (global.portal['fortress'] && global.portal.fortress.walls < 100){
             if (modRes('Stone', -(200 * time_multiplier))){
                 global.portal.fortress.repair++;
                 breakdown.p.consume.Stone['Fortress'] = -200;
