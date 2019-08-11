@@ -2553,8 +2553,15 @@ export const actions = {
                 Money(){ return costMultiplier('metal_refinery', 2500, 1.35); },
                 Steel(){ return costMultiplier('metal_refinery', 350, 1.35); }
             },
+            powered: 2,
+            power_reqs: { alumina: 2 },
             effect() {
-                return `<div>${loc('city_metal_refinery_effect',[6])}</div>`;
+                if (global.tech['alumina'] >= 2){
+                    return `<div>${loc('city_metal_refinery_effect2',[6,12])}</div>`;
+                }
+                else {
+                    return `<div>${loc('city_metal_refinery_effect',[6])}</div>`;
+                }
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2562,6 +2569,9 @@ export const actions = {
                     global.resource.Aluminium.display = true;
                     if (global.tech['foundry']){
                         global.resource.Sheet_Metal.display = true;
+                    }
+                    if (global.tech['alumina'] >= 2 && global.city.power > $(this)[0].powered){
+                        global.city['metal_refinery'].on++;
                     }
                     return true;
                 }
@@ -4098,11 +4108,28 @@ export const actions = {
             effect: loc('tech_bayer_process_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['metal_refinery'] = { 
-                        count: 0
-                    };
+                    global.city['metal_refinery'] = { count: 0, on: 0 };
                     global.resource.Sheet_Metal.display = true;
                     loadFoundry();
+                    return true;
+                }
+                return false;
+            }
+        },
+        elysis_process: {
+            id: 'tech-elysis_process',
+            title: loc('tech_elysis_process'),
+            desc: loc('tech_elysis_process'),
+            reqs: { alumina: 1, stanene: 1, graphene: 1 },
+            grant: ['alumina',2],
+            cost: { 
+                Knowledge(){ return 675000; },
+                Graphene(){ return 45000; },
+                Stanene(){ return 75000; },
+            },
+            effect: loc('tech_elysis_process_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
