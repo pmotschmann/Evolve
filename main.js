@@ -958,6 +958,7 @@ function fastLoop(){
             }
             global.space.spaceport.s_max = p_on['spaceport'] * actions.space.spc_red.spaceport.support;
             global.space.spaceport.s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? p_on['red_tower'] : 0;
+            global.space.spaceport.s_max += global.tech['luna'] && global.tech['luna'] >= 3 ? p_on['nav_beacon'] : 0;
         }
 
         if (global.space['spaceport']){
@@ -1178,7 +1179,7 @@ function fastLoop(){
             entertainment += global.city.wardenclyffe.on * global.tech.broadcast;
         }
         if (red_on['vr_center']){
-            entertainment += red_on['vr_center'] * 3;
+            entertainment += red_on['vr_center'];
         }
         global.city.morale.entertain = entertainment;
         morale += entertainment;

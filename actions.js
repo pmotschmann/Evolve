@@ -7793,6 +7793,24 @@ export const actions = {
                 return false;
             }
         },
+        subspace_signal: {
+            id: 'tech-subspace_signal',
+            title: loc('tech_subspace_signal'),
+            desc: loc('tech_subspace_signal'),
+            reqs: { science: 13, luna: 2, stanene: 1 },
+            grant: ['luna',3],
+            cost: {
+                Knowledge(){ return 700000; },
+                Stanene(){ return 125000; }
+            },
+            effect(){ return loc('tech_subspace_signal_effect',[races[global.race.species].solar.red]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         atmospheric_mining: {
             id: 'tech-atmospheric_mining',
             title: loc('tech_atmospheric_mining'),

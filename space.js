@@ -135,7 +135,8 @@ const spaceProjects = {
             },
             powered: 2,
             effect(){
-                return `<div>${loc('space_home_nav_beacon_effect1')}</div><div>${loc('space_home_nav_beacon_effect2')}</div>`;
+                let effect3 = global.tech['luna'] >=3 ? `<div>${loc('space_red_tower_effect1',[races[global.race.species].solar.red])}</div>` : '';
+                return `<div>${loc('space_home_nav_beacon_effect1')}</div>${effect3}<div>${loc('space_home_nav_beacon_effect2')}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -440,12 +441,12 @@ const spaceProjects = {
             },
             reqs: { mars: 1, broadcast: 3 },
             cost: {
-                Money(){ return costMultiplier('vr_center', house_adjust(38000), 1.28); },
-                Steel(){ return costMultiplier('vr_center', house_adjust(15000), 1.28); },
-                Polymer(){ return costMultiplier('vr_center', house_adjust(9500), 1.28); }
+                Money(){ return costMultiplier('vr_center', 380000, 1.25); },
+                Copper(){ return costMultiplier('vr_center', 55000, 1.25); },
+                Stanene(){ return costMultiplier('vr_center', 100000, 1.25); }
             },
             effect(){
-                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[3])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
+                return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[1])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
             },
             support: -1,
             powered: 1,
@@ -1670,10 +1671,10 @@ const interstellarProjects = {
             desc: `<div>${loc('interstellar_fusion_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
             reqs: { fusion: 1 },
             cost: {
-                Money(){ return costMultiplier('fusion', 750000, 1.28, 'interstellar'); },
-                Titanium(){ return costMultiplier('fusion', 120000, 1.28, 'interstellar'); },
-                Alloy(){ return costMultiplier('fusion', 95000, 1.28, 'interstellar'); },
-                Mythril(){ return costMultiplier('fusion', 8500, 1.28, 'interstellar'); }
+                Money(){ return costMultiplier('fusion', 990000, 1.28, 'interstellar'); },
+                Iridium(){ return costMultiplier('fusion', 44000, 1.28, 'interstellar'); },
+                Infernite(){ return costMultiplier('fusion', 350, 1.28, 'interstellar'); },
+                Brick(){ return costMultiplier('fusion', 18000, 1.28, 'interstellar'); }
             },
             effect(){
                 let det = 1.25;

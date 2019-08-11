@@ -1046,6 +1046,8 @@
   "tech_gps_effect": "Design a network of navigation satellites.",
   "tech_nav_beacon": "Navigation Beacon",
   "tech_nav_beacon_effect": "Navigation assist beacons will help guide space traffic.",
+  "tech_subspace_signal": "Subspace Beacon",
+  "tech_subspace_signal_effect": "Upgrade your navigation beacons to be detectable from %0.",
   "tech_atmospheric_mining": "Atmospheric Mining",
   "tech_atmospheric_mining_effect": "Learn the physics of operating a gas giant orbital mining platform.",
   "tech_helium_attractor": "Helium Attractor",

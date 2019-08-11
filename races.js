@@ -1008,7 +1008,8 @@ export function racialTrait(workers,type){
             modifier *= (workers * 0.05) + 0.5;
         }
         else {
-            modifier *= 1 + (1 - (0.98 ** (workers - 10)));
+            let mod = type === 'army' ? 0.99 : 0.98;
+            modifier *= 1 + (1 - (mod ** (workers - 10)));
         }
     }
     if(global.race['cold_blooded'] && type !== 'army' && type !== 'factory' && type !== 'science'){
