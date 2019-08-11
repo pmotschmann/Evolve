@@ -1203,6 +1203,9 @@ function fastLoop(){
         if (red_on['vr_center']){
             mBaseCap += red_on['vr_center'] * 2;
         }
+        if (global.tech['superstar']){
+            mBaseCap += global.civic.entertainer.workers;
+        }
         moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
 
         if (global.civic.taxes.tax_rate < 20){

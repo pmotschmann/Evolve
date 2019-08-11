@@ -3937,6 +3937,23 @@ export const actions = {
                 return false;
             }
         },
+        superstars: {
+            id: 'tech-superstars',
+            title: loc('tech_superstars'),
+            desc: loc('tech_superstars'),
+            reqs: { theatre: 3, high_tech: 12 },
+            grant: ['superstar',1],
+            cost: {
+                Knowledge(){ return 660000; }
+            },
+            effect: loc('tech_superstars_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         radio: {
             id: 'tech-radio',
             title: loc('tech_radio'),

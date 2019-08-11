@@ -65,7 +65,7 @@ export const job_desc = {
     },
     entertainer: function(){
         let morale = global.tech['theatre'];
-        return loc('job_entertainer_desc',[morale]);
+        return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
     },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
