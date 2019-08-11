@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, demoIsPressed, srSpeak, modRes, sizeApproximation, moon_on } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, demoIsPressed, srSpeak, modRes, sizeApproximation, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
@@ -4412,6 +4412,23 @@ export const actions = {
                 return false;
             }
         },
+        ai_logistics: {
+            id: 'tech-ai_logistics',
+            title: loc('tech_ai_logistics'),
+            desc: loc('tech_ai_logistics'),
+            reqs: { storage: 6, proxima: 2, science: 13 },
+            grant: ['storage',7],
+            cost: {
+                Knowledge(){ return 650000; }
+            },
+            effect: loc('tech_ai_logistics_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         containerization: {
             id: 'tech-containerization',
             title: loc('tech_containerization'),
@@ -4514,6 +4531,24 @@ export const actions = {
                 Infernite(){ return 1000; }
             },
             effect: loc('tech_infernite_crates_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        graphene_crates: {
+            id: 'tech-graphene_crates',
+            title: loc('tech_graphene_crates'),
+            desc: loc('tech_graphene_crates'),
+            reqs: { container: 6, graphene: 1 },
+            grant: ['container',7],
+            cost: {
+                Knowledge(){ return 725000; },
+                Graphene(){ return 75000; }
+            },
+            effect: loc('tech_graphene_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -8460,6 +8495,9 @@ export function storageMultipler(){
         multiplier *= 1 + global.stats.achieve.blackhole * 0.05;
     }
     multiplier *= global.tech['world_control'] ? 3 : 1;
+    if (global.tech['storage'] >= 7 && global.interstellar['cargo_yard']){
+        multiplier *= 1 + ((global.interstellar['cargo_yard'].count * quantum_level) / 100);
+    }
     return multiplier;
 }
 

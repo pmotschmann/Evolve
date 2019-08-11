@@ -1033,7 +1033,7 @@ export function crateValue(){
         create_value += global.tech['container'] >= 5 ? 500 : 250;
     }
     if (global.tech['container'] && global.tech['container'] >= 6){
-        create_value += 500;
+        create_value += global.tech['container'] >= 7 ? 1200 : 500;
     }
     create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
     return spatialReasoning(Math.round(create_value));
