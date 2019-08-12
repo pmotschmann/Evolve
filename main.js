@@ -172,48 +172,48 @@ $('#morale').on('mouseover',function(){
     $('#main').append(moralePopper);
     if (global.city.morale.unemployed !== 0){
         let type = global.city.morale.unemployed > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${loc('morale_unemployed')}<span class="has-text-${type}"> ${global.city.morale.unemployed}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_unemployed')}</span> <span class="has-text-${type}"> ${global.city.morale.unemployed}%</span></p>`);
     }
     if (global.city.morale.stress !== 0){
         let type = global.city.morale.stress > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${loc('morale_stress')}<span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_stress')}</span> <span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
     }
     if (global.city.morale.leadership !== 0){
         let type = global.city.morale.leadership > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${loc('morale_leadership')}<span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_leadership')}</span> <span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
     }
     if (global.city.morale.warmonger !== 0){
         let type = global.city.morale.warmonger > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${loc('morale_warmonger')}<span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_warmonger')}</span> <span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
     }
     if (global.city.morale.entertain !== 0){
         let type = global.city.morale.entertain > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${loc('morale_entertainment')}<span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_entertainment')}</span> <span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
     }
     if (global.city.morale.season !== 0){
         let season = global.city.calendar.season === 0 ? loc('morale_spring') : loc('morale_winter');
         let type = global.city.morale.season > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${season}<span class="has-text-${type}"> ${global.city.morale.season}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${season}</span> <span class="has-text-${type}"> ${global.city.morale.season}%</span></p>`);
     }
     if (global.city.morale.weather !== 0){
         let type = global.city.morale.weather > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${loc('morale_weather')}<span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_weather')}</span> <span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
     }
     if (global.city.morale.tax !== 0){
         let type = global.city.morale.tax > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${loc('morale_taxes')}<span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_taxes')}</span> <span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
     }
     let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership;
     if (global.city.morale['frenzy']){
         let type = global.city.morale.frenzy > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p>${loc('morale_frenzy')}<span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_frenzy')}</span> <span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
     }
     
     if (total > moraleCap || total < 50){
-        moralePopper.append(`<div>${loc('morale_current')}<span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
+        moralePopper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
     }
     else {
-        moralePopper.append(`<div>${loc('morale_current')}<span class="has-text-warning"> ${global.city.morale.current}%</span></div>`);
+        moralePopper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${global.city.morale.current}%</span></div>`);
     }
     moralePopper.show();
     poppers['morale'] = new Popper($('#morale'),moralePopper);
@@ -224,18 +224,21 @@ $('#morale').on('mouseout',function(){
     moralePopper.remove();
 });
 
+var power_generated = {};
 var powerPopper;
 $('#powerStatus').on('mouseover',function(){
     powerPopper = $(`<div class="popper has-background-light has-text-dark"></div>`);
     $('#main').append(powerPopper);
     let drain = global.city.power_total - global.city.power;
-    powerPopper.append(`<p>${loc('power_generated')}<span class="has-text-success"> +${global.city.power_total}</span></p>`);
-    powerPopper.append(`<p>${loc('power_consumed')}<span class="has-text-danger"> -${drain}</span></p>`);
+    Object.keys(power_generated).forEach(function (k){
+        powerPopper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${power_generated[k]}</span></p>`);
+    });
+    powerPopper.append(`<p class="modal_bd"><span>${loc('power_consumed')}</span> <span class="has-text-danger"> -${drain}</span></p>`);
     if (global.city.power > 0){
-        powerPopper.append(`<div>${loc('power_available')} <span class="has-text-success">${global.city.power}</span></div>`);
+        powerPopper.append(`<p class="modal_bd sum"><span>${loc('power_available')}</span> <span class="has-text-success">${global.city.power}</span></p>`);
     }
     else {
-        powerPopper.append(`<div>${loc('power_available')} <span class="has-text-danger">${global.city.power}</span></div>`);
+        powerPopper.append(`<p class="modal_bd sum"><span>${loc('power_available')}</span> <span class="has-text-danger">${global.city.power}</span></p>`);
     }
     powerPopper.show();
     poppers['PowerStatus'] = new Popper($('#powerStatus'),powerPopper);
@@ -734,6 +737,7 @@ function fastLoop(){
         if (global.interstellar['dyson'] && global.interstellar.dyson.count >= 100){
             max_power -= 175;
             power_grid += 175;
+            power_generated[loc('tech_dyson_net')] = 175;
         }
 
         let uranium_bd = {};
@@ -749,6 +753,7 @@ function fastLoop(){
 
             max_power += power;
             power_grid -= power;
+            power_generated[loc('city_coal_power')] = -(power);
 
             // Uranium
             if (global.tech['uranium'] && global.tech['uranium'] >= 3){
@@ -769,6 +774,7 @@ function fastLoop(){
 
             max_power += power;
             power_grid -= power;
+            power_generated[loc('city_oil_power')] = -(power);
         }
 
         if (global.city['fission_power']){
@@ -784,6 +790,7 @@ function fastLoop(){
 
             max_power += power;
             power_grid -= power;
+            power_generated[loc('city_fission_power')] = -(power);
         }
 
         if (global.interstellar['fusion']){
@@ -799,6 +806,7 @@ function fastLoop(){
 
             max_power += power;
             power_grid -= power;
+            power_generated[loc('interstellar_fusion_title')] = -(power);
         }
 
         if (global.space['geothermal'] && global.space.geothermal.on > 0){
@@ -816,6 +824,7 @@ function fastLoop(){
 
             max_power += power;
             power_grid -= power;
+            power_generated[loc('space_hell_geothermal_title')] = -(power);
         }
 
         if (global.space['e_reactor'] && global.space.e_reactor.on > 0){
@@ -833,6 +842,7 @@ function fastLoop(){
 
             max_power += power;
             power_grid -= power;
+            power_generated[loc('space_dwarf_reactor_title')] = -(power);
         }
 
         if (global.space['swarm_satellite'] && global.space['swarm_control']){
@@ -843,17 +853,20 @@ function fastLoop(){
             global.space.swarm_control.support = active;
             max_power -= active;
             power_grid += active;
+            power_generated[loc('space_sun_swarm_satellite_title')] = active;
         }
 
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
             let power = global.city.mill.on * actions.city.mill.powered;
             max_power += power;
             power_grid -= power;
+            power_generated[loc('city_mill_title2')] = -(power);
         }
 
         if (global.city['windmill'] && global.tech['wind_plant']){
             max_power -= global.city.windmill.count;
             power_grid += global.city.windmill.count;
+            power_generated[loc('city_mill_title2')] = global.city.windmill.count;
         }
 
         // Power usage

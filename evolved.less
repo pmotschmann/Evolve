@@ -701,6 +701,23 @@ body .modal > div.popper {
     border-radius: .25rem;
     line-height: 1.3125rem;
 
+    .modal_bd {
+        display: table;
+        width: 100%;
+        :first-child {
+            display: table-cell;
+            text-align: left;
+            padding-right: .375rem;
+        }
+        :nth-child(2) {
+            display: table-cell;
+            text-align: right;
+        }
+        &.sum {
+            border-top: .0625rem solid;
+        }
+    }
+
     .resBD {
         span {
             display: inline-block;
