@@ -701,13 +701,17 @@ body .modal > div.popper {
     border-radius: .25rem;
     line-height: 1.3125rem;
 
+    &.breakdown {
+        max-width: initial;
+    }
+
     .modal_bd {
         display: table;
         width: 100%;
         :first-child {
             display: table-cell;
             text-align: left;
-            padding-right: .375rem;
+            padding-right: .5rem;
         }
         :nth-child(2) {
             display: table-cell;
@@ -718,35 +722,15 @@ body .modal > div.popper {
         }
     }
 
-    .resBD {
-        span {
-            display: inline-block;
-        }
-        :first-child {
-            width: 6rem;
-            text-align: left;
-        }
-        :nth-child(2) {
-            width: 4rem;
-            text-align: center;
-        }
-    }
-    .rate {
-        border-top: 1px solid;
-        span {
-            display: inline-block;
-        }
-        :first-child {
-            width: 4rem;
-            text-align: left;
+    .resBreakdown .parent {
+        display: flex;
+        div.col {
+            padding-left: .5rem;
             margin-left: .5rem;
-        }
-        :nth-child(2) {
-            width: 6rem;
-            text-align: right;
-            margin-right: .5rem;
+            border-left: 1px solid;
         }
     }
+
     > .flair {
         margin-top: .5rem;
         font-size: .75rem;

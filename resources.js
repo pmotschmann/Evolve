@@ -709,11 +709,16 @@ export function tradeBuyPrice(res){
 function breakdownPopover(id,name,type){
     $(`#${id}`).on('mouseover',function(){
         
-        var popper = $(`<div id="resBreak${id}" class="popper has-background-light has-text-dark"></div>`);
+        var popper = $(`<div id="resBreak${id}" class="popper breakdown has-background-light has-text-dark"></div>`);
         $('#main').append(popper);
         let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
 
+        let table = $(`<div class="parent"></div>`);
+        bd.append(table);
+
         if (breakdown[type][name]){
+            let col1 = $(`<div></div>`);
+            table.append(col1);
             let types = [name,'Global'];
             for (var i = 0; i < types.length; i++){
                 let t = types[i];
@@ -724,7 +729,7 @@ function breakdownPopover(id,name,type){
                         if (val != 0 && !isNaN(val)){
                             let type = val > 0 ? 'success' : 'danger';
                             let label = mod.replace("_"," ");
-                            bd.append(`<div class="resBD"><span>${label}</span><span class="has-text-${type}">{{ ${t}['${mod}'] | translate }}</span></div>`);
+                            col1.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ ${t}['${mod}'] | translate }}</span></div>`);
                         }
                     });
                 }
@@ -732,19 +737,25 @@ function breakdownPopover(id,name,type){
         }
 
         if (breakdown[type].consume && breakdown[type].consume[name]){
+            let col2 = $(`<div class="col"></div>`);
+            let count = 0;
             Object.keys(breakdown[type].consume[name]).forEach(function (mod){
+                count++;
                 let val = breakdown[type].consume[name][mod];
                 if (val != 0 && !isNaN(val)){
                     let type = val > 0 ? 'success' : 'danger';
                     let label = mod.replace("_"," ");
-                    bd.append(`<div class="resBD"><span>${label}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
+                    col2.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
                 }
             });
+            if (count > 0){
+                table.append(col2);
+            }
         }
 
         if (type === 'p'){
             let dir = global['resource'][name].diff > 0 ? 'success' : 'danger';
-            bd.append(`<div class="rate"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
+            bd.append(`<div class="modal_bd sum"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
         }
 
         popper.append(bd);

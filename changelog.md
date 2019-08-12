@@ -3,6 +3,7 @@ Interstellar space is now unlockable<br>
 Interdimensional travel is now unlockable<br>
 New mangement tab for Crates & Containers<br>
 Power generation breakdown<br>
+Improved resource breakdown layout<br>
 Leathery trait buffed<br>
 Chameleon trait now adds a combat rating bonus<br>
 Smarter Smelter fuel switching<br>
