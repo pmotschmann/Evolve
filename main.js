@@ -870,7 +870,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : 'interstellar');
@@ -1166,6 +1166,20 @@ function fastLoop(){
                 if (!modRes('Oil', -(time_multiplier * fuel_cost))){
                     out_consume -= (p_on['outpost'] * fuel_cost) - (i * fuel_cost);
                     p_on['outpost'] -= i;
+                    break;
+                }
+            }
+        }
+
+        // Neutron Miner
+        if (p_on['neutron_miner'] && p_on['neutron_miner'] > 0){
+            let fuel_cost = 3;
+            let out_consume = p_on['neutron_miner'] * fuel_cost;
+            breakdown.p.consume.Helium_3[loc('interstellar_neutron_miner_title')] = -(out_consume);
+            for (let i=0; i<p_on['neutron_miner']; i++){
+                if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
+                    out_consume -= (p_on['neutron_miner'] * fuel_cost) - (i * fuel_cost);
+                    p_on['neutron_miner'] -= i;
                     break;
                 }
             }
@@ -2034,7 +2048,7 @@ function fastLoop(){
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
 
-            let delta = graphene_production * hunger * global_multiplier;
+            let delta = graphene_production * 0.6 * zigguratBonus() * hunger * global_multiplier;
 
             let graphene_bd = {};
             graphene_bd['G.Plant'] = graphene_production + 'v';
@@ -2141,7 +2155,7 @@ function fastLoop(){
             }
 
             if (global.interstellar['mining_droid'] && miner_droids['alum'] > 0){
-                let base = miner_droids['alum'] * 3.5;
+                let base = miner_droids['alum'] * 2.75 * zigguratBonus();
                 let delta = base * global_multiplier;
                 delta *= 1 + (refinery / 100);
 
@@ -2292,7 +2306,7 @@ function fastLoop(){
             coal_bd['Hunger'] = ((hunger - 1) * 100) + '%';
 
             if (global.interstellar['mining_droid'] && miner_droids['coal'] > 0){
-                let driod_base = miner_droids['coal'] * 6.25;
+                let driod_base = miner_droids['coal'] * 3.75 * zigguratBonus();
                 let driod_delta = driod_base * global_multiplier;
                 coal_bd['Droids'] = driod_base + 'v';
                 modRes('Coal', driod_delta * time_multiplier);
@@ -2314,7 +2328,7 @@ function fastLoop(){
 
         // Space Uranium
         if (global.interstellar['mining_droid'] && miner_droids['uran'] > 0){
-            let driod_base = miner_droids['uran'] * 0.25;
+            let driod_base = miner_droids['uran'] * 0.12 * zigguratBonus();
             let driod_delta = driod_base * global_multiplier;
             uranium_bd['Droids'] = driod_base + 'v';
             modRes('Uranium', driod_delta * time_multiplier);
@@ -2416,9 +2430,17 @@ function fastLoop(){
                 n_base *= 1 + (global.space.drone.count * 0.06);
             }
             let delta = n_base * hunger * global_multiplier;
-            neutronium_bd['Outpost'] = n_base + 'v';
+            neutronium_bd[loc('space_gas_moon_outpost_bd')] = n_base + 'v';
             modRes('Neutronium', delta * time_multiplier);
         }
+
+        if (p_on['neutron_miner']){
+            let n_base = p_on['neutron_miner'] * 0.055 * zigguratBonus();
+            let delta = n_base * hunger * global_multiplier;
+            neutronium_bd[loc('interstellar_neutron_miner_bd')] = n_base + 'v';
+            modRes('Neutronium', delta * time_multiplier);
+        }
+
         neutronium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
         breakdown.p['Neutronium'] = neutronium_bd;
 
@@ -2436,7 +2458,7 @@ function fastLoop(){
         // Adamantite
         let adamantite_bd = {};
         if (global.resource.Adamantite.display && global.interstellar['mining_droid'] && miner_droids['adam'] > 0){
-            let driod_base = miner_droids['adam'] * 0.075;
+            let driod_base = miner_droids['adam'] * 0.075 * zigguratBonus();
             let driod_delta = driod_base * global_multiplier;
             adamantite_bd['Droids'] = driod_base + 'v';
             if (global.interstellar['processing'] && int_on['processing']){

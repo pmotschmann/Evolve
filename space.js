@@ -1562,7 +1562,7 @@ const interstellarProjects = {
                     incrementStruct('starport','interstellar');
                     global.settings.space.proxima = true;
                     global.settings.space.nebula = true;
-                    if (global.city.power >= 10){
+                    if (global.city.power >= $(this)[0].powered){
                         global.interstellar['starport'].on++;
                     }
                     if (global.tech['alpha'] === 1){
@@ -1991,16 +1991,48 @@ const interstellarProjects = {
         },
         neutron_mission: {
             id: 'interstellar-neutron_mission',
-            title: loc('interstellar_nebula_mission'),
-            desc: loc('interstellar_nebula_mission'),
-            reqs: { nebula: 1 },
+            title: loc('interstellar_neutron_mission'),
+            desc: loc('interstellar_neutron_mission'),
+            reqs: { nebula: 1, high_tech: 14 },
             grant: ['neutron',1],
             cost: { 
-                Helium_3(){ return 75000; }
+                Helium_3(){ return 60000; },
+                Deuterium(){ return 10000; }
             },
             effect: loc('interstellar_neutron_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.interstellar['neutron_miner'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        neutron_miner: {
+            id: 'interstellar-neutron_miner',
+            title: loc('interstellar_neutron_miner_title'),
+            desc: `<div>${loc('interstellar_neutron_miner_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { neutron: 1 },
+            cost: {
+                Money(){ return costMultiplier('neutron_miner', 1000000, 1.32, 'interstellar'); },
+                Titanium(){ return costMultiplier('neutron_miner', 45000, 1.32, 'interstellar'); },
+                Stanene(){ return costMultiplier('neutron_miner', 88000, 1.32, 'interstellar'); },
+                Elerium(){ return costMultiplier('neutron_miner', 20, 1.32, 'interstellar'); },
+                Aerogel(){ return costMultiplier('neutron_miner', 50, 1.32, 'interstellar'); },
+            },
+            effect(){
+                let neutronium = 0.055;
+                neutronium = +(neutronium * zigguratBonus()).toFixed(3);
+                let helium = 3;
+                return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered])}</div>`;
+            },
+            powered: 6,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('neutron_miner','interstellar');
+                    if (global.city.power >= $(this)[0].powered){
+                        global.interstellar['neutron_miner'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -2019,7 +2051,8 @@ const interstellarProjects = {
             reqs: { nebula: 1 },
             grant: ['blackhole',1],
             cost: { 
-                Helium_3(){ return 100000; }
+                Helium_3(){ return 75000; },
+                Deuterium(){ return 25000; }
             },
             effect: loc('interstellar_blackhole_mission_effect'),
             action(){

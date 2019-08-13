@@ -406,8 +406,8 @@ function casualties(demons,pat_armor,ambush){
         if (casualties > global.portal.fortress.patrol_size){
             casualties = global.portal.fortress.patrol_size;
         }
-        casualties = Math.rand(ambush ? 1 : 0,casualties);
-        dead = Math.rand(0,casualties);
+        casualties = Math.rand(ambush ? 1 : 0,casualties + 1);
+        dead = Math.rand(0,casualties + 1);
         let wounded = casualties - dead;
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
@@ -465,9 +465,8 @@ export function bloodwar(){
 
     // Patrols
     let dead = 0;
+    let pat_rating = Math.round(armyRating(global.portal.fortress.patrol_size,'army'));
     for (let i=0; i<global.portal.fortress.patrols; i++){
-        let pat_rating = Math.round(armyRating(global.portal.fortress.patrol_size,'army'));
-
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 

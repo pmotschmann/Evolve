@@ -5233,7 +5233,7 @@ export const actions = {
                 Knowledge(){ return 600000; },
                 Infernite(){ return 800; }
             },
-            effect: loc('tech_fire_proof_safe_effect'),
+            effect: loc('tech_tamper_proof_safe_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5911,7 +5911,7 @@ export const actions = {
         plasma: {
             id: 'tech-plasma',
             title: loc('tech_plasma'),
-            desc: loc('tech_plasma_desc'),
+            desc: loc('tech_plasma'),
             reqs: { high_tech: 12 },
             grant: ['high_tech',13],
             cost: {
@@ -5922,6 +5922,24 @@ export const actions = {
             effect: loc('tech_plasma_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        shields: {
+            id: 'tech-shields',
+            title: loc('tech_shields'),
+            desc: loc('tech_shields'),
+            reqs: { high_tech: 13 },
+            grant: ['high_tech',14],
+            cost: {
+                Knowledge(){ return 850000; },
+            },
+            effect: loc('tech_shields_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.settings.space.neutron = true;
                     return true;
                 }
                 return false;
