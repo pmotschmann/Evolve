@@ -10375,7 +10375,7 @@ export function evoProgress(){
     $('#evolution').append(progress);
 }
 
-export function basicHousingLabel(){
+function basicHousingLabel(){
     switch (global.race.species){
         case 'orc':
             return loc('city_basic_housing_orc_title');
@@ -10426,7 +10426,7 @@ function largeHousingLabel(){
     }
 }
 
-function housingLabel(type){
+export function housingLabel(type){
     switch (type){
         case 'small':
             return basicHousingLabel();

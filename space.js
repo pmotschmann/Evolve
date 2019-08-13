@@ -2050,8 +2050,9 @@ const interstellarProjects = {
             effect(){
                 let neutronium = 0.055;
                 neutronium = +(neutronium * zigguratBonus()).toFixed(3);
+                let max_neutronium = spatialReasoning(500);
                 let helium = 3;
-                return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered])}</div>`;
+                return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max_neutronium,loc('resource_Neutronium_name')])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered])}</div>`;
             },
             powered: 6,
             action(){

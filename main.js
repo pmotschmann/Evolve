@@ -6,7 +6,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, basicHousingLabel, oldTech, f_rate, setPlanet } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -2765,7 +2765,7 @@ function midLoop(){
         if (global.city['farm']){
             if (global.tech['farm']){
                 caps[global.race.species] += global.city['farm'].count;
-                bd_Citizen['Farm'] = global.city['farm'].count + 'v';
+                bd_Citizen[loc('city_farm')] = global.city['farm'].count + 'v';
             }
         }
         if (global.city['wharf']){
@@ -2782,11 +2782,16 @@ function midLoop(){
 
             let gain = (global.interstellar['cargo_yard'].count * spatialReasoning(200));
             caps['Neutronium'] += gain;
-            bd_Neutronium['Cargo_Yard'] = gain+'v';
+            bd_Neutronium[loc('interstellar_cargo_yard_title')] = gain+'v';
 
             gain = (global.interstellar['cargo_yard'].count * spatialReasoning(150));
             caps['Infernite'] += gain;
-            bd_Infernite['Cargo_Yard'] = gain+'v';
+            bd_Infernite[loc('interstellar_cargo_yard_title')] = gain+'v';
+        }
+        if (global.interstellar['neutron_miner'] && p_on['neutron_miner']){
+            let gain = (p_on['neutron_miner'] * spatialReasoning(500));
+            caps['Neutronium'] += gain;
+            bd_Neutronium[loc('interstellar_neutron_miner_title')] = gain+'v';
         }
         if (global.city['storage_yard']){
             let size = global.tech.container >= 3 ? 20 : 10;
@@ -2825,19 +2830,19 @@ function midLoop(){
             let gain = (global.city['rock_quarry'].count * spatialReasoning(100));
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
             caps['Stone'] += gain;
-            bd_Stone['Quarry'] = gain+'v';
+            bd_Stone[loc('city_rock_quarry')] = gain+'v';
         }
         if (global.city['lumber_yard']){
             let gain = (global.city['lumber_yard'].count * spatialReasoning(100));
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
             caps['Lumber'] += gain;
-            bd_Lumber['Lumber_Yard'] = gain+'v';
+            bd_Lumber[loc('city_lumber_yard')] = gain+'v';
         }
         if (global.city['sawmill']){
             let gain = (global.city['sawmill'].count * spatialReasoning(200));
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
             caps['Lumber'] += gain;
-            bd_Lumber['Sawmill'] = gain+'v';
+            bd_Lumber[loc('city_sawmill')] = gain+'v';
             let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
             global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
         }
@@ -2876,24 +2881,24 @@ function midLoop(){
         }
         if (global.city['basic_housing']){
             caps[global.race.species] += global.city['basic_housing'].count;
-            bd_Citizen[basicHousingLabel()] = global.city['basic_housing'].count + 'v';
+            bd_Citizen[housingLabel('small')] = global.city['basic_housing'].count + 'v';
         }
         if (global.city['cottage']){
             caps[global.race.species] += global.city['cottage'].count * 2;
-            bd_Citizen['Cottage'] = (global.city['cottage'].count * 2) + 'v';
+            bd_Citizen[housingLabel('medium')] = (global.city['cottage'].count * 2) + 'v';
             if (global.tech['home_safe']){
                 let gain = (global.city['cottage'].count * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000));
                 caps['Money'] += gain;
-                bd_Money['Cottage'] = gain+'v';
+                bd_Money[housingLabel('medium')] = gain+'v';
             }
         }
         if (global.city['apartment']){
             caps[global.race.species] += global.city['apartment'].on * 5;
-            bd_Citizen['Apartment'] = (global.city['apartment'].on * 5)+'v';
+            bd_Citizen[housingLabel('large')] = (global.city['apartment'].on * 5)+'v';
             if (global.tech['home_safe']){
                 let gain = (global.city['apartment'].on * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000));
                 caps['Money'] += gain;
-                bd_Money['Apartment'] = gain+'v';
+                bd_Money[housingLabel('large')] = gain+'v';
             }
         }
         if (global.space['living_quarters']){
@@ -2911,12 +2916,12 @@ function midLoop(){
         if (global.space['outpost']){
             let gain = global.space['outpost'].count * spatialReasoning(500);
             caps['Neutronium'] += gain;
-            bd_Neutronium['Outpost'] = gain+'v';
+            bd_Neutronium[loc('space_gas_moon_outpost_title')] = gain+'v';
         }
         if (global.city['shed']){
             var multiplier = storageMultipler();
             let gain = 0;
-            let label = global.tech['storage'] <= 2 ? 'Shed' : (global.tech['storage'] >= 4 ? 'Warehouse' : 'Barn');
+            let label = global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
             if (global.tech['storage'] >= 3){
                 gain = (global.city['shed'].count * (spatialReasoning(40 * multiplier)));
                 caps['Steel'] += gain;
@@ -2962,7 +2967,7 @@ function midLoop(){
         if (global.resource.Infernite.display && global.portal['fortress']){
             let gain = spatialReasoning(1000);
             caps['Infernite'] += gain;
-            bd_Infernite['Fortress'] = gain+'v';
+            bd_Infernite[loc('portal_fortress_name')] = gain+'v';
         }
         if (global.space['garage']){
             let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
@@ -2971,130 +2976,130 @@ function midLoop(){
 
             let gain = (global.space.garage.count * (spatialReasoning(6500 * multiplier)));
             caps['Copper'] += gain;
-            bd_Copper['Garage'] = gain+'v';
+            bd_Copper[loc('space_red_garage_title')] = gain+'v';
 
             gain = (global.space.garage.count * (spatialReasoning(5500 * multiplier)));
             caps['Iron'] += gain;
-            bd_Iron['Garage'] = gain+'v';
+            bd_Iron[loc('space_red_garage_title')] = gain+'v';
 
             gain = (global.space.garage.count * (spatialReasoning(6000 * multiplier)));
             caps['Cement'] += gain;
-            bd_Cement['Garage'] = gain+'v';
+            bd_Cement[loc('space_red_garage_title')] = gain+'v';
 
             gain = (global.space.garage.count * (spatialReasoning(4500 * multiplier)));
             caps['Steel'] += gain;
-            bd_Steel['Garage'] = gain+'v';
+            bd_Steel[loc('space_red_garage_title')] = gain+'v';
 
             gain = (global.space.garage.count * (spatialReasoning(3500 * multiplier)));
             caps['Titanium'] += gain;
-            bd_Titanium['Garage'] = gain+'v';
+            bd_Titanium[loc('space_red_garage_title')] = gain+'v';
 
             gain = (global.space.garage.count * (spatialReasoning(2500 * multiplier)));
             caps['Alloy'] += gain;
-            bd_Alloy['Garage'] = gain+'v';
+            bd_Alloy[loc('space_red_garage_title')] = gain+'v';
 
             if (global.resource.Nano_Tube.display){
                 gain = (global.space.garage.count * (spatialReasoning(25000 * multiplier)));
                 caps['Nano_Tube'] += gain;
-                bd_Nano_Tube['Garage'] = gain+'v';
+                bd_Nano_Tube[loc('space_red_garage_title')] = gain+'v';
             }
 
             if (global.resource.Neutronium.display){
                 gain = (global.space.garage.count * (spatialReasoning(125 * multiplier)));
                 caps['Neutronium'] += gain;
-                bd_Neutronium['Garage'] = gain+'v';
+                bd_Neutronium[loc('space_red_garage_title')] = gain+'v';
             }
 
             if (global.resource.Infernite.display){
                 gain = (global.space.garage.count * (spatialReasoning(75 * multiplier)));
                 caps['Infernite'] += gain;
-                bd_Infernite['Garage'] = gain+'v';
+                bd_Infernite[loc('space_red_garage_title')] = gain+'v';
             }
         }
         if (global.city['silo']){
             let gain = (global.city['silo'].count * spatialReasoning(500));
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
             caps['Food'] += gain;
-            bd_Food['Silo'] = gain+'v';
+            bd_Food[loc('city_silo')] = gain+'v';
         }
         if (global.city['soul_well']){
             let gain = (global.city['soul_well'].count * spatialReasoning(500));
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
             caps['Food'] += gain;
-            bd_Food['Soul_Well'] = gain+'v';
+            bd_Food[loc('city_soul_well')] = gain+'v';
         }
         if (global.city['smokehouse']){
             let gain = (global.city['smokehouse'].count * spatialReasoning(500));
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
             caps['Food'] += gain;
-            bd_Food['Smoke_House'] = gain+'v';
+            bd_Food[loc('city_smokehouse')] = gain+'v';
         }
         if (global.city['oil_well']){
             let gain = (global.city['oil_well'].count * spatialReasoning(500));
             caps['Oil'] += gain;
-            bd_Oil['Oil_Derrick'] = gain+'v';
+            bd_Oil[loc('city_oil_well')] = gain+'v';
         }
         if (global.city['oil_depot']){
             let gain = (global.city['oil_depot'].count * spatialReasoning(1000));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Oil'] += gain;
-            bd_Oil['Fuel_Depot'] = gain+'v';
+            bd_Oil[loc('city_oil_depot')] = gain+'v';
             if (global.tech['uranium'] >= 2){
                 gain = (global.city['oil_depot'].count * spatialReasoning(250));
                 gain *= global.tech['world_control'] ? 1.5 : 1;
                 caps['Uranium'] += gain;
-                bd_Uranium['Fuel_Depot'] = gain+'v';
+                bd_Uranium[loc('city_oil_depot')] = gain+'v';
             }
             if (global.resource['Helium_3'].display){
                 gain = (global.city['oil_depot'].count * spatialReasoning(400));
                 gain *= global.tech['world_control'] ? 1.5 : 1;
                 caps['Helium_3'] += gain;
-                bd_Helium['Fuel_Depot'] = gain+'v';
+                bd_Helium[loc('city_oil_depot')] = gain+'v';
             }
         }
         if (global.space['propellant_depot']){
             let gain = (global.space['propellant_depot'].count * spatialReasoning(1250));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Oil'] += gain;
-            bd_Oil['Orbit_Depot'] = gain+'v';
+            bd_Oil[loc('space_home_propellant_depot_title')] = gain+'v';
             if (global.resource['Helium_3'].display){
                 gain = (global.space['propellant_depot'].count * spatialReasoning(1000));
                 gain *= global.tech['world_control'] ? 1.5 : 1;
                 caps['Helium_3'] += gain;
-                bd_Helium['Orbit_Depot'] = gain+'v';
+                bd_Helium[loc('space_home_propellant_depot_title')] = gain+'v';
             }
         }
         if (global.space['gas_storage']){
             let gain = (global.space['gas_storage'].count * spatialReasoning(3500));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Oil'] += gain;
-            bd_Oil[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
+            bd_Oil[`${races[global.race.species].solar.gas}_${loc('depot')}`] = gain+'v';
 
             gain = (global.space['gas_storage'].count * spatialReasoning(2500));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Helium_3'] += gain;
-            bd_Helium[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
+            bd_Helium[`${races[global.race.species].solar.gas}_${loc('depot')}`] = gain+'v';
 
             gain = (global.space['gas_storage'].count * spatialReasoning(1000));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Uranium'] += gain;
-            bd_Uranium[`${races[global.race.species].solar.gas}_Depot`] = gain+'v';
+            bd_Uranium[`${races[global.race.species].solar.gas}_${loc('depot')}`] = gain+'v';
         }
         if (p_on['xfer_station']){
             let gain = (p_on['xfer_station'] * spatialReasoning(5000));
             caps['Helium_3'] += gain;
-            bd_Helium['Xfer_Station'] = gain+'v';
+            bd_Helium[loc('interstellar_xfer_station_title')] = gain+'v';
 
             if (global.resource.Deuterium.display){
                 let deuterium_gain = p_on['nexus'] * spatialReasoning(3000);
                 caps['Deuterium'] += deuterium_gain;
-                bd_Deuterium['Xfer_Station'] = deuterium_gain+'v';
+                bd_Deuterium[loc('interstellar_xfer_station_title')] = deuterium_gain+'v';
             }
         }
         if (global.space['helium_mine']){
             let gain = (global.space['helium_mine'].count * spatialReasoning(100));
             caps['Helium_3'] += gain;
-            bd_Helium['Helium_Mine'] = gain+'v';
+            bd_Helium[loc('space_moon_helium_mine_title')] = gain+'v';
         }
         if (global.city['university']){
             let multiplier = 1;
@@ -3118,7 +3123,7 @@ function midLoop(){
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
             caps['Knowledge'] += gain;
-            bd_Knowledge['University'] = gain+'v';
+            bd_Knowledge[loc('city_university')] = gain+'v';
         }
         if (global.city['library']){
             let shelving = (global.race['nearsighted'] ? 110 : 125);
@@ -3133,7 +3138,7 @@ function midLoop(){
             }
             let gain = Math.round(global.city['library'].count * shelving);
             caps['Knowledge'] += gain;
-            bd_Knowledge['Library'] = gain+'v';
+            bd_Knowledge[loc('city_library')] = gain+'v';
             if (global.tech['science'] && global.tech['science'] >= 3){
                 global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
             }
@@ -3151,27 +3156,27 @@ function midLoop(){
                 gain *= 1 + (global.space.satellite.count * 0.04);
             }
             caps['Knowledge'] += gain;
-            bd_Knowledge['Wardenclyffe'] = gain+'v';
+            bd_Knowledge[loc('city_wardenclyffe')] = gain+'v';
         }
         if (global.portal['sensor_drone']){
             let gain = p_on['sensor_drone'] * 1000;
             caps['Knowledge'] += gain;
-            bd_Knowledge['Sensors'] = gain+'v';
+            bd_Knowledge[loc('portal_sensor_drone_title')] = gain+'v';
         }
         if (global.space['satellite']){
             let gain = (global.space.satellite.count * 750);
             caps['Knowledge'] += gain;
-            bd_Knowledge['Satellite'] = gain+'v';
+            bd_Knowledge[loc('space_home_satellite_title')] = gain+'v';
         }
         if (global.space['observatory'] && global.space.observatory.count > 0){
             let gain = (moon_on['observatory'] * 5000);
             caps['Knowledge'] += gain;
-            bd_Knowledge['Observatory'] = gain+'v';
+            bd_Knowledge[loc('space_moon_observatory_title')] = gain+'v';
         }
         if (global.interstellar['laboratory'] && int_on['laboratory'] > 0){
             let gain = (int_on['laboratory'] * 10000);
             caps['Knowledge'] += gain;
-            bd_Knowledge['Laboratory'] = gain+'v';
+            bd_Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
         }
         if (global.city['biolab']){
             let gain = 3000;
@@ -3179,7 +3184,7 @@ function midLoop(){
                 gain *= 1 + (p_on['sensor_drone'] * 0.02);
             }
             caps['Knowledge'] += (p_on['biolab'] * gain);
-            bd_Knowledge['Bio_Lab'] = (p_on['biolab'] * gain)+'v';
+            bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
         }
         if (global.city['bank']){
             let vault = 1800;
@@ -3212,7 +3217,7 @@ function midLoop(){
             }
             let gain = (global.city['bank'].count * spatialReasoning(vault));
             caps['Money'] += gain;
-            bd_Money['Bank'] = gain+'v';
+            bd_Money[loc('city_bank')] = gain+'v';
         }
         if (global.city['casino']){
             let vault = global.city['casino'].count * spatialReasoning(global.tech['gambling'] >= 3 ? 60000 : 40000);
@@ -3223,7 +3228,7 @@ function midLoop(){
                 vault = Math.round(vault * 1.25);
             }
             caps['Money'] += vault;
-            bd_Money['Casino'] = vault+'v';
+            bd_Money[loc('city_casino')] = vault+'v';
         }
         if (global.tech['banking'] >= 4){
             let cm = 250;
@@ -3235,19 +3240,19 @@ function midLoop(){
             }
             let gain = cm * (global.resource[global.race.species].amount + global.civic.garrison.workers);
             caps['Money'] += gain;
-            bd_Money['Bonds'] = gain+'v';
+            bd_Money[loc('tech_bonds')] = gain+'v';
         }
         if (p_on['moon_base']){
             let gain = p_on['moon_base'] * spatialReasoning(500);
             caps['Iridium'] += gain;
-            bd_Iridium['Moon_Base'] = gain+'v';
+            bd_Iridium[loc('space_moon_base_title')] = gain+'v';
         }
         if (p_on['space_station']){
             lCaps['space_miner'] += p_on['space_station'] * 3;
             if (global.tech['asteroid'] >= 5){
                 let gain = p_on['space_station'] * spatialReasoning(5);
                 caps['Elerium'] += gain;
-                bd_Elerium['Space_Station'] = gain+'v';
+                bd_Elerium[loc('space_belt_station_title')] = gain+'v';
             }
         }
         if (red_on['exotic_lab']){
@@ -3260,12 +3265,12 @@ function midLoop(){
             }
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;
-            bd_Knowledge['Exotic_Lab'] = gain+'v';
+            bd_Knowledge[loc('tech_exotic_bd')] = gain+'v';
         }
         if (p_on['elerium_contain']){
             let el_gain = p_on['elerium_contain'] * spatialReasoning(100);
             caps['Elerium'] += el_gain;
-            bd_Elerium['Containment'] = el_gain+'v';
+            bd_Elerium[loc('space_dwarf_elerium_contain_title')] = el_gain+'v';
         }
         if (global.city['foundry']){
             lCaps['craftsman'] += global.city['foundry'].count;
@@ -3279,11 +3284,11 @@ function midLoop(){
         if (p_on['nexus']){
             let helium_gain = p_on['nexus'] * spatialReasoning(4000);
             caps['Helium_3'] += helium_gain;
-            bd_Helium['Nexus'] = helium_gain+'v';
+            bd_Helium[loc('interstellar_nexus_title')] = helium_gain+'v';
 
             let deuterium_gain = p_on['nexus'] * spatialReasoning(3000);
             caps['Deuterium'] += deuterium_gain;
-            bd_Deuterium['Nexus'] = deuterium_gain+'v';
+            bd_Deuterium[loc('interstellar_nexus_title')] = deuterium_gain+'v';
         }
 
         if (global.city['trade']){
@@ -3310,7 +3315,7 @@ function midLoop(){
         if (p_on['world_controller']){
             let gain = Math.round(caps['Knowledge'] * 0.25);
             caps['Knowledge'] += gain;
-            bd_Knowledge['WS_Collider'] = gain+'v';
+            bd_Knowledge[loc('space_dwarf_collider_title')] = gain+'v';
         }
 
         breakdown.c = {

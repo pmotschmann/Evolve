@@ -412,9 +412,9 @@ function casualties(demons,pat_armor,ambush){
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
-        if (dead === global.portal.fortress.patrol_size && global.portal.fortress.notify === 'Yes'){
+        /*if (dead === global.portal.fortress.patrol_size && global.portal.fortress.notify === 'Yes'){
             messageQueue(loc('fortress_patrol_killed',[dead]));
-        }
+        }*/
     }
 
     if (global.civic.garrison.wounded > global.civic.garrison.workers){
