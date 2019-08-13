@@ -7085,6 +7085,24 @@ export const actions = {
             },
             flair: 'Outer space treaty be damned.'
         },
+        cruiser: {
+            id: 'tech-cruiser',
+            title: loc('tech_cruiser'),
+            desc: loc('tech_cruiser'),
+            reqs: { high_tech: 14, proxima: 2, aerogel: 1 },
+            grant: ['cruiser',1],
+            cost: {
+                Knowledge(){ return 860000; },
+            },
+            effect: loc('tech_cruiser_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['cruiser'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         armor: {
             id: 'tech-armor',
             title: loc('tech_armor'),
@@ -9929,7 +9947,7 @@ export const f_rate = {
     Stanene: {
         aluminium: [30,45,60,75],
         nano: [0.02,0.03,0.04,0.05],
-        output: [0.8,1.2,1.6,2],
+        output: [0.6,0.9,1.2,1.5],
     }
 };
 

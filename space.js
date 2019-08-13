@@ -1853,6 +1853,33 @@ const interstellarProjects = {
                 return false;
             }
         },
+        cruiser: {
+            id: 'interstellar-cruiser',
+            title: loc('interstellar_cruiser_title'),
+            desc: loc('interstellar_cruiser_title'),
+            reqs: { cruiser: 1 },
+            cost: {
+                Money(){ return costMultiplier('cruiser', 875000, 1.28, 'interstellar'); },
+                Aluminium(){ return costMultiplier('cruiser', 195000, 1.28, 'interstellar'); },
+                Deuterium(){ return costMultiplier('cruiser', 1500, 1.28, 'interstellar'); },
+                Neutronium(){ return costMultiplier('cruiser', 2000, 1.28, 'interstellar'); },
+                Aerogel(){ return costMultiplier('cruiser', 250, 1.28, 'interstellar'); },
+            },
+            powered: 1,
+            effect(){
+                let helium = 2;
+                let troops = 3;
+                return `<div>${loc('plus_max_soldiers',[troops])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('cruiser','interstellar');
+                    global.interstellar.cruiser.on++;
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson: {
             id: 'interstellar-dyson',
             title: loc('interstellar_dyson_title'),
@@ -2114,6 +2141,7 @@ const structDefinitions = {
     g_factory: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
     xfer_station: { count: 0, on: 0 },
     cargo_yard: { count: 0 },
+    cruiser: { count: 0, on: 0 },
     dyson: { count: 0 },
     nexus: { count: 0, on: 0, support: 0, s_max: 0 },
     harvester: { count: 0, on: 0 },

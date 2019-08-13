@@ -470,7 +470,7 @@ export function bloodwar(){
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
-            if (Math.rand(0,global.race['chameleon'] ? 45 : 30) === 0){
+            if (Math.rand(0,global.race['chameleon'] ? 50 : 30) === 0){
                 dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true);
                 let remain = demons - Math.round(pat_rating / 2);
                 if (remain > 0){
@@ -558,11 +558,11 @@ export function bloodwar(){
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
         let danger = global.portal.fortress.threat / 1000;
         let exposure = global.civic.hell_surveyor.workers > 10 ? 10 : global.civic.hell_surveyor.workers;
-        let risk = 10 - (Math.rand(0,exposure));
+        let risk = 10 - (Math.rand(0,exposure + 1));
 
         if (danger > risk){
             let cap = Math.round(danger);
-            let dead = Math.rand(0,cap);
+            let dead = Math.rand(0,cap + 1);
             if (dead > global.civic.hell_surveyor.workers){
                 dead = global.civic.hell_surveyor.workers;
             }

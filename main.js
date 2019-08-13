@@ -1185,6 +1185,22 @@ function fastLoop(){
             }
         }
 
+        // Patrol Cruiser
+        if (global.interstellar['cruiser']){
+            let fuel_cost = 2;
+            let active = global.interstellar['cruiser'].on;
+            let out_consume = active * fuel_cost;
+            breakdown.p.consume.Helium_3[loc('interstellar_cruiser_title')] = -(out_consume);
+            for (let i=0; i<global.interstellar['cruiser'].on; i++){
+                if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
+                    out_consume -= (global.interstellar['cruiser'].on * fuel_cost) - (i * fuel_cost);
+                    active -= i;
+                    break;
+                }
+            }
+            int_on['cruiser'] = active;
+        }
+
         // Detect labor anomalies
         let total = 0;
         Object.keys(job_desc).forEach(function (job) {
@@ -2854,6 +2870,9 @@ function midLoop(){
         }
         if (global.space['space_barracks']){
             lCaps['garrison'] += global.space.space_barracks.on * 2;
+        }
+        if (global.interstellar['cruiser']){
+            lCaps['garrison'] += int_on['cruiser'] * 3;
         }
         if (global.city['basic_housing']){
             caps[global.race.species] += global.city['basic_housing'].count;
