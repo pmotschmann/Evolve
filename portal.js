@@ -89,6 +89,37 @@ const fortressModules = {
                 return false;
             }
         },
+        war_droid: {
+            id: 'portal-war_droid',
+            title: loc('portal_war_droid_title'),
+            desc(){
+                return `<div>${loc('portal_war_droid_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { portal: 5 },
+            powered: 3,
+            cost: {
+                Money(){ return costMultiplier('war_droid', 495000, 1.26, 'portal'); },
+                Neutronium(){ return costMultiplier('war_droid', 1250, 1.26, 'portal'); },
+                Elerium(){ return costMultiplier('war_droid', 18, 1.26, 'portal'); },
+                Stanene(){ return costMultiplier('war_droid', 37500, 1.26, 'portal'); },
+                Soul_Gem(){ return costMultiplier('war_droid', 1, 1.26, 'portal'); }
+            },
+            powered: 2,
+            effect(){
+                return `<div>${loc('portal_war_droid_effect')}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('war_droid','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered){
+                        global.portal.war_droid.on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('portal_war_droid_flair')
+        },
     },
     prtl_badlands: {
         info: {
@@ -395,6 +426,9 @@ function buildFortress(parent){
 
 function fortressDefenseRating(v){
     let army = v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+    if (p_on['war_droid']){
+        army += p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
+    }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
     return Math.round(armyRating(army,'army')) + (p_on['turret'] ? p_on['turret'] * turret : 0);
 }
@@ -465,9 +499,16 @@ export function bloodwar(){
 
     // Patrols
     let dead = 0;
-    let pat_rating = Math.round(armyRating(global.portal.fortress.patrol_size,'army'));
+    let terminators = global.interstellar['war_droid'] ? p_on['war_droid'] : 0;
     for (let i=0; i<global.portal.fortress.patrols; i++){
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
+            let pat_size = global.portal.fortress.patrol_size;
+            if (terminators > 0){
+                pat_size++;
+                terminators--;
+            }
+            let pat_rating = Math.round(armyRating(pat_size,'army'));
+
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
             if (Math.rand(0,global.race['chameleon'] ? 50 : 30) === 0){
@@ -512,7 +553,7 @@ export function bloodwar(){
         let killed = 0;
         let destroyed = false;
         while (siege > 0 && global.portal.fortress.walls > 0){
-            let terminated = Math.round(defense / 16);
+            let terminated = Math.round(defense / 25);
             if (terminated > siege){
                 terminated = siege;
             }

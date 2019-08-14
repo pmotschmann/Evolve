@@ -8688,7 +8688,7 @@ export const actions = {
             reqs: { portal: 3, stanene: 1 },
             grant: ['portal',4],
             cost: {
-                Knowledge(){ return 750000; },
+                Knowledge(){ return 745000; },
             },
             effect: loc('tech_demon_attractor_effect'),
             action(){
@@ -8697,6 +8697,28 @@ export const actions = {
                     return true;
                 }
                 return false;
+            }
+        },
+        combat_droids: {
+            id: 'tech-combat_droids',
+            title: loc('tech_combat_droids'),
+            desc: loc('tech_combat_droids'),
+            reqs: { portal: 4 },
+            grant: ['portal',5],
+            cost: {
+                Knowledge(){ return 762000; },
+                Soul_Gem(){ return 1; }
+            },
+            effect: loc('tech_combat_droids_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['war_droid'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return loc('tech_combat_droids_flair');
             }
         },
         sensor_drone: {

@@ -870,7 +870,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : 'interstellar');

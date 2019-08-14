@@ -2148,6 +2148,7 @@ const structDefinitions = {
     harvester: { count: 0, on: 0 },
     turret: { count: 0, on: 0 },
     carport: { count: 0 },
+    war_droid: { count: 0, on: 0 },
     war_drones: { count: 0, on: 0 },
     sensor_drone: { count: 0, on: 0 },
     attractor: { count: 0, on: 0 },
