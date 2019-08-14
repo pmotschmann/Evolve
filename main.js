@@ -757,7 +757,7 @@ function fastLoop(){
 
             // Uranium
             if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                uranium_bd['Coal_Ash'] = (consume / 65 / global_multiplier);
+                uranium_bd[loc('city_coal_ash')] = (consume / 65 / global_multiplier);
                 modRes('Uranium', (consume * time_multiplier) / 65);
             }
         }
@@ -1298,11 +1298,11 @@ function fastLoop(){
             if (global.race['carnivore'] || global.race['evil']){
                 let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 0.5);
-                food_bd['Hunters'] = food_base + 'v';
+                food_bd[loc('job_hunter')] = food_base + 'v';
 
                 if (global.city['soul_well']){
                     let souls = global.city['soul_well'].count * 2;
-                    food_bd['Soul_Well'] = souls + 'v';
+                    food_bd[loc('city_soul_well')] = souls + 'v';
                     food_base += souls;
                 }
             }
@@ -1346,13 +1346,13 @@ function fastLoop(){
                     farm *= global.race['low_light'] ? 0.9 : 1;
                 }
 
-                food_bd['Farms'] = (farm) + 'v';
-                food_bd['Farmers'] = (farmers_base) + 'v';
+                food_bd[loc('city_farm')] = (farm) + 'v';
+                food_bd[loc('job_farmer')] = (farmers_base) + 'v';
 
                 food_base = ((farm + farmers_base) * weather_multiplier * mill_multiplier);
                 
-                food_bd['Weather'] = ((weather_multiplier - 1) * 100) + '%';
-                food_bd['Mills'] = ((mill_multiplier - 1) * 100) + '%';
+                food_bd[loc('morale_weather')] = ((weather_multiplier - 1) * 100) + '%';
+                food_bd[loc('city_mill_title1')] = ((mill_multiplier - 1) * 100) + '%';
             }
 
             let hunting = 0;
@@ -1428,8 +1428,8 @@ function fastLoop(){
 
             let delta = generated - consume - tourism - spaceport - starport - space_station - space_marines;
 
-            food_bd['Biodome'] = biodome + 'v';
-            food_bd['Soldiers'] = hunting + 'v';
+            food_bd[loc('space_red_biodome_title')] = biodome + 'v';
+            food_bd[loc('soldiers')] = hunting + 'v';
             breakdown.p['Food'] = food_bd;
 
             if (!modRes('Food', delta * time_multiplier)){
@@ -1513,13 +1513,13 @@ function fastLoop(){
             if (global.race['evil']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.free * weapons / 20;
-                fur_bd['Hunters'] = hunters  + 'v';
+                fur_bd[loc('job_hunter')] = hunters  + 'v';
                 modRes('Furs', hunters * hunger * global_multiplier * time_multiplier);
             }
 
             let hunting = armyRating(garrisonSize(),'hunting') / 10;
-            fur_bd['Soldiers'] = hunting  + 'v';
-            fur_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            fur_bd[loc('soldiers')] = hunting  + 'v';
+            fur_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
             let delta = hunting;
             delta *= hunger * global_multiplier;
@@ -1582,12 +1582,12 @@ function fastLoop(){
             delta *= library_mult;
 
             let know_bd = {};
-            know_bd['Professors'] = professors_base + 'v';
-            know_bd['Scientist'] = scientist_base + 'v';
-            know_bd['Hunger'] = ((hunger - 1) * 100) + '%';
-            know_bd['Sundial'] = sundial_base + 'v';
+            know_bd[loc('job_professor')] = professors_base + 'v';
+            know_bd[loc('job_scientist')] = scientist_base + 'v';
+            know_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+            know_bd[loc('tech_sundial')] = sundial_base + 'v';
             if (global.city['library']){
-                know_bd['Library'] = ((library_mult - 1) * 100) + '%';
+                know_bd[loc('city_library')] = ((library_mult - 1) * 100) + '%';
             }
             breakdown.p['Knowledge'] = know_bd;
 
@@ -1679,13 +1679,13 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 let alloy_bd = {};
-                alloy_bd['Factory'] = factory_output + 'v';
+                alloy_bd[loc('city_factory')] = factory_output + 'v';
                 if (global.tech['q_factory']){
                     let q_bonus = (quantum_level - 1) / 2 + 1;
                     delta *= q_bonus;
-                    alloy_bd['Quantum'] = ((q_bonus - 1) * 100) + '%';
+                    alloy_bd[loc('quantum')] = ((q_bonus - 1) * 100) + '%';
                 }
-                alloy_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                alloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Alloy'] = alloy_bd;
                 modRes('Alloy', delta * time_multiplier);
             }
@@ -1731,13 +1731,13 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 let polymer_bd = {};
-                polymer_bd['Factory'] = factory_output + 'v';
+                polymer_bd[loc('city_factory')] = factory_output + 'v';
                 if (global.tech['q_factory']){
                     let q_bonus = (quantum_level - 1) / 2 + 1;
                     delta *= q_bonus;
-                    polymer_bd['Quantum'] = ((q_bonus - 1) * 100) + '%';
+                    polymer_bd[loc('quantum')] = ((q_bonus - 1) * 100) + '%';
                 }
-                polymer_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                polymer_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Polymer'] = polymer_bd;
                 modRes('Polymer', delta * time_multiplier);
             }
@@ -1783,13 +1783,13 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 let nano_bd = {};
-                nano_bd['Factory'] = factory_output + 'v';
+                nano_bd[loc('city_factory')] = factory_output + 'v';
                 if (global.tech['q_factory']){
                     let q_bonus = (quantum_level - 1) / 2 + 1;
                     delta *= q_bonus;
-                    nano_bd['Quantum'] = ((q_bonus - 1) * 100) + '%';
+                    nano_bd[loc('quantum')] = ((q_bonus - 1) * 100) + '%';
                 }
-                nano_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                nano_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Nano_Tube'] = nano_bd;
                 modRes('Nano_Tube', delta * time_multiplier);
             }
@@ -1829,13 +1829,13 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 let stanene_bd = {};
-                stanene_bd['Factory'] = factory_output + 'v';
+                stanene_bd[loc('city_factory')] = factory_output + 'v';
                 if (global.tech['q_factory']){
                     let q_bonus = (quantum_level - 1) / 2 + 1;
                     delta *= q_bonus;
-                    stanene_bd['Quantum'] = ((q_bonus - 1) * 100) + '%';
+                    stanene_bd[loc('quantum')] = ((q_bonus - 1) * 100) + '%';
                 }
-                stanene_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                stanene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Stanene'] = stanene_bd;
                 modRes('Stanene', delta * time_multiplier);
             }
@@ -1872,9 +1872,9 @@ function fastLoop(){
             delta *= hunger * global_multiplier;
 
             let cement_bd = {};
-            cement_bd['C.Plant'] = factory_output + 'v';
-            cement_bd['Power'] = ((powered_mult - 1) * 100) + '%';
-            cement_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            cement_bd[loc('city_cement_plant_bd')] = factory_output + 'v';
+            cement_bd[loc('power')] = ((powered_mult - 1) * 100) + '%';
+            cement_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Cement'] = cement_bd;
             modRes('Cement', delta * time_multiplier);
         }
@@ -1960,7 +1960,7 @@ function fastLoop(){
                 if (global.city.geology['Uranium']){
                     ash_base *= global.city.geology['Uranium'] + 1;
                 }
-                uranium_bd['Coal_Ash'] = uranium_bd['Coal_Ash'] + (ash_base / 65 / global_multiplier);
+                uranium_bd[loc('city_coal_ash')] = uranium_bd[loc('city_coal_ash')] + (ash_base / 65 / global_multiplier);
                 modRes('Uranium', (ash_base * time_multiplier) / 65);
             }
 
@@ -2002,8 +2002,8 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 let steel_bd = {};
-                steel_bd['Smelter'] = smelter_output + 'v';
-                steel_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                steel_bd[loc('city_smelter')] = smelter_output + 'v';
+                steel_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Steel'] = steel_bd;
                 modRes('Steel', delta * time_multiplier);
                 
@@ -2014,7 +2014,7 @@ function fastLoop(){
                     }
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
-                    titanium_bd['Steel'] = (titanium / divisor) + 'v';
+                    titanium_bd[loc('resource_Steel_name')] = (titanium / divisor) + 'v';
                 }
             }
         }
@@ -2067,8 +2067,8 @@ function fastLoop(){
             let delta = graphene_production * 0.6 * zigguratBonus() * hunger * global_multiplier;
 
             let graphene_bd = {};
-            graphene_bd['G.Plant'] = graphene_production + 'v';
-            graphene_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            graphene_bd[loc('interstellar_g_factory_bd')] = graphene_production + 'v';
+            graphene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Graphene'] = graphene_bd;
             modRes('Graphene', delta * time_multiplier);
         }
@@ -2082,9 +2082,9 @@ function fastLoop(){
 
                 let soldiers = armyRating(garrisonSize(),'hunting') / 3;
 
-                lumber_bd['Hunters'] = hunters  + 'v';
-                lumber_bd['Soldiers'] = soldiers  + 'v';
-                lumber_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                lumber_bd[loc('job_hunter')] = hunters  + 'v';
+                lumber_bd[loc('soldiers')] = soldiers  + 'v';
+                lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Lumber'] = lumber_bd;
                 modRes('Lumber', hunters * hunger * global_multiplier * time_multiplier);
                 modRes('Lumber', soldiers * hunger * global_multiplier * time_multiplier);
@@ -2109,10 +2109,10 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 let lumber_bd = {};
-                lumber_bd['Lumberjacks'] = lumber_base + 'v';
-                lumber_bd['Lumber_Yard'] = ((lumber_yard - 1) * 100) + '%';
-                lumber_bd['Sawmill'] = ((power_mult - 1) * 100) + '%';
-                lumber_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                lumber_bd[loc('job_lumberjack')] = lumber_base + 'v';
+                lumber_bd[loc('city_lumber_yard')] = ((lumber_yard - 1) * 100) + '%';
+                lumber_bd[loc('city_sawmill')] = ((power_mult - 1) * 100) + '%';
+                lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Lumber'] = lumber_bd;
                 modRes('Lumber', delta * time_multiplier);
             }
@@ -2141,10 +2141,10 @@ function fastLoop(){
             delta *= hunger * global_multiplier;
 
             let stone_bd = {};
-            stone_bd['Workers'] = stone_base + 'v';
-            stone_bd['Rock_Quarry'] = ((rock_quarry - 1) * 100) + '%';
-            stone_bd['Power'] = ((power_mult - 1) * 100) + '%';
-            stone_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            stone_bd[loc('workers')] = stone_base + 'v';
+            stone_bd[loc('city_rock_quarry')] = ((rock_quarry - 1) * 100) + '%';
+            stone_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
+            stone_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Stone'] = stone_bd;
             modRes('Stone', delta * time_multiplier);
 
@@ -2164,8 +2164,8 @@ function fastLoop(){
 
                 delta *= 1 + (refinery / 100);
 
-                alumina_bd['Workers'] = base + 'v';
-                alumina_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                alumina_bd[loc('workers')] = base + 'v';
+                alumina_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 
                 modRes('Aluminium', delta * time_multiplier);
             }
@@ -2175,13 +2175,13 @@ function fastLoop(){
                 let delta = base * global_multiplier;
                 delta *= 1 + (refinery / 100);
 
-                alumina_bd['Droids'] = base + 'v';
+                alumina_bd[loc('interstellar_mining_droid_title')] = base + 'v';
                 
                 modRes('Aluminium', delta * time_multiplier);
             }
 
             if (refinery > 0){
-                alumina_bd['Refinery'] = refinery + '%';
+                alumina_bd[loc('city_metal_refinery')] = refinery + '%';
             }
             breakdown.p['Aluminium'] = alumina_bd;
         }
@@ -2224,8 +2224,8 @@ function fastLoop(){
                 let delta = copper_base * power_mult;
                 delta *= hunger * global_multiplier;
 
-                copper_bd['Miners'] = (copper_base) + 'v';
-                copper_bd['Power'] = ((power_mult - 1) * 100) + '%';
+                copper_bd[loc('job_miner')] = (copper_base) + 'v';
+                copper_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
                 modRes('Copper', delta * time_multiplier);
             }
             
@@ -2248,11 +2248,11 @@ function fastLoop(){
                 let delta = ((iron_base * power_mult) + space_iron) * smelter_mult;
                 delta *= hunger * global_multiplier;
                 
-                iron_bd['Miners'] = (iron_base) + 'v';
-                iron_bd['Power'] = ((power_mult - 1) * 100) + '%';
-                iron_bd['Space_Miners'] = space_iron + 'v';
-                iron_bd['Smelter'] = ((smelter_mult - 1) * 100) + '%';
-                iron_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                iron_bd[loc('job_miner')] = (iron_base) + 'v';
+                iron_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
+                iron_bd[loc('job_space_miner')] = space_iron + 'v';
+                iron_bd[loc('city_smelter')] = ((smelter_mult - 1) * 100) + '%';
+                iron_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Iron'] = iron_bd;
                 modRes('Iron', delta * time_multiplier);
 
@@ -2265,7 +2265,7 @@ function fastLoop(){
                     }
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
-                    titanium_bd['Iron'] = (iron / divisor) + 'v';
+                    titanium_bd[loc('resource_Iron_name')] = (iron / divisor) + 'v';
                 }
             }
         }
@@ -2280,12 +2280,12 @@ function fastLoop(){
             titanium_bd[`${races[global.race.species].solar.red}_Mining`] = (titanium_base) + 'v';
             modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
         }
-        copper_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        copper_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Copper'] = copper_bd;
         breakdown.p['Titanium'] = titanium_bd;
         
-        if (uranium_bd['Coal_Ash']){
-            uranium_bd['Coal_Ash'] = uranium_bd['Coal_Ash'] + 'v';
+        if (uranium_bd[loc('city_coal_ash')]){
+            uranium_bd[loc('city_coal_ash')] = uranium_bd[loc('city_coal_ash')] + 'v';
         }
 
         // Coal
@@ -2317,14 +2317,14 @@ function fastLoop(){
             delta *= hunger * global_multiplier;
 
             let coal_bd = {};
-            coal_bd['Miners'] = coal_base + 'v';
-            coal_bd['Power'] = ((power_mult - 1) * 100) + '%';
-            coal_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            coal_bd[loc('job_coal_miner')] = coal_base + 'v';
+            coal_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
+            coal_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
             if (global.interstellar['mining_droid'] && miner_droids['coal'] > 0){
                 let driod_base = miner_droids['coal'] * 3.75 * zigguratBonus();
                 let driod_delta = driod_base * global_multiplier;
-                coal_bd['Droids'] = driod_base + 'v';
+                coal_bd[loc('interstellar_mining_droid_title')] = driod_base + 'v';
                 modRes('Coal', driod_delta * time_multiplier);
             }
 
@@ -2338,7 +2338,7 @@ function fastLoop(){
                     uranium *= global.city.geology['Uranium'] + 1;
                 }
                 modRes('Uranium', uranium * time_multiplier);
-                uranium_bd['Miners'] = uranium / global_multiplier + 'v';
+                uranium_bd[loc('job_coal_miner')] = uranium / global_multiplier + 'v';
             }
         }
 
@@ -2346,7 +2346,7 @@ function fastLoop(){
         if (global.interstellar['mining_droid'] && miner_droids['uran'] > 0){
             let driod_base = miner_droids['uran'] * 0.12 * zigguratBonus();
             let driod_delta = driod_base * global_multiplier;
-            uranium_bd['Droids'] = driod_base + 'v';
+            uranium_bd[loc('interstellar_mining_droid_title')] = driod_base + 'v';
             modRes('Uranium', driod_delta * time_multiplier);
         }
 
@@ -2372,9 +2372,9 @@ function fastLoop(){
             delta *= hunger * global_multiplier;
 
             let oil_bd = {};
-            oil_bd['Derrick'] = oil_well + 'v';
-            oil_bd['Extractor'] = oil_extractor + 'v';
-            oil_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+            oil_bd[loc('city_oil_well')] = oil_well + 'v';
+            oil_bd[loc('space_gas_moon_oil_extractor_title')] = oil_extractor + 'v';
+            oil_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Oil'] = oil_bd;
             modRes('Oil', delta * time_multiplier);
         }
@@ -2384,17 +2384,17 @@ function fastLoop(){
         if (moon_on['iridium_mine']){
             let iridium_base = moon_on['iridium_mine'] * 0.035 * zigguratBonus();
             let delta = iridium_base * hunger * global_multiplier;
-            iridium_bd['Iridium_Mine'] = iridium_base + 'v';
+            iridium_bd[loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
         }
 
         if (belt_on['iridium_ship']){
             let iridium_base = belt_on['iridium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus();
             let delta = iridium_base * hunger * global_multiplier;
-            iridium_bd['Iridium_Ship'] = iridium_base + 'v';
+            iridium_bd[loc('job_space_miner')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
         }
-        iridium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        iridium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Iridium'] = iridium_bd;
 
         // Helium 3
@@ -2403,7 +2403,7 @@ function fastLoop(){
             let helium_base = moon_on['helium_mine'] * 0.18 * zigguratBonus();
             let delta = helium_base * hunger * global_multiplier;
 
-            helium_bd['Helium_Mine'] = helium_base + 'v';
+            helium_bd[loc('space_moon_helium_mine_title')] = helium_base + 'v';
             modRes('Helium_3', delta * time_multiplier);
         }
 
@@ -2411,7 +2411,7 @@ function fastLoop(){
             let gas_mining = p_on['gas_mining'] * (global.tech['helium'] ? 0.65 : 0.5) * zigguratBonus();
             let delta = gas_mining * hunger * global_multiplier;
 
-            helium_bd['Gas_Collector'] = gas_mining + 'v';
+            helium_bd[loc('space_gas_mining_title')] = gas_mining + 'v';
             modRes('Helium_3', delta * time_multiplier);
         }
 
@@ -2427,15 +2427,15 @@ function fastLoop(){
                 let deut_mining = int_on['harvester'] * 0.15 * zigguratBonus();
                 let deut_delta = deut_mining * hunger * global_multiplier;
 
-                deuterium_bd['Harvester'] = deut_mining + 'v';
+                deuterium_bd[loc('interstellar_harvester_title')] = deut_mining + 'v';
                 modRes('Deuterium', deut_delta * time_multiplier);
 
-                deuterium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+                deuterium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Deuterium'] = deuterium_bd;
             }
         }
         
-        helium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        helium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Helium_3'] = helium_bd;
 
         // Neutronium
@@ -2457,7 +2457,7 @@ function fastLoop(){
             modRes('Neutronium', delta * time_multiplier);
         }
 
-        neutronium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        neutronium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Neutronium'] = neutronium_bd;
 
         // Elerium
@@ -2465,10 +2465,10 @@ function fastLoop(){
         if (belt_on['elerium_ship']){
             let elerium_base = belt_on['elerium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005) * zigguratBonus();
             let delta = elerium_base * hunger * global_multiplier;
-            elerium_bd['Elerium_Ship'] = elerium_base + 'v';
+            elerium_bd[loc('job_space_miner')] = elerium_base + 'v';
             modRes('Elerium', delta * time_multiplier);
         }
-        elerium_bd['Hunger'] = ((hunger - 1) * 100) + '%';
+        elerium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Elerium'] = elerium_bd;
 
         // Adamantite
@@ -2476,11 +2476,11 @@ function fastLoop(){
         if (global.resource.Adamantite.display && global.interstellar['mining_droid'] && miner_droids['adam'] > 0){
             let driod_base = miner_droids['adam'] * 0.075 * zigguratBonus();
             let driod_delta = driod_base * global_multiplier;
-            adamantite_bd['Droids'] = driod_base + 'v';
+            adamantite_bd[loc('interstellar_mining_droid_title')] = driod_base + 'v';
             if (global.interstellar['processing'] && int_on['processing']){
                 let bonus = int_on['processing'] * 0.12;
                 driod_delta *= 1 + bonus;
-                adamantite_bd['Processing'] = (bonus * 100) + '%';
+                adamantite_bd[loc('interstellar_processing_title')] = (bonus * 100) + '%';
             }
             modRes('Adamantite', driod_delta * time_multiplier);
         }
@@ -2498,8 +2498,8 @@ function fastLoop(){
 
             let surveyor_delta = surveyor_base * sensors * global_multiplier;
             
-            infernite_bd['Surveyor'] = surveyor_base + 'v';
-            infernite_bd['Sensors'] = ((sensors - 1) * 100) + '%';
+            infernite_bd[loc('job_hell_surveyor')] = surveyor_base + 'v';
+            infernite_bd[loc('portal_sensor_drone_title')] = ((sensors - 1) * 100) + '%';
             modRes('Infernite', surveyor_delta * time_multiplier);
         }
         breakdown.p['Infernite'] = infernite_bd;
@@ -2533,9 +2533,9 @@ function fastLoop(){
             let delta = income_base * temple_mult;
             delta *= global_multiplier;
             
-            money_bd['Taxes'] = (income_base) + 'v';
-            money_bd['Temple'] = ((temple_mult - 1) * 100) + '%';
-            money_bd['Factory'] = FactoryMoney + 'v';
+            money_bd[loc('morale_taxes')] = (income_base) + 'v';
+            money_bd[loc('city_temple')] = ((temple_mult - 1) * 100) + '%';
+            money_bd[loc('city_factory')] = FactoryMoney + 'v';
             modRes('Money', +(delta * time_multiplier).toFixed(2));
         }
 
@@ -2543,7 +2543,7 @@ function fastLoop(){
             if (global.tech['gambling'] >= 2){
                 let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
                 cash *= p_on['casino'];
-                money_bd['Casino'] = cash + 'v';
+                money_bd[loc('city_casino')] = cash + 'v';
                 modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
             }
         }
@@ -2559,7 +2559,7 @@ function fastLoop(){
             if (global.tech['monuments']){
                 tourism += global.city['tourist_center'].on * global.tech['monuments'] * 2;
             }
-            money_bd['Tourism'] = tourism + 'v';
+            money_bd[loc('tech_tourism')] = tourism + 'v';
             modRes('Money', +(tourism * time_multiplier * global_multiplier * hunger).toFixed(2));
         }
 
