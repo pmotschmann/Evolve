@@ -5940,6 +5940,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.settings.space.neutron = true;
+                    global.settings.space.blackhole = true;
                     return true;
                 }
                 return false;

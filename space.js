@@ -2059,6 +2059,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.interstellar['neutron_miner'] = { count: 0, on: 0 };
+                    messageQueue(loc('interstellar_neutron_mission_result'),'success');
                     return true;
                 }
                 return false;
@@ -2114,6 +2115,8 @@ const interstellarProjects = {
             effect: loc('interstellar_blackhole_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.interstellar['far_reach'] = { count: 0, on: 0 };
+                    messageQueue(loc('interstellar_blackhole_mission_result'),'success');
                     return true;
                 }
                 return false;
