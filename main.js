@@ -1121,7 +1121,7 @@ function fastLoop(){
 
         if (global.interstellar['nexus']){
             let used_support = 0;
-            let structs = ['harvester'];
+            let structs = ['harvester','elerium_prospector'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -1187,7 +1187,7 @@ function fastLoop(){
 
         // Patrol Cruiser
         if (global.interstellar['cruiser']){
-            let fuel_cost = 2;
+            let fuel_cost = 6;
             let active = global.interstellar['cruiser'].on;
             let out_consume = active * fuel_cost;
             breakdown.p.consume.Helium_3[loc('interstellar_cruiser_title')] = -(out_consume);
@@ -2025,7 +2025,7 @@ function fastLoop(){
                 global.interstellar.g_factory.Lumber = 0;
             }
 
-            let consume_wood = global.interstellar.g_factory.Lumber * 250;
+            let consume_wood = global.interstellar.g_factory.Lumber * 350;
             let consume_coal = global.interstellar.g_factory.Coal * 25;
             let consume_oil = global.interstellar.g_factory.Oil * 15;
 
@@ -2044,7 +2044,7 @@ function fastLoop(){
             let graphene_production = global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
 
             while (consume_wood * time_multiplier > global.resource.Lumber.amount && consume_wood > 0){
-                consume_wood -= 250;
+                consume_wood -= 350;
                 graphene_production--;
             }
             while (consume_coal * time_multiplier > global.resource.Coal.amount && consume_coal > 0){
@@ -2466,6 +2466,14 @@ function fastLoop(){
             let elerium_base = belt_on['elerium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005) * zigguratBonus();
             let delta = elerium_base * hunger * global_multiplier;
             elerium_bd[loc('job_space_miner')] = elerium_base + 'v';
+            modRes('Elerium', delta * time_multiplier);
+        }
+
+        // Prospector
+        if (int_on['elerium_prospector']){
+            let elerium_base = int_on['elerium_prospector'] * 0.014 * zigguratBonus();
+            let delta = elerium_base * hunger * global_multiplier;
+            elerium_bd[loc('interstellar_elerium_prospector_bd')] = elerium_base + 'v';
             modRes('Elerium', delta * time_multiplier);
         }
         elerium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';

@@ -1867,7 +1867,7 @@ const interstellarProjects = {
             },
             powered: 1,
             effect(){
-                let helium = 2;
+                let helium = 6;
                 let troops = 3;
                 return `<div>${loc('plus_max_soldiers',[troops])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
@@ -2010,6 +2010,35 @@ const interstellarProjects = {
                 return false;
             }
         },
+        elerium_prospector: {
+            id: 'interstellar-elerium_prospector',
+            title: loc('interstellar_elerium_prospector_title'),
+            desc: `<div>${loc('interstellar_elerium_prospector_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_nebula_name')])}</div>`,
+            reqs: { nebula: 3 },
+            cost: {
+                Money(){ return costMultiplier('elerium_prospector', 825000, 1.28, 'interstellar'); },
+                Steel(){ return costMultiplier('elerium_prospector', 18000, 1.28, 'interstellar'); },
+                Polymer(){ return costMultiplier('elerium_prospector', 22000, 1.28, 'interstellar'); },
+                Graphene(){ return costMultiplier('elerium_prospector', 82000, 1.28, 'interstellar'); },
+                Stanene(){ return costMultiplier('elerium_prospector', 57000, 1.28, 'interstellar'); }
+            },
+            effect(){
+                let elerium = +(0.014 * zigguratBonus()).toFixed(3);
+                return `<div>${loc('space_used_support',[loc('interstellar_nebula_name')])}</div><div>${loc('space_belt_elerium_ship_effect2',[elerium])}</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('elerium_prospector','interstellar');
+                    if (global.interstellar.nexus.support < global.interstellar.nexus.s_max){
+                        global.interstellar.elerium_prospector.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     int_neutron: {
         info: {
@@ -2128,6 +2157,7 @@ const structDefinitions = {
     space_station: { count: 0, on: 0, support: 0, s_max: 0 },
     iridium_ship: { count: 0, on: 0 },
     elerium_ship: { count: 0, on: 0 },
+    elerium_prospector: { count: 0, on: 0 },
     iron_ship: { count: 0, on: 0 },
     elerium_contain: { count: 0, on: 0 },
     e_reactor: { count: 0, on: 0 },

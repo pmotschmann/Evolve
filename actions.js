@@ -8143,6 +8143,24 @@ export const actions = {
                 return false;
             }
         },
+        elerium_prospecting: {
+            id: 'tech-elerium_prospecting',
+            title: loc('tech_elerium_prospecting'),
+            desc: loc('tech_elerium_prospecting'),
+            reqs: { nebula: 2 },
+            grant: ['nebula',3],
+            cost: {
+                Knowledge(){ return 610000; }
+            },
+            effect(){ return loc('tech_elerium_prospecting_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['elerium_prospector'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         zero_g_mining: {
             id: 'tech-zero_g_mining',
             title: loc('tech_zero_g_mining'),
@@ -10367,7 +10385,7 @@ function grapheneModal(modal){
             buildLabel(type){
                 switch(type){
                     case 'wood':
-                        return loc('modal_graphene_produce',[250,loc('resource_Lumber_name'),loc('resource_Graphene_name')]);
+                        return loc('modal_graphene_produce',[350,loc('resource_Lumber_name'),loc('resource_Graphene_name')]);
                     case 'coal':
                         return loc('modal_graphene_produce',[25,loc('resource_Coal_name'),loc('resource_Graphene_name')]);
                     case 'oil':
