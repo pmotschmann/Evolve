@@ -230,7 +230,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
     }
 
     if (stackable){
-        res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal">+</span></span>`));
+        res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal" role="button">+</span></span>`));
     }
     else if (max !== -1){
         res_container.append($('<span></span>'));
