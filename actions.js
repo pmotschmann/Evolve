@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { unlockAchieve } from './achieve.js';
+import { unlockAchieve, unlockFeat } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -1499,11 +1499,13 @@ export const actions = {
                     global.evolution['craft'] = { count: 0 };
                     global.evolution['crispr'] = { count: 0 };
                     global.evolution['junker'] = { count: 0 };
+                    global.evolution['joyless'] = { count: 0 };
                     addAction('evolution','plasmid');
                     addAction('evolution','trade');
                     addAction('evolution','craft');
                     addAction('evolution','crispr');
                     addAction('evolution','junker');
+                    addAction('evolution','joyless');
                     evoProgress();
                 }
                 return false;
@@ -1590,7 +1592,7 @@ export const actions = {
             },
             effect: loc('evo_challenge_junker_effect'),
             action(){
-                if (payCosts(actions.evolution.crispr.cost)){
+                if (payCosts(actions.evolution.junker.cost)){
                     global.race.species = 'junker';
                     global.race['junker'] = 1;
                     global.race['no_plasmid'] = 1;
@@ -1602,6 +1604,24 @@ export const actions = {
                 return false;
             },
             flair: loc('evo_challenge_junker_flair')
+        },
+        joyless: {
+            id: 'evo-joyless',
+            title: loc('evo_challenge_joyless'),
+            desc: loc('evo_challenge_joyless_desc'),
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect: loc('evo_challenge_joyless_effect'),
+            action(){
+                if (payCosts(actions.evolution.joyless.cost)){
+                    global.race['joyless'] = 1;
+                    global.evolution['joyless'] = { count: 1 };
+                    removeAction(actions.evolution.joyless.id);
+                }
+                return false;
+            },
+            flair: loc('evo_challenge_joyless_flair')
         },
     },
     city: {
@@ -2812,6 +2832,7 @@ export const actions = {
             title: loc('city_amphitheatre'),
             desc: loc('city_amphitheatre_desc'),
             reqs: { theatre: 1 },
+            not_trait: ['joyless'],
             cost: {
                 Money(){ return costMultiplier('amphitheatre', 500, 1.55); },
                 Lumber(){ return costMultiplier('amphitheatre', 50, 1.75); },
@@ -2850,7 +2871,8 @@ export const actions = {
                 }
                 money = Math.round(money);
                 money = '$'+money;
-                let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div><div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`;
+                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer')}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
                 if (global.tech['gambling'] >= 2){
                     let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
                     desc = desc + `<div>${loc('tech_casino_effect2',[actions.city.casino.powered,cash])}</div>`
@@ -2862,8 +2884,10 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['casino'].count++;
-                    global.civic.entertainer.max++;
-                    global.civic.entertainer.display = true;
+                    if (!global.race['joyless']){
+                        global.civic.entertainer.max++;
+                        global.civic.entertainer.display = true;
+                    }
                     return true;
                 }
                 return false;
@@ -3907,6 +3931,7 @@ export const actions = {
             desc: loc('tech_theatre'),
             reqs: { housing: 1, currency: 1, cement: 1 },
             grant: ['theatre',1],
+            not_trait: ['joyless'],
             cost: {
                 Knowledge(){ return 750; }
             },
@@ -10764,6 +10789,12 @@ function bioseed(){
     unlockAchieve(`seeder`);
     let new_biome = unlockAchieve(`biome_${biome}`);
     let new_genus = unlockAchieve(`genus_${genus}`);
+    if (global.race.species === 'junker'){
+        unlockFeat('organ_harvester');
+    }
+    if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
+        unlockFeat('ill_advised');
+    }
     let probes = global.starDock.probes.count + 1;
     if (global.stats.achieve['explorer']){
         probes += global.stats.achieve['explorer'];

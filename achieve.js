@@ -1,8 +1,12 @@
-import { global, vues, messageQueue, set_alevel, achieve_level } from './vars.js';
+import { global, vues, messageQueue, set_alevel } from './vars.js';
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
     global.stats['achieve'] = {};
+}
+
+if (!global.stats['feat']){
+    global.stats['feat'] = {};
 }
 
 var achievements = {
@@ -105,6 +109,11 @@ var achievements = {
         name: loc("achieve_biome_explorer_name"),
         desc: loc("achieve_biome_explorer_desc"),
         flair: loc("achieve_biome_explorer_flair")
+    },
+    joyless: {
+        name: loc("achieve_joyless_name"),
+        desc: loc("achieve_joyless_desc"),
+        flair: loc("achieve_joyless_flair")
     },
     biome_grassland: {
         name: loc("achieve_biome_grassland_name"),
@@ -358,6 +367,19 @@ var achievements = {
     }
 };
 
+const feats = {
+    ill_advised: {
+        name: loc("feat_ill_advised_name"),
+        desc: loc("feat_ill_advised_desc"),
+        flair: loc("feat_ill_advised_flair")
+    },
+    organ_harvester: {
+        name: loc("feat_organ_harvester_name"),
+        desc: loc("feat_organ_harvester_desc"),
+        flair: loc("feat_organ_harvester_flair")
+    }
+}
+
 export function unlockAchieve(achievement){
     let a_level = 1;
     if (global.race['no_plasmid']){ a_level++; }
@@ -368,6 +390,23 @@ export function unlockAchieve(achievement){
         global.settings.showAchieve = true;
         global.stats.achieve[achievement] = a_level;
         messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
+        drawPerks();
+        drawAchieve();
+        return true;
+    }
+    return false;
+}
+
+export function unlockFeat(feat){
+    let a_level = 1;
+    if (global.race['no_plasmid']){ a_level++; }
+    if (global.race['no_trade']){ a_level++; }
+    if (global.race['no_craft']){ a_level++; }
+    if (global.race['no_crispr']){ a_level++; }
+    if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < a_level)){
+        global.settings.showAchieve = true;
+        global.stats.feat[feat] = a_level;
+        messageQueue(loc('feat_unlocked', [feats[feat].name] ),'special');
         drawPerks();
         drawAchieve();
         return true;
@@ -403,17 +442,31 @@ export function drawAchieve(){
         if (global.stats.achieve[achievement]){
             earned++;
             level += global.stats.achieve[achievement];
+            if (achievement === 'joyless'){
+                level += global.stats.achieve[achievement];
+            }
             let star = global.stats.achieve[achievement] > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achievement]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>` : '';
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${star}</div></b-tooltip>`));
         }
     });
     set_alevel(level);
+
+    Object.keys(feats).forEach(function (feat){
+        if (global.stats.feat[feat]){
+            let star = global.stats.feat[feat] > 1 ? `<span class="flair"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>` : '';
+            achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
+        }
+    });
+
     achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}</div>`);
 
     let avue = {
         methods: {
             flair(flair){
                 return achievements[flair].flair;
+            },
+            feat(flair){
+                return feats[flair].flair;
             }
         }
     }

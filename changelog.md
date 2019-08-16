@@ -8,6 +8,10 @@ Leathery trait buffed<br>
 Chameleon trait now adds a combat rating bonus<br>
 Smarter Smelter fuel switching<br>
 
+#### 0.4.41 - 8/15/2019 ####
+Joyless Challenge<br>
+??? - Nothing to see here, move along<br>
+
 #### 0.4.40 - 8/9/2019 ####
 Changed No Cripser gene into the Weak Crisper gene<br>
 
