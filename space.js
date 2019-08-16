@@ -609,10 +609,15 @@ const spaceProjects = {
             },
             support: -1,
             powered: 1,
+            refresh: true,
             action(){
                 if (payCosts(spaceProjects.spc_red.biodome.cost)){
                     incrementStruct('biodome');
                     unlockAchieve('colonist');
+                    if (global.race['joyless']){
+                        unlockAchieve('joyless');
+                        delete global.race['joyless'];
+                    }
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['biodome'].on++;
                     }
