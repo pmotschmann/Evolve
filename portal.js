@@ -73,6 +73,7 @@ const fortressModules = {
                 Oil(){ return costMultiplier('carport', 6500, 1.3, 'portal'); },
                 Plywood(){ return costMultiplier('carport', 8500, 1.3, 'portal'); }
             },
+            repair: 180,
             effect(){
                 return `${loc('portal_carport_effect')}`;
             },
@@ -616,6 +617,7 @@ export function bloodwar(){
             if (dead > 0){
                 global.civic.hell_surveyor.workers -= dead;
                 global.resource[global.race.species].amount -= dead;
+                global.portal.carport.damaged += dead;
             }
         }
     }

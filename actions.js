@@ -8694,7 +8694,7 @@ export const actions = {
                         notify: 'Yes',
                     };
                     global.portal['turret'] = { count: 0, on: 0 };
-                    global.portal['carport'] = { count: 0 };
+                    global.portal['carport'] = { count: 0, damaged: 0, repair: 0 };
                     if (global.race['evil']){
                         unlockAchieve('blood_war');
                     }
@@ -9103,6 +9103,9 @@ export function setAction(c_action,action,type,old){
     if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count >= 0){
         element.append($('<span class="count">{{ act.count }}</span>'));
     }
+    if (action !== 'tech' && global[action] && global[action][type] && typeof(global[action][type]['repair']) !== 'undefined'){
+        element.append($(`<div class="repair"><progress class="progress" :value="repair()" max="${c_action.repair}"></progress></div>`));
+    }
     if (old){
         $('#oldTech').append(parent);
     }
@@ -9258,6 +9261,9 @@ export function setAction(c_action,action,type,old){
                     c_action.postPower();
                 }
             },
+            repair(){
+                return global[action][type].repair;
+            }
         },
         filters: {
             off: function(value){

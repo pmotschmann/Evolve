@@ -168,6 +168,10 @@ function loadJob(job, impact, stress, color){
         global['civic'][job].name = loc('job_' + job);
     }
 
+    if (!global.civic[job]['assigned']){
+        global.civic[job]['assigned'] = global.civic[job].workers;
+    }
+
     global.civic[job]['stress'] = stress;
     global.civic[job].impact = impact;
     
@@ -205,6 +209,7 @@ function loadJob(job, impact, stress, color){
                     if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && global.civic.free > 0){
                         global.civic[job].workers++;
                         global.civic.free--;
+                        global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
                         break;
@@ -217,6 +222,7 @@ function loadJob(job, impact, stress, color){
                     if (global.civic[job].workers > 0){
                         global.civic[job].workers--;
                         global.civic.free++;
+                        global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
                         break;

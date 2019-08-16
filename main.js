@@ -2633,6 +2633,25 @@ function fastLoop(){
         }
     }
 
+    // carport repair
+    if (global.portal['carport']){
+        if (global.portal.carport.damaged > 0){
+            if (!$('#portal-carport .count').hasClass('has-text-alert')){
+                $('#portal-carport .count').addClass('has-text-alert');
+            }
+            global.portal.carport.repair++;
+            if (global.portal.carport.repair >= actions.portal.prtl_fortress.carport.repair){
+                global.portal.carport.repair = 0;
+                global.portal.carport.damaged--;
+            }
+        }
+        else {
+            if ($('#portal-carport .count').hasClass('has-text-alert')){
+                $('#portal-carport .count').removeClass('has-text-alert');
+            }
+        }
+    }
+
     // main resource delta tracking
     Object.keys(global.resource).forEach(function (res) {
         if (global['resource'][res].rate > 0){
@@ -3287,7 +3306,7 @@ function midLoop(){
             lCaps['craftsman'] += red_on['fabrication'];
         }
         if (global.portal['carport']){
-            lCaps['hell_surveyor'] += global.portal.carport.count;
+            lCaps['hell_surveyor'] += global.portal.carport.count - global.portal.carport.damaged;
         }
         if (p_on['nexus']){
             let helium_gain = p_on['nexus'] * spatialReasoning(4000);
@@ -3568,6 +3587,14 @@ function midLoop(){
                 space();
             }
         }
+
+        Object.keys(job_desc).forEach(function (job){
+            if (global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
+                global.civic[job].workers++;
+                global.civic.free--;
+                global.civic[job].assigned = global.civic[job].workers;
+            }
+        });
 
         checkAchievements();
     }

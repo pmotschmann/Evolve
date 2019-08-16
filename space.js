@@ -2185,7 +2185,7 @@ const structDefinitions = {
     nexus: { count: 0, on: 0, support: 0, s_max: 0 },
     harvester: { count: 0, on: 0 },
     turret: { count: 0, on: 0 },
-    carport: { count: 0 },
+    carport: { count: 0, damaged: 0, repair: 0 },
     war_droid: { count: 0, on: 0 },
     war_drones: { count: 0, on: 0 },
     sensor_drone: { count: 0, on: 0 },
