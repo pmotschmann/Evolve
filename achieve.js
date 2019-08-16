@@ -358,6 +358,11 @@ var achievements = {
 };
 
 const feats = {
+    take_no_advice: {
+        name: loc("feat_take_no_advice_name"),
+        desc: loc("feat_take_no_advice_desc"),
+        flair: loc("feat_take_no_advice_flair")
+    },
     ill_advised: {
         name: loc("feat_ill_advised_name"),
         desc: loc("feat_ill_advised_desc"),

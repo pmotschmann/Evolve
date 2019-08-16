@@ -1,3 +1,7 @@
+#### 0.4.42 - 8/16/2019 ####
+Fixed some screen reader issues with the crate modal launch button<br>
+Added a warning to the Genetic Dead End challenge if you are on a hellscape planet<br>
+
 #### 0.4.41 - 8/15/2019 ####
 Joyless Challenge<br>
 ??? - Nothing to see here, move along<br>
