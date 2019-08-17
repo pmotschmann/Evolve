@@ -740,6 +740,13 @@ function fastLoop(){
             power_generated[loc('tech_dyson_net')] = 175;
         }
 
+        if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.count >= 100){
+            let power = global.interstellar.stellar_engine.mass * 2.5;
+            max_power -= power;
+            power_grid += power;
+            power_generated[loc('tech_stellar_engine')] = power;
+        }
+
         let uranium_bd = {};
         if (global.city['coal_power']){
             let power = global.city.coal_power.on * actions.city.coal_power.powered;
@@ -870,7 +877,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','int_blackhole:mass_ejector','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : 'interstellar');
@@ -3429,7 +3436,11 @@ function midLoop(){
         }
 
         if (p_on['world_controller']){
-            let gain = Math.round(caps['Knowledge'] * 0.25);
+            let boost = 0.25;
+            if (global.interstellar['far_reach'] && p_on['far_reach'] > 0){
+                boost += p_on['far_reach'] * 0.01;
+            }
+            let gain = Math.round(caps['Knowledge'] * boost);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('space_dwarf_collider_title')] = gain+'v';
         }

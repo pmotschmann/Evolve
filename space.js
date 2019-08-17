@@ -1509,7 +1509,11 @@ const spaceProjects = {
             reqs: { science: 11 },
             cost: {},
             effect(){
-                return `<div>${loc('space_dwarf_controller_effect1')}</div><div>${loc('plus_max_resource',['25%',loc('resource_Knowledge_name')])}</div><div>${loc('space_dwarf_controller_effect3')}</div><div>${loc('space_dwarf_controller_effect4',[spaceProjects.spc_dwarf.world_controller.powered])}</div>`;
+                let boost = 25;
+                if (global.interstellar['far_reach'] && p_on['far_reach'] > 0){
+                    boost += p_on['far_reach'] * 1;
+                }
+                return `<div>${loc('space_dwarf_controller_effect1')}</div><div>${loc('plus_max_resource',[boost+'%',loc('resource_Knowledge_name')])}</div><div>${loc('space_dwarf_controller_effect3')}</div><div>${loc('space_dwarf_controller_effect4',[spaceProjects.spc_dwarf.world_controller.powered])}</div>`;
             },
             powered: 20,
             action(){
@@ -2254,6 +2258,114 @@ const interstellarProjects = {
                 return false;
             }
         },
+        far_reach: {
+            id: 'interstellar-far_reach',
+            title: loc('interstellar_far_reach'),
+            desc: `<div>${loc('interstellar_far_reach_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { blackhole: 1 },
+            cost: {
+                Money(){ return costMultiplier('far_reach', 1000000, 1.32, 'interstellar'); },
+                Knowledge(){ return costMultiplier('far_reach', 100000, 1.32, 'interstellar'); },
+                Neutronium(){ return costMultiplier('far_reach', 2500, 1.32, 'interstellar'); },
+                Elerium(){ return costMultiplier('far_reach', 100, 1.32, 'interstellar'); },
+                Aerogel(){ return costMultiplier('far_reach', 1000, 1.32, 'interstellar'); },
+            },
+            effect(){
+                return `<div>${loc('interstellar_far_reach_effect',[1])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+            },
+            powered: 5,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('far_reach','interstellar');
+                    if (global.city.power >= $(this)[0].powered){
+                        global.interstellar['far_reach'].on++;
+                    }
+                    if (global.tech['blackhole'] === 1){
+                        global.tech['blackhole'] = 2;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        stellar_engine: {
+            id: 'interstellar-stellar_engine',
+            title: loc('interstellar_stellar_engine'),
+            desc(){
+                if (global.interstellar.stellar_engine.count < 100){
+                    return `<div>${loc('interstellar_stellar_engine')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_stellar_engine')}</div>`;
+                }
+            },
+            reqs: { blackhole: 3 },
+            cost: {
+                Money(){ return global.interstellar.stellar_engine.count < 100 ? 500000 : 0; },
+                Neutronium(){ return global.interstellar.stellar_engine.count < 100 ? 450 : 0; },
+                Adamantite(){ return global.interstellar.stellar_engine.count < 100 ? 17500 : 0; },
+                Infernite(){ return global.interstellar.stellar_engine.count < 100 ? 225 : 0; },
+                Graphene(){ return global.interstellar.stellar_engine.count < 100 ? 45000 : 0; },
+                Mythril(){ return global.interstellar.stellar_engine.count < 100 ? 250 : 0; },
+                Aerogel(){ return global.interstellar.stellar_engine.count < 100 ? 75 : 0; },
+            },
+            effect(){
+                if (global.interstellar.stellar_engine.count < 100){
+                    let remain = 100 - global.interstellar.stellar_engine.count;
+                    return `<div>${loc('interstellar_stellar_engine_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    let output = +(2.5 * global.interstellar.stellar_engine.mass).toFixed(2);
+                    return loc('interstellar_stellar_engine_complete',[output]);
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.stellar_engine.count < 100){
+                        incrementStruct('stellar_engine','interstellar');
+                        if (global.tech['blackhole'] === 3){
+                            global.tech['blackhole'] = 4;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        mass_ejector: {
+            id: 'interstellar-mass_ejector',
+            title: loc('interstellar_mass_ejector'),
+            desc: `<div>${loc('interstellar_mass_ejector')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { blackhole: 5 },
+            cost: {
+                Money(){ return costMultiplier('mass_ejector', 750000, 1.25, 'interstellar'); },
+                Adamantite(){ return costMultiplier('mass_ejector', 125000, 1.25, 'interstellar'); },
+                Infernite(){ return costMultiplier('mass_ejector', 275, 1.25, 'interstellar'); },
+                Elerium(){ return costMultiplier('mass_ejector', 100, 1.25, 'interstellar'); },
+                Mythril(){ return costMultiplier('mass_ejector', 10000, 1.25, 'interstellar'); },
+            },
+            effect(){
+                return `<div>${loc('interstellar_mass_ejector_effect',[$(this)[0].powered])}</div>`;
+            },
+            powered: 2,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.mass_ejector.count === 0){
+                        messageQueue(loc('interstellar_mass_ejector_msg'));
+                    }
+                    global.settings.showEjector = true;
+                    incrementStruct('mass_ejector','interstellar');
+                    if (global.city.power >= $(this)[0].powered){
+                        global.interstellar['mass_ejector'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return loc('interstellar_mass_ejector_flair');
+            }
+        },
     }
 };
 
@@ -2312,6 +2424,27 @@ const structDefinitions = {
     dyson: { count: 0 },
     nexus: { count: 0, on: 0, support: 0, s_max: 0 },
     harvester: { count: 0, on: 0 },
+    far_reach: { count: 0, on: 0 },
+    stellar_engine: { count: 0, mass: 8, exotic: 0 },
+    mass_ejector:{
+        count: 0, on: 0,
+        Food: 0, Lumber: 0,
+        Stone: 0, Furs: 0,
+        Copper: 0, Iron: 0,
+        Aluminium: 0, Cement: 0,
+        Coal: 0, Oil: 0,
+        Uranium: 0, Steel: 0,
+        Titanium: 0, Alloy: 0,
+        Polymer: 0, Iridium: 0,
+        Helium_3: 0, Deuterium: 0,
+        Neutronium: 0, Adamantite: 0,
+        Infernite: 0, Elerium: 0,
+        Nano_Tube: 0, Graphene: 0,
+        Stanene: 0, Plywood: 0,
+        Brock: 0, Wrought_Iron: 0,
+        Sheet_Metal: 0, Mythril: 0,
+        Aerogel: 0
+    },
     turret: { count: 0, on: 0 },
     carport: { count: 0, damaged: 0, repair: 0 },
     war_droid: { count: 0, on: 0 },

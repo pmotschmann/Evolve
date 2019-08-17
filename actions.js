@@ -2881,7 +2881,7 @@ export const actions = {
                 }
                 return desc;
             },
-            powered: 5,
+            powered: 4,
             power_reqs: { gambling: 2 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -8656,14 +8656,85 @@ export const actions = {
                 return false;
             }
         },
+        stellar_engine: {
+            id: 'tech-stellar_engine',
+            title: loc('tech_stellar_engine'),
+            desc: loc('tech_stellar_engine'),
+            reqs: { blackhole: 2 },
+            grant: ['blackhole',3],
+            cost: {
+                Knowledge(){ return 1000000; }
+            },
+            effect: loc('tech_stellar_engine_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['stellar_engine'] = { count: 0, mass: 8, exotic: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        mass_ejector: {
+            id: 'tech-mass_ejector',
+            title: loc('tech_mass_ejector'),
+            desc: loc('tech_mass_ejector'),
+            reqs: { blackhole: 4 },
+            grant: ['blackhole',5],
+            cost: {
+                Knowledge(){ return 1100000; }
+            },
+            effect: loc('tech_mass_ejector_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['mass_ejector'] = {
+                        count: 0, on: 0,
+                        Food: 0, Lumber: 0,
+                        Stone: 0, Furs: 0,
+                        Copper: 0, Iron: 0,
+                        Aluminium: 0, Cement: 0,
+                        Coal: 0, Oil: 0,
+                        Uranium: 0, Steel: 0,
+                        Titanium: 0, Alloy: 0,
+                        Polymer: 0, Iridium: 0,
+                        Helium_3: 0, Deuterium: 0,
+                        Neutronium: 0, Adamantite: 0,
+                        Infernite: 0, Elerium: 0,
+                        Nano_Tube: 0, Graphene: 0,
+                        Stanene: 0, Plywood: 0,
+                        Brock: 0, Wrought_Iron: 0,
+                        Sheet_Metal: 0, Mythril: 0,
+                        Aerogel: 0
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        gravitational_waves: {
+            id: 'tech-gravitational_waves',
+            title: loc('tech_gravitational_waves'),
+            desc: loc('tech_gravitational_waves'),
+            reqs: { blackhole: 4, locked: 1 },
+            grant: ['gravity',1],
+            cost: {
+                Knowledge(){ return 1250000; }
+            },
+            effect: loc('tech_gravitational_waves_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         wormholes: {
             id: 'tech-wormholes',
             title: loc('tech_wormholes'),
             desc: loc('tech_wormholes'),
-            reqs: { ftl: 1, gravity: 1, locked: 1 },
+            reqs: { gravity: 1 },
             grant: ['stargate',1],
             cost: {
-                Knowledge(){ return 485000; }
+                Knowledge(){ return 1500000; }
             },
             effect: loc('tech_wormholes_effect'),
             action(){

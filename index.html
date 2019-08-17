@@ -133,6 +133,11 @@
                                         {{ 'tab_storage' | label }}
                                     </template>
                                 </b-tab-item>
+                                <b-tab-item id="resEjector" :visible="showEjector">
+                                    <template slot="header">
+                                        {{ 'tab_ejector' | label }}
+                                    </template>
+                                </b-tab-item>
                             </b-tabs>
                         </b-tab-item>
                         <b-tab-item :visible="showGenetics" label="A.R.P.A.">

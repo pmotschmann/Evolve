@@ -303,6 +303,9 @@ if (!global.settings.space['alpha']){
 if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
+if (!global.settings['showEjector']){
+    global.settings['showEjector'] = false;
+}
 if (!global.settings['resTabs']){
     global.settings['resTabs'] = 0;
 }
@@ -796,6 +799,7 @@ export function clearStates(){
     global.settings.showSpace = false;
     global.settings.showDeep = false;
     global.settings.showPortal = false;
+    global.settings.showEjector = false;
     global.settings.space.home = true;
     global.settings.space.moon = false;
     global.settings.space.red = false;

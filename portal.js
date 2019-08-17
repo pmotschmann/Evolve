@@ -548,13 +548,14 @@ export function bloodwar(){
     }
     if (global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
         let defense = fortressDefenseRating(global.portal.fortress.garrison);
+        let defend = defense / 20 > 0 ? defense / 20 : 1;
         let siege = Math.round(global.portal.fortress.threat / 2);
 
         let damage = 0;
         let killed = 0;
         let destroyed = false;
         while (siege > 0 && global.portal.fortress.walls > 0){
-            let terminated = Math.round(defense / 25);
+            let terminated = Math.round(Math.rand(1,defend));
             if (terminated > siege){
                 terminated = siege;
             }
