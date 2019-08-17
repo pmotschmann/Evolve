@@ -1716,6 +1716,9 @@ const interstellarProjects = {
             },
             effect(){
                 let know = 10000;
+                if (global.tech.science >= 15){
+                    know *= 1 + (global.city.wardenclyffe.count * 0.02);
+                }
                 let desc = `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.tech['science'] >= 13){
                     desc = desc + `<div>${loc('interstellar_laboratory_effect',[5])}</div>`;

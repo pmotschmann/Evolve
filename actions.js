@@ -3071,6 +3071,9 @@ export const actions = {
                     }
                     pgain = +(pgain).toFixed(1);
                     let desc = `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
+                    if (global.tech.science >= 15){
+                        desc = desc + `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
+                    }
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
                         desc = desc + `<div>${loc('city_wardenclyffe_effect3',[actions.city.wardenclyffe.powered,pgain,morale])}</div>`
@@ -5541,6 +5544,25 @@ export const actions = {
                 Knowledge(){ return 750000; }
             },
             effect(){ return loc('tech_dimensional_readings_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        quantum_entanglement: {
+            id: 'tech-quantum_entanglement',
+            title: loc('tech_quantum_entanglement'),
+            desc: loc('tech_quantum_entanglement'),
+            reqs: { science: 14, neutron: 1 },
+            grant: ['science',15],
+            cost: {
+                Knowledge(){ return 850000; },
+                Neutronium(){ return 7500; },
+                Soul_Gem(){ return 2; }
+            },
+            effect(){ return loc('tech_quantum_entanglement_effect',[2]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;

@@ -3280,6 +3280,9 @@ function midLoop(){
         }
         if (global.interstellar['laboratory'] && int_on['laboratory'] > 0){
             let gain = (int_on['laboratory'] * 10000);
+            if (global.tech.science >= 15){
+                gain *= 1 + (global.city.wardenclyffe.count * 0.02);
+            }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
         }
