@@ -1590,7 +1590,7 @@ export const actions = {
             cost: {
                 DNA(){ return 25; }
             },
-            effect: loc('evo_challenge_junker_effect'),
+            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_challenge_junker_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect'); },
             action(){
                 if (payCosts(actions.evolution.junker.cost)){
                     global.race.species = 'junker';

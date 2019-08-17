@@ -1,5 +1,5 @@
 import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier } from './vars.js';
-import { unlockAchieve, checkAchievements } from './achieve.js';
+import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
 
@@ -1003,6 +1003,9 @@ function warhead(){
     unlockAchieve(`apocalypse`);
     let new_achieve = unlockAchieve(`extinct_${god}`);
     checkAchievements();
+    if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
+        unlockFeat('take_no_advice');
+    }
     global['race'] = { 
         species : 'protoplasm', 
         gods: god,
