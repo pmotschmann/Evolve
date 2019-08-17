@@ -2996,31 +2996,31 @@ function midLoop(){
             var multiplier = storageMultipler();
             let gain = 0;
             let label = loc('interstellar_alpha_name');
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(500 * multiplier)));
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
             caps['Lumber'] += gain;
             bd_Lumber[label] = gain+'v';
             
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(500 * multiplier)));
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
             caps['Stone'] += gain;
             bd_Stone[label] = gain+'v';
             
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(275 * multiplier)));
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(425 * multiplier)));
             caps['Furs'] += gain;
             bd_Furs[label] = gain+'v';
             
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(225 * multiplier)));
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(380 * multiplier)));
             caps['Copper'] += gain;
             bd_Copper[label] = gain+'v';
             
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(250 * multiplier)));
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(350 * multiplier)));
             caps['Iron'] += gain;
             bd_Iron[label] = gain+'v';
             
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(220 * multiplier)));
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(320 * multiplier)));
             caps['Aluminium'] += gain;
             bd_Aluminium[label] = gain+'v';
             
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(200 * multiplier)));
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(280 * multiplier)));
             caps['Cement'] += gain;
             bd_Cement[label] = gain+'v';
             
@@ -3191,8 +3191,12 @@ function midLoop(){
             caps['Helium_3'] += gain;
             bd_Helium[loc('interstellar_xfer_station_title')] = gain+'v';
 
+            gain = (p_on['xfer_station'] * spatialReasoning(4000));
+            caps['Oil'] += gain;
+            bd_Oil[loc('interstellar_xfer_station_title')] = gain+'v';
+
             if (global.resource.Deuterium.display){
-                let deuterium_gain = p_on['nexus'] * spatialReasoning(3000);
+                let deuterium_gain = p_on['xfer_station'] * spatialReasoning(2000);
                 caps['Deuterium'] += deuterium_gain;
                 bd_Deuterium[loc('interstellar_xfer_station_title')] = deuterium_gain+'v';
             }
@@ -3387,9 +3391,17 @@ function midLoop(){
             caps['Helium_3'] += helium_gain;
             bd_Helium[loc('interstellar_nexus_title')] = helium_gain+'v';
 
+            let oil_gain = (p_on['nexus'] * spatialReasoning(3500));
+            caps['Oil'] += oil_gain;
+            bd_Oil[loc('interstellar_nexus_title')] = oil_gain+'v';
+
             let deuterium_gain = p_on['nexus'] * spatialReasoning(3000);
             caps['Deuterium'] += deuterium_gain;
             bd_Deuterium[loc('interstellar_nexus_title')] = deuterium_gain+'v';
+
+            let elerium_gain = p_on['nexus'] * spatialReasoning(25);
+            caps['Elerium'] += elerium_gain;
+            bd_Elerium[loc('interstellar_nexus_title')] = elerium_gain+'v';
         }
 
         if (global.city['trade']){

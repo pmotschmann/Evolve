@@ -1787,31 +1787,31 @@ const interstellarProjects = {
                 let storage = '<div class="aTable">';
                 let multiplier = storageMultipler();
                 if (global.resource.Lumber.display){
-                    let val = sizeApproximation(+(spatialReasoning(500) * multiplier).toFixed(0),1);
+                    let val = sizeApproximation(+(spatialReasoning(750) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Lumber.name])}</span>`;
                 }
                 if (global.resource.Stone.display){
-                    let val = sizeApproximation(+(spatialReasoning(500) * multiplier).toFixed(0),1);
+                    let val = sizeApproximation(+(spatialReasoning(750) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stone.name])}</span>`;
                 }
                 if (global.resource.Furs.display){
-                    let val = sizeApproximation(+(spatialReasoning(275) * multiplier).toFixed(0),1);
+                    let val = sizeApproximation(+(spatialReasoning(425) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Furs.name])}</span>`;
                 }
                 if (global.resource.Copper.display){
-                    let val = sizeApproximation(+(spatialReasoning(225) * multiplier).toFixed(0),1);
+                    let val = sizeApproximation(+(spatialReasoning(380) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Copper.name])}</span>`;
                 }
                 if (global.resource.Iron.display){
-                    let val = sizeApproximation(+(spatialReasoning(250) * multiplier).toFixed(0),1);
+                    let val = sizeApproximation(+(spatialReasoning(350) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Iron.name])}</span>`;
                 }
                 if (global.resource.Aluminium.display){
-                    let val = sizeApproximation(+(spatialReasoning(220) * multiplier).toFixed(0),1);
+                    let val = sizeApproximation(+(spatialReasoning(320) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Aluminium.name])}</span>`;
                 }
                 if (global.resource.Cement.display){
-                    let val = sizeApproximation(+(spatialReasoning(200) * multiplier).toFixed(0),1);
+                    let val = sizeApproximation(+(spatialReasoning(280) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Cement.name])}</span>`;
                 }
                 if (global.resource.Coal.display){
@@ -1849,13 +1849,13 @@ const interstellarProjects = {
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('warehouse','interstellar');
                     let multiplier = storageMultipler();
-                    global['resource']['Lumber'].max += (spatialReasoning(500) * multiplier);
-                    global['resource']['Stone'].max += (spatialReasoning(500) * multiplier);
-                    global['resource']['Furs'].max += (spatialReasoning(275) * multiplier);
-                    global['resource']['Copper'].max += (spatialReasoning(225) * multiplier);
-                    global['resource']['Iron'].max += (spatialReasoning(250) * multiplier);
-                    global['resource']['Aluminium'].max += (spatialReasoning(220) * multiplier);
-                    global['resource']['Cement'].max += (spatialReasoning(200) * multiplier);
+                    global['resource']['Lumber'].max += (spatialReasoning(750) * multiplier);
+                    global['resource']['Stone'].max += (spatialReasoning(750) * multiplier);
+                    global['resource']['Furs'].max += (spatialReasoning(425) * multiplier);
+                    global['resource']['Copper'].max += (spatialReasoning(380) * multiplier);
+                    global['resource']['Iron'].max += (spatialReasoning(350) * multiplier);
+                    global['resource']['Aluminium'].max += (spatialReasoning(320) * multiplier);
+                    global['resource']['Cement'].max += (spatialReasoning(280) * multiplier);
                     global['resource']['Coal'].max += (spatialReasoning(120) * multiplier);
                     if (global.tech['storage'] >= 3){
                         global['resource']['Steel'].max += ((spatialReasoning(60) * multiplier));
@@ -1924,11 +1924,12 @@ const interstellarProjects = {
                 }
                 let fuel = 0.28;
                 let helium = spatialReasoning(5000);
+                let oil = spatialReasoning(4000);
                 let det = '';
                 if (global.resource.Deuterium.display){
                     det = `<div>${loc('plus_max_resource',[spatialReasoning(2000),loc('resource_Deuterium_name')])}</div>`;
                 }
-                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div>${det}<div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div>${det}<div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered])}</div>`;
             },
             support: 1,
             powered: 1,
@@ -1939,6 +1940,7 @@ const interstellarProjects = {
                     if (global.city.power >= 4){
                         global.interstellar['xfer_station'].on++;
                         global['resource']['Helium_3'].max += spatialReasoning(5000);
+                        global['resource']['Oil'].max += spatialReasoning(4000);
                         global['resource']['Deuterium'].max += spatialReasoning(2000);
                     }
                     return true;
@@ -2078,9 +2080,11 @@ const interstellarProjects = {
                 Nano_Tube(){ return costMultiplier('nexus', 17500, 1.24, 'interstellar'); },
             },
             effect(){
+                let oil = spatialReasoning(3500);
                 let helium = spatialReasoning(4000);
                 let deuterium = spatialReasoning(3000);
-                return `<div>${loc('interstellar_nexus_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('interstellar_nexus_effect2',[$(this)[0].powered,350])}</div>`;
+                let elerium = spatialReasoning(25);
+                return `<div>${loc('interstellar_nexus_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('interstellar_nexus_effect2',[$(this)[0].powered,350])}</div>`;
             },
             support: 2,
             powered: 8,
@@ -2095,8 +2099,10 @@ const interstellarProjects = {
                     }
                     if (global.city.power >= 3){
                         global.interstellar['nexus'].on++;
+                        global['resource']['Oil'].max += spatialReasoning(2500);
                         global['resource']['Helium_3'].max += spatialReasoning(4000);
                         global['resource']['Deuterium'].max += spatialReasoning(3000);
+                        global['resource']['Elerium'].max += spatialReasoning(25);
                     }
                     return true;
                 }
