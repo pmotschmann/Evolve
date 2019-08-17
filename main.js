@@ -2991,6 +2991,80 @@ function midLoop(){
             caps['Coal'] += gain;
             bd_Coal[label] = gain+'v';
         }
+
+        if (global.interstellar['warehouse']){
+            var multiplier = storageMultipler();
+            let gain = 0;
+            let label = loc('interstellar_alpha_name');
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(500 * multiplier)));
+            caps['Lumber'] += gain;
+            bd_Lumber[label] = gain+'v';
+            
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(500 * multiplier)));
+            caps['Stone'] += gain;
+            bd_Stone[label] = gain+'v';
+            
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(275 * multiplier)));
+            caps['Furs'] += gain;
+            bd_Furs[label] = gain+'v';
+            
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(225 * multiplier)));
+            caps['Copper'] += gain;
+            bd_Copper[label] = gain+'v';
+            
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(250 * multiplier)));
+            caps['Iron'] += gain;
+            bd_Iron[label] = gain+'v';
+            
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(220 * multiplier)));
+            caps['Aluminium'] += gain;
+            bd_Aluminium[label] = gain+'v';
+            
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(200 * multiplier)));
+            caps['Cement'] += gain;
+            bd_Cement[label] = gain+'v';
+            
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(120 * multiplier)));
+            caps['Coal'] += gain;
+            bd_Coal[label] = gain+'v';
+
+            if (global.tech['storage'] >= 3){
+                gain = (global.interstellar['warehouse'].count * (spatialReasoning(60 * multiplier)));
+                caps['Steel'] += gain;
+                bd_Steel[label] = gain+'v';
+            }
+
+            if (global.tech['storage'] >= 4){
+                gain = (global.interstellar['warehouse'].count * (spatialReasoning(40 * multiplier)));
+                caps['Titanium'] += gain;
+                bd_Titanium[label] = gain+'v';
+            }
+
+            if (global.resource.Nano_Tube.display){
+                gain = (global.interstellar['warehouse'].count * (spatialReasoning(30 * multiplier)));
+                caps['Nano_Tube'] += gain;
+                bd_Nano_Tube[label] = gain+'v';
+            }
+
+            if (global.resource.Neutronium.display){
+                gain = (global.interstellar['warehouse'].count * (spatialReasoning(8 * multiplier)));
+                caps['Neutronium'] += gain;
+                bd_Neutronium[label] = gain+'v';
+            }
+
+            if (global.resource.Adamantite.display){
+                gain = (global.interstellar['warehouse'].count * (spatialReasoning(18 * multiplier)));
+                caps['Adamantite'] += gain;
+                bd_Adamantite[label] = gain+'v';
+            }
+
+            if (global.resource.Infernite.display){
+                gain = (global.interstellar['warehouse'].count * (spatialReasoning(5 * multiplier)));
+                caps['Infernite'] += gain;
+                bd_Infernite[label] = gain+'v';
+            }
+        }
+
         if (global.resource.Infernite.display && global.portal['fortress']){
             let gain = spatialReasoning(1000);
             caps['Infernite'] += gain;

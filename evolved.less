@@ -714,6 +714,13 @@ body .modal > div.popper {
     border-radius: .25rem;
     line-height: 1.3125rem;
 
+    div.aTable {
+        columns: 2;
+        span {
+            display: flex;
+        }
+    }
+
     &.breakdown {
         max-width: initial;
     }
@@ -753,6 +760,11 @@ body .modal > div.popper {
     &.flair {
         padding-bottom: .25rem;
     }
+}
+
+.main > div.popper.wide,
+body .modal > div.popper.wide {
+    max-width: initial;
 }
 
 .arpa,
