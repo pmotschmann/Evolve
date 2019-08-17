@@ -2236,7 +2236,17 @@ const interstellarProjects = {
     int_blackhole: {
         info: {
             name: loc('interstellar_blackhole_name'),
-            desc(){ return global.tech['blackhole'] ? loc('interstellar_blackhole_desc2',[races[global.race.species].home]) : loc('interstellar_blackhole_desc1',[races[global.race.species].home]); },
+            desc(){
+                let home = races[global.race.species].home;
+                if (global.tech['blackhole'] >= 5){
+                    let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
+                    let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
+                    return global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_blackhole_desc4',[home,mass,exotic]) : loc('interstellar_blackhole_desc3',[home,mass]);
+                }
+                else {
+                    return global.tech['blackhole'] ? loc('interstellar_blackhole_desc2',[home]) : loc('interstellar_blackhole_desc1',[home]);
+                }
+            },
         },
         blackhole_mission: {
             id: 'interstellar-blackhole_mission',
@@ -2427,7 +2437,7 @@ const structDefinitions = {
     far_reach: { count: 0, on: 0 },
     stellar_engine: { count: 0, mass: 8, exotic: 0 },
     mass_ejector:{
-        count: 0, on: 0,
+        count: 0, on: 0, total: 0, mass: 0,
         Food: 0, Lumber: 0,
         Stone: 0, Furs: 0,
         Copper: 0, Iron: 0,
@@ -2441,7 +2451,7 @@ const structDefinitions = {
         Infernite: 0, Elerium: 0,
         Nano_Tube: 0, Graphene: 0,
         Stanene: 0, Plywood: 0,
-        Brock: 0, Wrought_Iron: 0,
+        Brick: 0, Wrought_Iron: 0,
         Sheet_Metal: 0, Mythril: 0,
         Aerogel: 0
     },
@@ -2548,7 +2558,6 @@ export function deepSpace(){
         let show = region.replace("int_","");
         if (global.settings.space[`${show}`]){
             let name = typeof interstellarProjects[region].info.name === 'string' ? interstellarProjects[region].info.name : interstellarProjects[region].info.name();
-            let desc = typeof interstellarProjects[region].info.desc === 'string' ? interstellarProjects[region].info.desc : interstellarProjects[region].info.desc();
             
             if (interstellarProjects[region].info['support']){
                 let support = interstellarProjects[region].info['support'];
@@ -2566,6 +2575,7 @@ export function deepSpace(){
                 var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);
                 $('#main').append(popper);
                 
+                let desc = typeof interstellarProjects[region].info.desc === 'string' ? interstellarProjects[region].info.desc : interstellarProjects[region].info.desc();
                 popper.append($(`<div>${desc}</div>`));
                 popper.show();
                 poppers[region] = new Popper($(`#${region} h3.name`),popper);

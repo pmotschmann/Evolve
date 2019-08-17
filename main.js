@@ -2,7 +2,7 @@ import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultip
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
@@ -161,6 +161,11 @@ vues['race'] = new Vue({
         desc(){
             return races[global.race.species].desc;
         }
+    },
+    filters: {
+        approx(kw){
+            return +(kw).toFixed(1);
+        }
     }
 });
 vues['race'].$mount('#race');
@@ -231,14 +236,16 @@ $('#powerStatus').on('mouseover',function(){
     $('#main').append(powerPopper);
     let drain = global.city.power_total - global.city.power;
     Object.keys(power_generated).forEach(function (k){
-        powerPopper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${power_generated[k]}</span></p>`);
+        let gen = +(power_generated[k]).toFixed(1);
+        powerPopper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${gen}</span></p>`);
     });
     powerPopper.append(`<p class="modal_bd"><span>${loc('power_consumed')}</span> <span class="has-text-danger"> -${drain}</span></p>`);
+    let avail = +(global.city.power).toFixed(1);
     if (global.city.power > 0){
-        powerPopper.append(`<p class="modal_bd sum"><span>${loc('power_available')}</span> <span class="has-text-success">${global.city.power}</span></p>`);
+        powerPopper.append(`<p class="modal_bd sum"><span>${loc('power_available')}</span> <span class="has-text-success">${avail}</span></p>`);
     }
     else {
-        powerPopper.append(`<p class="modal_bd sum"><span>${loc('power_available')}</span> <span class="has-text-danger">${global.city.power}</span></p>`);
+        powerPopper.append(`<p class="modal_bd sum"><span>${loc('power_available')}</span> <span class="has-text-danger">${avail}</span></p>`);
     }
     powerPopper.show();
     poppers['PowerStatus'] = new Popper($('#powerStatus'),powerPopper);
@@ -535,7 +542,13 @@ function fastLoop(){
         Elerium: {},
         Nano_Tube: {},
         Graphene: {},
-        Stanene: {}
+        Stanene: {},
+        Plywood: {},
+        Brick: {},
+        Wrought_Iron: {},
+        Sheet_Metal: {},
+        Mythril: {},
+        Aerogel: {},
     };
     
     var time_multiplier = 0.25;
@@ -1295,6 +1308,35 @@ function fastLoop(){
             breakdown.p['Global']['Moon_Phase'] = (-(moon) + 4) + '%';
             moon = 1.04 - (moon / 100);
             global_multiplier *= moon;
+        }
+
+        if (global.interstellar['mass_ejector']){
+            let total = 0;
+            let mass = 0;
+            let exotic = 0;
+            Object.keys(global.interstellar.mass_ejector).forEach(function (res){
+                if (atomic_mass[res]){
+                    total += global.interstellar.mass_ejector[res];
+
+                    let volume = global.interstellar.mass_ejector[res];
+                    breakdown.p.consume[res][loc('interstellar_blackhole_name')] = -(volume);
+
+                    if (volume * time_multiplier > global.resource[res].amount){
+                        volume = global.resource[res].amount / time_multiplier;
+                    }
+
+                    modRes(res, -(time_multiplier * volume));
+                    mass += volume * (atomic_mass[res].mass / atomic_mass[res].size);
+                    if (res === 'Elerium' || res === 'Infernite'){
+                        exotic += volume * (atomic_mass[res].mass / atomic_mass[res].size);
+                    }
+                }
+            });
+            global.interstellar.mass_ejector.mass = mass;
+            global.interstellar.mass_ejector.total = total;
+
+            global.interstellar.stellar_engine.mass += mass / 10000000000 * time_multiplier;
+            global.interstellar.stellar_engine.exotic += exotic / 10000000000 * time_multiplier;
         }
 
         // Consumption

@@ -8687,7 +8687,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.interstellar['mass_ejector'] = {
-                        count: 0, on: 0,
+                        count: 0, on: 0, total: 0, mass: 0,
                         Food: 0, Lumber: 0,
                         Stone: 0, Furs: 0,
                         Copper: 0, Iron: 0,
@@ -8701,7 +8701,7 @@ export const actions = {
                         Infernite: 0, Elerium: 0,
                         Nano_Tube: 0, Graphene: 0,
                         Stanene: 0, Plywood: 0,
-                        Brock: 0, Wrought_Iron: 0,
+                        Brick: 0, Wrought_Iron: 0,
                         Sheet_Metal: 0, Mythril: 0,
                         Aerogel: 0
                     };

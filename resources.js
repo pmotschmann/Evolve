@@ -60,6 +60,40 @@ export const tradeRatio = {
     Stanene: 0.1,
 }
 
+export const atomic_mass = {
+    Food: { mass: 43.557, size: 10 },
+    Lumber: { mass: 582.5951, size: 76 },
+    Stone: { mass: 100.0869, size: 5 },
+    Furs: { mass: 26.0174, size: 2 },
+    Copper: { mass: 63.546, size: 1 },
+    Iron: { mass: 55.845, size: 1 },
+    Aluminium: { mass: 26.9815, size: 1 },
+    Cement: { mass: 200.0869, size: 10 },
+    Coal: { mass: 12.0107, size: 1 },
+    Oil: { mass: 16.02658, size: 3 },
+    Uranium: { mass: 238.0289, size: 1 },
+    Steel: { mass: 55.9, size: 1 },
+    Titanium: { mass: 47.867, size: 1 },
+    Alloy: { mass: 90.5275, size: 2 },
+    Polymer: { mass: 120.054, size: 1 },
+    Iridium: { mass: 192.217, size: 1 },
+    Helium_3: { mass: 3.0026, size: 1 },
+    Deuterium: { mass: 2.014, size: 1 },
+    Neutronium: { mass: 248.74, size: 1 },
+    Adamantite: { mass: 178.803, size: 1 },
+    Infernite: { mass: 667.998, size: 3 },
+    Elerium: { mass: 297.115, size: 1 },
+    Nano_Tube: { mass: 15.083, size: 1 },
+    Graphene: { mass: 26.9615, size: 1 },
+    Stanene: { mass: 33.9615, size: 1 },
+    Plywood: { mass: 582.5951, size: 76 },
+    Brick: { mass: 200.0869, size: 10 },
+    Wrought_Iron: { mass: 55.845, size: 1 },
+    Sheet_Metal: { mass: 26.9815, size: 1 },
+    Mythril: { mass: 282.717, size: 3 },
+    Aerogel: { mass: 47.04, size: 6 }
+};
+
 export const craftCost = {
     Plywood: [{ r: 'Lumber', a: 100 }],
     Brick: [{ r: 'Cement', a: 40 }],
@@ -135,6 +169,7 @@ export function defineResources(){
     else {
         initMarket();
         initStorage();
+        initEjector();
         loadResource('Money',1000,1,false,false,'success');
         loadResource(global.race.species,0,0,false,false,'warning');
         loadResource('Knowledge',100,1,false,false,'warning');
@@ -411,6 +446,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
             $(this).removeClass('hl-cna');
         });
     });
+
+    if (atomic_mass[name]){
+        loadEjector(name,color);
+    }
 }
 
 function loadSpecialResource(name,color) {
@@ -1133,6 +1172,80 @@ export function loadMarket(){
         data: global.city.market
     });
     vues['market_qty'].$mount('#market-qty');
+}
+
+export function initEjector(){
+    $('#resEjector').empty();
+    if (global.interstellar['mass_ejector']){
+        let ejector = $(`<div id="eject${name}" class="market-item"><h3 class="res has-text-warning">Voluming Ejecting</h3></div>`);
+        $('#resEjector').append(ejector);
+
+        let eject = $(`<span class="trade"></span>`);
+        ejector.append(eject);
+
+        eject.append($(`<span>{{ total }} / {{ on | max }}</span><span class="mass">Total Mass: {{ mass | approx }} kt/s</span>`));
+
+        vues['ejected'] = new Vue({
+            data: global.interstellar.mass_ejector,
+            filters: {
+                max(num){
+                    return num * 1000;
+                },
+                approx(tons){
+                    return sizeApproximation(tons,2);
+                }
+            }
+        });
+        vues['ejected'].$mount(`#eject${name}`);
+    }
+}
+
+function loadEjector(name,color){
+    if (atomic_mass[name] && global.interstellar['mass_ejector']){
+        let ejector = $(`<div id="eject${name}" class="market-item"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
+        $('#resEjector').append(ejector);
+
+        let res = $(`<span class="trade"></span>`);
+        ejector.append(res);
+
+        res.append($(`<span role="button" aria-label="eject more ${name} ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span class="current">{{ e.${name} }}</span>`));
+        res.append($(`<span role="button" aria-label="eject less ${name} ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
+
+        res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${unitMass(name)}</span> kt</span>`));
+
+        vues['eject_'+name] = new Vue({
+            data: {
+                r: global.resource[name],
+                e: global.interstellar.mass_ejector
+            },
+            methods: {
+                ejectMore(r){
+                    let keyMutipler = keyMultiplier();
+                    if (keyMutipler + global.interstellar.mass_ejector.total > global.interstellar.mass_ejector.on * 1000){
+                        keyMutipler = global.interstellar.mass_ejector.on * 1000 - global.interstellar.mass_ejector.total;
+                    }
+                    global.interstellar.mass_ejector[r] += keyMutipler;
+                    global.interstellar.mass_ejector.total += keyMutipler;
+                },
+                ejectLess(r){
+                    let keyMutipler = keyMultiplier();
+                    if (keyMutipler > global.interstellar.mass_ejector[r]){
+                        keyMutipler = global.interstellar.mass_ejector[r];
+                    }
+                    if (global.interstellar.mass_ejector[r] > 0){
+                        global.interstellar.mass_ejector[r] -= keyMutipler;
+                        global.interstellar.mass_ejector.total -= keyMutipler;
+                    }
+                },
+            }
+        });
+        vues['eject_'+name].$mount(`#eject${name}`);
+    }
+}
+
+function unitMass(name){
+    return +(atomic_mass[name].mass / atomic_mass[name].size).toFixed(3);
 }
 
 export function spatialReasoning(value){
