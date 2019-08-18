@@ -171,7 +171,7 @@ const fortressModules = {
                 Infernite(){ return costMultiplier('sensor_drone', 100, 1.25, 'portal'); }
             },
             effect(){
-                let bonus = 10;
+                let bonus = global.tech.infernite >= 4 ? 20 : 10;
                 let sci = global.tech['science'] >= 14 ? `<div>${loc('city_max_knowledge',[1000])}</div><div>${loc('space_moon_observatory_effect',[2])}</div><div>${loc('portal_sensor_drone_effect2',[2])}</div>` : '';
                 return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div>${sci}<div>${loc('minus_power',[$(this)[0].powered])}</div>`;
             },
@@ -511,6 +511,13 @@ export function bloodwar(){
             let pat_rating = Math.round(armyRating(pat_size,'army'));
 
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
+
+            if (global.race['frenzy']){
+                global.race['frenzy'] += Math.rand(0,Math.ceil(demons / 10));
+                if (global.race['frenzy'] > 1000000){
+                    global.race['frenzy'] = 1000000;
+                }
+            }
 
             if (Math.rand(0,global.race['chameleon'] ? 50 : 30) === 0){
                 dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true);

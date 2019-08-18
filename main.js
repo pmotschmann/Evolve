@@ -2551,11 +2551,13 @@ function fastLoop(){
         // Infernite
         let infernite_bd = {};
         if (global.resource.Infernite.display && global.civic.hell_surveyor.workers > 0){
-            let surveyor_base = global.civic.hell_surveyor.workers * 0.01;
+            let rate = global.tech.infernite >= 3 ? 0.015 : 0.01;
+            let surveyor_base = global.civic.hell_surveyor.workers * rate;
             
             let sensors = 1;
             if (global.tech['infernite'] >= 2 && p_on['sensor_drone']){
-                sensors = 1 + (p_on['sensor_drone'] * 0.1);
+                let drone_rate = global.tech.infernite >= 4 ? 0.2 : 0.1;
+                sensors = 1 + (p_on['sensor_drone'] * drone_rate);
             }
 
             let surveyor_delta = surveyor_base * sensors * global_multiplier;
@@ -3748,7 +3750,6 @@ function midLoop(){
             if (global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
                 global.civic[job].workers++;
                 global.civic.free--;
-                global.civic[job].assigned = global.civic[job].workers;
             }
         });
 

@@ -8962,6 +8962,41 @@ export const actions = {
                 return false;
             }
         },
+        map_terrain: {
+            id: 'tech-map_terrain',
+            title: loc('tech_map_terrain'),
+            desc: loc('tech_map_terrain'),
+            reqs: { infernite: 2 },
+            grant: ['infernite',3],
+            cost: {
+                Knowledge(){ return 948000; },
+            },
+            effect(){ return loc('tech_map_terrain_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        calibrated_sensors: {
+            id: 'tech-calibrated_sensors',
+            title: loc('tech_calibrated_sensors'),
+            desc: loc('tech_calibrated_sensors'),
+            reqs: { infernite: 3 },
+            grant: ['infernite',4],
+            cost: {
+                Knowledge(){ return 1125000; },
+                Infernite(){ return 3500; }
+            },
+            effect(){ return loc('tech_calibrated_sensors_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
