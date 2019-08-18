@@ -5138,6 +5138,25 @@ export const actions = {
                 return loc('tech_four_oh_one_flair');
             }
         },
+        exchange: {
+            id: 'tech-exchange',
+            title: loc('tech_exchange'),
+            desc: loc('tech_exchange'),
+            reqs: { banking: 11, alpha: 2, graphene: 1 },
+            grant: ['banking',12],
+            cost: {
+                Money(){ return 1000000; },
+                Knowledge(){ return 675000; }
+            },
+            effect: loc('tech_exchange_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['exchange'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         mythril_vault: {
             id: 'tech-mythril_vault',
             title: loc('tech_mythril_vault'),

@@ -1743,6 +1743,36 @@ const interstellarProjects = {
                 return false;
             }
         },
+        exchange: {
+            id: 'interstellar-exchange',
+            title: loc('interstellar_exchange_title'),
+            desc: `<div>${loc('interstellar_exchange_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            reqs: { banking: 12 },
+            cost: {
+                Money(){ return costMultiplier('exchange', 680000, 1.28, 'interstellar'); },
+                Stone(){ return costMultiplier('exchange', 115000, 1.28, 'interstellar'); },
+                Adamantite(){ return costMultiplier('exchange', 55000, 1.28, 'interstellar'); },
+                Graphene(){ return costMultiplier('exchange', 78000, 1.28, 'interstellar'); }
+            },
+            effect(){
+                let vault = spatialReasoning(450000);
+                vault = +(vault).toFixed(0);
+                return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div>`;
+            },
+            support: -1,
+            powered: 1,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('exchange','interstellar');
+                    if (global.interstellar.starport.support < global.interstellar.starport.s_max){
+                        global.interstellar.exchange.on++;
+                        global.resource.Money.max += +(spatialReasoning(450000)).toFixed(0);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         g_factory: {
             id: 'interstellar-g_factory',
             title: loc('interstellar_g_factory_title'),
@@ -2426,6 +2456,7 @@ const structDefinitions = {
     habitat: { count: 0, on: 0 },
     fusion: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
+    exchange: { count: 0, on: 0 },
     warehouse: { count: 0 },
     laboratory: { count: 0, on: 0 },
     xfer_station: { count: 0, on: 0 },

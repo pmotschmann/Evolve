@@ -1050,7 +1050,7 @@ function fastLoop(){
 
         if (global.interstellar['starport']){
             let used_support = 0;
-            let structs = ['fusion','mining_droid','processing','laboratory','g_factory'];
+            let structs = ['fusion','mining_droid','processing','laboratory','g_factory','exchange'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -3244,6 +3244,10 @@ function midLoop(){
             caps['Oil'] += gain;
             bd_Oil[loc('interstellar_xfer_station_title')] = gain+'v';
 
+            gain = (p_on['xfer_station'] * spatialReasoning(2500));
+            caps['Uranium'] += gain;
+            bd_Uranium[loc('interstellar_xfer_station_title')] = gain+'v';
+
             if (global.resource.Deuterium.display){
                 let deuterium_gain = p_on['xfer_station'] * spatialReasoning(2000);
                 caps['Deuterium'] += deuterium_gain;
@@ -3386,6 +3390,11 @@ function midLoop(){
             }
             caps['Money'] += vault;
             bd_Money[loc('city_casino')] = vault+'v';
+        }
+        if (global.interstellar['exchange']){
+            let vault = spatialReasoning(int_on['exchange'] * 450000);
+            caps['Money'] += vault;
+            bd_Money[loc('interstellar_exchange_bd')] = vault+'v';
         }
         if (global.tech['banking'] >= 4){
             let cm = 250;
