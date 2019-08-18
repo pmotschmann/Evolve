@@ -2355,7 +2355,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_stellar_engine_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    let output = +(2.5 * global.interstellar.stellar_engine.mass).toFixed(2);
+                    let output = +(20 + ((global.interstellar.stellar_engine.mass - 8) * 7.5) + (global.interstellar.stellar_engine.exotic * 75)).toFixed(2);
                     return loc('interstellar_stellar_engine_complete',[output]);
                 }
             },
