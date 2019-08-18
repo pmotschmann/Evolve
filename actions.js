@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, unlockFeat } from './achieve.js';
-import { races, genus_traits, randomMinorTrait, biomes } from './races.js';
+import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison, buildGarrison, armyRating, challenge_multiplier } from './civics.js';
@@ -7604,6 +7604,7 @@ export const actions = {
             desc: loc('tech_fanaticism'),
             reqs: { theology: 2 },
             grant: ['theology',3],
+            not_gene: ['transcendence'],
             cost: {
                 Knowledge(){ return 2500; }
             },
@@ -7611,6 +7612,31 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.tech['fanaticism'] = 1;
+                    if (global.race.gods === global.race.species){
+                        unlockAchieve(`second_evolution`);
+                    }
+                    fanaticism(global.race.gods);
+                    return true;
+                }
+                return false;
+            }
+        },
+        alt_fanaticism: {
+            id: 'tech-alt_fanaticism',
+            title: loc('tech_fanaticism'),
+            desc: loc('tech_fanaticism'),
+            reqs: { theology: 2 },
+            grant: ['fanaticism',1],
+            gene: ['transcendence'],
+            cost: {
+                Knowledge(){ return 2500; }
+            },
+            effect: `<div>${loc('tech_fanaticism_effect')}</div>`,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.tech['theology'] === 2){
+                        global.tech['theology'] = 3;
+                    }
                     if (global.race.gods === global.race.species){
                         unlockAchieve(`second_evolution`);
                     }
@@ -7732,6 +7758,7 @@ export const actions = {
             desc: loc('tech_anthropology'),
             reqs: { theology: 2 },
             grant: ['theology',3],
+            not_gene: ['transcendence'],
             cost: {
                 Knowledge(){ return 2500; }
             },
@@ -7739,6 +7766,27 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.tech['anthropology'] = 1;
+                    return true;
+                }
+                return false;
+            }
+        },
+        alt_anthropology: {
+            id: 'tech-alt_anthropology',
+            title: loc('tech_anthropology'),
+            desc: loc('tech_anthropology'),
+            reqs: { theology: 2 },
+            grant: ['anthropology',1],
+            gene: ['transcendence'],
+            cost: {
+                Knowledge(){ return 2500; }
+            },
+            effect: `<div>${loc('tech_anthropology_effect')}</div>`,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.tech['theology'] === 2){
+                        global.tech['theology'] = 3;
+                    }
                     return true;
                 }
                 return false;
@@ -9173,6 +9221,20 @@ export function setAction(c_action,action,type,old){
     if (c_action['trait']){
         for (let i=0; i<c_action.trait.length; i++){
             if (!global.race[c_action.trait[i]]){
+                return;
+            }
+        }
+    }
+    if (c_action['not_gene']){
+        for (let i=0; i<c_action.not_gene.length; i++){
+            if (global.genes[c_action.not_gene[i]]){
+                return;
+            }
+        }
+    }
+    if (c_action['gene']){
+        for (let i=0; i<c_action.gene.length; i++){
+            if (!global.genes[c_action.gene[i]]){
                 return;
             }
         }
@@ -10742,28 +10804,6 @@ function fanaticism(god){
             }
             else {
                 fanaticTrait('carnivore');
-                if (global.tech['farm'] >= 1){
-                    global.tech['hunting'] = 2;
-                }
-                else if (global.tech['agriculture'] >= 3){
-                    global.tech['hunting'] = 1;
-                }
-                if (global.city['farm']){
-                    global.city['lodge'] = { count: global.city.farm.count };
-                    delete global.city['farm'];
-                }
-                if (global.city['silo']){
-                    global.city['smokehouse'] = { count: global.city.silo.count };
-                    delete global.city['silo'];
-                }
-                if (global.city['mill']){
-                    delete global.city['mill'];
-                }
-                delete global.tech['agriculture'];
-                delete global.tech['farm'];
-                global.civic.farmer.workers = 0;
-                global.civic.farmer.max = 0;
-                global.civic.farmer.display = false;
                 if (global.race.species === 'entish'){
                     unlockAchieve(`madagascar_tree`);
                 }
@@ -10813,28 +10853,6 @@ function fanaticism(god){
             break;
         case 'entish':
             fanaticTrait('kindling_kindred');
-            global.resource.Lumber.display = false;
-            global.resource.Lumber.crates = 0;
-            global.resource.Lumber.containers = 0;
-            global.resource.Lumber.trade = 0;
-            global.resource.Plywood.display = false;
-            global.city['lumber'] = 0;
-            if (global.city['sawmill']){
-                delete global.city['sawmill'];
-            }
-            if (global.city['lumber_yard']){
-                delete global.city['lumber_yard'];
-            }
-            delete global.tech['axe'];
-            delete global.tech['saw'];
-            global.civic.lumberjack.display = false;
-            global.civic.lumberjack.workers = 0;
-            if (global.tech['foundry']){
-                global.civic.craftsman.workers -= global.city.foundry['Plywood'];
-                global.city.foundry.crafting -= global.city.foundry['Plywood'];
-                global.city.foundry['Plywood'] = 0;
-                loadFoundry();
-            }
             break;
         case 'cacti':
             fanaticTrait('hyper');
@@ -10883,6 +10901,7 @@ function fanaticTrait(trait){
     }
     else {
         global.race[trait] = 1;
+        cleanAddTrait(trait);
     }
 }
 

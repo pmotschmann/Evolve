@@ -387,6 +387,11 @@ const feats = {
         name: loc("feat_organ_harvester_name"),
         desc: loc("feat_organ_harvester_desc"),
         flair: loc("feat_organ_harvester_flair")
+    },
+    blank_slate: {
+        name: loc("feat_blank_slate_name"),
+        desc: loc("feat_blank_slate_desc"),
+        flair: loc("feat_blank_slate_flair")
     }
 }
 
