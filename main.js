@@ -1324,7 +1324,9 @@ function fastLoop(){
                     total += ejected;
 
                     let volume = ejected;
-                    breakdown.p.consume[res][loc('interstellar_blackhole_name')] = -(volume);
+                    if (volume > 0){
+                        breakdown.p.consume[res][loc('interstellar_blackhole_name')] = -(volume);
+                    }
 
                     if (volume * time_multiplier > global.resource[res].amount){
                         volume = global.resource[res].amount / time_multiplier;
