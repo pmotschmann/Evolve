@@ -100,6 +100,11 @@ var achievements = {
         desc: loc("achieve_blood_war_desc"),
         flair: loc("achieve_blood_war_flair")
     },
+    landfill: {
+        name: loc("achieve_landfill_name"),
+        desc: loc("achieve_landfill_desc"),
+        flair: loc("achieve_landfill_flair")
+    },
     seeder: {
         name: loc("achieve_seeder_name"),
         desc: loc("achieve_seeder_desc"),
@@ -549,6 +554,9 @@ export function checkAchievements(){
     }
     if (global.stats.died >= 250){
         unlockAchieve('red_tactics');
+    }
+    if (global.interstellar['stellar_engine'] && global.interstellar['stellar_engine'].mass >= 12){
+        unlockAchieve('landfill');
     }
 }
 

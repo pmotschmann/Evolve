@@ -8733,7 +8733,7 @@ export const actions = {
             id: 'tech-gravitational_waves',
             title: loc('tech_gravitational_waves'),
             desc: loc('tech_gravitational_waves'),
-            reqs: { blackhole: 4, locked: 1 },
+            reqs: { blackhole: 4 },
             grant: ['gravity',1],
             cost: {
                 Knowledge(){ return 1250000; }
@@ -8746,11 +8746,28 @@ export const actions = {
                 return false;
             }
         },
+        gravity_convection: {
+            id: 'tech-gravity_convection',
+            title: loc('tech_gravity_convection'),
+            desc: loc('tech_gravity_convection'),
+            reqs: { gravity: 1 },
+            grant: ['gravity',2],
+            cost: {
+                Knowledge(){ return 1350000; }
+            },
+            effect: loc('tech_gravity_convection_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         wormholes: {
             id: 'tech-wormholes',
             title: loc('tech_wormholes'),
             desc: loc('tech_wormholes'),
-            reqs: { gravity: 1 },
+            reqs: { gravity: 1, locked: 1 },
             grant: ['stargate',1],
             cost: {
                 Knowledge(){ return 1500000; }

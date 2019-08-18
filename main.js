@@ -754,7 +754,8 @@ function fastLoop(){
         }
 
         if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.count >= 100){
-            let power = 20 + ((global.interstellar.stellar_engine.mass - 8) * 7.5) + (global.interstellar.stellar_engine.exotic * 75);
+            let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
+            let power = 20 + ((global.interstellar.stellar_engine.mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10);
             max_power -= power;
             power_grid += power;
             power_generated[loc('tech_stellar_engine')] = power;
