@@ -8853,7 +8853,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.interstellar.stellar_engine.mass += (atomic_mass.Neutronium.mass * atomic_mass.Neutronium.size * 20000 / 10000000000);
-                    global.interstellar.stellar_engine.mass += global.interstellar.stellar_engine.exotic * 20;
+                    global.interstellar.stellar_engine.mass += global.interstellar.stellar_engine.exotic * 25;
                     global.interstellar.stellar_engine.exotic = 0;
                     delete global.tech['whitehole'];
                     return true;
@@ -9149,13 +9149,44 @@ export const actions = {
                 return false;
             },
         },
+        prep_ship: {
+            id: 'spcdock-prep_ship',
+            title: loc('star_dock_prep'),
+            desc(){
+                return `<div>${loc('star_dock_prep_desc')}</div><div class="has-text-danger">${loc('star_dock_genesis_desc2')}</div>`;
+            },
+            reqs: { genesis: 6 },
+            cost: {},
+            effect(){
+                let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+                let plasmid = Math.round(pop / 3);
+                let k_base = global.stats.know;
+                let k_inc = 50000;
+                while (k_base > k_inc){
+                    plasmid++;
+                    k_base -= k_inc;
+                    k_inc *= 1.015;
+                }
+                plasmid = challenge_multiplier(plasmid);
+                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E));
+                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+            },
+            action(){
+                global.tech['genesis'] = 7;
+                $('#popspcdock-seeder').remove();
+                $('#modalBox').empty();
+                let c_action = actions.space.spc_gas.star_dock;
+                drawModal(c_action,'star_dock');
+                return true;
+            },
+        },
         launch_ship: {
             id: 'spcdock-launch_ship',
             title: loc('star_dock_genesis'),
             desc(){
                 return `<div>${loc('star_dock_genesis_desc1')}</div><div class="has-text-danger">${loc('star_dock_genesis_desc2')}</div>`;
             },
-            reqs: { genesis: 6 },
+            reqs: { genesis: 7 },
             cost: {},
             effect(){
                 let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
@@ -10057,7 +10088,12 @@ function starDockModal(modal){
         setAction(c_action,'starDock','seeder');
     }
 
-    if (global.tech['genesis'] >= 6){
+    if (global.tech['genesis'] === 6){
+        let c_action = actions.starDock.prep_ship;
+        setAction(c_action,'starDock','prep_ship');
+    }
+
+    if (global.tech['genesis'] >= 7){
         let c_action = actions.starDock.launch_ship;
         setAction(c_action,'starDock','launch_ship');
     }
