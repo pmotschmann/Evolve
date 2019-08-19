@@ -227,6 +227,9 @@ const spaceProjects = {
             },
             effect(){
                 let iridium = +(0.035 * zigguratBonus()).toFixed(3);
+                if (global.city.geology['Iridium']){
+                    iridium *= global.city.geology['Iridium'] + 1;
+                }
                 return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>`;
             },
             support: -1,

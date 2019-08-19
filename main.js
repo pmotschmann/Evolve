@@ -2439,6 +2439,9 @@ function fastLoop(){
         let iridium_bd = {};
         if (moon_on['iridium_mine']){
             let iridium_base = moon_on['iridium_mine'] * 0.035 * zigguratBonus();
+            if (global.city.geology['Iridium']){
+                iridium_base *= global.city.geology['Iridium'] + 1;
+            }
             let delta = iridium_base * hunger * global_multiplier;
             iridium_bd[loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
@@ -4145,6 +4148,15 @@ function longLoop(){
         }
         else {
             global.event--;
+        }
+
+        if (!global.tech['whitehole'] && global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025){
+            global.tech['whitehole'] = 1;
+            if (global.tech['stablized']){
+                delete global.tech['stablized'];
+            }
+            messageQueue(loc('interstellar_blackhole_unstable'),'danger');
+            drawTech();
         }
     }
 

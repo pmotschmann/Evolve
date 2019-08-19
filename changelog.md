@@ -7,6 +7,7 @@ Improved resource breakdown layout<br>
 Leathery trait buffed<br>
 Chameleon trait now adds a combat rating bonus<br>
 Smarter Smelter fuel switching<br>
+New CRISPR unlocks<br>
 
 #### 0.4.42 - 8/16/2019 ####
 Fixed some screen reader issues with the crate modal launch button<br>

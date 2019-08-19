@@ -328,6 +328,9 @@ if (!global.stats['reset']){
 if (!global.stats['plasmid']){
     global.stats['plasmid'] = 0;
 }
+if (!global.stats['universes']){
+    global.stats['universes'] = 0;
+}
 if (!global.stats['phage']){
     global.stats['phage'] = 0;
 }

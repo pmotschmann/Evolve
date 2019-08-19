@@ -160,6 +160,11 @@ var achievements = {
         desc: loc("achieve_creator_desc"),
         flair: loc("achieve_creator_flair")
     },
+    whitehole: {
+        name: loc("achieve_whitehole_name"),
+        desc: loc("achieve_whitehole_desc"),
+        flair: loc("achieve_whitehole_flair")
+    },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
         desc: loc("achieve_genus_humanoid_desc"),

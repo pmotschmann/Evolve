@@ -2,7 +2,7 @@ import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, 
 import { loc } from './locale.js';
 import { unlockAchieve, unlockFeat } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
-import { defineResources, loadMarket, spatialReasoning, resource_values } from './resources.js';
+import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison, buildGarrison, armyRating, challenge_multiplier } from './civics.js';
 import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
@@ -8777,6 +8777,90 @@ export const actions = {
                 return false;
             }
         },
+        exotic_infusion: {
+            id: 'tech-exotic_infusion',
+            title: loc('tech_exotic_infusion'),
+            desc: loc('tech_exotic_infusion'),
+            reqs: { whitehole: 1 },
+            grant: ['whitehole',2],
+            cost: {
+                Knowledge(){ return 1500000; },
+                Soul_Gem(){ return 10; }
+            },
+            effect(){ return `<div>${loc('tech_exotic_infusion_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Soul_Gem.amount += 10;
+                    global.resource.Knowledge.amount += 1500000;
+                    return true;
+                }
+                return false;
+            },
+            flair(){ return loc('tech_exotic_infusion_flair'); }
+        },
+        infusion_check: {
+            id: 'tech-infusion_check',
+            title: loc('tech_infusion_check'),
+            desc: loc('tech_infusion_check'),
+            reqs: { whitehole: 2 },
+            grant: ['whitehole',3],
+            cost: {
+                Knowledge(){ return 1500000; },
+                Soul_Gem(){ return 10; }
+            },
+            effect(){ return `<div>${loc('tech_infusion_check_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Soul_Gem.amount += 10;
+                    global.resource.Knowledge.amount += 1500000;
+                    return true;
+                }
+                return false;
+            },
+            flair(){ return loc('tech_infusion_check_flair'); }
+        },
+        infusion_confirm: {
+            id: 'tech-infusion_confirm',
+            title: loc('tech_infusion_confirm'),
+            desc: loc('tech_infusion_confirm'),
+            reqs: { whitehole: 3 },
+            grant: ['whitehole',4],
+            cost: {
+                Knowledge(){ return 1500000; },
+                Soul_Gem(){ return 10; }
+            },
+            effect(){ return `<div>${loc('tech_infusion_confirm_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    big_bang();
+                    return false;
+                }
+                return false;
+            },
+            flair(){ return loc('tech_infusion_confirm_flair'); }
+        },
+        stabilize_blackhole: {
+            id: 'tech-stabilize_blackhole',
+            title: loc('tech_stabilize_blackhole'),
+            desc: loc('tech_stabilize_blackhole'),
+            reqs: { whitehole: 1 },
+            grant: ['stablized',1],
+            cost: {
+                Knowledge(){ return 1500000; },
+                Neutronium(){ return 20000; }
+            },
+            effect: loc('tech_stabilize_blackhole_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar.stellar_engine.mass += (atomic_mass.Neutronium.mass * atomic_mass.Neutronium.size * 20000 / 10000000000);
+                    global.interstellar.stellar_engine.mass += global.interstellar.stellar_engine.exotic * 20;
+                    global.interstellar.stellar_engine.exotic = 0;
+                    delete global.tech['whitehole'];
+                    return true;
+                }
+                return false;
+            }
+        },
         gravitational_waves: {
             id: 'tech-gravitational_waves',
             title: loc('tech_gravitational_waves'),
@@ -9550,29 +9634,39 @@ export function setPlanet(hell){
     
     let geology = {};
     let max = Math.floor(Math.seededRandom(0,3));
+    let top = 30;
+    if (global.stats.achieve['whitehole']){
+        top += global.stats.achieve['whitehole'] * 5;
+        max += global.stats.achieve['whitehole'];
+    }
 
     for (let i=0; i<max; i++){
         switch (Math.floor(Math.seededRandom(0,10))){
             case 0:
-                geology['Copper'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                geology['Copper'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
                 break;
             case 1:
-                geology['Iron'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                geology['Iron'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
                 break;
             case 2:
-                geology['Aluminium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                geology['Aluminium'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
                 break;
             case 3:
-                geology['Coal'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                geology['Coal'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
                 break;
             case 4:
-                geology['Oil'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                geology['Oil'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
                 break;
             case 5:
-                geology['Titanium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                geology['Titanium'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
                 break;
             case 6:
-                geology['Uranium'] = ((Math.floor(Math.seededRandom(0,30)) - 10) / 100);
+                geology['Uranium'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                break;
+            case 7:
+                if (global.stats.achieve['whitehole']){
+                    geology['Iridium'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                }
                 break;
             default:
                 break;
@@ -11018,6 +11112,75 @@ function bioseed(){
     if (!new_biome && !new_genus){
         global.lastMsg = false;
     }
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+    
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
+function big_bang(){
+    unlockAchieve(`whitehole`);
+    Object.keys(vues).forEach(function (v){
+        vues[v].$destroy();
+    });
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let plasmid = global.race.Plasmid.count;
+    let phage = global.race.Phage.count;
+    let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+    let new_plasmid = Math.round(pop / 2);
+    let k_base = global.stats.know;
+    let k_inc = 40000;
+    while (k_base > k_inc){
+        new_plasmid++;
+        k_base -= k_inc;
+        k_inc *= 1.012;
+    }
+    if (global.stats.died === 0){
+        unlockAchieve(`pacifist`);
+    }
+    new_plasmid = challenge_multiplier(new_plasmid);
+    plasmid += new_plasmid;
+    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5));
+    phage += new_phage;
+    global.stats.reset++;
+    global.stats.tdays += global.stats.days;
+    global.stats.days = 0;
+    global.stats.tknow += global.stats.know;
+    global.stats.know = 0;
+    global.stats.tstarved += global.stats.starved;
+    global.stats.starved = 0;
+    global.stats.tdied += global.stats.died;
+    global.stats.died = 0;
+    global.stats.plasmid += new_plasmid;
+    global.stats.phage += new_phage;
+    global.stats.universes++;
+    global['race'] = { 
+        species : 'protoplasm', 
+        gods: 'none',
+        old_gods: 'none',
+        Plasmid: { count: plasmid },
+        Phage: { count: phage },
+        seeded: true,
+        probes: 28,
+        seed: Math.floor(Math.seededRandom(10000)),
+    };
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome
+    };
+    global.tech = { theology: 1 };
+    clearStates();
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
