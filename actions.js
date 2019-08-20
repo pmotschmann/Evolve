@@ -7140,6 +7140,29 @@ export const actions = {
                 return false;
             }
         },
+        disruptor_rifles: {
+            id: 'tech-disruptor_rifles',
+            title: loc('tech_disruptor_rifles'),
+            desc: loc('tech_disruptor_rifles'),
+            reqs: { military: 8, high_tech: 14, neutron: 1, infernite: 1 },
+            grant: ['military',9],
+            cost: {
+                Knowledge(){ return 1000000; },
+                Infernite(){ return 1000; }
+            },
+            effect: loc('tech_disruptor_rifles_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    var tech = actions.tech.disruptor_rifles.grant[0];
+                    global.tech[tech] = actions.tech.disruptor_rifles.grant[1];
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         space_marines: {
             id: 'tech-space_marines',
             title: loc('tech_space_marines'),

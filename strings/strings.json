@@ -961,6 +961,8 @@
   "tech_laser_rifles_effect": "High tech weapons for the future.",
   "tech_plasma_rifles": "Plasma Rifles",
   "tech_plasma_rifles_effect": "Outfit your soldiers with advanced weapons which can burn through any armor.",
+  "tech_disruptor_rifles": "Disruptor Rifles",
+  "tech_disruptor_rifles_effect": "Studying the high intensity gamma rays from the neutron star has unlocked the secret to disrupter weapons which destroy the bonds between molecules.",
   "tech_laser_turret": "Laser Turret",
   "tech_laser_turret_effect1": "Upgrade your fortress turrets with laser weaponary.",
   "tech_laser_turret_effect2": "Increases power consumption of turrets by one.",
