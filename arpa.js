@@ -1,5 +1,5 @@
 import { global, vues, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { actions, drawTech, addAction, removeAction } from './actions.js';
+import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { space } from './space.js';
 import { unlockFeat } from './achieve.js';
@@ -899,6 +899,8 @@ function genetics(){
                         }
                         cleanRemoveTrait(t);
                         genetics();
+                        drawTech();
+                        drawCity();
 
                         let count = 0;
                         Object.keys(global.race).forEach(function (trait){
@@ -924,6 +926,8 @@ function genetics(){
                         }
                         cleanAddTrait(t);
                         genetics();
+                        drawTech();
+                        drawCity();
                     }
                 },
                 geneCost(t){
