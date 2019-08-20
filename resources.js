@@ -213,6 +213,7 @@ export function defineResources(){
     }
     loadSpecialResource('Plasmid');
     loadSpecialResource('Phage');
+    loadSpecialResource('Dark');
 }
 
 // Load resource function
@@ -462,7 +463,7 @@ function loadSpecialResource(name,color) {
 
     color = color || 'special';
     
-    var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${name}</span><span class="count">{{ count }}</span></div>`);
+    var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count }}</span></div>`);
    
     $('#resources').append(res_container);
     

@@ -127,6 +127,9 @@ export const events = {
             tech: 'wsc',
             notech: 'portal_guard'
         },
+        condition(){
+            return global.space['space_barracks'] && global.space.space_barracks.on > 0 ? true : false;
+        },
         effect: function(){
             unlockAchieve('doomed');
             global.stats.portals++;

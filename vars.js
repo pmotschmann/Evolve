@@ -369,6 +369,9 @@ if (!global.race['Plasmid']){
 if (!global.race['Phage']){
     global.race['Phage'] = { count: 0 };
 }
+if (!global.race['Dark']){
+    global.race['Dark'] = { count: 0 };
+}
 if (!global.race['deterioration']){
     global.race['deterioration'] = 0;
 }
@@ -728,6 +731,7 @@ window.soft_reset = function reset(){
         species : 'protoplasm', 
         Plasmid: { count: global.race.Plasmid.count },
         Phage: { count: global.race.Phage.count },
+        Dark: { count: global.race.Dark.count },
         seeded: global.race.seeded,
         probes: global.race.probes,
         seed: global.race.seed,

@@ -1,4 +1,4 @@
-#### 0.5.0 - ??? ####
+#### 0.5.0 - 8/19/2019 ####
 Interstellar space is now unlockable<br>
 Interdimensional travel is now unlockable<br>
 New mangement tab for Crates & Containers<br>
@@ -6,6 +6,7 @@ Power generation breakdown<br>
 Improved resource breakdown layout<br>
 Leathery trait buffed<br>
 Chameleon trait now adds a combat rating bonus<br>
+Optimistic now also applies to the minimum morale rating<br>
 Smarter Smelter fuel switching<br>
 New CRISPR unlocks<br>
 

@@ -1281,8 +1281,9 @@ function fastLoop(){
             moraleCap += 10 - Math.floor(global.civic.taxes.tax_rate / 2);
         }
 
-        if (morale < 50){
-            morale = 50;
+        let m_min = global.race['optimistic'] ? 60 : 50;
+        if (morale < m_min){
+            morale = m_min;
         }
         else if (morale > moraleCap){
             morale = moraleCap;
@@ -4074,68 +4075,73 @@ function longLoop(){
             var event_pool = [];
             Object.keys(events).forEach(function (event){
                 var isOk = true;
-                Object.keys(events[event].reqs).forEach(function (req) {
-                    switch(req){
-                        case 'race':
-                            if (events[event].reqs[req] !== global.race.species){
+                if (events[event]['condition'] && !events[event].condition()){
+                    isOk = false;
+                }
+                else {
+                    Object.keys(events[event].reqs).forEach(function (req) {
+                        switch(req){
+                            case 'race':
+                                if (events[event].reqs[req] !== global.race.species){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'genus':
+                                if (events[event].reqs[req] !== races[global.race.species].type){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'nogenus':
+                                if (events[event].reqs[req] === races[global.race.species].type){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'resource':
+                                if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'trait':
+                                if (!global.race[events[event].reqs[req]]){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'notrait':
+                                if (global.race[events[event].reqs[req]]){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'tech':
+                                if (!global.tech[events[event].reqs[req]]){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'notech':
+                                if (global.tech[events[event].reqs[req]]){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'high_tax_rate':
+                                if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'low_morale':
+                                if (global.city.morale.current >= [events[event].reqs[req]]){
+                                    isOk = false;
+                                }
+                                break;
+                            case 'biome':
+                                if (global.city.biome !== [events[event].reqs[req]]){
+                                    isOk = false;
+                                }
+                                break;
+                            default:
                                 isOk = false;
-                            }
-                            break;
-                        case 'genus':
-                            if (events[event].reqs[req] !== races[global.race.species].type){
-                                isOk = false;
-                            }
-                            break;
-                        case 'nogenus':
-                            if (events[event].reqs[req] === races[global.race.species].type){
-                                isOk = false;
-                            }
-                            break;
-                        case 'resource':
-                            if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
-                                isOk = false;
-                            }
-                            break;
-                        case 'trait':
-                            if (!global.race[events[event].reqs[req]]){
-                                isOk = false;
-                            }
-                            break;
-                        case 'notrait':
-                            if (global.race[events[event].reqs[req]]){
-                                isOk = false;
-                            }
-                            break;
-                        case 'tech':
-                            if (!global.tech[events[event].reqs[req]]){
-                                isOk = false;
-                            }
-                            break;
-                        case 'notech':
-                            if (global.tech[events[event].reqs[req]]){
-                                isOk = false;
-                            }
-                            break;
-                        case 'high_tax_rate':
-                            if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
-                                isOk = false;
-                            }
-                            break;
-                        case 'low_morale':
-                            if (global.city.morale.current >= [events[event].reqs[req]]){
-                                isOk = false;
-                            }
-                            break;
-                        case 'biome':
-                            if (global.city.biome !== [events[event].reqs[req]]){
-                                isOk = false;
-                            }
-                            break;
-                        default:
-                            isOk = false;
-                            break;
-                    }
-                });
+                                break;
+                        }
+                    });
+                }
                 if (isOk){
                     event_pool.push(event);
                 }

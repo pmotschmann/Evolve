@@ -1014,6 +1014,7 @@ function warhead(){
         ancient_ruins: 1,
         Plasmid: { count: plasmid },
         Phage: { count: global.race.Phage.count },
+        Dark: { count: global.race.Dark.count },
         seeded: false,
     };
     global.city = {

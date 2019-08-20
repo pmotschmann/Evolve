@@ -8832,7 +8832,20 @@ export const actions = {
             effect(){ return `<div>${loc('tech_infusion_confirm_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    big_bang();
+                    let bang = $('<div class="bigbang"></div>');
+                    $('body').append(bang);
+                    setTimeout(function(){
+                        bang.addClass('burn');
+                    }, 125);
+                    setTimeout(function(){
+                        bang.addClass('b');
+                    }, 150);
+                    setTimeout(function(){
+                        bang.addClass('c');
+                    }, 2000);
+                    setTimeout(function(){
+                        big_bang();
+                    }, 4000);
                     return false;
                 }
                 return false;
@@ -11165,6 +11178,8 @@ function big_bang(){
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
     let phage = global.race.Phage.count;
+    let dark = global.race.Dark.count;
+
     let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 2);
     let k_base = global.stats.know;
@@ -11180,6 +11195,8 @@ function big_bang(){
     new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;
     let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5));
+    let new_dark = +(global.interstellar.stellar_engine.exotic * 40).toFixed(3);
+
     phage += new_phage;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
@@ -11199,6 +11216,7 @@ function big_bang(){
         old_gods: 'none',
         Plasmid: { count: plasmid },
         Phage: { count: phage },
+        Dark: { count: dark + new_dark },
         seeded: true,
         probes: 28,
         seed: Math.floor(Math.seededRandom(10000)),
