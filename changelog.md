@@ -1,3 +1,7 @@
+#### 0.5.2 - 8/20/2019 ####
+Fixed misnamed mantis trait key<br>
+Fixed Iron smelter paying out 10x intended amount<br>
+
 #### 0.5.1 - 8/20/2019 ####
 Disappearing craftsman fix<br>
 

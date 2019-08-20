@@ -884,7 +884,7 @@ export const traits = {
         desc: loc('trait_nyctophilia'),
         type: 'major',
     },
-    frail: { // More soldiers die in combat
+    fraile: { // More soldiers die in combat
         desc: loc('trait_frail'),
         type: 'major',
     },
