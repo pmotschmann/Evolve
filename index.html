@@ -149,10 +149,22 @@
                                 </b-tabs>
                             </div>
                         </b-tab-item>
-                        <b-tab-item id="achieve" :visible="showAchieve">
+                        <b-tab-item :visible="showAchieve">
                             <template slot="header">
                                 {{ 'tab_stats' | label }}
                             </template>
+                            <b-tabs class="resTabs" v-model="statsTabs" :animated="animated">
+                                <b-tab-item id="stats">
+                                    <template slot="header">
+                                        {{ 'tab_stats' | label }}
+                                    </template>
+                                </b-tab-item>
+                                <b-tab-item id="achieve">
+                                    <template slot="header">
+                                        {{ 'tab_achieve' | label }}
+                                    </template>
+                                </b-tab-item>
+                            </b-tabs>
                         </b-tab-item>
                         <b-tab-item>
                             <template slot="header">

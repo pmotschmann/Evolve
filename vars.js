@@ -224,7 +224,7 @@ if (convertVersion(global['version']) === 5000){
     }
 }
 
-global['version'] = '0.5.2';
+global['version'] = '0.5.3';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -339,6 +339,9 @@ if (!global.settings['marketTabs']){
 }
 if (!global.settings['spaceTabs']){
     global.settings['spaceTabs'] = 0;
+}
+if (!global.settings['statsTabs']){
+    global.settings['statsTabs'] = 0;
 }
 if (!global.settings['locale']){
     global.settings['locale'] = 'en-us';

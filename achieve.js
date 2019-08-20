@@ -436,10 +436,11 @@ export function unlockFeat(feat){
 
 export function setupStats(){
     $('#achieve').empty();
+    $('#stats').empty();
     let stats = $('<div id="statsPanel"></div>');
-    $('#achieve').append(stats);
+    $('#stats').append(stats);
     let perks = $('<div id="perksPanel"></div>');
-    $('#achieve').append(perks);
+    $('#stats').append(perks);
     let achieve = $('<div id="achievePanel"></div>');
     $('#achieve').append(achieve);
     drawStats();
