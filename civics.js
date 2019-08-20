@@ -11,7 +11,7 @@ export function defineGovernment(){
     
     if (!global.civic['taxes']){
         global.civic['taxes'] = {
-            tax_rate: '20',
+            tax_rate: 20,
             display: false
         };
     }
