@@ -169,7 +169,7 @@ function loadJob(job, impact, stress, color){
     }
 
     if (!global.civic[job]['assigned']){
-        global.civic[job]['assigned'] = global.civic[job].workers;
+        global.civic[job]['assigned'] = job === 'craftsman'? 0 : global.civic[job].workers;
     }
 
     global.civic[job]['stress'] = stress;

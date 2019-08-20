@@ -214,7 +214,17 @@ if (convertVersion(global['version']) < 5000){
     }
 }
 
-global['version'] = '0.5.0';
+if (convertVersion(global['version']) === 5000){
+    if (global.civic['craftsman']){
+        global.civic.craftsman['assigned'] = 0;
+        if (global.city['foundry']){
+            let workers = global.city.foundry.Plywood + global.city.foundry.Brick + global.city.foundry.Wrought_Iron + global.city.foundry.Sheet_Metal + global.city.foundry.Mythril + global.city.foundry.Aerogel; 
+            global.civic.craftsman.workers = workers;
+        }
+    }
+}
+
+global['version'] = '0.5.1';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

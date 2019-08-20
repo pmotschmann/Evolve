@@ -1,3 +1,6 @@
+#### 0.5.1 - 8/19/2019 ####
+Disappearing craftsman fix<br>
+
 #### 0.5.0 - 8/19/2019 ####
 Interstellar space is now unlockable<br>
 Interdimensional travel is now unlockable<br>
