@@ -1,6 +1,7 @@
 #### 0.5.3 - 8/20/2019 ####
 Stats and Achievements seperated into seperate sub tabs<br>
 Disrupter rifle upgrade for soldiers<br>
+Mass Ejector can on longer be unlocked before completing the Stellar Engine<br>
 
 #### 0.5.2 - 8/20/2019 ####
 Fixed misnamed mantis trait key<br>
