@@ -1128,6 +1128,12 @@ export function cleanAddTrait(trait){
             global.civic.farmer.max = 0;
             global.civic.farmer.display = false;
             break;
+        case 'terrifying':
+            Object.keys(global.resource).forEach(function (res){
+                global.resource[res].trade = 0;
+            });
+            global.settings.showMarket = false;
+            break;
         default:
             break;
     }
@@ -1158,6 +1164,9 @@ export function cleanRemoveTrait(trait){
                 global.city['mill'] = { count: global.city.windmill.count };
                 delete global.city['windmill'];
             }
+            break;
+        case 'terrifying':
+            global.settings.showMarket = true;
             break;
         default:
             break;

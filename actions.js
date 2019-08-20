@@ -2203,6 +2203,8 @@ export const actions = {
                     }
                     global.city['storage_yard'].count++;
                     global.resource.Crates.display = true;
+                    global.settings.showResources = true;
+                    global.settings.showStorage = true;
                     let cap = global.tech.container >= 3 ? 20 : 10;
                     if (global.tech['world_control']){
                         cap += 10;
@@ -2245,6 +2247,8 @@ export const actions = {
                     }
                     global.city['warehouse'].count++;
                     global.resource.Containers.display = true;
+                    global.settings.showResources = true;
+                    global.settings.showStorage = true;
                     let cap = global.tech['steel_container'] >= 2 ? 20 : 10;
                     if (global.tech['world_control']){
                         cap += 10;
@@ -4778,6 +4782,7 @@ export const actions = {
             effect: loc('tech_market_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.settings.showResources = true;
                     global.settings.showMarket = true;
                     return true;
                 }
@@ -11174,6 +11179,8 @@ function big_bang(){
     Object.keys(vues).forEach(function (v){
         vues[v].$destroy();
     });
+    let god = global.race.species;
+    let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
@@ -11212,8 +11219,8 @@ function big_bang(){
     global.stats.universes++;
     global['race'] = { 
         species : 'protoplasm', 
-        gods: 'none',
-        old_gods: 'none',
+        gods: god,
+        old_gods: old_god,
         Plasmid: { count: plasmid },
         Phage: { count: phage },
         Dark: { count: dark + new_dark },

@@ -476,7 +476,7 @@ function fastLoop(){
     keyMultiplier();
     
     breakdown.p['Global'] = {};
-    var global_multiplier = 1000000000;
+    var global_multiplier = 1;
     if (global.race.Plasmid.count > 0){
         breakdown.p['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();

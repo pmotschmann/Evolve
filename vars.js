@@ -230,7 +230,9 @@ if (!global['settings']){
         showIndustry: false,
         showResearch: false,
         showCivic: false,
+        showResources: false,
         showMarket: false,
+        showStorage: false,
         showGenetics: false,
         showSpace: false,
         showAchieve: false,
@@ -238,6 +240,19 @@ if (!global['settings']){
         disableReset: false,
         theme: 'dark',
         locale: 'en-US',
+    }
+}
+
+if (!global.settings['showResources']){
+    global.settings['showResources'] = global.settings['showMarket'];
+}
+
+if (!global.settings['showStorage']){
+    if (global.city['warehouse'] || global.city['storage_yard']){
+        global.settings['showStorage'] = true;
+    }
+    else {
+        global.settings['showStorage'] = false;
     }
 }
 
@@ -801,7 +816,9 @@ export function clearStates(){
     global.settings.showIndustry = false;
     global.settings.showResearch = false;
     global.settings.showCivic = false;
+    global.settings.showResources = false;
     global.settings.showMarket = false;
+    global.settings.showStorage = false;
     global.settings.showGenetics = false;
     global.settings.showSpace = false;
     global.settings.showDeep = false;

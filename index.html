@@ -118,7 +118,7 @@
                                 </b-tab-item>
                             </b-tabs>
                         </b-tab-item>
-                        <b-tab-item :visible="showMarket">
+                        <b-tab-item :visible="showResources">
                             <template slot="header">
                                 {{ 'tab_resources' | label }}
                             </template>
@@ -128,7 +128,7 @@
                                         {{ 'tab_market' | label }}
                                     </template>
                                 </b-tab-item>
-                                <b-tab-item id="resStorage">
+                                <b-tab-item id="resStorage" :visible="showStorage">
                                     <template slot="header">
                                         {{ 'tab_storage' | label }}
                                     </template>
