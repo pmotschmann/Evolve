@@ -1988,7 +1988,7 @@ function fastLoop(){
                 }
             }
 
-            iron_smelter *= global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
+            iron_smelter *= global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 1.5 : 1.2) : 1;
 
             if (global.race['pyrophobia']){
                 iron_smelter *= 0.9;
@@ -2292,6 +2292,7 @@ function fastLoop(){
                 let iron_mult = 1/4;
                 let iron_base = miner_base * iron_mult;
                 let smelter_mult = 1 + (iron_smelter * 0.1);
+
                 if (global.city.geology['Iron']){
                     iron_base *= global.city.geology['Iron'] + 1;
                 }
