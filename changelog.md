@@ -1,7 +1,7 @@
 #### 0.5.3 - 8/20/2019 ####
-Stats and Achievements seperated into seperate sub tabs<br>
+Stats and Achievements separated into separate sub tabs<br>
 Disrupter rifle upgrade for soldiers<br>
-Mass Ejector can on longer be unlocked before completing the Stellar Engine<br>
+Mass Ejector can np longer be unlocked before completing the Stellar Engine<br>
 Changed "Special" text color in night theme to be easier to read<br> 
 
 #### 0.5.2 - 8/20/2019 ####
