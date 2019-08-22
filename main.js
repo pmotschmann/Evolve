@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
+import { global, vues, save, poppers, resizeGame, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
@@ -150,6 +150,8 @@ buildQueue();
 arpa('Physics');
 arpa('Genetics');
 arpa('Crispr');
+
+resizeGame();
 
 vues['race'] = new Vue({
     data: {
@@ -4180,10 +4182,12 @@ function longLoop(){
                     buy = false;
                     if (!element.hasClass('cna')){
                         if (deepScan.includes(struct.action)){
+                            let scan = true;
                             Object.keys(actions[struct.action]).forEach(function (region){
-                                if (actions[struct.action][region][struct.type] && buy){
+                                if (actions[struct.action][region][struct.type] && scan){
                                     c_action = actions[struct.action][region][struct.type];
                                     idx = i;
+                                    scan = false;
                                 }
                             });
                         }

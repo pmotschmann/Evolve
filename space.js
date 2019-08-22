@@ -2329,7 +2329,8 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            flair: loc('interstellar_far_reach_flair')
         },
         stellar_engine: {
             id: 'interstellar-stellar_engine',
