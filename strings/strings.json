@@ -1093,7 +1093,7 @@
   "tech_quantum_swarm": "Quantum Swarm",
   "tech_quantum_swarm_effect": "By upgrading your swarm plant AI with quantum processors the efficiency of the plants are limited only by your capacity for knowledge.",
   "tech_dyson_net": "Dyson Net",
-  "tech_dyson_net_effect": "Previous attempts to design a Dyson Sphere were unsuccessful, however it may now be possible to construct a Dyson Net surrounding the Proxima star. Instead of surrounding the star with a hard shell a Dyson Net would surround the much smaller Proxima star with a highly conductive net like material.",
+  "tech_dyson_net_effect": "Previous attempts to design a Dyson Sphere were unsuccessful, however it may now be possible to construct a Dyson Net surrounding the Proxima star. Instead of surrounding the star with a hard shell, a Dyson Net would surround the much smaller Proxima star with a highly conductive net like material.",
   "tech_quantum_manufacturing": "Quantum Manufacturing",
   "tech_quantum_manufacturing_effect": "AI powered by quantum processors can improve the output of your factories. Efficiency scales with your maximum capacity for knowledge.",
   "tech_gps": "GPS Constellation",
