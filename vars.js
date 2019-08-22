@@ -658,11 +658,12 @@ function convertVersion(version){
     return Number(vNum[0]) + Number(vNum[1]) + Number(vNum[2]);
 }
 
-function resizeGame(){
+export function resizeGame(){
     if ($(window).width() >= 1400 && $('#msgQueue:not(.right)')){
         let build = $('#buildQueue').detach();
         build.addClass('right');
         build.removeClass('has-text-info');
+        build.find('h2').removeClass('is-sr-only');
 
         let queue = $('#msgQueue').detach();
         queue.addClass('right');
@@ -678,6 +679,7 @@ function resizeGame(){
         let build = $('#buildQueue').detach();
         build.removeClass('right');
         build.addClass('has-text-info');
+        build.find('h2').addClass('is-sr-only');
 
         let queue = $('#msgQueue').detach();
         queue.removeClass('right');
@@ -723,8 +725,6 @@ export function sizeApproximation(value,precision,fixed){
 $(window).resize(function(){
     resizeGame();
 });
-
-resizeGame();
 
 window.exportGame = function exportGame(){
     $('#importExport').val(LZString.compressToBase64(JSON.stringify(global)));

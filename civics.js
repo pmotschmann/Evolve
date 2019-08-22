@@ -35,7 +35,7 @@ export function defineGarrison(){
 
 export function buildQueue(){
     $('#buildQueue').empty();
-    $('#buildQueue').append($('<h2 class="has-text-success">Building Queue</h2>'));
+    $('#buildQueue').append($('<h2 class="has-text-success is-sr-only">Building Queue</h2>'));
 
     let queue = $(`<div class="buildList"></div>`);
     $('#buildQueue').append(queue);
