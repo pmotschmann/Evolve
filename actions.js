@@ -7339,7 +7339,7 @@ export const actions = {
             id: 'tech-plasma_turret',
             title: loc('tech_plasma_turret'),
             desc: loc('tech_plasma_turret'),
-            reqs: { high_tech: 13, portal: 2 },
+            reqs: { high_tech: 13, turret: 1 },
             grant: ['turret',2],
             cost: {
                 Knowledge(){ return 760000; },
