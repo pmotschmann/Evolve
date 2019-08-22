@@ -1472,6 +1472,7 @@ const spaceProjects = {
                 }
             },
             reqs: { science: 10 },
+            no_queue(){ return global.space.world_collider.count < 1859 ? false : true },
             cost: {
                 Money(){ return global.space.world_collider.count < 1859 ? 25000 : 0; },
                 Copper(){ return global.space.world_collider.count < 1859 ? 750 : 0; },
@@ -2057,6 +2058,7 @@ const interstellarProjects = {
                 }
             },
             reqs: { proxima: 3 },
+            no_queue(){ return global.interstellar.dyson.count ? false : true },
             cost: {
                 Money(){ return global.interstellar.dyson.count < 100 ? 250000 : 0; },
                 Adamantite(){ return global.interstellar.dyson.count < 100 ? 10000 : 0; },
@@ -2344,6 +2346,7 @@ const interstellarProjects = {
                 }
             },
             reqs: { blackhole: 3 },
+            no_queue(){ return global.interstellar.stellar_engine.count < 100 ? false : true },
             cost: {
                 Money(){ return global.interstellar.stellar_engine.count < 100 ? 500000 : 0; },
                 Neutronium(){ return global.interstellar.stellar_engine.count < 100 ? 450 : 0; },
