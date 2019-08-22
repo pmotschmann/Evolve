@@ -480,7 +480,7 @@ function fastLoop(){
     keyMultiplier();
     
     breakdown.p['Global'] = {};
-    var global_multiplier = 1;
+    var global_multiplier = 1000;
     if (global.race.Plasmid.count > 0){
         breakdown.p['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();
@@ -4171,37 +4171,35 @@ function longLoop(){
         }
 
         if (global.tech['queue'] && global.queue.display){
-            let buy = true;
             let idx = -1;
             let c_action = false;
             let deepScan = ['space','interstellar','portal'];
             for (let i=0; i<global.queue.queue.length; i++){
                 let struct = global.queue.queue[i];
-                let element = $('#'+struct.id);
-                if (!element.hasClass('cnam') && buy === true){
-                    buy = false;
-                    if (!element.hasClass('cna')){
-                        if (deepScan.includes(struct.action)){
-                            let scan = true;
-                            Object.keys(actions[struct.action]).forEach(function (region){
-                                if (actions[struct.action][region][struct.type] && scan){
-                                    c_action = actions[struct.action][region][struct.type];
-                                    idx = i;
-                                    scan = false;
-                                }
-                            });
+
+                let t_action = false;
+                if (deepScan.includes(struct.action)){
+                    let scan = true;
+                    Object.keys(actions[struct.action]).forEach(function (region){
+                        if (actions[struct.action][region][struct.type] && scan){
+                            t_action = actions[struct.action][region][struct.type];
+                            scan = false;
                         }
-                        else {
-                            c_action = actions[struct.action][struct.type];
-                            idx = i;
-                        }
-                    }
-                }
-                if (element.hasClass('cnam')){
-                    global.queue.queue[i].cna = true;
+                    });
                 }
                 else {
+                    t_action = actions[struct.action][struct.type];
+                }
+
+                if (checkAffordable(t_action,true)){
                     global.queue.queue[i].cna = false;
+                    if (checkAffordable(t_action)){
+                        c_action = t_action;
+                        idx = i;
+                    }
+                }
+                else {
+                    global.queue.queue[i].cna = true;
                 }
             }
             if (idx >= 0 && c_action){

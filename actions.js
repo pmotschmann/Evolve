@@ -1631,7 +1631,7 @@ export const actions = {
             desc: loc('city_food_desc'),
             reqs: { primitive: 1 },
             not_trait: ['evil'],
-            no_queue: true,
+            no_queue(){ return true },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     modRes('Food',global.race['strong'] ? 2 : 1);
@@ -1645,7 +1645,7 @@ export const actions = {
             desc: loc('city_lumber_desc'),
             reqs: {},
             not_trait: ['evil'],
-            no_queue: true,
+            no_queue(){ return true },
             action(){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',global.race['strong'] ? 2 : 1);
@@ -1658,7 +1658,7 @@ export const actions = {
             title: loc('city_stone'),
             desc: loc('city_stone_desc'),
             reqs: { primitive: 2 },
-            no_queue: true,
+            no_queue(){ return true },
             action(){
                 if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     modRes('Stone',global.race['strong'] ? 2 : 1);
@@ -1672,7 +1672,7 @@ export const actions = {
             desc(){ return global.tech['primitive'] ? (global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1'); },
             reqs: {},
             trait: ['evil'],
-            no_queue: true,
+            no_queue(){ return true },
             action(){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',1);
@@ -9220,6 +9220,7 @@ export const actions = {
                 }
             },
             reqs: { genesis: 5 },
+            no_queue(){ return global.starDock.seeder.count < 100 ? false : true },
             cost: {
                 Money(){ return global.starDock.seeder.count < 100 ? 100000 : 0; },
                 Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
@@ -9254,6 +9255,7 @@ export const actions = {
             },
             reqs: { genesis: 6 },
             cost: {},
+            no_queue(){ return true },
             effect(){
                 let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
                 let plasmid = Math.round(pop / 3);
@@ -9285,6 +9287,7 @@ export const actions = {
             },
             reqs: { genesis: 7 },
             cost: {},
+            no_queue(){ return true },
             effect(){
                 let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
                 let plasmid = Math.round(pop / 3);
@@ -9619,7 +9622,7 @@ export function setAction(c_action,action,type,old){
                                 let grant = false;
                                 for (var i=0; i<keyMult; i++){
                                     if (!c_action.action()){
-                                        if (!c_action['no_queue'] && global.tech['queue']){
+                                        if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['queue']){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){
                                                 max_queue += 2;
