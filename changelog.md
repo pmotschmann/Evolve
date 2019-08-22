@@ -1,3 +1,6 @@
+#### 0.5.5 - 8/22/2019 ####
+Bug Fixes for queueing system<br>
+
 #### 0.5.4 - 8/22/2019 ####
 Building Queue system v1.0<br>
 Urban Planning, Zoning Permits, and Urbanization queue related techs<br>

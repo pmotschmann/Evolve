@@ -4849,7 +4849,7 @@ export const actions = {
             id: 'tech-tax_rates',
             title: loc('tech_tax_rates'),
             desc: loc('tech_tax_rates_desc'),
-            reqs: { banking: 2, currency: 2 },
+            reqs: { banking: 2, currency: 2, queue: 1 },
             grant: ['currency',3],
             cost: {
                 Knowledge(){ return 3375; }

@@ -6,7 +6,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -478,7 +478,7 @@ function fastLoop(){
     keyMultiplier();
     
     breakdown.p['Global'] = {};
-    var global_multiplier = 1;
+    var global_multiplier = 1000;
     if (global.race.Plasmid.count > 0){
         breakdown.p['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();
@@ -4171,23 +4171,26 @@ function longLoop(){
         if (global.tech['queue'] && global.queue.display){
             let buy = true;
             let idx = -1;
+            let c_action = false;
             let deepScan = ['space','interstellar','portal'];
             for (let i=0; i<global.queue.queue.length; i++){
                 let struct = global.queue.queue[i];
                 let element = $('#'+struct.id);
-                if (!element.hasClass('cnam') && !element.hasClass('cna') && buy){
-                    idx = i;
-                    if (deepScan.includes(struct.action)){
-                        Object.keys(actions[struct.action]).forEach(function (region){
-                            if (actions[struct.action][region][struct.type] && buy){
-                                actions[struct.action][region][struct.type].action();
-                                buy = false;
-                            }
-                        });
-                    }
-                    else {
-                        actions[struct.action][struct.type].action();
-                        buy = false;
+                if (!element.hasClass('cnam') && buy === true){
+                    buy = false;
+                    if (!element.hasClass('cna')){
+                        if (deepScan.includes(struct.action)){
+                            Object.keys(actions[struct.action]).forEach(function (region){
+                                if (actions[struct.action][region][struct.type] && buy){
+                                    c_action = actions[struct.action][region][struct.type];
+                                    idx = i;
+                                }
+                            });
+                        }
+                        else {
+                            c_action = actions[struct.action][struct.type];
+                            idx = i;
+                        }
                     }
                 }
                 if (element.hasClass('cnam')){
@@ -4197,8 +4200,34 @@ function longLoop(){
                     global.queue.queue[i].cna = false;
                 }
             }
-            if (idx >= 0){
-                global.queue.queue.splice(idx,1);
+            if (idx >= 0 && c_action){
+                if (c_action.action()){
+                    global.queue.queue.splice(idx,1);
+                    if (c_action['grant']){
+                        let tech = c_action.grant[0];
+                        global.tech[tech] = c_action.grant[1];
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        space();
+                        deepSpace();
+                        renderFortress();
+                    }
+                    else if (c_action['refresh']){
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        space();
+                        deepSpace();
+                        renderFortress();
+                    }
+                    else {
+                        drawCity();
+                        space();
+                        deepSpace();
+                        renderFortress();
+                    }
+                }
             }
         }
     }
