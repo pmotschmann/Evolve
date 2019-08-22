@@ -441,6 +441,36 @@ const genePool = {
             return false;
         }
     },
+    geographer: {
+        id: 'genes-geographer',
+        title: loc('arpa_genepool_geographer_title'),
+        desc: loc('arpa_genepool_geographer_desc'),
+        reqs: { store: 1 },
+        grant: ['queue',1],
+        cost: 75,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>75</span></div>`,
+        action(){
+            if (payPlasmids('geographer')){
+                return true;
+            }
+            return false;
+        }
+    },
+    architect: {
+        id: 'genes-architect',
+        title: loc('arpa_genepool_architect_title'),
+        desc: loc('arpa_genepool_architect_desc'),
+        reqs: { queue: 1 },
+        grant: ['queue',2],
+        cost: 160,
+        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>160</span></div>`,
+        action(){
+            if (payPlasmids('architect')){
+                return true;
+            }
+            return false;
+        }
+    },
     hardened_genes: {
         id: 'genes-hardened_genes',
         title: loc('arpa_genepool_hardened_genes_title'),

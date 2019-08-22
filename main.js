@@ -4,7 +4,7 @@ import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
-import { defineGovernment, defineGarrison, garrisonSize, armyRating } from './civics.js';
+import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
@@ -144,6 +144,8 @@ defineGovernment();
 if (global.race.species !== 'protoplasm'){
     defineGarrison();
 }
+
+buildQueue();
 
 arpa('Physics');
 arpa('Genetics');
@@ -4164,6 +4166,40 @@ function longLoop(){
             }
             messageQueue(loc('interstellar_blackhole_unstable'),'danger');
             drawTech();
+        }
+
+        if (global.tech['queue'] && global.queue.display){
+            let buy = true;
+            let idx = -1;
+            let deepScan = ['space','interstellar','portal'];
+            for (let i=0; i<global.queue.queue.length; i++){
+                let struct = global.queue.queue[i];
+                let element = $('#'+struct.id);
+                if (!element.hasClass('cnam') && !element.hasClass('cna') && buy){
+                    idx = i;
+                    if (deepScan.includes(struct.action)){
+                        Object.keys(actions[struct.action]).forEach(function (region){
+                            if (actions[struct.action][region][struct.type] && buy){
+                                actions[struct.action][region][struct.type].action();
+                                buy = false;
+                            }
+                        });
+                    }
+                    else {
+                        actions[struct.action][struct.type].action();
+                        buy = false;
+                    }
+                }
+                if (element.hasClass('cnam')){
+                    global.queue.queue[i].cna = true;
+                }
+                else {
+                    global.queue.queue[i].cna = false;
+                }
+            }
+            if (idx >= 0){
+                global.queue.queue.splice(idx,1);
+            }
         }
     }
 

@@ -224,7 +224,7 @@ if (convertVersion(global['version']) === 5000){
     }
 }
 
-global['version'] = '0.5.3';
+global['version'] = '0.5.4';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -302,6 +302,13 @@ if (!global.settings['portal']){
         fortress : false,
         badlands : false,
         pit : false,
+    };
+}
+
+if (!global['queue']){
+    global['queue'] = {
+        display: false,
+        queue: [],
     };
 }
 
@@ -653,19 +660,30 @@ function convertVersion(version){
 
 function resizeGame(){
     if ($(window).width() >= 1400 && $('#msgQueue:not(.right)')){
+        let build = $('#buildQueue').detach();
+        build.addClass('right');
+        build.removeClass('has-text-info');
+
         let queue = $('#msgQueue').detach();
         queue.addClass('right');
         queue.removeClass('has-text-info');
         $('#queueColumn').addClass('is-one-quarter');
+        $('#queueColumn').append(build);
         $('#queueColumn').append(queue);
         $('#mainColumn').removeClass('is-three-quarters');
         $('#mainColumn').addClass('is-half');
+
     }
     else if ($(window).width() < 1400 && $('#msgQueue').hasClass('right')){
+        let build = $('#buildQueue').detach();
+        build.removeClass('right');
+        build.addClass('has-text-info');
+
         let queue = $('#msgQueue').detach();
         queue.removeClass('right');
         queue.addClass('has-text-info');
         $('#queueColumn').removeClass('is-one-quarter');
+        $('#sideQueue').append(build);
         $('#sideQueue').append(queue);
         $('#mainColumn').removeClass('is-half');
         $('#mainColumn').addClass('is-three-quarters');

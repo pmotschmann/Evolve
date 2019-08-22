@@ -173,20 +173,41 @@ a {
             text-align: center;
         }
     }
+    
+    .queueCol {
+        div:first-child {
+            margin-top: 3.25rem;
+        }
+    }
 
+    .bldQueue,
     .msgQueue {
         height: 5rem;
         border-top: solid .0625rem;
         border-bottom: solid .0625rem;
         overflow-y: auto;
-        font-size: .75rem;
-
         &.right {
-            margin-top: 3.25rem;
             height: auto;
-            min-height: 30rem;
             border-bottom: none;
             padding: 1rem;
+        }
+    }
+    
+    .msgQueue {
+        font-size: .75rem;
+        &.right {
+            min-height: 30rem;
+        }
+    }
+
+    .bldQueue,
+    .bldQueue.right {
+        padding-top: .25rem;
+        h2 {
+            border-bottom: solid .0625rem;
+        }
+        .queued:not(:last-child):after {
+            content: " -> "
         }
     }
     
@@ -264,7 +285,7 @@ a {
 
     .content {
         .tab-content {
-            padding: 0 1rem 1rem;
+            padding: 0 .25rem 1rem 1rem;
         }
         .tab-item {
             padding: 0 0 3rem 1rem;

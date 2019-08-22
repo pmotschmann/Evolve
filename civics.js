@@ -33,6 +33,26 @@ export function defineGarrison(){
     defineMad();
 }
 
+export function buildQueue(){
+    $('#buildQueue').empty();
+    $('#buildQueue').append($('<h2 class="has-text-success">Building Queue</h2>'));
+
+    let queue = $(`<div class="buildList"></div>`);
+    $('#buildQueue').append(queue);
+
+    queue.append($(`<a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" v-for="(item, index) in queue" @click="remove(index)">{{ item.label }}</a>`));
+
+    vues['builld_queue'] = new Vue({
+        el: '#buildQueue',
+        data: global.queue,
+        methods: {
+            remove(index){
+                global.queue.queue.splice(index,1);
+            }
+        }
+    });
+}
+
 function taxRates(govern){
     var tax_rates = $('<div id="tax_rates" v-show="display" class="taxRate"></div>');
     govern.append(tax_rates);
