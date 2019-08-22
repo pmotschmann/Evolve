@@ -833,6 +833,10 @@ window.soft_reset = function reset(){
 }
 
 export function clearStates(){
+    global['queue'] = {
+        display: false,
+        queue: [],
+    };
     global.space = {};
     global.interstellar = {};
     global.portal = {};

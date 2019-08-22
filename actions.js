@@ -11040,6 +11040,7 @@ function sentience(){
     }
     if (global.genes['queue']){
         global.tech['queue'] = 1;
+        global.queue.display = true;
     }
 
     Object.keys(global.genes.minor).forEach(function (trait){
