@@ -6,7 +6,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -14,16 +14,29 @@ import { arpa } from './arpa.js';
 var intervals = {};
 
 if (Object.keys(locales).length > 1){
-    $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="locale"></select></span>`));
+    $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="s.locale"></select></span>`));
     Object.keys(locales).forEach(function (locale){
         let selected = global.settings.locale === locale ? ' selected=selected' : '';
         $('#localization select').append($(`<option value="${locale}"${selected}>${locales[locale]}</option>`));
     });
 }
 
+function resQueue(){
+    $('#resQueue').empty();
+
+    let queue = $(`<div class="buildList"></div>`);
+    $('#resQueue').append(queue);
+
+    queue.append($(`<a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" v-for="(item, index) in rq.queue" @click="remove(index)">{{ item.label }}</a>`));
+}
+resQueue();
+
 let settings = {
     el: '#mainColumn div:first-child',
-    data: global.settings,
+    data: { 
+        s: global.settings,
+        rq: global.r_queue
+    },
     methods: {
         lChange(){
             global.settings.locale = $('#localization select').children("option:selected").val();
@@ -61,6 +74,9 @@ let settings = {
         },
         soft(){
             return loc('settings4');
+        },
+        remove(index){
+            global.r_queue.queue.splice(index,1);
         }
     },
     filters: {
@@ -480,7 +496,7 @@ function fastLoop(){
     keyMultiplier();
     
     breakdown.p['Global'] = {};
-    var global_multiplier = 1000;
+    var global_multiplier = 1;
     if (global.race.Plasmid.count > 0){
         breakdown.p['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();
@@ -4229,6 +4245,32 @@ function longLoop(){
                         deepSpace();
                         renderFortress();
                     }
+                }
+            }
+        }
+
+        if (global.tech['r_queue'] && global.r_queue.display){
+            let idx = -1;
+            let c_action = false;
+            for (let i=0; i<global.r_queue.queue.length; i++){
+                let struct = global.r_queue.queue[i];
+                let t_action = actions[struct.action][struct.type];
+
+                if (checkAffordable(t_action,true)){
+                    global.r_queue.queue[i].cna = false;
+                    if (checkAffordable(t_action)){
+                        c_action = t_action;
+                        idx = i;
+                    }
+                }
+                else {
+                    global.r_queue.queue[i].cna = true;
+                }
+            }
+            if (idx >= 0 && c_action){
+                if (c_action.action()){
+                    gainTech(global.r_queue.queue[idx].type);
+                    global.r_queue.queue.splice(idx,1);
                 }
             }
         }

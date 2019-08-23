@@ -655,6 +655,8 @@
   "tech_zoning_permits_effect": "Increase the maximum queue size of the building queue by 2.",
   "tech_urbanization": "Urbanization",
   "tech_urbanization_effect": "Increase the maximum queue size of the building queue by 3.",
+  "tech_assistant": "Personal Assistant",
+  "tech_assistant_effect": "A personal assistant will help you keep your empire organized. Enables research queue.",
   "tech_currency": "Currency",
   "tech_currency_desc": "Invent the concept of currency",
   "tech_currency_effect": "Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.",

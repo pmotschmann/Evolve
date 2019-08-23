@@ -58,36 +58,36 @@
             <div id="mainColumn" class="column is-three-quarters">
                 <div class="content">
                     <h2 class="is-sr-only">Tab Navigation</h2>
-                    <b-tabs v-model="civTabs" :animated="animated">
-                        <b-tab-item id="evolution" :visible="showEvolve">
+                    <b-tabs v-model="s.civTabs" :animated="s.animated">
+                        <b-tab-item id="evolution" :visible="s.showEvolve">
                             <template slot="header">
                                 {{ 'tab_evolve' | label }}
                             </template>
                         </b-tab-item>
-                        <b-tab-item :visible="showCity">
+                        <b-tab-item :visible="s.showCity">
                             <template slot="header">
                                 {{ 'tab_civil' | label }}
                             </template>
-                            <b-tabs class="resTabs" v-model="spaceTabs" :animated="animated">
-                                <b-tab-item id="city" :visible="showCity">
+                            <b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated">
+                                <b-tab-item id="city" :visible="s.showCity">
                                     <template slot="header">
                                         <h2 class="is-sr-only">{{ 'city' | label }}</h2>
                                         <span aria-hidden="true">{{ 'city' | label }}</span>
                                     </template>
                                 </b-tab-item>
-                                <b-tab-item id="space" :visible="showSpace">
+                                <b-tab-item id="space" :visible="s.showSpace">
                                     <template slot="header">
                                         <h2 class="is-sr-only">{{ 'local_space' | label }}</h2>
                                         <span aria-hidden="true">{{ 'local_space' | label }}</span>
                                     </template>
                                 </b-tab-item>
-                                <b-tab-item id="interstellar" :visible="showDeep">
+                                <b-tab-item id="interstellar" :visible="s.showDeep">
                                     <template slot="header">
                                         <h2 class="is-sr-only">{{ 'tab_interstellar' | label }}</h2>
                                         <span aria-hidden="true">{{ 'tab_interstellar' | label }}</span>
                                     </template>
                                 </b-tab-item>
-                                <b-tab-item id="portal" :visible="showPortal">
+                                <b-tab-item id="portal" :visible="s.showPortal">
                                     <template slot="header">
                                         <h2 class="is-sr-only">{{ 'tab_portal' | label }}</h2>
                                         <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
@@ -95,16 +95,17 @@
                                 </b-tab-item>
                             </b-tabs>
                         </b-tab-item>
-                        <b-tab-item id="civic" :visible="showCivic" class="columns">
+                        <b-tab-item id="civic" :visible="s.showCivic" class="columns">
                             <template slot="header">
                                 {{ 'tab_civics' | label }}
                             </template>
                         </b-tab-item>
-                        <b-tab-item :visible="showResearch">
+                        <b-tab-item :visible="s.showResearch">
                             <template slot="header">
                                 {{ 'tab_research' | label }}
                             </template>
-                            <b-tabs class="resTabs" v-model="resTabs" :animated="animated">
+                            <div id="resQueue" class="resQueue" v-show="rq.display"></div>
+                            <b-tabs class="resTabs" v-model="s.resTabs" :animated="s.animated">
                                 <b-tab-item id="tech">
                                     <template slot="header">
                                         <h2 class="is-sr-only">{{ 'new_sr' | label }}</h2>
@@ -119,42 +120,42 @@
                                 </b-tab-item>
                             </b-tabs>
                         </b-tab-item>
-                        <b-tab-item :visible="showResources">
+                        <b-tab-item :visible="s.showResources">
                             <template slot="header">
                                 {{ 'tab_resources' | label }}
                             </template>
-                            <b-tabs class="resTabs" v-model="marketTabs" :animated="animated">
-                                <b-tab-item id="market" :visible="showMarket">
+                            <b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated">
+                                <b-tab-item id="market" :visible="s.showMarket">
                                     <template slot="header">
                                         {{ 'tab_market' | label }}
                                     </template>
                                 </b-tab-item>
-                                <b-tab-item id="resStorage" :visible="showStorage">
+                                <b-tab-item id="resStorage" :visible="s.showStorage">
                                     <template slot="header">
                                         {{ 'tab_storage' | label }}
                                     </template>
                                 </b-tab-item>
-                                <b-tab-item id="resEjector" :visible="showEjector">
+                                <b-tab-item id="resEjector" :visible="s.showEjector">
                                     <template slot="header">
                                         {{ 'tab_ejector' | label }}
                                     </template>
                                 </b-tab-item>
                             </b-tabs>
                         </b-tab-item>
-                        <b-tab-item :visible="showGenetics" label="A.R.P.A.">
+                        <b-tab-item :visible="s.showGenetics" label="A.R.P.A.">
                             <div id="apra" class="arpa">
-                                <b-tabs v-model="arpa.arpaTabs" :animated="animated">
-                                    <b-tab-item id="arpaPhysics" :visible="arpa.physics" label="Projects"></b-tab-item>
-                                    <b-tab-item id="arpaGenetics" :visible="arpa.genetics" label="Genetics"></b-tab-item>
-                                    <b-tab-item id="arpaCrispr" :visible="arpa.crispr" label="Crispr"></b-tab-item>
+                                <b-tabs v-model="s.arpa.arpaTabs" :animated="s.animated">
+                                    <b-tab-item id="arpaPhysics" :visible="s.arpa.physics" label="Projects"></b-tab-item>
+                                    <b-tab-item id="arpaGenetics" :visible="s.arpa.genetics" label="Genetics"></b-tab-item>
+                                    <b-tab-item id="arpaCrispr" :visible="s.arpa.crispr" label="Crispr"></b-tab-item>
                                 </b-tabs>
                             </div>
                         </b-tab-item>
-                        <b-tab-item :visible="showAchieve">
+                        <b-tab-item :visible="s.showAchieve">
                             <template slot="header">
                                 {{ 'tab_stats' | label }}
                             </template>
-                            <b-tabs class="resTabs" v-model="statsTabs" :animated="animated">
+                            <b-tabs class="resTabs" v-model="s.statsTabs" :animated="s.animated">
                                 <b-tab-item id="stats">
                                     <template slot="header">
                                         {{ 'tab_stats' | label }}
@@ -175,7 +176,7 @@
                                 <span>{{ 'theme' | label }} </span>
                                 <b-dropdown hoverable>
                                     <button class="button is-primary" slot="trigger">
-                                        <span>{{ theme | namecase }}</span>
+                                        <span>{{ s.theme | namecase }}</span>
                                         <i class="fas fa-sort-down"></i>
                                     </button>
                                     <b-dropdown-item v-on:click="dark">{{ 'theme_dark' | label }}</b-dropdown-item>
@@ -185,7 +186,7 @@
                                 </b-dropdown>
                             </div>
                             <div id="localization" class="localization"></div>
-                            <b-switch v-model="mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>Multiplier Keys</b-tooltip></b-switch>
+                            <b-switch v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>Multiplier Keys</b-tooltip></b-switch>
                             <div class="importExport">
                                 <b-field label="Import/Export Save">
                                     <b-input id="importExport" type="textarea"></b-input>
@@ -195,15 +196,15 @@
                             </div>
                             <div class="reset">
                                 <b-collapse :open="false">
-                                    <b-switch v-model="disableReset" slot="trigger">{{ 'enable_reset' | label }}</b-switch>
+                                    <b-switch v-model="s.disableReset" slot="trigger">{{ 'enable_reset' | label }}</b-switch>
                                     <div class="notification">
                                         <div class="content">
                                             <h4 class="has-text-danger">
                                                 {{ 'reset_warn' | label }}
                                             </h4>
                                             <p>
-                                                <button class="button" :disabled="!disableReset" @click="soft_reset()"><b-tooltip :label="soft()" position="is-top" size="is-small" multilined animated>{{ 'reset_soft' | label }}</b-tooltip></button>
-                                                <button class="button" :disabled="!disableReset" @click="reset()"><b-tooltip :label="hard()" position="is-top" size="is-small" multilined animated>{{ 'reset_hard' | label }}</b-tooltip></button>
+                                                <button class="button" :disabled="!s.disableReset" @click="soft_reset()"><b-tooltip :label="soft()" position="is-top" size="is-small" multilined animated>{{ 'reset_soft' | label }}</b-tooltip></button>
+                                                <button class="button" :disabled="!s.disableReset" @click="reset()"><b-tooltip :label="hard()" position="is-top" size="is-small" multilined animated>{{ 'reset_hard' | label }}</b-tooltip></button>
                                             </p>
                                         </div>
                                     </div>
