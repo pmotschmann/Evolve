@@ -4806,6 +4806,24 @@ export const actions = {
                 return false;
             }
         },
+        assistant: {
+            id: 'tech-assistant',
+            title: loc('tech_assistant'),
+            desc: loc('tech_assistant'),
+            reqs: { queue: 1, science: 4 },
+            grant: ['r_queue',1],
+            cost: {
+                Knowledge(){ return 5000; }
+            },
+            effect: loc('tech_assistant_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.r_queue.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: loc('tech_currency'),
@@ -9389,7 +9407,7 @@ function registerTech(action){
     addAction('tech',action);
 }
 
-function gainTech(action){
+export function gainTech(action){
     var tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
     drawCity();
@@ -9584,6 +9602,26 @@ export function setAction(c_action,action,type,old){
                         case 'tech':
                             if (c_action.action()){
                                 gainTech(type);
+                            }
+                            else {
+                                if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
+                                    let max_queue = 3;
+                                    if (global.genes['queue'] && global.genes['queue'] >= 2){
+                                        max_queue += 2;
+                                    }
+                                    if (global.r_queue.queue.length < max_queue){
+                                        let queued = false;
+                                        for (let tech in global.r_queue.queue){
+                                            if (tech.id === c_action.id){
+                                                queued = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!queued){
+                                            global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false });
+                                        }
+                                    }
+                                }
                             }
                             break;
                         case 'genes':

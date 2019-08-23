@@ -312,6 +312,13 @@ if (!global['queue']){
     };
 }
 
+if (!global['r_queue']){
+    global['r_queue'] = {
+        display: false,
+        queue: [],
+    };
+}
+
 if (!global['space']){
     global['space'] = {};
 }
@@ -833,10 +840,8 @@ window.soft_reset = function reset(){
 }
 
 export function clearStates(){
-    global['queue'] = {
-        display: false,
-        queue: [],
-    };
+    global['queue'] = { display: false, queue: [] };
+    global['r_queue'] = { display: false, queue: [] };
     global.space = {};
     global.interstellar = {};
     global.portal = {};

@@ -210,6 +210,15 @@ a {
             content: " -> "
         }
     }
+
+    .resQueue {
+        .buildList {
+            margin-left: 2rem;
+            .queued:not(:last-child):after {
+                content: " -> "
+            }
+        }
+    }
     
     .resources {
         margin-top: 1rem;
