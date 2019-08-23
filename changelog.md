@@ -2,6 +2,7 @@
 Building queue now works in space<br>
 Added a seperate research queue<br>
 Fixed rock quarry awarding 4% stone bonus instead of the stated 2%<br>
+Fixed rendering bugs with the blackhole and mass ejector<br>
 
 #### 0.5.5 - 8/22/2019 ####
 Bug Fixes for queueing system<br>
