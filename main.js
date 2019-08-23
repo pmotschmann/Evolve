@@ -2211,7 +2211,7 @@ function fastLoop(){
                 if (global.city.rock_quarry['on']){
                     power_mult += (p_on['rock_quarry'] * 0.04);
                 }
-                rock_quarry += global.city['rock_quarry'].count * 0.04;
+                rock_quarry += global.city['rock_quarry'].count * 0.02;
             }
 
             let delta = stone_base * power_mult * rock_quarry;
