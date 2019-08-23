@@ -9612,7 +9612,7 @@ export function setAction(c_action,action,type,old){
                                     if (global.r_queue.queue.length < max_queue){
                                         let queued = false;
                                         for (let tech in global.r_queue.queue){
-                                            if (tech.id === c_action.id){
+                                            if (global.r_queue.queue[tech].id === c_action.id){
                                                 queued = true;
                                                 break;
                                             }
