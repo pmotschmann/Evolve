@@ -1,9 +1,9 @@
 import { global, vues, poppers, messageQueue, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
-import { spatialReasoning } from './resources.js';
+import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { payCosts, setAction, storageMultipler } from './actions.js';
+import { payCosts, setAction, storageMultipler, drawTech } from './actions.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -2373,6 +2373,7 @@ const interstellarProjects = {
                         incrementStruct('stellar_engine','interstellar');
                         if (global.interstellar.stellar_engine.count >= 100 && global.tech['blackhole'] === 3){
                             global.tech['blackhole'] = 4;
+                            drawTech();
                         }
                     }
                     return true;
@@ -2406,6 +2407,7 @@ const interstellarProjects = {
                     if (global.city.power >= $(this)[0].powered){
                         global.interstellar['mass_ejector'].on++;
                     }
+                    defineResources();
                     return true;
                 }
                 return false;
