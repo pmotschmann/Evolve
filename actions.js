@@ -11081,7 +11081,9 @@ function sentience(){
     }
     if (global.genes['queue']){
         global.tech['queue'] = 1;
+        global.tech['r_queue'] = 1;
         global.queue.display = true;
+        global.r_queue.display = true;
     }
 
     Object.keys(global.genes.minor).forEach(function (trait){
