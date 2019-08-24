@@ -9619,6 +9619,7 @@ export function setAction(c_action,action,type,old){
                                         }
                                         if (!queued){
                                             global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false });
+                                            resDragQueue();
                                         }
                                     }
                                 }
@@ -11222,6 +11223,16 @@ function fanaticTrait(trait){
         global.race[trait] = 1;
         cleanAddTrait(trait);
     }
+}
+
+export function resDragQueue(){
+    sortable('#resQueue .buildList')[0].addEventListener('sortupdate', function(e){
+        let order = global.r_queue.queue;
+        var tmp = order[e.detail.origin.elementIndex];
+        order[e.detail.origin.elementIndex] = order[e.detail.destination.elementIndex];
+        order[e.detail.destination.elementIndex] = tmp;
+        global.r_queue.queue = order;
+    });
 }
 
 function bioseed(){

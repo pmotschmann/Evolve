@@ -1,3 +1,6 @@
+#### 0.5.7 - 8/24/2019 ####
+Drag support for queue sorting<br>
+
 #### 0.5.6 - 8/23/2019 ####
 Building queue now works in space<br>
 Added a seperate research queue<br>

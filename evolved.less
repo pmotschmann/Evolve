@@ -219,7 +219,14 @@ a {
     .resQueue {
         .buildList {
             margin-left: 2rem;
-            .queued:not(:last-child):after {
+            margin-top: 0;
+            
+            li {
+                display: inline-block;
+                height: 1rem;
+                padding: 0 .25rem 0 0;
+            }
+            li:not(:last-child) .queued:after {
                 content: " -> "
             }
         }

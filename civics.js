@@ -2,7 +2,6 @@ import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMult
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
-//import * as drag from './lib/html5sortable.es.js';
 
 // Sets up government in civics tab
 export function defineGovernment(){

@@ -6,7 +6,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resDragQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -24,10 +24,12 @@ if (Object.keys(locales).length > 1){
 function resQueue(){
     $('#resQueue').empty();
 
-    let queue = $(`<div class="buildList"></div>`);
+    let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
-    queue.append($(`<a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" v-for="(item, index) in rq.queue" @click="remove(index)">{{ item.label }}</a>`));
+    //queue.append($(`<a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" v-for="(item, index) in rq.queue" @click="remove(index)">{{ item.label }}</a>`));
+    queue.append($(`<li v-for="(item, index) in rq.queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }}</a></li>`));
+    resDragQueue();
 }
 resQueue();
 
@@ -3811,14 +3813,6 @@ let sythMap = {
 function longLoop(){
     if (global.race.species !== 'protoplasm'){
         
-        if (global.arpa.sequence && global.arpa.sequence['auto']){
-            if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - 10000){
-                global.resource.Knowledge.amount -= 200000;
-                let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
-                global.resource.Genes.amount += gene;
-            }
-        }
-
         if (global.portal['fortress']){
             bloodwar();
         }
@@ -4276,6 +4270,14 @@ function longLoop(){
                     gainTech(global.r_queue.queue[idx].type);
                     global.r_queue.queue.splice(idx,1);
                 }
+            }
+        }
+
+        if (global.arpa.sequence && global.arpa.sequence['auto']){
+            if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - 10000){
+                global.resource.Knowledge.amount -= 200000;
+                let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
+                global.resource.Genes.amount += gene;
             }
         }
     }
