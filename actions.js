@@ -3132,6 +3132,7 @@ export const actions = {
                 let gain = 3000;
                 if (global.portal['sensor_drone']){
                     gain *= 1 + (p_on['sensor_drone'] * 0.02);
+                    gain = +(gain).toFixed(0);
                 }
                 return `${loc('city_max_knowledge',[gain])}, -${actions.city.biolab.powered}kW`;
             },
