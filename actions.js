@@ -11280,6 +11280,7 @@ function bioseed(){
         old_gods: old_god,
         Plasmid: { count: plasmid },
         Phage: { count: phage },
+        Dark: { count: global.race.Dark.count },
         seeded: true,
         probes: probes,
         seed: Math.floor(Math.seededRandom(10000)),
