@@ -206,7 +206,12 @@ a {
         h2 {
             border-bottom: solid .0625rem;
         }
-        .queued:not(:last-child):after {
+        li {
+            display: inline-block;
+            height: 1rem;
+            padding: 0 .25rem 0 0;
+        }
+        li:not(:last-child) .queued:after {
             content: " -> "
         }
     }

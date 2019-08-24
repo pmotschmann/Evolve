@@ -4,7 +4,7 @@ import { unlockAchieve, unlockFeat } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineGarrison, buildGarrison, armyRating, challenge_multiplier } from './civics.js';
+import { defineGarrison, buildGarrison, armyRating, challenge_multiplier, dragQueue } from './civics.js';
 import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
@@ -9667,6 +9667,7 @@ export function setAction(c_action,action,type,old){
                                             }
                                             if (global.queue.queue.length < max_queue){
                                                 global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false });
+                                                dragQueue();
                                             }
                                         }
                                         break;
