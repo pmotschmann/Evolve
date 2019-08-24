@@ -765,6 +765,9 @@ function fastLoop(){
             });
             global.city.market.trade = used_trade;
         }
+        if (breakdown.p.consume.Money['Trade'] === 0){
+            delete breakdown.p.consume.Money['Trade'];
+        }
 
         let power_grid = 0;
         let max_power = 0;
