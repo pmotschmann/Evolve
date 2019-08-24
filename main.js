@@ -4189,6 +4189,7 @@ function longLoop(){
         if (global.tech['queue'] && global.queue.display){
             let idx = -1;
             let c_action = false;
+            let stop = false;
             let deepScan = ['space','interstellar','portal'];
             for (let i=0; i<global.queue.queue.length; i++){
                 let struct = global.queue.queue[i];
@@ -4209,10 +4210,11 @@ function longLoop(){
 
                 if (checkAffordable(t_action,true)){
                     global.queue.queue[i].cna = false;
-                    if (checkAffordable(t_action)){
+                    if (checkAffordable(t_action) && !stop){
                         c_action = t_action;
                         idx = i;
                     }
+                    stop = true;
                 }
                 else {
                     global.queue.queue[i].cna = true;
@@ -4252,16 +4254,18 @@ function longLoop(){
         if (global.tech['r_queue'] && global.r_queue.display){
             let idx = -1;
             let c_action = false;
+            let stop = false;
             for (let i=0; i<global.r_queue.queue.length; i++){
                 let struct = global.r_queue.queue[i];
                 let t_action = actions[struct.action][struct.type];
 
                 if (checkAffordable(t_action,true)){
                     global.r_queue.queue[i].cna = false;
-                    if (checkAffordable(t_action)){
+                    if (checkAffordable(t_action) && !stop){
                         c_action = t_action;
                         idx = i;
                     }
+                    stop = true;
                 }
                 else {
                     global.r_queue.queue[i].cna = true;
