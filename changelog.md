@@ -1,5 +1,7 @@
 #### 0.5.7 - 8/25/2019 ####
 Drag support for queue sorting<br>
+Fixed resource display bug that occured when buying a mass ejector<br>
+Minor traits now show the number of ranks from phage or genes spent<br>
 
 #### 0.5.6 - 8/23/2019 ####
 Building queue now works in space<br>

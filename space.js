@@ -2407,6 +2407,7 @@ const interstellarProjects = {
                     if (global.city.power >= $(this)[0].powered){
                         global.interstellar['mass_ejector'].on++;
                     }
+                    $('#resources').empty();
                     defineResources();
                     return true;
                 }
