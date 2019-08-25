@@ -9515,6 +9515,7 @@ export function setAction(c_action,action,type,old){
         global[action][type]['on'] = 0;
     }
     var id = c_action.id;
+    removeAction(id);
     var parent = $(`<div id="${id}" class="action"></div>`);
     if (!checkAffordable(c_action)){
         parent.addClass('cna');
@@ -9660,9 +9661,10 @@ export function setAction(c_action,action,type,old){
                                     keyMult = 1;
                                 }
                                 let grant = false;
+                                let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 for (var i=0; i<keyMult; i++){
                                     if (!c_action.action()){
-                                        if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['queue']){
+                                        if (!no_queue && global.tech['queue']){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){
                                                 max_queue += 2;

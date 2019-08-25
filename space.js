@@ -1512,6 +1512,7 @@ const spaceProjects = {
             },
             reqs: { science: 11 },
             cost: {},
+            no_queue(){ return true },
             effect(){
                 let boost = 25;
                 if (global.interstellar['far_reach'] && p_on['far_reach'] > 0){
