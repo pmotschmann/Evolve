@@ -27,7 +27,6 @@ function resQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
-    //queue.append($(`<a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" v-for="(item, index) in rq.queue" @click="remove(index)">{{ item.label }}</a>`));
     queue.append($(`<li v-for="(item, index) in rq.queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }}</a></li>`));
     resDragQueue();
 }

@@ -11351,7 +11351,8 @@ function big_bang(){
     new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;
     let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5));
-    let new_dark = +(global.interstellar.stellar_engine.exotic * 40).toFixed(3);
+    let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
+    new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
 
     phage += new_phage;
     global.stats.reset++;
