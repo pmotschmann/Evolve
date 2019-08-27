@@ -1040,6 +1040,7 @@ const spaceProjects = {
                 return `<div>${loc('space_gas_star_dock_title')}<div><div class="has-text-special">${loc('space_gas_star_dock_desc_req')}</div>`;
             },
             reqs: { genesis: 3 },
+            no_queue(){ return global.space.star_dock.count < 1 ? false : true },
             cost: {
                 Money(){ return global.space.star_dock.count === 0 ? 1500000 : 0; },
                 Steel(){ return global.space.star_dock.count === 0 ? 500000 : 0; },

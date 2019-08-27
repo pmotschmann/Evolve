@@ -1,5 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
+import { mainVue } from './functions.js';
 import { unlockAchieve, unlockFeat } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -9670,7 +9671,7 @@ export function setAction(c_action,action,type,old){
                                                 max_queue += 2;
                                             }
                                             if (global.queue.queue.length < max_queue){
-                                                global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false });
+                                                global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
                                                 dragQueue();
                                             }
                                         }
@@ -11228,13 +11229,38 @@ function fanaticTrait(trait){
     }
 }
 
+export function resQueue(){
+    $('#resQueue').empty();
+
+    let queue = $(`<ul class="buildList"></ul>`);
+    $('#resQueue').append(queue);
+
+    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }}</a></li>`));
+    
+    let bind = {
+        el: '#resQueue .buildList',
+        data: global.r_queue,
+        methods: {
+            remove(index){
+                global.r_queue.queue.splice(index,1);
+            }
+        }
+    }
+    vues['vue_res_queue'] = new Vue(bind);
+    resDragQueue();
+}
+
 export function resDragQueue(){
-    sortable('#resQueue .buildList')[0].addEventListener('sortupdate', function(e){
-        let order = global.r_queue.queue;
-        var tmp = order[e.detail.origin.elementIndex];
-        order[e.detail.origin.elementIndex] = order[e.detail.destination.elementIndex];
-        order[e.detail.destination.elementIndex] = tmp;
-        global.r_queue.queue = order;
+    let el = $('#resQueue .buildList')[0];
+    Sortable.create(el,{
+        onEnd(e){
+            let order = global.r_queue.queue;
+            var tmp = order[e.oldDraggableIndex];
+            order[e.oldDraggableIndex] = order[e.newDraggableIndex];
+            order[e.newDraggableIndex] = tmp;
+            global.r_queue.queue = order;
+            resQueue();
+        }
     });
 }
 

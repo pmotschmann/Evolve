@@ -1,12 +1,13 @@
 import { global, vues, save, poppers, resizeGame, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
+import { mainVue } from './functions.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc } from './jobs.js';
-import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
+import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue, dragQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resDragQueue } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -21,121 +22,8 @@ if (Object.keys(locales).length > 1){
     });
 }
 
-function resQueue(){
-    $('#resQueue').empty();
-
-    let queue = $(`<ul class="buildList"></ul>`);
-    $('#resQueue').append(queue);
-
-    queue.append($(`<li v-for="(item, index) in rq.queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }}</a></li>`));
-    resDragQueue();
-}
+mainVue();
 resQueue();
-
-let settings = {
-    el: '#mainColumn div:first-child',
-    data: { 
-        s: global.settings,
-        rq: global.r_queue
-    },
-    methods: {
-        lChange(){
-            global.settings.locale = $('#localization select').children("option:selected").val();
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-            window.location.reload();
-        },
-        dark(){
-            global.settings.theme = 'dark';
-            $('html').removeClass();
-            $('html').addClass('dark');
-        },
-        light(){
-            global.settings.theme = 'light';
-            $('html').removeClass();
-            $('html').addClass('light');
-        },
-        night(){
-            global.settings.theme = 'night';
-            $('html').removeClass();
-            $('html').addClass('night');
-        },
-        redgreen(){
-            global.settings.theme = 'redgreen';
-            $('html').removeClass();
-            $('html').addClass('redgreen');
-        },
-        keys(){
-            return loc('settings1');
-        },
-        animation(){
-            return loc('settings2');
-        },
-        hard(){
-            return loc('settings3');
-        },
-        soft(){
-            return loc('settings4');
-        },
-        remove(index){
-            global.r_queue.queue.splice(index,1);
-        }
-    },
-    filters: {
-        namecase(name){
-            return name.replace(/(?:^|\s)\w/g, function(match) {
-                return match.toUpperCase();
-            });
-        },
-        label(lbl){
-            switch (lbl){
-                case 'city':
-                    if (global.resource[global.race.species]){
-                        if (global.resource[global.race.species].amount <= 5){
-                            return loc('tab_city1');
-                        }
-                        else if (global.resource[global.race.species].amount <= 20){
-                            return loc('tab_city2');
-                        }
-                        else if (global.resource[global.race.species].amount <= 75){
-                            return loc('tab_city3');
-                        }
-                        else if (global.resource[global.race.species].amount <= 250){
-                            return loc('tab_city4');
-                        }
-                        else if (global.resource[global.race.species].amount <= 600){
-                            return loc('tab_city5');
-                        }
-                        else if (global.resource[global.race.species].amount <= 1200){
-                            return loc('tab_city6');
-                        }
-                        else if (global.resource[global.race.species].amount <= 2500){
-                            return loc('tab_city7');
-                        }
-                        else {
-                            return loc('tab_city8');
-                        }
-                    }
-                    else {
-                        return loc('tab_city1');
-                    }
-                case 'local_space':
-                    return loc('sol_system',[races[global.race.species].name]);
-                case 'old':
-                    return loc('tab_old_res');
-                case 'new':
-                    return loc('tab_new_res');
-                case 'old_sr':
-                    return loc('tab_old_sr_res');
-                case 'new_sr':
-                    return loc('tab_new_sr_res');
-                default:
-                    return loc(lbl);
-            }
-        }
-    }
-}
-
-vues['vue_tabs'] = new Vue(settings);
 
 if (global['new']){
     messageQueue(loc('new'), 'warning');
@@ -3784,6 +3672,106 @@ function midLoop(){
             }
         });
 
+        if (global.tech['queue'] && global.queue.display){
+            let idx = -1;
+            let c_action = false;
+            let stop = false;
+            let deepScan = ['space','interstellar','portal'];
+            let time = 0;
+            let spent = { t: 0, r: {}};
+            for (let i=0; i<global.queue.queue.length; i++){
+                let struct = global.queue.queue[i];
+
+                let t_action = false;
+                if (deepScan.includes(struct.action)){
+                    let scan = true;
+                    Object.keys(actions[struct.action]).forEach(function (region){
+                        if (actions[struct.action][region][struct.type] && scan){
+                            t_action = actions[struct.action][region][struct.type];
+                            scan = false;
+                        }
+                    });
+                }
+                else {
+                    t_action = actions[struct.action][struct.type];
+                }
+
+                if (checkAffordable(t_action,true)){
+                    global.queue.queue[i].cna = false;
+                    if (checkAffordable(t_action) && !stop){
+                        c_action = t_action;
+                        idx = i;
+                    }
+                    else {
+                        time += timeCheck(t_action,spent);
+                    }
+                    global.queue.queue[i]['time'] = time;
+                    stop = true;
+                }
+                else {
+                    global.queue.queue[i].cna = true;
+                    global.queue.queue[i]['time'] = -1;
+                }
+            }
+            if (idx >= 0 && c_action){
+                if (c_action.action()){
+                    global.queue.queue.splice(idx,1);
+                    if (c_action['grant']){
+                        let tech = c_action.grant[0];
+                        global.tech[tech] = c_action.grant[1];
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        space();
+                        deepSpace();
+                        renderFortress();
+                    }
+                    else if (c_action['refresh']){
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        space();
+                        deepSpace();
+                        renderFortress();
+                    }
+                    else {
+                        drawCity();
+                        space();
+                        deepSpace();
+                        renderFortress();
+                    }
+                }
+            }
+        }
+
+        if (global.tech['r_queue'] && global.r_queue.display){
+            let idx = -1;
+            let c_action = false;
+            let stop = false;
+            for (let i=0; i<global.r_queue.queue.length; i++){
+                let struct = global.r_queue.queue[i];
+                let t_action = actions[struct.action][struct.type];
+
+                if (checkAffordable(t_action,true)){
+                    global.r_queue.queue[i].cna = false;
+                    if (checkAffordable(t_action) && !stop){
+                        c_action = t_action;
+                        idx = i;
+                    }
+                    stop = true;
+                }
+                else {
+                    global.r_queue.queue[i].cna = true;
+                }
+            }
+            if (idx >= 0 && c_action){
+                if (c_action.action()){
+                    gainTech(global.r_queue.queue[idx].type);
+                    global.r_queue.queue.splice(idx,1);
+                }
+            }
+        }
+
         checkAchievements();
     }
 
@@ -4182,99 +4170,6 @@ function longLoop(){
             drawTech();
         }
 
-        if (global.tech['queue'] && global.queue.display){
-            let idx = -1;
-            let c_action = false;
-            let stop = false;
-            let deepScan = ['space','interstellar','portal'];
-            for (let i=0; i<global.queue.queue.length; i++){
-                let struct = global.queue.queue[i];
-
-                let t_action = false;
-                if (deepScan.includes(struct.action)){
-                    let scan = true;
-                    Object.keys(actions[struct.action]).forEach(function (region){
-                        if (actions[struct.action][region][struct.type] && scan){
-                            t_action = actions[struct.action][region][struct.type];
-                            scan = false;
-                        }
-                    });
-                }
-                else {
-                    t_action = actions[struct.action][struct.type];
-                }
-
-                if (checkAffordable(t_action,true)){
-                    global.queue.queue[i].cna = false;
-                    if (checkAffordable(t_action) && !stop){
-                        c_action = t_action;
-                        idx = i;
-                    }
-                    stop = true;
-                }
-                else {
-                    global.queue.queue[i].cna = true;
-                }
-            }
-            if (idx >= 0 && c_action){
-                if (c_action.action()){
-                    global.queue.queue.splice(idx,1);
-                    if (c_action['grant']){
-                        let tech = c_action.grant[0];
-                        global.tech[tech] = c_action.grant[1];
-                        removeAction(c_action.id);
-                        drawCity();
-                        drawTech();
-                        space();
-                        deepSpace();
-                        renderFortress();
-                    }
-                    else if (c_action['refresh']){
-                        removeAction(c_action.id);
-                        drawCity();
-                        drawTech();
-                        space();
-                        deepSpace();
-                        renderFortress();
-                    }
-                    else {
-                        drawCity();
-                        space();
-                        deepSpace();
-                        renderFortress();
-                    }
-                }
-            }
-        }
-
-        if (global.tech['r_queue'] && global.r_queue.display){
-            let idx = -1;
-            let c_action = false;
-            let stop = false;
-            for (let i=0; i<global.r_queue.queue.length; i++){
-                let struct = global.r_queue.queue[i];
-                let t_action = actions[struct.action][struct.type];
-
-                if (checkAffordable(t_action,true)){
-                    global.r_queue.queue[i].cna = false;
-                    if (checkAffordable(t_action) && !stop){
-                        c_action = t_action;
-                        idx = i;
-                    }
-                    stop = true;
-                }
-                else {
-                    global.r_queue.queue[i].cna = true;
-                }
-            }
-            if (idx >= 0 && c_action){
-                if (c_action.action()){
-                    gainTech(global.r_queue.queue[idx].type);
-                    global.r_queue.queue.splice(idx,1);
-                }
-            }
-        }
-
         if (global.arpa.sequence && global.arpa.sequence['auto']){
             if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - 10000){
                 global.resource.Knowledge.amount -= 200000;
@@ -4286,6 +4181,42 @@ function longLoop(){
 
     // Save game state
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+}
+
+function timeCheck(c_action,track){
+    if (c_action.cost){
+        let time = 0;
+        Object.keys(c_action.cost).forEach(function (res){
+            var testCost = Number(c_action.cost[res]()) || 0;
+            let res_have = Number(global.resource[res].amount);
+            if (track){
+                res_have += global.resource[res].diff * track.t;
+                if (track.r[res]){
+                    res_have -= Number(track.r[res]);
+                    track.r[res] += testCost;
+                }
+                else {
+                    track.r[res] = testCost;
+                }
+                if (res_have > global.resource[res].max){
+                    res_have = global.resource[res].max;
+                }
+            }
+            if (testCost > res_have && global.resource[res].diff > 0){
+                let r_time = (testCost - res_have) / global.resource[res].diff;
+                if (r_time > time){
+                    time = r_time;
+                }
+            }
+        });
+        if (track){
+            track.t += time;
+        }
+        return time;
+    }
+    else {
+        return 0;
+    }
 }
 
 function q_check(){

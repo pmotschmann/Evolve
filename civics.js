@@ -1,4 +1,4 @@
-import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier } from './vars.js';
+import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
@@ -40,7 +40,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }}</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
 
     vues['builld_queue'] = new Vue({
         el: '#buildQueue',
@@ -48,6 +48,31 @@ export function buildQueue(){
         methods: {
             remove(index){
                 global.queue.queue.splice(index,1);
+            }
+        },
+        filters: {
+            time(time){
+                if (time < 0){
+                    return 'Never';
+                }
+                else {
+                    time = +(time.toFixed(0));
+                    if (time > 60){
+                        let secs = time % 60;
+                        let mins = (time - secs) / 60;
+                        if (mins >= 60){
+                            let r = mins % 60;
+                            let hours = (mins - r) / 60;
+                            return `${hours}h ${r}m`;
+                        }
+                        else {
+                            return `${mins}m ${secs}s`;
+                        }
+                    }
+                    else {
+                        return `${time}s`;
+                    }
+                }
             }
         }
     });
@@ -989,12 +1014,17 @@ export function challenge_multiplier(value){
 }
 
 export function dragQueue(){
-    sortable('#buildQueue .buildList')[0].addEventListener('sortupdate', function(e){
-        let order = global.queue.queue;
-        var tmp = order[e.detail.origin.elementIndex];
-        order[e.detail.origin.elementIndex] = order[e.detail.destination.elementIndex];
-        order[e.detail.destination.elementIndex] = tmp;
-        global.queue.queue = order;
+    let el = $('#buildQueue .buildList')[0];
+    Sortable.create(el,{
+        onEnd(e){
+            let order = global.queue.queue;
+            var tmp = order[e.oldDraggableIndex];
+            order[e.oldDraggableIndex] = order[e.newDraggableIndex];
+            order[e.newDraggableIndex] = tmp;
+            global.queue.queue = order;
+            buildQueue();
+            resizeGame();
+        }
     });
 }
 
