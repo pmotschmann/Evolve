@@ -1,5 +1,6 @@
 #### 0.5.8 - 8/27/2019 ####
 Construction timers added to build queue<br>
+Construction and research completed by queues are now logged to the messege list<br>
 Improved drag and drop support for queues<br>
 
 #### 0.5.7 - 8/25/2019 ####

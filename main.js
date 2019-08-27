@@ -3715,6 +3715,7 @@ function midLoop(){
             }
             if (idx >= 0 && c_action){
                 if (c_action.action()){
+                    messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
                     global.queue.queue.splice(idx,1);
                     if (c_action['grant']){
                         let tech = c_action.grant[0];
@@ -3766,6 +3767,7 @@ function midLoop(){
             }
             if (idx >= 0 && c_action){
                 if (c_action.action()){
+                    messageQueue(loc('research_success',[global.r_queue.queue[idx].label]),'success');
                     gainTech(global.r_queue.queue[idx].type);
                     global.r_queue.queue.splice(idx,1);
                 }

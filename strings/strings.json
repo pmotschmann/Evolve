@@ -115,6 +115,8 @@
   "hunger": "Hunger",
   "quantum": "Quantum",
   "workers": "Workers",
+  "build_success": "%0 has been constructed.",
+  "research_success": "%0 has been researched.",
   "job_farmer": "Farmer",
   "job_farmer_desc": "Farmers create food to feed your population. Each farmer generates %0 food per second.",
   "job_lumberjack": "Lumberjack",
