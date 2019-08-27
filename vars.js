@@ -224,7 +224,11 @@ if (convertVersion(global['version']) === 5000){
     }
 }
 
-global['version'] = '0.5.8';
+if (convertVersion(global['version']) <= 5008 && global['queue'] && global['queue']['queue']){
+    global.queue.queue = []
+}
+
+global['version'] = '0.5.9';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

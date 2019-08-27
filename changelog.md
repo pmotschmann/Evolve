@@ -1,3 +1,6 @@
+#### 0.5.9 - 8/27/2019 ####
+Active build queues wiped due do internal game breaking format change<br>
+
 #### 0.5.8 - 8/27/2019 ####
 Construction timers added to build queue<br>
 Construction and research completed by queues are now logged to the messege list<br>
