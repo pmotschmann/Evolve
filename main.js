@@ -4034,6 +4034,10 @@ function longLoop(){
                         global.resource[craftCost[craft][i].r].amount -= final;
                     }
                     global.resource[craft].amount += craft_ratio * volume;
+
+                    let sec = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
+                    let time = global.genes['crafty'] ? 70000 : 140000;
+                    global.resource[craft].diff = +((craft_ratio * volume) / (time / sec)).toFixed(5);
                 });
             }
 
