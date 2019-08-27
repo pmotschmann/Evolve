@@ -4204,7 +4204,7 @@ function timeCheck(c_action,track){
                 else {
                     track.r[res] = testCost;
                 }
-                if (res_have > global.resource[res].max){
+                if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
                     res_have = global.resource[res].max;
                 }
             }
