@@ -1,6 +1,8 @@
 #### 0.5.10 - 8/27/2019 ####
 Fixed bug with some construction projects not refreshing the page after being built with the queue<br>
 Space exploration missions can no longer be queued more then once at a time<br>
+One off projects are now removed from the queue if completed manually<br>
+Queue timers now track crafted resources<br>
 
 #### 0.5.9 - 8/27/2019 ####
 Active build queues wiped due do internal game breaking format change<br>

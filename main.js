@@ -3696,21 +3696,27 @@ function midLoop(){
                     t_action = actions[struct.action][struct.type];
                 }
 
-                if (checkAffordable(t_action,true)){
-                    global.queue.queue[i].cna = false;
-                    if (checkAffordable(t_action) && !stop){
-                        c_action = t_action;
-                        idx = i;
-                    }
-                    else {
-                        time += timeCheck(t_action,spent);
-                    }
-                    global.queue.queue[i]['time'] = time;
-                    stop = true;
+                if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
+                    global.queue.queue.splice(i,1);
+                    break;
                 }
                 else {
-                    global.queue.queue[i].cna = true;
-                    global.queue.queue[i]['time'] = -1;
+                    if (checkAffordable(t_action,true)){
+                        global.queue.queue[i].cna = false;
+                        if (checkAffordable(t_action) && !stop){
+                            c_action = t_action;
+                            idx = i;
+                        }
+                        else {
+                            time += timeCheck(t_action,spent);
+                        }
+                        global.queue.queue[i]['time'] = time;
+                        stop = true;
+                    }
+                    else {
+                        global.queue.queue[i].cna = true;
+                        global.queue.queue[i]['time'] = -1;
+                    }
                 }
             }
             if (idx >= 0 && c_action){
@@ -3753,16 +3759,22 @@ function midLoop(){
                 let struct = global.r_queue.queue[i];
                 let t_action = actions[struct.action][struct.type];
 
-                if (checkAffordable(t_action,true)){
-                    global.r_queue.queue[i].cna = false;
-                    if (checkAffordable(t_action) && !stop){
-                        c_action = t_action;
-                        idx = i;
-                    }
-                    stop = true;
+                if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
+                    global.queue.queue.splice(i,1);
+                    break;
                 }
                 else {
-                    global.r_queue.queue[i].cna = true;
+                    if (checkAffordable(t_action,true)){
+                        global.r_queue.queue[i].cna = false;
+                        if (checkAffordable(t_action) && !stop){
+                            c_action = t_action;
+                            idx = i;
+                        }
+                        stop = true;
+                    }
+                    else {
+                        global.r_queue.queue[i].cna = true;
+                    }
                 }
             }
             if (idx >= 0 && c_action){
