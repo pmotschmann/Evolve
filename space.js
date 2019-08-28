@@ -20,6 +20,7 @@ const spaceProjects = {
             desc: loc('space_home_test_launch_desc'),
             reqs: { space: 1 },
             grant: ['space',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Money(){ return 100000; },
                 Oil(){ return 7500; }
@@ -165,6 +166,7 @@ const spaceProjects = {
             desc: loc('space_moon_mission_desc'),
             reqs: { space: 2, space_explore: 2 },
             grant: ['space',3],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Oil(){ return +fuel_adjust(12000).toFixed(0); }
             },
@@ -328,6 +330,7 @@ const spaceProjects = {
             },
             reqs: { space: 3, space_explore: 3 },
             grant: ['space',4],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(4500).toFixed(0); }
             },
@@ -780,6 +783,7 @@ const spaceProjects = {
             },
             reqs: { space: 3, space_explore: 3 },
             grant: ['hell',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(6500).toFixed(0); }
             },
@@ -872,6 +876,7 @@ const spaceProjects = {
             },
             reqs: { space_explore: 4 },
             grant: ['solar',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(15000).toFixed(0); }
             },
@@ -959,6 +964,7 @@ const spaceProjects = {
             },
             reqs: { space: 4, space_explore: 4 },
             grant: ['space',5],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(12500).toFixed(0); }
             },
@@ -1080,6 +1086,7 @@ const spaceProjects = {
             },
             reqs: { space: 5 },
             grant: ['space',6],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(30000).toFixed(0); }
             },
@@ -1216,6 +1223,7 @@ const spaceProjects = {
             },
             reqs: { space: 5 },
             grant: ['asteroid',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(25000).toFixed(0); }
             },
@@ -1389,6 +1397,7 @@ const spaceProjects = {
             },
             reqs: { asteroid: 1, elerium: 1 },
             grant: ['dwarf',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(45000).toFixed(0); }
             },
@@ -1543,6 +1552,7 @@ const interstellarProjects = {
             desc: loc('interstellar_alpha_mission'),
             reqs: { ftl: 2 },
             grant: ['alpha',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return 40000; }
             },
@@ -1935,6 +1945,7 @@ const interstellarProjects = {
             desc: loc('interstellar_proxima_mission'),
             reqs: { alpha: 1 },
             grant: ['proxima',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return 42000; }
             },
@@ -2099,6 +2110,7 @@ const interstellarProjects = {
             desc: loc('interstellar_nebula_mission'),
             reqs: { alpha: 1 },
             grant: ['nebula',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return 55000; }
             },
@@ -2224,6 +2236,7 @@ const interstellarProjects = {
             desc: loc('interstellar_neutron_mission'),
             reqs: { nebula: 1, high_tech: 14 },
             grant: ['neutron',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return 60000; },
                 Deuterium(){ return 10000; }
@@ -2291,6 +2304,7 @@ const interstellarProjects = {
             desc: loc('interstellar_blackhole_mission'),
             reqs: { nebula: 1 },
             grant: ['blackhole',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return 75000; },
                 Deuterium(){ return 25000; }

@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue, dragQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
+import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';

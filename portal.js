@@ -1,5 +1,4 @@
 import { global, vues, poppers, messageQueue, keyMultiplier, p_on, modRes } from './vars.js';
-import { spatialReasoning } from './resources.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
 import { costMultiplier, checkRequirements, incrementStruct } from './space.js';
