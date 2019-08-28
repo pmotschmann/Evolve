@@ -42,41 +42,46 @@ export function buildQueue(){
 
     queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
 
-    vues['builld_queue'] = new Vue({
-        el: '#buildQueue',
-        data: global.queue,
-        methods: {
-            remove(index){
-                global.queue.queue.splice(index,1);
-            }
-        },
-        filters: {
-            time(time){
-                if (time < 0){
-                    return 'Never';
+    try {
+        vues['builld_queue'] = new Vue({
+            el: '#buildQueue',
+            data: global.queue,
+            methods: {
+                remove(index){
+                    global.queue.queue.splice(index,1);
                 }
-                else {
-                    time = +(time.toFixed(0));
-                    if (time > 60){
-                        let secs = time % 60;
-                        let mins = (time - secs) / 60;
-                        if (mins >= 60){
-                            let r = mins % 60;
-                            let hours = (mins - r) / 60;
-                            return `${hours}h ${r}m`;
-                        }
-                        else {
-                            return `${mins}m ${secs}s`;
-                        }
+            },
+            filters: {
+                time(time){
+                    if (time < 0){
+                        return 'Never';
                     }
                     else {
-                        return `${time}s`;
+                        time = +(time.toFixed(0));
+                        if (time > 60){
+                            let secs = time % 60;
+                            let mins = (time - secs) / 60;
+                            if (mins >= 60){
+                                let r = mins % 60;
+                                let hours = (mins - r) / 60;
+                                return `${hours}h ${r}m`;
+                            }
+                            else {
+                                return `${mins}m ${secs}s`;
+                            }
+                        }
+                        else {
+                            return `${time}s`;
+                        }
                     }
                 }
             }
-        }
-    });
-    dragQueue();
+        });
+        dragQueue();
+    }
+    catch {
+        global.queue.queue = [];
+    }
 }
 
 function taxRates(govern){
