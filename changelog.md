@@ -4,6 +4,8 @@ Space exploration missions can no longer be queued more then once at a time<br>
 One off projects are now removed from the queue if completed manually<br>
 Queue timers now track crafted resources<br>
 Demonic attractor soul gem drop rate increase buffed from 5% to 8%<br>
+Updated some fortress related tooltips<br>
+Mousing over the star rating in the top left corner now lists which challenges are active<br>
 
 #### 0.5.9 - 8/27/2019 ####
 Active build queues wiped due do internal game breaking format change<br>

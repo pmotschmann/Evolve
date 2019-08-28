@@ -231,7 +231,7 @@ vues['topBar'] = new Vue({
 });
 vues['topBar'].$mount('#topBar');
 
-$('#topBar .planet').on('mouseover',function(){
+$('#topBar .planetWrap .planet').on('mouseover',function(){
     var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
     $('#main').append(popper);
     if (global.race.species === 'protoplasm'){
@@ -248,7 +248,7 @@ $('#topBar .planet').on('mouseover',function(){
     poppers['topbarPlanet'] = new Popper($('#topBar .planet'),popper);
 
 });
-$('#topBar .planet').on('mouseout',function(){
+$('#topBar .planetWrap .planet').on('mouseout',function(){
     $(`#topbarPlanet`).hide();
     poppers['topbarPlanet'].destroy();
     $(`#topbarPlanet`).remove();
