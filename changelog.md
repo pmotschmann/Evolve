@@ -1,4 +1,4 @@
-#### 0.5.10 - 8/27/2019 ####
+#### 0.5.10 - 8/28/2019 ####
 Fixed bug with some construction projects not refreshing the page after being built with the queue<br>
 Space exploration missions can no longer be queued more then once at a time<br>
 One off projects are now removed from the queue if completed manually<br>
