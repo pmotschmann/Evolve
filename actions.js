@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { mainVue } from './functions.js';
+import { timeCheck } from './functions.js';
 import { unlockAchieve, unlockFeat } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -9996,6 +9996,32 @@ function actionDesc(parent,c_action,old){
         var flair = typeof c_action.flair === 'string' ? c_action.flair : c_action.flair();
         parent.append($(`<div class="flair has-text-special">${flair}</div>`));
         parent.addClass('flair');
+    }
+    if (!old && !checkAffordable(c_action) && checkAffordable(c_action,true)){
+        let time = timeCheck(c_action);
+        let formatted;
+        if (time < 0){
+            formatted = 'Never';
+        }
+        else {
+            time = +(time.toFixed(0));
+            if (time > 60){
+                let secs = time % 60;
+                let mins = (time - secs) / 60;
+                if (mins >= 60){
+                    let r = mins % 60;
+                    let hours = (mins - r) / 60;
+                    formatted = `${hours}h ${r}m`;
+                }
+                else {
+                    formatted = `${mins}m ${secs}s`;
+                }
+            }
+            else {
+                formatted = `${time}s`;
+            }
+        }
+        parent.append($(`<div class="flair has-text-advanced">${loc('action_ready',[formatted])}</div>`));
     }
 }
 

@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, resizeGame, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
-import { mainVue } from './functions.js';
+import { mainVue, timeCheck } from './functions.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
@@ -4199,42 +4199,6 @@ function longLoop(){
 
     // Save game state
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-}
-
-function timeCheck(c_action,track){
-    if (c_action.cost){
-        let time = 0;
-        Object.keys(c_action.cost).forEach(function (res){
-            var testCost = Number(c_action.cost[res]()) || 0;
-            let res_have = Number(global.resource[res].amount);
-            if (track){
-                res_have += global.resource[res].diff * track.t;
-                if (track.r[res]){
-                    res_have -= Number(track.r[res]);
-                    track.r[res] += testCost;
-                }
-                else {
-                    track.r[res] = testCost;
-                }
-                if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
-                    res_have = global.resource[res].max;
-                }
-            }
-            if (testCost > res_have && global.resource[res].diff > 0){
-                let r_time = (testCost - res_have) / global.resource[res].diff;
-                if (r_time > time){
-                    time = r_time;
-                }
-            }
-        });
-        if (track){
-            track.t += time;
-        }
-        return time;
-    }
-    else {
-        return 0;
-    }
 }
 
 function q_check(){
