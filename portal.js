@@ -326,7 +326,15 @@ function buildFortress(parent){
                 return loc('fortress_defense');
             },
             hostiles(){
-                return loc('fortress_threat',[global.portal.fortress.threat]);
+                if (global.portal.fortress.threat >= 2000){
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_high')}`;
+                }
+                else if (global.portal.fortress.threat < 1000){
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_low')}`;
+                }
+                else {
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_medium')}`;
+                }
             },
             armyLabel(){
                 return loc('fortress_stationed');
