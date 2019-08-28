@@ -490,10 +490,10 @@ export function bloodwar(){
         }
     }
 
-    let gem_chance = 9999;
+    let gem_chance = 10000;
     if (global.tech['portal'] >= 4 && p_on['attractor']){
         for (let i=0; i<p_on['attractor']; i++){
-            gem_chance = Math.round(gem_chance * 0.95);
+            gem_chance = Math.round(gem_chance * 0.92);
         }
     }
 
