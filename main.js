@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, resizeGame, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
-import { mainVue, timeCheck } from './functions.js';
+import { mainVue, timeCheck, timeFormat } from './functions.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
@@ -3515,6 +3515,9 @@ function midLoop(){
                 else if (!element.hasClass('cnam')){
                     element.addClass('cnam');
                 }
+                if (global.city[action]){
+                    global.city[action]['time'] = timeFormat(timeCheck(c_action));
+                }
             }
         });
 
@@ -3566,6 +3569,9 @@ function midLoop(){
                         }
                         else if (!element.hasClass('cnam')){
                             element.addClass('cnam');
+                        }
+                        if (global[location][action]){
+                            global[location][action]['time'] = timeFormat(timeCheck(c_action));
                         }
                     }
                 });

@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck } from './functions.js';
+import { timeCheck, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -9773,12 +9773,15 @@ export function setAction(c_action,action,type,old){
             let wide = c_action['wide'] ? ' wide' : '';
             var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark"></div>`);
             $(pop_target).append(popper);
-            actionDesc(popper,c_action,old);
+            actionDesc(popper,c_action,global[action][type],old);
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
     $('#'+id).on('mouseout',function(){
             $(`#pop${id}`).hide();
+            if (vues['popTimer']){
+                vues['popTimer'].$destroy();
+            }
             if (poppers[id]){
                 poppers[id].destroy();
             }
@@ -9967,7 +9970,7 @@ function srDesc(c_action,old){
     return desc.replace("..",".");
 }
 
-function actionDesc(parent,c_action,old){
+function actionDesc(parent,c_action,obj,old){
     parent.empty();
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     parent.append($('<div>'+desc+'</div>'));
@@ -9998,30 +10001,25 @@ function actionDesc(parent,c_action,old){
         parent.addClass('flair');
     }
     if (!old && !checkAffordable(c_action) && checkAffordable(c_action,true)){
-        let time = timeCheck(c_action);
-        let formatted;
-        if (time < 0){
-            formatted = 'Never';
+        if (obj['time']){
+            if (vues['popTimer']){
+                vues['popTimer'].$destroy();
+            }
+            parent.append($(`<div id="popTimer" class="flair has-text-advanced">{{ time | timer }}</div>`));
+            vues['popTimer'] = new Vue({
+                data: obj,
+                filters: {
+                    timer(t){
+                        return loc('action_ready',[t]);
+                    }
+                }
+            });
+            vues['popTimer'].$mount('#popTimer');
         }
         else {
-            time = +(time.toFixed(0));
-            if (time > 60){
-                let secs = time % 60;
-                let mins = (time - secs) / 60;
-                if (mins >= 60){
-                    let r = mins % 60;
-                    let hours = (mins - r) / 60;
-                    formatted = `${hours}h ${r}m`;
-                }
-                else {
-                    formatted = `${mins}m ${secs}s`;
-                }
-            }
-            else {
-                formatted = `${time}s`;
-            }
+            let time = timeFormat(timeCheck(c_action));
+            parent.append($(`<div class="flair has-text-advanced">${loc('action_ready',[time])}</div>`));
         }
-        parent.append($(`<div class="flair has-text-advanced">${loc('action_ready',[formatted])}</div>`));
     }
 }
 
@@ -10041,7 +10039,7 @@ function updateDesc(c_action,category,action){
             $(`#${id} .off`).css('display','block');
         }
     }
-    actionDesc($('#pop'+id),c_action);
+    actionDesc($('#pop'+id),c_action,global[category][action]);
 }
 
 function adjustCosts(costs){

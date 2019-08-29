@@ -143,3 +143,29 @@ export function timeCheck(c_action,track){
         return 0;
     }
 }
+
+export function timeFormat(time){
+    let formatted;
+    if (time < 0){
+        formatted = 'Never';
+    }
+    else {
+        time = +(time.toFixed(0));
+        if (time > 60){
+            let secs = time % 60;
+            let mins = (time - secs) / 60;
+            if (mins >= 60){
+                let r = mins % 60;
+                let hours = (mins - r) / 60;
+                formatted = `${hours}h ${r}m`;
+            }
+            else {
+                formatted = `${mins}m ${secs}s`;
+            }
+        }
+        else {
+            formatted = `${time}s`;
+        }
+    }
+    return formatted;
+}
