@@ -3766,7 +3766,7 @@ function midLoop(){
                 let t_action = actions[struct.action][struct.type];
 
                 if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
-                    global.queue.queue.splice(i,1);
+                    global.r_queue.queue.splice(i,1);
                     break;
                 }
                 else {

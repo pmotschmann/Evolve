@@ -2,6 +2,7 @@
 Fixed issue with nucleus DNA bonus not applying from correct cell stage evolutions<br>
 Building timers now count down without refreashing the popover<br>
 Long action titles will now wrap instead of overflowing the button<br>
+Fixed a bug that could cause the research queue to clear items from the building queue<br>
 
 #### 0.5.10 - 8/28/2019 ####
 Fixed bug with some construction projects not refreshing the page after being built with the queue<br>
