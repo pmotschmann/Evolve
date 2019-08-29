@@ -801,10 +801,10 @@ function genetics(){
                 timer(val){
                     if (global.city.biolab.on > 0){
                         if (global.arpa.sequence.boost){
-                            return (val / (global.city.biolab.on * 2)).toFixed(0) + 's';
+                            return new Date((val / (global.city.biolab.on * 2)) * 1000).toISOString().substr(11, 8);
                         }
                         else {
-                            return (val / global.city.biolab.on).toFixed(0) + 's';
+                            return new Date((val / global.city.biolab.on) * 1000).toISOString().substr(11, 8);
                         }
                     }
                     else {
