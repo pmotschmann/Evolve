@@ -1,3 +1,6 @@
+#### 0.5.11 - 8/28/2019 ####
+Fixed issue with nucleus DNA bonus not applying from correct cell stage evolutions<br>
+
 #### 0.5.10 - 8/28/2019 ####
 Fixed bug with some construction projects not refreshing the page after being built with the queue<br>
 Space exploration missions can no longer be queued more then once at a time<br>

@@ -90,7 +90,7 @@ export const actions = {
                 DNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16)) + 18; }
             },
             effect(){
-                let dna = global.evolution['bryophyte'] || global.evolution['protostomes'] || global.evolution['deuterostome'] ? 2 : 1;
+                let dna = global.evolution['bilateral_symmetry'] || global.evolution['poikilohydric'] || global.evolution['spores'] ? 2 : 1;
                 return loc('evo_nucleus_effect',[dna]);
             },
             action(){

@@ -473,7 +473,7 @@ function fastLoop(){
                 if (increment <= 0){ break; }
             }
             let rna = increment;
-            if (global.evolution['bryophyte'] || global.evolution['protostomes'] || global.evolution['deuterostome']){
+            if (global.evolution['bilateral_symmetry'] || global.evolution['poikilohydric'] || global.evolution['spores']){
                 increment *= 2;
             }
             modRes('DNA', increment * global_multiplier * time_multiplier);

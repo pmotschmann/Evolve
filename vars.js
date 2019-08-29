@@ -228,7 +228,7 @@ if (convertVersion(global['version']) <= 5008 && global['queue'] && global['queu
     global.queue.queue = []
 }
 
-global['version'] = '0.5.10';
+global['version'] = '0.5.11';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
