@@ -157,7 +157,14 @@ export function timeFormat(time){
             if (mins >= 60){
                 let r = mins % 60;
                 let hours = (mins - r) / 60;
-                formatted = `${hours}h ${r}m`;
+                if (hours > 24){
+                    r = hours % 24;
+                    let days = (hours - r) / 24;
+                    formatted = `${days}d ${r}h`;
+                }
+                else {
+                    formatted = `${hours}h ${r}m`;
+                }
             }
             else {
                 formatted = `${mins}m ${secs}s`;
