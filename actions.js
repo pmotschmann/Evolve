@@ -10001,7 +10001,7 @@ function actionDesc(parent,c_action,obj,old){
         parent.addClass('flair');
     }
     if (!old && !checkAffordable(c_action) && checkAffordable(c_action,true)){
-        if (obj['time']){
+        if (obj && obj['time']){
             if (vues['popTimer']){
                 vues['popTimer'].$destroy();
             }
