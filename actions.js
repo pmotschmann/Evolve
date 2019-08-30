@@ -8551,6 +8551,9 @@ export const actions = {
                     $('#garrison').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`world_domination`);
+                    if (global.stats.attacks === 0){
+                        unlockAchieve(`pacifist`);
+                    }
                     return true;
                 }
                 return false;
@@ -8582,6 +8585,9 @@ export const actions = {
                     $('#garrison').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`illuminati`);
+                    if (global.stats.attacks === 0){
+                        unlockAchieve(`pacifist`);
+                    }
                     return true;
                 }
                 return false;
@@ -8612,6 +8618,9 @@ export const actions = {
                     $('#garrison').empty();
                     buildGarrison($('#garrison'));
                     unlockAchieve(`syndicate`);
+                    if (global.stats.attacks === 0){
+                        unlockAchieve(`pacifist`);
+                    }
                     return true;
                 }
                 return false;
@@ -11308,9 +11317,6 @@ function bioseed(){
         k_base -= k_inc;
         k_inc *= 1.015;
     }
-    if (global.stats.died === 0){
-        unlockAchieve(`pacifist`);
-    }
     new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;
     let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E));
@@ -11396,9 +11402,6 @@ function big_bang(){
         new_plasmid++;
         k_base -= k_inc;
         k_inc *= 1.012;
-    }
-    if (global.stats.died === 0){
-        unlockAchieve(`pacifist`);
     }
     new_plasmid = challenge_multiplier(new_plasmid);
     plasmid += new_plasmid;

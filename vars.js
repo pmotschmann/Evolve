@@ -228,7 +228,11 @@ if (convertVersion(global['version']) <= 5008 && global['queue'] && global['queu
     global.queue.queue = []
 }
 
-global['version'] = '0.5.11';
+if (convertVersion(global['version']) <= 5011 && global.stats['died']){
+    global.stats['attacks'] = global.stats['died'];
+}
+
+global['version'] = '0.5.12';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -400,6 +404,9 @@ if (!global.stats['tknow']){
 }
 if (!global.stats['portals']){
     global.stats['portals'] = global.stats['achieve'] && global.stats.achieve['doomed'] ? 1 : 0;
+}
+if (!global.stats['attacks']){
+    global.stats['attacks'] = 0;
 }
 
 if (!global['lastMsg']){
@@ -854,6 +861,11 @@ export function clearStates(){
     global.resource = {};
     global.evolution = {};
     global.event = 100;
+    global.stats.days = 0;
+    global.stats.know = 0;
+    global.stats.starved = 0;
+    global.stats.died = 0;
+    global.stats.attacks = 0;
     global.settings.civTabs = 0;
     global.settings.showEvolve = true;
     global.settings.showCity = false;

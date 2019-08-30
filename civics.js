@@ -259,6 +259,8 @@ export function buildGarrison(garrison){
                     messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning');
                     return;
                 }
+                global.stats.attacks++;
+
                 if (global.civic.garrison.raid > garrisonSize()){
                     global.civic.garrison.raid = garrisonSize();
                 }
@@ -1052,9 +1054,6 @@ function warhead(){
         k_inc *= 1.1;
     }
     new_plasmid = challenge_multiplier(new_plasmid);
-    if (global.stats.died === 0){
-        unlockAchieve(`pacifist`);
-    }
     plasmid += new_plasmid;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
