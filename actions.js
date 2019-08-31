@@ -11270,17 +11270,22 @@ export function resQueue(){
 
     queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }}</a></li>`));
     
-    let bind = {
-        el: '#resQueue .buildList',
-        data: global.r_queue,
-        methods: {
-            remove(index){
-                global.r_queue.queue.splice(index,1);
+    try {
+        let bind = {
+            el: '#resQueue .buildList',
+            data: global.r_queue,
+            methods: {
+                remove(index){
+                    global.r_queue.queue.splice(index,1);
+                }
             }
         }
+        vues['vue_res_queue'] = new Vue(bind);
+        resDragQueue();
     }
-    vues['vue_res_queue'] = new Vue(bind);
-    resDragQueue();
+    catch {
+        global.r_queue.queue = [];
+    }
 }
 
 export function resDragQueue(){
