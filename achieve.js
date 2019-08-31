@@ -1,8 +1,12 @@
-import { global, vues, messageQueue, set_alevel, achieve_level } from './vars.js';
+import { global, vues, messageQueue, set_alevel, poppers } from './vars.js';
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
     global.stats['achieve'] = {};
+}
+
+if (!global.stats['feat']){
+    global.stats['feat'] = {};
 }
 
 var achievements = {
@@ -86,6 +90,21 @@ var achievements = {
         desc: loc("achieve_doomed_desc"),
         flair: loc("achieve_doomed_flair")
     },
+    pandemonium: {
+        name: loc("achieve_pandemonium_name"),
+        desc: loc("achieve_pandemonium_desc"),
+        flair: loc("achieve_pandemonium_flair")
+    },
+    blood_war: {
+        name: loc("achieve_blood_war_name"),
+        desc: loc("achieve_blood_war_desc"),
+        flair: loc("achieve_blood_war_flair")
+    },
+    landfill: {
+        name: loc("achieve_landfill_name"),
+        desc: loc("achieve_landfill_desc"),
+        flair: loc("achieve_landfill_flair")
+    },
     seeder: {
         name: loc("achieve_seeder_name"),
         desc: loc("achieve_seeder_desc"),
@@ -95,6 +114,11 @@ var achievements = {
         name: loc("achieve_biome_explorer_name"),
         desc: loc("achieve_biome_explorer_desc"),
         flair: loc("achieve_biome_explorer_flair")
+    },
+    joyless: {
+        name: loc("achieve_joyless_name"),
+        desc: loc("achieve_joyless_desc"),
+        flair: loc("achieve_joyless_flair")
     },
     biome_grassland: {
         name: loc("achieve_biome_grassland_name"),
@@ -135,6 +159,11 @@ var achievements = {
         name: loc("achieve_creator_name"),
         desc: loc("achieve_creator_desc"),
         flair: loc("achieve_creator_flair")
+    },
+    whitehole: {
+        name: loc("achieve_whitehole_name"),
+        desc: loc("achieve_whitehole_desc"),
+        flair: loc("achieve_whitehole_flair")
     },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
@@ -348,6 +377,29 @@ var achievements = {
     }
 };
 
+const feats = {
+    take_no_advice: {
+        name: loc("feat_take_no_advice_name"),
+        desc: loc("feat_take_no_advice_desc"),
+        flair: loc("feat_take_no_advice_flair")
+    },
+    ill_advised: {
+        name: loc("feat_ill_advised_name"),
+        desc: loc("feat_ill_advised_desc"),
+        flair: loc("feat_ill_advised_flair")
+    },
+    organ_harvester: {
+        name: loc("feat_organ_harvester_name"),
+        desc: loc("feat_organ_harvester_desc"),
+        flair: loc("feat_organ_harvester_flair")
+    },
+    blank_slate: {
+        name: loc("feat_blank_slate_name"),
+        desc: loc("feat_blank_slate_desc"),
+        flair: loc("feat_blank_slate_flair")
+    }
+}
+
 export function unlockAchieve(achievement){
     let a_level = 1;
     if (global.race['no_plasmid']){ a_level++; }
@@ -365,12 +417,30 @@ export function unlockAchieve(achievement){
     return false;
 }
 
+export function unlockFeat(feat){
+    let a_level = 1;
+    if (global.race['no_plasmid']){ a_level++; }
+    if (global.race['no_trade']){ a_level++; }
+    if (global.race['no_craft']){ a_level++; }
+    if (global.race['no_crispr']){ a_level++; }
+    if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < a_level)){
+        global.settings.showAchieve = true;
+        global.stats.feat[feat] = a_level;
+        messageQueue(loc('feat_unlocked', [feats[feat].name] ),'special');
+        drawPerks();
+        drawAchieve();
+        return true;
+    }
+    return false;
+}
+
 export function setupStats(){
     $('#achieve').empty();
+    $('#stats').empty();
     let stats = $('<div id="statsPanel"></div>');
-    $('#achieve').append(stats);
+    $('#stats').append(stats);
     let perks = $('<div id="perksPanel"></div>');
-    $('#achieve').append(perks);
+    $('#stats').append(perks);
     let achieve = $('<div id="achievePanel"></div>');
     $('#achieve').append(achieve);
     drawStats();
@@ -393,17 +463,31 @@ export function drawAchieve(){
         if (global.stats.achieve[achievement]){
             earned++;
             level += global.stats.achieve[achievement];
+            if (achievement === 'joyless'){
+                level += global.stats.achieve[achievement];
+            }
             let star = global.stats.achieve[achievement] > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achievement]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>` : '';
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${star}</div></b-tooltip>`));
         }
     });
     set_alevel(level);
+
+    Object.keys(feats).forEach(function (feat){
+        if (global.stats.feat[feat]){
+            let star = global.stats.feat[feat] > 1 ? `<span class="flair"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>` : '';
+            achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
+        }
+    });
+
     achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}</div>`);
 
     let avue = {
         methods: {
             flair(flair){
                 return achievements[flair].flair;
+            },
+            feat(flair){
+                return feats[flair].flair;
             }
         }
     }
@@ -418,7 +502,30 @@ export function drawAchieve(){
     if (global.race['no_crispr']){ a_level++; }
 
     if (a_level > 1 && $('#topBar .planet .flair').length === 0){
-        $('#topBar .planet').append(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>`);
+        if ($('#topBar span.flair')){
+            $('#topBar span.flair').remove();
+        }
+        $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>`);
+    
+        $('#topBar .planetWrap .flair').on('mouseover',function(){
+            var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
+            $('#main').append(popper);
+
+            if (global.race['no_plasmid']){ popper.append($(`<div>${loc('evo_challenge_plasmid')}</div>`)); } 
+            if (global.race['no_trade']){ popper.append($(`<div>${loc('evo_challenge_trade')}</div>`)); }
+            if (global.race['no_craft']){ popper.append($(`<div>${loc('evo_challenge_craft')}</div>`)); }
+            if (global.race['no_crispr']){ popper.append($(`<div>${loc('evo_challenge_crispr')}</div>`)); }
+
+            popper.show();
+            poppers['topbarPlanet'] = new Popper($('#topBar .planetWrap .flair'),popper);
+        
+        });
+
+        $('#topBar .planetWrap .flair').on('mouseout',function(){
+            $(`#topbarPlanet`).hide();
+            poppers['topbarPlanet'].destroy();
+            $(`#topbarPlanet`).remove();
+        });
     }
 }
 
@@ -481,6 +588,9 @@ export function checkAchievements(){
     }
     if (global.stats.died >= 250){
         unlockAchieve('red_tactics');
+    }
+    if (global.interstellar['stellar_engine'] && global.interstellar['stellar_engine'].mass >= 12){
+        unlockAchieve('landfill');
     }
 }
 
@@ -605,6 +715,7 @@ export function drawStats(){
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_attacks_made")}</span> {{ attacks }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days }}</div>`);
 
     let svue = {

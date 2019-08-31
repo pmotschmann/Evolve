@@ -884,7 +884,7 @@ export const traits = {
         desc: loc('trait_nyctophilia'),
         type: 'major',
     },
-    frail: { // More soldiers die in combat
+    fraile: { // More soldiers die in combat
         desc: loc('trait_frail'),
         type: 'major',
     },
@@ -1008,7 +1008,8 @@ export function racialTrait(workers,type){
             modifier *= (workers * 0.05) + 0.5;
         }
         else {
-            modifier *= 1 + (1 - (0.98 ** (workers - 10)));
+            let mod = type === 'army' ? 0.99 : 0.98;
+            modifier *= 1 + (1 - (mod ** (workers - 10)));
         }
     }
     if(global.race['cold_blooded'] && type !== 'army' && type !== 'factory' && type !== 'science'){
@@ -1075,6 +1076,101 @@ export function randomMinorTrait(){
         global.race[trait] = 1;
     }
     return trait;
+}
+
+export function cleanAddTrait(trait){
+    switch (trait){
+        case 'kindling_kindred':
+            global.resource.Lumber.display = false;
+            global.resource.Lumber.crates = 0;
+            global.resource.Lumber.containers = 0;
+            global.resource.Lumber.trade = 0;
+            global.resource.Plywood.display = false;
+            global.city['lumber'] = 0;
+            if (global.city['sawmill']){
+                delete global.city['sawmill'];
+            }
+            if (global.city['lumber_yard']){
+                delete global.city['lumber_yard'];
+            }
+            delete global.tech['axe'];
+            delete global.tech['saw'];
+            global.civic.lumberjack.display = false;
+            global.civic.lumberjack.workers = 0;
+            if (global.tech['foundry']){
+                global.civic.craftsman.workers -= global.city.foundry['Plywood'];
+                global.city.foundry.crafting -= global.city.foundry['Plywood'];
+                global.city.foundry['Plywood'] = 0;
+                loadFoundry();
+            }
+            break;
+        case 'carnivore':
+            if (global.tech['farm'] >= 1){
+                global.tech['hunting'] = 2;
+            }
+            else if (global.tech['agriculture'] >= 3){
+                global.tech['hunting'] = 1;
+            }
+            if (global.city['farm']){
+                global.city['lodge'] = { count: global.city.farm.count };
+                delete global.city['farm'];
+            }
+            if (global.city['silo']){
+                global.city['smokehouse'] = { count: global.city.silo.count };
+                delete global.city['silo'];
+            }
+            if (global.city['mill']){
+                delete global.city['mill'];
+            }
+            delete global.tech['agriculture'];
+            delete global.tech['farm'];
+            global.civic.farmer.workers = 0;
+            global.civic.farmer.max = 0;
+            global.civic.farmer.display = false;
+            break;
+        case 'terrifying':
+            Object.keys(global.resource).forEach(function (res){
+                global.resource[res].trade = 0;
+            });
+            global.settings.showMarket = false;
+            break;
+        default:
+            break;
+    }
+}
+
+export function cleanRemoveTrait(trait){
+    switch (trait){
+        case 'kindling_kindred':
+            global.resource.Lumber.display = true;
+            break;
+        case 'carnivore':
+            global.civic.farmer.display = true;
+            global.tech['agriculture'] = 1;
+            if (global.tech['hunting'] >= 2){
+                global.tech['farm'] = 1;
+            }
+            delete global.tech['hunting'];
+            delete global.tech['wind_plant'];
+            if (global.city['lodge']){
+                global.city['farm'] = { count: global.city.lodge.count };
+                delete global.city['lodge'];
+            }
+            if (global.city['smokehouse']){
+                global.city['silo'] = { count: global.city.smokehouse.count };
+                delete global.city['smokehouse'];
+            }
+            if (global.city['windmill']){
+                global.city['mill'] = { count: global.city.windmill.count };
+                delete global.city['windmill'];
+            }
+            break;
+        case 'terrifying':
+            global.settings.showMarket = true;
+            break;
+        default:
+            break;
+    }
 }
 
 export const biomes = {

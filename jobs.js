@@ -65,7 +65,7 @@ export const job_desc = {
     },
     entertainer: function(){
         let morale = global.tech['theatre'];
-        return loc('job_entertainer_desc',[morale]);
+        return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
     },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
@@ -96,6 +96,9 @@ export const job_desc = {
     },
     space_miner(){
         return loc('job_space_miner_desc');
+    },
+    hell_surveyor(){
+        return loc('job_hell_surveyor_desc');
     }
 }
 
@@ -103,19 +106,20 @@ export const job_desc = {
 export function defineJobs(){
     $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
     loadUnemployed();
-    loadJob('farmer',1.35);
-    loadJob('lumberjack',1);
-    loadJob('quarry_worker',1);
-    loadJob('miner',1);
-    loadJob('coal_miner',0.2);
-    loadJob('craftsman',1);
-    loadJob('cement_worker',0.4);
-    loadJob('entertainer',1);
-    loadJob('professor',0.5);
-    loadJob('scientist',1);
-    loadJob('banker',0.1);
-    loadJob('colonist',1);
-    loadJob('space_miner',1);
+    loadJob('farmer',1.35,5);
+    loadJob('lumberjack',1,5);
+    loadJob('quarry_worker',1,5);
+    loadJob('miner',1,4,'advanced');
+    loadJob('coal_miner',0.2,4,'advanced');
+    loadJob('craftsman',1,5,'advanced');
+    loadJob('cement_worker',0.4,5,'advanced');
+    loadJob('entertainer',1,10,'advanced');
+    loadJob('professor',0.5,6,'advanced');
+    loadJob('scientist',1,5,'advanced');
+    loadJob('banker',0.1,6,'advanced');
+    loadJob('colonist',1,5,'advanced');
+    loadJob('space_miner',1,5,'advanced');
+    loadJob('hell_surveyor',1,1,'advanced');
     loadFoundry();
 }
 
@@ -148,7 +152,7 @@ function loadUnemployed(){
         });
 }
 
-function loadJob(job, impact, color){
+function loadJob(job, impact, stress, color){
     color = color || 'info';
     if (!global['civic'][job]){
         global['civic'][job] = {
@@ -160,10 +164,15 @@ function loadJob(job, impact, color){
             impact: impact
         };
     }
-    else{
+    else {
         global['civic'][job].name = loc('job_' + job);
     }
 
+    if (!global.civic[job]['assigned']){
+        global.civic[job]['assigned'] = job === 'craftsman'? 0 : global.civic[job].workers;
+    }
+
+    global.civic[job]['stress'] = stress;
     global.civic[job].impact = impact;
     
     if (job === 'craftsman'){
@@ -185,8 +194,8 @@ function loadJob(job, impact, color){
     civ_container.append(controls);
     $('#jobs').append(civ_container);
     
-    var sub = $(`<span role="button" aria-label="remove ${job}" class="sub" @click="sub">&laquo;</span>`);
-    var add = $(`<span role="button" aria-label="add ${job}" class="add" @click="add">&raquo;</span>`);
+    var sub = $(`<span role="button" aria-label="remove ${job}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
+    var add = $(`<span role="button" aria-label="add ${job}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
     
     controls.append(sub);
     controls.append(add);
@@ -200,6 +209,7 @@ function loadJob(job, impact, color){
                     if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && global.civic.free > 0){
                         global.civic[job].workers++;
                         global.civic.free--;
+                        global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
                         break;
@@ -212,6 +222,7 @@ function loadJob(job, impact, color){
                     if (global.civic[job].workers > 0){
                         global.civic[job].workers--;
                         global.civic.free++;
+                        global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
                         break;
@@ -245,7 +256,7 @@ export function loadFoundry(){
         var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span class="count">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
-        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril'];
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel'];
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
@@ -259,8 +270,8 @@ export function loadFoundry(){
                 resource.append(controls);
                 $('#foundry').append(resource);
                 
-                let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub" @click="sub('${res}')">&laquo;</span>`);
-                let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add" @click="add('${res}')">&raquo;</span>`);
+                let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></span>`);
+                let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></span>`);
                 
                 controls.append(sub);
                 controls.append(add);

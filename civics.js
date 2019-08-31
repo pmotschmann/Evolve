@@ -1,5 +1,5 @@
-import { global, vues, poppers, messageQueue, modRes, save, keyMultiplier } from './vars.js';
-import { unlockAchieve, checkAchievements } from './achieve.js';
+import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
+import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
 
@@ -11,7 +11,7 @@ export function defineGovernment(){
     
     if (!global.civic['taxes']){
         global.civic['taxes'] = {
-            tax_rate: '20',
+            tax_rate: 20,
             display: false
         };
     }
@@ -33,6 +33,57 @@ export function defineGarrison(){
     defineMad();
 }
 
+export function buildQueue(){
+    $('#buildQueue').empty();
+    $('#buildQueue').append($('<h2 class="has-text-success is-sr-only">Building Queue</h2>'));
+
+    let queue = $(`<ul class="buildList"></ul>`);
+    $('#buildQueue').append(queue);
+
+    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
+
+    try {
+        vues['builld_queue'] = new Vue({
+            el: '#buildQueue',
+            data: global.queue,
+            methods: {
+                remove(index){
+                    global.queue.queue.splice(index,1);
+                }
+            },
+            filters: {
+                time(time){
+                    if (time < 0){
+                        return 'Never';
+                    }
+                    else {
+                        time = +(time.toFixed(0));
+                        if (time > 60){
+                            let secs = time % 60;
+                            let mins = (time - secs) / 60;
+                            if (mins >= 60){
+                                let r = mins % 60;
+                                let hours = (mins - r) / 60;
+                                return `${hours}h ${r}m`;
+                            }
+                            else {
+                                return `${mins}m ${secs}s`;
+                            }
+                        }
+                        else {
+                            return `${time}s`;
+                        }
+                    }
+                }
+            }
+        });
+        dragQueue();
+    }
+    catch {
+        global.queue.queue = [];
+    }
+}
+
 function taxRates(govern){
     var tax_rates = $('<div id="tax_rates" v-show="display" class="taxRate"></div>');
     govern.append(tax_rates);
@@ -41,8 +92,8 @@ function taxRates(govern){
     tax_rates.append(label);
     
     var tax_level = $('<span class="current">{{ tax_rate | tax_level }}</span>');
-    var sub = $(`<span role="button" aria-label="decrease taxes" class="sub" @click="sub">&laquo;</span>`);
-    var add = $(`<span role="button" aria-label="increase taxes" class="add" @click="add">&raquo;</span>`);
+    var sub = $(`<span role="button" aria-label="decrease taxes" class="sub has-text-success" @click="sub">&laquo;</span>`);
+    var add = $(`<span role="button" aria-label="increase taxes" class="add has-text-danger" @click="add">&raquo;</span>`);
     tax_rates.append(sub);
     tax_rates.append(tax_level);
     tax_rates.append(add);
@@ -106,10 +157,10 @@ function taxRates(govern){
 
 export function buildGarrison(garrison){
     if (global.tech['world_control']){
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | hell | rating }}</b-tooltip></div>`));
     }
     else {
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | hell | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>`));
     }
 
     var barracks = $('<div class="columns is-mobile bunk"></div>');
@@ -119,8 +170,7 @@ export function buildGarrison(garrison){
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
     
-    
-    bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ workers }} / {{ max }}</span></div>`));
+    bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ workers | stationed }} / {{ max | s_max }}</span></div>`));
     bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span>{{ wounded }}</span></div>`));
 
     barracks.append($(`<div class="column hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
@@ -144,7 +194,7 @@ export function buildGarrison(garrison){
         tactics.append(strategy);
         tactics.append(next);
 
-         var battalion = $(`<div id="battalion" v-show="display" class="tactics"><span>${loc('civics_garrison_battalion')}</span></div>`);
+        var battalion = $(`<div id="battalion" v-show="display" class="tactics"><span>${loc('civics_garrison_battalion')}</span></div>`);
         wrap.append(battalion);
             
         var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ raid }}</span></b-tooltip>');
@@ -209,8 +259,10 @@ export function buildGarrison(garrison){
                     messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning');
                     return;
                 }
-                if (global.civic.garrison.raid > global.civic.garrison.workers){
-                    global.civic.garrison.raid = global.civic.garrison.workers;
+                global.stats.attacks++;
+
+                if (global.civic.garrison.raid > garrisonSize()){
+                    global.civic.garrison.raid = garrisonSize();
                 }
 
                 let highLuck = global.race['claws'] ? 20 : 16;
@@ -680,11 +732,11 @@ export function buildGarrison(garrison){
                 return loc('civics_garrison_army_label');
             },
             soldierDesc(){
-                let rating = armyRating(global.civic.garrison.workers,'hunting');
+                let rating = armyRating(garrisonSize(),'hunting');
                 let food = +(rating / 3).toFixed(2);
                 let fur = +(rating / 10).toFixed(2);
                 if (global.race['evil']){
-                    let bones = +(armyRating(global.civic.garrison.workers,'hunting') / 3).toFixed(2);
+                    let bones = +(armyRating(garrisonSize(),'hunting') / 3).toFixed(2);
                     return loc('civics_garrison_evil_soldier_desc',[food,fur,bones]);
                 }
                 else {
@@ -714,10 +766,10 @@ export function buildGarrison(garrison){
             },
             aNext(){
                 let inc = keyMultiplier();
-                if (global.civic.garrison.raid < global.civic.garrison.workers){
+                if (global.civic.garrison.raid < garrisonSize()){
                     global.civic.garrison.raid += inc;
-                    if (global.civic.garrison.raid > global.civic.garrison.workers){
-                        global.civic.garrison.raid = global.civic.garrison.workers;
+                    if (global.civic.garrison.raid > garrisonSize()){
+                        global.civic.garrison.raid = garrisonSize();
                     }
                 }
             },
@@ -746,8 +798,17 @@ export function buildGarrison(garrison){
                         return loc('civics_garrison_tactic_siege');
                 }
             },
-            rating(val){
-                return +armyRating(val,'army').toFixed(1);
+            rating(v){
+                return +armyRating(v,'army').toFixed(1);
+            },
+            hell(v){
+                return garrisonSize();
+            },
+            stationed(v){
+                return garrisonSize();
+            },
+            s_max(v){
+                return garrisonSize(true);
             }
         }
     });
@@ -804,15 +865,11 @@ export function armyRating(val,type){
         if (global.race['puny']){
             army = Math.floor(army * 0.9);
         }
-        if (global.race['claws']){
+        if (global.race['claws'] || global.race['chameleon']){
             army = Math.floor(army * 1.2);
         }
         if (global.race['cautious'] && global.city.calendar.weather === 0){
             army = Math.floor(army * 0.9);
-        }
-        if (global.race['tactical']){
-            let bonus = 1 + (global.race['tactical'] / 20);
-            army = Math.floor(army * bonus);
         }
         if (global.race['apex_predator']){
             army = Math.floor(army * 1.25);
@@ -822,6 +879,10 @@ export function armyRating(val,type){
         }
         if (global.race['pathetic']){
             army = Math.floor(army * 0.75);
+        }
+        if (global.race['tactical']){
+            let bonus = 1 + (global.race['tactical'] / 20);
+            army = Math.floor(army * bonus);
         }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
@@ -854,6 +915,14 @@ export function armyRating(val,type){
         }
     }
     return army * racialTrait(val,type);
+}
+
+export function garrisonSize(max){
+    let type = max ? 'max' : 'workers';
+    if (global.portal['fortress']){
+        return global.civic.garrison[type] - global.portal.fortress.garrison;
+    }
+    return global.civic.garrison[type];
 }
 
 function defineMad(){
@@ -951,6 +1020,21 @@ export function challenge_multiplier(value){
     }
 }
 
+export function dragQueue(){
+    let el = $('#buildQueue .buildList')[0];
+    Sortable.create(el,{
+        onEnd(e){
+            let order = global.queue.queue;
+            var tmp = order[e.oldDraggableIndex];
+            order[e.oldDraggableIndex] = order[e.newDraggableIndex];
+            order[e.newDraggableIndex] = tmp;
+            global.queue.queue = order;
+            buildQueue();
+            resizeGame();
+        }
+    });
+}
+
 function warhead(){
     Object.keys(vues).forEach(function (v){
         vues[v].$destroy();
@@ -970,9 +1054,6 @@ function warhead(){
         k_inc *= 1.1;
     }
     new_plasmid = challenge_multiplier(new_plasmid);
-    if (global.stats.died === 0){
-        unlockAchieve(`pacifist`);
-    }
     plasmid += new_plasmid;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
@@ -987,6 +1068,9 @@ function warhead(){
     unlockAchieve(`apocalypse`);
     let new_achieve = unlockAchieve(`extinct_${god}`);
     checkAchievements();
+    if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
+        unlockFeat('take_no_advice');
+    }
     global['race'] = { 
         species : 'protoplasm', 
         gods: god,
@@ -995,6 +1079,7 @@ function warhead(){
         ancient_ruins: 1,
         Plasmid: { count: plasmid },
         Phage: { count: global.race.Phage.count },
+        Dark: { count: global.race.Dark.count },
         seeded: false,
     };
     global.city = {
@@ -1009,34 +1094,8 @@ function warhead(){
         },
         biome: biome
     };
-    global.space = {};
-    global.starDock = {};
-    global.civic = { free: 0 };
-    global.resource = {};
-    global.evolution = {};
     global.tech = { theology: 1 };
-    global.event = 100;
-    global.settings.civTabs = 0;
-    global.settings.showEvolve = true;
-    global.settings.showCity = false;
-    global.settings.showIndustry = false;
-    global.settings.showResearch = false;
-    global.settings.showCivic = false;
-    global.settings.showMarket = false;
-    global.settings.showGenetics = false;
-    global.settings.showSpace = false;
-    global.settings.space.home = true;
-    global.settings.space.moon = false;
-    global.settings.space.red = false;
-    global.settings.space.hell = false;
-    global.settings.space.sun = false;
-    global.settings.space.gas = false;
-    global.settings.space.gas_moon = false;
-    global.settings.space.belt = false;
-    global.settings.space.dwarf = false;
-    global.settings.space.blackhole = false;
-    global.settings.arpa = false;
-    global.settings.resTabs = 0;
+    clearStates();
     global.arpa = {};
     if (!new_achieve){
         global.lastMsg = false;
