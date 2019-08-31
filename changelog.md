@@ -1,3 +1,8 @@
+#### 0.5.13 - 8/30/2019 ####
+New layout for selecting challenge genes/modes during end of evolution stage<br>
+Fixed bug with low support elerium miners that caused them to miscalulate miner outputs<br>
+Added a threat level warning to fortress<br>
+
 #### 0.5.12 - 8/30/2019 ####
 Pacifist Achievement is now unlocked by unifying without ever initiating an attack<br>
 

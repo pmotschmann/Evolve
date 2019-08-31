@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue, dragQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { actions, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
+import { actions, challengeGeneHeader, challengeActionHeader, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -306,6 +306,24 @@ if (global.race.species === 'protoplasm'){
     }
     if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
         evoProgress();
+    }
+    
+    if (global.evolution['bunker'] && global.evolution['bunker'].count >= 1){
+        challengeGeneHeader();
+        var challenge_genes = ['plasmid','trade','craft','crispr'];
+        for (var i = 0; i < challenge_genes.length; i++){
+            if (global.evolution[challenge_genes[i]] && global.evolution[challenge_genes[i]].count == 0){
+                addAction('evolution',challenge_genes[i]);
+            }
+        }
+
+        challengeActionHeader()
+        var challenge_actions = ['junker','joyless'];
+        for (var i = 0; i < challenge_actions.length; i++){
+            if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
+                addAction('evolution',challenge_actions[i]);
+            }
+        }
     }
 }
 else {
@@ -1022,7 +1040,7 @@ function fastLoop(){
                     let operating = global.space[belt_structs[i]].on;
                     let id = actions.space.spc_belt[belt_structs[i]].id;
                     if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support)) > global.space.space_station.s_max){
-                        operating -= used_support + operating - global.space.space_station.s_max;
+                        operating -= used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support)) - global.space.space_station.s_max;
                         $(`#${id} .on`).addClass('warn');
                     }
                     else {
