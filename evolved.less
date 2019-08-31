@@ -77,6 +77,30 @@ a {
     overflow: hidden;
 }
 
+.actionWidth {
+    @media only screen and (max-width: 113rem){
+        max-width: 38rem;
+    }
+    @media only screen and (max-width: 88.5rem){
+        max-width: 51rem;
+    }
+    @media only screen and (max-width: 76.375rem){
+        max-width: 38rem;
+    }
+    @media only screen and (max-width: 59rem){
+        max-width: 25rem;
+    }
+    @media only screen and (max-width: 48rem){
+        max-width: 38rem;
+    }
+    @media only screen and (max-width: 45rem){
+        max-width: 25rem;
+    }
+    @media only screen and (max-width: 32rem){
+        max-width: 12rem;
+    }
+}
+
 .add {
     display: inline-block;
     margin-right: .25rem;
@@ -270,27 +294,7 @@ a {
     .evolving {
         margin-top: 1rem;
         max-width: 51rem;
-        @media only screen and (max-width: 113rem){
-            max-width: 38rem;
-        }
-        @media only screen and (max-width: 88.5rem){
-            max-width: 51rem;
-        }
-        @media only screen and (max-width: 76.375rem){
-            max-width: 38rem;
-        }
-        @media only screen and (max-width: 59rem){
-            max-width: 25rem;
-        }
-        @media only screen and (max-width: 48rem){
-            max-width: 38rem;
-        }
-        @media only screen and (max-width: 45rem){
-            max-width: 25rem;
-        }
-        @media only screen and (max-width: 32rem){
-            max-width: 12rem;
-        }
+        .actionWidth();
         .progress {
             height: 1.2rem;
         }
@@ -302,6 +306,7 @@ a {
         content: "Evolving";
         text-align: center;
         color: #af8d07;
+        margin-bottom: -1.25rem;
     }
 
     .content {
@@ -394,6 +399,24 @@ a {
                     height: .25rem;
                     background: transparent;
                 }
+            }
+        }
+
+        .challenge {
+            width: 100%; 
+            .actionWidth();
+            text-align: center;
+        }
+        .divider {
+            width: 100%; 
+            text-align: center; 
+            border-bottom: .0625rem solid; 
+            margin: .625rem 0 .625rem;
+
+            h2 {
+                position: relative;
+                bottom: -.5rem;
+                padding: 0 .625rem;
             }
         }
     }
@@ -1360,6 +1383,9 @@ html.dark {
                     color: #975f5f;
                 }
             }
+            .divider h2 {
+                background: #1f2424;
+            }
         }
     
         .government {
@@ -1616,6 +1642,9 @@ html.light {
             .button.is-dark:hover {
                 background-color: #ccc;
             }
+            .divider h2 {
+                background: #fff;
+            }
         }
 
         > div.popper {
@@ -1725,6 +1754,9 @@ html.night {
                 span.off {
                     background: #000;
                 }
+            }
+            .divider h2 {
+                background: #000;
             }
         }
     }

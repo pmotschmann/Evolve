@@ -502,6 +502,9 @@ export function drawAchieve(){
     if (global.race['no_crispr']){ a_level++; }
 
     if (a_level > 1 && $('#topBar .planet .flair').length === 0){
+        if ($('#topBar span.flair')){
+            $('#topBar span.flair').remove();
+        }
         $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>`);
     
         $('#topBar .planetWrap .flair').on('mouseover',function(){

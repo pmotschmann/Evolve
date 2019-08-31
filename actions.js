@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat } from './functions.js';
-import { unlockAchieve, unlockFeat } from './achieve.js';
+import { unlockAchieve, unlockFeat, drawAchieve } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -1495,19 +1495,21 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.evolution['bunker'] = { count: 1 };
                     removeAction(actions.evolution.bunker.id);
+                    evoProgress();
                     global.evolution['plasmid'] = { count: 0 };
                     global.evolution['trade'] = { count: 0 };
                     global.evolution['craft'] = { count: 0 };
                     global.evolution['crispr'] = { count: 0 };
                     global.evolution['junker'] = { count: 0 };
                     global.evolution['joyless'] = { count: 0 };
+                    challengeGeneHeader();
                     addAction('evolution','plasmid');
                     addAction('evolution','trade');
                     addAction('evolution','craft');
                     addAction('evolution','crispr');
+                    challengeActionHeader();
                     addAction('evolution','junker');
                     addAction('evolution','joyless');
-                    evoProgress();
                 }
                 return false;
             }
@@ -1525,7 +1527,7 @@ export const actions = {
                     global.race['no_plasmid'] = 1;
                     global.evolution['plasmid'] = { count: 1 };
                     removeAction(actions.evolution.plasmid.id);
-                    evoProgress();
+                    drawAchieve();
                 }
                 return false;
             }
@@ -1543,7 +1545,7 @@ export const actions = {
                     global.race['no_trade'] = 1;
                     global.evolution['trade'] = { count: 1 };
                     removeAction(actions.evolution.trade.id);
-                    evoProgress();
+                    drawAchieve();
                 }
                 return false;
             }
@@ -1561,7 +1563,7 @@ export const actions = {
                     global.race['no_craft'] = 1;
                     global.evolution['craft'] = { count: 1 };
                     removeAction(actions.evolution.craft.id);
-                    evoProgress();
+                    drawAchieve();
                 }
                 return false;
             }
@@ -1579,7 +1581,7 @@ export const actions = {
                     global.race['no_crispr'] = 1;
                     global.evolution['crispr'] = { count: 1 };
                     removeAction(actions.evolution.crispr.id);
-                    evoProgress();
+                    drawAchieve();
                 }
                 return false;
             }
@@ -10224,6 +10226,23 @@ function costMultiplier(structure,base,mutiplier,cat){
     }
     var count = global[cat][structure] ? global[cat][structure].count : 0;
     return Math.round((mutiplier ** count) * base);
+}
+
+export function challengeGeneHeader(){
+    let challenge = $(`<div class="challenge"></div>`);
+    $('#evolution').append(challenge);
+    challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_genes')}</h2></div>`));
+    challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_genes_desc')}</div>`));
+    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_genes_mastery')}</div>`));
+    }
+}
+
+export function challengeActionHeader(){
+    let challenge = $(`<div class="challenge"></div>`);
+    $('#evolution').append(challenge);
+    challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_run')}</h2></div>`));
+    challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_run_desc')}</div>`));
 }
 
 function drawModal(c_action,type){
