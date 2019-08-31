@@ -1874,6 +1874,21 @@ function fastLoop(){
                 global.city['smelter'].Wood = 0;
             }
             let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
+
+            if (global.city['smelter'].Iron + global.city['smelter'].Steel > global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil){
+                let fueled = global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil;
+                let overflow = global.city['smelter'].Iron + global.city['smelter'].Steel - fueled;
+                global.city['smelter'].Iron -= overflow;
+                if (global.city['smelter'].Iron < 0){
+                    overflow = global.city['smelter'].Iron;
+                    global.city['smelter'].Iron = 0;
+                    global.city['smelter'].Steel += overflow;
+                    if (global.city['smelter'].Steel < 0){
+                        global.city['smelter'].Steel = 0;
+                    }
+                }
+            }
+
             let consume_wood = global.city['smelter'].Wood * 3;
             let consume_coal = global.city['smelter'].Coal * coal_fuel;
             let consume_oil = global.city['smelter'].Oil * 0.35;
