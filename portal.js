@@ -286,6 +286,8 @@ function buildFortress(parent){
     status.append(defense);
     let activity = $(`<b-tooltip :label="hostiles()" position="is-bottom" multilined animated><span class="has-text-danger" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span></b-tooltip>`);
     status.append(activity);
+    let threatLevel = $(`<b-tooltip :label="threatLevel()" position="is-bottom" multilined animated><span :class="threaten()" :aria-label="threatLevel()">{{ f.threat | threat }}</span></b-tooltip>`);
+    status.append(threatLevel);
 
     let wallStatus = $('<div></div>');
     fort.append(wallStatus);
@@ -344,6 +346,27 @@ function buildFortress(parent){
             },
             patSizeLabel(){
                 return loc('fortress_patrol_size_desc',[global.portal.fortress.patrol_size]);
+            },
+            threatLevel(){
+                let t = global.portal.fortress.threat;
+                if (t < 1000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level1')}`;
+                }
+                else if (t < 1500){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level2')}`;
+                }
+                else if (t >= 5000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level6')}`;
+                }
+                else if (t >= 3000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level5')}`;
+                }
+                else if (t >= 2000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level4')}`;
+                }
+                else {
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level3')}`;
+                }
             },
             aNext(){
                 let inc = keyMultiplier();
@@ -419,6 +442,18 @@ function buildFortress(parent){
                 else {
                     return "has-text-warning";
                 }
+            },
+            threaten(){
+                let val = global.portal.fortress.threat;
+                if (val < 1000){
+                    return "has-text-success";
+                }
+                else if (val >= 2000){
+                    return "has-text-danger";
+                }
+                else {
+                    return "has-text-warning";
+                }
             }
         },
         filters: {
@@ -427,6 +462,26 @@ function buildFortress(parent){
             },
             patrolling(v){
                 return v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+            },
+            threat(t){
+                if (t < 1000){
+                    return loc('fortress_threat_level1');
+                }
+                else if (t < 1500){
+                    return loc('fortress_threat_level2');
+                }
+                else if (t >= 5000){
+                    return loc('fortress_threat_level6');
+                }
+                else if (t >= 3000){
+                    return loc('fortress_threat_level5');
+                }
+                else if (t >= 2000){
+                    return loc('fortress_threat_level4');
+                }
+                else {
+                    return loc('fortress_threat_level3');
+                }
             }
         }
     });
