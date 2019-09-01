@@ -1,3 +1,6 @@
+#### 0.5.15 - 9/1/2019 ####
+Portuguese translations updated Rodrigodd<br>
+
 #### 0.5.14 - 9/1/2019 ####
 Buildings will no longer be added to the queue if holding down a multiplier key<br>
 Fixed a problem with smelters that could cause their production to become stuck in a high state<br>

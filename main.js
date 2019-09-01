@@ -405,7 +405,7 @@ function fastLoop(){
     breakdown.p['Global'] = {};
     var global_multiplier = 1;
     if (global.race.Plasmid.count > 0){
-        breakdown.p['Global']['Plasmid'] = (plasmidBonus() * 100) + '%';
+        breakdown.p['Global'][loc('resource_Plasmid_name')] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();
     }
     if (global.race['no_plasmid']){
@@ -415,30 +415,30 @@ function fastLoop(){
                 temple_bonus += global.civic.professor.workers * 0.0004;
             }
             let faith = global.city.temple.count * temple_bonus;
-            breakdown.p['Global']['Faith'] = (faith * 100) + '%';
+            breakdown.p['Global'][loc('faith')] = (faith * 100) + '%';
             global_multiplier *= (1 + faith);
         }
     }
     if (global.tech['world_control']){
-        breakdown.p['Global']['Unification'] = '25%';
+        breakdown.p['Global'][loc('tech_unification')] = '25%';
         global_multiplier *= 1.25;
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-        breakdown.p['Global']['Mastery'] = (achieve_level * 0.25) + '%';
+        breakdown.p['Global'][loc('mastery')] = (achieve_level * 0.25) + '%';
         global_multiplier *= 1 + (achieve_level * 0.0025);
     }
     if (global.race['suction_grip']){
-        breakdown.p['Global']['Grip'] = '8%';
+        breakdown.p['Global'][loc('trait_suction_grip_bd')] = '8%';
         global_multiplier *= 1.08;
     }
     if (global.race['intelligent']){
         let bonus = (global.civic.scientist.workers * 0.25) + (global.civic.professor.workers * 0.125);
-        breakdown.p['Global']['Intelligence'] = bonus+'%';
+        breakdown.p['Global'][loc('trait_intelligent_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
     if (global.race['slaver'] && global.city['slave_pen'] && global.city['slave_pen']){
         let bonus = (global.city.slave_pen.slaves * 0.28);
-        breakdown.p['Global']['Slaves'] = bonus+'%';
+        breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
 
@@ -637,7 +637,7 @@ function fastLoop(){
         }
 
         let money_bd = {};
-        breakdown.p.consume.Money['Trade'] = 0;
+        breakdown.p.consume.Money[loc('trade')] = 0;
 
         // trade routes
         if (global.tech['trade']){
@@ -650,8 +650,8 @@ function fastLoop(){
                     if (global.resource.Money.amount >= price * time_multiplier){
                         modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
                         modRes('Money', -(price * time_multiplier));
-                        breakdown.p.consume.Money['Trade'] -= price;
-                        breakdown.p.consume[res]['Trade'] = global.resource[res].trade * tradeRatio[res];
+                        breakdown.p.consume.Money[loc('trade')] -= price;
+                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * tradeRatio[res];
                     }
                     steelCheck();
                 }
@@ -662,16 +662,16 @@ function fastLoop(){
                     if (global.resource[res].amount >= time_multiplier){
                         modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
                         modRes('Money', -(price * time_multiplier));
-                        breakdown.p.consume.Money['Trade'] -= price;
-                        breakdown.p.consume[res]['Trade'] = global.resource[res].trade * tradeRatio[res];
+                        breakdown.p.consume.Money[loc('trade')] -= price;
+                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * tradeRatio[res];
                     }
                     steelCheck();
                 }
             });
             global.city.market.trade = used_trade;
         }
-        if (breakdown.p.consume.Money['Trade'] === 0){
-            delete breakdown.p.consume.Money['Trade'];
+        if (breakdown.p.consume.Money[loc('trade')] === 0){
+            delete breakdown.p.consume.Money[loc('trade')];
         }
 
         let power_grid = 0;
@@ -699,7 +699,7 @@ function fastLoop(){
                 power -= actions.city.coal_power.powered;
                 consume -= 0.35;
             }
-            breakdown.p.consume.Coal['Powerplant'] = -(consume);
+            breakdown.p.consume.Coal[loc('powerplant')] = -(consume);
             modRes('Coal', -(consume * time_multiplier));
 
             max_power += power;
@@ -720,7 +720,7 @@ function fastLoop(){
                 power -= actions.city.oil_power.powered;
                 consume -= 0.65;
             }
-            breakdown.p.consume.Oil['Powerplant'] = -(consume);
+            breakdown.p.consume.Oil[loc('powerplant')] = -(consume);
             modRes('Oil', -(consume * time_multiplier));
 
             max_power += power;
@@ -736,7 +736,7 @@ function fastLoop(){
                 power -= output;
                 consume -= 0.1;
             }
-            breakdown.p.consume.Uranium['Reactor'] = -(consume);
+            breakdown.p.consume.Uranium[loc('reactor')] = -(consume);
             modRes('Uranium', -(consume * time_multiplier));
 
             max_power += power;
@@ -752,7 +752,7 @@ function fastLoop(){
                 power -= output;
                 consume -= 1.25;
             }
-            breakdown.p.consume.Deuterium['Reactor'] = -(consume);
+            breakdown.p.consume.Deuterium[loc('reactor')] = -(consume);
             modRes('Deuterium', -(consume * time_multiplier));
 
             max_power += power;
@@ -769,7 +769,7 @@ function fastLoop(){
                 power -= output;
                 consume -= increment;
             }
-            breakdown.p.consume.Helium_3['Geothermal'] = -(consume);
+            breakdown.p.consume.Helium_3[loc('space_hell_geothermal_bd')] = -(consume);
             let number = consume * time_multiplier;
             modRes('Helium_3', -(number));
 
@@ -787,7 +787,7 @@ function fastLoop(){
                 power += output;
                 consume -= increment;
             }
-            breakdown.p.consume.Elerium['Reactor'] = -(consume);
+            breakdown.p.consume.Elerium[loc('reactor')] = -(consume);
             let number = consume * time_multiplier;
             modRes('Elerium', -(number));
 
@@ -857,7 +857,7 @@ function fastLoop(){
         if (global.space['moon_base'] && global.space['moon_base'].count > 0){
             let oil_cost = +fuel_adjust(2);
             let mb_consume = p_on['moon_base'] * oil_cost;
-            breakdown.p.consume.Oil['Moon_Base'] = -(mb_consume);
+            breakdown.p.consume.Oil[loc('space_moon_base_title')] = -(mb_consume);
             for (let i=0; i<p_on['moon_base']; i++){
                 if (!modRes('Oil', -(time_multiplier * oil_cost))){
                     mb_consume -= (p_on['moon_base'] * oil_cost) - (i * oil_cost);
@@ -897,7 +897,7 @@ function fastLoop(){
         if (global.space['space_barracks']){
             let oil_cost = +fuel_adjust(2);
             let sm_consume = global.space.space_barracks.on * oil_cost;
-            breakdown.p.consume.Oil['Marines'] = -(sm_consume);
+            breakdown.p.consume.Oil[loc('tech_space_marines_bd')] = -(sm_consume);
             for (let i=0; i<global.space.space_barracks.on; i++){
                 if (!modRes('Oil', -(time_multiplier * oil_cost))){
                     sm_consume -= (global.space.space_barracks.on * oil_cost) - (i * oil_cost);
@@ -910,14 +910,14 @@ function fastLoop(){
         if (p_on['red_factory'] && p_on['red_factory'] > 0){
             let h_consume = p_on['red_factory'] * fuel_adjust(1);
             modRes('Helium_3',-(h_consume * time_multiplier));
-            breakdown.p.consume.Helium_3['Factory'] = -(h_consume);
+            breakdown.p.consume.Helium_3[loc('space_red_factory_title')] = -(h_consume);
         }
 
         // spaceports
         if (global.space['spaceport'] && global.space['spaceport'].count > 0){
             let fuel_cost = +fuel_adjust(1.25);
             let mb_consume = p_on['spaceport'] * fuel_cost;
-            breakdown.p.consume.Helium_3['Spaceport'] = -(mb_consume);
+            breakdown.p.consume.Helium_3[loc('space_red_spaceport_title')] = -(mb_consume);
             for (let i=0; i<p_on['spaceport']; i++){
                 if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
                     mb_consume -= (p_on['spaceport'] * fuel_cost) - (i * fuel_cost);
@@ -958,7 +958,7 @@ function fastLoop(){
         if (global.interstellar['starport'] && global.interstellar['starport'].count > 0){
             let fuel_cost = 5;
             let mb_consume = p_on['starport'] * fuel_cost;
-            breakdown.p.consume.Helium_3['Starport'] = -(mb_consume);
+            breakdown.p.consume.Helium_3[loc('interstellar_alpha_starport_title')] = -(mb_consume);
             for (let i=0; i<p_on['starport']; i++){
                 if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
                     mb_consume -= (p_on['starport'] * fuel_cost) - (i * fuel_cost);
@@ -1022,7 +1022,7 @@ function fastLoop(){
         if (global.space['space_station'] && global.space['space_station'].count > 0){
             let fuel_cost = +fuel_adjust(2.5);
             let ss_consume = p_on['space_station'] * fuel_cost;
-            breakdown.p.consume.Helium_3['Space_Station'] = -(ss_consume);
+            breakdown.p.consume.Helium_3[loc('space_belt_station_title')] = -(ss_consume);
             for (let i=0; i<p_on['space_station']; i++){
                 if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
                     ss_consume -= (p_on['space_station'] * fuel_cost) - (i * fuel_cost);
@@ -1059,7 +1059,7 @@ function fastLoop(){
         if (global.interstellar['nexus'] && global.interstellar['nexus'].count > 0){
             let cash_cost = 350;
             let mb_consume = p_on['nexus'] * cash_cost;
-            breakdown.p.consume.Money['Nexus'] = -(mb_consume);
+            breakdown.p.consume.Money[loc('interstellar_nexus_bd')] = -(mb_consume);
             for (let i=0; i<p_on['nexus']; i++){
                 if (!modRes('Money', -(time_multiplier * cash_cost))){
                     mb_consume -= (p_on['nexus'] * cash_cost) - (i * cash_cost);
@@ -1098,7 +1098,7 @@ function fastLoop(){
         if (global.interstellar['xfer_station'] && p_on['xfer_station']){
             let fuel_cost = 0.28;
             let xfer_consume = p_on['xfer_station'] * fuel_cost;
-            breakdown.p.consume.Uranium['Xfer_Station'] = -(xfer_consume);
+            breakdown.p.consume.Uranium[loc('interstellar_xfer_station_title')] = -(xfer_consume);
             for (let i=0; i<p_on['xfer_station']; i++){
                 if (!modRes('Uranium', -(time_multiplier * fuel_cost))){
                     xfer_consume -= (p_on['xfer_station'] * fuel_cost) - (i * fuel_cost);
@@ -1112,7 +1112,7 @@ function fastLoop(){
         if (p_on['outpost'] && p_on['outpost'] > 0){
             let fuel_cost = +fuel_adjust(2);
             let out_consume = p_on['outpost'] * fuel_cost;
-            breakdown.p.consume.Oil['Outpost'] = -(out_consume);
+            breakdown.p.consume.Oil[loc('space_gas_moon_outpost_bd')] = -(out_consume);
             for (let i=0; i<p_on['outpost']; i++){
                 if (!modRes('Oil', -(time_multiplier * fuel_cost))){
                     out_consume -= (p_on['outpost'] * fuel_cost) - (i * fuel_cost);
@@ -1223,21 +1223,21 @@ function fastLoop(){
 
         if (global.city.morale.current < 100){
             global_multiplier *= global.city.morale.current / 100;
-            breakdown.p['Global']['Morale'] = (global.city.morale.current - 100) + '%';
+            breakdown.p['Global'][loc('morale')] = (global.city.morale.current - 100) + '%';
         }
         else {
             global_multiplier *= 1 + ((global.city.morale.current - 100) / 200);
-            breakdown.p['Global']['Morale'] = ((global.city.morale.current - 100) / 2) + '%';
+            breakdown.p['Global'][loc('morale')] = ((global.city.morale.current - 100) / 2) + '%';
         }
 
         if (global.race['lazy'] && global.city.calendar.temp === 2){
-            breakdown.p['Global']['Lazy'] = '-10%';
+            breakdown.p['Global'][loc('trait_lazy_bd')] = '-10%';
             global_multiplier *= 0.9;
         }
 
         if (global.race['selenophobia']){
             let moon = global.city.calendar.moon > 14 ? 28 - global.city.calendar.moon : global.city.calendar.moon;
-            breakdown.p['Global']['Moon_Phase'] = (-(moon) + 4) + '%';
+            breakdown.p['Global'][loc('moon_phase')] = (-(moon) + 4) + '%';
             moon = 1.04 - (moon / 100);
             global_multiplier *= moon;
         }
@@ -1386,31 +1386,31 @@ function fastLoop(){
             let tourism = 0;
             if (global.city['tourist_center']){
                 tourism = global.city['tourist_center'].on * 50;
-                breakdown.p.consume.Food['Tourism'] = -(tourism);
+                breakdown.p.consume.Food[loc('tech_tourism')] = -(tourism);
             }
 
             let spaceport = 0;
             if (global.space['spaceport']){
                 spaceport = p_on['spaceport'] * 25;
-                breakdown.p.consume.Food['Spaceport'] = -(spaceport);
+                breakdown.p.consume.Food[loc('space_red_spaceport_title')] = -(spaceport);
             }
 
             let starport = 0;
             if (global.interstellar['starport']){
                 starport = p_on['starport'] * 100;
-                breakdown.p.consume.Food['Starport'] = -(starport);
+                breakdown.p.consume.Food[loc('interstellar_alpha_starport_title')] = -(starport);
             }
 
             let space_station = 0;
             if (global.space['space_station']){
                 space_station = p_on['space_station'] * 10;
-                breakdown.p.consume.Food['Space_Station'] = -(space_station);
+                breakdown.p.consume.Food[loc('space_belt_station_title')] = -(space_station);
             }
 
             let space_marines = 0;
             if (global.space['space_barracks']){
                 space_marines = global.space.space_barracks.on * 10;
-                breakdown.p.consume.Food['Marines'] = -(space_marines);
+                breakdown.p.consume.Food[loc('tech_space_marines_bd')] = -(space_marines);
             }
 
             let delta = generated - consume - tourism - spaceport - starport - space_station - space_marines;
@@ -1441,7 +1441,7 @@ function fastLoop(){
         if (global.portal['fortress'] && global.portal.fortress.walls < 100){
             if (modRes('Stone', -(200 * time_multiplier))){
                 global.portal.fortress.repair++;
-                breakdown.p.consume.Stone['Fortress'] = -200;
+                breakdown.p.consume.Stone[loc('portal_fortress_name')] = -200;
             }
             if (global.portal.fortress.repair >= 200){
                 global.portal.fortress.repair = 0;
@@ -1580,7 +1580,7 @@ function fastLoop(){
 
             if (gene_consume > 0) {
                 delta -= gene_consume;
-                breakdown.p.consume.Knowledge['Genome'] = -(gene_consume);
+                breakdown.p.consume.Knowledge[loc('genome_bd')] = -(gene_consume);
             }
             
             modRes('Knowledge', delta * time_multiplier);
@@ -1608,7 +1608,7 @@ function fastLoop(){
                     workDone--;
                 }
 
-                breakdown.p.consume.Furs['Factory'] = -(fur_cost);
+                breakdown.p.consume.Furs[loc('city_factory')] = -(fur_cost);
                 modRes('Furs', -(fur_cost * time_multiplier));
                 
                 let demand = global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]);
@@ -1646,8 +1646,8 @@ function fastLoop(){
                     workDone--;
                 }
 
-                breakdown.p.consume.Copper['Factory'] = -(copper_cost);
-                breakdown.p.consume.Aluminium['Factory'] = -(aluminium_cost);
+                breakdown.p.consume.Copper[loc('city_factory')] = -(copper_cost);
+                breakdown.p.consume.Aluminium[loc('city_factory')] = -(aluminium_cost);
                 modRes('Copper', -(copper_cost * time_multiplier));
                 modRes('Aluminium', -(aluminium_cost * time_multiplier));
 
@@ -1701,8 +1701,8 @@ function fastLoop(){
                     workDone--;
                 }
 
-                breakdown.p.consume.Lumber['Factory'] = -(lumber_cost);
-                breakdown.p.consume.Oil['Factory'] = -(oil_cost);
+                breakdown.p.consume.Lumber[loc('city_factory')] = -(lumber_cost);
+                breakdown.p.consume.Oil[loc('city_factory')] = -(oil_cost);
                 modRes('Lumber', -(lumber_cost * time_multiplier));
                 modRes('Oil', -(oil_cost * time_multiplier));
 
@@ -1753,8 +1753,8 @@ function fastLoop(){
                     workDone--;
                 }
 
-                breakdown.p.consume.Coal['Factory'] = -(coal_cost);
-                breakdown.p.consume.Neutronium['Factory'] = -(neutronium_cost);
+                breakdown.p.consume.Coal[loc('city_factory')] = -(coal_cost);
+                breakdown.p.consume.Neutronium[loc('city_factory')] = -(neutronium_cost);
                 modRes('Neutronium', -(neutronium_cost * time_multiplier));
                 modRes('Coal', -(coal_cost * time_multiplier));
 
@@ -1805,8 +1805,8 @@ function fastLoop(){
                     workDone--;
                 }
 
-                breakdown.p.consume.Aluminium['Factory'] = breakdown.p.consume.Aluminium['Factory'] ? breakdown.p.consume.Aluminium['Factory'] - alum_cost : -(alum_cost);
-                breakdown.p.consume.Nano_Tube['Factory'] = -(nano_cost);
+                breakdown.p.consume.Aluminium[loc('city_factory')] = breakdown.p.consume.Aluminium[loc('city_factory')] ? breakdown.p.consume.Aluminium[loc('city_factory')] - alum_cost : -(alum_cost);
+                breakdown.p.consume.Nano_Tube[loc('city_factory')] = -(nano_cost);
                 modRes('Aluminium', -(alum_cost * time_multiplier));
                 modRes('Nano_Tube', -(nano_cost * time_multiplier));
 
@@ -1837,7 +1837,7 @@ function fastLoop(){
                 workDone--;
             }
 
-            breakdown.p.consume.Stone['C.Plant'] = -(stone_cost);
+            breakdown.p.consume.Stone[loc('city_cement_plant_bd')] = -(stone_cost);
             modRes('Stone', -(stone_cost * time_multiplier));
 
             let cement_base = global.tech['cement'] >= 4 ? 1.2 : 1;
@@ -1944,13 +1944,13 @@ function fastLoop(){
             }
 
             if (global.race['evil']){
-                breakdown.p.consume.Food['Smelter'] = -(consume_wood);
+                breakdown.p.consume.Food[loc('city_smelter')] = -(consume_wood);
             }
             else {
-                breakdown.p.consume.Lumber['Smelter'] = -(consume_wood);
+                breakdown.p.consume.Lumber[loc('city_smelter')] = -(consume_wood);
             }
-            breakdown.p.consume.Coal['Smelter'] = -(consume_coal);
-            breakdown.p.consume.Oil['Smelter'] = -(consume_oil);
+            breakdown.p.consume.Coal[loc('city_smelter')] = -(consume_coal);
+            breakdown.p.consume.Oil[loc('city_smelter')] = -(consume_oil);
 
             modRes(l_type, -(consume_wood * time_multiplier));
             modRes('Coal', -(consume_coal * time_multiplier));
@@ -1976,8 +1976,8 @@ function fastLoop(){
                     steel_smelter--;
                 }
 
-                breakdown.p.consume.Coal['Smelter'] -= coal_consume;
-                breakdown.p.consume.Iron['Smelter'] = -(iron_consume);
+                breakdown.p.consume.Coal[loc('city_smelter')] -= coal_consume;
+                breakdown.p.consume.Iron[loc('city_smelter')] = -(iron_consume);
                 modRes('Iron', -(iron_consume * time_multiplier));
                 modRes('Coal', -(coal_consume * time_multiplier));
 
@@ -2058,9 +2058,9 @@ function fastLoop(){
                 graphene_production--;
             }
             
-            breakdown.p.consume.Lumber['G.Plant'] = -(consume_wood);
-            breakdown.p.consume.Coal['G.Plant'] = -(consume_coal);
-            breakdown.p.consume.Oil['G.Plant'] = -(consume_oil);
+            breakdown.p.consume.Lumber[loc('interstellar_g_factory_bd')] = -(consume_wood);
+            breakdown.p.consume.Coal[loc('interstellar_g_factory_bd')] = -(consume_coal);
+            breakdown.p.consume.Oil[loc('interstellar_g_factory_bd')] = -(consume_oil);
 
             modRes('Lumber', -(consume_wood * time_multiplier));
             modRes('Coal', -(consume_coal * time_multiplier));
