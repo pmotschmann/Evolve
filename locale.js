@@ -45,9 +45,7 @@ function getString(locale) {
             $.getJSON(`strings/strings.${locale}.json`, (data) => { localeString = data; })
         }
         catch (e) {
-            if (locale != 'en-US') {
-                console.error(e,e.stack);
-            }
+            console.error(e,e.stack);
         }
         const defSize = defaultString.length;
 
