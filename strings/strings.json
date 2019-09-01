@@ -1511,7 +1511,7 @@
   "feat_blank_slate_name": "Blank Slate",
   "feat_blank_slate_desc": "Removed all your major and genus racial traits",
   "feat_blank_slate_flair": "A race is a race, but a blank slate could be anything; it could even be a boat!",
-  "feat_supermassive": "Supermassive",
+  "feat_supermassive_name": "Supermassive",
   "feat_supermassive_desc": "Increase a blackhole to 100 solar masses",
   "feat_supermassive_flair": "More like regular massive really",
   "arpa_projects_lhc_title": "Supercollider",

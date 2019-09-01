@@ -232,7 +232,7 @@ if (convertVersion(global['version']) <= 5011 && global.stats['died']){
     global.stats['attacks'] = global.stats['died'];
 }
 
-global['version'] = '0.5.13';
+global['version'] = '0.5.14';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
