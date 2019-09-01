@@ -1247,7 +1247,7 @@ function fastLoop(){
             let mass = 0;
             let exotic = 0;
             Object.keys(global.interstellar.mass_ejector).forEach(function (res){
-                if (atomic_mass[res]){
+                if (atomic_mass[res] && atomic_mass[res] > 0){
                     let ejected = global.interstellar.mass_ejector[res];
                     if (total + ejected > p_on['mass_ejector'] * 1000){
                         ejected = p_on['mass_ejector'] * 1000 - total;

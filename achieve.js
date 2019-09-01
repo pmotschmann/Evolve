@@ -397,6 +397,11 @@ const feats = {
         name: loc("feat_blank_slate_name"),
         desc: loc("feat_blank_slate_desc"),
         flair: loc("feat_blank_slate_flair")
+    },
+    supermassive: {
+        name: loc("feat_supermassive_name"),
+        desc: loc("feat_supermassive_desc"),
+        flair: loc("feat_supermassive_flair")
     }
 }
 
@@ -591,6 +596,9 @@ export function checkAchievements(){
     }
     if (global.interstellar['stellar_engine'] && global.interstellar['stellar_engine'].mass >= 12){
         unlockAchieve('landfill');
+    }
+    if (global.interstellar['stellar_engine'] && global.interstellar['stellar_engine'].mass >= 100){
+        unlockFeat('supermassive');
     }
 }
 
