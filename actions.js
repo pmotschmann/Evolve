@@ -2209,7 +2209,6 @@ export const actions = {
                         messageQueue(loc('city_storage_yard_msg'),'success');
                     }
                     global.city['storage_yard'].count++;
-                    global.resource.Crates.display = true;
                     global.settings.showResources = true;
                     global.settings.showStorage = true;
                     let cap = global.tech.container >= 3 ? 20 : 10;
@@ -2220,8 +2219,11 @@ export const actions = {
                         cap *= 2;
                     }
                     global.resource.Crates.max += cap;
-                    $('#resources').empty();
-                    defineResources();
+                    if (!global.resource.Crates.display){
+                        global.resource.Crates.display = true;
+                        $('#resources').empty();
+                        defineResources();
+                    }
                     return true;
                 }
                 return false;
@@ -2253,7 +2255,6 @@ export const actions = {
                         messageQueue(loc('city_warehouse_msg'),'success');
                     }
                     global.city['warehouse'].count++;
-                    global.resource.Containers.display = true;
                     global.settings.showResources = true;
                     global.settings.showStorage = true;
                     let cap = global.tech['steel_container'] >= 2 ? 20 : 10;
@@ -2264,6 +2265,11 @@ export const actions = {
                         cap *= 2;
                     }
                     global.resource.Containers.max += cap;
+                    if (!global.resource.Containers.display){
+                        global.resource.Containers.display = true;
+                        $('#resources').empty();
+                        defineResources();
+                    }
                     return true;
                 }
                 return false;
