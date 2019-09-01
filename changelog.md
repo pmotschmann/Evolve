@@ -1,5 +1,5 @@
 #### 0.5.15 - 9/1/2019 ####
-Portuguese translations updated Rodrigodd<br>
+Portuguese translations updated by Rodrigodd<br>
 
 #### 0.5.14 - 9/1/2019 ####
 Buildings will no longer be added to the queue if holding down a multiplier key<br>
