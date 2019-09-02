@@ -1548,8 +1548,8 @@ const interstellarProjects = {
         },
         alpha_mission: {
             id: 'interstellar-alpha_mission',
-            title: loc('space_mission_title', ['interstellar_alpha_name']),
-            desc: loc('space_mission_desc', ['interstellar_alpha_name']),
+            title: loc('space_mission_title', [loc('interstellar_alpha_name')]),
+            desc: loc('space_mission_desc', [loc('interstellar_alpha_name')]),
             reqs: { ftl: 2 },
             grant: ['alpha',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
@@ -1941,8 +1941,8 @@ const interstellarProjects = {
         },
         proxima_mission: {
             id: 'interstellar-proxima_mission',
-            title: loc('space_mission_title',['interstellar_proxima_name']),
-            desc: loc('space_mission_desc',['interstellar_proxima_name']),
+            title: loc('space_mission_title',[loc('interstellar_proxima_name')]),
+            desc: loc('space_mission_desc',[loc('interstellar_proxima_name')]),
             reqs: { alpha: 1 },
             grant: ['proxima',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
@@ -2106,8 +2106,8 @@ const interstellarProjects = {
         },
         nebula_mission: {
             id: 'interstellar-nebula_mission',
-            title: loc('space_mission_title',['interstellar_nebula_name']),
-            desc: loc('space_mission_desc',['interstellar_nebula_name']),
+            title: loc('space_mission_title',[loc('interstellar_nebula_name')]),
+            desc: loc('space_mission_desc',[loc('interstellar_nebula_name')]),
             reqs: { alpha: 1 },
             grant: ['nebula',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
@@ -2300,8 +2300,8 @@ const interstellarProjects = {
         },
         blackhole_mission: {
             id: 'interstellar-blackhole_mission',
-            title: loc('space_mission_title', ['interstellar_blackhole_name']),
-            desc: loc('space_mission_desc', ['interstellar_blackhole_name']),
+            title: loc('space_mission_title', [loc('interstellar_blackhole_name')]),
+            desc: loc('space_mission_desc', [loc('interstellar_blackhole_name')]),
             reqs: { nebula: 1 },
             grant: ['blackhole',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
