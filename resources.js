@@ -958,7 +958,7 @@ function buildContainer(){
 function drawModal(name,color){
     $('#modalBox').append($('<p id="modalBoxTitle" class="has-text-warning modalTitle">{{ name }} - {{ amount | size }}/{{ max | size }}</p>'));
     
-    let body = $('<div class="modalBody"></div>');
+    let body = $('<div class="modalBody crateModal"></div>');
     $('#modalBox').append(body);
     
     vues['modalCrates'] = new Vue({
@@ -1065,12 +1065,6 @@ function drawModal(name,color){
         }
     });
     vues[`modal_res_${name}`].$mount('#modalBoxTitle');
-    
-    if (global.tech['currency'] && global.tech['currency'] >= 2){
-        var market_item = $(`<div id="pop_market" class="market-item" v-show="r.display"></div>`);
-        body.append(market_item);
-        marketItem(`pop_market_${name}`,'#pop_market',market_item,name,color,false);
-    }
 }
 
 export function crateValue(){
