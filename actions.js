@@ -11462,6 +11462,7 @@ function big_bang(){
         Dark: { count: dark + new_dark },
         universe: 'bigbang',
         seeded: true,
+        bigbang: true,
         probes: 3,
         seed: Math.floor(Math.seededRandom(10000)),
     };

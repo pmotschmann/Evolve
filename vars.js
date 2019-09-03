@@ -817,6 +817,9 @@ window.soft_reset = function reset(){
     if (global.race['ancient_ruins'] && global.race['rapid_mutation'] > 0){
         replace['ancient_ruins'] = global.race['ancient_ruins'];
     }
+    if (global.race['bigbang']){
+        replace.universe = 'bigbang';
+    }
     global['race'] = replace;
 
     let orbit = global.city.calendar.orbit;

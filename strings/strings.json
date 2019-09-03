@@ -2273,8 +2273,11 @@
   "universe_antimatter_effect": "Everything spins in the opposite direction",
   "universe_evil": "Evil",
   "universe_evil_desc": "Everything in this universe is evil",
-  "universe_evil_effect": "Evil is nomral, and normal is Evil.",
+  "universe_evil_effect": "Evil is normal, and normal is Evil. Is evil evil anymore? I'm confused. HELP.",
   "universe_decay": "Decay",
   "universe_decay_desc": "All matter in this universe is unstable and decays",
-  "universe_decay_effect": "Resources decay at a rate determined by how much if it you are storing. Larger stores decay quicker."
+  "universe_decay_effect": "Resources decay at a rate determined by how much of it you are storing. Larger stores decay quicker. The extra radioactivity makes everything more energetic doubling power generation from all sources.",
+  "universe_micro": "Micro",
+  "universe_micro_desc": "Everything in this universe is small",
+  "universe_micro_effect": "Everything in this universe is small and thus is cheaper, however all prestige resource gains are nerfed by 50%."
 }
