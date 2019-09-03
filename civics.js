@@ -1080,6 +1080,7 @@ function warhead(){
         Plasmid: { count: plasmid },
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
+        universe: global.race.universe,
         seeded: false,
     };
     global.city = {

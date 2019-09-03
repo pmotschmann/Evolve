@@ -3,7 +3,7 @@ import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { payCosts, setAction, storageMultipler, drawTech } from './actions.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech } from './actions.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -2714,4 +2714,91 @@ export function zigguratBonus(){
         bonus += (global.space.ziggurat.count * global.civic.colonist.workers * study);
     }
     return bonus;
+}
+
+const universe_types = {
+    standard: {
+        name: loc('universe_standard'),
+        desc: loc('universe_standard_desc'),
+        effect: loc('universe_standard_effect')
+    },
+    heavy: {
+        name: loc('universe_heavy'),
+        desc: loc('universe_heavy_desc'),
+        effect: loc('universe_heavy_effect')
+    },
+    antimatter: {
+        name: loc('universe_antimatter'),
+        desc: loc('universe_antimatter_desc'),
+        effect: loc('universe_antimatter_effect')
+    },
+    evil: {
+        name: loc('universe_evil'),
+        desc: loc('universe_evil_desc'),
+        effect: loc('universe_evil_effect')
+    },
+    decay: {
+        name: loc('universe_decay'),
+        desc: loc('universe_decay_desc'),
+        effect: loc('universe_decay_effect')
+    }
+};
+
+export function setUniverse(){
+    let universes = ['standard','heavy','antimatter','evil','decay'];
+
+    for (let i=0; i<universes.length; i++){
+        let universe = universes[i];
+
+        let id = `uni-${universe}`;
+
+        let parent = $(`<div id="${id}" class="action"></div>`);
+        let element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${universe_types[universe].name}</span></a>`);
+        parent.append(element);
+
+        $('#evolution').append(parent);
+
+        $('#'+id).on('click',function(){
+            global.race['universe'] = universe;
+            $('#evolution').empty();
+
+            if (global.race.probes === 0){
+                setPlanet();
+            }
+            else {
+                let hell = false;
+                for (let i=0; i<global.race.probes; i++){
+                    if (setPlanet(hell) === 'hellscape'){
+                        hell = true;
+                    }
+                }
+            }
+
+            $(`#pop${id}`).hide();
+            if (poppers[id]){
+                poppers[id].destroy();
+            }
+            $(`#pop${id}`).remove();
+        });
+
+        $('#'+id).on('mouseover',function(){
+                var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
+                $('#main').append(popper);
+                
+                popper.append($(`<div>${universe_types[universe].name}</div>`));
+                popper.append($(`<div>${universe_types[universe].desc}</div>`));
+                popper.append($(`<div>${universe_types[universe].effect}</div>`));
+
+                popper.show();
+                poppers[id] = new Popper($('#'+id),popper);
+            });
+            
+        $('#'+id).on('mouseout',function(){
+                $(`#pop${id}`).hide();
+                if (poppers[id]){
+                    poppers[id].destroy();
+                }
+                $(`#pop${id}`).remove();
+            });
+    }
 }

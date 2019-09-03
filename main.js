@@ -8,7 +8,7 @@ import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue, dragQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { actions, challengeGeneHeader, challengeActionHeader, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
-import { space, deepSpace, fuel_adjust, zigguratBonus } from './space.js';
+import { space, deepSpace, fuel_adjust, zigguratBonus, setUniverse } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -256,7 +256,11 @@ $('#topBar .planetWrap .planet').on('mouseout',function(){
 
 if (global.race.species === 'protoplasm'){
     global.resource.RNA.display = true;
-    if (global.race.seeded && !global.race['chose']){
+    if (global.race.universe === 'bigbang'){
+        Math.seed = global.race.seed;
+        setUniverse();
+    }
+    else if (global.race.seeded && !global.race['chose']){
         Math.seed = global.race.seed;
         if (global.race.probes === 0){
             setPlanet();

@@ -436,6 +436,10 @@ if (!global.race['old_gods']){
     global.race['old_gods'] = 'none';
 }
 
+if (!global.race['universe']){
+    global.race['universe'] = 'standard';
+}
+
 if (!global.genes['minor']){
     global.genes['minor'] = {};
 }
@@ -796,6 +800,7 @@ window.soft_reset = function reset(){
         Plasmid: { count: global.race.Plasmid.count },
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
+        universe: global.race.universe,
         seeded: global.race.seeded,
         probes: global.race.probes,
         seed: global.race.seed,

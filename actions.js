@@ -11382,6 +11382,7 @@ function bioseed(){
         Plasmid: { count: plasmid },
         Phage: { count: phage },
         Dark: { count: global.race.Dark.count },
+        universe: global.race.universe,
         seeded: true,
         probes: probes,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -11459,8 +11460,9 @@ function big_bang(){
         Plasmid: { count: plasmid },
         Phage: { count: phage },
         Dark: { count: dark + new_dark },
+        universe: 'bigbang',
         seeded: true,
-        probes: 28,
+        probes: 3,
         seed: Math.floor(Math.seededRandom(10000)),
     };
     global.city = {
