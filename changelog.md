@@ -1,3 +1,7 @@
+#### 0.5.16 - 9/3/2019 ####
+Made some adjustments to Soul Gem drop odds<br>
+Added a message when you discover your first Soul Gem<br>
+
 #### 0.5.15 - 9/1/2019 ####
 Portuguese translations updated by Rodrigodd<br>
 
