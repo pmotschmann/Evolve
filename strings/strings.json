@@ -1348,6 +1348,11 @@
   "achieve_whitehole_name": "Whitehole",
   "achieve_whitehole_desc": "Caused a blackhole to explode and trigger a new big bang",
   "achieve_whitehole_flair": "You wiped out the universe, I hope you're happy with yourself.",
+
+  "achieve_eviltwin_name": "Evil Extinguisher",
+  "achieve_eviltwin_desc": "Destroyed an evil universe",
+  "achieve_eviltwin_flair": "Never you will find a more wretched universe of scum and villainy",
+
   "achieve_seeder_name": "Seeder",
   "achieve_seeder_desc": "Bioseed an alien world",
   "achieve_seeder_flair": "What is god if not us?",
@@ -2273,7 +2278,7 @@
   "universe_antimatter_effect": "Everything spins in the opposite direction",
   "universe_evil": "Evil",
   "universe_evil_desc": "Everything in this universe is evil",
-  "universe_evil_effect": "Evil is normal, and normal is Evil. Is evil evil anymore? I'm confused. HELP.",
+  "universe_evil_effect": "If Evil is normal and normal is Evil, is evil evil anymore?",
   "universe_decay": "Decay",
   "universe_decay_desc": "All matter in this universe is unstable and decays",
   "universe_decay_effect": "Resources decay at a rate determined by how much of it you are storing. Larger stores decay quicker. The extra radioactivity makes everything more energetic doubling power generation from all sources.",

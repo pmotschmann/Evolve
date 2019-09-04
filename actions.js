@@ -196,7 +196,7 @@ export const actions = {
             cost: {
                 DNA(){ return 175; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_chloroplasts_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_chloroplasts_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_chloroplasts_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_chloroplasts_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['chloroplasts'].count++;
@@ -220,7 +220,7 @@ export const actions = {
             cost: {
                 DNA(){ return 175; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_chitin_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_chitin_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_chitin_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_chitin_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['chitin'].count++;
@@ -384,7 +384,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_athropods_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_athropods_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_athropods_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_athropods_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['athropods'].count++;
@@ -462,7 +462,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_humanoid_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_humanoid_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_humanoid_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_humanoid_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['humanoid'].count++;
@@ -504,7 +504,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_gigantism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_gigantism_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_gigantism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_gigantism_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['gigantism'].count++;
@@ -546,7 +546,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_dwarfism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_dwarfism_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_dwarfism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_dwarfism_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['dwarfism'].count++;
@@ -588,7 +588,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_animalism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_animalism_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_animalism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_animalism_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['animalism'].count++;
@@ -704,7 +704,7 @@ export const actions = {
             cost: {
                 DNA(){ return 245; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_eggshell_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_eggshell_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_eggshell_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_eggshell_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['eggshell'].count++;
@@ -1593,7 +1593,7 @@ export const actions = {
             cost: {
                 DNA(){ return 25; }
             },
-            effect(){ return global.city.biome === 'hellscape' ? `<div>${loc('evo_challenge_junker_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_challenge_junker_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect'); },
             action(){
                 if (payCosts(actions.evolution.junker.cost)){
                     global.race.species = 'junker';
@@ -11112,6 +11112,15 @@ function sentience(){
         }
     }
 
+    if (global.race.universe === 'evil'){
+        if (global.race['evil']){
+            delete global.race['evil'];
+        }
+        else {
+            global.race['evil'] = 1;
+        }
+    }
+
     defineResources();
     if (!global.race['kindling_kindred']){
         global.resource.Lumber.display = true;
@@ -11413,7 +11422,16 @@ function bioseed(){
 }
 
 function big_bang(){
-    unlockAchieve(`whitehole`);
+
+    switch (global.race.universe){
+        case 'evil':
+            unlockAchieve(`eviltwin`);
+            break;
+        default:
+            unlockAchieve(`whitehole`);
+            break;
+    }
+
     Object.keys(vues).forEach(function (v){
         vues[v].$destroy();
     });
