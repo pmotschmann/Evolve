@@ -1553,8 +1553,8 @@ const interstellarProjects = {
             reqs: { ftl: 2 },
             grant: ['alpha',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
-                Helium_3(){ return 40000; }
+            cost: {
+                Helium_3(){ return +int_fuel_adjust(40000).toFixed(0); }
             },
             effect: loc('interstellar_alpha_mission_effect'),
             action(){
@@ -1946,8 +1946,8 @@ const interstellarProjects = {
             reqs: { alpha: 1 },
             grant: ['proxima',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
-                Helium_3(){ return 42000; }
+            cost: {
+                Helium_3(){ return +int_fuel_adjust(42000).toFixed(0); }
             },
             effect: loc('interstellar_proxima_mission_effect'),
             action(){
@@ -2040,7 +2040,7 @@ const interstellarProjects = {
             cost: {
                 Money(){ return costMultiplier('cruiser', 875000, 1.28, 'interstellar'); },
                 Aluminium(){ return costMultiplier('cruiser', 195000, 1.28, 'interstellar'); },
-                Deuterium(){ return costMultiplier('cruiser', 1500, 1.28, 'interstellar'); },
+                Deuterium(){ return costMultiplier('cruiser', +int_fuel_adjust(1500).toFixed(0), 1.28, 'interstellar'); },
                 Neutronium(){ return costMultiplier('cruiser', 2000, 1.28, 'interstellar'); },
                 Aerogel(){ return costMultiplier('cruiser', 250, 1.28, 'interstellar'); },
             },
@@ -2111,8 +2111,8 @@ const interstellarProjects = {
             reqs: { alpha: 1 },
             grant: ['nebula',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
-                Helium_3(){ return 55000; }
+            cost: {
+                Helium_3(){ return +int_fuel_adjust(55000).toFixed(0); }
             },
             effect: loc('interstellar_nebula_mission_effect'),
             action(){
@@ -2237,9 +2237,9 @@ const interstellarProjects = {
             reqs: { nebula: 1, high_tech: 14 },
             grant: ['neutron',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
-                Helium_3(){ return 60000; },
-                Deuterium(){ return 10000; }
+            cost: {
+                Helium_3(){ return +int_fuel_adjust(60000).toFixed(0); },
+                Deuterium(){ return +int_fuel_adjust(10000).toFixed(0); }
             },
             effect: loc('interstellar_neutron_mission_effect'),
             action(){
@@ -2305,9 +2305,9 @@ const interstellarProjects = {
             reqs: { nebula: 1 },
             grant: ['blackhole',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
-                Helium_3(){ return 75000; },
-                Deuterium(){ return 25000; }
+            cost: {
+                Helium_3(){ return +int_fuel_adjust(75000).toFixed(0); },
+                Deuterium(){ return +int_fuel_adjust(25000).toFixed(0); }
             },
             effect: loc('interstellar_blackhole_mission_effect'),
             action(){
@@ -2701,8 +2701,18 @@ export function swarm_adjust(res){
 }
 
 export function fuel_adjust(fuel){
+    if (global.race.universe === 'heavy'){
+        fuel *= 1.5;
+    }
     if (global.city['mass_driver'] && p_on['mass_driver']){
         fuel *= 0.95 ** p_on['mass_driver'];
+    }
+    return fuel;
+}
+
+export function int_fuel_adjust(fuel){
+    if (global.race.universe === 'heavy'){
+        fuel *= 1.25;
     }
     return fuel;
 }
