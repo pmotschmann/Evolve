@@ -2232,8 +2232,8 @@ const interstellarProjects = {
         },
         neutron_mission: {
             id: 'interstellar-neutron_mission',
-            title: loc('space_mission_title', ['interstellar_neutron_name']),
-            desc: loc('space_mission_desc', ['interstellar_neutron_name']),
+            title: loc('space_mission_title', [loc('interstellar_neutron_name')]),
+            desc: loc('space_mission_desc', [loc('interstellar_neutron_name')]),
             reqs: { nebula: 1, high_tech: 14 },
             grant: ['neutron',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
