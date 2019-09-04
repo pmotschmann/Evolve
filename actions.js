@@ -630,7 +630,7 @@ export const actions = {
             cost: {
                 DNA(){ return 260; }
             },
-            effect: loc('evo_demonic_effect'),
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe === 'evil' ? `<div>${loc('evo_demonic_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_demonic_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['demonic'].count++;

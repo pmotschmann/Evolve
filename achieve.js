@@ -165,6 +165,11 @@ var achievements = {
         desc: loc("achieve_whitehole_desc"),
         flair: loc("achieve_whitehole_flair")
     },
+    eviltwin: {
+        name: loc("achieve_eviltwin_name"),
+        desc: loc("achieve_eviltwin_desc"),
+        flair: loc("achieve_eviltwin_flair")
+    },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
         desc: loc("achieve_genus_humanoid_desc"),
