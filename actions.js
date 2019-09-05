@@ -1689,6 +1689,69 @@ export const actions = {
                 return false;
             }
         },
+        s_alter: {
+            id: 'city-s_alter',
+            title: loc('city_s_alter'),
+            desc(){
+                return global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
+            },
+            reqs: { mining: 1 },
+            trait: ['cannibalize'],
+            cost: {
+                Stone(){ return global.city['s_alter'].count >= 1 ? 0 : 100; }
+            },
+            effect(){
+                let desc = '';
+                if (global.city.s_alter.rage > 0){
+                    desc = desc + `<div>${loc('city_s_alter_rage',[15,timeFormat(global.city.s_alter.rage)])}</div>`;
+                }
+                if (global.city.s_alter.regen > 0){
+                    desc = desc + `<div>${loc('city_s_alter_regen',[15,timeFormat(global.city.s_alter.regen)])}</div>`;
+                }
+                if (global.city.s_alter.mind > 0){
+                    desc = desc + `<div>${loc('city_s_alter_mind',[15,timeFormat(global.city.s_alter.mind)])}</div>`;
+                }
+                if (global.city.s_alter.mine > 0){
+                    desc = desc + `<div>${loc('city_s_alter_mine',[15,timeFormat(global.city.s_alter.mine)])}</div>`;
+                }
+                if (global.city.s_alter.harvest > 0){
+                    desc = desc + `<div>${loc('city_s_alter_harvest',[15,timeFormat(global.city.s_alter.harvest)])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.city['s_alter'].count === 0){
+                        global.city['s_alter'].count++;
+                    }
+                    else {
+                        if (global['resource'][global.race.species].amount > 0){
+                            global['resource'][global.race.species].amount--;
+                            global['resource'].Food.amount += Math.rand(250,1000);
+                            switch (Math.rand(0,5)){
+                                case 0:
+                                    global.city.s_alter.rage += Math.rand(300,600);
+                                    break;
+                                case 1:
+                                    global.city.s_alter.mind += Math.rand(300,600);
+                                    break;
+                                case 2:
+                                    global.city.s_alter.regen += Math.rand(300,600);
+                                    break;
+                                case 3:
+                                    global.city.s_alter.mine += Math.rand(300,600);
+                                    break;
+                                case 4:
+                                    global.city.s_alter.harvest += Math.rand(300,600);
+                                    break;
+                            }
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         basic_housing: {
             id: 'city-house',
             title(){
@@ -4139,6 +4202,16 @@ export const actions = {
                         count: 0, 
                         on: 0 
                     };
+                    if (global.race['cannibalize']){
+                        global.city['s_alter'] = {
+                            count: 0,
+                            rage: 0,
+                            mind: 0,
+                            regen: 0,
+                            mine: 0,
+                            harvest: 0,
+                        };
+                    }
                     return true;
                 }
                 return false;
@@ -9788,7 +9861,7 @@ export function setAction(c_action,action,type,old){
     let pop_target = action === 'starDock' ? 'body .modal' : '#main';
     $('#'+id).on('mouseover',function(){
             let wide = c_action['wide'] ? ' wide' : '';
-            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark"></div>`);
+            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark"><div id="popDesc"></div></div>`);
             $(pop_target).append(popper);
             actionDesc(popper,c_action,global[action][type],old);
             popper.show();
@@ -10045,7 +10118,7 @@ export function removeAction(id){
     $('#pop'+id).remove();
 }
 
-function updateDesc(c_action,category,action){
+export function updateDesc(c_action,category,action){
     var id = c_action.id;
     if (global[category] && global[category][action] && global[category][action]['count']){
         $(`#${id} .count`).html(global[category][action].count);
@@ -11258,7 +11331,7 @@ function fanaticism(god){
             fanaticTrait('toxic');
             break;
         case 'mantis':
-            fanaticTrait('malnutrition');
+            fanaticTrait('cannibalize');
             break;
         case 'scorpid':
             fanaticTrait('claws');

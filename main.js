@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue, dragQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { actions, challengeGeneHeader, challengeActionHeader, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, zigguratBonus, setUniverse } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
@@ -1173,6 +1173,13 @@ function fastLoop(){
             stress -= +(global.civic[job].workers / stress_level).toFixed(0);
         });
         global.civic.free = global.resource[global.race.species].amount - total;
+
+        Object.keys(job_desc).forEach(function (job){
+            if (job !== 'craftsman' && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
+                global.civic[job].workers++;
+                global.civic.free--;
+            }
+        });
         
         let entertainment = 0;
         if (global.tech['theatre']){
@@ -2642,6 +2649,10 @@ function fastLoop(){
         if (global.civic.garrison.progress >= 100){
             global.civic.garrison.progress = 0;
             global.civic.garrison.workers++;
+
+            if (global.portal['fortress'] && global.portal.fortress['assigned'] && global.portal.fortress.garrison < global.portal.fortress.assigned){
+                global.portal.fortress.garrison++;
+            };
         }
     }
 
@@ -3708,12 +3719,27 @@ function midLoop(){
             }
         }
 
-        Object.keys(job_desc).forEach(function (job){
-            if (job !== 'craftsman' && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
-                global.civic[job].workers++;
-                global.civic.free--;
+        if (global.race['cannibalize'] && global.city['s_alter']){
+            if (global.city.s_alter.rage > 0){
+                global.city.s_alter.rage--;
             }
-        });
+            if (global.city.s_alter.regen > 0){
+                global.city.s_alter.regen--;
+            }
+            if (global.city.s_alter.mind > 0){
+                global.city.s_alter.mind--;
+            }
+            if (global.city.s_alter.mine > 0){
+                global.city.s_alter.mine--;
+            }
+            if (global.city.s_alter.harvest > 0){
+                global.city.s_alter.harvest--;
+            }
+
+            if ($(`#popcity-s_alter`).length > 0){
+                updateDesc(actions.city.s_alter,'city','s_alter');
+            }
+        }
 
         if (global.tech['queue'] && global.queue.display){
             let idx = -1;
@@ -3914,6 +3940,9 @@ function longLoop(){
             }
             if (global.race['fibroblast']){
                 hc += global.race['fibroblast'] * 2;
+            }
+            if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
+                hc += 3
             }
             if (hc > 0){
                 while (hc >= 20){
