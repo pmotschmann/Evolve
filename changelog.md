@@ -1,5 +1,6 @@
 #### 0.5.17 - 9/5/2019 ####
 Mantis Fraile trait replaced with new Cannibalize trait, eat your own citizens for buffs<br>
+The Fortress will now remember the number of troops assigned to it and attempt to keep it at that level<br>
 
 #### 0.5.16 - 9/3/2019 ####
 Made some adjustments to Soul Gem drop odds<br>
