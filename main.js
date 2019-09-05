@@ -1169,6 +1169,13 @@ function fastLoop(){
             stress -= +(global.civic[job].workers / stress_level).toFixed(0);
         });
         global.civic.free = global.resource[global.race.species].amount - total;
+
+        Object.keys(job_desc).forEach(function (job){
+            if (job !== 'craftsman' && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
+                global.civic[job].workers++;
+                global.civic.free--;
+            }
+        });
         
         let entertainment = 0;
         if (global.tech['theatre']){
@@ -3707,13 +3714,6 @@ function midLoop(){
                 space();
             }
         }
-
-        Object.keys(job_desc).forEach(function (job){
-            if (job !== 'craftsman' && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
-                global.civic[job].workers++;
-                global.civic.free--;
-            }
-        });
 
         if (global.race['cannibalize'] && global.city['s_alter']){
             if (global.city.s_alter.rage > 0){
