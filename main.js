@@ -2638,6 +2638,10 @@ function fastLoop(){
         if (global.civic.garrison.progress >= 100){
             global.civic.garrison.progress = 0;
             global.civic.garrison.workers++;
+
+            if (global.portal['fortress'] && global.portal.fortress['assigned'] && global.portal.fortress.garrison < global.portal.fortress.assigned){
+                global.portal.fortress.garrison++;
+            };
         }
     }
 

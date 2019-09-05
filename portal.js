@@ -375,6 +375,7 @@ function buildFortress(parent){
                     if (global.portal.fortress.garrison > global.civic.garrison.workers){
                         global.portal.fortress.garrison = global.civic.garrison.workers;
                     }
+                    global.portal.fortress['assigned'] = global.portal.fortress.garrison;
                     if (vues['civ_garrison']){
                         vues['civ_garrison'].$forceUpdate();
                     }
@@ -390,6 +391,7 @@ function buildFortress(parent){
                     if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
                         global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
                     }
+                    global.portal.fortress['assigned'] = global.portal.fortress.garrison;
                     if (vues['civ_garrison']){
                         vues['civ_garrison'].$forceUpdate();
                     }
@@ -665,6 +667,7 @@ export function bloodwar(){
             global.stats.died += global.portal.fortress.garrison;
             global.civic.garrison.workers -= global.portal.fortress.garrison;
             global.portal.fortress.garrison = 0;
+            global.portal.fortress['assigned'] = 0;
         }
         else {
             messageQueue(loc('fortress_sieged',[killed,damage]));
