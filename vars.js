@@ -232,7 +232,20 @@ if (convertVersion(global['version']) <= 5011 && global.stats['died']){
     global.stats['attacks'] = global.stats['died'];
 }
 
-global['version'] = '0.5.16';
+if (convertVersion(global['version']) <= 5016 && global.race.species === 'mantis'){
+    delete global.race['fraile'];
+    global.race['cannibalize'] = 1;
+    global.city['s_alter'] = {
+        count: 0,
+        rage: 0,
+        mind: 0,
+        regen: 0,
+        mine: 0,
+        harvest: 0,
+    };
+}
+
+global['version'] = '0.5.17';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

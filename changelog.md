@@ -1,3 +1,6 @@
+#### 0.5.17 - 9/5/2019 ####
+Mantis Fraile trait replaced with new Cannibalize trait, eat your own citizens for buffs<br>
+
 #### 0.5.16 - 9/3/2019 ####
 Made some adjustments to Soul Gem drop odds<br>
 Added a message when you discover your first Soul Gem<br>

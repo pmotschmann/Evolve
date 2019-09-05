@@ -411,7 +411,7 @@ export const races = {
         home: 'Chryssalid',
         entity: loc('race_mantis_entity'),
         traits: {
-            fraile: 1,
+            cannibalize: 1,
             malnutrition: 1
         },
         solar: {
@@ -884,6 +884,10 @@ export const traits = {
         desc: loc('trait_nyctophilia'),
         type: 'major',
     },
+    cannibalize: { // Eat your own for buffs
+        desc: loc('trait_cannibalize'),
+        type: 'major',
+    },
     fraile: { // More soldiers die in combat
         desc: loc('trait_frail'),
         type: 'major',
@@ -1036,6 +1040,20 @@ export function racialTrait(workers,type){
                 break;
         }
     }
+    if (global.race['cannibalize'] && global.city['s_alter'] && global.city['s_alter'].count > 0){
+        if (type === 'miner' && global.city.s_alter.mine > 0){
+            modifier *= 1.15; 
+        }
+        if (type === 'lumberjack' && global.city.s_alter.harvest > 0){
+            modifier *= 1.15; 
+        }
+        if (type === 'army' && global.city.s_alter.rage > 0){
+            modifier *= 1.15; 
+        }
+        if (type === 'science' && global.city.s_alter.mind > 0){
+            modifier *= 1.15; 
+        }
+    }
     if (global.race['weak'] && (type === 'miner' || type === 'lumberjack')){
         modifier *= 0.9;
     }
@@ -1134,6 +1152,16 @@ export function cleanAddTrait(trait){
             });
             global.settings.showMarket = false;
             break;
+        case 'cannibalize':
+            global.city['s_alter'] = {
+                count: 0,
+                rage: 0,
+                mind: 0,
+                regen: 0,
+                mine: 0,
+                harvest: 0,
+            };
+            break;
         default:
             break;
     }
@@ -1167,6 +1195,9 @@ export function cleanRemoveTrait(trait){
             break;
         case 'terrifying':
             global.settings.showMarket = true;
+            break;
+        case 'cannibalize':
+            delete global.city['s_alter'];
             break;
         default:
             break;
