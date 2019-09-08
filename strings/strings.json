@@ -1629,6 +1629,7 @@
   "arpa_remove": "Remove %0 from your species, cost %1 Plasmids. This is not easily reversible.",
   "arpa_gain": "Add %0 to your species, cost %1 Plasmids. This is not easily reversible.",
   "time_never": "Never",
+  "race_prehistoric": "Prehistoric",
   "race_protoplasm": "Protoplasm",
   "race_protoplasm_desc": "Your race has yet to evolve into a complex lifeform. Currently you're nothing but protoplasm in the primordial ooze.",
   "race_human": "Human",

@@ -6,7 +6,7 @@ export const races = {
         name: loc('race_protoplasm'),
         desc: loc('race_protoplasm_desc'),
         type: 'organism',
-        home: 'Prehistoric'
+        home: loc('race_prehistoric')
     },
     human: {
         name: loc('race_human'),
