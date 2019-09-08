@@ -11448,12 +11448,21 @@ function bioseed(){
     unlockAchieve(`seeder`);
     let new_biome = unlockAchieve(`biome_${biome}`);
     let new_genus = unlockAchieve(`genus_${genus}`);
+    let new_achieve = false;
     if (global.race.species === 'junker'){
-        unlockFeat('organ_harvester');
+        new_achieve = unlockFeat('organ_harvester');
     }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
-        unlockFeat('ill_advised');
+        if (unlockFeat('ill_advised')){ new_achive = true; };
     }
+
+    if (global.race['small'] || global.race['compact']){
+        if (unlockAchieve(`macro`,true)){ new_achieve = true; }
+    }
+    else {
+        if (unlockAchieve(`marble`,true)){ new_achieve = true; }
+    }
+
     let probes = global.starDock.probes.count + 1;
     if (global.stats.achieve['explorer']){
         probes += global.stats.achieve['explorer'];
@@ -11484,7 +11493,7 @@ function bioseed(){
     };
     global.tech = { theology: 1 };
     clearStates();
-    if (!new_biome && !new_genus){
+    if (!new_biome && !new_genus && !new_achieve){
         global.lastMsg = false;
     }
     global.new = true;
@@ -11500,6 +11509,9 @@ function big_bang(){
     switch (global.race.universe){
         case 'evil':
             unlockAchieve(`eviltwin`);
+            break;
+        case 'micro':
+            unlockAchieve(`microbang`,true);
             break;
         default:
             unlockAchieve(`whitehole`);

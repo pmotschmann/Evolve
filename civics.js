@@ -1066,8 +1066,9 @@ function warhead(){
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
     global.stats.plasmid += new_plasmid;
-    unlockAchieve(`apocalypse`);
-    let new_achieve = unlockAchieve(`extinct_${god}`);
+    let new_achieve = unlockAchieve(`apocalypse`);
+    if (unlockAchieve(`squished`,true)){ new_achieve = true; }
+    if (unlockAchieve(`extinct_${god}`)){ new_achieve = true; }
     checkAchievements();
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         unlockFeat('take_no_advice');

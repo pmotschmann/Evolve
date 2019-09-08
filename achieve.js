@@ -15,6 +15,11 @@ var achievements = {
         desc: loc("achieve_apocalypse_desc"),
         flair: loc("achieve_apocalypse_flair")
     },
+    squished: {
+        name: loc("achieve_squished_name"),
+        desc: loc("achieve_squished_desc"),
+        flair: loc("achieve_squished_flair")
+    },
     second_evolution: {
         name: loc("achieve_second_evolution_name"),
         desc: loc("achieve_second_evolution_desc"),
@@ -110,6 +115,16 @@ var achievements = {
         desc: loc("achieve_seeder_desc"),
         flair: loc("achieve_seeder_flair")
     },
+    macro: {
+        name: loc("achieve_macro_name"),
+        desc: loc("achieve_macro_desc"),
+        flair: loc("achieve_macro_flair")
+    },
+    marble: {
+        name: loc("achieve_marble_name"),
+        desc: loc("achieve_marble_desc"),
+        flair: loc("achieve_marble_flair")
+    },
     explorer: {
         name: loc("achieve_biome_explorer_name"),
         desc: loc("achieve_biome_explorer_desc"),
@@ -164,6 +179,11 @@ var achievements = {
         name: loc("achieve_whitehole_name"),
         desc: loc("achieve_whitehole_desc"),
         flair: loc("achieve_whitehole_flair")
+    },
+    microbang: {
+        name: loc("achieve_microbang_name"),
+        desc: loc("achieve_microbang_desc"),
+        flair: loc("achieve_microbang_flair")
     },
     eviltwin: {
         name: loc("achieve_eviltwin_name"),
@@ -410,7 +430,10 @@ const feats = {
     }
 }
 
-export function unlockAchieve(achievement){
+export function unlockAchieve(achievement,small){
+    if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
+        return false;
+    }
     let a_level = 1;
     if (global.race['no_plasmid']){ a_level++; }
     if (global.race['no_trade']){ a_level++; }
@@ -428,6 +451,9 @@ export function unlockAchieve(achievement){
 }
 
 export function unlockFeat(feat){
+    if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
+        return false;
+    }
     let a_level = 1;
     if (global.race['no_plasmid']){ a_level++; }
     if (global.race['no_trade']){ a_level++; }
