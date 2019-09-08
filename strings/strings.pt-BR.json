@@ -1629,6 +1629,7 @@
   "arpa_remove": "Remova %0 da sua espécie, custa %1 Plasmídeos. Isso não é facilmente reversível.",
   "arpa_gain": "Adicione %0 à sua espécie, custa %1 Plasmídeos. Isso não é facilmente reversível.",
   "time_never": "Nunca",
+  "race_prehistoric": "Pre-histórico",
   "race_protoplasm": "Protoplasma",
   "race_protoplasm_desc": "Sua raça ainda tem que evoluir para uma forma de vida complexa. Atualmente você não é nada além de um protoplasma no sopa primordial.",
   "race_human": "Humano",
