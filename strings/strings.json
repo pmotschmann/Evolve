@@ -2300,7 +2300,7 @@
   "universe_standard_desc": "A standard universe with normal laws of physics",
   "universe_standard_effect": "This is a vanilla universe, no special rules apply.",
   "universe_heavy": "Heavy Gravity",
-  "universe_heavy_desc": "The force of gravity in this universe is much stronger then in a standard universe",
+  "universe_heavy_desc": "The force of gravity in this universe is much stronger then normal",
   "universe_heavy_effect": "Transportation fuel costs will be much higher in this universe but prestige resources earned from resets other then MAD are increased.",
   "universe_antimatter": "Antimatter",
   "universe_antimatter_desc": "This universe consists primarily of antimatter",

@@ -23,7 +23,7 @@ const spaceProjects = {
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Money(){ return 100000; },
-                Oil(){ return 7500; }
+                Oil(){ return fuel_adjust(7500); }
             },
             effect: loc('space_home_test_launch_effect'),
             action(){
@@ -2703,7 +2703,7 @@ export function swarm_adjust(res){
 
 export function fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
-        fuel *= 1.5;
+        fuel *= global.race['no_plasmid'] ? 1.5 : 1.75;
     }
     if (global.city['mass_driver'] && p_on['mass_driver']){
         fuel *= 0.95 ** p_on['mass_driver'];
@@ -2713,7 +2713,7 @@ export function fuel_adjust(fuel){
 
 export function int_fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
-        fuel *= 1.25;
+        fuel *= global.race['no_plasmid'] ? 1.25 : 1.5;
     }
     return fuel;
 }

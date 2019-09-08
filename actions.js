@@ -9376,8 +9376,8 @@ export const actions = {
                     k_base -= k_inc;
                     k_inc *= 1.015;
                 }
-                plasmid = challenge_multiplier(plasmid);
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E));
+                plasmid = challenge_multiplier(plasmid,'bioseed');
+                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
                 return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
             },
             action(){
@@ -9408,8 +9408,8 @@ export const actions = {
                     k_base -= k_inc;
                     k_inc *= 1.015;
                 }
-                plasmid = challenge_multiplier(plasmid);
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E));
+                plasmid = challenge_multiplier(plasmid,'bioseed');
+                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
                 return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
             },
             action(){
@@ -11430,9 +11430,9 @@ function bioseed(){
         k_base -= k_inc;
         k_inc *= 1.015;
     }
-    new_plasmid = challenge_multiplier(new_plasmid);
+    new_plasmid = challenge_multiplier(new_plasmid,'bioseed');
     plasmid += new_plasmid;
-    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E));
+    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E),'bioseed');
     phage += new_phage;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
@@ -11547,12 +11547,12 @@ function big_bang(){
         k_base -= k_inc;
         k_inc *= 1.012;
     }
-    new_plasmid = challenge_multiplier(new_plasmid);
+    new_plasmid = challenge_multiplier(new_plasmid,'bigbang');
     plasmid += new_plasmid;
-    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5));
+    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5),'bigbang');
     let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
     new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
-    new_dark = challenge_multiplier(new_dark);
+    new_dark = challenge_multiplier(new_dark,'bigbang');
 
     phage += new_phage;
     global.stats.reset++;

@@ -992,7 +992,7 @@ function defineMad(){
                     k_base -= k_inc;
                     k_inc *= 1.1;
                 }
-                plasma = challenge_multiplier(plasma);
+                plasma = challenge_multiplier(plasma,'mad');
                 return loc('civics_mad_missiles_warning',[plasma]);
             }
         }
@@ -1000,9 +1000,10 @@ function defineMad(){
     vues['mad'].$mount('#mad');
 }
 
-export function challenge_multiplier(value){
+export function challenge_multiplier(value,type){
     let challenge_level = 0;
     if (global.race.universe === 'micro'){ value = Math.round(value * 0.25); }
+    if (global.race.universe === 'heavy' && type !== 'mad'){ value = Math.round(value * 1.25); }
     if (global.race['no_plasmid']){ challenge_level++; }
     if (global.race['no_trade']){ challenge_level++; }
     if (global.race['no_craft']){ challenge_level++; }
@@ -1054,7 +1055,7 @@ function warhead(){
         k_base -= k_inc;
         k_inc *= 1.1;
     }
-    new_plasmid = challenge_multiplier(new_plasmid);
+    new_plasmid = challenge_multiplier(new_plasmid,'mad');
     plasmid += new_plasmid;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
