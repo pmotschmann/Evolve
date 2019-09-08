@@ -180,15 +180,30 @@ var achievements = {
         desc: loc("achieve_whitehole_desc"),
         flair: loc("achieve_whitehole_flair")
     },
-    microbang: {
-        name: loc("achieve_microbang_name"),
-        desc: loc("achieve_microbang_desc"),
-        flair: loc("achieve_microbang_flair")
+    heavy: {
+        name: loc("achieve_heavy_name"),
+        desc: loc("achieve_heavy_desc"),
+        flair: loc("achieve_heavy_flair")
+    },
+    canceled: {
+        name: loc("achieve_canceled_name"),
+        desc: loc("achieve_canceled_desc"),
+        flair: loc("achieve_canceled_flair")
     },
     eviltwin: {
         name: loc("achieve_eviltwin_name"),
         desc: loc("achieve_eviltwin_desc"),
         flair: loc("achieve_eviltwin_flair")
+    },
+    dissipated: {
+        name: loc("achieve_decay_name"),
+        desc: loc("achieve_decay_desc"),
+        flair: loc("achieve_decay_flair")
+    },
+    microbang: {
+        name: loc("achieve_microbang_name"),
+        desc: loc("achieve_microbang_desc"),
+        flair: loc("achieve_microbang_flair")
     },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),

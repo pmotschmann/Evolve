@@ -11507,8 +11507,17 @@ function bioseed(){
 function big_bang(){
 
     switch (global.race.universe){
+        case 'heavy':
+            unlockAchieve(`heavy`);
+            break;
+        case 'antimatter':
+            unlockAchieve(`canceled`);
+            break;
         case 'evil':
             unlockAchieve(`eviltwin`);
+            break;
+        case 'decay':
+            unlockAchieve(`dissipated`);
             break;
         case 'micro':
             unlockAchieve(`microbang`,true);
