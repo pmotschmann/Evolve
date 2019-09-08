@@ -10266,6 +10266,7 @@ function costMultiplier(structure,base,mutiplier,cat){
     if (!cat){
         cat = 'city';
     }
+    if (global.race.universe === 'micro'){ mutiplier -= 0.05; }
     if (global.race['small']){ mutiplier -= 0.01; }
     else if (global.race['large']){ mutiplier += 0.01; }
     if (global.race['compact']){ mutiplier -= 0.02; }
@@ -11530,6 +11531,7 @@ function big_bang(){
     let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5));
     let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
     new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
+    new_dark = challenge_multiplier(new_dark);
 
     phage += new_phage;
     global.stats.reset++;
@@ -11550,7 +11552,7 @@ function big_bang(){
         old_gods: old_god,
         Plasmid: { count: plasmid },
         Phage: { count: phage },
-        Dark: { count: dark + new_dark },
+        Dark: { count: +(dark + new_dark).toFixed(3) },
         universe: 'bigbang',
         seeded: true,
         bigbang: true,

@@ -1002,6 +1002,7 @@ function defineMad(){
 
 export function challenge_multiplier(value){
     let challenge_level = 0;
+    if (global.race.universe === 'micro'){ value = Math.round(value * 0.25); }
     if (global.race['no_plasmid']){ challenge_level++; }
     if (global.race['no_trade']){ challenge_level++; }
     if (global.race['no_craft']){ challenge_level++; }

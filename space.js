@@ -2660,6 +2660,7 @@ export function costMultiplier(action,base,mutiplier,sector){
     if (!sector){
         sector = 'space';
     }
+    if (global.race.universe === 'micro'){ mutiplier -= 0.025; }
     if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }
@@ -2751,6 +2752,11 @@ const universe_types = {
         name: loc('universe_decay'),
         desc: loc('universe_decay_desc'),
         effect: loc('universe_decay_effect')
+    },
+    micro: {
+        name: loc('universe_micro'),
+        desc: loc('universe_micro_desc'),
+        effect: loc('universe_micro_effect',[75])
     }
 };
 
