@@ -15,7 +15,7 @@ What will you evolve into?
 ## Contributing a Language file
 If you are interested in a contributing a new language for Evolve the process is fairly straight forward (although a bit tedious).
 
-Make a copy of strings/strings.json and name the copy as strings/strings.\<locale\>.json (EX: strings.es_US.json). The locale format is the language alpha-2 code joined with the country alpha-2 code using an underscore.
+Make a copy of strings/strings.json and name the copy as strings/strings.\<locale\>.json (EX: strings.es_US.json). The locale format is the language alpha-2 code joined with the country alpha-2 code.
   
 The strings are stored in a json format and will look like this:
 ```
