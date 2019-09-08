@@ -2727,7 +2727,7 @@ export function zigguratBonus(){
     return bonus;
 }
 
-const universe_types = {
+export const universe_types = {
     standard: {
         name: loc('universe_standard'),
         desc: loc('universe_standard_desc'),

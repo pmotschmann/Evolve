@@ -8,7 +8,7 @@ import { defineJobs, job_desc } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue, dragQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
-import { space, deepSpace, fuel_adjust, zigguratBonus, setUniverse } from './space.js';
+import { space, deepSpace, fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -221,18 +221,24 @@ vues['topBar'] = new Vue({
             else if (global.city.calendar.moon > 21){
                 return loc('moon8');
             }
+        },
+        showUniverse(){
+            return global.race.universe === 'standard' ? false : true;
         }
     },
     filters: {
         planet(species){
             return races[species].home;
+        },
+        universe(universe){
+            return universe === 'standard' ? '' : universe_types[universe].name;
         }
     }
 });
 vues['topBar'].$mount('#topBar');
 
 $('#topBar .planetWrap .planet').on('mouseover',function(){
-    var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
+    var popper = $(`<div id="topbarPop" class="popper has-background-light has-text-dark"></div>`);
     $('#main').append(popper);
     if (global.race.species === 'protoplasm'){
         popper.append($(`<span>${loc('infant')}</span>`));
@@ -245,13 +251,28 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         popper.append($(`<span>${loc('home',[planet,race,biome,orbit])}</span>`));
     }
     popper.show();
-    poppers['topbarPlanet'] = new Popper($('#topBar .planet'),popper);
+    poppers['topbarPop'] = new Popper($('#topBar .planet'),popper);
 
 });
 $('#topBar .planetWrap .planet').on('mouseout',function(){
-    $(`#topbarPlanet`).hide();
-    poppers['topbarPlanet'].destroy();
-    $(`#topbarPlanet`).remove();
+    $(`#topbarPop`).hide();
+    poppers['topbarPop'].destroy();
+    $(`#topbarPop`).remove();
+});
+
+$('#topBar .planetWrap .universe').on('mouseover',function(){
+    var popper = $(`<div id="topbarPop" class="popper has-background-light has-text-dark"></div>`);
+    $('#main').append(popper);
+    popper.append($(`<div>${universe_types[global.race.universe].desc}</div>`));
+    popper.append($(`<div>${universe_types[global.race.universe].effect}</div>`));
+    popper.show();
+    poppers['topbarPop'] = new Popper($('#topBar .planet'),popper);
+
+});
+$('#topBar .planetWrap .universe').on('mouseout',function(){
+    $(`#topbarPop`).hide();
+    poppers['topbarPop'].destroy();
+    $(`#topbarPop`).remove();
 });
 
 if (global.race.species === 'protoplasm'){

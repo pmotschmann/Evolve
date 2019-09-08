@@ -196,9 +196,9 @@ var achievements = {
         flair: loc("achieve_eviltwin_flair")
     },
     dissipated: {
-        name: loc("achieve_decay_name"),
-        desc: loc("achieve_decay_desc"),
-        flair: loc("achieve_decay_flair")
+        name: loc("achieve_dissipated_name"),
+        desc: loc("achieve_dissipated_desc"),
+        flair: loc("achieve_dissipated_flair")
     },
     microbang: {
         name: loc("achieve_microbang_name"),
