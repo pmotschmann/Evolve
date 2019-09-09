@@ -2656,6 +2656,19 @@ function fastLoop(){
                 global.tech['portal_guard'] = 0;
             }
         }
+
+        if (global.race.universe === 'decay'){
+            Object.keys(tradeRatio).forEach(function (res) {
+                if (global.resource[res].amount > 50){
+                    let decay = +(Math.log(global.resource[res].amount) - 3.9).toFixed(3);
+                    modRes(res, -(decay));
+                    breakdown.p.consume[res]['Decay'] = -(decay) / time_multiplier;
+                }
+                else {
+                    delete breakdown.p.consume[res]['Decay'];
+                }
+            });
+        }
     }
     
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
