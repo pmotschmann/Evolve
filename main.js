@@ -223,7 +223,7 @@ vues['topBar'] = new Vue({
             }
         },
         showUniverse(){
-            return global.race.universe === 'standard' ? false : true;
+            return global.race.universe === 'standard' || global.race.universe === 'bigbang' ? false : true;
         }
     },
     filters: {
@@ -231,7 +231,7 @@ vues['topBar'] = new Vue({
             return races[species].home;
         },
         universe(universe){
-            return universe === 'standard' ? '' : universe_types[universe].name;
+            return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name;
         }
     }
 });
