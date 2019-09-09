@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat } from './functions.js';
-import { unlockAchieve, unlockFeat, drawAchieve } from './achieve.js';
+import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -11449,11 +11449,20 @@ function bioseed(){
     let new_biome = unlockAchieve(`biome_${biome}`);
     let new_genus = unlockAchieve(`genus_${genus}`);
     let new_achieve = false;
+
     if (global.race.species === 'junker'){
         new_achieve = unlockFeat('organ_harvester');
     }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         if (unlockFeat('ill_advised')){ new_achive = true; };
+    }
+
+    switch (global.race.universe){
+        case 'heavy':
+            if (unlockFeat(`heavy_genus_${genus}`)){ new_achive = true; };
+            break;
+        default:
+            break;
     }
 
     if (global.race['small'] || global.race['compact']){
@@ -11462,6 +11471,8 @@ function bioseed(){
     else {
         if (unlockAchieve(`marble`,true)){ new_achieve = true; }
     }
+
+    checkAchievements();
 
     let probes = global.starDock.probes.count + 1;
     if (global.stats.achieve['explorer']){
@@ -11553,6 +11564,8 @@ function big_bang(){
     let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
     new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
     new_dark = challenge_multiplier(new_dark,'bigbang');
+
+    checkAchievements();
 
     phage += new_phage;
     global.stats.reset++;

@@ -1070,10 +1070,10 @@ function warhead(){
     let new_achieve = unlockAchieve(`apocalypse`);
     if (unlockAchieve(`squished`,true)){ new_achieve = true; }
     if (unlockAchieve(`extinct_${god}`)){ new_achieve = true; }
-    checkAchievements();
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         unlockFeat('take_no_advice');
     }
+    checkAchievements();
     global['race'] = { 
         species : 'protoplasm', 
         gods: god,
