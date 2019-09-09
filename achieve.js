@@ -175,6 +175,11 @@ var achievements = {
         desc: loc("achieve_creator_desc"),
         flair: loc("achieve_creator_flair")
     },
+    heavyweight: {
+        name: loc("achieve_heavyweight_name"),
+        desc: loc("achieve_heavyweight_desc"),
+        flair: loc("achieve_heavyweight_flair")
+    },
     whitehole: {
         name: loc("achieve_whitehole_name"),
         desc: loc("achieve_whitehole_desc"),
@@ -681,6 +686,20 @@ export function checkAchievements(){
         }
         if (total >= 6){
             unlockAchieve('explorer');
+        }
+    }
+    if (!global.stats.achieve['heavyweight'] || global.stats.achieve['heavyweight'] < a_level){
+        let total = 0;
+        const keys = Object.keys(feats)
+        for (const key of keys) {
+            if (key.includes('heavy_genus_')){
+                if (global.stats.feat[key] && global.stats.feat[key] >= a_level){
+                    total++
+                }
+            }
+        }
+        if (total >= 8){
+            unlockAchieve('heavyweight');
         }
     }
     if (global.tech['supercollider'] && global.tech['supercollider'] >= 99){
