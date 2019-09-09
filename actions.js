@@ -11602,7 +11602,7 @@ function big_bang(){
         universe: 'bigbang',
         seeded: true,
         bigbang: true,
-        probes: 3,
+        probes: 4,
         seed: Math.floor(Math.seededRandom(10000)),
     };
     global.city = {
