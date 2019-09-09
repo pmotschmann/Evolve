@@ -11454,12 +11454,12 @@ function bioseed(){
         new_achieve = unlockFeat('organ_harvester');
     }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
-        if (unlockFeat('ill_advised')){ new_achive = true; };
+        if (unlockFeat('ill_advised')){ new_achieve = true; };
     }
 
     switch (global.race.universe){
         case 'heavy':
-            if (unlockFeat(`heavy_genus_${genus}`)){ new_achive = true; };
+            if (unlockFeat(`heavy_genus_${genus}`)){ new_achieve = true; };
             break;
         default:
             break;
