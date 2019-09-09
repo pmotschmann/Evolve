@@ -2380,7 +2380,15 @@ const interstellarProjects = {
                 else {
                     let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
                     let output = +(20 + ((global.interstellar.stellar_engine.mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)).toFixed(2);
-                    return loc('interstellar_stellar_engine_complete',[output]);
+                    if (global.tech['blackhole'] >= 5){
+                        let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
+                        let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
+                        let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[mass,exotic]) : loc('interstellar_stellar_engine_effect2',[mass]);
+                        return `<div>${loc('interstellar_stellar_engine_complete',[output])}</div><div>${blackhole}</div>`;
+                    }
+                    else {
+                        return loc('interstellar_stellar_engine_complete',[output]);
+                    }
                 }
             },
             action(){

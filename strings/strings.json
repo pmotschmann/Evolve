@@ -2274,6 +2274,8 @@
   "interstellar_stellar_engine_desc": "Stellar Engine",
   "interstellar_stellar_engine_effect": "Construct 1% of the Stellar Engine",
   "interstellar_stellar_engine_complete": "The Stellar Engine is complete, +%0kW",
+  "interstellar_stellar_engine_effect2": "Blackhole mass is %0 solar masses.",
+  "interstellar_stellar_engine_effect3": "Blackhole mass is %0 solar masses, with exotic matter making up %1 solar mass.",
   "interstellar_mass_ejector": "Mass Ejector",
   "interstellar_mass_ejector_effect": "Eject mass into the blackhole to enlarge it, -%0kW.",
   "interstellar_mass_ejector_flair": "This is a good idea, this is fine",
