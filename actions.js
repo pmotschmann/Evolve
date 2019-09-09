@@ -10428,6 +10428,9 @@ function smelterModal(modal){
         smelt.append(steelSmelt);
     }
 
+    if (vues['specialModal']){
+        vues['specialModal'].$destroy();
+    }
     vues['specialModal'] = new Vue({
         data: global.city['smelter'],
         methods: {
@@ -10727,6 +10730,9 @@ function factoryModal(modal){
         stanene.append(addStanene);
     }
 
+    if (vues['specialModal']){
+        vues['specialModal'].$destroy();
+    }
     vues['specialModal'] = new Vue({
         data: global.city['factory'],
         methods: {
@@ -10846,6 +10852,9 @@ function droidModal(modal){
     alum.append(alumCount);
     alum.append(alumAdd);
 
+    if (vues['specialModal']){
+        vues['specialModal'].$destroy();
+    }
     vues['specialModal'] = new Vue({
         data: global.interstellar['mining_droid'],
         methods: {
@@ -10935,6 +10944,9 @@ function grapheneModal(modal){
         fuelTypes.append(addOil);
     }
 
+    if (vues['specialModal']){
+        vues['specialModal'].$destroy();
+    }
     vues['specialModal'] = new Vue({
         data: global.interstellar['g_factory'],
         methods: {
