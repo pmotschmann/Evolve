@@ -2660,9 +2660,9 @@ function fastLoop(){
         if (global.race.universe === 'decay'){
             Object.keys(tradeRatio).forEach(function (res) {
                 if (global.resource[res].amount > 50){
-                    let decay = +(Math.log(global.resource[res].amount) - 3.9).toFixed(3);
+                    let decay = +((global.resource[res].amount - 50) * (0.01 / global.race.Dark.count) * time_multiplier).toFixed(3);
                     modRes(res, -(decay));
-                    breakdown.p.consume[res]['Decay'] = -(decay) / time_multiplier;
+                    breakdown.p.consume[res]['Decay'] = -(decay);
                 }
                 else {
                     delete breakdown.p.consume[res]['Decay'];
