@@ -1837,7 +1837,7 @@ export const actions = {
                     return `${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}`;
                 }
             },
-            powered: 1,
+            powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['apartment'].count++;
@@ -1991,7 +1991,7 @@ export const actions = {
                 Iron(){ return costMultiplier('mill', 150, 1.33); },
                 Cement(){ return costMultiplier('mill', 125, 1.33); },
             },
-            powered: -1,
+            powered(){ return -1; },
             power_reqs: { agriculture: 6 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2449,7 +2449,7 @@ export const actions = {
                 }
                 return desc;
             },
-            powered: 1,
+            powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['sawmill'].count++;
@@ -2484,7 +2484,7 @@ export const actions = {
                     return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>`;
                 }
             },
-            powered: 1,
+            powered(){ return 1; },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2512,13 +2512,13 @@ export const actions = {
             effect(){ 
                 if (global.tech['cement'] >= 5){
                     let screws = global.tech['cement'] >= 6 ? 8 : 5;
-                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div>${loc('city_cement_plant_effect2',[actions.city.cement_plant.powered,screws])}</div>`;
+                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div>${loc('city_cement_plant_effect2',[$(this)[0].powered(),screws])}</div>`;
                 }
                 else {
                     return loc('city_cement_plant_effect1',[2]);
                 }
             },
-            powered: 2,
+            powered(){ return 2; },
             power_reqs: { cement: 5 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2588,13 +2588,13 @@ export const actions = {
                 Titanium(){ return costMultiplier('factory', 2500, 1.32); }
             },
             effect(){
-                let desc = `<div>${loc('city_factory_effect',[actions.city.factory.powered])}</div>`;
+                let desc = `<div>${loc('city_factory_effect',[$(this)[0].powered()])}</div>`;
                 if (global.tech['foundry'] >= 7){
                     desc = desc + `<div>${loc('city_crafted_mats',[5])}</div>`;
                 }
                 return desc;
             },
-            powered: 3,
+            powered(){ return 3; },
             special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2655,7 +2655,7 @@ export const actions = {
                 Money(){ return costMultiplier('metal_refinery', 2500, 1.35); },
                 Steel(){ return costMultiplier('metal_refinery', 350, 1.35); }
             },
-            powered: 2,
+            powered(){ return 2; },
             power_reqs: { alumina: 2 },
             effect() {
                 if (global.tech['alumina'] >= 2){
@@ -2672,7 +2672,7 @@ export const actions = {
                     if (global.tech['foundry']){
                         global.resource.Sheet_Metal.display = true;
                     }
-                    if (global.tech['alumina'] >= 2 && global.city.power > $(this)[0].powered){
+                    if (global.tech['alumina'] >= 2 && global.city.power > $(this)[0].powered()){
                         global.city['metal_refinery'].on++;
                     }
                     return true;
@@ -2691,13 +2691,13 @@ export const actions = {
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_mine_effect1')}</div><div>${loc('city_mine_effect2',[actions.city.mine.powered,5])}</div>`;
+                    return `<div>${loc('city_mine_effect1')}</div><div>${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
                     return loc('city_mine_effect1');
                 }
             },
-            powered: 1,
+            powered(){ return 1; },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2725,13 +2725,13 @@ export const actions = {
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_coal_mine_effect1')}</div><div>${loc('city_coal_mine_effect2',[actions.city.coal_mine.powered,5])}</div>`;
+                    return `<div>${loc('city_coal_mine_effect1')}</div><div>${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
                     return loc('city_coal_mine_effect1');
                 }
             },
-            powered: 1,
+            powered(){ return 1; },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2899,7 +2899,7 @@ export const actions = {
             effect(){
                 return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2')}</div><div>${loc('city_tourist_center_effect3')}</div><div>${loc('city_tourist_center_effect4')}</div>`; 
             },
-            powered: 1,
+            powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['tourist_center'].count++;
@@ -2957,11 +2957,11 @@ export const actions = {
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
                 if (global.tech['gambling'] >= 2){
                     let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
-                    desc = desc + `<div>${loc('tech_casino_effect2',[actions.city.casino.powered,cash])}</div>`
+                    desc = desc + `<div>${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`
                 }
                 return desc;
             },
-            powered: 4,
+            powered(){ return 4; },
             power_reqs: { gambling: 2 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3156,10 +3156,10 @@ export const actions = {
                     }
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div>${loc('city_wardenclyffe_effect3',[actions.city.wardenclyffe.powered,pgain,morale])}</div>`
+                        desc = desc + `<div>${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain,morale])}</div>`
                     }
                     else {
-                        desc = desc + `<div>${loc('city_wardenclyffe_effect2',[actions.city.wardenclyffe.powered,pgain])}</div>`;
+                        desc = desc + `<div>${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain])}</div>`;
                     }
                     return desc;
                 }
@@ -3167,7 +3167,7 @@ export const actions = {
                     return `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
                 }
             },
-            powered: 2,
+            powered(){ return 2; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     let gain = 1000;
@@ -3206,9 +3206,9 @@ export const actions = {
                     gain *= 1 + (p_on['sensor_drone'] * 0.02);
                     gain = +(gain).toFixed(0);
                 }
-                return `${loc('city_max_knowledge',[gain])}, -${actions.city.biolab.powered}kW`;
+                return `${loc('city_max_knowledge',[gain])}, -${$(this)[0].powered()}kW`;
             },
-            powered: 2,
+            powered(){ return 2; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.biolab.count++;
@@ -3236,7 +3236,7 @@ export const actions = {
                 let consume = 0.35;
                 return `+5kW. ${loc('city_coal_power_effect',[consume])}`;
             },
-            powered: -5,
+            powered(){ return -5; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.coal_power.count++;
@@ -3262,7 +3262,7 @@ export const actions = {
                 let consume = 0.65;
                 return `+6kW. ${loc('city_oil_power_effect',[consume])}`;
             },
-            powered: -6,
+            powered(){ return -6; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.oil_power.count++;
@@ -3289,7 +3289,7 @@ export const actions = {
                 let output = global.tech['uranium'] >= 4 ? 18 : 14;
                 return `+${output}kW. ${loc('city_fission_power_effect',[consume])}`;
             },
-            powered: -14,
+            powered(){ return -14; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.fission_power.count++;
@@ -3312,13 +3312,13 @@ export const actions = {
                 Iridium(){ return costMultiplier('mass_driver', 2200, 1.32); }
             },
             effect(){
-                return loc('city_mass_driver_effect',[5,actions.city.mass_driver.powered,races[global.race.species].name]);
+                return loc('city_mass_driver_effect',[5,$(this)[0].powered(),races[global.race.species].name]);
             },
-            powered: 5,
+            powered(){ return 5; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.mass_driver.count++;
-                    if (global.city.powered && global.city.power >= actions.city.mass_driver.powered){
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.city.mass_driver.on++;
                     }
                     return true;

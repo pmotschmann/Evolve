@@ -718,10 +718,10 @@ function fastLoop(){
 
         let uranium_bd = {};
         if (global.city['coal_power']){
-            let power = global.city.coal_power.on * actions.city.coal_power.powered;
+            let power = global.city.coal_power.on * actions.city.coal_power.powered();
             let consume = global.city.coal_power.on * 0.35;
             while ((consume * time_multiplier) > global.resource.Coal.amount && consume > 0){
-                power -= actions.city.coal_power.powered;
+                power -= actions.city.coal_power.powered();
                 consume -= 0.35;
             }
             breakdown.p.consume.Coal[loc('powerplant')] = -(consume);
@@ -739,10 +739,10 @@ function fastLoop(){
         }
 
         if (global.city['oil_power']){
-            let power = global.city.oil_power.on * actions.city.oil_power.powered;
+            let power = global.city.oil_power.on * actions.city.oil_power.powered();
             let consume = global.city.oil_power.on * 0.65;
             while ((consume * time_multiplier) > global.resource.Oil.amount && consume > 0){
-                power -= actions.city.oil_power.powered;
+                power -= actions.city.oil_power.powered();
                 consume -= 0.65;
             }
             breakdown.p.consume.Oil[loc('powerplant')] = -(consume);
@@ -754,7 +754,7 @@ function fastLoop(){
         }
 
         if (global.city['fission_power']){
-            let output = global.tech['uranium'] >= 4 ? (actions.city.fission_power.powered - 4) : actions.city.fission_power.powered;
+            let output = global.tech['uranium'] >= 4 ? (actions.city.fission_power.powered() - 4) : actions.city.fission_power.powered();
             let power = global.city.fission_power.on * output;
             let consume = global.city.fission_power.on * 0.1;
             while (consume * time_multiplier > global.resource.Uranium.amount && consume > 0){
@@ -770,7 +770,7 @@ function fastLoop(){
         }
 
         if (global.interstellar['fusion']){
-            let output = actions.interstellar.int_alpha.fusion.powered;
+            let output = actions.interstellar.int_alpha.fusion.powered();
             let power = global.interstellar.fusion.on * output;
             let consume = global.interstellar.fusion.on * 1.25;
             while (consume * time_multiplier > global.resource.Deuterium.amount && consume > 0){
@@ -786,7 +786,7 @@ function fastLoop(){
         }
 
         if (global.space['geothermal'] && global.space.geothermal.on > 0){
-            let output = actions.space.spc_hell.geothermal.powered;
+            let output = actions.space.spc_hell.geothermal.powered();
             let increment = fuel_adjust(0.5);
             let power = global.space.geothermal.on * output;
             let consume = (global.space.geothermal.on * increment);
@@ -804,7 +804,7 @@ function fastLoop(){
         }
 
         if (global.space['e_reactor'] && global.space.e_reactor.on > 0){
-            let output = actions.space.spc_dwarf.e_reactor.powered;
+            let output = actions.space.spc_dwarf.e_reactor.powered();
             let increment = 0.05;
             let power = global.space.e_reactor.on * output;
             let consume = (global.space.e_reactor.on * increment);
@@ -833,7 +833,7 @@ function fastLoop(){
         }
 
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
-            let power = global.city.mill.on * actions.city.mill.powered;
+            let power = global.city.mill.on * actions.city.mill.powered();
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
@@ -853,7 +853,7 @@ function fastLoop(){
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
             if (global[region][parts[1]] && global[region][parts[1]]['on']){
-                let watts = c_action[parts[1]].powered;
+                let watts = c_action[parts[1]].powered();
                 if (c_action[parts[1]]['powerInc']){
                     watts += c_action[parts[1]].powerInc();
                 }
@@ -861,7 +861,7 @@ function fastLoop(){
                 
                 p_on[parts[1]] = global[region][parts[1]].on;
                 while (power > power_grid && power > 0){
-                    power -= c_action[parts[1]].powered;
+                    power -= c_action[parts[1]].powered();
                     p_on[parts[1]]--;
                 }
                 power_grid -= global[region][parts[1]].on * watts;
