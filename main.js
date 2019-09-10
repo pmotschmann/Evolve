@@ -2662,7 +2662,7 @@ function fastLoop(){
                     breakdown.p.consume[res][loc('evo_challenge_decay')] = -(decay);
                 }
                 else {
-                    delete breakdown.p.consume[res][decay];
+                    delete breakdown.p.consume[res][loc('evo_challenge_decay')];
                 }
             });
         }
