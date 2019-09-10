@@ -2756,11 +2756,6 @@ export const universe_types = {
         desc: loc('universe_evil_desc'),
         effect: loc('universe_evil_effect')
     },
-    decay: {
-        name: loc('universe_decay'),
-        desc: loc('universe_decay_desc'),
-        effect: loc('universe_decay_effect')
-    },
     micro: {
         name: loc('universe_micro'),
         desc: loc('universe_micro_desc'),
@@ -2769,7 +2764,7 @@ export const universe_types = {
 };
 
 export function setUniverse(){
-    let universes = ['standard','heavy','antimatter','evil','decay','micro'];
+    let universes = ['standard','heavy','antimatter','evil','micro'];
 
     for (let i=0; i<universes.length; i++){
         let universe = universes[i];

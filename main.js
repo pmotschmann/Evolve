@@ -313,7 +313,7 @@ if (global.race.species === 'protoplasm'){
         addAction('evolution','chitin');
     }
     else {
-        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','demonic','sentience','bunker','plasmid','trade','craft','crispr','junker','joyless'];
+        var late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','demonic','sentience','bunker'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -343,7 +343,7 @@ if (global.race.species === 'protoplasm'){
         }
 
         challengeActionHeader()
-        var challenge_actions = ['junker','joyless'];
+        var challenge_actions = ['junker','joyless','decay'];
         for (var i = 0; i < challenge_actions.length; i++){
             if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
                 addAction('evolution',challenge_actions[i]);
@@ -2654,15 +2654,15 @@ function fastLoop(){
             }
         }
 
-        if (global.race.universe === 'decay'){
+        if (global.race['decay']){
             Object.keys(tradeRatio).forEach(function (res) {
                 if (global.resource[res].amount > 50){
                     let decay = +((global.resource[res].amount - 50) * (0.01 / global.race.Dark.count) * time_multiplier).toFixed(3);
                     modRes(res, -(decay));
-                    breakdown.p.consume[res]['Decay'] = -(decay);
+                    breakdown.p.consume[res][loc('evo_challenge_decay')] = -(decay);
                 }
                 else {
-                    delete breakdown.p.consume[res]['Decay'];
+                    delete breakdown.p.consume[res][decay];
                 }
             });
         }

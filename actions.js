@@ -1502,6 +1502,9 @@ export const actions = {
                     global.evolution['crispr'] = { count: 0 };
                     global.evolution['junker'] = { count: 0 };
                     global.evolution['joyless'] = { count: 0 };
+                    if (global.stats.achieve['whitehole']){
+                        global.evolution['decay'] = { count: 0 };
+                    }
                     challengeGeneHeader();
                     addAction('evolution','plasmid');
                     addAction('evolution','trade');
@@ -1510,6 +1513,9 @@ export const actions = {
                     challengeActionHeader();
                     addAction('evolution','junker');
                     addAction('evolution','joyless');
+                    if (global.stats.achieve['whitehole']){
+                        addAction('evolution','decay');
+                    }
                 }
                 return false;
             }
@@ -1625,6 +1631,24 @@ export const actions = {
                 return false;
             },
             flair: loc('evo_challenge_joyless_flair')
+        },
+        decay: {
+            id: 'evo-decay',
+            title: loc('evo_challenge_decay'),
+            desc: loc('evo_challenge_decay_desc'),
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect: loc('evo_challenge_decay_effect'),
+            action(){
+                if (payCosts(actions.evolution.decay.cost)){
+                    global.race['decay'] = 1;
+                    global.evolution['decay'] = { count: 1 };
+                    removeAction(actions.evolution.decay.id);
+                }
+                return false;
+            },
+            flair: loc('evo_challenge_decay_flair')
         },
     },
     city: {
@@ -11538,15 +11562,16 @@ function big_bang(){
         case 'evil':
             unlockAchieve(`eviltwin`);
             break;
-        case 'decay':
-            unlockAchieve(`dissipated`);
-            break;
         case 'micro':
             unlockAchieve(`microbang`,true);
             break;
         default:
             unlockAchieve(`whitehole`);
             break;
+    }
+
+    if (global.race['decay']){
+        unlockAchieve(`dissipated`);
     }
 
     Object.keys(vues).forEach(function (v){
