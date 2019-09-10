@@ -1270,10 +1270,10 @@ export function plasmidBonus(){
     }
     let p_cap = 250 + global.race.Phage.count;
     if (plasmids > p_cap){
-        plasmid_bonus = (Math.log10(p_cap) / 3.85) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
+        plasmid_bonus = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
     }
     else {
-        plasmid_bonus = Math.log10(plasmids + 1) / 3.85;
+        plasmid_bonus = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
     }
     if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid']){
         let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
