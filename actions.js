@@ -3286,10 +3286,9 @@ export const actions = {
             },
             effect(){
                 let consume = 0.1;
-                let output = global.tech['uranium'] >= 4 ? 18 : 14;
-                return `+${output}kW. ${loc('city_fission_power_effect',[consume])}`;
+                return `+${-($(this)[0].powered())}kW. ${loc('city_fission_power_effect',[consume])}`;
             },
-            powered(){ return -14; },
+            powered(){ return global.tech['uranium'] >= 4 ? -18 : -14; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.fission_power.count++;

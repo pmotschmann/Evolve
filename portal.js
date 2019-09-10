@@ -28,9 +28,8 @@ const fortressModules = {
                 Elerium(){ return costMultiplier('turret', 15, 1.28, 'portal'); },
                 Nano_Tube(){ return costMultiplier('turret', 28000, 1.28, 'portal'); }
             },
-            powered(){ return 3; },
-            powerInc(){
-                return global.tech['turret'] ? global.tech['turret'] : 0;
+            powered(){
+                return global.tech['turret'] ? 3 + global.tech['turret'] : 3;
             },
             postPower(){
                 if (vues['civ_fortress']){

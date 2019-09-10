@@ -754,7 +754,7 @@ function fastLoop(){
         }
 
         if (global.city['fission_power']){
-            let output = global.tech['uranium'] >= 4 ? (actions.city.fission_power.powered() - 4) : actions.city.fission_power.powered();
+            let output = actions.city.fission_power.powered();
             let power = global.city.fission_power.on * output;
             let consume = global.city.fission_power.on * 0.1;
             while (consume * time_multiplier > global.resource.Uranium.amount && consume > 0){
@@ -854,9 +854,6 @@ function fastLoop(){
             let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
             if (global[region][parts[1]] && global[region][parts[1]]['on']){
                 let watts = c_action[parts[1]].powered();
-                if (c_action[parts[1]]['powerInc']){
-                    watts += c_action[parts[1]].powerInc();
-                }
                 let power = global[region][parts[1]].on * watts;
                 
                 p_on[parts[1]] = global[region][parts[1]].on;
