@@ -758,6 +758,12 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
     }
 
+    if (global.stats.achieve['heavyweight']){
+        unlocked++;
+        let bonus = global.stats.achieve['heavyweight'] * 4;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_heavyweight",[bonus])}</span></div>`);
+    }
+
     if (global.genes['creep']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_creep",[global.genes.creep])}</span></div>`);

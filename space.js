@@ -2716,12 +2716,18 @@ export function fuel_adjust(fuel){
     if (global.city['mass_driver'] && p_on['mass_driver']){
         fuel *= 0.95 ** p_on['mass_driver'];
     }
+    if (global.stats.achieve['heavyweight']){
+        fuel *= 0.96 ** global.stats.achieve['heavyweight'];
+    }
     return fuel;
 }
 
 export function int_fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
         fuel *= global.race['no_plasmid'] ? 1.25 : 1.5;
+    }
+    if (global.stats.achieve['heavyweight']){
+        fuel *= 0.96 ** global.stats.achieve['heavyweight'];
     }
     return fuel;
 }
