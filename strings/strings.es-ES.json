@@ -567,7 +567,7 @@
   "tech_playwright": "Dramaturgo",
   "tech_playwright_effect": "Los dramaturgos aumentarán la calidad del entretenimiento aumentando la efectividad de los artistas",
   "tech_magic": "Tecno-magos",
-  "tech_magic_effect": "Los tecno-magos son un nuevo tipo de intérprete de escenario que utiliza tecnología para realizar \"Magia\". Aumenta la efectividad de los artistas".
+  "tech_magic_effect": "Los tecno-magos son un nuevo tipo de intérprete de escenario que utiliza tecnología para realizar \"Magia\". Aumenta la efectividad de los artistas",
   "tech_superstars": "Súper estrellas",
   "tech_superstars_effect": "Al promocionar una lista TOP de súper estrellas del entretenimiento, puede aumentar su efectividad. Los artistas obtienen un aumento de moral máximo",
   "tech_radio": "Radio",
@@ -1558,7 +1558,7 @@
   "arpa_genepool_genetic_memory_title": "Memoria genética",
   "arpa_genepool_genetic_memory_desc": "Reduce el arrastre de costos en 0.01",
   "arpa_genepool_effect_plasmid": "Plásmido",
-  "Arpa_genepool_animus_title" "alma",
+  "Arpa_genepool_animus_title": "Animus",
   "arpa_genepool_animus_desc": "Reduce el arrastre de costos en 0.02",
   "arpa_genepool_divine_remembrance_title": "Recuerdo divino",
   "arpa_genepool_divine_remembrance_desc": "Reduce la reducción de costos en 0.03",
