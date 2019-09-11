@@ -2,6 +2,7 @@
 Spanish translation provided by RanaPeluda<br>
 Fixed Ent fanaticism<br>
 Modals are no longer unnecessarily wide<br>
+Smelter modal now shows the fuel production for each type<br>
 
 #### 0.5.17 - 9/5/2019 ####
 Mantis Fraile trait replaced with new Cannibalize trait, eat your own citizens for buffs<br>
