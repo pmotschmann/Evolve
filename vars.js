@@ -594,6 +594,14 @@ else {
     delete global.genes['old_gods'];
 }
 
+if (global.tech['fanaticism'] && global.tech['theology'] && global.tech['theology'] === 2){
+    global.tech['theology'] = 3;
+}
+
+if (global.tech['fanaticism'] && global.tech['anthropology'] && !global.genes['transcendence']){
+    delete global.tech['anthropology'];
+}
+
 global.settings.animated = true;
 global.settings.disableReset = false;
 

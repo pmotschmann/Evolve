@@ -4,7 +4,7 @@ import { mainVue, timeCheck, timeFormat } from './functions.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
-import { defineJobs, job_desc } from './jobs.js';
+import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue, dragQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
@@ -3884,6 +3884,11 @@ function midLoop(){
                     global.r_queue.queue.splice(idx,1);
                 }
             }
+        }
+
+        if (global['loadFoundry']){
+            loadFoundry();
+            delete global['loadFoundry'];
         }
 
         checkAchievements();

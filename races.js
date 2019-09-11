@@ -1158,7 +1158,7 @@ export function cleanAddTrait(trait){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
                 global.city.foundry['Plywood'] = 0;
-                loadFoundry();
+                global['loadFoundry'] = true;
             }
             break;
         case 'carnivore':
