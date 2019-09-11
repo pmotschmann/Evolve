@@ -391,7 +391,7 @@
   "city_smelter": "Fundición",
   "city_smelter_desc": "Aumentar la producción de hierro",
   "city_smelter_effect1": "Las fundiciones aumentan el rendimiento de hierro en un %0% por fundición pero requieren combustible para funcionar",
-  "city_smelter_effect2": "Las fundiciones pueden aumentar el rendimiento de hierro en% 0% por fundición o producir acero consumiendo hierro y carbón. Las fundiciones requieren combustible para funcionar".
+  "city_smelter_effect2": "Las fundiciones pueden aumentar el rendimiento de hierro en% 0% por fundición o producir acero consumiendo hierro y carbón. Las fundiciones requieren combustible para funcionar",
   "city_smelter_flair1": "40% Zinc, 40% Titanio, 30% Hierro",
   "city_smelter_flair2": "40% Dolomita, 40% Plomo, 0.04% Níquel",
   "city_metal_refinery": "Refinería de metales",
@@ -432,7 +432,7 @@
   "city_max_entertainer": "Artitas máximos +1",
   "city_max_morale": "Moral máxima +1%",
   "city_temple": "Templo",
-  "city_temple_desc": "Su raza cree que fue creada por una especie de %0. Dedíqueles un templo".
+  "city_temple_desc": "Su raza cree que fue creada por una especie de %0. Dedíqueles un templo",
   "city_temple_effect1": "Aumenta la producción en %0%",
   "city_temple_effect2": "Aumenta el efecto de producción de plásmidos en %0%",
   "city_temple_effect3": "Ruta comercial +1",
@@ -498,11 +498,11 @@
   "tech_apartment_effect": "Diseñar complejos de viviendas de alta ocupación",
   "tech_housing_cost": "Reducir el costo de la vivienda",
   "tech_steel_beams": "Vigas de acero",
-  "tech_steel_beams_effect": "Reduzca los costos de material de %0s y %1s mediante la introducción de vigas de acero fuertes".
+  "tech_steel_beams_effect": "Reduzca los costos de material de %0s y %1s mediante la introducción de vigas de acero fuertes",
   "tech_mythril_beams": "Vigas de mitril",
   "tech_mythril_beams_effect": "Reduzca los costos de material de %0s y %1s al introducir vigas de mitril irrompibles",
   "tech_neutronium_walls": "Paredes de neutronio",
-  "tech_neutronium_walls_effect": "Reduzca los costos de material de %0s y %1s agregando muros de carga hechos de Neutronium".
+  "tech_neutronium_walls_effect": "Reduzca los costos de material de %0s y %1s agregando muros de carga hechos de Neutronium",
   "tech_aphrodisiac": "Afrodisíaco",
   "tech_aphrodisiac_desc": "Estudie el crecimiento de la población y cómo mejorarlo",
   "tech_aphrodisiac_effect": "Desarrollar una sustancia que ayude con el crecimiento de la población",
@@ -529,7 +529,7 @@
   "tech_mill_desc": "Desarrollar fábricas para aumentar la producción de alimentos",
   "tech_mill_effect": "Crear planes para un molino de granos. Los molinos de granos aumentan la efectividad de la granja",
   "tech_windmill": "Molino de viento",
-  "tech_windmill_desc": "Actualice sus molinos de grano con la vela del molino de viento"
+  "tech_windmill_desc": "Actualice sus molinos de grano con la vela del molino de viento",
   "tech_windmill_effect": "Agregue una vela de molino de viento a sus molinos de granos, aumenta la efectividad de los molinos",
   "tech_windturbine": "Turbina de viento",
   "tech_windturbine_effect": "Agregue una turbina a sus molinos de viento, permitiéndole usarlos para obtener energía en lugar de moler",
@@ -563,9 +563,9 @@
   "tech_laser_cutters": "Cortadores láser",
   "tech_laser_cutters_effect": "Los cortadores láser proporcionan un aumento del 25% a la velocidad de fabricación",
   "tech_theatre": "Teatro",
-  "tech_theatre_effect": "Diseña un espacio para espectáculos para ayudar a elevar tu espíritu".
+  "tech_theatre_effect": "Diseña un espacio para espectáculos para ayudar a elevar tu espíritu",
   "tech_playwright": "Dramaturgo",
-  "tech_playwright_effect": "Los dramaturgos aumentarán la calidad del entretenimiento aumentando la efectividad de los artistas".
+  "tech_playwright_effect": "Los dramaturgos aumentarán la calidad del entretenimiento aumentando la efectividad de los artistas",
   "tech_magic": "Tecno-magos",
   "tech_magic_effect": "Los tecno-magos son un nuevo tipo de intérprete de escenario que utiliza tecnología para realizar \"Magia\". Aumenta la efectividad de los artistas".
   "tech_superstars": "Súper estrellas",
@@ -580,7 +580,7 @@
   "tech_casino_effect": "Los casinos no solo ofrecen entretenimiento para su población sino también una nueva fuente de ingresos",
   "tech_casino_effect2": "Si la energía consume %0kW pero genera ingresos de $%1",
   "tech_dazzle": "Deslumbramiento extremo",
-  "tech_dazzle_effect": "Atrae a más clientes a tus casinos electrificándolos con un deslumbramiento extremo".
+  "tech_dazzle_effect": "Atrae a más clientes a tus casinos electrificándolos con un deslumbramiento extremo",
   "tech_casino_vault": "Bóveda del casino",
   "tech_casino_vault_effect": "Actualice las bóvedas de su casino para almacenar un 50% más de dinero",
   "tech_mining": "Minería",
@@ -590,7 +590,7 @@
   "tech_bayer_process_desc": "Aprenda a extraer aluminio de las minas",
   "tech_bayer_process_effect": "Aprenda a eliminar el aluminio del material de desecho previamente inutilizable producido por sus canteras de roca",
   "tech_elysis_process": "Proceso ELYSIS",
-  "tech_elysis_process_effect": "Encienda sus fábricas de metales con un nuevo proceso de purificación para aluminio".
+  "tech_elysis_process_effect": "Encienda sus fábricas de metales con un nuevo proceso de purificación para aluminio",
   "tech_smelting": "Fundición",
   "tech_smelting_desc": "Diseñar instalaciones de fundición para refinar mineral",
   "tech_smelting_effect": "Aprenda técnicas avanzadas para fundir minerales que aumentarán el rendimiento",
@@ -626,7 +626,7 @@
   "tech_reinforced_shed_effect": "Refuerce sus cobertizos con materiales más nuevos para aumentar la capacidad de almacenamiento",
   "tech_barns": "Graneros",
   "tech_barns_desc": "Reemplazar cobertizos por graneros",
-  "tech_barns_effect": "Reemplazar cobertizos de almacenamiento más pequeños por graneros de almacenamiento más grandes, un aumento significativo en la capacidad de almacenamiento".
+  "tech_barns_effect": "Reemplazar cobertizos de almacenamiento más pequeños por graneros de almacenamiento más grandes, un aumento significativo en la capacidad de almacenamiento",
   "tech_warehouse": "Almacén",
   "tech_warehouse_desc": "Reemplazar graneros por almacenes",
   "tech_warehouse_effect": "Reemplace sus graneros por enormes instalaciones de almacenamiento conocidas como \"almacenes\".",
@@ -642,7 +642,7 @@
   "tech_containerization_desc": "Investigue nuevas soluciones de almacenamiento escalables",
   "tech_containerization_effect": "Diseña una solución de almacenamiento escalable para todas sus necesidades de almacenamiento",
   "tech_reinforced_crates": "Cajas reforzadas",
-  "tech_reinforced_crates_effect": "Mejora las cajas de madera reforzándolas con placas de metal".
+  "tech_reinforced_crates_effect": "Mejora las cajas de madera reforzándolas con placas de metal",
   "tech_cranes": "Grúas",
   "tech_cranes_desc": "Grúas de carga",
   "tech_cranes_effect": "Mejora tus patios de carga con grúas, duplicando la cantidad de cajas que se pueden almacenar en cada patio",
@@ -660,13 +660,13 @@
   "tech_steel_containers_effect": "Reemplazar cajas de madera baratas con contenedores de acero más duraderos",
   "tech_gantry_crane": "Grúas de pórtico",
   "tech_gantry_crane_desc": "Agregar grúas pórtico a los puertos de contenedores",
-  "tech_gantry_crane_effect": "Actualice sus puertos de contenedores con grúas de pórtico. Esto duplica la cantidad de contenedores que se pueden almacenar en cada puerto".
+  "tech_gantry_crane_effect": "Actualice sus puertos de contenedores con grúas de pórtico. Esto duplica la cantidad de contenedores que se pueden almacenar en cada puerto",
   "tech_alloy_containers": "Contenedores de aleación",
   "tech_alloy_containers_desc": "Nuevos contenedores más grandes hechos de aleación",
-  "tech_alloy_containers_effect": "Aumente la capacidad del contenedor en un 50% con los nuevos contenedores de aleación".
+  "tech_alloy_containers_effect": "Aumente la capacidad del contenedor en un 50% con los nuevos contenedores de aleación",
   "tech_mythril_containers": "Contenedores de mitril",
   "tech_mythril_containers_desc": "Reforzar contenedores con puntales de mitril",
-  "tech_mythril_containers_effect": "Aumente la capacidad del contenedor agregando puntales de mitril".
+  "tech_mythril_containers_effect": "Aumente la capacidad del contenedor agregando puntales de mitril",
   "tech_adamantite_containers": "Contenedores de adamantita",
   "tech_adamantite_containers_desc": "Contenedores chapados en adamantita",
   "tech_adamantite_containers_effect": "Enchapar sus contenedores con adamantita aumentará su capacidad máxima de carga útil",
@@ -682,7 +682,7 @@
   "tech_assistant_effect": "Un asistente personal te ayudará a mantener tu imperio organizado. Habilita la cola de investigación",
   "tech_currency": "Moneda",
   "tech_currency_desc": "Inventar el concepto de moneda",
-  "tech_currency_effect": "Desbloquea la moneda, un paso importante en el desarrollo de una sociedad. También crea impuestos, no tan populares entre los ciudadanos".
+  "tech_currency_effect": "Desbloquea la moneda, un paso importante en el desarrollo de una sociedad. También crea impuestos, no tan populares entre los ciudadanos",
   "tech_market": "Mercado",
   "tech_market_desc": "Abrir un mercado de productos básicos",
   "tech_market_effect": "Abre un mercado de productos básicos donde puede comprar y vender recursos",
@@ -718,15 +718,15 @@
   "tech_investing_effect": "Descubre los principios de inversión, desbloquea el trabajo bancario",
   "tech_vault": "Bóveda de banco",
   "tech_vault_desc": "Bóvedas de hormigón",
-  "tech_vault_effect": "Actualice sus bancos con bóvedas hechas de concreto, aumenta la capacidad de almacenamiento en dólares".
+  "tech_vault_effect": "Actualice sus bancos con bóvedas hechas de concreto, aumenta la capacidad de almacenamiento en dólares",
   "tech_bonds": "Bonos de ahorro",
-  "tech_bonds_effect": "Recaude capital nuevo creando una serie de bonos de ahorro. Con bonos de ahorro, cada ciudadano aumentará su límite de dinero en $250".
+  "tech_bonds_effect": "Recaude capital nuevo creando una serie de bonos de ahorro. Con bonos de ahorro, cada ciudadano aumentará su límite de dinero en $250",
   "tech_steel_vault": "Bóveda de acero",
-  "tech_steel_vault_effect": "Refuerce las bóvedas de su banco con pesadas puertas y paredes de acero, aumenta la capacidad de almacenamiento en dólares".
+  "tech_steel_vault_effect": "Refuerce las bóvedas de su banco con pesadas puertas y paredes de acero, aumenta la capacidad de almacenamiento en dólares",
   "tech_eebonds": "Bonos de la serie EE",
-  "tech_eebonds_effect": "Crear nuevas series de bonos de ahorro EE que vencen a un valor mucho más alto. Cada ciudadano aumentará su límite de dinero en $600".
+  "tech_eebonds_effect": "Crear nuevas series de bonos de ahorro EE que vencen a un valor mucho más alto. Cada ciudadano aumentará su límite de dinero en $600",
   "tech_swiss_banking": "Banca suiza",
-  "tech_swiss_banking_effect": "Con una nueva capacitación, sus banqueros aprenderán cómo almacenar dinero de manera creativa. Aumenta la capacidad de la bóveda bancaria en un 5% por banquero".
+  "tech_swiss_banking_effect": "Con una nueva capacitación, sus banqueros aprenderán cómo almacenar dinero de manera creativa. Aumenta la capacidad de la bóveda bancaria en un 5% por banquero",
   "tech_safety_deposit": "Caja de seguridad",
   "tech_safety_deposit_effect": "Los bancos ofrecerán cajas de seguridad, aumentando la capacidad bancaria en $25 por ciudadano",
   "tech_stock_market": "Bolsa de valores",
@@ -739,19 +739,19 @@
   "tech_exchange": "Intercambio galáctico",
   "tech_exchange_effect": "Realizar operaciones bancarias a nivel galáctico",
   "tech_mythril_vault": "Bóvedas de mitril",
-  "tech_mythril_vault_effect": "Actualizar bancos con bóvedas impenetrables con placas de mitril, aumenta la capacidad de almacenamiento de $".
+  "tech_mythril_vault_effect": "Actualizar bancos con bóvedas impenetrables con placas de mitril, aumenta la capacidad de almacenamiento de $",
   "tech_neutronium_vault": "Bóveda de neutronio",
-  "tech_neutronium_vault_effect": "Actualiza las puertas de las bóvedas de tu banco con neutronio, aumenta la capacidad de almacenamiento en dólares".
+  "tech_neutronium_vault_effect": "Actualiza las puertas de las bóvedas de tu banco con neutronio, aumenta la capacidad de almacenamiento en dólares",
   "tech_adamantite_vault": "Bóveda de Adamantita",
-  "tech_adamantite_vault_effect": "Reemplaza los muros de la bóveda de tu banco por otros nuevos hechos de Adamantite. Aumenta la capacidad de almacenamiento de $".
+  "tech_adamantite_vault_effect": "Reemplaza los muros de la bóveda de tu banco por otros nuevos hechos de Adamantite. Aumenta la capacidad de almacenamiento de $",
   "tech_graphene_vault": "Bóveda de grafeno",
-  "tech_graphene_vault_effect": "Refuerce sus bancos con grafeno. Aumenta la capacidad de almacenamiento en dólares".
+  "tech_graphene_vault_effect": "Refuerce sus bancos con grafeno. Aumenta la capacidad de almacenamiento en dólares",
   "tech_home_safe": "Casa segura",
   "tech_home_safe_effect": "Instale una caja fuerte en cada cabaña y apartamento para guardar objetos de valor. Agrega $ almacenamiento a la vivienda",
   "tech_fire_proof_safe": "Prueba de fuego segura",
-  "tech_fire_proof_safe_effect": "Actualice las cajas fuertes de la casa con materiales resistentes al fuego más nuevos, aumenta la capacidad de almacenamiento en dólares".
+  "tech_fire_proof_safe_effect": "Actualice las cajas fuertes de la casa con materiales resistentes al fuego más nuevos, aumenta la capacidad de almacenamiento en dólares",
   "tech_tamper_proof_safe": "Prueba de manipulación segura",
-  "tech_tamper_proof_safe_effect": "Actualizar las cajas fuertes de la casa con lo último en seguridad para el hogar, aumenta la capacidad de almacenamiento en dólares".
+  "tech_tamper_proof_safe_effect": "Actualizar las cajas fuertes de la casa con lo último en seguridad para el hogar, aumenta la capacidad de almacenamiento en dólares",
   "tech_monument": "Monumentos",
   "tech_monument_effect": "Planifica la construcción de un monumento para celebrar la grandeza de tu civilización",
   "tech_tourism": "Turismo",
@@ -789,7 +789,7 @@
   "tech_laboratory_effect": "La construcción de un laboratorio en la periferia del espacio profundo permitirá a los científicos buscar conocimiento utilizando medios cuestionables sin la atenta mirada del público",
   "tech_laboratory_flair": "¿Científicos totalmente financiados en los confines de la sociedad con poca o ninguna supervisión? Esto está bien",
   "tech_virtual_assistant": "Asistente virtual",
-  "tech_virtual_assistant_effect": "Los Asistentes virtuales ayudarán a coordinar los esfuerzos entre sus instalaciones científicas avanzadas. Los laboratorios aumentarán la efectividad de los laboratorios exo".
+  "tech_virtual_assistant_effect": "Los Asistentes virtuales ayudarán a coordinar los esfuerzos entre sus instalaciones científicas avanzadas. Los laboratorios aumentarán la efectividad de los laboratorios exo",
   "tech_dimensional_readings": "Lecturas dimensionales",
   "tech_dimensional_readings_effect": "Usa los sensores de sus drones para transmitir información sobre la dimensión del Infierno que podría ser de interés científico",
   "tech_quantum_entanglement": "Enredo cuántico",
@@ -853,7 +853,7 @@
   "tech_uranium": "Extracción de uranio",
   "tech_uranium_effect": "Aprenda a extraer pequeñas cantidades de uranio de los depósitos de carbón",
   "tech_uranium_storage": "Almacenamiento de uranio",
-  "tech_uranium_storage_effect": "Actualice sus depósitos de combustible con áreas especialmente diseñadas para almacenar uranio".
+  "tech_uranium_storage_effect": "Actualice sus depósitos de combustible con áreas especialmente diseñadas para almacenar uranio",
   "tech_uranium_ash": "Ceniza de uranio",
   "tech_uranium_ash_effect": "Aprenda a extraer pequeñas cantidades de uranio de las cenizas de carbón",
   "tech_breeder_reactor": "Breeder Reactor",
@@ -873,25 +873,25 @@
   "tech_fracking": "Fracking",
   "tech_fracking_effect": "Una nueva técnica de extracción de petróleo, controvertida pero efectiva. Mejora la producción de la torre de perforación de petróleo en un 40%",
   "tech_mythril_drills": "Ejercicios de Mythril",
-  "tech_mythril_drills_effect": "Nuevos ejercicios de mythril que mejorarán la eficiencia de sus torres de perforación de petróleo".
+  "tech_mythril_drills_effect": "Nuevos ejercicios de mythril que mejorarán la eficiencia de sus torres de perforación de petróleo",
   "tech_mass_driver": "Catapulta electromagnética",
-  "tech_mass_driver_effect": "Los conductores masivos usan un riel electromagnético para lanzar cargas útiles en órbita. Se puede usar para reducir el consumo de combustible requerido por los lanzamientos de cohetes tradicionales".
+  "tech_mass_driver_effect": "Los conductores masivos usan un riel electromagnético para lanzar cargas útiles en órbita. Se puede usar para reducir el consumo de combustible requerido por los lanzamientos de cohetes tradicionales",
   "tech_polymer": "Polímero",
   "tech_polymer_effect": "Cree un nuevo material polimérico de alta tecnología que pueda usarse para una amplia variedad de aplicaciones",
   "tech_polymer_avail": "El polímero ya está disponible para su fabricación",
   "tech_fluidized_bed_reactor": "Reactor de lecho fluidizado",
-  "tech_fluidized_bed_reactor_effect": "Los reactores de lecho fluidizado revolucionan la fabricación de polímeros, aumentando la producción en un asombroso 42%".
+  "tech_fluidized_bed_reactor_effect": "Los reactores de lecho fluidizado revolucionan la fabricación de polímeros, aumentando la producción en un asombroso 42%",
   "tech_stanene": "Estaneno",
-  "tech_stanene_effect": "El estaneno es un supermaterial que es altamente conductor, perfecciona el proceso de fabricación para que pueda ser producido en masa",
+  "tech_stanene_effect": "El estaneno es un supermaterial que es altamente conductor, perfecciona el proceso de fabricación para que pueda ser producido en masa.",
   "tech_stanene_avail": "El estaneno ya está disponible para su fabricación",
   "tech_nano_tubes": "Nano Tubos",
-  "tech_nano_tubes_effect": "Los modelos informáticos avanzados podrían ayudar a diseñar un supermaterial conocido como nano tubos de carbono",
+  "tech_nano_tubes_effect": "Los modelos informáticos avanzados podrían ayudar a diseñar un supermaterial conocido como nano tubos de carbono.",
   "tech_stone_axe": "Ejes primitivos",
   "tech_stone_axe_desc": "Crear el primer hacha",
-  "tech_stone_axe_effect": "Crea un hacha primitiva hecha de piedra atada a un palo. Permite la extracción de madera".
+  "tech_stone_axe_effect": "Crea un hacha primitiva hecha de piedra atada a un palo. Permite la extracción de madera.",
   "tech_copper_axes": "Hacha de bronce",
   "tech_copper_axes_desc": "Crear un hacha hecha de bronce",
-  "tech_copper_axes_effect": "Actualice la tecnología del hacha a hachas de metal hechas de bronce. Mejora la recolección de madera".
+  "tech_copper_axes_effect": "Actualice la tecnología del hacha a hachas de metal hechas de bronce. Mejora la recolección de madera.",
   "tech_iron_saw": "Aserraderos",
   "tech_iron_saw_desc": "Crear planes para un aserradero",
   "tech_iron_saw_effect": "Los aserraderos aumentan el rendimiento de la madera de sus leñadores",
@@ -900,16 +900,16 @@
   "tech_steel_saw_effect": "Actualizar aserraderos con cuchillas de acero",
   "tech_iron_axes": "Hacha de hierro",
   "tech_iron_axes_desc": "Crea un hacha resistente hecha de hierro",
-  "tech_iron_axes_effect": "Actualice la tecnología del hacha a hachas de metal hechas de hierro. Mejora la recolección de madera".
+  "tech_iron_axes_effect": "Actualice la tecnología del hacha a hachas de metal hechas de hierro. Mejora la recolección de madera.",
   "tech_steel_axes": "Hacha de acero",
   "tech_steel_axes_desc": "Crea un hacha superior hecha de acero",
-  "tech_steel_axes_effect": "Actualice la tecnología del hacha a hachas duraderas hechas de acero. Mejora la recolección de madera".
+  "tech_steel_axes_effect": "Actualice la tecnología del hacha a hachas duraderas hechas de acero. Mejora la recolección de madera.",
   "tech_titanium_axes": "Hacha de titanio",
   "tech_titanium_axes_desc": "Crea el hacha definitiva hecha de titanio",
-  "tech_titanium_axes_effect": "Actualice la tecnología del hacha a hachas duraderas hechas de titanio. Mejora la recolección de madera".
+  "tech_titanium_axes_effect": "Actualice la tecnología del hacha a hachas duraderas hechas de titanio. Mejora la recolección de madera.",
   "tech_chainsaws": "Motosierras",
   "tech_chainsaws_desc": "Crear una motosierra con una cadena de adamantita",
-  "tech_chainsaws_effect": "Reemplazar ejes manuales con motosierras. Mejora la recolección de madera".
+  "tech_chainsaws_effect": "Reemplazar ejes manuales con motosierras. Mejora la recolección de madera",
   "tech_chainsaws_flair1": "Realmente tomó esto",
   "tech_chainsaws_flair2": "tanto tiempo para inventar la motosierra?",
   "tech_copper_sledgehammer": "Mazo de bronce",
@@ -935,26 +935,26 @@
   "tech_steel_pickaxe_effect": "Actualiza la tecnología de picos a picos de acero. Mejora las actividades mineras",
   "tech_jackhammer": "Martillo neumático",
   "tech_jackhammer_desc": "Inventar el martillo neumático",
-  "tech_jackhammer_effect": "Reemplace la tecnología de recolección de minería antigua con martillos neumáticos. Mejora las actividades mineras"
+  "tech_jackhammer_effect": "Reemplace la tecnología de recolección de minería antigua con martillos neumáticos. Mejora las actividades mineras",
   "tech_jackhammer_mk2": "Martillo eléctrico",
   "tech_jackhammer_mk2_effect": "Actualice sus martillos neumáticos con modelos más nuevos. Mejora las actividades mineras",
   "tech_adamantite_hammer": "Martillo neumático de adamantita",
   "tech_adamantite_hammer_effect": "Mejora tus martillos neumáticos con cabezas adamantita. Mejora las actividades mineras",
   "tech_copper_hoe": "Azadas de bronce",
   "tech_copper_hoe_desc": "Crear herramientas agrícolas hechas de bronce",
-  "tech_copper_hoe_effect": "Crear herramientas hechas de bronce que ayudan a la agricultura. Mejora la eficiencia de la granja".
+  "tech_copper_hoe_effect": "Crear herramientas hechas de bronce que ayudan a la agricultura. Mejora la eficiencia de la granja",
   "tech_iron_hoe": "Azadas de hierro",
   "tech_iron_hoe_desc": "Crear herramientas agrícolas hechas de hierro",
-  "tech_iron_hoe_effect": "Crear herramientas hechas de hierro que ayudan a la agricultura. Mejora la eficiencia de la granja".
+  "tech_iron_hoe_effect": "Crear herramientas hechas de hierro que ayudan a la agricultura. Mejora la eficiencia de la granja",
   "tech_steel_hoe": "Azadas de acero",
   "tech_steel_hoe_desc": "Crear mejores herramientas agrícolas hechas de acero",
-  "tech_steel_hoe_effect": "Crear herramientas hechas de acero que ayudan a la agricultura. Mejora la eficiencia de la granja".
+  "tech_steel_hoe_effect": "Crear herramientas hechas de acero que ayudan a la agricultura. Mejora la eficiencia de la granja",
   "tech_titanium_hoe": "Azadas de titanio",
   "tech_titanium_hoe_desc": "Crear mejores herramientas agrícolas hechas de titanio",
-  "tech_titanium_hoe_effect": "Crea herramientas hechas de titanio que ayudan a la agricultura. Mejora la eficiencia de la granja".
+  "tech_titanium_hoe_effect": "Crea herramientas hechas de titanio que ayudan a la agricultura. Mejora la eficiencia de la granja",
   "tech_adamantite_hoe": "Azadas de Adamantita",
   "tech_adamantite_hoe_desc": "Herramientas agrícolas Adamantite",
-  "tech_adamantite_hoe_effect": "Crear herramientas agrícolas hechas de adamantita. Mejora la eficiencia de la granja".
+  "tech_adamantite_hoe_effect": "Crear herramientas agrícolas hechas de adamantita. Mejora la eficiencia de la granja",
   "tech_slave_pens": "Chabola de esclavos",
   "tech_slave_pens_effect": "Diseña un lugar para mantener a tus esclavos",
   "tech_garrison": "Guarnición",
@@ -993,7 +993,7 @@
   "tech_plasma_rifles": "Rifles de plasma",
   "tech_plasma_rifles_effect": "Equipa a tus soldados con armas avanzadas que pueden quemar cualquier armadura",
   "tech_disruptor_rifles": "Rifles disruptores",
-  "tech_disruptor_rifles_effect": "Estudiar los rayos gamma de alta intensidad de la estrella de neutrones ha revelado el secreto de las armas disruptivas, que destruyen los enlaces entre las moléculas".
+  "tech_disruptor_rifles_effect": "Estudiar los rayos gamma de alta intensidad de la estrella de neutrones ha revelado el secreto de las armas disruptivas, que destruyen los enlaces entre las moléculas",
   "tech_laser_turret": "Torreta láser",
   "tech_laser_turret_effect1": "Mejora tus torretas de fortaleza con armamento láser",
   "tech_laser_turret_effect2": "Aumenta el consumo de energía de las torretas en 1.",
@@ -1035,13 +1035,13 @@
   "tech_portland_cement": "Cemento Portland",
   "tech_portland_cement_effect": "El cemento Portland es más fácil de fabricar, lo que aumenta la productividad de los trabajadores del cemento en un 20%",
   "tech_screw_conveyor": "Transportador de tornillo",
-  "tech_screw_conveyor_effect": "Los transportadores de tornillo pueden aumentar considerablemente la producción de las fábricas de cemento. Sin embargo, requieren energía para funcionar".
+  "tech_screw_conveyor_effect": "Los transportadores de tornillo pueden aumentar considerablemente la producción de las fábricas de cemento. Sin embargo, requieren energía para funcionar",
   "tech_adamantite_screws": "Tornillos de adamantita",
   "tech_adamantite_screws_effect": "Actualice sus plantas de cemento con transportadores de tornillo roscado Adamantite. Mejora la bonificación del transportador en% 0%",
   "tech_hunter_process": "Proceso Hunter",
-  "tech_hunter_process_effect": "La fundición de acero dará como resultado pequeñas cantidades de producción de titanio".
+  "tech_hunter_process_effect": "La fundición de acero dará como resultado pequeñas cantidades de producción de titanio",
   "tech_kroll_process": "Proceso Kroll",
-  "tech_kroll_process_effect": "La fundición de hierro dará como resultado pequeñas cantidades de producción de titanio".
+  "tech_kroll_process_effect": "La fundición de hierro dará como resultado pequeñas cantidades de producción de titanio",
   "tech_cambridge_process": "Proceso de Cambridge",
   "tech_cambridge_process_effect": "Las técnicas modernas dan como resultado una producción más eficiente de titanio a partir de fundiciones",
   "tech_pynn_partical": "Partículas Pynn",
@@ -1049,7 +1049,7 @@
   "tech_matter_compression": "Compresión de materia",
   "tech_matter_compression_effect": "Use partículas de Pynn para reducir los contenedores a la mitad, duplicando la cantidad que puede almacenar",
   "tech_higgs_boson": "Bosón de Higgs",
-  "tech_higgs_boson_effect": "Descubre el Bosón de Higgs. Nadie sabe qué aplicación práctica tiene esto, pero el entusiasmo al respecto aumentará la contribución a la ciencia de los supercolliders".
+  "tech_higgs_boson_effect": "Descubre el Bosón de Higgs. Nadie sabe qué aplicación práctica tiene esto, pero el entusiasmo al respecto aumentará la contribución a la ciencia de los supercolliders",
   "tech_dimensional_compression": "Compresión de dimensión",
   "tech_dimensional_compression_effect": "El efecto de compresión de espacio Supercollider ahora se aplica a garajes",
   "tech_theology": "Teología",
@@ -1081,7 +1081,7 @@
   "tech_archaeology": "Arqueología",
   "tech_archaeology_effect": "Los profesores que estudian la historia pasada de los creadores aumentan su efectividad en un 5% por templo",
   "tech_merchandising": "Merchandising",
-  "tech_merchandising_effect": "La popularidad de los creadores entre su cultura ha dado lugar a grandes oportunidades de comercialización. Los ingresos fiscales aumentan un 2,5% por templo".
+  "tech_merchandising_effect": "La popularidad de los creadores entre su cultura ha dado lugar a grandes oportunidades de comercialización. Los ingresos fiscales aumentan un 2,5% por templo",
   "tech_astrophysics": "Astrofísica",
   "tech_astrophysics_desc": "Astrofísica",
   "tech_astrophysics_effect": "Navegar por el espacio requiere investigación en una nueva rama de la ciencia llamada astrofísica",
@@ -1104,24 +1104,24 @@
   "tech_exotic_lab_effect": "Diseña un laboratorio especial de alta tecnología para estudiar materiales exóticos",
   "tech_exotic_bd": "Laboratorio exótico",
   "tech_dyson_sphere": "Esfera Dyson",
-  "tech_dyson_sphere_effect": "La ciencia ficción ha popularizado la idea de una Esfera Dyson, intenta descubrir cómo hacer una".
+  "tech_dyson_sphere_effect": "La ciencia ficción ha popularizado la idea de una Esfera Dyson, intenta descubrir cómo hacer una",
   "tech_dyson_swarm": "Enjambre Dyson",
-  "tech_dyson_swarm_effect": "Una Esfera Dyson resulta completamente poco práctica, si no imposible. En su lugar, diseñe una red de satélites solares conocida como Enjambre Dyson".
+  "tech_dyson_swarm_effect": "Una Esfera Dyson resulta completamente poco práctica, si no imposible. En su lugar, diseñe una red de satélites solares conocida como Enjambre Dyson",
   "tech_swarm_plant": "Planta de enjambre",
-  "tech_swarm_plant_effect": "Fabricar y desplegar satélites enjambre es costoso debido a la distancia de %0. Al establecer instalaciones automatizadas en %1, que está mucho más cerca del sol, puede reducir los costos".
+  "tech_swarm_plant_effect": "Fabricar y desplegar satélites enjambre es costoso debido a la distancia de %0. Al establecer instalaciones automatizadas en %1, que está mucho más cerca del sol, puede reducir los costos",
   "tech_space_sourced": "Fuente espacial",
   "tech_space_sourced_desc": "Hierro de fuentes espaciales",
-  "tech_space_sourced_effect": "El hierro de origen espacial puede reducir el volumen necesario para construir plantas de enjambre".
+  "tech_space_sourced_effect": "El hierro de origen espacial puede reducir el volumen necesario para construir plantas de enjambre",
   "tech_swarm_plant_ai": "Planta de enjambre AI",
   "tech_swarm_plant_ai_effect": "La IA avanzada que controla la producción en las instalaciones de enjambre podría aumentar su productividad",
   "tech_swarm_control_ai": "Control de enjambre AI",
   "tech_swarm_control_ai_effect": "Con la IA controlando su enjambre solar, puede operar hasta 6 satélites por estación de control",
   "tech_quantum_swarm": "Enjambre cuántico",
-  "tech_quantum_swarm_effect": "Al actualizar la IA de su planta de enjambre con procesadores cuánticos, la eficiencia de las plantas está limitada solo por su capacidad de conocimiento".
+  "tech_quantum_swarm_effect": "Al actualizar la IA de su planta de enjambre con procesadores cuánticos, la eficiencia de las plantas está limitada solo por su capacidad de conocimiento",
   "tech_dyson_net": "Red Dyson",
-  "tech_dyson_net_effect": "Los intentos anteriores de diseñar una Esfera Dyson no tuvieron éxito. Sin embargo, ahora es posible construir una Red Dyson que rodea la estrella Proxima. En lugar de rodear la estrella con un caparazón duro, una Red Dyson rodearía a la mucho más pequeña Próxima estrella con un material similar a una red altamente conductivo ".
+  "tech_dyson_net_effect": "Los intentos anteriores de diseñar una Esfera Dyson no tuvieron éxito. Sin embargo, ahora es posible construir una Red Dyson que rodea la estrella Proxima. En lugar de rodear la estrella con un caparazón duro, una Red Dyson rodearía a la mucho más pequeña Próxima estrella con un material similar a una red altamente conductivo ",
   "tech_quantum_man manufacturing": "Fabricación cuántica",
-  "tech_quantum_man Manufacturing_effect": "La inteligencia artificial impulsada por procesadores cuánticos puede mejorar el rendimiento de sus fábricas. La eficiencia aumenta con su capacidad máxima de conocimiento".
+  "tech_quantum_man Manufacturing_effect": "La inteligencia artificial impulsada por procesadores cuánticos puede mejorar el rendimiento de sus fábricas. La eficiencia aumenta con su capacidad máxima de conocimiento",
   "tech_gps": "Constelación GPS",
   "tech_gps_effect": "Diseñar una red de satélites de navegación",
   "tech_nav_beacon": "Baliza de navegación",
@@ -1131,7 +1131,7 @@
   "tech_atmospheric_mining": "Minería atmosférica",
   "tech_atmospheric_mining_effect": "Aprenda la física de operar una plataforma minera en órbita de un gigante gaseoso",
   "tech_helium_attractor": "Atractor de helio",
-  "tech_helium_attractor_effect": "Aumentar la eficiencia de %0 colectores de helio-3".
+  "tech_helium_attractor_effect": "Aumentar la eficiencia de %0 colectores de helio-3",
   "tech_ram_scoops": "Ram Scoops",
   "tech_ram_scoops_effect": "Actualice las cosechadoras de gas con Ram Scoops para recoger Deuterio",
   "tech_elerium_prospecting": "Prospección de Elerium",
@@ -1139,7 +1139,7 @@
   "tech_zero_g_mining": "Minería Zero G",
   "tech_zero_g_mining_effect": "La minería de asteroides en Zero G presenta nuevos desafíos que deben estudiarse antes de que se pueda desarrollar este recurso",
   "tech_elerium_mining": "Minería de Elerium",
-  "tech_elerium_mining_effect": "El elerium es un elemento nuevo altamente energético poco común descubierto en el cinturón de asteroides. La extracción de este elemento de forma segura requerirá un equipo especializado de recolección y recipientes de contención".
+  "tech_elerium_mining_effect": "El elerium es un elemento nuevo altamente energético poco común descubierto en el cinturón de asteroides. La extracción de este elemento de forma segura requerirá un equipo especializado de recolección y recipientes de contención",
   "tech_laser_mining": "Minería láser",
   "tech_laser_mining_effect": "Los ejercicios de minería láser pueden atravesar los asteroides más rápido que los métodos tradicionales",
   "tech_plasma_mining": "Minería de plasma",
@@ -1157,7 +1157,7 @@
   "tech_wc_conquest_desc": "%0 Conquista",
   "tech_wc_conquest_desc_req": "Requiere %0 Clasificación del ejército",
   "tech_wc_conquest_effect": "Intenta conquistar el mundo con tu poderío militar superior",
-  "tech_unification_warning": "La unificación cambia el juego. No habrá más conflictos, pero obtendrás + 25% de producción global y aproximadamente el doble de capacidad de almacenamiento".
+  "tech_unification_warning": "La unificación cambia el juego. No habrá más conflictos, pero obtendrás + 25% de producción global y aproximadamente el doble de capacidad de almacenamiento",
   "tech_wc_morale": "Supremacía cultural",
   "tech_wc_morale_desc": "%0 Supremacía cultural",
   "tech_wc_morale_desc_req": "Requiere %0% de moral",
@@ -1193,23 +1193,23 @@
   "tech_gravitational_waves": "Ondas gravitacionales",
   "tech_gravitational_waves_effect": "Estudiar las ondas gravitacionales generadas por el agujero negro podría conducir a nuevos y emocionantes avances",
   "tech_gravity_convection": "Convección gravitacional",
-  "tech_gravity_convection_effect": "Después de estudiar las ondas gravimétricas generadas por el agujero negro, debería ser posible aumentar la eficiencia del Motor estelar".
+  "tech_gravity_convection_effect": "Después de estudiar las ondas gravimétricas generadas por el agujero negro, debería ser posible aumentar la eficiencia del Motor estelar",
   "tech_wormholes": "Agujeros de gusano",
   "tech_wormholes_effect": "Crear un túnel artificial a través del espacio podría ser la forma más rápida de viajar a un destino lejano",
   "tech_stellar_engine": "Motor estelar",
   "tech_stellar_engine_effect": "Construir un motor estelar alrededor de un agujero negro podría ser la mejor fuente de energía",
   "tech_mass_ejector": "Eyector de masas",
-  "tech_mass_ejector_effect": "El motor estelar resultó ser decepcionante. Las principales mentes piensan que el problema es que el agujero negro no es lo suficientemente masivo. Convierta el agujero negro en su propio triturador de basura interestelar personal diseñando un método para suministrar masa extra en el agujero negro en un intento de reforzarlo ".
+  "tech_mass_ejector_effect": "El motor estelar resultó ser decepcionante. Las principales mentes piensan que el problema es que el agujero negro no es lo suficientemente masivo. Convierta el agujero negro en su propio triturador de basura interestelar personal diseñando un método para suministrar masa extra en el agujero negro en un intento de reforzarlo.",
   "tech_exotic_infusion": "Infusión exótica",
   "tech_exotic_infusion_effect": "El material exótico en el agujero negro está teniendo un efecto positivo en el motor estelar, refuérzalo suministrándole el material más exótico que poseemos... gemas del alma",
-  "tech_exotic_infusion_effect2": "Nota: sus científicos piensan que es una mala idea, bla bla bla...; podría explotar catastróficamente; como sea".
+  "tech_exotic_infusion_effect2": "Nota: sus científicos piensan que es una mala idea, bla bla bla...; podría explotar catastróficamente; como sea",
   "tech_exotic_infusion_flair": "Tienes un buen presentimiento sobre esto",
   "tech_infusion_check": "Infusión exótica",
   "tech_infusion_check_effect": "¿Estás seguro? Esto podría tener mayores consecuencias de lo que piensas. Última oportunidad de retroceder, tal vez deberías hacer una copia de seguridad de tu archivo de juego",
   "tech_infusion_check_flair": "¿Tienes dudas?",
   "tech_infusion_confirm": "Infusión exótica",
   "tech_infusion_confirm_effect": "En serio, última oportunidad de abortar. Probablemente sea un logro, pero ¿vale la pena?",
-  "tech_infusion_confirm_flair": "¡Adiós, mundo cruel! ¡Adiós, lámpara cruel! Adiós, cortinas de terciopelo cruel, forradas con lo que parecería ser una especie de muselina cruel y los lindos cordones de cortina de pompón".
+  "tech_infusion_confirm_flair": "¡Adiós, mundo cruel! ¡Adiós, lámpara cruel! Adiós, cortinas de terciopelo cruel, forradas con lo que parecería ser una especie de muselina cruel y los lindos cordones de cortina de pompón",
   "tech_stabilize_blackhole": "Estabilizar agujero negro",
   "tech_stabilize_blackhole_effect": "El material exótico dentro del agujero negro parece estar teniendo un impacto más significativo en su motor estelar que la materia normal. Sin embargo, también está causando que el agujero negro emita lecturas extrañas que son motivo de gran preocupación. Estabilice el agujero negro eyectando una gran cantidad del material más denso que conoces ",
   "tech_portal": "Portales",
@@ -1217,7 +1217,7 @@
   "tech_portal_effect": "Controlar una puerta de entrada a otra dimensión permitiría la exploración y explotación de otras realidades",
   "tech_fort": "Fortificaciones",
   "tech_fort_desc": "Fortificar el infierno",
-  "tech_fort_effect": "Nuestra exploración de la otra dimensión se ha encontrado con una hostilidad extrema por parte de extrañas criaturas que algunos llaman demonios, por lo que se requiere fortalecer nuestra posición en el otro lado".
+  "tech_fort_effect": "Nuestra exploración de la otra dimensión se ha encontrado con una hostilidad extrema por parte de extrañas criaturas que algunos llaman demonios, por lo que se requiere fortalecer nuestra posición en el otro lado",
   "tech_war_drones": "Drones de guerra",
   "tech_war_drones_effect": "Diseña drones para patrullar las tierras baldías demoníacas y ayudar a salvaguardar tus operaciones",
   "tech_demon_attractor": "Atractor demoníaco",
@@ -1230,14 +1230,14 @@
   "tech_map_terrain": "Mapa del terreno",
   "tech_map_terrain_effect": "Mapa del área que rodea la fortaleza del Infierno para ayudar a sus topógrafos a navegar por la región",
   "tech_calibrated_sensors": "Sensores calibrados",
-  "tech_calibrated_sensors_effect": "Calibre sus drones sensores para detectar mejor los posibles depósitos de infernita".
+  "tech_calibrated_sensors_effect": "Calibre sus drones sensores para detectar mejor los posibles depósitos de infernita",
   "star_dock_probe": "sonda espacial",
   "star_dock_probe_desc": "Sonda interestelar",
   "star_dock_probe_effect": "Cada sonda interestelar aumenta la cantidad de mundos objetivo que tu nave biosembradora puede explorar en 1.",
   "star_dock_seeder": "Nave biosembradora",
   "star_dock_seeder_desc1": "Requiere 100 segmentos",
   "star_dock_seeder_desc2": "Estado: Completo",
-  "star_dock_seeder_effect": "La nave \"Genesis\". Esta es una nave automatizada que viajará durante cientos de años para alcanzar un objetivo y biosembrar con nueva vida".
+  "star_dock_seeder_effect": "La nave \"Genesis\". Esta es una nave automatizada que viajará durante cientos de años para alcanzar un objetivo y biosembrar con nueva vida",
   "star_dock_seeder_status1": "%0 segmentos restantes",
   "star_dock_seeder_status2": "El barco está completo",
   "star_dock_prep": "Envío de preparación",
@@ -1246,7 +1246,7 @@
   "star_dock_genesis": "Lanzar barco",
   "star_dock_genesis_desc1": "Lanzar la nave biosembradora",
   "star_dock_genesis_desc2": "Restablece el juego",
-  "star_dock_genesis_effect1": "Lanza la nave \"Genesis\". Sembrarás vida en un sistema estelar lejano y te harás cargo de la especie que evoluciona allí".
+  "star_dock_genesis_effect1": "Lanza la nave \"Genesis\". Sembrarás vida en un sistema estelar lejano y te harás cargo de la especie que evoluciona allí",
   "star_dock_genesis_effect2": "Obtendrá %0 Plásmidos",
   "star_dock_genesis_effect3": "Obtendrá %0 Phage",
   "set_planet": "%0 es un planeta %1 con un período orbital de %2 días",
@@ -1523,7 +1523,7 @@
   "feat_ill_advised_flair": "No me digas qué hacer",
   "feat_organ_harvester_name": "Organ Harvester",
   "feat_organ_harvester_desc": "Tomó los rechazos genéticos al espacio y extendió su miseria a otro planeta",
-  "feat_organ_harvester_flair": "Creaste esa nueva raza solo para robarles la cara, ¿no?"
+  "feat_organ_harvester_flair": "Creaste esa nueva raza solo para robarles la cara, ¿no?",
   "feat_blank_slate_name": "Pizarra en blanco",
   "feat_blank_slate_desc": "Eliminó todos sus rasgos raciales principales y de género",
   "feat_blank_slate_flair": "Una carrera es una carrera, pero una pizarra en blanco podría ser cualquier cosa; ¡incluso podría ser un barco!",
@@ -1558,7 +1558,7 @@
   "arpa_genepool_genetic_memory_title": "Memoria genética",
   "arpa_genepool_genetic_memory_desc": "Reduce el arrastre de costos en 0.01",
   "arpa_genepool_effect_plasmid": "Plásmido",
-  "Arpa_genepool_animus_title" "alma";
+  "Arpa_genepool_animus_title" "alma",
   "arpa_genepool_animus_desc": "Reduce el arrastre de costos en 0.02",
   "arpa_genepool_divine_remembrance_title": "Recuerdo divino",
   "arpa_genepool_divine_remembrance_desc": "Reduce la reducción de costos en 0.03",
@@ -1607,7 +1607,7 @@
   "arpa_genepool_ancients_desc": "Desbloquea actualizaciones de religión de segundo nivel",
   "arpa_genepool_transcendence_title": "Trascendencia",
   "arpa_genepool_transcendence_desc": "Puede desbloquear tanto el fanatismo como la antropología",
-  "arpa_crispr_desc": "Altere permanentemente su ADN. Estas actualizaciones se transfieren a través de restablecimientos".
+  "arpa_crispr_desc": "Altere permanentemente su ADN. Estas actualizaciones se transfieren a través de restablecimientos",
   "arpa_race_genetic_traids": "%0 Rasgos genéticos",
   "arpa_race_genetic_minor_traits": "%0 Rasgos menores",
   "arpa_race_genetic_gain": "Rasgos genéticos disponibles",
@@ -1631,7 +1631,7 @@
   "time_never": "Nunca",
   "race_prehistoric": "Prehistórico",
   "race_protoplasm": "Protoplasma",
-  "race_protoplasm_desc": "Tu raza aún tiene que evolucionar hacia una forma de vida compleja. Actualmente no eres más que protoplasma en el cieno primordial".
+  "race_protoplasm_desc": "Tu raza aún tiene que evolucionar hacia una forma de vida compleja. Actualmente no eres más que protoplasma en el cieno primordial",
   "race_human": "Humano",
   "race_human_desc": "Los seres humanos son criaturas versátiles que son expertos en cambiar el entorno a su alrededor para satisfacer sus necesidades. Son una raza ambiciosa que buscan expandir su conocimiento del universo que los rodea y construir grandes imperios",
   "race_human_entity": "criaturas bípedas de piel rosa",
@@ -1642,7 +1642,7 @@
   "race_solar_gas_moon": "Ganímedes",
   "race_solar_dwarf": "Ceres",
   "race_elven": "Elf",
-  "race_elven_desc": "Los elfos suelen ser criaturas altas y delgadas con orejas puntiagudas, tienden a ser solitarios pero agudos de ingenio. Los elfos viven largas vidas y a menudo se dedican a estudiar, buscando respuestas a las preguntas fundamentales del universo".
+  "race_elven_desc": "Los elfos suelen ser criaturas altas y delgadas con orejas puntiagudas, tienden a ser solitarios pero agudos de ingenio. Los elfos viven largas vidas y a menudo se dedican a estudiar, buscando respuestas a las preguntas fundamentales del universo",
   "race_elven_entity": "criaturas bípedas de orejas puntiagudas",
   "race_orc": "Orco",
   "race_orc_desc": "Los orcos tienden a ser criaturas grandes y musculosas que son lentas de ingenio pero contienen una fuerza bruta inmensa. Por lo general, primero tratan de resolver problemas con violencia, luego buscan una solución más racional solo cuando eso no funciona",
@@ -1663,16 +1663,16 @@
   "race_goblin_desc": "Los duendes son pequeñas criaturas humanoides que son conocidas por su avaricia y astucia. Son altamente inteligentes pero típicamente de naturaleza egoísta",
   "race_goblin_entity": "pequeñas criaturas bípedas de piel verde",
   "race_gnome": "Gnomo",
-  "race_gnome_desc": "Los gnomos son pequeñas criaturas humanoides que son conocidas por su inteligencia superior. Son científicos naturales y buscan expandir su conocimiento, a menudo a costa de la seguridad y la moral".
+  "race_gnome_desc": "Los gnomos son pequeñas criaturas humanoides que son conocidas por su inteligencia superior. Son científicos naturales y buscan expandir su conocimiento, a menudo a costa de la seguridad y la moral",
   "race_gnome_entity": "pequeños humanoides rosados",
   "race_ogre": "Ogro",
-  "race_ogre_desc": "Los ogros son grandes criaturas humanoides que son conocidas por ser algo tontas. Son muy fuertes con pocas razas capaces de igualar su destreza física. Sin embargo, aprenden lentamente".
+  "race_ogre_desc": "Los ogros son grandes criaturas humanoides que son conocidas por ser algo tontas. Son muy fuertes con pocas razas capaces de igualar su destreza física. Sin embargo, aprenden lentamente",
   "race_ogre_entity": "humanoides gigantes",
   "race_cyclops": "Cyclops",
   "race_cyclops_desc": "Los cíclopes son grandes criaturas humanoides que tienen un solo ojo gigante. Tienen poca percepción de profundidad pero son bastante sociales e inteligentes",
   "race_cyclops_entity": "humanoides gigantes de un ojo",
   "race_troll": "Troll",
-  "race_troll_desc": "Los trolls son grandes criaturas humanoides que son conocidas por sus poderes regenerativos. Son una raza resistente altamente resistente a enfermedades y lesiones".
+  "race_troll_desc": "Los trolls son grandes criaturas humanoides que son conocidas por sus poderes regenerativos. Son una raza resistente altamente resistente a enfermedades y lesiones",
   "race_troll_entity": "grandes humanoides verdes",
   "race_tortoisan": "Tortoisan",
   "race_tortoisan_desc": "Los tortoyanos son una especie de reptil con conchas en la espalda. Se mueven lentamente y son buenos para esconderse",
@@ -1684,10 +1684,10 @@
   "race_slitheryn_desc": "Slitheryn es una especie de reptil que evolucionó a partir de serpientes. Tienen cuerpos superiores humanoides pero retienen mitades inferiores como serpientes",
   "race_slitheryn_entity": "criaturas serpiente",
   "race_arraak": "Arraak",
-  "race_arraak_desc": "Los Arraak son una especie emplumada de aves no voladoras. Hace mucho tiempo pueden haber salido a los cielos, pero los Arraak modernos son demasiado pesados ​​para volar",
+  "race_arraak_desc": "Los Arraak son una especie emplumada de aves no voladoras. Hace mucho tiempo pueden haber salido a los cielos, pero los Arraak modernos son demasiado pesados para volar",
   "race_arraak_entity": "gente pájaro",
   "race_pterodacti": "Pterodacti",
-  "race_pterodacti_desc": "Los pterodacti descienden de grandes criaturas voladoras sin plumas. Su piel es coriácea y tienen cabezas largas y estrechas".
+  "race_pterodacti_desc": "Los pterodacti descienden de grandes criaturas voladoras sin plumas. Su piel es coriácea y tienen cabezas largas y estrechas",
   "race_pterodacti_entity": "criaturas aladas coriáceas",
   "race_dracnid": "Dracnid",
   "race_dracnid_desc": "Los dracnidos descienden de grandes criaturas voladoras escamosas. Son resistentes debido a su armadura natural, pero tienden a ser antisociales y codiciosos",
@@ -1699,16 +1699,16 @@
   "race_cacti_desc": "Los cactus son pequeñas criaturas de plantas sensibles cubiertas de espinas. Se mueven sorprendentemente rápido, pero se asustan fácilmente",
   "race_cacti_entity": "cactus sintientes",
   "race_sporgar": "Sporgar",
-  "race_sporgar_desc": "Sporgar es una especie parásita de esporas de moho inteligentes que se propagan al infectar los cuerpos del huésped y poseerlos".
+  "race_sporgar_desc": "Sporgar es una especie parásita de esporas de moho inteligentes que se propagan al infectar los cuerpos del huésped y poseerlos",
   "race_sporgar_entity": "molde sensible",
   "race_shroomi": "Shroomi",
-  "race_shroomi_desc": "Los Shroomi son una raza de criaturas parecidas a hongos. Prefieren lugares oscuros lejos de la luz solar".
+  "race_shroomi_desc": "Los Shroomi son una raza de criaturas parecidas a hongos. Prefieren lugares oscuros lejos de la luz solar",
   "race_shroomi_entity": "hongos sensibles",
   "race_mantis": "Mantis",
   "race_mantis_desc": "Las mantis son una especie insectoide que se asemeja a gigantes ... mantis. Son rápidas pero frágiles",
   "race_mantis_entity": "insectos",
   "race_scorpid": "Scorpid",
-  "race_scorpid_desc": "Scorpid es una especie bípeda con grandes garras y colas de púas. Son luchadores duros equipados naturalmente para el combate cuerpo a cuerpo".
+  "race_scorpid_desc": "Scorpid es una especie bípeda con grandes garras y colas de púas. Son luchadores duros equipados naturalmente para el combate cuerpo a cuerpo",
   "race_scorpid_entity": "escorpiones",
   "race_antid": "Antid",
   "race_antid_desc": "Los antid son una especie de colmena descendiente de hormigas. Individualmente no son inteligentes, pero a medida que aumenta su enjambre también lo hace su inteligencia colectiva",
@@ -1717,10 +1717,10 @@
   "race_sharkin_desc": "Los tiburones son una especie acuática descendiente de peces agresivos que tienen bocas grandes con muchos dientes afilados. Aunque pueden vagar por la tierra, prefieren permanecer bajo el agua",
   "race_sharkin_entity": "tiburones verticales",
   "race_octigoran": "Octigoran",
-  "race_octigoran_desc": "Octigoran es una especie acuática de cefalópodo que tiene ocho tentáculos. Pueden imitar caminar en tierra usando sus apéndices como patas improvisadas, pero están más en casa bajo el agua".
+  "race_octigoran_desc": "Octigoran es una especie acuática de cefalópodo que tiene ocho tentáculos. Pueden imitar caminar en tierra usando sus apéndices como patas improvisadas, pero están más en casa bajo el agua",
   "race_octigoran_entity": "cefalópodos de ocho extremidades",
   "race_balorg": "Balorg",
-  "race_balorg_desc": "Los balorg son una raza ardiente de demonios que habitan en el abismo. Su piel literalmente arde con el fuego del infierno y pocos que los miran viven para contar la historia".
+  "race_balorg_desc": "Los balorg son una raza ardiente de demonios que habitan en el abismo. Su piel literalmente arde con el fuego del infierno y pocos que los miran viven para contar la historia",
   "race_balorg_entity": "hellspawn",
   "race_imp": "Imp",
   "race_imp_desc": "Los diablillos son una pequeña raza de criaturas demoníacas que se deleitan en atormentar a sus víctimas con bromas que distan de ser inofensivas",
@@ -1741,9 +1741,9 @@
   "trait_hollow_bones": "Su especie tiene huesos livianos y requiere materiales menos diseñados para construir estructuras",
   "trait_rigid": "Tu raza tiene una estructura esquelética rígida y una artesanía menos eficiente",
   "trait_fast_growth": "Su especie se gesta rápidamente, por lo tanto, la población aumenta más rápido que otras especies",
-  "trait_high_metabolism": "Su especie metaboliza los alimentos rápidamente, por lo que necesita más".
+  "trait_high_metabolism": "Su especie metaboliza los alimentos rápidamente, por lo que necesita más",
   "trait_photosynth": "Su raza produce parte de sus necesidades alimentarias a través de la fotosíntesis",
-  "trait_asymmetrical": "Su especie es asimétrica. Esto le da una apariencia más monstruosa, haciendo que el comercio sea más difícil".
+  "trait_asymmetrical": "Su especie es asimétrica. Esto le da una apariencia más monstruosa, haciendo que el comercio sea más difícil",
   "trait_spores": "Tu especie se propaga rápidamente cuando hace viento",
   "trait_spongy": "Tu especie no se propaga cuando precipita",
   "trait_submerged": "Su especie vive principalmente bajo el agua y, por lo tanto, no se ve afectada por la mayoría del clima",
@@ -1780,7 +1780,7 @@
   "trait_chameleon": "La afinidad natural de tu especie por esconderse ha provocado que sean más reacios a tener un ejército permanente",
   "trait_slow_digestion": "Tu raza digiere la comida lentamente y, por lo tanto, no morirá de hambre tan fácilmente",
   "trait_hard_of_hearing": "Su especie tiene poca audición y, por lo tanto, las conferencias son menos efectivas",
-  "trait_resourceful": "El ingenio de tu especie conduce a menos desperdicio al crear".
+  "trait_resourceful": "El ingenio de tu especie conduce a menos desperdicio al crear",
   "trait_selenophobia": "Tu raza prefiere noches sin luna",
   "trait_leathery": "Tu raza tiene piel curtida, lo que los hace más resistentes a la intemperie",
   "trait_pessimistic": "Tu raza se deprime fácilmente",
@@ -1796,7 +1796,7 @@
   "trait_nyctophilia": "A tu raza no le gusta la luz solar directa, son menos productivos cuando hace sol",
   "trait_cannibalize": "Ustedes son caníbales y se comerán a los de su propia especie. Obtenga su propia fuerza ingiriéndolos",
   "trait_frail": "Tu raza es frágil y es más probable que muera en combate",
-  "trait_malnutrition": "Su raza puede funcionar mientras sufre de desnutrición mejor que la mayoría".
+  "trait_malnutrition": "Su raza puede funcionar mientras sufre de desnutrición mejor que la mayoría",
   "trait_claws": "Tu raza es más efectiva en combate",
   "trait_atrophy": "Su raza se atrofia más rápido cuando no está bien alimentada",
   "trait_hivemind": "Sus ciudadanos son muy ineficaces cuando trabajan como individuos pero ganan potencia al trabajar en grupos más grandes",
@@ -1816,7 +1816,7 @@
   "trait_pathetic": "Eres patético en combate, los otros demonios te ven como alimañas",
   "trait_conniving": "Tus formas intrigantes te ofrecen las mejores ofertas en el comercio",
   "trait_tactical": "Una disposición genética al pensamiento táctico le da a su raza una ventaja en el combate",
-  "trait_analytical": "Su raza tiene una mente analítica mejorada, lo que aumenta su conocimiento".
+  "trait_analytical": "Su raza tiene una mente analítica mejorada, lo que aumenta su conocimiento",
   "trait_promiscuous": "Su raza tiene una tasa de natalidad elevada",
   "trait_resilient": "La resistencia natural a las condiciones difíciles hace que su especie sea más experta en la minería del carbón",
   "trait_cunning": "Tu raza posee una afinidad por el juego de rastreo",
@@ -1827,13 +1827,13 @@
   "trait_fibroblast": "Los fibroblastos mejorados aumentan el factor de curación de tus soldados",
   "trait_metallurgist": "Usted tiene un don para la metalurgia, lo que lo hace más eficiente en la fabricación de aleaciones",
   "trait_gambler": "Su especie es adicta al juego, los casinos almacenan más dinero y generan ingresos adicionales",
-  "biome_grassland": "Los mundos de pastizales están cubiertos de llanuras y son mundos ideales para la agricultura. Se caracterizan por un mayor rendimiento de los cultivos".
+  "biome_grassland": "Los mundos de pastizales están cubiertos de llanuras y son mundos ideales para la agricultura. Se caracterizan por un mayor rendimiento de los cultivos",
   "biome_oceanic": "Los mundos oceánicos están cubiertos principalmente por agua con algunas masas de tierra dispersas alrededor. Se caracterizan por el aumento de las precipitaciones",
-  "biome_forest": "Los mundos forestales están casi completamente cubiertos de vegetación. Se caracterizan por la abundancia de madera".
+  "biome_forest": "Los mundos forestales están casi completamente cubiertos de vegetación. Se caracterizan por la abundancia de madera",
   "biome_desert": "Los mundos del desierto son en su mayoría rocas polvorientas cubiertas de arena. Se caracterizan por ser muy soleadas",
   "biome_volcanic": "Los mundos volcánicos suelen ser planetas más jóvenes que aún no se han enfriado. Se caracterizan por estar calientes",
   "biome_tundra": "Los planetas de la tundra están cubiertos en gran parte de hielo y casi nunca están calientes. Se caracterizan por tener frío",
-  "biome_hellscape": "El planeta Hellscape es un lugar de pesadilla donde la mayoría de las cosas están literalmente en llamas, el aire apesta a azufre y vegetación es escaso. La mayoría de las razas no pueden sobrevivir en este lugar".
+  "biome_hellscape": "El planeta Hellscape es un lugar de pesadilla donde la mayoría de las cosas están literalmente en llamas, el aire apesta a azufre y vegetación es escaso. La mayoría de las razas no pueden sobrevivir en este lugar",
   "civics_jobs": "Empleos",
   "civics_government": "Gobierno",
   "civics_tax_rates": "Tasas de impuestos",
@@ -1865,7 +1865,7 @@
   "civics_garrison_tactic_assault": "Asalto",
   "civics_garrison_tactic_assault_desc": "Intento de asaltar una ciudad rival. Operación de muy alto riesgo con un enorme potencial de recompensa",
   "civics_garrison_tactic_siege": "Asedio",
-  "civics_garrison_tactic_siege_desc": "Intento de asediar una ciudad rival. Esta operación es un suicidio para todos menos para los ejércitos más fuertes, pero si tiene éxito será glorioso".
+  "civics_garrison_tactic_siege_desc": "Intento de asediar una ciudad rival. Esta operación es un suicidio para todos menos para los ejércitos más fuertes, pero si tiene éxito será glorioso",
   "civics_garrison_hire_mercenary_cost": "Contratar un mercenario: $%0",
   "civics_garrison_advantage": "%0% ventaja",
   "civics_garrison_disadvantage": "%0% desventaja",
@@ -1882,7 +1882,7 @@
   "civics_mad_launch_missiles": "Lanzar misiles",
   "civics_mad_missiles_world_control_desc": "Activar o desactivar el botón de inicio. Recorrer el mundo con fuego nuclear, ¿por qué? Porque puedes",
   "civics_mad_missiles_desc": "Habilitar o deshabilitar el botón de lanzamiento. El lanzamiento de un ataque nuclear desencadenará un ataque de represalia que dará como resultado el final de toda la vida tal como la conocemos",
-  "civics_mad_missiles_warning": "Esto provocará la destrucción de toda la vida en su planeta. Tendrá que volver a evolucionar desde el principio. Ganará% 0 Plásmidos".
+  "civics_mad_missiles_warning": "Esto provocará la destrucción de toda la vida en su planeta. Tendrá que volver a evolucionar desde el principio. Ganará% 0 Plásmidos",
   "resource_market": "Mercado",
   "resource_trade_qty": "Cantidad comercial",
   "resource_RNA_name": "RNA",
@@ -1972,7 +1972,7 @@
   "space_home_gps_desc": "Lanzar un satélite GPS",
   "space_home_gps_desc_req": "Requiere un mínimo de 4 satélites",
   "space_home_gps_effect": "Aumenta la rentabilidad de las rutas comerciales en un 1% a través de la eficiencia comercial mejorada",
-  "space_home_gps_effect_req": "Necesita un mínimo de 4 satélites GPS para establecer una señal GPS. Los primeros 3 no hacen nada".
+  "space_home_gps_effect_req": "Necesita un mínimo de 4 satélites GPS para establecer una señal GPS. Los primeros 3 no hacen nada",
   "space_home_propellant_depot_title": "Depósito de propulsor",
   "space_home_propellant_depot_desc": "Construir un depósito orbital",
   "space_home_nav_beacon_title": "Baliza de navegación",
@@ -1980,7 +1980,7 @@
   "space_home_nav_beacon_effect1": "+1 Soporte lunar",
   "space_home_nav_beacon_effect2": "-2kW",
   "space_moon_info_name": "Luna",
-  "space_moon_info_desc": "La luna en órbita %0. Es aproximadamente 1/10 de la masa de %0 y no tiene atmósfera".
+  "space_moon_info_desc": "La luna en órbita %0. Es aproximadamente 1/10 de la masa de %0 y no tiene atmósfera",
   "space_moon_mission_title": "Lanzamiento lunar",
   "space_moon_mission_desc": "Lanzar la misión Luna",
   "space_moon_mission_effect": "Lanzar una misión para inspeccionar la luna",
@@ -1998,7 +1998,7 @@
   "space_moon_observatory_title": "Observatorio",
   "space_moon_observatory_desc": "Observatorio basado en la Luna",
   "space_moon_observatory_effect": "+%0% University Max Knowledge",
-  "space_red_info_desc": "El planeta rojo %0 orbita alrededor del sol a una distancia de aproximadamente 1.4 UA".
+  "space_red_info_desc": "El planeta rojo %0 orbita alrededor del sol a una distancia de aproximadamente 1.4 UA",
   "space_red_mission_effect": "Lanzar una misión para examinar el planeta rojo %0",
   "space_red_mission_action": "%0 no ofrece muchos recursos raros, pero sus científicos lo consideran la mejor perspectiva para una colonia fuera del mundo",
   "space_red_spaceport_title": "Puerto espacial",
@@ -2051,7 +2051,7 @@
   "space_red_space_barracks_effect3": "-10 %0/s",
   "space_hell_info_desc": "El planeta %0 se encuentra a aproximadamente 0,4 UA del sol y hace mucho calor",
   "space_hell_mission_effect1": "Lanzar una misión para estudiar el planeta infernal %0",
-  "space_hell_mission_action": "%0 es un planeta caliente cerca del Sol. Sus perspectivas de desarrollo son malas".
+  "space_hell_mission_action": "%0 es un planeta caliente cerca del Sol. Sus perspectivas de desarrollo son malas",
   "space_hell_geothermal_title": "Planta geotérmica",
   "space_hell_geothermal_desc": "Planta de energía geotérmica",
   "space_hell_geothermal_desc_req": "Requiere Helium-3",
@@ -2072,7 +2072,7 @@
   "space_sun_swarm_satellite_desc": "Satélite de enjambre solar",
   "space_sun_swarm_satellite_desc_req": "Requiere estación de control",
   "space_sun_swarm_satellite_effect1": "+1kW, -1 Soporte de enjambre",
-  "space_gas_info_desc": "El planeta %0 es un gigante gaseoso ubicado a aproximadamente 5,2 UA del sol. Es el planeta más grande del sistema %1".
+  "space_gas_info_desc": "El planeta %0 es un gigante gaseoso ubicado a aproximadamente 5,2 UA del sol. Es el planeta más grande del sistema %1",
   "space_gas_mission_effect1": "Lanzar una misión para estudiar",
   "space_gas_mission_effect2": "el gigante gaseoso %0",
   "space_gas_mission_action": "%0 es verdaderamente masivo, su atmósfera es rica en Helio-3",
@@ -2118,7 +2118,7 @@
   "space_belt_iron_ship_effect1": "Requiere 1 minero espacial",
   "space_belt_iron_ship_effect2": "+%0 Hierro/s",
   "space_belt_iron_ship_effect3": "Reduce los costos de hierro y dinero de la planta de enjambre",
-  "space_dwarf_info_desc": "%0 es un planeta enano ubicado a unos 2.8AU del Sol. Es el único planeta enano conocido en el sistema solar interno".
+  "space_dwarf_info_desc": "%0 es un planeta enano ubicado a unos 2.8AU del Sol. Es el único planeta enano conocido en el sistema solar interno",
   "space_dwarf_mission_effect1": "Lanzar una misión para estudiar %0",
   "space_dwarf_mission_action": "%0 parece ser una roca sin vida con pocos recursos de valor, es el lugar perfecto para almacenar materiales peligrosos",
   "space_dwarf_elerium_contain_title": "Almacenamiento de Elerium",
@@ -2141,8 +2141,8 @@
   "space_dwarf_controller_effect4": "-%0kW",
   "space_dwarf_controller_flair": "Podría destruir el universo",
   "interstellar_alpha_name": "Alpha Centauri",
-  "interstellar_alpha_desc1": "Alpha Centauri es un sistema estelar binario cercano ubicado a 4.36 años luz de %0. Sospechamos que varios planetas pueden estar orbitando alrededor de él".
-  "interstellar_alpha_desc2": "Alpha Centauri es un sistema estelar binario cercano ubicado a 4.36 años luz de %0. El cuarto planeta, designado Alpha Centauri IV, es candidato para una base extrasolar permanente".
+  "interstellar_alpha_desc1": "Alpha Centauri es un sistema estelar binario cercano ubicado a 4.36 años luz de %0. Sospechamos que varios planetas pueden estar orbitando alrededor de él",
+  "interstellar_alpha_desc2": "Alpha Centauri es un sistema estelar binario cercano ubicado a 4.36 años luz de %0. El cuarto planeta, designado Alpha Centauri IV, es candidato para una base extrasolar permanente",
   "interstellar_alpha_mission_effect": "Enviar una nave al sistema Alpha Centauri para inspeccionarla",
   "interstellar_alpha_mission_result": "Alpha Centauri IV parece ser un gran candidato para una colonia",
   "interstellar_alpha_starport_title": "Starport",
@@ -2154,7 +2154,7 @@
   "interstellar_habitat_desc": "Centauri Habitat",
   "interstellar_habitat_effect": "+%0 Ciudadanos, -%1kW",
   "interstellar_mining_droid_title": "Droid minero",
-  "interstellar_mining_droid_effect": "Los droides mineros pueden encargarse de extraer materiales valiosos del suelo. Se pueden configurar para extraer Adamantita, uranio, carbón o aluminio".
+  "interstellar_mining_droid_effect": "Los droides mineros pueden encargarse de extraer materiales valiosos del suelo. Se pueden configurar para extraer Adamantita, uranio, carbón o aluminio",
   "interstellar_processing_title": "Instalación de procesamiento",
   "interstellar_processing_effect": "Aumenta el rendimiento del droide Adamantita en %0%",
   "interstellar_fusion_title": "Reactor de fusión",
@@ -2170,7 +2170,7 @@
   "interstellar_proxima_desc1": "Proxima Centauri es una enana roja ubicada a unos 0,12 años luz del sistema Alpha Centauri",
   "interstellar_proxima_desc2": "Proxima Centauri es una enana roja ubicada a unos 0,12 años luz del sistema Alpha Centauri. Un planeta rocoso solitario orbita el sistema",
   "interstellar_proxima_mission_effect": "Enviar una nave al sistema Proxima Centauri para determinar si tiene algún valor",
-  "interstellar_proxima_mission_result": "Un planeta rocoso solitario de poco valor orbita alrededor del sistema Proxima. Sin embargo, la posición estratégica de Proxima lo convierte en un gran lugar para una base de operaciones interestelar".
+  "interstellar_proxima_mission_result": "Un planeta rocoso solitario de poco valor orbita alrededor del sistema Proxima. Sin embargo, la posición estratégica de Proxima lo convierte en un gran lugar para una base de operaciones interestelar",
   "interstellar_xfer_station_title": "Estación de transferencia",
   "interstellar_xfer_station_desc": "Una estación espacial profunda utilizada como centro de la región",
   "interstellar_cargo_yard_title": "Cargo Yard",
@@ -2180,7 +2180,7 @@
   "interstellar_dyson_effect": "Construir el 1% de la red Dyson",
   "interstellar_dyson_complete": "Dyson Net está completa, +%0kW",
   "interstellar_nebula_name": "Helix Nebula",
-  "interstellar_nebula_desc1": "La Nebulosa Helix está bastante lejos a 694 años luz, pero esta podría ser una fuente muy rica de helio-3 para alimentar su expansión".
+  "interstellar_nebula_desc1": "La Nebulosa Helix está bastante lejos a 694 años luz, pero esta podría ser una fuente muy rica de helio-3 para alimentar su expansión",
   "interstellar_nebula_desc2": "La Nebulosa Helix está bastante lejos a 694 años luz, es rica en valioso helio-3",
   "interstellar_nebula_mission_effect": "Enviar un barco a la Nebulosa Helix para evaluarlo para posibles operaciones de extracción de gas",
   "interstellar_nebula_mission_result": "La Nebulosa Helix es rica en Helio-3 como se esperaba. También contiene Deuterio y se han detectado depósitos de Elerium",
@@ -2197,7 +2197,7 @@
   "interstellar_neutron_desc1": "Se ha detectado una estrella de neutrones aproximadamente a 619 años luz de distancia",
   "interstellar_neutron_desc2": "La estrella de neutrones, Calvera, está aproximadamente a 619 años luz de %0",
   "interstellar_neutron_mission_effect": "Embárcate en una misión peligrosa para estudiar la estrella de neutrones, Calvera",
-  "interstellar_neutron_mission_result": "Las emisiones peligrosas de rayos X hacen que la estrella de neutrones Calvera sea extremadamente peligrosa de abordar, solo las naves blindadas deben acercarse a ella".
+  "interstellar_neutron_mission_result": "Las emisiones peligrosas de rayos X hacen que la estrella de neutrones Calvera sea extremadamente peligrosa de abordar, solo las naves blindadas deben acercarse a ella",
   "interstellar_neutron_miner_title": "Minero de neutrones",
   "interstellar_neutron_miner_desc": "Buque minero de neutrones",
   "interstellar_neutron_miner_bd": "Minero",
