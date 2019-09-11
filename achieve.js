@@ -170,6 +170,11 @@ var achievements = {
         desc: loc("achieve_biome_hellscape_desc"),
         flair: loc("achieve_biome_hellscape_flair")
     },
+    biome_eden: {
+        name: loc("achieve_biome_eden_name"),
+        desc: loc("achieve_biome_eden_desc"),
+        flair: loc("achieve_biome_eden_flair")
+    },
     creator: {
         name: loc("achieve_creator_name"),
         desc: loc("achieve_creator_desc"),
@@ -264,6 +269,11 @@ var achievements = {
         name: loc("achieve_genus_demonic_name"),
         desc: loc("achieve_genus_demonic_desc"),
         flair: loc("achieve_genus_demonic_flair")
+    },
+    genus_angelic: {
+        name: loc("achieve_genus_angelic_name"),
+        desc: loc("achieve_genus_angelic_desc"),
+        flair: loc("achieve_genus_angelic_flair")
     },
     mass_extinction: {
         name: loc("achieve_mass_extinction_name"),

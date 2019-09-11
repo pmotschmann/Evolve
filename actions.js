@@ -1483,6 +1483,44 @@ export const actions = {
                 return false;
             }
         },
+        seraph: {
+            id: 'evo-seraph',
+            title(){ return races.seraph.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.seraph.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.seraph.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'seraph';
+                    sentience();
+                }
+                return false;
+            }
+        },
+        unicorn: {
+            id: 'evo-unicorn',
+            title(){ return races.unicorn.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.unicorn.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.unicorn.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'unicorn';
+                    sentience();
+                }
+                return false;
+            }
+        },
         bunker: {
             id: 'evo-bunker',
             title: loc('evo_bunker'),
@@ -9925,7 +9963,7 @@ export function setPlanet(hell){
             biome = 'tundra';
             break;
         case 6:
-            biome = 'hellscape';
+            biome = global.race.universe === 'evil' ? 'eden' : 'hellscape';
             break;
         default:
             biome = 'grassland';
@@ -9976,7 +10014,18 @@ export function setPlanet(hell){
     var id = biome+Math.floor(Math.seededRandom(0,10000));
     id = id.charAt(0).toUpperCase() + id.slice(1);
 
-    var orbit = biome === 'hellscape' ? 666 : Math.floor(Math.seededRandom(200,600));
+    var orbit = 365;
+    switch (biome){
+        case 'hellscape':
+            orbit = 666;
+            break;
+        case 'eden':
+            orbit = 777;
+            break;
+        default:
+            orbit = Math.floor(Math.seededRandom(200,600));
+            break;
+    }
 
     var parent = $(`<div id="${id}" class="action"></div>`);
     var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${id}</span></a>`);
@@ -10037,7 +10086,7 @@ export function setPlanet(hell){
             }
             $(`#pop${id}`).remove();
         });
-    return biome;
+    return biome === 'eden' ? 'hellscape' : biome;
 }
 
 function srDesc(c_action,old){

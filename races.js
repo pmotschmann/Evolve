@@ -532,6 +532,41 @@ export const races = {
             dwarf: 'Stygia',
         }
     },
+    seraph: {
+        name: loc('race_seraph'),
+        desc: loc('race_seraph_desc'),
+        type: 'angelic',
+        home: 'Araboth',
+        entity: loc('race_seraph_entity'),
+        traits: {
+            smite: 1,
+            spiritual: 1
+        },
+        solar: {
+            red: 'Michael',
+            hell: 'Lucifer',
+            gas: 'Gabriel',
+            gas_moon: 'Raphael',
+            dwarf: 'Uriel',
+        }
+    },
+    unicorn: {
+        name: loc('race_unicorn'),
+        desc: loc('race_unicorn_desc'),
+        type: 'angelic',
+        home: 'Celestia',
+        entity: loc('race_unicorn_entity'),
+        traits: {
+            
+        },
+        solar: {
+            red: 'Lunia',
+            hell: 'Mercuria',
+            gas: 'Jovar',
+            gas_moon: 'Venya',
+            dwarf: 'Chronias',
+        }
+    },
     junker: {
         name: loc('race_junker'),
         desc: loc('race_junker_desc'),
@@ -616,6 +651,10 @@ export const genus_traits = {
     demonic: {
         immoral: 1,
         evil: 1
+    },
+    angelic: {
+        blissful: 1,
+        pompous: 1,
     }
 };
 
@@ -1211,5 +1250,6 @@ export const biomes = {
     desert: loc('biome_desert'),
     volcanic: loc('biome_volcanic'),
     tundra: loc('biome_tundra'),
-    hellscape: loc('biome_hellscape')
+    hellscape: loc('biome_hellscape'),
+    eden: loc('biome_eden')
 };
