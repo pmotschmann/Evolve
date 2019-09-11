@@ -10457,15 +10457,15 @@ function starDockModal(modal){
 }
 
 function smelterModal(modal){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span class="has-text-info">{{s.count | on}}/{{ s.count }}</span></div>`);
     modal.append(fuel);
 
-    let fuelTypes = $('<div></div>');
+    let fuelTypes = $('<div class="fuels"></div>');
     modal.append(fuelTypes);
 
     if (!global.race['kindling_kindred']){
         let f_label = global.race['evil'] ? global.resource.Food.name : global.resource.Lumber.name;
-        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ Wood }}</span></b-tooltip>`);
+        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ s.Wood }}</span></b-tooltip>`);
         let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
         let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subWood);
@@ -10474,7 +10474,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
+        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ s.Coal }}</span></b-tooltip>`);
         let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
         let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subCoal);
@@ -10483,7 +10483,7 @@ function smelterModal(modal){
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
+        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ s.Oil }}</span></b-tooltip>`);
         let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
         let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subOil);
@@ -10491,10 +10491,25 @@ function smelterModal(modal){
         fuelTypes.append(addOil);
     }
 
+    let available = $('<div class="avail"></div>');
+    modal.append(available);
+
+    if (!global.race['kindling_kindred']){
+        available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
+    }
+
+    if (global.resource.Coal.display){
+        available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
+    }
+
+    if (global.resource.Oil.display){
+        available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
+    }
+
     if (global.resource.Steel.display && global.tech.smelting >= 2){
         let smelt = $('<div class="smelting"></div>');
-        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ Iron }}</button></b-tooltip>`);
-        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ Steel }}</button></b-tooltip>`);
+        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button></b-tooltip>`);
+        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ s.Steel }}</button></b-tooltip>`);
         modal.append(smelt);
         smelt.append(ironSmelt);
         smelt.append(steelSmelt);
@@ -10504,7 +10519,12 @@ function smelterModal(modal){
         vues['specialModal'].$destroy();
     }
     vues['specialModal'] = new Vue({
-        data: global.city['smelter'],
+        data: {
+            s: global.city['smelter'],
+            lum: global.resource.Lumber,
+            coal: global.resource.Coal,
+            oil: global.resource.Oil,
+        },
         methods: {
             subWood(){
                 let keyMult = keyMultiplier();
@@ -10702,12 +10722,18 @@ function smelterModal(modal){
             },
             ariaProd(res){
                 return `. ${global.city.smelter[res]} producing ${res}.`;
+            },
+            net(res){
+                return global.resource[res].diff >= 0 ? 'has-text-success' : 'has-text-danger';
             }
         },
         filters: {
             on: function(count){
                 return global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
-            }
+            },
+            diffSize: function (value){
+                return value > 0 ? `+${sizeApproximation(value,2)}` : sizeApproximation(value,2);
+            },
         }
     });
 

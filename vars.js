@@ -245,7 +245,7 @@ if (convertVersion(global['version']) <= 5016 && global.race.species === 'mantis
     };
 }
 
-global['version'] = '0.5.17';
+global['version'] = '0.5.18';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
