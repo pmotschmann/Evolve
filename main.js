@@ -248,7 +248,17 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         let race = races[global.race.species].name;
         let biome = global.city.biome;
         let orbit = global.city.calendar.orbit;
-        popper.append($(`<span>${loc('home',[planet,race,biome,orbit])}</span>`));
+        let challenges = '';
+        if (global.race['junker']){
+            challenges = challenges + `<div>${loc('evo_challenge_junker_desc')}</div>`;
+        }
+        if (global.race['joyless']){
+            challenges = challenges + `<div>${loc('evo_challenge_joyless_desc')}</div>`;
+        }
+        if (global.race['decay']){
+            challenges = challenges + `<div>${loc('evo_challenge_decay_desc')}</div>`;
+        }
+        popper.append($(`<div>${loc('home',[planet,race,biome,orbit])}</div>${challenges}`));
     }
     popper.show();
     poppers['topbarPop'] = new Popper($('#topBar .planet'),popper);
