@@ -245,7 +245,7 @@ if (convertVersion(global['version']) <= 5016 && global.race.species === 'mantis
     };
 }
 
-global['version'] = '0.5.17';
+global['version'] = '0.5.18';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -588,6 +588,14 @@ if (global.race['old_gods'] && global.race['old_gods'] != 'none'){
 }
 else {
     delete global.genes['old_gods'];
+}
+
+if (global.tech['fanaticism'] && global.tech['theology'] && global.tech['theology'] === 2){
+    global.tech['theology'] = 3;
+}
+
+if (global.tech['fanaticism'] && global.tech['anthropology'] && !global.genes['transcendence']){
+    delete global.tech['anthropology'];
 }
 
 global.settings.animated = true;
