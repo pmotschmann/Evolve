@@ -1280,6 +1280,9 @@ export function plasmidBonus(){
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
             temple_bonus += global.civic.professor.workers * 0.002;
         }
+        if (global.race['spiritual']){
+            temple_bonus *= 1.13;
+        }
         plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
     }
     return plasmid_bonus;

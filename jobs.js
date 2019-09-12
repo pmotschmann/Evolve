@@ -61,6 +61,9 @@ export const job_desc = {
         if (global.tech['banking'] >= 10){
             interest += 2 * global.tech['stock_exchange'];
         }
+        if (global.race['truthful']){
+            interest = +(interest / 2).toFixed(0);
+        }
         return loc('job_banker_desc',[interest]);
     },
     entertainer: function(){

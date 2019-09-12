@@ -539,8 +539,9 @@ export const races = {
         home: 'Araboth',
         entity: loc('race_seraph_entity'),
         traits: {
-            smite: 1,
-            spiritual: 1
+            unified: 1,
+            spiritual: 1,
+            truthful: 1
         },
         solar: {
             red: 'Michael',
@@ -745,6 +746,14 @@ export const traits = {
     },
     evil: { // You are pure evil
         desc: loc('trait_evil'),
+        type: 'genus',
+    },
+    blissful: { // Low morale penalty is halved and citizens never riot.
+        desc: loc('trait_blissful'),
+        type: 'genus',
+    },
+    pompous: { //
+        desc: loc('trait_pompous'),
         type: 'genus',
     },
     creative: { // A.R.P.A. Projects are cheaper
@@ -989,6 +998,18 @@ export const traits = {
     },
     pathetic: { // You suck at combat
         desc: loc('trait_pathetic'),
+        type: 'major',
+    },
+    spiritual: { // Temples are 13% more effective
+        desc: loc('trait_spiritual'),
+        type: 'major',
+    },
+    truthful: { // Bankers are less effective
+        desc: loc('trait_truthful'),
+        type: 'major',
+    },
+    unified: { // Start with unification
+        desc: loc('trait_unified'),
         type: 'major',
     },
     tactical: { // War Bonus

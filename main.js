@@ -449,6 +449,9 @@ function fastLoop(){
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                 temple_bonus += global.civic.professor.workers * 0.0004;
             }
+            if (global.race['spiritual']){
+                temple_bonus *= 1.13;
+            }
             let faith = global.city.temple.count * temple_bonus;
             breakdown.p['Global'][loc('faith')] = (faith * 100) + '%';
             global_multiplier *= (1 + faith);
@@ -1261,8 +1264,14 @@ function fastLoop(){
         global.city.morale.current = morale;
 
         if (global.city.morale.current < 100){
-            global_multiplier *= global.city.morale.current / 100;
-            breakdown.p['Global'][loc('morale')] = (global.city.morale.current - 100) + '%';
+            if (global.race['blissful']){
+                global_multiplier *= 1 + ((global.city.morale.current - 100) / 200);
+                breakdown.p['Global'][loc('morale')] = ((global.city.morale.current - 100) / 2) + '%';
+            }
+            else {
+                global_multiplier *= global.city.morale.current / 100;
+                breakdown.p['Global'][loc('morale')] = (global.city.morale.current - 100) + '%';
+            }
         }
         else {
             global_multiplier *= 1 + ((global.city.morale.current - 100) / 200);
@@ -2570,6 +2579,9 @@ function fastLoop(){
                     let impact = global.civic.banker.impact;
                     if (global.tech['banking'] >= 10){
                         impact += 0.02 * global.tech['stock_exchange'];
+                    }
+                    if (global.race['truthful']){
+                        impact /= 2;
                     }
                     income_base *= 1 + (global.civic.banker.workers * impact);
                 }

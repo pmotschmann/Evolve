@@ -171,7 +171,8 @@ export const events = {
     tax_revolt: {
         reqs: { 
             high_tax_rate: 26,
-            low_morale: 99
+            low_morale: 99,
+            notrait: 'blissful'
         },
         effect: function(){
             return tax_revolt();

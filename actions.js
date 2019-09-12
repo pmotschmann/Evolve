@@ -3059,12 +3059,20 @@ export const actions = {
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         faith += +(global.civic.professor.workers * 0.04).toFixed(1);
                     }
+                    if (global.race['spiritual']){
+                        faith *= 1.13;
+                        faith = +(faith).toFixed(2);
+                    }
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
                 }
                 else {
                     let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
+                    }
+                    if (global.race['spiritual']){
+                        plasmid *= 1.13;
+                        plasmid = +(plasmid).toFixed(2);
                     }
                     desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
                 }
@@ -11303,6 +11311,11 @@ function sentience(){
         else {
             global.race['evil'] = 1;
         }
+    }
+
+    if (global.race['unified']){
+        global.tech['world_control'] = 1;
+        global.tech['unify'] = 2;
     }
 
     defineResources();
