@@ -774,6 +774,21 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_heavyweight",[bonus])}</span></div>`);
     }
 
+    if (global.stats.achieve['dissipated']){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated1",[1])}</span></div>`);
+        if (global.stats.achieve['dissipated'] >= 3){
+            let bonus = global.stats.achieve['dissipated'] >= 5 ? 2 : 1;
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated2",[bonus])}</span></div>`);
+        }
+        if (global.stats.achieve['dissipated'] >= 2){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated3",[1])}</span></div>`);
+        }
+        if (global.stats.achieve['dissipated'] >= 4){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated4",[1])}</span></div>`);
+        }
+    }
+
     if (global.genes['creep']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_creep",[global.genes.creep])}</span></div>`);

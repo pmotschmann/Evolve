@@ -3023,7 +3023,7 @@ export const actions = {
                 }
                 return desc;
             },
-            powered(){ return 4; },
+            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'] >= 2 ? 3 : 4; },
             power_reqs: { gambling: 2 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3304,9 +3304,10 @@ export const actions = {
             },
             effect(){
                 let consume = 0.35;
-                return `+5kW. ${loc('city_coal_power_effect',[consume])}`;
+                let power = -($(this)[0].powered());
+                return `+${power}kW. ${loc('city_coal_power_effect',[consume])}`;
             },
-            powered(){ return -5; },
+            powered(){ return global.stats.achieve['dissipated'] ? -6 : -5; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.coal_power.count++;
@@ -3330,9 +3331,17 @@ export const actions = {
             },
             effect(){
                 let consume = 0.65;
-                return `+6kW. ${loc('city_oil_power_effect',[consume])}`;
+                let power = -($(this)[0].powered());
+                return `+${power}kW. ${loc('city_oil_power_effect',[consume])}`;
             },
-            powered(){ return -6; },
+            powered(){
+                if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'] >= 3){
+                    return global.stats.achieve['dissipated'] >= 5 ? -8 : -7;
+                }
+                else {
+                    return -6;
+                }
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.oil_power.count++;
@@ -3383,7 +3392,7 @@ export const actions = {
             effect(){
                 return loc('city_mass_driver_effect',[5,$(this)[0].powered(),races[global.race.species].name]);
             },
-            powered(){ return 5; },
+            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'] >= 4 ? 4 : 5; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.mass_driver.count++;
