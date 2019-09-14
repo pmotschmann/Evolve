@@ -441,6 +441,10 @@ export const actions = {
                         global.evolution['demonic'] = { count: 0 };
                         addAction('evolution','demonic');
                     }
+                    if (global.city.biome === 'eden'){
+                        global.evolution['celestial'] = { count: 0 };
+                        addAction('evolution','celestial');
+                    }
                     global.evolution['humanoid'] = { count: 0 };
                     global.evolution['gigantism'] = { count: 0 };
                     global.evolution['dwarfism'] = { count: 0 };
@@ -476,6 +480,10 @@ export const actions = {
                     if (global.city.biome === 'hellscape'){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
+                    }
+                    if (global.city.biome === 'eden'){
+                        removeAction(actions.evolution.celestial.id);
+                        delete global.evolution.celestial;
                     }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
@@ -519,6 +527,10 @@ export const actions = {
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
                     }
+                    if (global.city.biome === 'eden'){
+                        removeAction(actions.evolution.celestial.id);
+                        delete global.evolution.celestial;
+                    }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -560,6 +572,10 @@ export const actions = {
                     if (global.city.biome === 'hellscape'){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
+                    }
+                    if (global.city.biome === 'eden'){
+                        removeAction(actions.evolution.celestial.id);
+                        delete global.evolution.celestial;
                     }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
@@ -603,6 +619,10 @@ export const actions = {
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
                     }
+                    if (global.city.biome === 'eden'){
+                        removeAction(actions.evolution.celestial.id);
+                        delete global.evolution.celestial;
+                    }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -613,6 +633,44 @@ export const actions = {
                         addAction('evolution','cath');
                         addAction('evolution','wolven');
                         addAction('evolution','centaur');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        celestial: {
+            id: 'evo-celestial',
+            title: loc('evo_celestial_title'),
+            desc: loc('evo_celestial_desc'),
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect(){ return loc('evo_celestial_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['celestial'].count++;
+                    removeAction(actions.evolution.humanoid.id);
+                    removeAction(actions.evolution.gigantism.id);
+                    removeAction(actions.evolution.dwarfism.id);
+                    removeAction(actions.evolution.animalism.id);
+                    removeAction(actions.evolution.celestial.id);
+                    delete global.evolution.humanoid;
+                    delete global.evolution.gigantism;
+                    delete global.evolution.dwarfism;
+                    delete global.evolution.animalism;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    if (global.race.seeded || global.stats.achieve['creator']){
+                        global.evolution['seraph'] = { count: 0 };
+                        global.evolution['unicorn'] = { count: 0 };
+                        addAction('evolution','seraph');
+                        addAction('evolution','unicorn');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -11376,7 +11434,7 @@ function sentience(){
         if (global.race['evil']){
             delete global.race['evil'];
         }
-        else {
+        else if (races[global.race.species].type !== 'angelic'){
             global.race['evil'] = 1;
         }
     }

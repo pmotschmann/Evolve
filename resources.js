@@ -921,7 +921,7 @@ function tradeRouteColor(res){
 }
 
 function buildCrateLabel(){
-    let material = global.race['kindling_kindred'] ? global.resource.Stone.name : global.resource.Plywood.name;
+    let material = global.race['kindling_kindred'] ? global.resource.Stone.name : (global.resource['Plywood'] ? global.resource.Plywood.name : loc('resource_Plywood_name'));
     let cost = global.race['kindling_kindred'] ? 200 : 10
     return loc('resource_modal_crate_construct_desc',[cost,material]);
 }
@@ -1110,38 +1110,40 @@ export function initMarket(){
 }
 
 export function initStorage(){
-    let store = $(`<div id="createHead" class="storage-header"><h2 class="is-sr-only">${loc('tab_storage')}</h2</div>`);
+    let store = $(`<div id="createHead" class="storage-header"><h2 class="is-sr-only">${loc('tab_storage')}</h2></div>`);
     $('#resStorage').empty();
     $('#resStorage').append(store);
     
-    store.append($(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" class="crate" animated><button :aria-label="buildCrateLabel()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
-    store.append($(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" class="container" animated><button :aria-label="buildContainerLabel()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
+    if (global.resource['Crates'] && global.resource['Containers']){
+        store.append($(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" class="crate" animated><button :aria-label="buildCrateLabel()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
+        store.append($(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" class="container" animated><button :aria-label="buildContainerLabel()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
 
-    if (vues['store_head']){
-        vues['store_head'].$destroy();
-    }
-
-    vues['store_head'] = new Vue({
-        data: {
-            cr: global.resource.Crates,
-            cn: global.resource.Containers
-        },
-        methods: {
-            crate(){
-                buildCrate();
-            },
-            container(){
-                buildContainer();
-            },
-            buildCrateLabel(){
-                return buildCrateLabel();
-            },
-            buildContainerLabel(){
-                return buildContainerLabel();
-            },
+        if (vues['store_head']){
+            vues['store_head'].$destroy();
         }
-    });
-    vues['store_head'].$mount('#createHead');
+
+        vues['store_head'] = new Vue({
+            data: {
+                cr: global.resource.Crates,
+                cn: global.resource.Containers
+            },
+            methods: {
+                crate(){
+                    buildCrate();
+                },
+                container(){
+                    buildContainer();
+                },
+                buildCrateLabel(){
+                    return buildCrateLabel();
+                },
+                buildContainerLabel(){
+                    return buildContainerLabel();
+                },
+            }
+        });
+        vues['store_head'].$mount('#createHead');
+    }
 }
 
 export function loadMarket(){

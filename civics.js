@@ -205,32 +205,32 @@ export function buildGarrison(garrison){
         battalion.append(anext);
 
         campaign.append($(`<div class="column launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
+    }
 
-        if (!global.civic['garrison']){
-            global.civic['garrison'] = {
-                display: false,
-                disabled: false,
-                progress: 0,
-                tactic: 0,
-                workers: 0,
-                wounded: 0,
-                raid: 0,
-                max: 0
-            };
-        }
+    if (!global.civic['garrison']){
+        global.civic['garrison'] = {
+            display: false,
+            disabled: false,
+            progress: 0,
+            tactic: 0,
+            workers: 0,
+            wounded: 0,
+            raid: 0,
+            max: 0
+        };
+    }
 
-        if (!global.civic.garrison['mercs']){
-            global.civic.garrison['mercs'] = false;
-        }
-        if (!global.civic.garrison['fatigue']){
-            global.civic.garrison['fatigue'] = 0;
-        }
-        if (!global.civic.garrison['protest']){
-            global.civic.garrison['protest'] = 0;
-        }
-        if (!global.civic.garrison['m_use']){
-            global.civic.garrison['m_use'] = 0;
-        }
+    if (!global.civic.garrison['mercs']){
+        global.civic.garrison['mercs'] = false;
+    }
+    if (!global.civic.garrison['fatigue']){
+        global.civic.garrison['fatigue'] = 0;
+    }
+    if (!global.civic.garrison['protest']){
+        global.civic.garrison['protest'] = 0;
+    }
+    if (!global.civic.garrison['m_use']){
+        global.civic.garrison['m_use'] = 0;
     }
 
     vues['civ_garrison'] = new Vue({
@@ -978,7 +978,6 @@ function defineMad(){
                 }
             },
             defcon(){
-                
                 return global.tech['world_control']
                     ? loc('civics_mad_missiles_world_control_desc')
                     : loc('civics_mad_missiles_desc');
