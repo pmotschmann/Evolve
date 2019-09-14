@@ -11665,7 +11665,6 @@ function bioseed(){
 }
 
 function big_bang(){
-
     switch (global.race.universe){
         case 'heavy':
             unlockAchieve(`heavy`);

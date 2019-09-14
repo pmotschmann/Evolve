@@ -1253,7 +1253,14 @@ export function spatialReasoning(value){
     }
     if (global.genes['store']){
         let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
+        if (global.race.universe === 'antimatter'){
+            divisor *= 2;
+        }
         value *= 1 + (plasmids / divisor);
+        value = Math.round(value);
+    }
+    if (global.race.universe === 'standard'){
+        value *= 1 + (global.race.Dark.count / 200);
         value = Math.round(value);
     }
     return value;
