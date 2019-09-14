@@ -425,6 +425,16 @@ var achievements = {
         desc: loc("achieve_extinct_imp_desc"),
         flair: loc("achieve_extinct_imp_flair")
     },
+    extinct_seraph: {
+        name: loc("achieve_extinct_seraph_name"),
+        desc: loc("achieve_extinct_seraph_desc"),
+        flair: loc("achieve_extinct_seraph_flair")
+    },
+    extinct_unicorn: {
+        name: loc("achieve_extinct_unicorn_name"),
+        desc: loc("achieve_extinct_unicorn_desc"),
+        flair: loc("achieve_extinct_unicorn_flair")
+    },
     extinct_junker: {
         name: loc("achieve_extinct_junker_name"),
         desc: loc("achieve_extinct_junker_desc"),
