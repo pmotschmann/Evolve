@@ -2668,7 +2668,13 @@ export function costMultiplier(action,base,mutiplier,sector){
     if (!sector){
         sector = 'space';
     }
-    if (global.race.universe === 'micro'){ mutiplier -= 0.025; }
+    if (global.race.universe === 'micro'){
+        let dark = 0.01 + (Math.log(100 + global.race.Dark.count) - 4.605170185988092) / 35;
+        if (dark > 0.04){
+            dark = 0.04;
+        }
+        mutiplier -= +(dark).toFixed(5);
+    }
     if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
     }

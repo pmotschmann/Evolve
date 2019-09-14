@@ -10355,7 +10355,13 @@ function costMultiplier(structure,base,mutiplier,cat){
     if (!cat){
         cat = 'city';
     }
-    if (global.race.universe === 'micro'){ mutiplier -= 0.05; }
+    if (global.race.universe === 'micro'){
+        let dark = 0.02 + (Math.log(100 + global.race.Dark.count) - 4.605170185988092) / 20;
+        if (dark > 0.06){
+            dark = 0.06;
+        }
+        mutiplier -= +(dark).toFixed(5);
+    }
     if (global.race['small']){ mutiplier -= 0.01; }
     else if (global.race['large']){ mutiplier += 0.01; }
     if (global.race['compact']){ mutiplier -= 0.02; }
