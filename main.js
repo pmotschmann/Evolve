@@ -4083,22 +4083,22 @@ function longLoop(){
                 let wind = Math.rand(0,3);
                 switch(global.city.biome){
                     case 'oceanic':
-                        if (Math.rand(0,3) === 0 && sky > 0){
+                        if (Math.rand(0,2) === 0 && sky > 0){
                             sky--;
                         }
                         break;
                     case 'tundra':
-                        if (Math.rand(0,3) === 0 && temp > 0){
+                        if (Math.rand(0,2) === 0 && temp > 0){
                             temp--;
                         }
                         break;
                     case 'desert':
-                        if (Math.rand(0,3) === 0 && sky < 4){
+                        if (Math.rand(0,2) === 0 && sky < 4){
                             sky++;
                         }
                         break;
                     case 'volcanic':
-                        if (Math.rand(0,3) === 0 && temp < 2){
+                        if (Math.rand(0,2) === 0 && temp < 2){
                             temp++;
                         }
                         break;
@@ -4140,7 +4140,7 @@ function longLoop(){
                 else {
                     global.city.calendar.weather = 2;
                 }
-                if (temp === 0){
+                if (temp === 0){ // Get colder
                     let new_temp = global.city.calendar.temp - 1;
                     if (new_temp < 0){
                         new_temp = 0;
@@ -4151,14 +4151,20 @@ function longLoop(){
                     if (new_temp === 0 && global.city.biome === 'hellscape'){
                         new_temp = 1;
                     }
+                    if (new_temp === 0 && global.city.biome === 'eden' && global.city.calendar.season !== 3){
+                        new_temp = 1;
+                    }
                     global.city.calendar.temp = new_temp;
                 }
-                else if (temp === 2){
+                else if (temp === 2){ // Get hotter
                     let new_temp = global.city.calendar.temp + 1;
                     if (new_temp > 2){
                         new_temp = 2;
                     }
                     if (global.city.calendar.season === 3 && new_temp === 2){
+                        new_temp = 1;
+                    }
+                    if (new_temp === 2 && global.city.biome === 'eden' && global.city.calendar.season !== 1){
                         new_temp = 1;
                     }
                     global.city.calendar.temp = new_temp;
