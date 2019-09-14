@@ -2681,8 +2681,8 @@ function fastLoop(){
         if (global.race['decay']){
             Object.keys(tradeRatio).forEach(function (res) {
                 if (global.resource[res].amount > 50){
-                    let decay = +((global.resource[res].amount - 50) * (0.02 / global.race.Dark.count) * time_multiplier).toFixed(3);
-                    modRes(res, -(decay));
+                    let decay = +((global.resource[res].amount - 50) * (0.001 * tradeRatio[res])).toFixed(3);
+                    modRes(res, -(decay * time_multiplier));
                     breakdown.p.consume[res][loc('evo_challenge_decay')] = -(decay);
                 }
                 else {
