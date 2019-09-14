@@ -8698,6 +8698,7 @@ export const actions = {
             },
             reqs: { unify: 1 },
             grant: ['unify',2],
+            not_tech: ['m_boost'],
             cost: {},
             effect(){ return `<div>${loc('tech_wc_conquest_effect')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
@@ -8730,6 +8731,7 @@ export const actions = {
             },
             reqs: { unify: 1 },
             grant: ['unify',2],
+            not_tech: ['m_boost'],
             cost: {},
             effect(){
                 return `<div>${loc('tech_wc_morale_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`;
@@ -8764,6 +8766,7 @@ export const actions = {
             },
             reqs: { unify: 1 },
             grant: ['unify',2],
+            not_tech: ['m_boost'],
             cost: {},
             effect(){ return `<div>${loc('tech_wc_money_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
@@ -8791,6 +8794,7 @@ export const actions = {
             desc: loc('tech_wc_reject'),
             reqs: { unify: 1 },
             grant: ['unify',2],
+            not_tech: ['world_control'],
             cost: {},
             effect(){ return `<div>${loc('tech_wc_reject_effect')}</div><div class="has-text-special">${loc('tech_wc_reject_warning')}</div>`; },
             action(){
@@ -9673,6 +9677,13 @@ export function setAction(c_action,action,type,old){
     if (c_action['gene']){
         for (let i=0; i<c_action.gene.length; i++){
             if (!global.genes[c_action.gene[i]]){
+                return;
+            }
+        }
+    }
+    if (c_action['not_tech']){
+        for (let i=0; i<c_action.not_tech.length; i++){
+            if (global.tech[c_action.not_tech[i]]){
                 return;
             }
         }
