@@ -8,7 +8,7 @@ import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue, dragQueue } from './civics.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
-import { space, deepSpace, fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
+import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { events } from './events.js';
 import { arpa } from './arpa.js';
 
@@ -991,7 +991,7 @@ function fastLoop(){
 
         // starports
         if (global.interstellar['starport'] && global.interstellar['starport'].count > 0){
-            let fuel_cost = 5;
+            let fuel_cost = +int_fuel_adjust(5);
             let mb_consume = p_on['starport'] * fuel_cost;
             breakdown.p.consume.Helium_3[loc('interstellar_alpha_starport_title')] = -(mb_consume);
             for (let i=0; i<p_on['starport']; i++){
@@ -1159,7 +1159,7 @@ function fastLoop(){
 
         // Neutron Miner
         if (p_on['neutron_miner'] && p_on['neutron_miner'] > 0){
-            let fuel_cost = 3;
+            let fuel_cost = +int_fuel_adjust(3);
             let out_consume = p_on['neutron_miner'] * fuel_cost;
             breakdown.p.consume.Helium_3[loc('interstellar_neutron_miner_title')] = -(out_consume);
             for (let i=0; i<p_on['neutron_miner']; i++){
@@ -1173,7 +1173,7 @@ function fastLoop(){
 
         // Patrol Cruiser
         if (global.interstellar['cruiser']){
-            let fuel_cost = 6;
+            let fuel_cost = +int_fuel_adjust(6);
             let active = global.interstellar['cruiser'].on;
             let out_consume = active * fuel_cost;
             breakdown.p.consume.Helium_3[loc('interstellar_cruiser_title')] = -(out_consume);

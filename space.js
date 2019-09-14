@@ -1579,7 +1579,7 @@ const interstellarProjects = {
                 Elerium(){ return costMultiplier('starport', 100, 1.3, 'interstellar'); }
             },
             effect(){
-                let helium = +(5).toFixed(2);
+                let helium = +(int_fuel_adjust(5)).toFixed(2);
                 let food = 100;
                 return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
@@ -2046,7 +2046,7 @@ const interstellarProjects = {
             },
             powered(){ return 1; },
             effect(){
-                let helium = 6;
+                let helium = +int_fuel_adjust(6).toFixed(2);
                 let troops = 3;
                 return `<div>${loc('plus_max_soldiers',[troops])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
@@ -2267,7 +2267,7 @@ const interstellarProjects = {
                 let neutronium = 0.055;
                 neutronium = +(neutronium * zigguratBonus()).toFixed(3);
                 let max_neutronium = spatialReasoning(500);
-                let helium = 3;
+                let helium = +int_fuel_adjust(3).toFixed(2);
                 return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max_neutronium,loc('resource_Neutronium_name')])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div>`;
             },
             powered(){ return 6; },
@@ -2717,7 +2717,7 @@ export function swarm_adjust(res){
 
 export function fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
-        fuel *= global.race['no_plasmid'] ? 1.5 : 1.75;
+        fuel *= 1.25 + (0.5 * 0.995 ** global.race.Dark.count);
     }
     if (global.city['mass_driver'] && p_on['mass_driver']){
         fuel *= 0.95 ** p_on['mass_driver'];
@@ -2730,7 +2730,7 @@ export function fuel_adjust(fuel){
 
 export function int_fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
-        fuel *= global.race['no_plasmid'] ? 1.25 : 1.5;
+        fuel *= 1.2 + (0.3 * 0.995 ** global.race.Dark.count);
     }
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'];
