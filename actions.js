@@ -10528,7 +10528,7 @@ function smelterModal(modal){
     modal.append(fuelTypes);
 
     if (!global.race['kindling_kindred']){
-        let f_label = global.race['evil'] ? global.resource.Food.name : global.resource.Lumber.name;
+        let f_label = global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
         let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ s.Wood }}</span></b-tooltip>`);
         let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
         let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
@@ -10559,7 +10559,17 @@ function smelterModal(modal){
     modal.append(available);
 
     if (!global.race['kindling_kindred']){
-        available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
+        if (global.race['evil']){
+            if (global.race['soul_eater']){
+                available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
+            }
+            else {
+                available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
+            }
+        }
+        else {
+            available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
+        }
     }
 
     if (global.resource.Coal.display){
@@ -10588,6 +10598,8 @@ function smelterModal(modal){
             lum: global.resource.Lumber,
             coal: global.resource.Coal,
             oil: global.resource.Oil,
+            food: global.resource.Food,
+            fur: global.resource.Furs,
         },
         methods: {
             subWood(){
@@ -10768,7 +10780,7 @@ function smelterModal(modal){
             buildLabel(type){
                 switch(type){
                     case 'wood':
-                        return loc('modal_build_wood',[global.race['evil'] ? loc('resource_Souls_name') : loc('resource_Lumber_name')]);
+                        return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name]);
                     case 'coal':
                         let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
                         if (global.tech['uranium'] && global.tech['uranium'] >= 3){

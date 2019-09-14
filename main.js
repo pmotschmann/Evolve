@@ -2001,7 +2001,12 @@ function fastLoop(){
             }
 
             if (global.race['evil']){
-                breakdown.p.consume.Food[loc('city_smelter')] = -(consume_wood);
+                if (global.race['soul_eater']){
+                    breakdown.p.consume.Food[loc('city_smelter')] = -(consume_wood);
+                }
+                else {
+                    breakdown.p.consume.Furs[loc('city_smelter')] = -(consume_wood);
+                }
             }
             else {
                 breakdown.p.consume.Lumber[loc('city_smelter')] = -(consume_wood);
