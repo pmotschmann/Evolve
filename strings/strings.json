@@ -2158,7 +2158,7 @@
   "space_sun_swarm_satellite_title": "Swarm Satellite",
   "space_sun_swarm_satellite_desc": "Solar Swarm Satellite",
   "space_sun_swarm_satellite_desc_req": "Requires Control Station",
-  "space_sun_swarm_satellite_effect1": "+1kW, -1 Swarm Support",
+  "space_sun_swarm_satellite_effect1": "+%0kW, -1 Swarm Support",
   "space_gas_info_desc": "The planet %0 is a gas giant located about 5.2AU from the sun. It is the largest planet in the %1 system.",
   "space_gas_mission_effect1": "Launch a mission to study",
   "space_gas_mission_effect2": "the gas giant %0.",

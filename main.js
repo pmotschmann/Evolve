@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, resizeGame, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
-import { mainVue, timeCheck, timeFormat } from './functions.js';
+import { mainVue, timeCheck, timeFormat, powerModifier } from './functions.js';
 import { setupStats, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
@@ -716,14 +716,15 @@ function fastLoop(){
         let max_power = 0;
 
         if (global.interstellar['dyson'] && global.interstellar.dyson.count >= 100){
-            max_power -= 175;
-            power_grid += 175;
-            power_generated[loc('tech_dyson_net')] = 175;
+            let output = powerModifier(175);
+            max_power -= output;
+            power_grid += output;
+            power_generated[loc('tech_dyson_net')] = output;
         }
 
         if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.count >= 100){
             let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
-            let power = 20 + ((global.interstellar.stellar_engine.mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10);
+            let power = powerModifier(20 + ((global.interstellar.stellar_engine.mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10));
             max_power -= power;
             power_grid += power;
             power_generated[loc('tech_stellar_engine')] = power;
@@ -840,9 +841,10 @@ function fastLoop(){
                 active = global.space.swarm_control.s_max;
             }
             global.space.swarm_control.support = active;
-            max_power -= active;
-            power_grid += active;
-            power_generated[loc('space_sun_swarm_satellite_title')] = active;
+            let output = powerModifier(active);
+            max_power -= output;
+            power_grid += output;
+            power_generated[loc('space_sun_swarm_satellite_title')] = output;
         }
 
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){

@@ -1,4 +1,5 @@
 import { global, vues, poppers, messageQueue, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
+import { powerModifier } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -815,7 +816,7 @@ const spaceProjects = {
                 let helium = +(fuel_adjust(0.5)).toFixed(2);
                 return loc('space_hell_geothermal_effect1',[helium]);
             },
-            powered(){ return -8; },
+            powered(){ return powerModifier(-8); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('geothermal');
@@ -932,7 +933,7 @@ const spaceProjects = {
                 Helium_3(){ return costMultiplier('swarm_satellite', swarm_adjust(fuel_adjust(500)), 1.18); }
             },
             effect(){
-                return loc('space_sun_swarm_satellite_effect1');
+                return loc('space_sun_swarm_satellite_effect1',[powerModifier(1)]);
             },
             support: -1,
             action(){
@@ -1711,7 +1712,7 @@ const interstellarProjects = {
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_fusion_effect',[-($(this)[0].powered()),det])}</div>`;
             },
             support: -1,
-            powered(){ return -22; },
+            powered(){ return powerModifier(-22); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('fusion','interstellar');
@@ -2084,7 +2085,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_dyson_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    return loc('interstellar_dyson_complete',[175]);
+                    return loc('interstellar_dyson_complete',[powerModifier(175)]);
                 }
             },
             action(){
@@ -2379,7 +2380,7 @@ const interstellarProjects = {
                 }
                 else {
                     let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
-                    let output = +(20 + ((global.interstellar.stellar_engine.mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)).toFixed(2);
+                    let output = powerModifier(+(20 + ((global.interstellar.stellar_engine.mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)).toFixed(2));
                     if (global.tech['blackhole'] >= 5){
                         let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
                         let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);

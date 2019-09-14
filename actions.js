@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat } from './functions.js';
+import { timeCheck, timeFormat, powerModifier } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -3307,7 +3307,7 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return `+${power}kW. ${loc('city_coal_power_effect',[consume])}`;
             },
-            powered(){ return global.stats.achieve['dissipated'] ? -6 : -5; },
+            powered(){ return powerModifier(global.stats.achieve['dissipated'] ? -6 : -5); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.coal_power.count++;
@@ -3336,10 +3336,10 @@ export const actions = {
             },
             powered(){
                 if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'] >= 3){
-                    return global.stats.achieve['dissipated'] >= 5 ? -8 : -7;
+                    return powerModifier(global.stats.achieve['dissipated'] >= 5 ? -8 : -7);
                 }
                 else {
-                    return -6;
+                    return powerModifier(-6);
                 }
             },
             action(){
@@ -3367,7 +3367,7 @@ export const actions = {
                 let consume = 0.1;
                 return `+${-($(this)[0].powered())}kW. ${loc('city_fission_power_effect',[consume])}`;
             },
-            powered(){ return global.tech['uranium'] >= 4 ? -18 : -14; },
+            powered(){ return powerModifier(global.tech['uranium'] >= 4 ? -18 : -14); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.fission_power.count++;

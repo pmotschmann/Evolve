@@ -176,3 +176,11 @@ export function timeFormat(time){
     }
     return formatted;
 }
+
+export function powerModifier(energy){
+    if (global.race.universe === 'antimatter'){
+        energy *= 1 + (Math.log(50 + global.race.Dark.count) - 3.912023005428146) / 5;
+        energy = +energy.toFixed(2);
+    }
+    return energy;
+}
