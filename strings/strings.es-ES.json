@@ -363,7 +363,7 @@
   "city_warehouse_msg": "Ahora puede construir contenedores, haga clic en el símbolo + junto a un recurso para administrar contenedores",
   "city_bank": "Banco",
   "city_bank_desc": "Banco de %0",
-  "city_lumber_yard": "Serrería",
+  "city_lumber_yard": "Depósito de madera",
   "city_lumber_yard_desc": "Aumenta la producción de madera",
   "city_lumber_yard_effect": "Producción de madera +%0%.",
   "city_sawmill": "Aserradero",
