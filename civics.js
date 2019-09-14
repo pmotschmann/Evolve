@@ -1046,6 +1046,7 @@ function warhead(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
+    let antiplasmid = global.race.Plasmid.anti;
     let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 3);
     let k_base = global.stats.know;
@@ -1056,7 +1057,6 @@ function warhead(){
         k_inc *= 1.1;
     }
     new_plasmid = challenge_multiplier(new_plasmid,'mad');
-    plasmid += new_plasmid;
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
@@ -1066,7 +1066,14 @@ function warhead(){
     global.stats.starved = 0;
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
-    global.stats.plasmid += new_plasmid;
+    if (global.race.universe === 'antimatter'){
+        antiplasmid += new_plasmid;
+        global.stats.antiplasmid += new_plasmid;
+    }
+    else {
+        plasmid += new_plasmid;
+        global.stats.plasmid += new_plasmid;
+    }
     let new_achieve = unlockAchieve(`apocalypse`);
     if (unlockAchieve(`squished`,true)){ new_achieve = true; }
     if (unlockAchieve(`extinct_${god}`)){ new_achieve = true; }
@@ -1080,7 +1087,7 @@ function warhead(){
         old_gods: old_god,
         rapid_mutation: 1,
         ancient_ruins: 1,
-        Plasmid: { count: plasmid },
+        Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
         universe: global.race.universe,

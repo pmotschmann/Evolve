@@ -15,11 +15,21 @@ export const job_desc = {
         return loc('job_farmer_desc',[gain]);
     },
     lumberjack: function(){
-        let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
-        multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-        let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
-        let gain = +(impact * multiplier).toFixed(1);
-        return loc('job_lumberjack_desc',[gain]);
+        if (global.race['evil'] && !global.race['soul_eater']){
+            let multiplier = 1;
+            multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
+            let impact = global.civic.lumberjack.impact;
+            let bone = +(impact * multiplier).toFixed(2);
+            let flesh = +(impact / 4 * multiplier).toFixed(2);
+            return loc('job_reclaimer_desc',[bone,flesh]);
+        }
+        else {
+            let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
+            multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
+            let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
+            let gain = +(impact * multiplier).toFixed(1);
+            return loc('job_lumberjack_desc',[gain]);
+        }
     },
     quarry_worker: function(){
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
@@ -131,7 +141,7 @@ function loadUnemployed(){
     
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job = global.race['carnivore'] || global.race['evil'] ? loc('job_hunter') : loc('job_unemployed');
+    let job = global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed');
     let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">${job}</h3><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
@@ -142,7 +152,7 @@ function loadUnemployed(){
     vues['civ_free'].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
-            let text = global.race['carnivore'] || global.race['evil'] ? (global.race['evil'] ? loc('job_evil_hunter_desc') : loc('job_hunter_desc')) : loc('job_unemployed_desc');
+            let text = global.race['carnivore'] || global.race['soul_eater'] ? (global.race['evil'] ? loc('job_evil_hunter_desc') : loc('job_hunter_desc')) : loc('job_unemployed_desc');
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
             $('#main').append(popper);
             popper.show();
@@ -160,16 +170,15 @@ function loadJob(job, impact, stress, color){
     if (!global['civic'][job]){
         global['civic'][job] = {
             job: job,
-            name: loc('job_' + job),
             display: false,
             workers: 0,
             max: 0,
             impact: impact
         };
     }
-    else {
-        global['civic'][job].name = loc('job_' + job);
-    }
+
+    let job_name = job === 'lumberjack' && global.race['evil'] ? loc('job_reclaimer') : loc('job_' + job);
+    global['civic'][job].name = job_name;
 
     if (!global.civic[job]['assigned']){
         global.civic[job]['assigned'] = job === 'craftsman'? 0 : global.civic[job].workers;

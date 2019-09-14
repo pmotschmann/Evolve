@@ -1734,7 +1734,14 @@ export const actions = {
         slaughter: {
             id: 'city-slaughter',
             title: loc('city_evil'),
-            desc(){ return global.tech['primitive'] ? (global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1'); },
+            desc(){
+                if (global.race['soul_eater']){
+                    return global.tech['primitive'] ? (global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1');
+                }
+                else {
+                    return global.resource.Furs.display ? loc('city_evil_desc4') : loc('city_evil_desc1');
+                }
+            },
             reqs: {},
             trait: ['evil'],
             no_queue(){ return true },
@@ -1742,7 +1749,7 @@ export const actions = {
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',1);
                 }
-                if(global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
+                if(global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
                     modRes('Food',1);
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
@@ -3656,7 +3663,7 @@ export const actions = {
             title: loc('tech_soul_well'),
             desc: loc('tech_soul_well'),
             reqs: { primitive: 3 },
-            trait: ['evil'],
+            trait: ['soul_eater'],
             grant: ['soul_eater',1],
             cost: { 
                 Knowledge(){ return 10; }
@@ -3675,7 +3682,7 @@ export const actions = {
             title: loc('tech_agriculture'),
             desc: loc('tech_agriculture_desc'),
             reqs: { primitive: 3 },
-            not_trait: ['carnivore','evil'],
+            not_trait: ['carnivore','soul_eater'],
             grant: ['agriculture',1],
             cost: { 
                 Knowledge(){ return 10; }
@@ -6637,6 +6644,29 @@ export const actions = {
                     global.resource.Nano_Tube.display = true;
                     global.city.factory['Nano'] = 0;
                     messageQueue('Nano Tubes are now available for manufacture');
+                    return true;
+                }
+                return false;
+            }
+        },
+        reclaimer: {
+            id: 'tech-reclaimer',
+            title: loc('tech_reclaimer'),
+            desc: loc('tech_reclaimer_desc'),
+            reqs: { primitive: 3 },
+            grant: ['reclaimer',1],
+            trait: ['evil'],
+            not_trait: ['kindling_kindred','soul_eater'],
+            cost: {
+                Knowledge(){ return 45; },
+                Lumber(){ return 20; },
+                Stone(){ return 20; }
+            },
+            effect: loc('tech_reclaimer_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.civic.lumberjack.display = true;
+                    global.city['graveyard'] = { count: 0 };
                     return true;
                 }
                 return false;
@@ -11569,6 +11599,7 @@ function bioseed(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
+    let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
     let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 3);
@@ -11580,7 +11611,6 @@ function bioseed(){
         k_inc *= 1.015;
     }
     new_plasmid = challenge_multiplier(new_plasmid,'bioseed');
-    plasmid += new_plasmid;
     let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E),'bioseed');
     phage += new_phage;
     global.stats.reset++;
@@ -11592,7 +11622,14 @@ function bioseed(){
     global.stats.starved = 0;
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
-    global.stats.plasmid += new_plasmid;
+    if (global.race.universe === 'antimatter'){
+        antiplasmid += new_plasmid;
+        global.stats.antiplasmid += new_plasmid;
+    }
+    else {
+        plasmid += new_plasmid;
+        global.stats.plasmid += new_plasmid;
+    }
     global.stats.phage += new_phage;
     unlockAchieve(`seeder`);
     let new_biome = unlockAchieve(`biome_${biome}`);
@@ -11631,7 +11668,7 @@ function bioseed(){
         species : 'protoplasm', 
         gods: god,
         old_gods: old_god,
-        Plasmid: { count: plasmid },
+        Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: phage },
         Dark: { count: global.race.Dark.count },
         universe: global.race.universe,
@@ -11695,9 +11732,9 @@ function big_bang(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let plasmid = global.race.Plasmid.count;
+    let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
     let dark = global.race.Dark.count;
-
     let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
     let new_plasmid = Math.round(pop / 2);
     let k_base = global.stats.know;
@@ -11708,7 +11745,6 @@ function big_bang(){
         k_inc *= 1.012;
     }
     new_plasmid = challenge_multiplier(new_plasmid,'bigbang');
-    plasmid += new_plasmid;
     let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5),'bigbang');
     let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
     new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
@@ -11726,14 +11762,21 @@ function big_bang(){
     global.stats.starved = 0;
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
-    global.stats.plasmid += new_plasmid;
+    if (global.race.universe === 'antimatter'){
+        antiplasmid += new_plasmid;
+        global.stats.antiplasmid += new_plasmid;
+    }
+    else {
+        plasmid += new_plasmid;
+        global.stats.plasmid += new_plasmid;
+    }
     global.stats.phage += new_phage;
     global.stats.universes++;
     global['race'] = { 
         species : 'protoplasm', 
         gods: god,
         old_gods: old_god,
-        Plasmid: { count: plasmid },
+        Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: phage },
         Dark: { count: +(dark + new_dark).toFixed(3) },
         universe: 'bigbang',

@@ -651,7 +651,8 @@ export const genus_traits = {
     },
     demonic: {
         immoral: 1,
-        evil: 1
+        evil: 1,
+        soul_eater: 1
     },
     angelic: {
         blissful: 1,

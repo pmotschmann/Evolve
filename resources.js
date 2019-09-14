@@ -238,6 +238,14 @@ function loadResource(name,max,rate,tradable,stackable,color){
         global['resource'][name].name = name === global.race.species ? races[global.race.species].name : (name === 'Money' ? '$' : loc(`resource_${name}_name`));
     }
 
+    if (global.race['soul_eater']){
+        switch(name){
+            case 'Food':
+                global['resource'][name].name = 'Souls';
+                break;
+        }
+    }
+
     if (global.race['evil']){
         switch(name){
             case 'Lumber':
@@ -245,9 +253,6 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 break;
             case 'Furs':
                 global['resource'][name].name = 'Flesh';
-                break;
-            case 'Food':
-                global['resource'][name].name = 'Souls';
                 break;
             case 'Plywood':
                 global['resource'][name].name = 'Boneweave';

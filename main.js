@@ -653,7 +653,7 @@ function fastLoop(){
         morale += global.race['submerged'] ? 0 : weather_morale;
 
         let stress = 0;
-        if (!global.race['carnivore'] && !global.race['evil']){
+        if (!global.race['carnivore'] && !global.race['soul_eater']){
             morale -= global.civic.free;
             global.city.morale.unemployed = -(global.civic.free);
         }
@@ -1332,7 +1332,7 @@ function fastLoop(){
         if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['tourist_center']){
             let food_bd = {};
             let food_base = 0;
-            if (global.race['carnivore'] || global.race['evil']){
+            if (global.race['carnivore'] || global.race['soul_eater']){
                 let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 0.5);
                 food_bd[loc('job_hunter')] = food_base + 'v';
@@ -1552,6 +1552,13 @@ function fastLoop(){
                 let hunters = global.civic.free * weapons / 20;
                 fur_bd[loc('job_hunter')] = hunters  + 'v';
                 modRes('Furs', hunters * hunger * global_multiplier * time_multiplier);
+
+                if (!global.race['soul_eater']){
+                    let reclaimers = global.civic.lumberjack.workers;
+                    reclaimers *= racialTrait(global.civic.lumberjack.workers,'lumberjack') / 4;
+                    fur_bd[loc('job_reclaimer')] = reclaimers  + 'v';
+                    modRes('Furs', reclaimers * hunger * global_multiplier * time_multiplier);
+                }
             }
 
             let hunting = armyRating(garrisonSize(),'hunting') / 10;
@@ -1939,7 +1946,7 @@ function fastLoop(){
                 }
             }
 
-            let consume_wood = global.city['smelter'].Wood * 3;
+            let consume_wood = global.city['smelter'].Wood * (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
             let consume_coal = global.city['smelter'].Coal * coal_fuel;
             let consume_oil = global.city['smelter'].Oil * 0.35;
             iron_smelter = global.city['smelter'].Iron;
@@ -1953,9 +1960,9 @@ function fastLoop(){
                     iron_smelter--;
                 }
             }
-            let l_type = global.race['evil'] ? 'Food' : 'Lumber';
+            let l_type = global.race['soul_eater'] ? 'Food' : (global.race['evil'] ? 'Furs' : 'Lumber');
             while (consume_wood * time_multiplier > global.resource[l_type].amount && consume_wood > 0){
-                consume_wood -= 3;
+                consume_wood -= (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
@@ -2127,7 +2134,7 @@ function fastLoop(){
 
         // Lumber
         { //block scope
-            if (global.race['evil']){
+            if (global.race['soul_eater']){
                 let lumber_bd = {};
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.free * weapons / 2;
@@ -2139,6 +2146,20 @@ function fastLoop(){
                 lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Lumber'] = lumber_bd;
                 modRes('Lumber', hunters * hunger * global_multiplier * time_multiplier);
+                modRes('Lumber', soldiers * hunger * global_multiplier * time_multiplier);
+            }
+            else if (global.race['evil']){
+                let lumber_bd = {};
+                let reclaimers = global.civic.lumberjack.workers;
+                reclaimers *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
+
+                let soldiers = armyRating(garrisonSize(),'hunting') / 3;
+
+                lumber_bd[loc('job_reclaimer')] = reclaimers  + 'v';
+                lumber_bd[loc('soldiers')] = soldiers  + 'v';
+                lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Lumber'] = lumber_bd;
+                modRes('Lumber', reclaimers * hunger * global_multiplier * time_multiplier);
                 modRes('Lumber', soldiers * hunger * global_multiplier * time_multiplier);
             }
             else {

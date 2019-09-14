@@ -245,7 +245,11 @@ if (convertVersion(global['version']) <= 5016 && global.race.species === 'mantis
     };
 }
 
-global['version'] = '0.5.18';
+if (convertVersion(global['version']) < 6000 && (global.race.species === 'imp' || global.race.species === 'balorg')){
+    global.race['soul_eater'] = 1;
+}
+
+global['version'] = '0.6.0';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -391,6 +395,9 @@ if (!global.stats['reset']){
 if (!global.stats['plasmid']){
     global.stats['plasmid'] = 0;
 }
+if (!global.stats['antiplasmid']){
+    global.stats['antiplasmid'] = 0;
+}
 if (!global.stats['universes']){
     global.stats['universes'] = 0;
 }
@@ -430,7 +437,10 @@ if (!global.race['seeded']){
     global.race['seeded'] = false;
 }
 if (!global.race['Plasmid']){
-    global.race['Plasmid'] = { count: 0 };
+    global.race['Plasmid'] = { count: 0, anti: 0 };
+}
+if (!global.race.Plasmid['anti']){
+    global.race.Plasmid['anti'] = 0;
 }
 if (!global.race['Phage']){
     global.race['Phage'] = { count: 0 };
@@ -819,12 +829,16 @@ window.soft_reset = function reset(){
     let replace = {
         species : 'protoplasm', 
         Plasmid: { count: global.race.Plasmid.count },
+        Plasmid: { count: global.race.Plasmid.count, anti: global.race.Plasmid.anti },
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
         universe: global.race.universe,
         seeded: global.race.seeded,
         probes: global.race.probes,
         seed: global.race.seed,
+    }
+    if (global.race['bigbang']){
+        replace['bigbang'] = true;
     }
     if (global.race['gods']){
         replace['gods'] = global.race.gods;
