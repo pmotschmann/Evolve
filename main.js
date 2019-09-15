@@ -457,7 +457,7 @@ function fastLoop(){
             global_multiplier *= (1 + faith);
         }
     }
-    if (global.race['rainbow']){
+    if (global.race['rainbow'] && global.race['rainbow'] > 1){
         breakdown.p['Global'][loc('trait_rainbow_bd')] = '50%';
         global_multiplier *= 1.5;
     }
@@ -4061,6 +4061,10 @@ function longLoop(){
         let merc_bound = global.tech['mercs'] && global.tech['mercs'] >= 2 ? 3 : 4;
         if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0 && Math.rand(0,merc_bound) === 0){
             global.civic.garrison.m_use--;
+        }
+
+        if (global.race['rainbow'] && global.race['rainbow'] > 1){
+            global.race['rainbow']--;
         }
 
         if (global.city.calendar.day > 0){

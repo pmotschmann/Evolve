@@ -5121,7 +5121,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.large_trades.grant[0];
                     global.tech[tech] = actions.tech.large_trades.grant[1];
-                    if (global.race['nobel']){
+                    if (global.race['noble']){
                         global.tech[tech] = 5;
                     }
                     loadMarket();
@@ -5136,7 +5136,7 @@ export const actions = {
             desc: loc('tech_corruption_desc'),
             reqs: { currency: 4, high_tech: 3 },
             grant: ['currency',5],
-            not_trait: ['nobel'],
+            not_trait: ['noble'],
             cost: {
                 Knowledge(){ return 36000; }
             },
@@ -11359,6 +11359,10 @@ function basicHousingLabel(){
             return loc('city_basic_housing_title7');
         case 'imp':
             return loc('city_basic_housing_title8');
+        case 'seraph':
+            return loc('city_basic_housing_seraph_title');
+        case 'unicorn':
+            return loc('city_basic_housing_unicorn_title');
         default:
             return loc('city_basic_housing_title');
     }
@@ -11372,6 +11376,10 @@ function mediumHousingLabel(){
             return loc('city_cottage_title3');
         case 'imp':
             return loc('city_basic_housing_title7');
+        case 'seraph':
+            return loc('city_cottage_title4');
+        case 'unicorn':
+            return loc('city_cottage_title5');
         default:
             return loc('city_cottage_title1');
     }
@@ -11385,6 +11393,10 @@ function largeHousingLabel(){
             return loc('city_apartment_title3');
         case 'imp':
             return loc('city_apartment_title3');
+        case 'seraph':
+            return loc('city_apartment_title4');
+        case 'unicorn':
+            return loc('city_apartment_title4');
         default:
             return loc('city_apartment_title1');
     }
@@ -11604,6 +11616,12 @@ function fanaticism(god){
             break;
         case 'imp':
             fanaticTrait('conniving');
+            break;
+        case 'seraph':
+            fanaticTrait('spiritual');
+            break;
+        case 'unicorn':
+            fanaticTrait('magnificent');
             break;
         default:
             randomMinorTrait();

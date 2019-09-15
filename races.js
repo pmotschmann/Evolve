@@ -560,7 +560,7 @@ export const races = {
         traits: {
             rainbow: 1,
             magnificent: 1,
-            nobel: 1,
+            noble: 1,
         },
         solar: {
             red: 'Lunia',
@@ -755,7 +755,7 @@ export const traits = {
         desc: loc('trait_blissful'),
         type: 'genus',
     },
-    pompous: { //
+    pompous: { // Professors are less effective
         desc: loc('trait_pompous'),
         type: 'genus',
     },
@@ -1013,6 +1013,18 @@ export const traits = {
     },
     unified: { // Start with unification
         desc: loc('trait_unified'),
+        type: 'major',
+    },
+    rainbow: { // Gain a bonus if sunny after raining
+        desc: loc('trait_rainbow'),
+        type: 'major',
+    },
+    magnificent: { // ???
+        desc: loc('trait_magnificent'),
+        type: 'major',
+    },
+    noble: { // Unable to raise taxes above base value or set very low taxes
+        desc: loc('trait_noble'),
         type: 'major',
     },
     tactical: { // War Bonus
