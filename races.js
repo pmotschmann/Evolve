@@ -558,7 +558,9 @@ export const races = {
         home: 'Celestia',
         entity: loc('race_unicorn_entity'),
         traits: {
-            
+            rainbow: 1,
+            magnificent: 1,
+            nobel: 1,
         },
         solar: {
             red: 'Lunia',

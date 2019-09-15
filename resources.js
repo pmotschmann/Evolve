@@ -1179,13 +1179,13 @@ export function loadMarket(){
 export function initEjector(){
     $('#resEjector').empty();
     if (global.interstellar['mass_ejector']){
-        let ejector = $(`<div id="eject${name}" class="market-item"><h3 class="res has-text-warning">Voluming Ejecting</h3></div>`);
+        let ejector = $(`<div id="eject${name}" class="market-item"><h3 class="res has-text-warning">${loc('interstellar_mass_ejector_vol')}</h3></div>`);
         $('#resEjector').append(ejector);
 
         let eject = $(`<span class="trade"></span>`);
         ejector.append(eject);
 
-        eject.append($(`<span>{{ total }} / {{ on | max }}</span><span class="mass">Total Mass: {{ mass | approx }} kt/s</span>`));
+        eject.append($(`<span>{{ total }} / {{ on | max }}</span><span class="mass">${loc('interstellar_mass_ejector_mass')}: {{ mass | approx }} kt/s</span>`));
 
         vues['ejected'] = new Vue({
             data: global.interstellar.mass_ejector,

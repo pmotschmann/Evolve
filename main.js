@@ -457,6 +457,10 @@ function fastLoop(){
             global_multiplier *= (1 + faith);
         }
     }
+    if (global.race['rainbow']){
+        breakdown.p['Global'][loc('trait_rainbow_bd')] = '50%';
+        global_multiplier *= 1.5;
+    }
     if (global.tech['world_control']){
         breakdown.p['Global'][loc('tech_unification')] = '25%';
         global_multiplier *= 1.25;
@@ -1585,6 +1589,7 @@ function fastLoop(){
 
             let professors_base = global.civic.professor.workers;
             professors_base *= global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
+            professors_base *= global.race['pompous'] ? 0.25 : 1;
             professors_base *= racialTrait(global.civic.professor.workers,'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
                 professors_base *= 1 + (global.city.temple.count * 0.05);
@@ -4132,12 +4137,21 @@ function longLoop(){
                 }
 
                 if (sky === 0){
+                    if (global.race['rainbow']){
+                        global.race['rainbow'] = 1;
+                    }
                     global.city.calendar.weather = 0;
                 }
                 else if (sky >= 1 && sky <= 2){
+                    if (global.race['rainbow']){
+                        global.race['rainbow'] = 1;
+                    }
                     global.city.calendar.weather = 1;
                 }
                 else {
+                    if (global.race['rainbow'] && global.city.calendar.weather === 0){
+                        global.race['rainbow'] = Math.rand(10,20);
+                    }
                     global.city.calendar.weather = 2;
                 }
                 if (temp === 0){ // Get colder

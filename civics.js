@@ -109,7 +109,13 @@ function taxRates(govern){
             add(){
                 let inc = keyMultiplier();
                 let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
-                if ((extreme || global.race['terrifying']) && global.civic.taxes.tax_rate < 50){
+                if (global.race['nobel'] && global.civic.taxes.tax_rate < 20){
+                    global.civic.taxes.tax_rate += inc;
+                    if (global.civic.taxes.tax_rate > 20){
+                        global.civic.taxes.tax_rate = 20;
+                    }
+                }
+                else if ((extreme || global.race['terrifying']) && global.civic.taxes.tax_rate < 50){
                     global.civic.taxes.tax_rate += inc;
                     if (global.civic.taxes.tax_rate > 50){
                         global.civic.taxes.tax_rate = 50;
@@ -125,7 +131,13 @@ function taxRates(govern){
             sub(){
                 let dec = keyMultiplier();
                 let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
-                if ((extreme || global.race['terrifying']) && global.civic.taxes.tax_rate > 0){
+                if (global.race['nobel'] && global.civic.taxes.tax_rate > 10){
+                    global.civic.taxes.tax_rate -= dec;
+                    if (global.civic.taxes.tax_rate < 10){
+                        global.civic.taxes.tax_rate = 10;
+                    }
+                }
+                else if ((extreme || global.race['terrifying']) && global.civic.taxes.tax_rate > 0){
                     global.civic.taxes.tax_rate -= dec;
                     if (global.civic.taxes.tax_rate < 0){
                         global.civic.taxes.tax_rate = 0;

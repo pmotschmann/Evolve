@@ -85,6 +85,7 @@ export const job_desc = {
         if (global.tech['science'] && global.tech['science'] >= 3){
             impact += global.city.library.count * 0.01;
         }
+        impact *= global.race['pompous'] ? 0.25 : 1;
         impact *= racialTrait(global.civic.professor.workers,'science');
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
             impact *= 1 + (global.city.temple.count * 0.05);

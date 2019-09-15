@@ -5121,6 +5121,9 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.large_trades.grant[0];
                     global.tech[tech] = actions.tech.large_trades.grant[1];
+                    if (global.race['nobel']){
+                        global.tech[tech] = 5;
+                    }
                     loadMarket();
                     return true;
                 }
@@ -5133,6 +5136,7 @@ export const actions = {
             desc: loc('tech_corruption_desc'),
             reqs: { currency: 4, high_tech: 3 },
             grant: ['currency',5],
+            not_trait: ['nobel'],
             cost: {
                 Knowledge(){ return 36000; }
             },
