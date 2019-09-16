@@ -2528,6 +2528,30 @@ export const actions = {
                 return false;
             }
         },
+        graveyard: {
+            id: 'city-graveyard',
+            title: loc('city_graveyard'),
+            desc: loc('city_graveyard_desc'),
+            reqs: { reclaimer: 1 },
+            cost: { 
+                Money(){ if (global.city['graveyard'] && global.city['graveyard'].count >= 5){ return costMultiplier('graveyard', 5, 1.85);} else { return 0; } },
+                Lumber(){ return costMultiplier('graveyard', 2, 1.95); },
+                Stone(){ return costMultiplier('graveyard', 6, 1.9); }
+            },
+            effect:  function(){
+                let lum = spatialReasoning(100);
+                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
+                return `<div>${loc('city_graveyard_effect',[8])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['graveyard'].count++;
+                    global['resource']['Lumber'].max += spatialReasoning(100);
+                    return true;
+                }
+                return false;
+            }
+        },
         lumber_yard: {
             id: 'city-lumber_yard',
             title: loc('city_lumber_yard'),
@@ -6785,6 +6809,146 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.civic.lumberjack.display = true;
                     global.city['graveyard'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        shovel: {
+            id: 'tech-shovel',
+            title: loc('tech_shovel'),
+            desc: loc('tech_shovel'),
+            reqs: { reclaimer: 1, mining: 2 },
+            grant: ['reclaimer',2],
+            trait: ['evil'],
+            not_trait: ['kindling_kindred','soul_eater'],
+            cost: {
+                Knowledge(){ return 540; },
+                Copper(){ return 25; }
+            },
+            effect: loc('tech_shovel_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        iron_shovel: {
+            id: 'tech-iron_shovel',
+            title: loc('tech_iron_shovel'),
+            desc: loc('tech_iron_shovel'),
+            reqs: { reclaimer: 2, mining: 3 },
+            grant: ['reclaimer',3],
+            trait: ['evil'],
+            not_trait: ['kindling_kindred','soul_eater'],
+            cost: {
+                Knowledge(){ return 2700; },
+                Iron(){ return 250; }
+            },
+            effect: loc('tech_iron_shovel_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        steel_shovel: {
+            id: 'tech-steel_shovel',
+            title: loc('tech_steel_shovel'),
+            desc: loc('tech_steel_shovel'),
+            reqs: { reclaimer: 3, smelting: 2 },
+            grant: ['reclaimer',4],
+            trait: ['evil'],
+            not_trait: ['kindling_kindred','soul_eater'],
+            cost: {
+                Knowledge(){ return 9000; },
+                Steel(){ return 250; }
+            },
+            effect: loc('tech_steel_shovel_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        titanium_shovel: {
+            id: 'tech-titanium_shovel',
+            title: loc('tech_titanium_shovel'),
+            desc: loc('tech_titanium_shovel'),
+            reqs: { reclaimer: 4, high_tech: 3 },
+            grant: ['reclaimer',5],
+            trait: ['evil'],
+            not_trait: ['kindling_kindred','soul_eater'],
+            cost: {
+                Knowledge(){ return 38000; },
+                Titanium(){ return 350; }
+            },
+            effect: loc('tech_titanium_shovel_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        alloy_shovel: {
+            id: 'tech-alloy_shovel',
+            title: loc('tech_alloy_shovel'),
+            desc: loc('tech_alloy_shovel'),
+            reqs: { reclaimer: 5, high_tech: 4 },
+            grant: ['reclaimer',6],
+            trait: ['evil'],
+            not_trait: ['kindling_kindred','soul_eater'],
+            cost: {
+                Knowledge(){ return 67500; },
+                Alloy(){ return 750; }
+            },
+            effect: loc('tech_alloy_shovel_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mythril_shovel: {
+            id: 'tech-mythril_shovel',
+            title: loc('tech_mythril_shovel'),
+            desc: loc('tech_mythril_shovel'),
+            reqs: { reclaimer: 6, space: 3 },
+            grant: ['reclaimer',7],
+            trait: ['evil'],
+            not_trait: ['kindling_kindred','soul_eater'],
+            cost: {
+                Knowledge(){ return 160000; },
+                Mythril(){ return 880; }
+            },
+            effect: loc('tech_mythril_shovel_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        adamantite_shovel: {
+            id: 'tech-adamantite_shovel',
+            title: loc('tech_adamantite_shovel'),
+            desc: loc('tech_adamantite_shovel'),
+            reqs: { reclaimer: 7, alpha: 2 },
+            grant: ['reclaimer',8],
+            trait: ['evil'],
+            not_trait: ['kindling_kindred','soul_eater'],
+            cost: {
+                Knowledge(){ return 525000; },
+                Adamantite(){ return 10000; }
+            },
+            effect: loc('tech_adamantite_shovel_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
@@ -11877,6 +12041,9 @@ function big_bang(){
             break;
     }
 
+    if (global.race.species === 'junker'){
+        unlockFeat('the_misery');
+    }
     if (global.race['decay']){
         unlockAchieve(`dissipated`);
     }

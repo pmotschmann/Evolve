@@ -1082,6 +1082,9 @@ types: farmer, miner, lumberjack, science, factory, army, hunting
 */
 export function racialTrait(workers,type){
     let modifier = 1; 
+    if (type === 'lumberjack' && global.race.universe === 'evil'){
+        modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
+    }
     if (global.race['hivemind'] && type !== 'farmer'){
         if (workers <= 10){
             modifier *= (workers * 0.05) + 0.5;

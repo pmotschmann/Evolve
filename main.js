@@ -2181,13 +2181,19 @@ function fastLoop(){
                 let reclaimers = global.civic.lumberjack.workers;
                 reclaimers *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
 
-                let soldiers = armyRating(garrisonSize(),'hunting') / 3;
+                let graveyard = 1;
+                if (global.city['graveyard']){
+                    graveyard += global.city['graveyard'].count * 0.08;
+                }
+
+                let soldiers = armyRating(garrisonSize(),'hunting') / 5;
 
                 lumber_bd[loc('job_reclaimer')] = reclaimers  + 'v';
+                lumber_bd[loc('city_graveyard')] = ((graveyard - 1) * 100) + '%';
                 lumber_bd[loc('soldiers')] = soldiers  + 'v';
                 lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Lumber'] = lumber_bd;
-                modRes('Lumber', reclaimers * hunger * global_multiplier * time_multiplier);
+                modRes('Lumber', reclaimers * hunger * graveyard * global_multiplier * time_multiplier);
                 modRes('Lumber', soldiers * hunger * global_multiplier * time_multiplier);
             }
             else {
@@ -3040,6 +3046,12 @@ function midLoop(){
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_lumber_yard')] = gain+'v';
+        }
+        else if (global.city['graveyard']){
+            let gain = (global.city['graveyard'].count * spatialReasoning(100));
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            caps['Lumber'] += gain;
+            bd_Lumber[loc('city_graveyard')] = gain+'v';
         }
         if (global.city['sawmill']){
             let gain = (global.city['sawmill'].count * spatialReasoning(200));

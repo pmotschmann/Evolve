@@ -748,8 +748,16 @@ export function buildGarrison(garrison){
                 let food = +(rating / 3).toFixed(2);
                 let fur = +(rating / 10).toFixed(2);
                 if (global.race['evil']){
-                    let bones = +(armyRating(garrisonSize(),'hunting') / 3).toFixed(2);
-                    return loc('civics_garrison_evil_soldier_desc',[food,fur,bones]);
+                    if (global.race['soul_eater']){
+                        let bones = +(armyRating(garrisonSize(),'hunting') / 3).toFixed(2);
+                        return loc('civics_garrison_evil_soldier_desc',[food,fur,bones]);
+                    }
+                    else {
+                        let bones = +(armyRating(garrisonSize(),'hunting') / 5).toFixed(2);
+                        return global.race['herbivore']
+                            ? loc('civics_garrison_evil_alt_soldier_desc_herb',[fur,bones])
+                            : loc('civics_garrison_evil_alt_soldier_desc',[food,fur,bones]);
+                    }
                 }
                 else {
                     return global.race['herbivore']
