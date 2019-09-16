@@ -92,6 +92,10 @@ $('#morale').on('mouseover',function(){
         let type = global.city.morale.stress > 0 ? 'success' : 'danger';
         moralePopper.append(`<p class="modal_bd"><span>${loc('morale_stress')}</span> <span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
     }
+    if (global.city.morale.shrine !== 0){
+        let type = global.city.morale.shrine > 0 ? 'success' : 'danger';
+        moralePopper.append(`<p class="modal_bd"><span>${loc('city_shrine')}</span> <span class="has-text-${type}"> ${global.city.morale.shrine}%</span></p>`);
+    }
     if (global.city.morale.leadership !== 0){
         let type = global.city.morale.leadership > 0 ? 'success' : 'danger';
         moralePopper.append(`<p class="modal_bd"><span>${loc('morale_leadership')}</span> <span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
@@ -117,7 +121,7 @@ $('#morale').on('mouseover',function(){
         let type = global.city.morale.tax > 0 ? 'success' : 'danger';
         moralePopper.append(`<p class="modal_bd"><span>${loc('morale_taxes')}</span> <span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
     }
-    let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership;
+    let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership + global.city.morale.shrine;
     if (global.city.morale['frenzy']){
         let type = global.city.morale.frenzy > 0 ? 'success' : 'danger';
         moralePopper.append(`<p class="modal_bd"><span>${loc('morale_frenzy')}</span> <span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
@@ -603,6 +607,11 @@ function fastLoop(){
         }
         else {
             global.city.morale.leadership = 0;
+        }
+
+        if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+            global.city.morale.shrine = global.city.shrine.morale;
+            morale += global.city.shrine.morale;
         }
 
         if (global.race['frenzy']){
@@ -2067,11 +2076,17 @@ function fastLoop(){
                     smelter_output *= 0.9;
                 }
 
+                let shrine_bonus = 1;
+                if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                    shrine_bonus = 1 + (global.city.shrine.metal / 100);
+                }
+
                 let delta = smelter_output;
-                delta *= hunger * global_multiplier;
+                delta *= hunger * global_multiplier * shrine_bonus;
 
                 let steel_bd = {};
                 steel_bd[loc('city_smelter')] = smelter_output + 'v';
+                steel_bd[loc('city_shrine')] = ((shrine_bonus - 1) * 100) + '%';
                 steel_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Steel'] = steel_bd;
                 modRes('Steel', delta * time_multiplier);
@@ -2080,6 +2095,9 @@ function fastLoop(){
                     let titanium = smelter_output * hunger;
                     if (global.city.geology['Titanium']){
                         delta *= global.city.geology['Titanium'] + 1;
+                    }
+                    if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                        delta *= 1 + (global.city.shrine.metal / 100);
                     }
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
@@ -2239,7 +2257,13 @@ function fastLoop(){
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
                 }
-                let delta = base * hunger * global_multiplier;
+
+                let shrine_bonus = 1;
+                if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                    shrine_bonus = 1 + (global.city.shrine.metal / 100);
+                }
+
+                let delta = base * shrine_bonus * hunger * global_multiplier;
 
                 if (global.tech['alumina'] >= 2){
                     refinery += p_on['metal_refinery'] * 6;
@@ -2248,6 +2272,7 @@ function fastLoop(){
                 delta *= 1 + (refinery / 100);
 
                 alumina_bd[loc('workers')] = base + 'v';
+                alumina_bd[loc('city_shrine')] = ((shrine_bonus - 1) * 100) + '%';
                 alumina_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 
                 modRes('Aluminium', delta * time_multiplier);
@@ -2304,7 +2329,12 @@ function fastLoop(){
                     copper_base *= global.city.geology['Copper'] + 1;
                 }
 
-                let delta = copper_base * power_mult;
+                let copper_shrine = 1;
+                if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                    copper_shrine = 1 + (global.city.shrine.metal / 100);
+                }
+
+                let delta = copper_base * copper_shrine * power_mult;
                 delta *= hunger * global_multiplier;
 
                 copper_bd[loc('job_miner')] = (copper_base) + 'v';
@@ -2329,13 +2359,19 @@ function fastLoop(){
                     space_iron = belt_on['iron_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2) * zigguratBonus();
                 }
 
-                let delta = ((iron_base * power_mult) + space_iron) * smelter_mult;
+                let iron_shrine = 1;
+                if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                    iron_shrine = 1 + (global.city.shrine.metal / 100);
+                }
+
+                let delta = ((iron_base * power_mult) + space_iron) * smelter_mult * iron_shrine;
                 delta *= hunger * global_multiplier;
                 
                 iron_bd[loc('job_miner')] = (iron_base) + 'v';
                 iron_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
                 iron_bd[loc('job_space_miner')] = space_iron + 'v';
                 iron_bd[loc('city_smelter')] = ((smelter_mult - 1) * 100) + '%';
+                iron_bd[loc('city_shrine')] = ((iron_shrine - 1) * 100) + '%';
                 iron_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Iron'] = iron_bd;
                 modRes('Iron', delta * time_multiplier);
@@ -2347,6 +2383,9 @@ function fastLoop(){
                     if (global.city.geology['Titanium']){
                         delta *= global.city.geology['Titanium'] + 1;
                     }
+                    if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                        delta *= 1 + (global.city.shrine.metal / 100);
+                    }
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
                     titanium_bd[loc('resource_Iron_name')] = (iron / divisor) + 'v';
@@ -2357,12 +2396,22 @@ function fastLoop(){
         // Mars Mining
         if (red_on['red_mine'] && red_on['red_mine'] > 0){
             let copper_base = red_on['red_mine'] * 0.25 * global.civic.colonist.workers * zigguratBonus();
+            if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                copper_base *= 1 + (global.city.shrine.metal / 100);
+            }
             copper_bd[`${races[global.race.species].solar.red}_Mining`] = (copper_base) + 'v';
             modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger);
 
             let titanium_base = red_on['red_mine'] * 0.02 * global.civic.colonist.workers * hunger * zigguratBonus();
+            if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                titanium_base *= 1 + (global.city.shrine.metal / 100);
+            }
             titanium_bd[`${races[global.race.species].solar.red}_Mining`] = (titanium_base) + 'v';
             modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
+        }
+        if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+            copper_bd[loc('city_shrine')] = global.city.shrine.metal + '%';
+            titanium_bd[loc('city_shrine')] = global.city.shrine.metal + '%';
         }
         copper_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Copper'] = copper_bd;
@@ -2465,21 +2514,28 @@ function fastLoop(){
 
         // Iridium
         let iridium_bd = {};
+        let iridium_shrine = 1;
+        if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+            iridium_shrine = 1 + (global.city.shrine.metal / 100);
+        }
         if (moon_on['iridium_mine']){
             let iridium_base = moon_on['iridium_mine'] * 0.035 * zigguratBonus();
             if (global.city.geology['Iridium']){
                 iridium_base *= global.city.geology['Iridium'] + 1;
             }
-            let delta = iridium_base * hunger * global_multiplier;
+            let delta = iridium_base * hunger * iridium_shrine * global_multiplier;
             iridium_bd[loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
         }
 
         if (belt_on['iridium_ship']){
             let iridium_base = belt_on['iridium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus();
-            let delta = iridium_base * hunger * global_multiplier;
+            let delta = iridium_base * hunger * iridium_shrine * global_multiplier;
             iridium_bd[loc('job_space_miner')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
+        }
+        if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+            iridium_bd[loc('city_shrine')] = ((iridium_shrine - 1) * 100) + '%';
         }
         iridium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Iridium'] = iridium_bd;
@@ -2577,6 +2633,11 @@ function fastLoop(){
                 driod_delta *= 1 + bonus;
                 adamantite_bd[loc('interstellar_processing_title')] = (bonus * 100) + '%';
             }
+            if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                let bonus = global.city.shrine.metal * 0.01;
+                driod_delta *= 1 + bonus;
+                adamantite_bd[loc('city_shrine')] = (bonus * 100) + '%';
+            }
             modRes('Adamantite', driod_delta * time_multiplier);
         }
         breakdown.p['Adamantite'] = adamantite_bd;
@@ -2630,11 +2691,17 @@ function fastLoop(){
                 temple_mult += (global.city.temple.count * 0.025);
             }
 
-            let delta = income_base * temple_mult;
+            let shrine_mult = 1;
+            if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                shrine_mult += +(global.city.shrine.tax / 100);
+            }
+
+            let delta = income_base * temple_mult * shrine_mult;
             delta *= global_multiplier;
             
             money_bd[loc('morale_taxes')] = (income_base) + 'v';
             money_bd[loc('city_temple')] = ((temple_mult - 1) * 100) + '%';
+            money_bd[loc('city_shrine')] = ((shrine_mult - 1) * 100) + '%';
             money_bd[loc('city_factory')] = FactoryMoney + 'v';
             modRes('Money', +(delta * time_multiplier).toFixed(2));
         }
@@ -3318,6 +3385,11 @@ function midLoop(){
             let gain = (global.space['helium_mine'].count * spatialReasoning(100));
             caps['Helium_3'] += gain;
             bd_Helium[loc('space_moon_helium_mine_title')] = gain+'v';
+        }
+        if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+            let gain = +(global.city.shrine.know * 500);
+            caps['Knowledge'] += gain;
+            bd_Knowledge[loc('city_shrine')] = gain+'v';
         }
         if (global.city['university']){
             let multiplier = 1;

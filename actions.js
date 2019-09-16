@@ -3157,6 +3157,62 @@ export const actions = {
                 return false;
             }
         },
+        shrine: {
+            id: 'city-shrine',
+            title: loc('city_shrine'),
+            desc(){
+                return loc('city_shrine_desc');
+            },
+            reqs: { theology: 2 },
+            trait: ['magnificent'],
+            cost: {
+                Money(){ return costMultiplier('shrine', 75, 1.32); },
+                Stone(){ return costMultiplier('shrine', 65, 1.32); },
+                Furs(){ return costMultiplier('shrine', 10, 1.32); },
+                Copper(){ return costMultiplier('shrine', 15, 1.32); }
+            },
+            effect(){
+                let desc = `<div class="has-text-special">${loc('city_shrine_effect')}</div>`;
+                if (global.city.shrine.morale > 0){
+                    let morale = global.city.shrine.morale;
+                    desc = desc + `<div>${loc('city_shrine_morale',[morale])}</div>`;
+                }
+                if (global.city.shrine.metal > 0){
+                    let metal = global.city.shrine.metal;
+                    desc = desc + `<div>${loc('city_shrine_metal',[metal])}</div>`;
+                }
+                if (global.city.shrine.know > 0){
+                    let know = global.city.shrine.know * 500;
+                    desc = desc + `<div>${loc('city_shrine_know',[know])}</div>`;
+                }
+                if (global.city.shrine.tax > 0){
+                    let tax = global.city.shrine.tax;
+                    desc = desc + `<div>${loc('city_shrine_tax',[tax])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city.shrine.count++;
+                    switch (Math.floor(Math.seededRandom(0,4))){
+                        case 0:
+                            global.city.shrine.morale++;
+                            break;
+                        case 1:
+                            global.city.shrine.metal++;
+                            break;
+                        case 2:
+                            global.city.shrine.know++;
+                            break;
+                        case 3:
+                            global.city.shrine.tax++;
+                            break;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         university: {
             id: 'city-university',
             title: loc('city_university'),
@@ -7948,6 +8004,15 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['temple'] = { count: 0 };
+                    if (global.race['magnificent']){
+                        global.city['shrine'] = {
+                            count: 0,
+                            morale: 0,
+                            metal: 0,
+                            know: 0,
+                            tax: 0
+                        };
+                    }
                     return true;
                 }
                 return false;

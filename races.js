@@ -1019,7 +1019,7 @@ export const traits = {
         desc: loc('trait_rainbow'),
         type: 'major',
     },
-    magnificent: { // ???
+    magnificent: { // construct shrines to receive boons
         desc: loc('trait_magnificent'),
         type: 'major',
     },
@@ -1237,6 +1237,15 @@ export function cleanAddTrait(trait){
                 harvest: 0,
             };
             break;
+        case 'magnificent':
+            global.city['shrine'] = {
+                count: 0,
+                morale: 0,
+                metal: 0,
+                know: 0,
+                tax: 0
+            };
+            break;
         default:
             break;
     }
@@ -1273,6 +1282,9 @@ export function cleanRemoveTrait(trait){
             break;
         case 'cannibalize':
             delete global.city['s_alter'];
+            break;
+        case 'magnificent':
+            delete global.city['shrine'];
             break;
         default:
             break;

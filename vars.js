@@ -506,6 +506,10 @@ if (!global.city.morale['tax']){
     global.city.morale['tax'] = 0;
 }
 
+if (!global.city.morale['shrine']){
+    global.city.morale['shrine'] = 0;
+}
+
 if (!global.city['calendar']){
     global.city['calendar'] = {
         day: 0,
