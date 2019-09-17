@@ -535,6 +535,7 @@ export function unlockAchieve(achievement,small){
         return false;
     }
     let a_level = 1;
+    let unlock = false;
     if (global.race['no_plasmid']){ a_level++; }
     if (global.race['no_trade']){ a_level++; }
     if (global.race['no_craft']){ a_level++; }
@@ -550,9 +551,33 @@ export function unlockAchieve(achievement,small){
         messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
         drawPerks();
         drawAchieve();
-        return true;
+        unlock = true;
     }
-    return false;
+    if (global.stats.achieve[achievement]){
+        switch (global.race.universe){
+            case 'antimatter':
+                if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < a_level)){
+                    global.stats.achieve[achievement]['a'] = a_level;
+                }
+                break;
+            case 'heavy':
+                if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < a_level)){
+                    global.stats.achieve[achievement]['h'] = a_level;
+                }
+                break;
+            case 'evil':
+                if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < a_level)){
+                    global.stats.achieve[achievement]['e'] = a_level;
+                }
+                break;
+            case 'micro':
+                if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < a_level)){
+                    global.stats.achieve[achievement]['m'] = a_level;
+                }
+                break;
+        }
+    }
+    return unlock;
 }
 
 export function unlockFeat(feat,small){
