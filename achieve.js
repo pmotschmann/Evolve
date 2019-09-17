@@ -280,6 +280,11 @@ var achievements = {
         desc: loc("achieve_mass_extinction_desc"),
         flair: loc("achieve_mass_extinction_flair")
     },
+    vigilante: {
+        name: loc("achieve_vigilante_name"),
+        desc: loc("achieve_vigilante_desc"),
+        flair: loc("achieve_vigilante_flair")
+    },
     extinct_human: {
         name: loc("achieve_extinct_human_name"),
         desc: loc("achieve_extinct_human_desc"),
@@ -735,6 +740,20 @@ export function checkAchievements(){
         }
         if (total >= 25){
             unlockAchieve('mass_extinction');
+        }
+    }
+    if (!global.stats.achieve['vigilante'] || global.stats.achieve['vigilante'].l < a_level){
+        let total = 0;
+        const keys = Object.keys(achievements)
+        for (const key of keys) {
+            if (key.includes('extinct_')){
+                if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= a_level){
+                    total++
+                }
+            }
+        }
+        if (total >= 25){
+            unlockAchieve('vigilante');
         }
     }
     if (!global.stats.achieve['creator'] || global.stats.achieve['creator'].l < a_level){
