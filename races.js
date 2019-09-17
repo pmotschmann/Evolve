@@ -1082,7 +1082,7 @@ types: farmer, miner, lumberjack, science, factory, army, hunting
 */
 export function racialTrait(workers,type){
     let modifier = 1; 
-    if (type === 'lumberjack' && global.race.universe === 'evil'){
+    if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
         modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
     }
     if (global.race['hivemind'] && type !== 'farmer'){

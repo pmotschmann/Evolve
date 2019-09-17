@@ -1,4 +1,8 @@
 
+#### 0.6.1 - 9/??/2019
+Multiverse Update, explore 4 new universe types<br>
+Decay Challenge<br>
+
 #### 0.6.0 - 9/??/2019
 New Plasmid scaling formula<br>
 Blackhole mass added to Stellar Engine<br>

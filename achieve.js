@@ -539,9 +539,14 @@ export function unlockAchieve(achievement,small){
     if (global.race['no_trade']){ a_level++; }
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
-    if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement] < a_level)){
+    if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < a_level)){
         global.settings.showAchieve = true;
-        global.stats.achieve[achievement] = a_level;
+        if (global.stats.achieve[achievement]){
+            global.stats.achieve[achievement].l = a_level;
+        }
+        else {
+            global.stats.achieve[achievement] = { l: a_level };
+        }
         messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
         drawPerks();
         drawAchieve();
@@ -620,11 +625,11 @@ export function drawAchieve(){
         total++;
         if (global.stats.achieve[achievement]){
             earned++;
-            level += global.stats.achieve[achievement];
+            level += global.stats.achieve[achievement].l;
             if (achievement === 'joyless'){
-                level += global.stats.achieve[achievement];
+                level += global.stats.achieve[achievement].l;
             }
-            let star = global.stats.achieve[achievement] > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achievement]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
+            let star = global.stats.achieve[achievement].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achievement].l}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${star}</div></b-tooltip>`));
         }
     });
@@ -693,12 +698,12 @@ export function checkAchievements(){
     if (global.race['no_trade']){ a_level++; }
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
-    if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'] < a_level){
+    if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'].l < a_level){
         let total = 0;
         const keys = Object.keys(achievements)
         for (const key of keys) {
             if (key.includes('extinct_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key] >= a_level){
+                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
                     total++
                 }
             }
@@ -707,12 +712,12 @@ export function checkAchievements(){
             unlockAchieve('mass_extinction');
         }
     }
-    if (!global.stats.achieve['creator'] || global.stats.achieve['creator'] < a_level){
+    if (!global.stats.achieve['creator'] || global.stats.achieve['creator'].l < a_level){
         let total = 0;
         const keys = Object.keys(achievements)
         for (const key of keys) {
             if (key.includes('genus_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key] >= a_level){
+                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
                     total++
                 }
             }
@@ -721,12 +726,12 @@ export function checkAchievements(){
             unlockAchieve('creator');
         }
     }
-    if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'] < a_level){
+    if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'].l < a_level){
         let total = 0;
         const keys = Object.keys(achievements)
         for (const key of keys) {
             if (key.includes('biome_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key] >= a_level){
+                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
                     total++
                 }
             }
@@ -735,7 +740,7 @@ export function checkAchievements(){
             unlockAchieve('explorer');
         }
     }
-    if (!global.stats.achieve['heavyweight'] || global.stats.achieve['heavyweight'] < a_level){
+    if (!global.stats.achieve['heavyweight'] || global.stats.achieve['heavyweight'].l < a_level){
         let total = 0;
         const keys = Object.keys(feats)
         for (const key of keys) {
@@ -776,27 +781,27 @@ export function drawPerks(){
     let unlocked = 0;
     if (global.stats.achieve['blackhole']){
         unlocked++;
-        let bonus = global.stats.achieve.blackhole * 5;
+        let bonus = global.stats.achieve.blackhole.l * 5;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_blackhole",[bonus])}</span></div>`);
     }
 
     if (global.stats.achieve['mass_extinction']){
         unlocked++;
-        let bonus = global.stats.achieve['mass_extinction'] + 1
+        let bonus = global.stats.achieve['mass_extinction'].l + 1
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction",[bonus])}</span></div>`);
     }
 
     if (global.stats.achieve['creator']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator")}</span></div>`);
-        if (global.stats.achieve['creator'] > 1){
+        if (global.stats.achieve['creator'].l > 1){
             perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator2")}</span></div>`);
         }
     }
 
     if (global.stats.achieve['explorer']){
         unlocked++;
-        let bonus = global.stats.achieve['explorer'] + 1
+        let bonus = global.stats.achieve['explorer'].l + 1
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_explorer",[bonus])}</span></div>`);
     }
 
@@ -807,21 +812,21 @@ export function drawPerks(){
 
     if (global.stats.achieve['heavyweight']){
         unlocked++;
-        let bonus = global.stats.achieve['heavyweight'] * 4;
+        let bonus = global.stats.achieve['heavyweight'].l * 4;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_heavyweight",[bonus])}</span></div>`);
     }
 
     if (global.stats.achieve['dissipated']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated1",[1])}</span></div>`);
-        if (global.stats.achieve['dissipated'] >= 3){
-            let bonus = global.stats.achieve['dissipated'] >= 5 ? 2 : 1;
+        if (global.stats.achieve['dissipated'].l >= 3){
+            let bonus = global.stats.achieve['dissipated'].l >= 5 ? 2 : 1;
             perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated2",[bonus])}</span></div>`);
         }
-        if (global.stats.achieve['dissipated'] >= 2){
+        if (global.stats.achieve['dissipated'].l >= 2){
             perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated3",[1])}</span></div>`);
         }
-        if (global.stats.achieve['dissipated'] >= 4){
+        if (global.stats.achieve['dissipated'].l >= 4){
             perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated4",[1])}</span></div>`);
         }
     }

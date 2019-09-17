@@ -2009,7 +2009,7 @@ export const actions = {
             },
             effect(){ 
                 let food = spatialReasoning(500);
-                if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole * 0.05))) };
+                if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 return loc('plus_max_resource',[food, loc('resource_Food_name')]); 
             },
             action(){
@@ -2033,7 +2033,7 @@ export const actions = {
             },
             effect(){
                 let souls = spatialReasoning(500);
-                if (global.stats.achieve['blackhole']){ souls = Math.round(souls * (1 + (global.stats.achieve.blackhole * 0.05))) };
+                if (global.stats.achieve['blackhole']){ souls = Math.round(souls * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 return `<div>${loc('city_soul_well_effect',[2])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`; 
             },
             action(){
@@ -2171,7 +2171,7 @@ export const actions = {
             },
             effect(){ 
                 let food = spatialReasoning(500);
-                if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole * 0.05))) };
+                if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 return loc('plus_max_resource',[food, loc('resource_Food_name')]);
             },
             action(){
@@ -2540,7 +2540,7 @@ export const actions = {
             },
             effect:  function(){
                 let lum = spatialReasoning(100);
-                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
+                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 return `<div>${loc('city_graveyard_effect',[8])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
             },
             action(){
@@ -2564,7 +2564,7 @@ export const actions = {
             },
             effect:  function(){
                 let lum = spatialReasoning(100);
-                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
+                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
             },
             action(){
@@ -2590,7 +2590,7 @@ export const actions = {
             effect(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = spatialReasoning(200);
-                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole * 0.05))) };
+                if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
                     desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`; 
@@ -2627,7 +2627,7 @@ export const actions = {
             },
             effect() {
                 let stone = spatialReasoning(100);
-                if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole * 0.05))) };
+                if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 if (global.tech['mine_conveyor']){
                     return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
                 }
@@ -9836,7 +9836,7 @@ export function storageMultipler(){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
     }
     if (global.stats.achieve['blackhole']){
-        multiplier *= 1 + global.stats.achieve.blackhole * 0.05;
+        multiplier *= 1 + global.stats.achieve.blackhole.l * 0.05;
     }
     multiplier *= global.tech['world_control'] ? 3 : 1;
     if (global.tech['storage'] >= 7 && global.interstellar['cargo_yard']){

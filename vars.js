@@ -245,11 +245,21 @@ if (convertVersion(global['version']) <= 5016 && global.race.species === 'mantis
     };
 }
 
-if (convertVersion(global['version']) < 6000 && (global.race.species === 'imp' || global.race.species === 'balorg')){
-    global.race['soul_eater'] = 1;
+if (convertVersion(global['version']) < 6000){
+    if (global.race.species === 'imp' || global.race.species === 'balorg'){
+        global.race['soul_eater'] = 1;
+    }
 }
 
-global['version'] = '0.6.0';
+if (convertVersion(global['version']) < 6001){
+    Object.keys(global.stats.achieve).forEach(function (key){
+        if (!global.stats.achieve[key]['l']){
+            global.stats.achieve[key] = { l: global.stats.achieve[key] };
+        }
+    });
+}
+
+global['version'] = '0.6.1';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

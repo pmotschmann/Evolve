@@ -3037,25 +3037,25 @@ function midLoop(){
         }
         if (global.city['rock_quarry']){
             let gain = (global.city['rock_quarry'].count * spatialReasoning(100));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Stone'] += gain;
             bd_Stone[loc('city_rock_quarry')] = gain+'v';
         }
         if (global.city['lumber_yard']){
             let gain = (global.city['lumber_yard'].count * spatialReasoning(100));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_lumber_yard')] = gain+'v';
         }
         else if (global.city['graveyard']){
             let gain = (global.city['graveyard'].count * spatialReasoning(100));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_graveyard')] = gain+'v';
         }
         if (global.city['sawmill']){
             let gain = (global.city['sawmill'].count * spatialReasoning(200));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_sawmill')] = gain+'v';
             let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
@@ -3261,7 +3261,7 @@ function midLoop(){
         if (global.space['garage']){
             let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
             multiplier *= global.tech['world_control'] ? 2 : 1;
-            multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole * 0.05) : 1;
+            multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
 
             let gain = (global.space.garage.count * (spatialReasoning(6500 * multiplier)));
             caps['Copper'] += gain;
@@ -3307,19 +3307,19 @@ function midLoop(){
         }
         if (global.city['silo']){
             let gain = (global.city['silo'].count * spatialReasoning(500));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Food'] += gain;
             bd_Food[loc('city_silo')] = gain+'v';
         }
         if (global.city['soul_well']){
             let gain = (global.city['soul_well'].count * spatialReasoning(500));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Food'] += gain;
             bd_Food[loc('city_soul_well')] = gain+'v';
         }
         if (global.city['smokehouse']){
             let gain = (global.city['smokehouse'].count * spatialReasoning(500));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole * 0.05))) };
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Food'] += gain;
             bd_Food[loc('city_smokehouse')] = gain+'v';
         }
