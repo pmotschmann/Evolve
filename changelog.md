@@ -6,6 +6,7 @@ Micro Universe<br>
 Evil Universe<br>
 New Decay Challenge<br>
 Antimatter universe is still forming, coming soon<br>
+Dark Energy effects added, unique per universe type<br>
 New Plasmid scaling formula<br>
 Blackhole mass added to Stellar Engine<br>
 Stuff I probably forgot about<br>
