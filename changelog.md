@@ -1,11 +1,14 @@
 
-#### 0.6.1 - 9/??/2019
-Multiverse Update, explore 4 new universe types<br>
-Decay Challenge<br>
-
-#### 0.6.0 - 9/??/2019
+#### 0.6.1 - 9/17/2019
+Universe Update, explore ~~4~~ 3 new universe types:<br>
+Heavy Gravity Universe<br>
+Micro Universe<br>
+Evil Universe<br>
+New Decay Challenge<br>
+Antimatter universe is still forming, coming soon<br>
 New Plasmid scaling formula<br>
 Blackhole mass added to Stellar Engine<br>
+Stuff I probably forgot about<br>
 
 #### 0.5.18 - 9/11/2019 ####
 Spanish translation provided by RanaPeluda<br>
