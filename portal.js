@@ -557,6 +557,9 @@ export function bloodwar(){
         global.portal.fortress['pity'] = 0;
     }
     let gem_chance = 10000 - global.portal.fortress.pity;
+    if (global.race.universe === 'evil'){
+        gem_chance -= Math.round(Math.log2(global.race.Dark.count) * 2);
+    }
     
     if (global.tech['portal'] >= 4 && p_on['attractor']){
         for (let i=0; i<p_on['attractor']; i++){

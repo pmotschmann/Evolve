@@ -870,6 +870,9 @@ function lootModify(val){
     if (global.race['invertebrate']){
         loot = loot * 0.9;
     }
+    if (global.race.universe === 'evil'){
+        loot = loot * (1 + ((Math.log2(10 + global.race.Dark.count) - 3.321928094887362) / 5));
+    }
     return Math.floor(loot);
 }
 
