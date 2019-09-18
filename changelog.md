@@ -1,4 +1,7 @@
 
+#### 0.6.3 - 9/17/2019
+Restored broken perks<br>
+
 #### 0.6.2 - 9/17/2019
 Bug Fixes<br>
 

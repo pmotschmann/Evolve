@@ -3452,7 +3452,7 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return `+${power}kW. ${loc('city_coal_power_effect',[consume])}`;
             },
-            powered(){ return powerModifier(global.stats.achieve['dissipated'].l ? -6 : -5); },
+            powered(){ return powerModifier(global.stats.achieve['dissipated'] ? -6 : -5); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.coal_power.count++;
