@@ -1,6 +1,6 @@
 
 #### 0.6.1 - 9/17/2019
-Universe Update, explore ~~4~~ 3 new universe types:<br>
+Universe Update, explore ~~ 4 ~~ 3 new universe types:<br>
 Heavy Gravity Universe<br>
 Micro Universe<br>
 Evil Universe<br>
