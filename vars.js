@@ -252,11 +252,13 @@ if (convertVersion(global['version']) < 6000){
 }
 
 if (convertVersion(global['version']) < 6001){
-    Object.keys(global.stats.achieve).forEach(function (key){
-        if (!global.stats.achieve[key]['l']){
-            global.stats.achieve[key] = { l: global.stats.achieve[key] };
-        }
-    });
+    if (global.stats['achieve']){
+        Object.keys(global.stats.achieve).forEach(function (key){
+            if (!global.stats.achieve[key]['l']){
+                global.stats.achieve[key] = { l: global.stats.achieve[key] };
+            }
+        });
+    }
 }
 
 global['version'] = '0.6.1';
