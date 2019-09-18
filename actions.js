@@ -3112,7 +3112,7 @@ export const actions = {
                 }
                 return desc;
             },
-            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'] >= 2 ? 3 : 4; },
+            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 3 : 4; },
             power_reqs: { gambling: 2 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3452,7 +3452,7 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return `+${power}kW. ${loc('city_coal_power_effect',[consume])}`;
             },
-            powered(){ return powerModifier(global.stats.achieve['dissipated'] ? -6 : -5); },
+            powered(){ return powerModifier(global.stats.achieve['dissipated'].l ? -6 : -5); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.coal_power.count++;
@@ -3480,8 +3480,8 @@ export const actions = {
                 return `+${power}kW. ${loc('city_oil_power_effect',[consume])}`;
             },
             powered(){
-                if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'] >= 3){
-                    return powerModifier(global.stats.achieve['dissipated'] >= 5 ? -8 : -7);
+                if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
+                    return powerModifier(global.stats.achieve['dissipated'].l >= 5 ? -8 : -7);
                 }
                 else {
                     return powerModifier(-6);
@@ -3537,7 +3537,7 @@ export const actions = {
             effect(){
                 return loc('city_mass_driver_effect',[5,$(this)[0].powered(),races[global.race.species].name]);
             },
-            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'] >= 4 ? 4 : 5; },
+            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.mass_driver.count++;
@@ -10323,8 +10323,8 @@ export function setPlanet(hell){
     let max = Math.floor(Math.seededRandom(0,3));
     let top = 30;
     if (global.stats.achieve['whitehole']){
-        top += global.stats.achieve['whitehole'] * 5;
-        max += global.stats.achieve['whitehole'];
+        top += global.stats.achieve['whitehole'].l * 5;
+        max += global.stats.achieve['whitehole'].l;
     }
 
     for (let i=0; i<max; i++){
@@ -11983,7 +11983,7 @@ function bioseed(){
 
     let probes = global.starDock.probes.count + 1;
     if (global.stats.achieve['explorer']){
-        probes += global.stats.achieve['explorer'];
+        probes += global.stats.achieve['explorer'].l;
     }
     global['race'] = { 
         species : 'protoplasm', 
