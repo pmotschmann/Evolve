@@ -1,4 +1,7 @@
 
+#### 0.6.2 - 9/17/2019
+Bug Fixes<br>
+
 #### 0.6.1 - 9/17/2019
 Universe Update, explore ~~ 4 ~~ 3 new universe types:<br>
 Heavy Gravity Universe<br>
