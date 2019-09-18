@@ -2724,7 +2724,7 @@ export function fuel_adjust(fuel){
         fuel *= 0.95 ** p_on['mass_driver'];
     }
     if (global.stats.achieve['heavyweight']){
-        fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
+        fuel *= 0.96 ** global.stats.achieve['heavyweight'];
     }
     return fuel;
 }
@@ -2734,7 +2734,7 @@ export function int_fuel_adjust(fuel){
         fuel *= 1.2 + (0.3 * 0.995 ** global.race.Dark.count);
     }
     if (global.stats.achieve['heavyweight']){
-        fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
+        fuel *= 0.96 ** global.stats.achieve['heavyweight'];
     }
     return fuel;
 }

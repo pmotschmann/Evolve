@@ -555,7 +555,7 @@ function fastLoop(){
             global.evolution['dna'] = 1;
             addAction('evolution','dna');
             global.resource.DNA.display = true;
-            if (global.stats.achieve['creator'] && global.stats.achieve['creator'].l > 1){
+            if (global.stats.achieve['creator'] && global.stats.achieve['creator'] > 1){
                 modRes('RNA', global.resource.RNA.max);
                 modRes('DNA', global.resource.RNA.max);
             }
@@ -2845,8 +2845,8 @@ function fastLoop(){
 function midLoop(){
     if (global.race.species === 'protoplasm'){
         let base = 100;
-        if (global.stats.achieve['creator'] && global.stats.achieve['creator'].l > 1){
-            base += 50 * (global.stats.achieve['creator'].l - 1);
+        if (global.stats.achieve['creator'] && global.stats.achieve['creator'] > 1){
+            base += 50 * (global.stats.achieve['creator'] - 1);
         }
         var caps = {
             RNA: base,
@@ -3819,7 +3819,7 @@ function midLoop(){
                     let trait = randomMinorTrait();
                     let gene = global.genes['synthesis'] ? (2 ** (global.race.mutation - 1)) * (global.genes['synthesis'] + 1) : global.race.mutation;
                     if (global.stats.achieve['mass_extinction']){
-                        gene *= global.stats.achieve['mass_extinction'].l + 1;
+                        gene *= global.stats.achieve['mass_extinction'] + 1;
                     }
                     messageQueue(loc('gene_therapy',[trait,gene]),'success');
                     global.stats.plasmid++;
