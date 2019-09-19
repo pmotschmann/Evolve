@@ -1691,7 +1691,7 @@ export const actions = {
         junker: {
             id: 'evo-junker',
             title: loc('evo_challenge_junker'),
-            desc: loc('evo_challenge_junker_desc'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_junker_desc')}</div>` : loc('evo_challenge_junker_desc'); },
             cost: {
                 DNA(){ return 25; }
             },
@@ -1713,7 +1713,7 @@ export const actions = {
         joyless: {
             id: 'evo-joyless',
             title: loc('evo_challenge_joyless'),
-            desc: loc('evo_challenge_joyless_desc'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_joyless_desc')}</div>` : loc('evo_challenge_joyless_desc'); },
             cost: {
                 DNA(){ return 25; }
             },
@@ -1731,7 +1731,7 @@ export const actions = {
         decay: {
             id: 'evo-decay',
             title: loc('evo_challenge_decay'),
-            desc: loc('evo_challenge_decay_desc'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_decay_desc')}</div>` : loc('evo_challenge_decay_desc'); },
             cost: {
                 DNA(){ return 25; }
             },

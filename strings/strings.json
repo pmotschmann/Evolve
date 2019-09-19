@@ -299,6 +299,7 @@
   "evo_challenge_decay_desc": "All matter in this universe is unstable and decays",
   "evo_challenge_decay_effect": "Resources decay at a rate determined by how much of it you are storing. Larger stores decay quicker. Destroy this universe to end the cycle of decay.",
   "evo_challenge_decay_flair": "Decayed, but not forgotten. Who am I kidding? No one will remember you.",
+  "evo_challenge_micro_warn": "You will not get credit for completing this challenge in a micro universe.",
   "city_food": "Gather Food",
   "city_food_desc": "Harvest and preserve food",
   "city_lumber": "Gather Lumber",
