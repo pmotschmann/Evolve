@@ -619,7 +619,7 @@ function fastLoop(){
                 global.city.morale['frenzy'] = 0;
             }
 
-            if (global.race.frenzy > 1){
+            if (global.race.frenzy >= 1){
                 let frenzy = Math.ceil(Math.log2(global.race.frenzy));
                 global.city.morale.frenzy = frenzy;
                 morale += frenzy;
