@@ -36,6 +36,6 @@ else:
                 trans_count+=1
         
         print("{} values are marked with tag 'TRANS:'".format(trans_count))
-        print("{} keys was deleted".format(trans_count))
+        print("{} keys was deleted".format(len(locstr)))
 
         json.dump(wr, wr_file, ensure_ascii=False, indent=4)
