@@ -1802,6 +1802,7 @@ export const actions = {
             },
             reqs: {},
             trait: ['evil'],
+            not_trait: ['kindling_kindred'],
             no_queue(){ return true },
             action(){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
@@ -11705,7 +11706,7 @@ function sentience(){
     global.city.calendar.day = 0;
 
     var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
-    if (global.race['evil']){
+    if (global.race['evil'] && !global.race['kindling_kindred']){
         global.city['slaughter'] = 1;
         city_actions = ['slaughter'];
     }

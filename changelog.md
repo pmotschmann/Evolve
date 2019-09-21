@@ -2,6 +2,7 @@
 #### 0.6.5 - 9/21/2019
 Fixed display issue with frenzy appearing to never drop below 1%<br>
 Updated the tooltip values on farms and farmers to include the hellscape penalty<br>
+Fixed Evil Ents so they start with Gather Stone option<br>
 
 #### 0.6.4 - 9/19/2019
 Fixed double windmill issue with evil universe races<br>
