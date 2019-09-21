@@ -32,7 +32,7 @@ else:
                     wr[key] = locstr[key]
                 del locstr[key]
             else:
-                wr[key] = "TRANS: " + defstr[key]
+                wr[key] = "TRANS:" + defstr[key]
                 trans_count+=1
         
         print("{} values are marked with tag 'TRANS:'".format(trans_count))
