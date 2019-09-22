@@ -15,7 +15,7 @@ export function loc(key, variables) {
             for (let i = 0; i < variables.length; i++){
                 let re = new RegExp(`%${i}(?!\d)`, "g");
                 if(!re.exec(string)){
-                    console.error(`"%${i}" was not found in the string ${key} to be replace by "${variables[i]}"`);
+                    console.error(`"%${i}" was not found in the string "${key}" to be replace by "${variables[i]}"`);
                     continue;
                 }
                 string = string.replace(re, variables[i]);
