@@ -299,7 +299,7 @@
   "evo_challenge_decay_desc": "Toda la materia en este universo es inestable y se descompone",
   "evo_challenge_decay_effect": "Los recursos se descomponen a un ritmo determinado por la cantidad que almacenas. Las almacenados en grandes espacios se descomponen más rápido. Destruye este universo para terminar el ciclo de descomposición.",
   "evo_challenge_decay_flair": "Decaído, pero no olvidado. ¿A quién estoy engañando? Nadie te recordará.",
-"evo_challenge_micro_warn": "No obtendrá crédito por completar este desafío en un micro universo".
+"evo_challenge_micro_warn": "No obtendrá crédito por completar este desafío en un micro universo",
   "city_food": "Reunir comida",
   "city_food_desc": "Cosecha y conserva alimentos",
   "city_lumber": "Recoger madera",
@@ -1407,7 +1407,7 @@
   "achieve_whitehole_desc": "Causó que un agujero negro explotara y desencadenara un nuevo big bang",
   "achieve_whitehole_flair": "Eliminaste el universo, espero que estés contento contigo mismo",
   "achieve_heavy_name": "Esto es pesado",
- "achieve_heavy_desc": "Causó que un universo colapsase bajo su propio peso",
+  "achieve_heavy_desc": "Causó que un universo colapsase bajo su propio peso",
   "achieve_heavy_flair": "¿Hay algo mal con la gravedad en tu universo?",
   "achieve_canceled_name": "Cancelado",
   "achieve_canceled_desc": "Aniquiló un universo de antimateria",
