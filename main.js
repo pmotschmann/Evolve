@@ -619,7 +619,7 @@ function fastLoop(){
                 global.city.morale['frenzy'] = 0;
             }
 
-            if (global.race.frenzy > 1){
+            if (global.race.frenzy >= 1){
                 let frenzy = Math.ceil(Math.log2(global.race.frenzy));
                 global.city.morale.frenzy = frenzy;
                 morale += frenzy;
@@ -867,7 +867,7 @@ function fastLoop(){
             power_generated[loc('city_mill_title2')] = -(power);
         }
 
-        if (global.city['windmill'] && global.tech['wind_plant']){
+        if (global.city['windmill'] && global.tech['wind_plant'] && global.race['soul_eater']){
             max_power -= global.city.windmill.count;
             power_grid += global.city.windmill.count;
             power_generated[loc('city_mill_title2')] = global.city.windmill.count;

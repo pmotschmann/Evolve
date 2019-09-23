@@ -1691,7 +1691,7 @@ export const actions = {
         junker: {
             id: 'evo-junker',
             title: loc('evo_challenge_junker'),
-            desc: loc('evo_challenge_junker_desc'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_junker_desc')}</div>` : loc('evo_challenge_junker_desc'); },
             cost: {
                 DNA(){ return 25; }
             },
@@ -1713,7 +1713,7 @@ export const actions = {
         joyless: {
             id: 'evo-joyless',
             title: loc('evo_challenge_joyless'),
-            desc: loc('evo_challenge_joyless_desc'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_joyless_desc')}</div>` : loc('evo_challenge_joyless_desc'); },
             cost: {
                 DNA(){ return 25; }
             },
@@ -1731,7 +1731,7 @@ export const actions = {
         decay: {
             id: 'evo-decay',
             title: loc('evo_challenge_decay'),
-            desc: loc('evo_challenge_decay_desc'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_decay_desc')}</div>` : loc('evo_challenge_decay_desc'); },
             cost: {
                 DNA(){ return 25; }
             },
@@ -1802,6 +1802,7 @@ export const actions = {
             },
             reqs: {},
             trait: ['evil'],
+            not_trait: ['kindling_kindred'],
             no_queue(){ return true },
             action(){
                 if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
@@ -2081,6 +2082,7 @@ export const actions = {
                 let farming = global.tech['agriculture'] >= 2 ? 1.25 : 0.75;
                 farming *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
+                farming *= global.city.biome === 'hellscape' ? 0.25 : 1;
                 farming = +farming.toFixed(2);
                 return global.tech['farm'] ? `<div>${loc('city_farm_effect',[farming])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect',[farming]); 
             },
@@ -2145,6 +2147,7 @@ export const actions = {
                 return loc('city_windmill_desc');
             },
             reqs: { wind_plant: 1 },
+            trait: ['soul_eater'],
             cost: { 
                 Money(){ return costMultiplier('windmill', 1000, 1.31); },
                 Lumber(){ return costMultiplier('windmill', 600, 1.33); },
@@ -3967,7 +3970,7 @@ export const actions = {
             desc: loc('tech_windmill'),
             reqs: { high_tech: 4 },
             grant: ['wind_plant',1],
-            trait: ['evil'],
+            trait: ['soul_eater'],
             cost: { 
                 Knowledge(){ return 66000; }
             },
@@ -11703,7 +11706,7 @@ function sentience(){
     global.city.calendar.day = 0;
 
     var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
-    if (global.race['evil']){
+    if (global.race['evil'] && !global.race['kindling_kindred']){
         global.city['slaughter'] = 1;
         city_actions = ['slaughter'];
     }

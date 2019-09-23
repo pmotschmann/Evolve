@@ -11,7 +11,8 @@ export const job_desc = {
         }
         multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
         let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
-        let gain = +(impact * multiplier).toFixed(1);
+        impact *= global.city.biome === 'hellscape' ? 0.25 : 1;
+        let gain = +(impact * multiplier).toFixed(2);
         return loc('job_farmer_desc',[gain]);
     },
     lumberjack: function(){
