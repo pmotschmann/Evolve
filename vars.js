@@ -269,6 +269,10 @@ if (convertVersion(global['version']) < 6006 && !global.city['windmill'] && glob
     global.city['windmill'] = { count: 0 };
 }
 
+if (convertVersion(global['version']) < 6006 && global.tech['wind_plant'] && !global.race['soul_eater'] && !global.race['carnivore']){
+    delete global.tech['wind_plant'];
+}
+
 global['version'] = '0.6.6';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
