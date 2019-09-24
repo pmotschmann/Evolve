@@ -1028,9 +1028,7 @@ export function dragQueue(){
     Sortable.create(el,{
         onEnd(e){
             let order = global.queue.queue;
-            var tmp = order[e.oldDraggableIndex];
-            order[e.oldDraggableIndex] = order[e.newDraggableIndex];
-            order[e.newDraggableIndex] = tmp;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
             global.queue.queue = order;
             buildQueue();
             resizeGame();

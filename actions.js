@@ -11976,9 +11976,7 @@ export function resDragQueue(){
     Sortable.create(el,{
         onEnd(e){
             let order = global.r_queue.queue;
-            var tmp = order[e.oldDraggableIndex];
-            order[e.oldDraggableIndex] = order[e.newDraggableIndex];
-            order[e.newDraggableIndex] = tmp;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
             global.r_queue.queue = order;
             resQueue();
         }
