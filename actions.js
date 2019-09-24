@@ -1856,21 +1856,39 @@ export const actions = {
                         if (global['resource'][global.race.species].amount > 0){
                             global['resource'][global.race.species].amount--;
                             global['resource'].Food.amount += Math.rand(250,1000);
+                            let low = 300;
+                            let high = 600;
+                            if (global.tech['sacrifice']){
+                                switch (global.tech['sacrifice']){
+                                    case 1:
+                                        low = 900;
+                                        high = 1800;
+                                        break;
+                                    case 2:
+                                        low = 1800;
+                                        high = 3600;
+                                        break;
+                                    case 3:
+                                        low = 3600;
+                                        high = 7200;
+                                        break;
+                                }
+                            }
                             switch (Math.rand(0,5)){
                                 case 0:
-                                    global.city.s_alter.rage += Math.rand(300,600);
+                                    global.city.s_alter.rage += Math.rand(low,high);
                                     break;
                                 case 1:
-                                    global.city.s_alter.mind += Math.rand(300,600);
+                                    global.city.s_alter.mind += Math.rand(low,high);
                                     break;
                                 case 2:
-                                    global.city.s_alter.regen += Math.rand(300,600);
+                                    global.city.s_alter.regen += Math.rand(low,high);
                                     break;
                                 case 3:
-                                    global.city.s_alter.mine += Math.rand(300,600);
+                                    global.city.s_alter.mine += Math.rand(low,high);
                                     break;
                                 case 4:
-                                    global.city.s_alter.harvest += Math.rand(300,600);
+                                    global.city.s_alter.harvest += Math.rand(low,high);
                                     break;
                             }
                         }
@@ -7396,6 +7414,60 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['slave_pen'] = { count: 0, slaves: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        ceremonial_dagger: {
+            id: 'tech-ceremonial_dagger',
+            title: loc('tech_ceremonial_dagger'),
+            desc: loc('tech_ceremonial_dagger'),
+            reqs: { mining: 1 },
+            grant: ['sacrifice',1],
+            trait: ['cannibalize'],
+            cost: { 
+                Knowledge(){ return 60; }
+            },
+            effect: loc('tech_ceremonial_dagger_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        last_rites: {
+            id: 'tech-last_rites',
+            title: loc('tech_last_rites'),
+            desc: loc('tech_last_rites'),
+            reqs: { sacrifice: 1, theology: 2 },
+            grant: ['sacrifice',2],
+            trait: ['cannibalize'],
+            cost: { 
+                Knowledge(){ return 1000; }
+            },
+            effect: loc('tech_last_rites_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        ancient_infusion: {
+            id: 'tech-last_rites',
+            title: loc('tech_ancient_infusion'),
+            desc: loc('tech_ancient_infusion'),
+            reqs: { sacrifice: 2, theology: 4 },
+            grant: ['sacrifice',3],
+            trait: ['cannibalize'],
+            cost: { 
+                Knowledge(){ return 182000; }
+            },
+            effect: loc('tech_ancient_infusion_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
