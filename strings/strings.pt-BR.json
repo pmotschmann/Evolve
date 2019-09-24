@@ -165,7 +165,7 @@
   "craftsman_assigned": "Artesão Designado",
   "job_craftsman_desc1": "O artesão trabalhará para produzir os recursos designados. Todos os materiais produzidos serão entregues a cada 28 dias.",
   "job_craftsman_desc2": "O artesão trabalhará para produzir os recursos designados. Todos os materiais produzidos serão entregues a cada 14 dias.",
-  "event_dna": "Algumas moléculas de DNA se replicaram. Você ganha %0 DNA.",
+  "event_dna": "Algumas moléculas de DNA se replicaram. Você ganhou %0 DNA.",
   "event_rna": "Um meteoro impactou o planeta, trazendo novo material genético com sigo. Ganhou %0 RNA.",
   "event_inspiration": "Seus cientistas se inspiraram. Ganham %0 de Conhecimento.",
   "event_fire": "Um incêndio aconteceu, destruindo %0 de madeira.",
