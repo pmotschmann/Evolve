@@ -1,6 +1,7 @@
 
 #### 0.6.5 - 9/23/2019
-Restored windmills to cath
+Restored windmills to cath<br>
+Challenge Multiplier Dark Energy rounding calculation fixed<br>
 
 #### 0.6.5 - 9/21/2019
 Fixed display issue with frenzy appearing to never drop below 1%<br>

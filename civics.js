@@ -1022,25 +1022,26 @@ function defineMad(){
     vues['mad'].$mount('#mad');
 }
 
-export function challenge_multiplier(value,type){
+export function challenge_multiplier(value,type,decimals){
+    decimals = decimals || 0;
     let challenge_level = 0;
-    if (global.race.universe === 'micro'){ value = Math.round(value * 0.25); }
-    if (global.race.universe === 'heavy' && type !== 'mad'){ value = Math.round(value * 1.25); }
+    if (global.race.universe === 'micro'){ value = value * 0.25; }
+    if (global.race.universe === 'heavy' && type !== 'mad'){ value = value * 1.25; }
     if (global.race['no_plasmid']){ challenge_level++; }
     if (global.race['no_trade']){ challenge_level++; }
     if (global.race['no_craft']){ challenge_level++; }
     if (global.race['no_crispr']){ challenge_level++; }
     switch (challenge_level){
         case 1:
-            return Math.round(value * 1.05);
+            return +(value * 1.05).toFixed(decimals);
         case 2:
-            return Math.round(value * 1.10);
+            return +(value * 1.10).toFixed(decimals);
         case 3:
-            return Math.round(value * 1.20);
+            return +(value * 1.20).toFixed(decimals);
         case 4:
-            return Math.round(value * 1.35);
+            return +(value * 1.35).toFixed(decimals);
         default:
-            return value;
+            return +(value).toFixed(decimals);
     }
 }
 

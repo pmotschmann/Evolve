@@ -12075,7 +12075,7 @@ function big_bang(){
     let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5),'bigbang');
     let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
     new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
-    new_dark = challenge_multiplier(new_dark,'bigbang');
+    new_dark = challenge_multiplier(new_dark,'bigbang',3);
 
     checkAchievements();
 
