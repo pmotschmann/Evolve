@@ -154,7 +154,7 @@ function loadUnemployed(){
     vues['civ_free'].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
-            let text = global.race['carnivore'] || global.race['soul_eater'] ? (global.race['evil'] ? loc('job_evil_hunter_desc') : loc('job_hunter_desc')) : loc('job_unemployed_desc');
+            let text = global.race['carnivore'] || global.race['soul_eater'] ? (global.race['soul_eater'] ? loc('job_evil_hunter_desc') : loc('job_hunter_desc')) : loc('job_unemployed_desc');
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
             $('#main').append(popper);
             popper.show();

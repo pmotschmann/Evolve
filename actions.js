@@ -1753,7 +1753,7 @@ export const actions = {
             title: loc('city_food'),
             desc: loc('city_food_desc'),
             reqs: { primitive: 1 },
-            not_trait: ['evil'],
+            not_trait: ['soul_eater'],
             no_queue(){ return true },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
