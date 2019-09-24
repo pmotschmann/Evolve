@@ -1,5 +1,5 @@
 import { global, vues, poppers, messageQueue, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
-import { powerModifier } from './functions.js';
+import { powerModifier, challenge_multiplier } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -2293,7 +2293,19 @@ const interstellarProjects = {
                 if (global.tech['blackhole'] >= 5){
                     let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
                     let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
-                    return global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_blackhole_desc4',[home,mass,exotic]) : loc('interstellar_blackhole_desc3',[home,mass]);
+                    if (global.tech['whitehole']){
+                        let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+                        let plasmid = challenge_multiplier(Math.round(pop / 2),'bigbang');
+                        let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 2.5),'bigbang');
+                        let dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
+                        dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
+                        dark = challenge_multiplier(dark,'bigbang',3);
+
+                        return `<div>${loc('interstellar_blackhole_desc4',[home,mass,exotic])}</div><div class="has-text-advanced">${loc('interstellar_blackhole_desc5',[plasmid,phage,dark])}</div>`;
+                    }
+                    else {
+                        return global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_blackhole_desc4',[home,mass,exotic]) : loc('interstellar_blackhole_desc3',[home,mass]);
+                    }
                 }
                 else {
                     return global.tech['blackhole'] ? loc('interstellar_blackhole_desc2',[home]) : loc('interstellar_blackhole_desc1',[home]);

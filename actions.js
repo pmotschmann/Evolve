@@ -1,11 +1,11 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, powerModifier } from './functions.js';
+import { timeCheck, timeFormat, powerModifier, challenge_multiplier } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineGarrison, buildGarrison, armyRating, challenge_multiplier, dragQueue } from './civics.js';
+import { defineGarrison, buildGarrison, armyRating, dragQueue } from './civics.js';
 import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
@@ -9527,7 +9527,7 @@ export const actions = {
         stabilize_blackhole: {
             id: 'tech-stabilize_blackhole',
             title: loc('tech_stabilize_blackhole'),
-            desc: loc('tech_stabilize_blackhole'),
+            desc(){ return `<div>${loc('tech_stabilize_blackhole')}</div><div class="has-text-danger">${loc('tech_stabilize_blackhole2')}</div>`; },
             reqs: { whitehole: 1 },
             grant: ['stablized',1],
             cost: {

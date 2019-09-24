@@ -3,6 +3,8 @@
 Added special tech tree to sacrifical altar to boost it's effectiveness per sacrifice<br>
 Restored windmills to cath<br>
 Challenge Multiplier Dark Energy rounding calculation fixed<br>
+Added extra information to blackhole description when it reaches destabilization point<br>
+Added a warning to stabilize option that it will reset your exotic matter<br>
 
 #### 0.6.5 - 9/21/2019
 Fixed display issue with frenzy appearing to never drop below 1%<br>

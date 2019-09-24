@@ -1,4 +1,5 @@
 import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
+import { challenge_multiplier } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
@@ -1020,29 +1021,6 @@ function defineMad(){
         }
     });
     vues['mad'].$mount('#mad');
-}
-
-export function challenge_multiplier(value,type,decimals){
-    decimals = decimals || 0;
-    let challenge_level = 0;
-    if (global.race.universe === 'micro'){ value = value * 0.25; }
-    if (global.race.universe === 'heavy' && type !== 'mad'){ value = value * 1.25; }
-    if (global.race['no_plasmid']){ challenge_level++; }
-    if (global.race['no_trade']){ challenge_level++; }
-    if (global.race['no_craft']){ challenge_level++; }
-    if (global.race['no_crispr']){ challenge_level++; }
-    switch (challenge_level){
-        case 1:
-            return +(value * 1.05).toFixed(decimals);
-        case 2:
-            return +(value * 1.10).toFixed(decimals);
-        case 3:
-            return +(value * 1.20).toFixed(decimals);
-        case 4:
-            return +(value * 1.35).toFixed(decimals);
-        default:
-            return +(value).toFixed(decimals);
-    }
 }
 
 export function dragQueue(){
