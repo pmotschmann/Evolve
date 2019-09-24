@@ -1,5 +1,6 @@
 
 #### 0.6.5 - 9/23/2019
+Added special tech tree to sacrifical altar to boost it's effectiveness per sacrifice<br>
 Restored windmills to cath<br>
 Challenge Multiplier Dark Energy rounding calculation fixed<br>
 
