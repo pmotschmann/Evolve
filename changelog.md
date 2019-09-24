@@ -1,4 +1,8 @@
 
+#### 0.6.7 - 9/24/2019
+Cath windmills now generate power instead of just looking pretty<br>
+Fixed Spanish strings file, language now loads again<br>
+
 #### 0.6.6 - 9/23/2019
 Added special tech tree to sacrifical altar to boost it's effectiveness per sacrifice<br>
 Restored windmills to cath<br>

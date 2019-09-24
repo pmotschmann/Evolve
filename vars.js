@@ -273,7 +273,7 @@ if (convertVersion(global['version']) < 6006 && global.tech['wind_plant'] && !gl
     delete global.tech['wind_plant'];
 }
 
-global['version'] = '0.6.6';
+global['version'] = '0.6.7';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
