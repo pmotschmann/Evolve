@@ -2295,7 +2295,15 @@ const interstellarProjects = {
                     let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                     if (global.tech['whitehole']){
                         let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
-                        let plasmid = challenge_multiplier(Math.round(pop / 2),'bigbang');
+                        let plasmid = Math.round(pop / 2);
+                        let k_base = global.stats.know;
+                        let k_inc = 40000;
+                        while (k_base > k_inc){
+                            plasmid++;
+                            k_base -= k_inc;
+                            k_inc *= 1.012;
+                        }
+                        plasmid = challenge_multiplier(plasmid,'bigbang');
                         let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 2.5),'bigbang');
                         let dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
                         dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
