@@ -2114,6 +2114,7 @@ export const actions = {
                 }
             },
             reqs: { agriculture: 4 },
+            not_tech: ['wind_plant'],
             cost: { 
                 Money(){ return costMultiplier('mill', 1000, 1.31); },
                 Lumber(){ return costMultiplier('mill', 600, 1.33); },
@@ -2147,7 +2148,6 @@ export const actions = {
                 return loc('city_windmill_desc');
             },
             reqs: { wind_plant: 1 },
-            trait: ['soul_eater'],
             cost: { 
                 Money(){ return costMultiplier('windmill', 1000, 1.31); },
                 Lumber(){ return costMultiplier('windmill', 600, 1.33); },
@@ -3951,7 +3951,7 @@ export const actions = {
             desc: loc('tech_windmill'),
             reqs: { hunting: 2, high_tech: 4 },
             grant: ['wind_plant',1],
-            not_trait: ['evil'],
+            not_trait: ['soul_eater'],
             cost: { 
                 Knowledge(){ return 66000; }
             },
