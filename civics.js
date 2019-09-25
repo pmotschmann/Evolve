@@ -1,5 +1,5 @@
 import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
-import { challenge_multiplier } from './functions.js';
+import { challenge_multiplier, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
@@ -54,27 +54,7 @@ export function buildQueue(){
             },
             filters: {
                 time(time){
-                    if (time < 0){
-                        return 'Never';
-                    }
-                    else {
-                        time = +(time.toFixed(0));
-                        if (time > 60){
-                            let secs = time % 60;
-                            let mins = (time - secs) / 60;
-                            if (mins >= 60){
-                                let r = mins % 60;
-                                let hours = (mins - r) / 60;
-                                return `${hours}h ${r}m`;
-                            }
-                            else {
-                                return `${mins}m ${secs}s`;
-                            }
-                        }
-                        else {
-                            return `${time}s`;
-                        }
-                    }
+                    return timeFormat(time);
                 }
             }
         });

@@ -10196,7 +10196,7 @@ export function setAction(c_action,action,type,old){
                                             }
                                         }
                                         if (!queued){
-                                            global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false });
+                                            global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
                                             resDragQueue();
                                         }
                                     }
@@ -11951,7 +11951,7 @@ export function resQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }}</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
     
     try {
         let bind = {
@@ -11960,6 +11960,11 @@ export function resQueue(){
             methods: {
                 remove(index){
                     global.r_queue.queue.splice(index,1);
+                }
+            },
+            filters: {
+                time(time){
+                    return timeFormat(time);
                 }
             }
         }
