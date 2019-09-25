@@ -9,7 +9,7 @@ Cath windmills now generate power instead of just looking pretty<br>
 Fixed Spanish strings file, language now loads again<br>
 
 #### 0.6.6 - 9/23/2019
-Added special tech tree to sacrifical altar to boost it's effectiveness per sacrifice<br>
+Added special tech tree to sacrifical altar to boost its effectiveness per sacrifice<br>
 Restored windmills to cath<br>
 Challenge Multiplier Dark Energy rounding calculation fixed<br>
 Added extra information to blackhole description when it reaches destabilization point<br>
