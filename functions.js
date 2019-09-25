@@ -112,7 +112,7 @@ export function timeCheck(c_action,track){
     if (c_action.cost){
         let time = 0;
         Object.keys(c_action.cost).forEach(function (res){
-            var testCost = Number(c_action.cost[res]()) || 0;
+            var testCost = adjustCosts(Number(c_action.cost[res]()) || 0);
             let res_have = Number(global.resource[res].amount);
             if (track){
                 res_have += global.resource[res].diff * track.t;
@@ -206,4 +206,82 @@ export function challenge_multiplier(value,type,decimals){
         default:
             return +(value).toFixed(decimals);
     }
+}
+
+export function adjustCosts(costs){
+    if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'RNA' || res === 'DNA'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.8); }
+            }
+        });
+        return newCosts;
+    }
+    costs = kindlingAdjust(costs);
+    costs = scienceAdjust(costs);
+    costs = rebarAdjust(costs);
+    return craftAdjust(costs);
+}
+
+function scienceAdjust(costs){
+    if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Knowledge'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * (global.race['smart'] ? 0.9 : 1.05)); }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function kindlingAdjust(costs){
+    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res !== 'Lumber' && res !== 'Plywood'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 1.05) || 0; }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function craftAdjust(costs){
+    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'])){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res]()); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function rebarAdjust(costs){
+    if (costs['Cement'] && global.tech['cement'] && global.tech['cement'] >= 2){
+        let discount = global.tech['cement'] >= 3 ? 0.8 : 0.9;
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Cement'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * discount) || 0; }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res]()); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }

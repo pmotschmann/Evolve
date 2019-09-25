@@ -2,6 +2,7 @@
 #### 0.6.8 - 9/24/2019
 Queue reordering no longer swaps the dragged item with the one in the target spot<br>
 Added timers to research queue<br>
+Cost adjustments are now applied to queue timers increasing their accuracy<br>
 
 #### 0.6.7 - 9/24/2019
 Cath windmills now generate power instead of just looking pretty<br>
