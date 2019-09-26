@@ -1275,7 +1275,7 @@ export function spatialReasoning(value){
 
 export function plasmidBonus(){
     let plasmid_bonus = 0;
-    let plasmids = global.race['no_plasmid'] ? global.race.mutation : global.race.Plasmid.count;
+    let plasmids = global.race['no_plasmid'] ? global.race.mutation : (global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count);
     if (plasmids > global.race.Plasmid.count){
         plasmids = global.race.Plasmid.count;
     }
@@ -1298,6 +1298,9 @@ export function plasmidBonus(){
             temple_bonus *= 1.13;
         }
         plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
+    }
+    if (global.race.universe === 'antimatter'){
+        plasmid_bonus /= 4;
     }
     return plasmid_bonus;
 }

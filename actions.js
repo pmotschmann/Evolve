@@ -1592,7 +1592,12 @@ export const actions = {
                     global.evolution['bunker'] = { count: 1 };
                     removeAction(actions.evolution.bunker.id);
                     evoProgress();
-                    global.evolution['plasmid'] = { count: 0 };
+                    if (global.race.universe === 'antimatter'){
+                        global.evolution['mastery'] = { count: 0 };
+                    }
+                    else {
+                        global.evolution['plasmid'] = { count: 0 };
+                    }
                     global.evolution['trade'] = { count: 0 };
                     global.evolution['craft'] = { count: 0 };
                     global.evolution['crispr'] = { count: 0 };
@@ -1602,7 +1607,12 @@ export const actions = {
                         global.evolution['decay'] = { count: 0 };
                     }
                     challengeGeneHeader();
-                    addAction('evolution','plasmid');
+                    if (global.race.universe === 'antimatter'){
+                        addAction('evolution','mastery');
+                    }
+                    else {
+                        addAction('evolution','plasmid');
+                    }
                     addAction('evolution','trade');
                     addAction('evolution','craft');
                     addAction('evolution','crispr');
@@ -1629,6 +1639,24 @@ export const actions = {
                     global.race['no_plasmid'] = 1;
                     global.evolution['plasmid'] = { count: 1 };
                     removeAction(actions.evolution.plasmid.id);
+                    drawAchieve();
+                }
+                return false;
+            }
+        },
+        mastery: {
+            id: 'evo-mastery',
+            title: loc('evo_challenge_mastery'),
+            desc: loc('evo_challenge_mastery'),
+            cost: {
+                DNA(){ return 10; }
+            },
+            effect: loc('evo_challenge_mastery_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.race['weak_mastery'] = 1;
+                    global.evolution['mastery'] = { count: 1 };
+                    removeAction(actions.evolution.mastery.id);
                     drawAchieve();
                 }
                 return false;

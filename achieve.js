@@ -545,6 +545,7 @@ export function unlockAchieve(achievement,small){
     if (global.race['no_trade']){ a_level++; }
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
+    if (global.race['weak_mastery']){ a_level++; }
     if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < a_level)){
         global.settings.showAchieve = true;
         if (global.stats.achieve[achievement]){
@@ -594,6 +595,7 @@ export function unlockFeat(feat,small){
     if (global.race['no_trade']){ a_level++; }
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
+    if (global.race['weak_mastery']){ a_level++; }
     if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < a_level)){
         global.settings.showAchieve = true;
         global.stats.feat[feat] = a_level;
@@ -715,6 +717,7 @@ export function drawAchieve(){
     if (global.race['no_trade']){ a_level++; }
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
+    if (global.race['weak_mastery']){ a_level++; }
 
     if (a_level > 1 && $('#topBar .planet .flair').length === 0){
         if ($('#topBar span.flair')){
@@ -726,7 +729,8 @@ export function drawAchieve(){
             var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
 
-            if (global.race['no_plasmid']){ popper.append($(`<div>${loc('evo_challenge_plasmid')}</div>`)); } 
+            if (global.race['no_plasmid']){ popper.append($(`<div>${loc('evo_challenge_plasmid')}</div>`)); }
+            if (global.race['weak_mastery']){ popper.append($(`<div>${loc('evo_challenge_mastery')}</div>`)); }
             if (global.race['no_trade']){ popper.append($(`<div>${loc('evo_challenge_trade')}</div>`)); }
             if (global.race['no_craft']){ popper.append($(`<div>${loc('evo_challenge_craft')}</div>`)); }
             if (global.race['no_crispr']){ popper.append($(`<div>${loc('evo_challenge_crispr')}</div>`)); }
@@ -750,6 +754,7 @@ export function checkAchievements(){
     if (global.race['no_trade']){ a_level++; }
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
+    if (global.race['weak_mastery']){ a_level++; }
     if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'].l < a_level){
         let total = 0;
         const keys = Object.keys(achievements)

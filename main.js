@@ -349,7 +349,7 @@ if (global.race.species === 'protoplasm'){
     
     if (global.evolution['bunker'] && global.evolution['bunker'].count >= 1){
         challengeGeneHeader();
-        var challenge_genes = ['plasmid','trade','craft','crispr'];
+        var challenge_genes = ['plasmid','mastery','trade','craft','crispr'];
         for (var i = 0; i < challenge_genes.length; i++){
             if (global.evolution[challenge_genes[i]] && global.evolution[challenge_genes[i]].count == 0){
                 addAction('evolution',challenge_genes[i]);
@@ -470,8 +470,14 @@ function fastLoop(){
         global_multiplier *= 1.25;
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-        breakdown.p['Global'][loc('mastery')] = (achieve_level * 0.25) + '%';
-        global_multiplier *= 1 + (achieve_level * 0.0025);
+        if (global.race['weak_mastery']){
+            breakdown.p['Global'][loc('mastery')] = (achieve_level * 0.025) + '%';
+            global_multiplier *= 1 + (achieve_level * 0.00025);
+        }
+        else {
+            breakdown.p['Global'][loc('mastery')] = (achieve_level * 0.25) + '%';
+            global_multiplier *= 1 + (achieve_level * 0.0025);
+        }
     }
     if (global.race['suction_grip']){
         breakdown.p['Global'][loc('trait_suction_grip_bd')] = '8%';

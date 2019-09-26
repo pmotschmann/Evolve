@@ -2798,7 +2798,7 @@ export const universe_types = {
 };
 
 export function setUniverse(){
-    let universes = ['standard','heavy','evil','micro'];
+    let universes = ['standard','heavy','antimatter','evil','micro'];
 
     for (let i=0; i<universes.length; i++){
         let universe = universes[i];
