@@ -1251,9 +1251,9 @@ function unitMass(name){
 }
 
 export function spatialReasoning(value){
-    let plasmids = global.race.Plasmid.count;
+    let plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
     if (global.race['no_plasmid']){
-        plasmids = global.race.mutation > global.race.Plasmid.count ? global.race.Plasmid.count : global.race.mutation;
+        plasmids = global.race.mutation > plasmids ? plasmids : global.race.mutation;
     }
     if (global.genes['store'] && global.genes['store'] >= 4){
         plasmids += global.race.Phage.count;
@@ -1270,14 +1270,17 @@ export function spatialReasoning(value){
         value *= 1 + (global.race.Dark.count / 200);
         value = Math.round(value);
     }
+    if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
+        value *= 1 + (global.city.temple.count * 0.04);
+    }
     return value;
 }
 
 export function plasmidBonus(){
     let plasmid_bonus = 0;
     let plasmids = global.race['no_plasmid'] ? global.race.mutation : (global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count);
-    if (plasmids > global.race.Plasmid.count){
-        plasmids = global.race.Plasmid.count;
+    if (plasmids > (global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count)){
+        plasmids = (global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count);
     }
     if (global.race['decayed']){
         plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
@@ -1289,7 +1292,7 @@ export function plasmidBonus(){
     else {
         plasmid_bonus = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
     }
-    if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid']){
+    if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
         let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
             temple_bonus += global.civic.professor.workers * 0.002;

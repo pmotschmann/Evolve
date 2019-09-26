@@ -458,6 +458,7 @@
   "city_temple_effect2": "Increases the production effect of Plasmids by %0%.",
   "city_temple_effect3": "+1 Trade Route",
   "city_temple_effect4": "+2.5% Tax Income",
+  "city_temple_effect5": "Increases the storage effect of Anti-Plasmids by %0%.",
   "city_shrine": "Shrine",
   "city_shrine_desc": "Unicorn Shrine",
   "city_shrine_effect": "Combined All Shrines",

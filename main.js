@@ -447,11 +447,14 @@ function fastLoop(){
         breakdown.p['Global'][loc('resource_Plasmid_name')] = (plasmidBonus() * 100) + '%';
         global_multiplier += plasmidBonus();
     }
-    if (global.race['no_plasmid']){
+    if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
         if (global.city['temple'] && global.city['temple'].count){
             let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
+            if (global.race.universe === 'antimatter'){
+                temple_bonus /= 2;
+            }
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                temple_bonus += global.civic.professor.workers * 0.0004;
+                temple_bonus += global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
             }
             if (global.race['spiritual']){
                 temple_bonus *= 1.13;
