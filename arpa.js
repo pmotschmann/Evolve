@@ -188,7 +188,7 @@ const genePool = {
         reqs: { creep: 4 },
         grant: ['creep',5],
         cost: 999,
-        effect(){ return crispr_effect($(this)[0].cost()); },,
+        effect(){ return crispr_effect($(this)[0].cost()); },
         action(){
             if (payPlasmids('genetic_repository')){
                 return true;
