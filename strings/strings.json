@@ -2084,6 +2084,7 @@
   "resource_Genes_name": "Genes",
   "resource_Soul_Gem_name": "Soul Gem",
   "resource_Plasmid_name": "Plasmid",
+  "resource_AntiPlasmid_name": "Anti-Plasmid",
   "resource_Phage_name": "Phage",
   "resource_Dark_name": "Dark Energy",
   "resource_market_buy": "BUY",

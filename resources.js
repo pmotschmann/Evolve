@@ -212,6 +212,7 @@ export function defineResources(){
         loadContainerCounter();
     }
     loadSpecialResource('Plasmid');
+    loadSpecialResource('AntiPlasmid');
     loadSpecialResource('Phage');
     loadSpecialResource('Dark');
 }
@@ -465,15 +466,21 @@ function loadSpecialResource(name,color) {
         $('#resources').append(bind);
         return;
     }
-
     color = color || 'special';
+    let bind = name;
     
-    var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count }}</span></div>`);
-   
-    $('#resources').append(res_container);
+    if (name === 'AntiPlasmid'){
+        var res_container = $(`<div id="res${name}" class="resource" v-show="anti"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ anti }}</span></div>`);
+        $('#resources').append(res_container);
+        bind = 'Plasmid';
+    }
+    else {
+        var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count }}</span></div>`);
+        $('#resources').append(res_container);
+    }
     
     vues[`res_${name}`] = new Vue({
-        data: global.race[name]
+        data: global.race[bind]
     });
     vues[`res_${name}`].$mount(`#res${name}`);
 }
