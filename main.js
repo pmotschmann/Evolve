@@ -443,8 +443,12 @@ function fastLoop(){
     
     breakdown.p['Global'] = {};
     var global_multiplier = 1;
-    if (global.race.Plasmid.count > 0){
-        breakdown.p['Global'][loc('resource_Plasmid_name')] = (plasmidBonus() * 100) + '%';
+    if (global.race.Plasmid.count > 0  && ((global.race.universe !== 'antimatter') || (global.genes['bleed'] && global.race.universe === 'antimatter'))){
+        breakdown.p['Global'][loc('resource_Plasmid_name')] = (plasmidBonus('plasmid') * 100) + '%';
+        global_multiplier += plasmidBonus();
+    }
+    if (global.race.Plasmid.anti > 0  && ((global.race.universe === 'antimatter') || (global.genes['bleed'] && global.genes['bleed'] >= 2 && global.race.universe !== 'antimatter'))){
+        breakdown.p['Global'][loc('resource_AntiPlasmid_name')] = (plasmidBonus('antiplasmid') * 100) + '%';
         global_multiplier += plasmidBonus();
     }
     if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){

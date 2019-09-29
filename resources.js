@@ -1278,39 +1278,72 @@ export function spatialReasoning(value){
         value = Math.round(value);
     }
     if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
-        value *= 1 + (global.city.temple.count * 0.04);
+        value *= 1 + (global.city.temple.count * 0.06);
     }
     return value;
 }
 
-export function plasmidBonus(){
-    let plasmid_bonus = 0;
-    let plasmids = global.race['no_plasmid'] ? global.race.mutation : (global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count);
-    if (plasmids > (global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count)){
-        plasmids = (global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count);
-    }
-    if (global.race['decayed']){
-        plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
-    }
-    let p_cap = 250 + global.race.Phage.count;
-    if (plasmids > p_cap){
-        plasmid_bonus = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
-    }
-    else {
-        plasmid_bonus = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
-    }
-    if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
-        let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
-        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            temple_bonus += global.civic.professor.workers * 0.002;
+export function plasmidBonus(type){
+    let standard = 0;
+    let anti = 0;    
+    if (global.race.universe !== 'antimatter' || global.genes['bleed']){
+        let plasmids = global.race['no_plasmid'] ? global.race.mutation : global.race.Plasmid.count;
+        if (plasmids > global.race.Plasmid.count){
+            plasmids = global.race.Plasmid.count;
         }
-        if (global.race['spiritual']){
-            temple_bonus *= 1.13;
+        if (global.race['decayed']){
+            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
         }
-        plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
+        let p_cap = 250 + global.race.Phage.count;
+        if (plasmids > p_cap){
+            standard = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
+        }
+        else {
+            standard = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+        }
+        if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
+            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
+            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                temple_bonus += global.civic.professor.workers * 0.002;
+            }
+            if (global.race['spiritual']){
+                temple_bonus *= 1.13;
+            }
+            standard *= 1 + (global.city.temple.count * temple_bonus);
+        }
+        if (global.race.universe === 'antimatter' && global.genes['bleed']){
+            standard *= 0.05
+        }
     }
-    if (global.race.universe === 'antimatter'){
-        plasmid_bonus /= 4;
+
+    if (global.race.universe === 'antimatter' || (global.genes['bleed'] && global.genes['bleed'] >= 2)){
+        let plasmids = global.race.Plasmid.anti;
+        if (plasmids > global.race.Plasmid.anti){
+            plasmids = global.race.Plasmid.anti;
+        }
+        if (global.race['decayed']){
+            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
+        }
+        let p_cap = 250 + global.race.Phage.count;
+        if (plasmids > p_cap){
+            anti = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
+        }
+        else {
+            anti = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+        }
+        anti /= 3;
+        if (global.race.universe !== 'antimatter' && global.genes['bleed'] && global.genes['bleed'] >= 2){
+            anti *= 0.25
+        }
     }
-    return plasmid_bonus;
+
+    if (type && type === 'plasmid'){
+        return standard;
+    }
+    else if (type && type === 'antiplasmid'){
+        return anti;
+    }
+
+    let final = (1 + standard) * (1 + anti);
+    return final - 1;
 }

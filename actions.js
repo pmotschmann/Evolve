@@ -3201,7 +3201,7 @@ export const actions = {
                         faith *= 1.13;
                         faith = +(faith).toFixed(2);
                     }
-                    desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[4])}</div>`;
+                    desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[6])}</div>`;
                 }
                 else if (global.race['no_plasmid']){
                     let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;

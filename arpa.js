@@ -535,6 +535,36 @@ const genePool = {
             }
             return false;
         }
+    },
+    bleeding_effect: {
+        id: 'genes-bleeding_effect',
+        title: loc('arpa_genepool_bleeding_effect_title'),
+        desc: loc('arpa_genepool_bleeding_effect_desc',[0.05]),
+        reqs: { creep: 2 },
+        grant: ['bleed',1],
+        cost: 100,
+        effect(){ return crispr_effect($(this)[0].cost()); },
+        action(){
+            if (payPlasmids('bleeding_effect')){
+                return true;
+            }
+            return false;
+        }
+    },
+    synchronicity: {
+        id: 'genes-synchronicity',
+        title: loc('arpa_genepool_synchronicity_title'),
+        desc: loc('arpa_genepool_synchronicity_desc',[0.25]),
+        reqs: { bleed: 1 },
+        grant: ['bleed',2],
+        cost: 1000,
+        effect(){ return crispr_effect($(this)[0].cost()); },
+        action(){
+            if (payPlasmids('synchronicity')){
+                return true;
+            }
+            return false;
+        }
     }
 }
 
