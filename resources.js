@@ -1217,9 +1217,9 @@ function loadEjector(name,color){
         let res = $(`<span class="trade"></span>`);
         ejector.append(res);
 
-        res.append($(`<span role="button" aria-label="eject less ${name} ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="eject less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
         res.append($(`<span class="current">{{ e.${name} }}</span>`));
-        res.append($(`<span role="button" aria-label="eject more ${name} ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
 
         res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${unitMass(name)}</span> kt</span>`));
 
