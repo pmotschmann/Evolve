@@ -542,6 +542,9 @@ const genePool = {
         desc: loc('arpa_genepool_bleeding_effect_desc',[0.05]),
         reqs: { creep: 2 },
         grant: ['bleed',1],
+        condition(){
+            return global.race.universe === 'antimatter' ? true : false;
+        },
         cost: 100,
         effect(){ return crispr_effect($(this)[0].cost()); },
         action(){
@@ -557,10 +560,25 @@ const genePool = {
         desc: loc('arpa_genepool_synchronicity_desc',[0.25]),
         reqs: { bleed: 1 },
         grant: ['bleed',2],
-        cost: 1000,
+        cost: 500,
         effect(){ return crispr_effect($(this)[0].cost()); },
         action(){
             if (payPlasmids('synchronicity')){
+                return true;
+            }
+            return false;
+        }
+    },
+    astral_awareness: {
+        id: 'genes-astral_awareness',
+        title: loc('arpa_genepool_astral_awareness_title'),
+        desc: loc('arpa_genepool_astral_awareness_desc'),
+        reqs: { bleed: 2 },
+        grant: ['bleed',3],
+        cost: 1000,
+        effect(){ return crispr_effect($(this)[0].cost()); },
+        action(){
+            if (payPlasmids('astral_awareness')){
                 return true;
             }
             return false;

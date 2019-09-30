@@ -10088,6 +10088,9 @@ export function addAction(action,type,old){
 }
 
 export function setAction(c_action,action,type,old){
+    if (c_action['condition'] && !c_action.condition()){
+        return;
+    }
     if (c_action['not_trait']){
         for (let i=0; i<c_action.not_trait.length; i++){
             if (global.race[c_action.not_trait[i]]){

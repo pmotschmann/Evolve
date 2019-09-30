@@ -1270,6 +1270,9 @@ export function spatialReasoning(value){
         if (global.race.universe === 'antimatter'){
             divisor *= 2;
         }
+        if (global.genes['bleed'] && global.genes['bleed'] >= 3){
+            plasmids += global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
+        }
         value *= 1 + (plasmids / divisor);
         value = Math.round(value);
     }
