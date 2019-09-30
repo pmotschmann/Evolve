@@ -539,7 +539,7 @@ const genePool = {
     bleeding_effect: {
         id: 'genes-bleeding_effect',
         title: loc('arpa_genepool_bleeding_effect_title'),
-        desc: loc('arpa_genepool_bleeding_effect_desc',[0.025]),
+        desc: loc('arpa_genepool_bleeding_effect_desc',[2.5]),
         reqs: { creep: 2 },
         grant: ['bleed',1],
         condition(){
@@ -557,7 +557,7 @@ const genePool = {
     synchronicity: {
         id: 'genes-synchronicity',
         title: loc('arpa_genepool_synchronicity_title'),
-        desc: loc('arpa_genepool_synchronicity_desc',[0.25]),
+        desc: loc('arpa_genepool_synchronicity_desc',[25]),
         reqs: { bleed: 1 },
         grant: ['bleed',2],
         cost: 500,
