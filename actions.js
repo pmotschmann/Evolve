@@ -3195,12 +3195,12 @@ export const actions = {
                 if (global.race.universe === 'antimatter'){
                     let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.8 : 0.5;
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                        faith += +(global.civic.professor.workers * 0.02).toFixed(2);
+                        faith += global.civic.professor.workers * 0.02;
                     }
                     if (global.race['spiritual']){
                         faith *= 1.13;
-                        faith = +(faith).toFixed(2);
                     }
+                    faith = +(faith).toFixed(2);
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[6])}</div>`;
                 }
                 else if (global.race['no_plasmid']){
