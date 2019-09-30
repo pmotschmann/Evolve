@@ -1,8 +1,9 @@
 
-#### 0.6.9 - 9/29/2019
+#### 0.6.9 - 9/30/2019
 Antimatter Universe<br>
 Bleeding Effect line of CRISPR upgrades, requires Anti-Plasmids to unlock<br>
 Balorg can now unlock queues<br>
+Fixed aria labels in mass ejector<br>
 
 #### 0.6.8 - 9/24/2019
 Queue reordering no longer swaps the dragged item with the one in the target spot<br>
