@@ -73,7 +73,7 @@ vues['race'] = new Vue({
     },
     filters: {
         approx(kw){
-            return +(kw).toFixed(1);
+            return +(kw).toFixed(2);
         }
     }
 });
@@ -149,11 +149,11 @@ $('#powerStatus').on('mouseover',function(){
     $('#main').append(powerPopper);
     let drain = global.city.power_total - global.city.power;
     Object.keys(power_generated).forEach(function (k){
-        let gen = +(power_generated[k]).toFixed(1);
+        let gen = +(power_generated[k]).toFixed(2);
         powerPopper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${gen}</span></p>`);
     });
     powerPopper.append(`<p class="modal_bd"><span>${loc('power_consumed')}</span> <span class="has-text-danger"> -${drain}</span></p>`);
-    let avail = +(global.city.power).toFixed(1);
+    let avail = +(global.city.power).toFixed(2);
     if (global.city.power > 0){
         powerPopper.append(`<p class="modal_bd sum"><span>${loc('power_available')}</span> <span class="has-text-success">${avail}</span></p>`);
     }
