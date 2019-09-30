@@ -128,7 +128,7 @@ const genePool = {
         reqs: {},
         grant: ['creep',1],
         cost: 25,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('genetic_memory')){
                 return true;
@@ -143,7 +143,7 @@ const genePool = {
         reqs: { creep: 1 },
         grant: ['creep',2],
         cost: 75,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('animus')){
                 return true;
@@ -158,7 +158,7 @@ const genePool = {
         reqs: { creep: 2 },
         grant: ['creep',3],
         cost: 225,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('divine_remembrance')){
                 return true;
@@ -173,7 +173,7 @@ const genePool = {
         reqs: { creep: 3 },
         grant: ['creep',4],
         cost: 618,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('divine_proportion')){
                 return true;
@@ -188,7 +188,7 @@ const genePool = {
         reqs: { creep: 4 },
         grant: ['creep',5],
         cost: 999,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('genetic_repository')){
                 return true;
@@ -203,7 +203,7 @@ const genePool = {
         reqs: {},
         grant: ['store',1],
         cost: 50,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('spatial_reasoning')){
                 return true;
@@ -218,7 +218,7 @@ const genePool = {
         reqs: { store: 1 },
         grant: ['store',2],
         cost: 125,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('spatial_superiority')){
                 return true;
@@ -233,7 +233,7 @@ const genePool = {
         reqs: { store: 2 },
         grant: ['store',3],
         cost: 325,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('spatial_supremacy')){
                 return true;
@@ -248,7 +248,7 @@ const genePool = {
         reqs: { store: 3 },
         grant: ['store',4],
         cost: 500,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('dimensional_warping')){
                 return true;
@@ -263,7 +263,7 @@ const genePool = {
         reqs: {},
         grant: ['evolve',1],
         cost: 10,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('morphogenesis')){
                 return true;
@@ -278,7 +278,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['evolve',2],
         cost: 35,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('recombination')){
                 return true;
@@ -293,7 +293,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['synthesis',1],
         cost: 25,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('synthesis')){
                 return true;
@@ -308,7 +308,7 @@ const genePool = {
         reqs: { synthesis: 1 },
         grant: ['synthesis',2],
         cost: 40,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('karyokinesis')){
                 return true;
@@ -323,7 +323,7 @@ const genePool = {
         reqs: { synthesis: 2 },
         grant: ['synthesis',3],
         cost: 55,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('cytokinesis')){
                 return true;
@@ -338,7 +338,7 @@ const genePool = {
         reqs: { synthesis: 3, creep: 5 },
         grant: ['mutation',1],
         cost: 1250,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('mutation')){
                 global.genes['mutation'] = 1;
@@ -355,7 +355,7 @@ const genePool = {
         reqs: { mutation: 1 },
         grant: ['mutation',2],
         cost: 1500,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('transformation')){
                 global.genes['mutation'] = 2;
@@ -372,7 +372,7 @@ const genePool = {
         reqs: { mutation: 2 },
         grant: ['mutation',3],
         cost: 1750,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('metamorphosis')){
                 global.genes['mutation'] = 3;
@@ -389,7 +389,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['birth',1],
         cost: 65,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('replication')){
                 return true;
@@ -404,7 +404,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['crafty',1],
         cost: 45,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('artificer')){
                 return true;
@@ -419,7 +419,7 @@ const genePool = {
         reqs: { crafty: 1 },
         grant: ['crafty',2],
         cost: 90,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('detail_oriented')){
                 return true;
@@ -434,7 +434,7 @@ const genePool = {
         reqs: { crafty: 2 },
         grant: ['crafty',3],
         cost: 135,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('rigorous')){
                 return true;
@@ -449,7 +449,7 @@ const genePool = {
         reqs: { store: 1 },
         grant: ['queue',1],
         cost: 75,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('geographer')){
                 return true;
@@ -464,7 +464,7 @@ const genePool = {
         reqs: { queue: 1 },
         grant: ['queue',2],
         cost: 160,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('architect')){
                 return true;
@@ -479,7 +479,7 @@ const genePool = {
         reqs: {},
         grant: ['challenge',1],
         cost: 5,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('hardened_genes')){
                 return true;
@@ -494,7 +494,7 @@ const genePool = {
         reqs: {challenge:1},
         grant: ['challenge',2],
         cost: 50,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('unlocked')){
                 return true;
@@ -509,7 +509,7 @@ const genePool = {
         reqs: { evolve: 2, old_gods: 1 },
         grant: ['ancients',1],
         cost: 120,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('ancients')){
                 global.genes['ancients'] = 1;
@@ -526,7 +526,7 @@ const genePool = {
         reqs: { ancients: 1, mutation: 3 },
         grant: ['transcendence',1],
         cost: 3000,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('transcendence')){
                 global.genes['transcendence'] = 1;
@@ -546,7 +546,7 @@ const genePool = {
             return global.race.universe === 'antimatter' ? true : false;
         },
         cost: 100,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('bleeding_effect')){
                 return true;
@@ -561,7 +561,7 @@ const genePool = {
         reqs: { bleed: 1 },
         grant: ['bleed',2],
         cost: 500,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('synchronicity')){
                 return true;
@@ -576,7 +576,7 @@ const genePool = {
         reqs: { bleed: 2 },
         grant: ['bleed',3],
         cost: 1000,
-        effect(){ return crispr_effect($(this)[0].cost()); },
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('astral_awareness')){
                 return true;
