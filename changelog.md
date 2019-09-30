@@ -1,43 +1,43 @@
 
-#### 0.6.9 - 9/30/2019
+#### 0.6.9 - 9/30/2019 ####
 Antimatter Universe<br>
 Bleeding Effect line of CRISPR upgrades, requires Anti-Plasmids to unlock<br>
 Balorg can now unlock queues<br>
 Fixed aria labels in mass ejector<br>
 
-#### 0.6.8 - 9/24/2019
+#### 0.6.8 - 9/24/2019 ####
 Queue reordering no longer swaps the dragged item with the one in the target spot<br>
 Added timers to research queue<br>
 Cost adjustments are now applied to queue timers increasing their accuracy<br>
 
-#### 0.6.7 - 9/24/2019
+#### 0.6.7 - 9/24/2019 ####
 Cath windmills now generate power instead of just looking pretty<br>
 Fixed Spanish strings file, language now loads again<br>
 
-#### 0.6.6 - 9/23/2019
+#### 0.6.6 - 9/23/2019 ####
 Added special tech tree to sacrifical altar to boost its effectiveness per sacrifice<br>
 Restored windmills to cath<br>
 Challenge Multiplier Dark Energy rounding calculation fixed<br>
 Added extra information to blackhole description when it reaches destabilization point<br>
 Added a warning to stabilize option that it will reset your exotic matter<br>
 
-#### 0.6.5 - 9/21/2019
+#### 0.6.5 - 9/21/2019 ####
 Fixed display issue with frenzy appearing to never drop below 1%<br>
 Updated the tooltip values on farms and farmers to include the hellscape penalty<br>
 Fixed Evil Ents so they start with Gather Stone option<br>
 
-#### 0.6.4 - 9/19/2019
+#### 0.6.4 - 9/19/2019 ####
 Fixed double windmill issue with evil universe races<br>
 Spanish language updates<br>
 Added warnings to challenge modes in micro universe that you will not receive credit<br>
 
-#### 0.6.3 - 9/17/2019
+#### 0.6.3 - 9/17/2019 ####
 Restored broken perks<br>
 
-#### 0.6.2 - 9/17/2019
+#### 0.6.2 - 9/17/2019 ####
 Bug Fixes<br>
 
-#### 0.6.1 - 9/17/2019
+#### 0.6.1 - 9/17/2019 ####
 Universe Update, explore ~~ 4 ~~ 3 new universe types:<br>
 Heavy Gravity Universe<br>
 Micro Universe<br>
