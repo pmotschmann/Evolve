@@ -5120,12 +5120,32 @@ export const actions = {
                 return false;
             }
         },
+        evil_planning: {
+            id: 'tech-evil_planning',
+            title: loc('tech_urban_planning'),
+            desc: loc('tech_urban_planning'),
+            reqs: { banking: 2 },
+            grant: ['queue',1],
+            trait: ['terrifying'],
+            cost: {
+                Knowledge(){ return 2500; }
+            },
+            effect: loc('tech_urban_planning_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.queue.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         urban_planning: {
             id: 'tech-urban_planning',
             title: loc('tech_urban_planning'),
             desc: loc('tech_urban_planning'),
             reqs: { banking: 2, currency: 2 },
             grant: ['queue',1],
+            not_trait: ['terrifying'],
             cost: {
                 Knowledge(){ return 2500; }
             },
