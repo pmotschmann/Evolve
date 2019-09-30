@@ -539,7 +539,7 @@ const genePool = {
     bleeding_effect: {
         id: 'genes-bleeding_effect',
         title: loc('arpa_genepool_bleeding_effect_title'),
-        desc: loc('arpa_genepool_bleeding_effect_desc',[0.05]),
+        desc: loc('arpa_genepool_bleeding_effect_desc',[0.025]),
         reqs: { creep: 2 },
         grant: ['bleed',1],
         condition(){
