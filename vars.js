@@ -279,7 +279,16 @@ if (convertVersion(global['version']) <= 6008 && global['r_queue'] && global['r_
     }
 }
 
-global['version'] = '0.6.9';
+if (convertVersion(global['version']) <= 6010 && global.race['Plasmid']){
+    if (global.race.Plasmid.anti < 0){
+        global.race.Plasmid.anti = 0;
+    }
+    if (global.race.Plasmid.count < 0){
+        global.race.Plasmid.count = 0;
+    }
+}
+
+global['version'] = '0.6.10';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

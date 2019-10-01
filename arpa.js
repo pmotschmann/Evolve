@@ -981,7 +981,7 @@ function genetics(){
                 purge(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
                     if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
-                        if (global.race.universe !== 'antimatter'){
+                        if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti -= cost;
                         }
                         else {
@@ -1013,7 +1013,7 @@ function genetics(){
                 gain(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
                     if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
-                        if (global.race.universe !== 'antimatter'){
+                        if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti -= cost;
                         }
                         else {
@@ -1042,11 +1042,11 @@ function genetics(){
                 },
                 removeCost(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
-                    return loc('arpa_remove',[t,cost]);
+                    return loc('arpa_remove',[t,cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')]);
                 },
                 addCost(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
-                    return loc('arpa_gain',[t,cost]);
+                    return loc('arpa_gain',[t,cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')]);
                 }
             }
         });

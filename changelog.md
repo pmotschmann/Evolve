@@ -1,4 +1,7 @@
 
+#### 0.6.10 - 10/1/2019 ####
+Fixed issue with gene editing costing the wrong type of Plasmid<br>
+
 #### 0.6.9 - 9/30/2019 ####
 Antimatter Universe<br>
 Bleeding Effect line of CRISPR upgrades, requires Anti-Plasmids to unlock<br>
