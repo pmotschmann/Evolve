@@ -1,6 +1,7 @@
 
 #### 0.6.10 - 10/1/2019 ####
 Fixed issue with gene editing costing the wrong type of Plasmid<br>
+Fixed Bone label in Graphene plant<br>
 
 #### 0.6.9 - 9/30/2019 ####
 Antimatter Universe<br>

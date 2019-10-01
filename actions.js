@@ -11597,7 +11597,7 @@ function grapheneModal(modal){
             buildLabel(type){
                 switch(type){
                     case 'wood':
-                        return loc('modal_graphene_produce',[350,loc('resource_Lumber_name'),loc('resource_Graphene_name')]);
+                        return loc('modal_graphene_produce',[350,global.race['evil'] ? loc('resource_Bones_name') : loc('resource_Lumber_name'),loc('resource_Graphene_name')]);
                     case 'coal':
                         return loc('modal_graphene_produce',[25,loc('resource_Coal_name'),loc('resource_Graphene_name')]);
                     case 'oil':
