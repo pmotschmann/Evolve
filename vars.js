@@ -286,6 +286,10 @@ if (convertVersion(global['version']) <= 6010 && global.race['Plasmid']){
     if (global.race.Plasmid.count < 0){
         global.race.Plasmid.count = 0;
     }
+
+    if (global.tech['foundry'] && !global.race['kindling_kindred']){
+        global.resource.Plywood.display = true;
+    }
 }
 
 global['version'] = '0.6.10';

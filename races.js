@@ -1258,6 +1258,9 @@ export function cleanRemoveTrait(trait){
     switch (trait){
         case 'kindling_kindred':
             global.resource.Lumber.display = true;
+            if (global.tech['foundry']){
+                global.resource.Plywood.display = true;
+            }
             break;
         case 'carnivore':
             global.civic.farmer.display = true;
