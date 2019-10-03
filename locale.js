@@ -66,5 +66,5 @@ export const locales = {
     'en-US': 'English (US)',
     'es-ES': 'Spanish (ESP)',
     'pt-BR': 'Português (BR)',
-    'zh-CN':'简体中文',
+    'zh-CN': '简体中文',
 };
