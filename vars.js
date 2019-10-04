@@ -279,7 +279,7 @@ if (convertVersion(global['version']) <= 6008 && global['r_queue'] && global['r_
     }
 }
 
-if (convertVersion(global['version']) <= 6010 && global.race['Plasmid']){
+if (convertVersion(global['version']) < 6010 && global.race['Plasmid']){
     if (global.race.Plasmid.anti < 0){
         global.race.Plasmid.anti = 0;
     }
@@ -290,6 +290,10 @@ if (convertVersion(global['version']) <= 6010 && global.race['Plasmid']){
     if (global.tech['foundry'] && !global.race['kindling_kindred']){
         global.resource.Plywood.display = true;
     }
+}
+
+if (convertVersion(global['version']) < 6011 && !global.city['ptrait']){
+    global.city['ptrait'] = 'none';
 }
 
 global['version'] = '0.6.11';
