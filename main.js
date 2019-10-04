@@ -2,7 +2,7 @@ import { global, vues, save, poppers, resizeGame, messageQueue, modRes, breakdow
 import { loc, locales } from './locale.js';
 import { mainVue, timeCheck, timeFormat, powerModifier } from './functions.js';
 import { setupStats, checkAchievements } from './achieve.js';
-import { races, racialTrait, randomMinorTrait } from './races.js';
+import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
@@ -250,7 +250,11 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
     else {
         let planet = races[global.race.species].home;
         let race = races[global.race.species].name;
-        let biome = global.city.biome;
+        let planet_label = biomes[global.city.biome].label;
+        let trait = global.city.ptrait;
+        if (trait !== 'none'){
+            planet_label = `${planetTraits[trait].label} ${planet_label}`;
+        }
         let orbit = global.city.calendar.orbit;
         let challenges = '';
         if (global.race['junker']){
@@ -262,7 +266,7 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         if (global.race['decay']){
             challenges = challenges + `<div>${loc('evo_challenge_decay_desc')}</div>`;
         }
-        popper.append($(`<div>${loc('home',[planet,race,biome,orbit])}</div>${challenges}`));
+        popper.append($(`<div>${loc('home',[planet,race,planet_label,orbit])}</div>${challenges}`));
     }
     popper.show();
     poppers['topbarPop'] = new Popper($('#topBar .planet'),popper);
@@ -500,6 +504,10 @@ function fastLoop(){
         breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
+    if (global.city.ptrait === 'mellow'){
+        breakdown.p['Global'][loc('planet_mellow_bd')] = '-2%';
+        global_multiplier *= 0.98;
+    }
 
     breakdown.p['consume'] = {
         Money: {},
@@ -684,7 +692,7 @@ function fastLoop(){
             global.city.morale.unemployed = -(global.civic.free);
         }
         else {
-            stress -= Math.round(global.civic.free / 5);
+            stress -= Math.round(global.civic.free / (global.city.ptrait === 'mellow' ? 5.5 : 5));
             global.city.morale.unemployed = 0;
         }
 
@@ -1224,6 +1232,9 @@ function fastLoop(){
             }
 
             let stress_level = global.civic[job].stress;
+            if (global.city.ptrait === 'mellow'){
+                stress_level += 1;
+            }
             if (global.race['content']){
                 let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
                 stress_level += global.race['content'] * effectiveness;
@@ -1374,6 +1385,7 @@ function fastLoop(){
                 farmers_base *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
                 farmers_base *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farmers_base *= global.city.biome === 'hellscape' ? 0.25 : 1;
+                farmers_base *= global.city.ptrait === 'trashed' ? 0.9 : 1;
                 farmers_base *= racialTrait(global.civic.farmer.workers,'farmer');
                 farmers_base *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                 farmers_base *= global.race['low_light'] ? 0.9 : 1;
@@ -1405,6 +1417,7 @@ function fastLoop(){
                     farm = global.city['farm'].count * (global.tech['agriculture'] >= 2 ? 1.25 : 0.75);
                     farm *= global.city.biome === 'grassland' ? 1.1 : 1;
                     farm *= global.city.biome === 'hellscape' ? 0.25 : 1;
+                    farm *= global.city.ptrait === 'trashed' ? 0.9 : 1;
                     farm *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                     farm *= global.race['low_light'] ? 0.9 : 1;
                 }
@@ -1554,7 +1567,8 @@ function fastLoop(){
                 if (global.race['promiscuous']){
                     lowerBound += global.race['promiscuous'];
                 }
-                if(Math.rand(0, global['resource'][global.race.species].amount * (3 - (2 ** time_multiplier))) <= lowerBound){
+                let base = global.city.ptrait === 'toxic' ? global['resource'][global.race.species].amount * 1.25 : global['resource'][global.race.species].amount;
+                if(Math.rand(0, base * (3 - (2 ** time_multiplier))) <= lowerBound){
                     global['resource'][global.race.species].amount++;
                 }
             }

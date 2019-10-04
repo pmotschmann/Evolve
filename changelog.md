@@ -1,3 +1,5 @@
+#### 0.6.11 - 10/3/2019 ####
+Chinese Translation<br>
 
 #### 0.6.10 - 10/1/2019 ####
 Fixed issue with gene editing costing the wrong type of Plasmid<br>

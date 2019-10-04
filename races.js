@@ -1298,12 +1298,67 @@ export function cleanRemoveTrait(trait){
 }
 
 export const biomes = {
-    grassland: loc('biome_grassland'),
-    oceanic: loc('biome_oceanic'),
-    forest: loc('biome_forest'),
-    desert: loc('biome_desert'),
-    volcanic: loc('biome_volcanic'),
-    tundra: loc('biome_tundra'),
-    hellscape: loc('biome_hellscape'),
-    eden: loc('biome_eden')
+    grassland: {
+        label: loc('biome_grassland_name'),
+        desc: loc('biome_grassland')
+    },
+    oceanic: {
+        label: loc('biome_oceanic_name'),
+        desc: loc('biome_oceanic')
+    },
+    forest: {
+        label: loc('biome_forest_name'),
+        desc: loc('biome_forest')
+    },
+    desert: {
+        label: loc('biome_desert_name'),
+        desc: loc('biome_desert')
+    },
+    volcanic: {
+        label: loc('biome_volcanic_name'),
+        desc: loc('biome_volcanic')
+    },
+    tundra: {
+        label: loc('biome_tundra_name'),
+        desc: loc('biome_tundra')
+    },
+    hellscape: {
+        label: loc('biome_hellscape_name'),
+        desc: loc('biome_hellscape')
+    },
+    eden: {
+        label: loc('biome_eden_name'),
+        desc: loc('biome_eden')
+    }
+};
+
+export const planetTraits = {
+    toxic: {
+        label: loc('planet_toxic'),
+        desc: loc('planet_toxic_desc')
+    },
+    mellow: {
+        label: loc('planet_mellow'),
+        desc: loc('planet_mellow_desc')
+    },
+    rage: {
+        label: loc('planet_rage'),
+        desc: loc('planet_rage_desc')
+    },
+    stormy: {
+        label: loc('planet_stormy'),
+        desc: loc('planet_stormy_desc')
+    },
+    ozone: {
+        label: loc('planet_ozone'),
+        desc: loc('planet_ozone_desc')
+    },
+    magnetic: {
+        label: loc('planet_magnetic'),
+        desc: loc('planet_magnetic_desc')
+    },
+    trashed: {
+        label: loc('planet_trashed'),
+        desc: loc('planet_trashed_desc')
+    }
 };

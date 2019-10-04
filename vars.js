@@ -292,7 +292,7 @@ if (convertVersion(global['version']) <= 6010 && global.race['Plasmid']){
     }
 }
 
-global['version'] = '0.6.10';
+global['version'] = '0.6.11';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

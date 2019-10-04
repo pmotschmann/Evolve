@@ -2,7 +2,7 @@ import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, powerModifier, challenge_multiplier, adjustCosts } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
-import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes } from './races.js';
+import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineGarrison, buildGarrison, armyRating, dragQueue } from './civics.js';
@@ -2129,6 +2129,7 @@ export const actions = {
                 farming *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                 farming *= global.city.biome === 'hellscape' ? 0.25 : 1;
+                farming *= global.city.ptrait === 'trashed' ? 0.9 : 1;
                 farming = +farming.toFixed(2);
                 return global.tech['farm'] ? `<div>${loc('city_farm_effect',[farming])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect',[farming]); 
             },
@@ -10455,6 +10456,34 @@ export function setPlanet(hell){
             biome = 'grassland';
             break;
     }
+
+    let trait = 'none';
+    switch (Math.floor(Math.seededRandom(0,12))){
+        case 0:
+            trait = 'toxic';
+            break;
+        case 1:
+            trait = 'mellow';
+            break;
+        case 2:
+            trait = 'rage';
+            break;
+        case 3:
+            trait = 'stormy';
+            break;
+        case 4:
+            trait = 'ozone';
+            break;
+        case 5:
+            trait = 'magnetic';
+            break;
+        case 6:
+            trait = 'trashed';
+            break;
+        default:
+            trait = 'none';
+            break;
+    }
     
     let geology = {};
     let max = Math.floor(Math.seededRandom(0,3));
@@ -10497,7 +10526,8 @@ export function setPlanet(hell){
         }
     }
 
-    var id = biome+Math.floor(Math.seededRandom(0,10000));
+    let num = Math.floor(Math.seededRandom(0,10000));
+    var id = biome+num;
     id = id.charAt(0).toUpperCase() + id.slice(1);
 
     var orbit = 365;
@@ -10513,8 +10543,9 @@ export function setPlanet(hell){
             break;
     }
 
+    let title = trait === 'none' ? `${biomes[biome].label} ${num}` : `${planetTraits[trait].label} ${biomes[biome].label} ${num}`;
     var parent = $(`<div id="${id}" class="action"></div>`);
-    var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${id}</span></a>`);
+    var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${title}</span></a>`);
     parent.append(element);
 
     $('#evolution').append(parent);
@@ -10524,6 +10555,7 @@ export function setPlanet(hell){
         global.city.biome = biome;
         global.city.calendar.orbit = orbit;
         global.city.geology = geology;
+        global.city.ptrait = trait;
         $('#evolution').empty();
         $(`#pop${id}`).hide();
         if (poppers[id]){
@@ -10538,7 +10570,10 @@ export function setPlanet(hell){
             $('#main').append(popper);
             
             popper.append($(`<div>${loc('set_planet',[id,biome,orbit])}</div>`));
-            popper.append($(`<div>${biomes[biome]}</div>`));
+            popper.append($(`<div>${biomes[biome].desc}</div>`));
+            if (trait !== 'none'){
+                popper.append($(`<div>${planetTraits[trait].desc}</div>`));
+            }
 
             let array = [];
             for (let key in geology){
@@ -11652,7 +11687,7 @@ function basicHousingLabel(){
         case 'unicorn':
             return loc('city_basic_housing_unicorn_title');
         default:
-            return loc('city_basic_housing_title');
+            return global.city.ptrait === 'trashed' ? loc('city_basic_housing_trash_title') : loc('city_basic_housing_title');
     }
 }
 
