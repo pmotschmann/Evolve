@@ -253,7 +253,12 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         let planet_label = biomes[global.city.biome].label;
         let trait = global.city.ptrait;
         if (trait !== 'none'){
-            planet_label = `${planetTraits[trait].label} ${planet_label}`;
+            if (trait === 'mellow' && global.race.species === 'entish'){
+                planet_label = `${loc('planet_mellow_eg')} ${planet_label}`;
+            }
+            else {
+                planet_label = `${planetTraits[trait].label} ${planet_label}`;
+            }
         }
         let orbit = global.city.calendar.orbit;
         let challenges = '';
