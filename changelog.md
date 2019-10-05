@@ -1,4 +1,5 @@
-#### 0.6.11 - 10/3/2019 ####
+#### 0.6.11 - 10/4/2019 ####
+City Categorization by NotOats<br>
 Chinese Translation<br>
 
 #### 0.6.10 - 10/1/2019 ####
