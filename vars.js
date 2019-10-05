@@ -910,6 +910,7 @@ window.soft_reset = function reset(){
 
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
+    let atmo = global.city.ptrait;
     global.city = {
         calendar: {
             day: 0,
@@ -920,7 +921,8 @@ window.soft_reset = function reset(){
             wind: 0,
             orbit: orbit
         },
-        biome: biome
+        biome: biome,
+        ptrait: atmo
     };
 
     global.stats.days = 0;

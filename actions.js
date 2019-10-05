@@ -12106,6 +12106,7 @@ function bioseed(){
     let genus = races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
+    let atmo = global.city.ptrait;
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
@@ -12141,6 +12142,7 @@ function bioseed(){
     global.stats.phage += new_phage;
     unlockAchieve(`seeder`);
     let new_biome = unlockAchieve(`biome_${biome}`);
+    let new_atmo = unlockAchieve(`atmo_${atmo}`);
     let new_genus = unlockAchieve(`genus_${genus}`);
     let new_achieve = false;
 
@@ -12194,7 +12196,8 @@ function bioseed(){
             wind: 0,
             orbit: orbit
         },
-        biome: biome
+        biome: biome,
+        ptrait: atmo
     };
     global.tech = { theology: 1 };
     clearStates();
@@ -12242,6 +12245,7 @@ function big_bang(){
     let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
+    let atmo = global.city.ptrait;
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
@@ -12306,7 +12310,8 @@ function big_bang(){
             wind: 0,
             orbit: orbit
         },
-        biome: biome
+        biome: biome,
+        ptrait: atmo
     };
     global.tech = { theology: 1 };
     clearStates();

@@ -862,11 +862,12 @@ function genetics(){
             filters: {
                 timer(val){
                     if (global.city.biolab.on > 0){
+                        let labs = global.city.ptrait === 'toxic' ? global.city.biolab.on + 1 : global.city.biolab.on;
                         if (global.arpa.sequence.boost){
-                            return timeFormat(val / (global.city.biolab.on * 2));
+                            return timeFormat(val / (labs * 2));
                         }
                         else {
-                            return timeFormat(val / global.city.biolab.on);
+                            return timeFormat(val / labs);
                         }
                     }
                     else {

@@ -3833,7 +3833,8 @@ function midLoop(){
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
-            global.arpa.sequence.time -= global.arpa.sequence.boost ? global.city.biolab.on * 2 : global.city.biolab.on;
+            let labs = global.city.ptrait === 'toxic' ? global.city.biolab.on + 1 : global.city.biolab.on;
+            global.arpa.sequence.time -= global.arpa.sequence.boost ? labs * 2 : labs;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
             if (global.arpa.sequence.time <= 0){
                 global.arpa.sequence.max = 50000 * (1 + (global.race.mutation ** 2));

@@ -1036,6 +1036,7 @@ function warhead(){
     let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
+    let atmo = global.city.ptrait;
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
@@ -1094,7 +1095,8 @@ function warhead(){
             wind: 0,
             orbit: orbit
         },
-        biome: biome
+        biome: biome,
+        ptrait: atmo
     };
     global.tech = { theology: 1 };
     clearStates();

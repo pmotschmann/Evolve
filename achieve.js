@@ -275,6 +275,41 @@ var achievements = {
         desc: loc("achieve_genus_angelic_desc"),
         flair: loc("achieve_genus_angelic_flair")
     },
+    atmo_toxic: {
+        name: loc("achieve_atmo_toxic_name"),
+        desc: loc("achieve_atmo_toxic_desc"),
+        flair: loc("achieve_atmo_toxic_flair")
+    },
+    atmo_mellow: {
+        name: loc("achieve_atmo_mellow_name"),
+        desc: loc("achieve_atmo_mellow_desc"),
+        flair: loc("achieve_atmo_mellow_flair")
+    },
+    atmo_rage: {
+        name: loc("achieve_atmo_rage_name"),
+        desc: loc("achieve_atmo_rage_desc"),
+        flair: loc("achieve_atmo_rage_flair")
+    },
+    atmo_stormy: {
+        name: loc("achieve_atmo_stormy_name"),
+        desc: loc("achieve_atmo_stormy_desc"),
+        flair: loc("achieve_atmo_stormy_flair")
+    },
+    atmo_ozone: {
+        name: loc("achieve_atmo_ozone_name"),
+        desc: loc("achieve_atmo_ozone_desc"),
+        flair: loc("achieve_atmo_ozone_flair")
+    },
+    atmo_magnetic: {
+        name: loc("achieve_atmo_magnetic_name"),
+        desc: loc("achieve_atmo_magnetic_desc"),
+        flair: loc("achieve_atmo_magnetic_flair")
+    },
+    atmo_trashed: {
+        name: loc("achieve_atmo_trashed_name"),
+        desc: loc("achieve_atmo_trashed_desc"),
+        flair: loc("achieve_atmo_trashed_flair")
+    },
     mass_extinction: {
         name: loc("achieve_mass_extinction_name"),
         desc: loc("achieve_mass_extinction_desc"),
