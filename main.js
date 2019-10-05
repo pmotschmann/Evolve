@@ -1624,6 +1624,9 @@ function fastLoop(){
             if (global.stats.achieve['extinct_junker']){
                 sundial_base++;
             }
+            if (global.city.ptrait === 'magnetic'){
+                sundial_base++;
+            }
 
             let professors_base = global.civic.professor.workers;
             professors_base *= global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
@@ -3475,7 +3478,7 @@ function midLoop(){
             }
         }
         if (global.city['wardenclyffe']){
-            let gain = global.city['wardenclyffe'].count * 1000;
+            let gain = global.city['wardenclyffe'].count * (global.city.ptrait === 'magnetic' ? 1100 : 1000);
             lCaps['scientist'] += global.city['wardenclyffe'].count;
             let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
             gain += (p_on['wardenclyffe'] * powered_gain);
@@ -4258,6 +4261,10 @@ function longLoop(){
                         break;
                     default:
                         break;
+                }
+
+                if (global.city.ptrait === 'stormy' && wind > 0 && Math.rand(0,3) === 0){
+                    wind--;
                 }
 
                 if (sky === 0){

@@ -1132,6 +1132,9 @@ export function racialTrait(workers,type){
             modifier *= 1.15; 
         }
     }
+    if (global.city.ptrait === 'magnetic' && type === 'miner'){
+        modifier *= 0.985;
+    }
     if (global.race['weak'] && (type === 'miner' || type === 'lumberjack')){
         modifier *= 0.9;
     }

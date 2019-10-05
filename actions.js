@@ -3453,7 +3453,7 @@ export const actions = {
                 Sheet_Metal(){ return costMultiplier('wardenclyffe', 125, 1.2); }
             },
             effect(){
-                let gain = 1000;
+                let gain = global.city['wardenclyffe'].count * (global.city.ptrait === 'magnetic' ? 1100 : 1000);
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
@@ -3464,6 +3464,9 @@ export const actions = {
                 gain = +(gain).toFixed(1);
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
+                    if (global.city.ptrait === 'magnetic'){
+                        pgain += 100;
+                    }
                     if (global.space['satellite']){
                         pgain *= 1 + (global.space.satellite.count * 0.02);
                     }
