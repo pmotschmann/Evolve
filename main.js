@@ -375,11 +375,8 @@ if (global.race.species === 'protoplasm'){
     }
 }
 else {
-    Object.keys(actions.city).forEach(function (city){
-        if (checkCityRequirements(city)){
-            addAction('city',city);
-        }
-    });
+    drawCity();
+
     Object.keys(actions.tech).forEach(function (tech){
         if (checkTechRequirements(tech)){
             addAction('tech',tech);
