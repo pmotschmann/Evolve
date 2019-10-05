@@ -366,45 +366,7 @@ if (global.race.species === 'protoplasm'){
     }
 }
 else {
-    let city_buildings = { };
-    Object.keys(actions.city).forEach(function (city_name) {
-        if(!checkCityRequirements(city_name))
-            return;
-        
-        // TODO: Default to utility, maybe add a separate category?
-        let action = actions.city[city_name];
-        let category = 'category' in action ? action.category : 'utility';
-
-        if(!(category in city_buildings)) {
-            city_buildings[category] = [];
-        }
-
-        city_buildings[category].push(city_name);
-    });
-
-    let categories = {
-        outskirts: 'Outskirts',
-        residential: 'Residential District',
-        commercial: 'Commercial District',
-        science: 'Science District',
-        military: 'Military District',
-        trade: 'Trade District',
-        industrial: 'Industrial District',
-        utility: 'Utility District'
-    };
-
-    Object.keys(categories).forEach(function(category) {
-        if(!(category in city_buildings))
-            return;
-
-        $('<div class="space"></div>')
-            .appendTo('#city')
-            .append(`<div><h3 class="name has-text-warning">${categories[category]}</h3></div>`);
-
-        city_buildings[category].forEach(function(city_name) {
-            addAction('city', city_name);
-        });
-    });
+    drawCity();
 
     Object.keys(actions.tech).forEach(function (tech){
         if (checkTechRequirements(tech)){

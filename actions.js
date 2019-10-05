@@ -1855,7 +1855,6 @@ export const actions = {
             desc(){
                 return global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
             },
-            // TODO: Figure out where this goes.
             category: 'outskirts',
             reqs: { mining: 1 },
             trait: ['cannibalize'],
@@ -2107,7 +2106,6 @@ export const actions = {
             id: 'city-slave_pen',
             title: loc('city_slave_pen'),
             desc: loc('city_slave_pen'),
-            // TODO: Confirm this, maybe military or industrial?
             category: 'commercial',
             reqs: { slaves: 1 },
             cost: { 
@@ -2174,8 +2172,7 @@ export const actions = {
                     return loc('city_mill_desc1',[bonus]);
                 }
             },
-            // TODO: Confirm this goes here. Windmill is utility (power). This is ?
-            category: 'industrial',
+            category: 'utility',
             reqs: { agriculture: 4 },
             not_tech: ['wind_plant'],
             cost: { 
@@ -3227,7 +3224,6 @@ export const actions = {
                 let entity = races[global.race.gods.toLowerCase()].entity;
                 return loc('city_temple_desc',[entity]);
             },
-            // TODO: Confirm this goes here. Maybe industrial since it's a huge boost to everything?
             category: 'commercial',
             reqs: { theology: 2 },
             cost: {
@@ -3293,7 +3289,6 @@ export const actions = {
             desc(){
                 return loc('city_shrine_desc');
             },
-            // TODO: Thematically it's a commercial district item. Should be industrial?
             category: 'commercial',
             reqs: { theology: 2 },
             trait: ['magnificent'],
@@ -10103,11 +10098,47 @@ export function gainTech(action){
 }
 
 export function drawCity(){
-    Object.keys(actions.city).forEach(function (city) {
-        removeAction(actions.city[city].id);
-        if (checkCityRequirements(city)){
-            addAction('city',city);
+    let city_buildings = { };
+    Object.keys(actions.city).forEach(function (city_name) {
+        removeAction(actions.city[city_name].id);
+        
+        if(!checkCityRequirements(city_name))
+            return;
+        
+        let action = actions.city[city_name];
+        let category = 'category' in action ? action.category : 'utility';
+
+        if(!(category in city_buildings)) {
+            city_buildings[category] = [];
         }
+
+        city_buildings[category].push(city_name);
+    });
+
+    let city_categories =  [
+        'outskirts', 
+        'residential', 
+        'commercial', 
+        'science', 
+        'military', 
+        'trade', 
+        'industrial', 
+        'utility'
+    ];
+
+    city_categories.forEach(function(category) {
+        $(`#city-dist-${category}`).remove();
+
+        if(!(category in city_buildings))
+            return;
+
+        $(`<div id="city-dist-${category}" class="space"></div>`)
+            .appendTo('#city')
+            .append(`<div><h3 class="name has-text-warning">${loc(`city_dist_${category}`)}</h3></div>`);
+
+        city_buildings[category].forEach(function(city_name) {
+            addAction('city', city_name);
+        });
     });
 }
 
