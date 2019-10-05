@@ -1780,6 +1780,7 @@ export const actions = {
             id: 'city-food',
             title: loc('city_food'),
             desc: loc('city_food_desc'),
+            category: 'outskirts',
             reqs: { primitive: 1 },
             not_trait: ['soul_eater'],
             no_queue(){ return true },
@@ -1794,6 +1795,7 @@ export const actions = {
             id: 'city-lumber',
             title: loc('city_lumber'),
             desc: loc('city_lumber_desc'),
+            category: 'outskirts',
             reqs: {},
             not_trait: ['evil'],
             no_queue(){ return true },
@@ -1808,6 +1810,7 @@ export const actions = {
             id: 'city-stone',
             title: loc('city_stone'),
             desc: loc('city_stone_desc'),
+            category: 'outskirts',
             reqs: { primitive: 2 },
             no_queue(){ return true },
             action(){
@@ -1828,6 +1831,7 @@ export const actions = {
                     return global.resource.Furs.display ? loc('city_evil_desc4') : loc('city_evil_desc1');
                 }
             },
+            category: 'outskirts',
             reqs: {},
             trait: ['evil'],
             not_trait: ['kindling_kindred'],
@@ -1851,6 +1855,8 @@ export const actions = {
             desc(){
                 return global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
             },
+            // TODO: Figure out where this goes.
+            category: 'outskirts',
             reqs: { mining: 1 },
             trait: ['cannibalize'],
             cost: {
@@ -1932,6 +1938,7 @@ export const actions = {
                 return basicHousingLabel();
             },
             desc: loc('city_basic_housing_desc'),
+            category: 'residential',
             reqs: { housing: 1 },
             cost: { 
                 Money(){ 
@@ -1963,6 +1970,7 @@ export const actions = {
                 return housingLabel('medium');
             },
             desc: loc('city_cottage_desc'),
+            category: 'residential',
             reqs: { housing: 2 },
             cost: { 
                 Money(){ return costMultiplier('cottage', 900, 1.15); },
@@ -1994,6 +2002,7 @@ export const actions = {
                 return housingLabel('large');
             },
             desc: `<div>${loc('city_apartment_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            category: 'residential',
             reqs: { housing: 3 },
             cost: { 
                 Money(){ return costMultiplier('apartment', 1750, 1.26) - 500; },
@@ -2028,6 +2037,7 @@ export const actions = {
             id: 'city-lodge',
             title: loc('city_lodge'),
             desc: loc('city_lodge_desc'),
+            category: 'residential',
             reqs: { hunting: 2 },
             cost: { 
                 Money(){ return costMultiplier('lodge', 50, 1.32); },
@@ -2048,6 +2058,7 @@ export const actions = {
             id: 'city-smokehouse',
             title: loc('city_smokehouse'),
             desc: loc('city_food_storage'),
+            category: 'trade',
             reqs: { hunting: 1 },
             cost: { 
                 Money(){ return costMultiplier('smokehouse', 85, 1.32); },
@@ -2072,6 +2083,7 @@ export const actions = {
             id: 'city-soul_well',
             title: loc('city_soul_well'),
             desc: loc('city_soul_well_desc'),
+            category: 'trade',
             reqs: { soul_eater: 1 },
             cost: { 
                 Money(){ if (global.city['soul_well'] && global.city['soul_well'].count >= 3){ return costMultiplier('soul_well', 50, 1.32);} else { return 0; } },
@@ -2095,6 +2107,8 @@ export const actions = {
             id: 'city-slave_pen',
             title: loc('city_slave_pen'),
             desc: loc('city_slave_pen'),
+            // TODO: Confirm this, maybe military or industrial?
+            category: 'commercial',
             reqs: { slaves: 1 },
             cost: { 
                 Money(){ return costMultiplier('slave_pen', 250, 1.32); },
@@ -2118,6 +2132,7 @@ export const actions = {
             id: 'city-farm',
             title: loc('city_farm'),
             desc: loc('city_farm_desc'),
+            category: 'residential',
             reqs: { agriculture: 1 },
             cost: { 
                 Money(){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', 50, 1.32);} else { return 0; } },
@@ -2159,6 +2174,8 @@ export const actions = {
                     return loc('city_mill_desc1',[bonus]);
                 }
             },
+            // TODO: Confirm this goes here. Windmill is utility (power). This is ?
+            category: 'industrial',
             reqs: { agriculture: 4 },
             not_tech: ['wind_plant'],
             cost: { 
@@ -2193,6 +2210,7 @@ export const actions = {
             desc(){
                 return loc('city_windmill_desc');
             },
+            category: 'utility',
             reqs: { wind_plant: 1 },
             cost: { 
                 Money(){ return costMultiplier('windmill', 1000, 1.31); },
@@ -2212,6 +2230,7 @@ export const actions = {
             id: 'city-silo',
             title: loc('city_silo'),
             desc: loc('city_food_storage'),
+            category: 'trade',
             reqs: { agriculture: 3 },
             cost: { 
                 Money(){ return costMultiplier('silo', 85, 1.32); },
@@ -2236,6 +2255,7 @@ export const actions = {
             id: 'city-garrison',
             title: loc('city_garrison'),
             desc: loc('city_garrison_desc'),
+            category: 'military',
             reqs: { military: 1, housing: 1 },
             cost: { 
                 Money(){ return costMultiplier('garrison', 240, 1.5); },
@@ -2266,6 +2286,7 @@ export const actions = {
             id: 'city-hospital',
             title: loc('city_hospital'),
             desc: loc('city_hospital_desc'),
+            category: 'military',
             reqs: { medic: 1 },
             cost: { 
                 Money(){ return costMultiplier('hospital', 22000, 1.32); },
@@ -2288,6 +2309,7 @@ export const actions = {
             id: 'city-boot_camp',
             title: loc('city_boot_camp'),
             desc: loc('city_boot_camp_desc'),
+            category: 'military',
             reqs: { boot_camp: 1 },
             cost: { 
                 Money(){ return costMultiplier('boot_camp', 50000, 1.32); },
@@ -2316,6 +2338,7 @@ export const actions = {
                 let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
                 return loc('city_shed_desc',[storage]);
             },
+            category: 'trade',
             reqs: { storage: 1 },
             cost: {
                 Money(){ return costMultiplier('shed', 75, 1.22); },
@@ -2426,6 +2449,7 @@ export const actions = {
             id: 'city-storage_yard',
             title: loc('city_storage_yard'),
             desc: loc('city_storage_yard_desc'),
+            category: 'trade',
             reqs: { container: 1 },
             cost: {
                 Money(){ return costMultiplier('storage_yard', 10, 1.36); },
@@ -2472,6 +2496,7 @@ export const actions = {
             id: 'city-warehouse',
             title: loc('city_warehouse'),
             desc: loc('city_warehouse_desc'),
+            category: 'trade',
             reqs: { steel_container: 1 },
             cost: {
                 Money(){ return costMultiplier('warehouse', 400, 1.26); },
@@ -2521,6 +2546,7 @@ export const actions = {
                 let planet = races[global.race.species].home;
                 return loc('city_bank_desc',[planet]);
             },
+            category: 'commercial',
             reqs: { banking: 1 },
             cost: { 
                 Money(){ return costMultiplier('bank', 250, 1.35); },
@@ -2581,6 +2607,7 @@ export const actions = {
             id: 'city-graveyard',
             title: loc('city_graveyard'),
             desc: loc('city_graveyard_desc'),
+            category: 'industrial',
             reqs: { reclaimer: 1 },
             cost: { 
                 Money(){ if (global.city['graveyard'] && global.city['graveyard'].count >= 5){ return costMultiplier('graveyard', 5, 1.85);} else { return 0; } },
@@ -2605,6 +2632,7 @@ export const actions = {
             id: 'city-lumber_yard',
             title: loc('city_lumber_yard'),
             desc: loc('city_lumber_yard_desc'),
+            category: 'industrial',
             reqs: { axe: 1 },
             cost: { 
                 Money(){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', 5, 1.85);} else { return 0; } },
@@ -2630,6 +2658,7 @@ export const actions = {
             id: 'city-sawmill',
             title: loc('city_sawmill'),
             desc: loc('city_sawmill_desc'),
+            category: 'industrial',
             reqs: { saw: 1 },
             cost: { 
                 Money(){ return costMultiplier('sawmill', 3000, 1.26); },
@@ -2668,6 +2697,7 @@ export const actions = {
             id: 'city-rock_quarry',
             title: loc('city_rock_quarry'),
             desc: loc('city_rock_quarry_desc'),
+            category: 'industrial',
             reqs: { mining: 1 },
             cost: { 
                 Money(){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', 20, 1.45);} else { return 0; } },
@@ -2703,6 +2733,7 @@ export const actions = {
             id: 'city-cement_plant',
             title: loc('city_cement_plant'),
             desc: loc('city_cement_plant_desc'),
+            category: 'industrial',
             reqs: { cement: 1 },
             cost: { 
                 Money(){ return costMultiplier('cement_plant', 3000, 1.5); },
@@ -2738,6 +2769,7 @@ export const actions = {
             id: 'city-foundry',
             title: loc('city_foundry'),
             desc: loc('city_foundry_desc'),
+            category: 'industrial',
             reqs: { foundry: 1 },
             cost: {
                 Money(){ return costMultiplier('foundry', 750, 1.36); },
@@ -2780,6 +2812,7 @@ export const actions = {
             id: 'city-factory',
             title: loc('city_factory'),
             desc: `<div>${loc('city_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`, 
+            category: 'industrial',
             reqs: { high_tech: 3 },
             cost: { 
                 Money(){ return costMultiplier('factory', 25000, 1.32); },
@@ -2812,6 +2845,7 @@ export const actions = {
             id: 'city-smelter',
             title: loc('city_smelter'),
             desc: loc('city_smelter_desc'),
+            category: 'industrial',
             reqs: { smelting: 1 },
             cost: { 
                 Money(){ return costMultiplier('smelter', 1000, 1.32); },
@@ -2850,6 +2884,7 @@ export const actions = {
             id: 'city-metal_refinery',
             title: loc('city_metal_refinery'),
             desc: loc('city_metal_refinery_desc'),
+            category: 'industrial',
             reqs: { alumina: 1 },
             cost: { 
                 Money(){ return costMultiplier('metal_refinery', 2500, 1.35); },
@@ -2884,6 +2919,7 @@ export const actions = {
             id: 'city-mine',
             title: loc('city_mine'),
             desc: loc('city_mine_desc'),
+            category: 'industrial',
             reqs: { mining: 2 },
             cost: { 
                 Money(){ return costMultiplier('mine', 60, 1.6); },
@@ -2917,6 +2953,7 @@ export const actions = {
             id: 'city-coal_mine',
             title: loc('city_coal_mine'),
             desc: loc('city_coal_mine_desc'),
+            category: 'industrial',
             reqs: { mining: 4 },
             cost: { 
                 Money(){ return costMultiplier('coal_mine', 480, 1.4); },
@@ -2951,6 +2988,7 @@ export const actions = {
             id: 'city-oil_well',
             title: loc('city_oil_well'),
             desc: loc('city_oil_well_desc'),
+            category: 'industrial',
             reqs: { oil: 1 },
             cost: { 
                 Money(){ return costMultiplier('oil_well', 5000, 1.5); },
@@ -2987,6 +3025,7 @@ export const actions = {
             id: 'city-oil_depot',
             title: loc('city_oil_depot'),
             desc: loc('city_oil_depot_desc'),
+            category: 'trade',
             reqs: { oil: 2 },
             cost: { 
                 Money(){ return costMultiplier('oil_depot', 2500, 1.46); },
@@ -3028,6 +3067,7 @@ export const actions = {
             id: 'city-trade',
             title: loc('city_trade'),
             desc: loc('city_trade_desc'),
+            category: 'trade',
             reqs: { trade: 1 },
             cost: { 
                 Money(){ return costMultiplier('trade', 500, 1.36); },
@@ -3055,6 +3095,7 @@ export const actions = {
             id: 'city-wharf',
             title: loc('city_wharf'),
             desc: loc('city_wharf_desc'),
+            category: 'trade',
             reqs: { wharf: 1 },
             cost: { 
                 Money(){ return costMultiplier('wharf', 62000, 1.32); },
@@ -3089,6 +3130,7 @@ export const actions = {
             id: 'city-tourist_center',
             title: loc('city_tourist_center'),
             desc: loc('city_tourist_center_desc'),
+            category: 'commercial',
             reqs: { monument: 2 },
             cost: { 
                 Money(){ return costMultiplier('tourist_center', 100000, 1.36); },
@@ -3113,6 +3155,7 @@ export const actions = {
             id: 'city-amphitheatre',
             title: loc('city_amphitheatre'),
             desc: loc('city_amphitheatre_desc'),
+            category: 'commercial',
             reqs: { theatre: 1 },
             not_trait: ['joyless'],
             cost: {
@@ -3136,6 +3179,7 @@ export const actions = {
             id: 'city-casino',
             title: loc('city_casino'),
             desc: loc('city_casino_desc'),
+            category: 'commercial',
             reqs: { gambling: 1 },
             cost: {
                 Money(){ return costMultiplier('casino', 350000, 1.35); },
@@ -3183,6 +3227,8 @@ export const actions = {
                 let entity = races[global.race.gods.toLowerCase()].entity;
                 return loc('city_temple_desc',[entity]);
             },
+            // TODO: Confirm this goes here. Maybe industrial since it's a huge boost to everything?
+            category: 'commercial',
             reqs: { theology: 2 },
             cost: {
                 Money(){ return costMultiplier('temple', 50, 1.36); },
@@ -3247,6 +3293,8 @@ export const actions = {
             desc(){
                 return loc('city_shrine_desc');
             },
+            // TODO: Thematically it's a commercial district item. Should be industrial?
+            category: 'commercial',
             reqs: { theology: 2 },
             trait: ['magnificent'],
             cost: {
@@ -3304,6 +3352,7 @@ export const actions = {
                 let planet = races[global.race.species].home;
                 return loc('city_university_desc',[planet]);
             },
+            category: 'science',
             reqs: { science: 1 },
             cost: {
                 Money(){ return costMultiplier('university', 900, 1.5) - 500; },
@@ -3359,6 +3408,7 @@ export const actions = {
                 let planet = races[global.race.species].home;
                 return loc('city_library_desc',[planet]);
             },
+            category: 'science',
             reqs: { science: 2 },
             cost: {
                 Money(){ return costMultiplier('library', 45, 1.2); },
@@ -3397,6 +3447,7 @@ export const actions = {
             id: 'city-wardenclyffe',
             title(){ return global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe'); },
             desc: loc('city_wardenclyffe_desc'),
+            category: 'science',
             reqs: { high_tech: 1 },
             cost: { 
                 Money(){ return costMultiplier('wardenclyffe', 5000, 1.22); },
@@ -3468,6 +3519,7 @@ export const actions = {
             id: 'city-biolab',
             title: loc('city_biolab'),
             desc: `<div>${loc('city_biolab_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            category: 'science',
             reqs: { genetics: 1 },
             cost: { 
                 Money(){ return costMultiplier('biolab', 25000, 1.3); },
@@ -3500,6 +3552,7 @@ export const actions = {
             id: 'city-coal_power',
             title: loc('city_coal_power'),
             desc: `<div>${loc('city_coal_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Coal_name')])}</div>`,
+            category: 'utility',
             reqs: { high_tech: 2 },
             cost: { 
                 Money(){ return costMultiplier('coal_power', 10000, 1.22); },
@@ -3527,6 +3580,7 @@ export const actions = {
             id: 'city-oil_power',
             title: loc('city_oil_power'),
             desc: `<div>${loc('city_oil_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Oil_name')])}</div>`,
+            category: 'utility',
             reqs: { oil: 3 },
             cost: { 
                 Money(){ return costMultiplier('oil_power', 50000, 1.22); },
@@ -3561,6 +3615,7 @@ export const actions = {
             id: 'city-fission_power',
             title: loc('city_fission_power'),
             desc: `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Uranium_name')])}</div>`,
+            category: 'utility',
             reqs: { high_tech: 5 },
             cost: { 
                 Money(){ return costMultiplier('fission_power', 250000, 1.36); },
@@ -3587,6 +3642,7 @@ export const actions = {
             id: 'city-mass_driver',
             title: loc('city_mass_driver'),
             desc: `<div>${loc('city_mass_driver_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            category: 'utility',
             reqs: { mass: 1 },
             cost: { 
                 Money(){ return costMultiplier('mass_driver', 375000, 1.32); },
