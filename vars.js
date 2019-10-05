@@ -537,6 +537,10 @@ if (!global.city['morale']){
     };
 }
 
+if (!global.city['sun']){
+    global.city['sun'] = 0;
+}
+
 if (!global.city.morale['unemployed']){
     global.city.morale['unemployed'] = 0;
 }

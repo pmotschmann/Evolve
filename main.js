@@ -510,6 +510,11 @@ function fastLoop(){
         breakdown.p['Global'][loc('planet_mellow_bd')] = '-2%';
         global_multiplier *= 0.98;
     }
+    if (global.city.ptrait === 'ozone' && global.city['sun']){
+        let uv = global.city['sun'] * 0.25;
+        breakdown.p['Global'][loc('planet_ozone_bd')] = `-${uv}%`;
+        global_multiplier *= 1 - (uv / 100);
+    }
 
     breakdown.p['consume'] = {
         Money: {},
@@ -4317,6 +4322,13 @@ function longLoop(){
                 }
 
                 global.city.calendar.wind = wind === 0 ? 1 : 0;
+            }
+
+            if (global.city.calendar.weather === 2){
+                global.city.sun++;
+            }
+            else {
+                global.city.sun = 0;
             }
 
             // Moon Phase
