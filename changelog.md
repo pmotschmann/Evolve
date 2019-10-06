@@ -1,5 +1,5 @@
 #### 0.6.11 - 10/5/2019 ####
-New plantary modifiers: Toxic, Mellow, Rage, Stormy, Ozone, Magnetic, and Trashed<br>
+New planetary modifiers: Toxic, Mellow, Rage, Stormy, Ozone, Magnetic, and Trashed<br>
 City Categorization by NotOats<br>
 Chinese Translation<br>
 
