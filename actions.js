@@ -3512,7 +3512,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: `<div>${loc('city_wardenclyffe_flair1')}</div><div>${loc('city_wardenclyffe_flair2')}</div>`
+            flair(){ return global.race['evil'] ? `<div>${loc('city_babel_flair')}</div>` : `<div>${loc('city_wardenclyffe_flair1')}</div><div>${loc('city_wardenclyffe_flair2')}</div>`; }
         },
         biolab: {
             id: 'city-biolab',
@@ -10137,7 +10137,7 @@ export function drawCity(){
         if(!(category in city_buildings))
             return;
 
-        $(`<div id="city-dist-${category}" class="space"></div>`)
+        $(`<div id="city-dist-${category}" class="city"></div>`)
             .appendTo('#city')
             .append(`<div><h3 class="name has-text-warning">${loc(`city_dist_${category}`)}</h3></div>`);
 
