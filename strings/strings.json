@@ -429,7 +429,7 @@
   "city_metal_refinery": "Metal Refinery",
   "city_metal_refinery_desc": "Refines aluminium",
   "city_metal_refinery_effect": "Enables aluminium mining by quarry workers and boosts aluminium production by %0%",
-  "city_metal_refinery_effect2": "Enables aluminium mining by quarry workers and boosts aluminium production by %0%. If powered boosts aluminium production by %1% instead of %0%.",
+  "city_metal_refinery_effect2": "Enables aluminium mining by quarry workers and boosts aluminium production by %0%. If powered consumes %2kW but boosts aluminium production by %1% instead of %0%.",
   "city_mine": "Mine",
   "city_mine_desc": "Employs miners",
   "city_mine_effect1": "+1 Max Miner",

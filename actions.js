@@ -2892,7 +2892,7 @@ export const actions = {
             power_reqs: { alumina: 2 },
             effect() {
                 if (global.tech['alumina'] >= 2){
-                    return `<div>${loc('city_metal_refinery_effect2',[6,12])}</div>`;
+                    return `<div>${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</div>`;
                 }
                 else {
                     return `<div>${loc('city_metal_refinery_effect',[6])}</div>`;
