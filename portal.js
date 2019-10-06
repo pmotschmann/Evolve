@@ -310,6 +310,8 @@ function buildFortress(parent){
     station.append($('<b-tooltip :label="patSizeLabel()" position="is-bottom" multilined animated><span class="current">{{ f.patrol_size }}</span></b-tooltip>'));
     station.append($('<span role="button" aria-label="increase size of each patrol" class="add has-text-success" @click="patSizeInc"><span>&raquo;</span></span>'));
 
+    station.append($(`<b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="g.mercs" class="button merc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip>`));
+
     let color = global.settings.theme === 'light' ? ` type="is-light"` : ` type="is-dark"`;
     let reports = $(`<div></div>`);
     station.append(reports);
@@ -457,6 +459,43 @@ function buildFortress(parent){
                 else {
                     return "has-text-warning";
                 }
+            },
+            hire(){
+                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                if (cost > 25000){
+                    cost = 25000;
+                }
+                if (global.civic.garrison.m_use > 0){
+                    cost *= 1.1 ** global.civic.garrison.m_use;
+                }
+                if (global.race['brute']){
+                    cost = cost / 2;
+                }
+                cost = Math.round(cost);
+                if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                    global.resource.Money.amount -= cost;
+                    global.civic['garrison'].workers++;
+                    global.civic.garrison.m_use++;
+                    global.portal.fortress.garrison++;
+                    global.portal.fortress['assigned'] = global.portal.fortress.garrison;
+                    if (vues['civ_garrison']){
+                        vues['civ_garrison'].$forceUpdate();
+                    }
+                }
+            },
+            hireLabel(){
+                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                if (cost > 25000){
+                    cost = 25000;
+                }
+                if (global.civic.garrison.m_use > 0){
+                    cost *= 1.1 ** global.civic.garrison.m_use;
+                }
+                if (global.race['brute']){
+                    cost = cost / 2;
+                }
+                cost = Math.round(cost);
+                return loc('civics_garrison_hire_mercenary_cost',[cost]);
             }
         },
         filters: {
@@ -512,9 +551,6 @@ function casualties(demons,pat_armor,ambush){
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
-        /*if (dead === global.portal.fortress.patrol_size && global.portal.fortress.notify === 'Yes'){
-            messageQueue(loc('fortress_patrol_killed',[dead]));
-        }*/
     }
 
     if (global.civic.garrison.wounded > global.civic.garrison.workers){

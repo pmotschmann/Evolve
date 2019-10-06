@@ -1,4 +1,5 @@
 #### 0.6.12 - 10/6/2019 ####
+Added a hire merc option to fortress, mercs highered here go directly to the fortress<br>
 Default patrol size is now 10 instead of 4<br>
 Adjuted margins in city tab/space tabs to slightly reduce vertical scrolling<br>
 New Tower of Babel flair<br>
