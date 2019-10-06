@@ -506,6 +506,11 @@ function fastLoop(){
         breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
+    if (global.city.ptrait === 'trashed' && global.civic['scavenger'] && global.civic.scavenger.workers > 0){
+        let bonus = (global.civic.scavenger.workers * global.civic.scavenger.impact);
+        breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
+        global_multiplier *= 1 + (bonus / 100);
+    }
     if (global.city.ptrait === 'mellow'){
         breakdown.p['Global'][loc('planet_mellow_bd')] = '-2%';
         global_multiplier *= 0.98;
@@ -1233,26 +1238,28 @@ function fastLoop(){
         // Detect labor anomalies
         let total = 0;
         Object.keys(job_desc).forEach(function (job) {
-            total += global.civic[job].workers;
-            if (total > global.resource[global.race.species].amount){
-                global.civic[job].workers -= total - global.resource[global.race.species].amount;
-            }
+            if (global.civic[job]){
+                total += global.civic[job].workers;
+                if (total > global.resource[global.race.species].amount){
+                    global.civic[job].workers -= total - global.resource[global.race.species].amount;
+                }
 
-            let stress_level = global.civic[job].stress;
-            if (global.city.ptrait === 'mellow'){
-                stress_level += 1;
-            }
-            if (global.race['content']){
-                let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
-                stress_level += global.race['content'] * effectiveness;
-            }
+                let stress_level = global.civic[job].stress;
+                if (global.city.ptrait === 'mellow'){
+                    stress_level += 1;
+                }
+                if (global.race['content']){
+                    let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
+                    stress_level += global.race['content'] * effectiveness;
+                }
 
-            stress -= +(global.civic[job].workers / stress_level).toFixed(0);
+                stress -= +(global.civic[job].workers / stress_level).toFixed(0);
+            }
         });
         global.civic.free = global.resource[global.race.species].amount - total;
 
         Object.keys(job_desc).forEach(function (job){
-            if (job !== 'craftsman' && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
+            if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
                 global.civic[job].workers++;
                 global.civic.free--;
             }
@@ -1392,7 +1399,7 @@ function fastLoop(){
                 farmers_base *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
                 farmers_base *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farmers_base *= global.city.biome === 'hellscape' ? 0.25 : 1;
-                farmers_base *= global.city.ptrait === 'trashed' ? 0.9 : 1;
+                farmers_base *= global.city.ptrait === 'trashed' ? 0.75 : 1;
                 farmers_base *= racialTrait(global.civic.farmer.workers,'farmer');
                 farmers_base *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                 farmers_base *= global.race['low_light'] ? 0.9 : 1;
@@ -1424,7 +1431,7 @@ function fastLoop(){
                     farm = global.city['farm'].count * (global.tech['agriculture'] >= 2 ? 1.25 : 0.75);
                     farm *= global.city.biome === 'grassland' ? 1.1 : 1;
                     farm *= global.city.biome === 'hellscape' ? 0.25 : 1;
-                    farm *= global.city.ptrait === 'trashed' ? 0.9 : 1;
+                    farm *= global.city.ptrait === 'trashed' ? 0.75 : 1;
                     farm *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                     farm *= global.race['low_light'] ? 0.9 : 1;
                 }
@@ -2964,6 +2971,7 @@ function midLoop(){
             farmer: -1,
             lumberjack: -1,
             quarry_worker: -1,
+            scavenger: -1,
             miner: 0,
             coal_miner: 0,
             craftsman: 0,
@@ -4108,6 +4116,14 @@ function longLoop(){
         
         if (global.portal['fortress']){
             bloodwar();
+        }
+
+        if (global.city.ptrait === 'trashed'){
+            global.civic.scavenger.display = true;
+        }
+        else {
+            global.civic.scavenger.display = false;
+            global.civic.scavenger.workers = 0;
         }
 
         // Market price fluctuation

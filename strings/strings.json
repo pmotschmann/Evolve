@@ -134,6 +134,8 @@
   "job_reclaimer_desc": "Reclaimers scavenge for dead things. Each reclaimer generates %0 bones and %1 flesh per second.",
   "job_quarry_worker": "Quarry Worker",
   "job_quarry_worker_desc": "Quarry Workers mine stone from rock quarries. Each quarry worker generates %0 stone per second.",
+  "job_scavenger": "Scavenger",
+  "job_scavenger_desc": "Scavengers search the trash heaps of %0 looking for anytihng useful. Boosts production by %1%.",
   "job_miner": "Miner",
   "job_miner_desc1": "Miners dig up useful minerals from shafts dug deep in the ground. Each miner will extract copper from the ground.",
   "job_miner_desc2": "Miners dig up useful minerals from shafts dug deep in the ground. Each miner will extract copper and iron from the ground.",

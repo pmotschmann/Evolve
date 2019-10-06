@@ -2142,7 +2142,7 @@ export const actions = {
                 farming *= global.city.biome === 'grassland' ? 1.1 : 1;
                 farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
                 farming *= global.city.biome === 'hellscape' ? 0.25 : 1;
-                farming *= global.city.ptrait === 'trashed' ? 0.9 : 1;
+                farming *= global.city.ptrait === 'trashed' ? 0.75 : 1;
                 farming = +farming.toFixed(2);
                 return global.tech['farm'] ? `<div>${loc('city_farm_effect',[farming])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect',[farming]); 
             },

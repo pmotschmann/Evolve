@@ -12,7 +12,7 @@ export const job_desc = {
         multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
         let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
         impact *= global.city.biome === 'hellscape' ? 0.25 : 1;
-        impact *= global.city.ptrait === 'trashed' ? 0.9 : 1;
+        impact *= global.city.ptrait === 'trashed' ? 0.75 : 1;
         let gain = +(impact * multiplier).toFixed(2);
         return loc('job_farmer_desc',[gain]);
     },
@@ -41,6 +41,9 @@ export const job_desc = {
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
         return loc('job_quarry_worker_desc',[gain]);
+    },
+    scavenger: function(){
+        return loc('job_scavenger_desc',[races[global.race.species].home,global.civic.scavenger.impact]);
     },
     miner: function(){
         if (global.tech['mining'] >= 3){
@@ -125,6 +128,7 @@ export function defineJobs(){
     loadJob('farmer',1.35,5);
     loadJob('lumberjack',1,5);
     loadJob('quarry_worker',1,5);
+    loadJob('scavenger',0.12,5);
     loadJob('miner',1,4,'advanced');
     loadJob('coal_miner',0.2,4,'advanced');
     loadJob('craftsman',1,5,'advanced');
@@ -198,7 +202,7 @@ function loadJob(job, impact, stress, color){
     
     var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
     var controls = $('<div class="controls"></div>');
-    if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker'){
+    if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker' || job === 'scavenger'){
         let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ name }}</h3><span class="count">{{ workers }}</span></div>`);
         civ_container.append(job_label);
     }
