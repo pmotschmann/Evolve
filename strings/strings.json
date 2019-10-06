@@ -2470,6 +2470,8 @@
   "portal_sensor_drone_effect": "+%0% Surveyor Infernite",
   "portal_sensor_drone_effect2": "+%0% Bio Lab Max Knowledge",
   "portal_first_gem": "Your soldiers discovered a peculiar stone in the aftermath of a battle. It makes everyone who goes near it uneasy and almost seems to be alive.",
+  "fortress_patrol_reports": "Patrol Reports",
+  "fortress_surv_reports": "Surveyor Reports",
   "fortress_spotted": "Demonic Creatures Spotted:",
   "fortress_threat": "%0 demonic creatures have been spotted in the vicinity.",
   "fortress_threat_high": "Surveyors will not live long with this much activity.",

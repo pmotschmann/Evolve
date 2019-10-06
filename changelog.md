@@ -1,3 +1,6 @@
+#### 0.6.12 - 10/6/2019 ####
+Default patrol size is now 10 instead of 4<br>
+
 #### 0.6.11 - 10/5/2019 ####
 New planetary modifiers: Toxic, Mellow, Rage, Stormy, Ozone, Magnetic, and Trashed<br>
 City Categorization by NotOats<br>

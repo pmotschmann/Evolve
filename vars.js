@@ -296,7 +296,11 @@ if (convertVersion(global['version']) < 6011 && !global.city['ptrait']){
     global.city['ptrait'] = 'none';
 }
 
-global['version'] = '0.6.11';
+if (convertVersion(global['version']) < 6012 && global.portal['fortress']){
+    global.portal.fortress['s_ntfy'] = 'Yes';
+}
+
+global['version'] = '0.6.12';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

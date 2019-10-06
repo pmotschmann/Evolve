@@ -9751,9 +9751,10 @@ export const actions = {
                         walls: 100,
                         repair: 0,
                         patrols: 0,
-                        patrol_size: 4,
+                        patrol_size: 10,
                         siege: 999,
                         notify: 'Yes',
+                        s_ntfy: 'Yes',
                     };
                     global.portal['turret'] = { count: 0, on: 0 };
                     global.portal['carport'] = { count: 0, damaged: 0, repair: 0 };
