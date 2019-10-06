@@ -3253,8 +3253,8 @@ export const actions = {
                     }
                     if (global.race['spiritual']){
                         faith *= 1.13;
-                        faith = +(faith).toFixed(2);
                     }
+                    faith = +(faith).toFixed(2);
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
                 }
                 else {
@@ -3264,8 +3264,8 @@ export const actions = {
                     }
                     if (global.race['spiritual']){
                         plasmid *= 1.13;
-                        plasmid = +(plasmid).toFixed(2);
                     }
+                    plasmid = +(plasmid).toFixed(2);
                     desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
                 }
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
