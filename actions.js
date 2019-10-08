@@ -12143,7 +12143,9 @@ function bioseed(){
     global.stats.phage += new_phage;
     unlockAchieve(`seeder`);
     let new_biome = unlockAchieve(`biome_${biome}`);
-    let new_atmo = unlockAchieve(`atmo_${atmo}`);
+    if (atmo !== 'none'){
+        unlockAchieve(`atmo_${atmo}`);
+    }
     let new_genus = unlockAchieve(`genus_${genus}`);
     let new_achieve = false;
 

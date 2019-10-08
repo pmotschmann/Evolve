@@ -1,3 +1,6 @@
+#### 0.6.13 - 10/7/2019 ####
+Fixed bioseed reset bug when seeding from a planet without a special property<br>
+
 #### 0.6.12 - 10/6/2019 ####
 Added a hire merc option to fortress, mercs hired here go directly to the fortress<br>
 Default patrol size is now 10 instead of 4<br>
