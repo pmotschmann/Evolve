@@ -3453,7 +3453,7 @@ export const actions = {
                 Sheet_Metal(){ return costMultiplier('wardenclyffe', 125, 1.2); }
             },
             effect(){
-                let gain = global.city['wardenclyffe'].count * (global.city.ptrait === 'magnetic' ? 1100 : 1000);
+                let gain = global.city.ptrait === 'magnetic' ? 1100 : 1000;
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
@@ -3462,6 +3462,8 @@ export const actions = {
                     gain *= 1 + (global.space.satellite.count * 0.04);
                 }
                 gain = +(gain).toFixed(1);
+                let desc = `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
+                gain *= global.city['wardenclyffe'].count;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait === 'magnetic'){
@@ -3475,7 +3477,6 @@ export const actions = {
                         pgain *= (global.tech['supercollider'] / ratio) + 1;
                     }
                     pgain = +(pgain).toFixed(1);
-                    let desc = `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
                     if (global.tech.science >= 15){
                         desc = desc + `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
@@ -3486,11 +3487,8 @@ export const actions = {
                     else {
                         desc = desc + `<div>${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain])}</div>`;
                     }
-                    return desc;
                 }
-                else {
-                    return `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
-                }
+                return desc;
             },
             powered(){ return 2; },
             action(){
