@@ -887,10 +887,10 @@ function genetics(){
             if (traits[trait] && traits[trait].type === 'minor'){
                 minor = true;
                 let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
-                let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button gene" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
+                let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-dark']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
                 m_trait.append(gene);
                 if (global.race.Phage.count > 0){
-                    let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button gene" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
+                    let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-dark']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
                     m_trait.append(phage);
                 }
                 if (global.race[trait] > 1){
@@ -1048,6 +1048,14 @@ function genetics(){
                 addCost(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
                     return loc('arpa_gain',[t,cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')]);
+                },
+                genePurchasable(t){
+                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    return global.resource.Genes.amount >= cost;
+                },
+                phagePurchasable(t){
+                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    return global.race.Phage.count >= cost;
                 }
             }
         });
