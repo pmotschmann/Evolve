@@ -991,6 +991,43 @@ export function drawPerks(){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_ancients")}</span></div>`);
     }
+    
+    if (global.genes['transcendence']){ 
+        unlocked++; 
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_transcendence_desc")}</span></div>`); 
+    } 
+
+    if (global.genes['queue']){ 
+        unlocked++; 
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_geographer_desc")}</span></div>`); 
+        if (global.genes['queue'] >= 2) { 
+            unlocked++; 
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_architect_desc")}</span></div>`); 
+        } 
+    } 
+
+    if (global.genes['mutation']){ 
+        unlocked++; 
+        let racial_trait = global.genes['mutation'] === 1 ? "" : " and genus"; 
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation1",[racial_trait])}</span></div>`); 
+        if (global.genes['mutation'] >= 3) { 
+            unlocked++; 
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation2")}</span></div>`); 
+        } 
+    } 
+
+    if (global.genes['bleed']){ 
+        unlocked++; 
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_bleeding_effect_desc",[25])}</span></div>`); 
+        if (global.genes['bleed'] >= 2) { 
+            unlocked++; 
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_synchronicity_desc",[2.5])}</span></div>`); 
+            if (global.genes['bleed'] >= 3) { 
+                unlocked++; 
+                perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_astral_awareness_desc")}</span></div>`); 
+            } 
+        } 
+    }
 
     if (unlocked > 0){
         perks.prepend(`<div class="cstat"><span class="has-text-success">${loc("achieve_perks")}</span></div>`);
