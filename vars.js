@@ -300,7 +300,11 @@ if (convertVersion(global['version']) < 6012 && global.portal['fortress']){
     global.portal.fortress['s_ntfy'] = 'Yes';
 }
 
-global['version'] = '0.6.13';
+if (convertVersion(global['version']) < 6014 && global.race['noble'] && global.tech['currency'] && global.tech['currency'] === 4){
+    global.tech['currency'] = 5;
+}
+
+global['version'] = '0.6.14';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -727,7 +731,6 @@ $(document).keydown(function(e){
     altIsPressed = e.altKey ? true : false;
     demoIsPressed = e.keyCode === 68 ? true : false;
     queueIsPressed = e.keyCode === 81 ? true : false;
-    console.log(queueIsPressed);
 });
 $(document).keyup(function(e){
     cntrlIsPressed = e.ctrlKey ? true : false;

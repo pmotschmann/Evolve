@@ -1,3 +1,6 @@
+#### 0.6.14 - 10/9/2019 ####
+Fixed several bugs with celestial races<br>
+
 #### 0.6.13 - 10/7/2019 ####
 Fixed bioseed reset bug when seeding from a planet without a special property<br>
 

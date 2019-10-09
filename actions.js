@@ -978,6 +978,14 @@ export const actions = {
                             global.race.species = 'imp';
                         }
                     }
+                    else if (global.evolution['celestial']){
+                        if (path < 50){
+                            global.race.species = 'seraph';
+                        }
+                        else {
+                            global.race.species = 'unicorn';
+                        }
+                    }
                     else if (global.evolution['eggshell']){
                         global.race.species = 'dracnid';
                     }
@@ -5333,13 +5341,16 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.large_trades.grant[0];
                     global.tech[tech] = actions.tech.large_trades.grant[1];
-                    if (global.race['noble']){
-                        global.tech[tech] = 5;
-                    }
                     loadMarket();
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.race['noble']){
+                    global.tech['currency'] = 5;
+                    drawTech();
+                }
             }
         },
         corruption: {
@@ -10331,6 +10342,9 @@ export function setAction(c_action,action,type,old){
                         case 'tech':
                             if (c_action.action()){
                                 gainTech(type);
+                                if (c_action['post']){
+                                    c_action.post();
+                                }
                             }
                             else {
                                 if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
@@ -10357,6 +10371,9 @@ export function setAction(c_action,action,type,old){
                         case 'genes':
                             if (c_action.action()){
                                 gainGene(type);
+                                if (c_action['post']){
+                                    c_action.post();
+                                }
                             }
                             break;
                         default:
