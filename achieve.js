@@ -1007,12 +1007,10 @@ export function drawPerks(){
     } 
 
     if (global.genes['mutation']){ 
-        unlocked++; 
-        let racial_trait = global.genes['mutation'] === 1 ? "" : " and genus"; 
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation1",[racial_trait])}</span></div>`); 
-        if (global.genes['mutation'] >= 3) { 
-            unlocked++; 
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation2")}</span></div>`); 
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${global.genes['mutation'] === 1 ? loc("arpa_perks_mutation1") : loc("arpa_perks_mutation2")}</span></div>`); 
+        if (global.genes['mutation'] >= 3){
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation3")}</span></div>`); 
         } 
     } 
 
