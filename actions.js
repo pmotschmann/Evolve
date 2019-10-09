@@ -3463,14 +3463,13 @@ export const actions = {
                 }
                 gain = +(gain).toFixed(1);
                 let desc = `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
-                gain *= global.city['wardenclyffe'].count;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait === 'magnetic'){
                         pgain += 100;
                     }
                     if (global.space['satellite']){
-                        pgain *= 1 + (global.space.satellite.count * 0.02);
+                        pgain *= 1 + (global.space.satellite.count * 0.04);
                     }
                     if (global.tech['supercollider']){
                         let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
