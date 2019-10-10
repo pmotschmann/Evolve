@@ -631,14 +631,19 @@ const spaceProjects = {
         },
         biodome: {
             id: 'space-biodome',
-            title: loc('space_red_biodome_title'),
+            title(){return global.race['soul_eater'] ? loc('space_red_asphodel_title') : loc('space_red_biodome_title'); },
             desc(){
                 let desc;
-                if (global.race['carnivore']){
-                    desc = `<div>${loc('space_red_biodome_desc_carn')}</div>`;
+                if (global.race['soul_eater']) {
+                    desc = `<div>${loc('space_red_asphodel_desc')}</div>`;
                 }
                 else {
-                    desc = `<div>${loc('space_red_biodome_desc',[races[global.race.species].solar.red])}</div>`;
+                    if (global.race['carnivore']){
+                        desc = `<div>${loc('space_red_biodome_desc_carn')}</div>`;
+                    }
+                    else {
+                        desc = `<div>${loc('space_red_biodome_desc',[races[global.race.species].solar.red])}</div>`;
+                    }
                 }
                 return `<div>${desc}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`;
             },
@@ -671,7 +676,7 @@ const spaceProjects = {
                 return false;
             },
             flair(){
-                return global.race['carnivore'] ? loc('space_red_biodome_flair_carn') : loc('space_red_biodome_flair');
+                return global.race['soul_eater'] ? loc('space_red_asphodel_flair') : global.race['carnivore'] ? loc('space_red_biodome_flair_carn') : loc('space_red_biodome_flair');
             }
         },
         exotic_lab: {
