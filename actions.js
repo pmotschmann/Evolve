@@ -10111,7 +10111,7 @@ export function gainTech(action){
 }
 
 export function drawCity(){
-    let city_buildings = { };
+    let city_buildings = {};
     Object.keys(actions.city).forEach(function (city_name) {
         removeAction(actions.city[city_name].id);
         
@@ -10125,7 +10125,12 @@ export function drawCity(){
             city_buildings[category] = [];
         }
 
-        city_buildings[category].push(city_name);
+        if (global.settings['cLabels']){
+            city_buildings[category].push(city_name);
+        }
+        else {
+            addAction('city', city_name);
+        }
     });
 
     let city_categories =  [
@@ -10141,17 +10146,18 @@ export function drawCity(){
 
     city_categories.forEach(function(category) {
         $(`#city-dist-${category}`).remove();
+        if (global.settings['cLabels']){
+            if(!(category in city_buildings))
+                return;
 
-        if(!(category in city_buildings))
-            return;
+            $(`<div id="city-dist-${category}" class="city"></div>`)
+                .appendTo('#city')
+                .append(`<div><h3 class="name has-text-warning">${loc(`city_dist_${category}`)}</h3></div>`);
 
-        $(`<div id="city-dist-${category}" class="city"></div>`)
-            .appendTo('#city')
-            .append(`<div><h3 class="name has-text-warning">${loc(`city_dist_${category}`)}</h3></div>`);
-
-        city_buildings[category].forEach(function(city_name) {
-            addAction('city', city_name);
-        });
+            city_buildings[category].forEach(function(city_name) {
+                addAction('city', city_name);
+            });
+        }
     });
 }
 
@@ -10534,7 +10540,7 @@ export function setAction(c_action,action,type,old){
 
 export function setPlanet(hell){
     var biome = 'grassland';
-    let max_bound = !hell && global.stats.portals >= 10 ? 7 : 6;
+    let max_bound = !hell && global.stats.portals >= 1 ? 7 : 6;
     switch (Math.floor(Math.seededRandom(0,max_bound))){
         case 0:
             biome = 'grassland';

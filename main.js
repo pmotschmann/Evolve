@@ -4428,6 +4428,13 @@ function longLoop(){
             messageQueue(loc('genesis'),'special');
             drawTech();
         }
+
+        if (global.settings['cLabels'] && $('#city-dist-outskirts').length === 0){
+            drawCity();
+        }
+        if (!global.settings['cLabels'] && $('#city-dist-outskirts').length > 0){
+            drawCity();
+        }
     }
 
     // Event triggered

@@ -300,8 +300,13 @@ if (convertVersion(global['version']) < 6012 && global.portal['fortress']){
     global.portal.fortress['s_ntfy'] = 'Yes';
 }
 
-if (convertVersion(global['version']) < 6014 && global.race['noble'] && global.tech['currency'] && global.tech['currency'] === 4){
-    global.tech['currency'] = 5;
+if (convertVersion(global['version']) < 6014){
+    if (global.race['noble'] && global.tech['currency'] && global.tech['currency'] === 4){
+        global.tech['currency'] = 5;
+    }
+    if (global['settings']){
+        global.settings['cLabels'] = true;
+    }
 }
 
 global['version'] = '0.6.14';
@@ -328,9 +333,10 @@ if (!global['settings']){
         showAchieve: false,
         animated: true,
         disableReset: false,
+        cLabels: true,
         theme: 'dark',
         locale: 'en-US',
-    }
+    };
 }
 
 if (!global.settings['showResources']){

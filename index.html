@@ -191,7 +191,8 @@
                                 </b-dropdown>
                             </div>
                             <div id="localization" class="localization"></div>
-                            <b-switch v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>Multiplier Keys</b-tooltip></b-switch>
+                            <b-switch v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
+                            <b-switch v-model="s.cLabels"><b-tooltip :label="city()" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>
                             <div class="importExport">
                                 <b-field label="Import/Export Save">
                                     <b-input id="importExport" type="textarea"></b-input>

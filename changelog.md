@@ -1,5 +1,7 @@
 #### 0.6.14 - 10/9/2019 ####
 Fixed several bugs with celestial races<br>
+Only one demonic invasion event is now required to reach a hellscape planet<br>
+New city categorization can now be switched off in the settings tab<br>
 
 #### 0.6.13 - 10/7/2019 ####
 Fixed bioseed reset bug when seeding from a planet without a special property<br>

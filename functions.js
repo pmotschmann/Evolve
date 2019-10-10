@@ -47,6 +47,9 @@ export function mainVue(){
             soft(){
                 return loc('settings4');
             },
+            city(){
+                return loc('settings5');
+            },
             remove(index){
                 global.r_queue.queue.splice(index,1);
             }
