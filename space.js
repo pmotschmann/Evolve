@@ -676,7 +676,7 @@ const spaceProjects = {
                 return false;
             },
             flair(){
-                return global.race['soul_eater'] ? loc('space_red_asphodel_flair') : global.race['carnivore'] ? loc('space_red_biodome_flair_carn') : loc('space_red_biodome_flair');
+                return global.race['soul_eater'] ? loc('space_red_asphodel_flair') : (global.race['carnivore'] ? loc('space_red_biodome_flair_carn') : loc('space_red_biodome_flair'));
             }
         },
         exotic_lab: {
