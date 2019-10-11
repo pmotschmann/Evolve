@@ -449,8 +449,8 @@ if (!global.settings['locale']){
 if (typeof global.settings.mKeys === 'undefined'){
     global.settings['mKeys'] = true;
 }
-if (!global.settings['qKey']){
-    global.settings['qKey'] = true;
+if (typeof global.settings.qKey === 'undefined'){
+    global.settings['qKey'] = false;
 }
 if (!global.stats['reset']){
     global.stats['reset'] = 0;

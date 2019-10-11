@@ -1,5 +1,6 @@
 #### 0.6.15 - 10/11/2019 ####
-Added a settings option to disable the queue key<br>
+Added a settings option to disable the queue hot key<br>
+The queue hot key is now disabled by default because it breaks the game for some users<br>
 
 #### 0.6.14 - 10/9/2019 ####
 Fixed several bugs with celestial races<br>
