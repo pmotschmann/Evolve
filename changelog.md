@@ -1,3 +1,6 @@
+#### 0.6.15 - 10/11/2019 ####
+Added a settings option to disable the queue key<br>
+
 #### 0.6.14 - 10/9/2019 ####
 Fixed several bugs with celestial races<br>
 Only one demonic invasion event is now required to reach a hellscape planet<br>

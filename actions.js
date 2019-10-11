@@ -10413,7 +10413,7 @@ export function setAction(c_action,action,type,old){
                                 let grant = false;
                                 let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 for (var i=0; i<keyMult; i++){
-                                    if (queueIsPressed || !c_action.action()){
+                                    if ((global.settings.qKey && queueIsPressed) || !c_action.action()){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){

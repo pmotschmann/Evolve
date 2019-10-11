@@ -309,7 +309,7 @@ if (convertVersion(global['version']) < 6014){
     }
 }
 
-global['version'] = '0.6.14';
+global['version'] = '0.6.15';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -449,7 +449,9 @@ if (!global.settings['locale']){
 if (typeof global.settings.mKeys === 'undefined'){
     global.settings['mKeys'] = true;
 }
-
+if (!global.settings['qKey']){
+    global.settings['qKey'] = true;
+}
 if (!global.stats['reset']){
     global.stats['reset'] = 0;
 }
