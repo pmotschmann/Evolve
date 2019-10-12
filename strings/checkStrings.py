@@ -5,6 +5,10 @@ import re
 
 print()
 
+check_tokens = True
+check_leading_space = True
+check_periods = True
+
 def led_spaces(str):
     return len(str) - len(str.lstrip(' '))
 
@@ -22,7 +26,7 @@ else:
         defstr = json.load(default_file)
         
         json_regex = re.compile(r'"(?P<key>.+)"\s*:\s"(?P<value>.*)"\s*$')
-        period_count = re.compile(r'(\.,。)\D')
+        period_count = re.compile(r'(\.(\D|$))|。')
         tokens_regex = re.compile("%\d+(?!\d)");
 
         for (nl, line) in enumerate(loc_file):
@@ -45,19 +49,22 @@ else:
             else:
                 defline = defstr[line['key']]
             
-            pcdef = len(period_count.findall(defline))
-            pcloc = len(period_count.findall(line['value']))
-            if pcdef != pcloc:
-                print("periods number differ (def: {} != loc: {}), in key '{}', line {}" \
-                    .format(pcdef, pcloc, line['key'], nl+1))
-            
-            leddef = led_spaces(defline)
-            ledloc = led_spaces(line['value'])
-            if leddef != ledloc:
-                print("leading spaces differ (def: {} != loc: {}), in key '{}', line {}".format(leddef, ledloc, line['key'], nl+1))
+            if check_tokens:
+                tcdef = len(tokens_regex.findall(defline))
+                tcloc = len(tokens_regex.findall(line['value']))
+                if tcdef != tcloc:
+                    print("Number of tokens (like %0) number differ (def: {} != loc: {}), in key '{}', line {}" \
+                        .format(tcdef, tcloc, line['key'], nl+1))
 
-            tcdef = len(tokens_regex.findall(defline))
-            tcloc = len(tokens_regex.findall(line['value']))
-            if tcdef != tcloc:
-                print("Number of tokens (like %0) number differ (def: {} != loc: {}), in key '{}', line {}" \
-                    .format(tcdef, tcloc, line['key'], nl+1))
+            if check_leading_space:
+                leddef = led_spaces(defline)
+                ledloc = led_spaces(line['value'])
+                if leddef != ledloc:
+                    print("leading spaces differ (def: {} != loc: {}), in key '{}', line {}".format(leddef, ledloc, line['key'], nl+1))
+            
+            if check_periods:            
+                pcdef = len(period_count.findall(defline))
+                pcloc = len(period_count.findall(line['value']))
+                if pcdef != pcloc:
+                    print("periods number differ (def: {} != loc: {}), in key '{}', line {}" \
+                        .format(pcdef, pcloc, line['key'], nl+1))
