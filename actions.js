@@ -12144,6 +12144,7 @@ function bioseed(){
     let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E),'bioseed');
     phage += new_phage;
     global.stats.reset++;
+    global.stats.bioseed++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
     global.stats.tknow += global.stats.know;
@@ -12292,6 +12293,7 @@ function big_bang(){
 
     phage += new_phage;
     global.stats.reset++;
+    global.stats.blackhole++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
     global.stats.tknow += global.stats.know;

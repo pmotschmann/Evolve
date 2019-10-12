@@ -205,15 +205,15 @@ var achievements = {
         desc: loc("achieve_eviltwin_desc"),
         flair: loc("achieve_eviltwin_flair")
     },
-    dissipated: {
-        name: loc("achieve_dissipated_name"),
-        desc: loc("achieve_dissipated_desc"),
-        flair: loc("achieve_dissipated_flair")
-    },
     microbang: {
         name: loc("achieve_microbang_name"),
         desc: loc("achieve_microbang_desc"),
         flair: loc("achieve_microbang_flair")
+    },
+    dissipated: {
+        name: loc("achieve_dissipated_name"),
+        desc: loc("achieve_dissipated_desc"),
+        flair: loc("achieve_dissipated_flair")
     },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
@@ -820,8 +820,8 @@ export function checkAchievements(){
     }
     if (!global.stats.achieve['creator'] || global.stats.achieve['creator'].l < a_level){
         let total = 0;
-        const keys = Object.keys(achievements)
-        for (const key of keys) {
+        const keys = Object.keys(achievements);
+        for (const key of keys){
             if (key.includes('genus_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
                     total++
@@ -834,8 +834,8 @@ export function checkAchievements(){
     }
     if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'].l < a_level){
         let total = 0;
-        const keys = Object.keys(achievements)
-        for (const key of keys) {
+        const keys = Object.keys(achievements);
+        for (const key of keys){
             if (key.includes('biome_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
                     total++
@@ -1048,6 +1048,15 @@ export function drawStats(){
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died | t_died }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days | played }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_total_resets")}</span> {{ reset }}</div>`);
+    if (global.stats.mad > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_mad_resets")}</span> {{ mad }}</div>`);
+    }
+    if (global.stats.bioseed > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_bioseed_resets")}</span> {{ bioseed }}</div>`);
+    }
+    if (global.stats.mad > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blackhole_resets")}</span> {{ blackhole }}</div>`);
+    }
     if (global.stats.portals > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ portals }}</div>`);
     }

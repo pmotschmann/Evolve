@@ -1050,6 +1050,7 @@ function warhead(){
     }
     new_plasmid = challenge_multiplier(new_plasmid,'mad');
     global.stats.reset++;
+    global.stats.mad++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
     global.stats.tknow += global.stats.know;

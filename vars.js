@@ -309,6 +309,26 @@ if (convertVersion(global['version']) < 6014){
     }
 }
 
+if (convertVersion(global['version']) < 6016 && global.stats && global.stats['reset'] && global.stats['achieve']){
+    global.stats['mad'] = global.stats['reset'];
+    global.stats['bioseed'] = 0;
+    global.stats['blackhole'] = 0;
+    let blkhle = ['whitehole','heavy','canceled','eviltwin','microbang'];
+    for (let i=0; i<blkhle.length; i++){
+        if (global.stats.achieve[blkhle[i]]){
+            global.stats['blackhole']++;
+            global.stats['mad']--;
+        }
+    }
+    let genus = ['genus_humanoid','genus_animal','genus_small','genus_giant','genus_reptilian','genus_avian','genus_insectoid','genus_plant','genus_fungi','genus_aquatic','genus_demonic','genus_angelic'];
+    for (let i=0; i<blkhle.length; i++){
+        if (global.stats.achieve[genus[i]]){
+            global.stats['bioseed']++;
+            global.stats['mad']--;
+        }
+    }
+}
+
 global['version'] = '0.6.16';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -491,11 +511,18 @@ if (!global.stats['portals']){
 if (!global.stats['attacks']){
     global.stats['attacks'] = 0;
 }
-
+if (!global.stats['mad']){
+    global.stats['mad'] = 0;
+}
+if (!global.stats['bioseed']){
+    global.stats['bioseed'] = 0;
+}
+if (!global.stats['blackhole']){
+    global.stats['blackhole'] = 0;
+}
 if (!global['lastMsg']){
     global['lastMsg'] = false;
 }
-
 if (!global.race['seeded']){
     global.race['seeded'] = false;
 }
