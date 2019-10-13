@@ -1773,7 +1773,7 @@
   "arpa_genepool_replication_title": "Replication",
   "arpa_genepool_replication_desc": "Increases Birth Rate",
   "arpa_genepool_artificer_title": "Artificer",
-  "arpa_genepool_artificer_desc": "Craftsmen trigger once every 70s",
+  "arpa_genepool_artificer_desc": "Craftsmen trigger twice a month (once every 70 seconds)",
   "arpa_genepool_detail_oriented_title": "Detail Oriented",
   "arpa_genepool_crafting_desc": "Craftsman produce %0% more product",
   "arpa_genepool_rigorous_title": "Rigorous",

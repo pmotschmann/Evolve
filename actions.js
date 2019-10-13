@@ -1,7 +1,7 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, queueIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, powerModifier, challenge_multiplier, adjustCosts } from './functions.js';
-import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
+import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements, svgIcons, svgViewBox } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -1015,6 +1015,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_human';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         orc: {
@@ -1034,6 +1038,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_orc';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         elven: {
@@ -1053,6 +1061,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_elven';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         troll: {
@@ -1072,6 +1084,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_troll';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         orge: {
@@ -1091,6 +1107,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_orge';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         cyclops: {
@@ -1110,6 +1130,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_cyclops';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         kobold: {
@@ -1129,6 +1153,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_kobold';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         goblin: {
@@ -1148,6 +1176,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_goblin';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         gnome: {
@@ -1167,6 +1199,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_gnome';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         cath: {
@@ -1186,6 +1222,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_cath';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         wolven: {
@@ -1205,6 +1245,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_wolven';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         centaur: {
@@ -1224,6 +1268,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_centaur';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         tortoisan: {
@@ -1243,6 +1291,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_tortoisan';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         gecko: {
@@ -1262,6 +1314,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_gecko';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         slitheryn: {
@@ -1281,6 +1337,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_slitheryn';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         arraak: {
@@ -1300,6 +1360,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_arraak';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         pterodacti: {
@@ -1319,6 +1383,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_pterodacti';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         dracnid: {
@@ -1338,6 +1406,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_dracnid';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         sporgar: {
@@ -1357,6 +1429,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_sporgar';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         shroomi: {
@@ -1376,6 +1452,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_shroomi';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         mantis: {
@@ -1395,6 +1475,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_mantis';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         scorpid: {
@@ -1414,6 +1498,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_scorpid';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         antid: {
@@ -1433,6 +1521,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_antid';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         entish: {
@@ -1452,6 +1544,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_entish';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         cacti: {
@@ -1471,6 +1567,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_cacti';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         sharkin: {
@@ -1490,6 +1590,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_sharkin';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         octigoran: {
@@ -1509,6 +1613,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_octigoran';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         balorg: {
@@ -1528,6 +1636,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_balorg';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         imp: {
@@ -1547,6 +1659,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_imp';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         seraph: {
@@ -1566,6 +1682,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_seraph';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         unicorn: {
@@ -1585,6 +1705,10 @@ export const actions = {
                     sentience();
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'extinct_unicorn';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             }
         },
         bunker: {
@@ -1744,6 +1868,10 @@ export const actions = {
                 }
                 return false;
             },
+            emblem(){
+                let achieve = 'extinct_junker';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
+            },
             flair: loc('evo_challenge_junker_flair')
         },
         joyless: {
@@ -1762,6 +1890,10 @@ export const actions = {
                 }
                 return false;
             },
+            emblem(){
+                let achieve = 'joyless';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
+            },
             flair: loc('evo_challenge_joyless_flair')
         },
         decay: {
@@ -1779,6 +1911,10 @@ export const actions = {
                     removeAction(actions.evolution.decay.id);
                 }
                 return false;
+            },
+            emblem(){
+                let achieve = 'joyless';
+                return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             },
             flair: loc('evo_challenge_decay_flair')
         },
@@ -10324,6 +10460,11 @@ export function setAction(c_action,action,type,old){
         $(`#${id} .special`).css('display','none');
         $(`#${id} .on`).css('display','none');
         $(`#${id} .off`).css('display','none');
+    }
+
+    if (c_action['emblem']){
+        let emblem = c_action.emblem();
+        parent.append($(emblem));
     }
 
     var modal = {

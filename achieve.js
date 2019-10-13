@@ -656,7 +656,7 @@ export function setupStats(){
     drawAchieve();
 }
 
-function svgIcons(icon){
+export function svgIcons(icon){
     switch (icon){
         case 'star':
             return `<path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/>`;
@@ -671,7 +671,7 @@ function svgIcons(icon){
     }
 }
 
-function svgViewBox(icon){
+export function svgViewBox(icon){
     switch (icon){
         case 'star':
             return `0 0 640 640`;

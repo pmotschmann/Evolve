@@ -3,6 +3,7 @@ Employment is now color coded depending on staffing levels<br>
 GPS satelites now add additional trade routes<br>
 Added stats tracking on reset mechanics used<br>
 Added a message when completing the launch facility<br>
+Added icons to challenges and races in evolution stage to indicate level of challenge completion<br>
 
 #### 0.6.15 - 10/11/2019 ####
 Added a settings option to disable the queue hot key<br>
