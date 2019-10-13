@@ -310,7 +310,7 @@ function buildFortress(parent){
     station.append($('<b-tooltip :label="patSizeLabel()" position="is-bottom" multilined animated><span class="current">{{ f.patrol_size }}</span></b-tooltip>'));
     station.append($('<span role="button" aria-label="increase size of each patrol" class="add has-text-success" @click="patSizeInc"><span>&raquo;</span></span>'));
 
-    station.append($(`<b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="g.mercs" class="button merc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip>`));
+    station.append($(`<b-tooltip :label="hireLabel()" size="is-small merctip" position="is-bottom" animated><button v-show="g.mercs" class="button merc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip>`));
 
     let color = global.settings.theme === 'light' ? ` type="is-light"` : ` type="is-dark"`;
     let reports = $(`<div></div>`);
