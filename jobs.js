@@ -148,13 +148,18 @@ function loadUnemployed(){
     
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job = global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed');
-    let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">${job}</h3><span class="count">{{ free }}</span></div>`);
+    //let job = global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed');
+    let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ 'job' | title }}</h3><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
     vues['civ_free'] = new Vue({
         data: global.civic,
+        filters: {
+            title(){
+                return global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed');
+            }
+        }
     });
     vues['civ_free'].$mount(`#${id}`);
     
