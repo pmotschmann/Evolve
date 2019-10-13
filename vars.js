@@ -321,7 +321,7 @@ if (convertVersion(global['version']) < 6016 && global.stats && global.stats['re
         }
     }
     let genus = ['genus_humanoid','genus_animal','genus_small','genus_giant','genus_reptilian','genus_avian','genus_insectoid','genus_plant','genus_fungi','genus_aquatic','genus_demonic','genus_angelic'];
-    for (let i=0; i<blkhle.length; i++){
+    for (let i=0; i<genus.length; i++){
         if (global.stats.achieve[genus[i]]){
             global.stats['bioseed']++;
             global.stats['mad']--;
