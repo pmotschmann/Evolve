@@ -1055,7 +1055,7 @@ export function drawStats(){
     if (global.stats.bioseed > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_bioseed_resets")}</span> {{ bioseed }}</div>`);
     }
-    if (global.stats.mad > 0){
+    if (global.stats.blackhole > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blackhole_resets")}</span> {{ blackhole }}</div>`);
     }
     if (global.stats.portals > 0){
