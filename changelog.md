@@ -1,6 +1,6 @@
-#### 0.6.16 - 10/12/2019 ####
+#### 0.6.16 - 10/13/2019 ####
 Employment is now color coded depending on staffing levels<br>
-GPS satelites now add additional trade routes<br>
+GPS satellites now add additional trade routes<br>
 Added stats tracking on reset mechanics used<br>
 Added a message when completing the launch facility<br>
 Added icons to challenges and races in evolution stage to indicate level of challenge completion<br>
