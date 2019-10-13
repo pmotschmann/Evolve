@@ -1,4 +1,4 @@
-import { global, vues, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { global, vues, poppers, keyMultiplier, sizeApproximation, messageQueue, srSpeak } from './vars.js';
 import { timeFormat } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
@@ -1136,6 +1136,7 @@ function addProject(parent,project){
                                     $(`#popArpa${pro}`).remove();
                                     physics();
                                     space();
+                                    messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
                                 }
                                 drawTech();
                             }
