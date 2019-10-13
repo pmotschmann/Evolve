@@ -3664,6 +3664,9 @@ function midLoop(){
         if (global.city['wharf']){
             global.city.market.mtrade += global.city.wharf.count * (global.race['xenophobic'] ? 1 : 2);
         }
+        if (global.space['gps'] && global.space.gps.count >= 4){
+            global.city.market.mtrade += global.space.gps.count * 2;
+        }
         
         let pop_loss = global.resource[global.race.species].amount - caps[global.race.species];
         if (pop_loss > 0){
