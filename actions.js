@@ -10487,7 +10487,7 @@ export function setAction(c_action,action,type,old){
                 else {
                     switch (action){
                         case 'tech':
-                            if (c_action.action()){
+                            if (!(global.settings.qKey && queueIsPressed) && c_action.action()){
                                 gainTech(type);
                                 if (c_action['post']){
                                     c_action.post();
