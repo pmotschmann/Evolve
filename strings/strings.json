@@ -1719,6 +1719,7 @@
   "arpa_projects_launch_facility_title": "Launch Facility",
   "arpa_projects_launch_facility_desc": "A launch facility allows for construction and firing of rockets, and thus space exploration.",
   "arpa_projects_launch_facility_effect1": "Enables the space tab, does this description matter? It shouldn't because no one should be reading it.",
+  "arpa_projects_launch_facility_msg": "A new era of space exploration is now available. Check the civilization tab for new options.",
   "arpa_project_monument_obelisk": "Obelisk",
   "arpa_project_monument_statue": "Statue",
   "arpa_project_monument_sculpture": "Sculpture",

@@ -1,7 +1,8 @@
 #### 0.6.16 - 10/12/2019 ####
 Employment is now color coded depending on staffing levels<br>
-Added stats tracking on reset mechanics used<br>
 GPS satelites now add additional trade routes<br>
+Added stats tracking on reset mechanics used<br>
+Added a message when completing the launch facility<br>
 
 #### 0.6.15 - 10/11/2019 ####
 Added a settings option to disable the queue hot key<br>
