@@ -901,7 +901,8 @@ export function drawPerks(){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator")}</span></div>`);
         if (global.stats.achieve['creator'].l > 1){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator2")}</span></div>`);
+            let bonus = (global.stats.achieve['creator'].l - 1) * 50;
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator2",[bonus])}</span></div>`);
         }
     }
 
