@@ -3,6 +3,7 @@
 Added settings option to not enforce queue order<br>
 Decay challenge no longer shows the star level for Joyless<br>
 All universe types can now be seen on achievemnts<br>
+Genus completion is now marked on sentience<br>
 
 #### 0.6.16 - 10/13/2019 ####
 Employment is now color coded depending on staffing levels<br>
