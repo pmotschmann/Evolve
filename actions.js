@@ -1913,7 +1913,7 @@ export const actions = {
                 return false;
             },
             emblem(){
-                let achieve = 'joyless';
+                let achieve = 'dissipated';
                 return global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<span class="flair"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>` : '';
             },
             flair: loc('evo_challenge_decay_flair')

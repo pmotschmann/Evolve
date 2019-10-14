@@ -1,6 +1,7 @@
 #### 0.6.17 - 10/14/2019 ####
 "Q" key now works with research queue<br>
 Added settings option to not enforce queue order<br>
+Decay challenge no longer shows the star level for Joyless<br>
 
 #### 0.6.16 - 10/13/2019 ####
 Employment is now color coded depending on staffing levels<br>
