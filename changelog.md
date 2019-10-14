@@ -7,6 +7,7 @@ Genus completion is now marked on sentience<br>
 Challenges can now be toggled during evolution<br>
 Inspiration event now gives a temporary buff to all science production<br>
 Added Slave Market for slaver races to buy slaves as an alternative to catching them<br>
+Added Crate/Containter storage amount to the build crate/container tooltip<br>
 
 #### 0.6.16 - 10/13/2019 ####
 Employment is now color coded depending on staffing levels<br>
