@@ -1983,6 +1983,29 @@ export const actions = {
                 return false;
             }
         },
+        slave_market: {
+            id: 'city-slave_market',
+            title: loc('city_slave_market'),
+            desc: loc('city_slave_market_desc'),
+            category: 'outskirts',
+            reqs: { slaves: 2 },
+            trait: ['slaver'],
+            cost: {
+                Money(){ return 25000 },
+            },
+            no_queue(){ return true },
+            action(){
+                if (global.race['slaver'] && global.city['slave_pen']){
+                    let max = global.city.slave_pen.count * 5;
+                    if (max > global.city.slave_pen.slaves){
+                        if (payCosts($(this)[0].cost)){
+                            global.city.slave_pen.slaves++;
+                        }
+                    }
+                }
+                return false;
+            }
+        },
         s_alter: {
             id: 'city-s_alter',
             title: loc('city_s_alter'),
@@ -7662,6 +7685,24 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['slave_pen'] = { count: 0, slaves: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        slave_market: {
+            id: 'tech-slave_market',
+            title: loc('tech_slave_market'),
+            desc: loc('tech_slave_market'),
+            reqs: { slaves: 1, high_tech: 1 },
+            grant: ['slaves',2],
+            trait: ['slaver'],
+            cost: {
+                Knowledge(){ return 8000; }
+            },
+            effect: loc('tech_slave_market_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
