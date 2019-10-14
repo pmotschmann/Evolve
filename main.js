@@ -1688,6 +1688,10 @@ function fastLoop(){
             know_bd[loc('job_scientist')] = scientist_base + 'v';
             know_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             know_bd[loc('tech_sundial')] = sundial_base + 'v';
+            if (global.race['inspired']){
+                know_bd[loc('event_inspiration_bd')] = '100%';
+                delta *= 2;
+            }
             if (global.city['library']){
                 know_bd[loc('city_library')] = ((library_mult - 1) * 100) + '%';
             }
@@ -3666,6 +3670,13 @@ function midLoop(){
         }
         if (global.space['gps'] && global.space.gps.count >= 4){
             global.city.market.mtrade += global.space.gps.count * 2;
+        }
+
+        if (global.race['inspired']){
+            global.race['inspired']--;
+            if (global.race['inspired'] <= 0){
+                delete global.race['inspired'];
+            }
         }
         
         let pop_loss = global.resource[global.race.species].amount - caps[global.race.species];

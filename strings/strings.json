@@ -184,6 +184,7 @@
   "event_dna": "Some DNA molecules have replicated. You gain %0 DNA.",
   "event_rna": "A meteor has impacted the planet bringing new genetic material with it. Gained %0 RNA.",
   "event_inspiration": "Your scientists have become inspired. Gain %0 Knowledge.",
+  "event_inspiration_bd": "Inspired",
   "event_fire": "A fire has broken out destroying %0 lumber.",
   "event_raid1": "An attack by a rival city has been repelled, %0 soldiers were killed and %1 soldiers were wounded.",
   "event_raid2": "Your city was raided, $%0 was stolen, %1 soldiers were killed and %2 soldiers were wounded.",
