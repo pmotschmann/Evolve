@@ -4356,7 +4356,7 @@ export const actions = {
             }
         },
         demonic_craftsman: {
-            id: 'tech-master_craftsman',
+            id: 'tech-demonic_craftsman',
             title: loc('tech_master_craftsman'),
             desc: loc('tech_master_craftsman'),
             reqs: { foundry: 3 },
