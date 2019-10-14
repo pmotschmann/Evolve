@@ -1716,13 +1716,19 @@ export const actions = {
             effect: loc('evo_challenge_plasmid_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.race['no_plasmid'] = 1;
-                    global.evolution['plasmid'] = { count: 1 };
-                    removeAction(actions.evolution.plasmid.id);
+                    if (global.race['no_plasmid']){
+                        delete global.race['no_plasmid'];
+                        $(`#${$(this)[0].id}`).removeClass('hl');
+                    }
+                    else {
+                        global.race['no_plasmid'] = 1;
+                        $(`#${$(this)[0].id}`).addClass('hl');
+                    }
                     drawAchieve();
                 }
                 return false;
-            }
+            },
+            highlight(){ return global.race['no_plasmid'] ? true : false; }
         },
         mastery: {
             id: 'evo-mastery',
@@ -1734,13 +1740,19 @@ export const actions = {
             effect: loc('evo_challenge_mastery_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.race['weak_mastery'] = 1;
-                    global.evolution['mastery'] = { count: 1 };
-                    removeAction(actions.evolution.mastery.id);
+                    if (global.race['weak_mastery']){
+                        delete global.race['weak_mastery'];
+                        $(`#${$(this)[0].id}`).removeClass('hl');
+                    }
+                    else {
+                        global.race['weak_mastery'] = 1;
+                        $(`#${$(this)[0].id}`).addClass('hl');
+                    }
                     drawAchieve();
                 }
                 return false;
-            }
+            },
+            highlight(){ return global.race['weak_mastery'] ? true : false; }
         },
         trade: {
             id: 'evo-trade',
@@ -1752,13 +1764,19 @@ export const actions = {
             effect: loc('evo_challenge_trade_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.race['no_trade'] = 1;
-                    global.evolution['trade'] = { count: 1 };
-                    removeAction(actions.evolution.trade.id);
+                    if (global.race['no_trade']){
+                        delete global.race['no_trade'];
+                        $(`#${$(this)[0].id}`).removeClass('hl');
+                    }
+                    else {
+                        global.race['no_trade'] = 1;
+                        $(`#${$(this)[0].id}`).addClass('hl');
+                    }
                     drawAchieve();
                 }
                 return false;
-            }
+            },
+            highlight(){ return global.race['no_trade'] ? true : false; }
         },
         craft: {
             id: 'evo-craft',
@@ -1770,13 +1788,19 @@ export const actions = {
             effect: loc('evo_challenge_craft_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.race['no_craft'] = 1;
-                    global.evolution['craft'] = { count: 1 };
-                    removeAction(actions.evolution.craft.id);
+                    if (global.race['no_craft']){
+                        delete global.race['no_craft'];
+                        $(`#${$(this)[0].id}`).removeClass('hl');
+                    }
+                    else {
+                        global.race['no_craft'] = 1;
+                        $(`#${$(this)[0].id}`).addClass('hl');
+                    }
                     drawAchieve();
                 }
                 return false;
-            }
+            },
+            highlight(){ return global.race['no_craft'] ? true : false; }
         },
         crispr: {
             id: 'evo-crispr',
@@ -1788,18 +1812,27 @@ export const actions = {
             effect: loc('evo_challenge_crispr_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.race['no_crispr'] = 1;
-                    global.evolution['crispr'] = { count: 1 };
-                    removeAction(actions.evolution.crispr.id);
+                    if (payCosts($(this)[0].cost)){
+                        if (global.race['no_crispr']){
+                            delete global.race['no_crispr'];
+                            $(`#${$(this)[0].id}`).removeClass('hl');
+                        }
+                        else {
+                            global.race['no_crispr'] = 1;
+                            $(`#${$(this)[0].id}`).addClass('hl');
+                        }
+                        drawAchieve();
+                    }
                     drawAchieve();
                 }
                 return false;
-            }
+            },
+            highlight(){ return global.race['no_crispr'] ? true : false; }
         },
         junker: {
             id: 'evo-junker',
             title: loc('evo_challenge_junker'),
-            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_junker_desc')}</div>` : loc('evo_challenge_junker_desc'); },
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>` : `<div>${loc('evo_challenge_junker_desc')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>`; },
             cost: {
                 DNA(){ return 25; }
             },
@@ -1829,14 +1862,23 @@ export const actions = {
             effect: loc('evo_challenge_joyless_effect'),
             action(){
                 if (payCosts(actions.evolution.joyless.cost)){
-                    global.race['joyless'] = 1;
-                    global.evolution['joyless'] = { count: 1 };
-                    removeAction(actions.evolution.joyless.id);
+                    if (payCosts($(this)[0].cost)){
+                        if (global.race['joyless']){
+                            delete global.race['joyless'];
+                            $(`#${$(this)[0].id}`).removeClass('hl');
+                        }
+                        else {
+                            global.race['joyless'] = 1;
+                            $(`#${$(this)[0].id}`).addClass('hl');
+                        }
+                        drawAchieve();
+                    }
                 }
                 return false;
             },
             emblem(){ return format_emblem('joyless'); },
-            flair: loc('evo_challenge_joyless_flair')
+            flair: loc('evo_challenge_joyless_flair'),
+            highlight(){ return global.race['joyless'] ? true : false; }
         },
         decay: {
             id: 'evo-decay',
@@ -1848,14 +1890,23 @@ export const actions = {
             effect: loc('evo_challenge_decay_effect'),
             action(){
                 if (payCosts(actions.evolution.decay.cost)){
-                    global.race['decay'] = 1;
-                    global.evolution['decay'] = { count: 1 };
-                    removeAction(actions.evolution.decay.id);
+                    if (payCosts($(this)[0].cost)){
+                        if (global.race['decay']){
+                            delete global.race['decay'];
+                            $(`#${$(this)[0].id}`).removeClass('hl');
+                        }
+                        else {
+                            global.race['decay'] = 1;
+                            $(`#${$(this)[0].id}`).addClass('hl');
+                        }
+                        drawAchieve();
+                    }
                 }
                 return false;
             },
             emblem(){ return format_emblem('dissipated'); },
-            flair: loc('evo_challenge_decay_flair')
+            flair: loc('evo_challenge_decay_flair'),
+            highlight(){ return global.race['decay'] ? true : false; }
         },
     },
     city: {
@@ -10335,7 +10386,7 @@ export function setAction(c_action,action,type,old){
     }
     var id = c_action.id;
     removeAction(id);
-    var parent = $(`<div id="${id}" class="action"></div>`);
+    var parent = c_action['highlight'] && c_action.highlight() ? $(`<div id="${id}" class="action hl"></div>`) : $(`<div id="${id}" class="action"></div>`);
     if (!checkAffordable(c_action)){
         parent.addClass('cna');
     }
