@@ -6,6 +6,7 @@ All universe types can now be seen on achievemnts<br>
 Genus completion is now marked on sentience<br>
 Challenges can now be toggled during evolution<br>
 Inspiration event now gives a temporary buff to all science production<br>
+Added Slave Market for slaver races to buy slaves as an alternative to catching them<br>
 
 #### 0.6.16 - 10/13/2019 ####
 Employment is now color coded depending on staffing levels<br>

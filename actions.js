@@ -1997,9 +1997,18 @@ export const actions = {
             action(){
                 if (global.race['slaver'] && global.city['slave_pen']){
                     let max = global.city.slave_pen.count * 5;
-                    if (max > global.city.slave_pen.slaves){
-                        if (payCosts($(this)[0].cost)){
-                            global.city.slave_pen.slaves++;
+                    let keyMult = keyMultiplier();
+                    for (var i=0; i<keyMult; i++){
+                        if (max > global.city.slave_pen.slaves){
+                            if (payCosts($(this)[0].cost)){
+                                global.city.slave_pen.slaves++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        else {
+                            break;
                         }
                     }
                 }
