@@ -997,6 +997,47 @@ export const actions = {
                 }
                 return false;
             },
+            emblem(){
+                if (global.evolution['humanoid']){
+                    return format_emblem('genus_humanoid');
+                }
+                else if (global.evolution['gigantism']){
+                    return format_emblem('genus_giant');
+                }
+                else if (global.evolution['dwarfism']){
+                    return format_emblem('genus_small');
+                }
+                else if (global.evolution['animalism']){
+                    return format_emblem('genus_animal');
+                }
+                else if (global.evolution['ectothermic']){
+                    return format_emblem('genus_reptilian');
+                }
+                else if (global.evolution['endothermic']){
+                    return format_emblem('genus_avian');
+                }
+                else if (global.evolution['chitin']){
+                    return format_emblem('genus_fungi');
+                }
+                else if (global.evolution['athropods']){
+                    return format_emblem('genus_insectoid');
+                }
+                else if (global.evolution['chloroplasts']){
+                    return format_emblem('genus_plant');
+                }
+                else if (global.evolution['aquatic']){
+                    return format_emblem('genus_aquatic');
+                }
+                else if (global.evolution['demonic']){
+                    return format_emblem('genus_demonic');
+                }
+                else if (global.evolution['celestial']){
+                    return format_emblem('genus_angelic');
+                }
+                else {
+                    return '';
+                }
+            }
         },
         human: {
             id: 'evo-human',
