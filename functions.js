@@ -53,6 +53,9 @@ export function mainVue(){
             qKey(){
                 return loc('settings6');
             },
+            qAny(){
+                return loc('settings7');
+            },
             remove(index){
                 global.r_queue.queue.splice(index,1);
             }

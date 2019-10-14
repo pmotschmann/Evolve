@@ -238,6 +238,9 @@ a {
         li:not(:last-child) .queued:after {
             content: " -> "
         }
+        li:not(:last-child) .qany:after {
+            content: ", "
+        }
     }
 
     .resQueue {
@@ -252,6 +255,9 @@ a {
             }
             li:not(:last-child) .queued:after {
                 content: " -> "
+            }
+            li:not(:last-child) .qany:after {
+                content: ", "
             }
         }
     }

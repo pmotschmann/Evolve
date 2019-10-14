@@ -472,6 +472,9 @@ if (typeof global.settings.mKeys === 'undefined'){
 if (typeof global.settings.qKey === 'undefined'){
     global.settings['qKey'] = false;
 }
+if (typeof global.settings.qAny === 'undefined'){
+    global.settings['qAny'] = false;
+}
 if (!global.stats['reset']){
     global.stats['reset'] = 0;
 }

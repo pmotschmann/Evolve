@@ -3969,6 +3969,7 @@ function midLoop(){
             let spent = { t: 0, r: {}};
             for (let i=0; i<global.queue.queue.length; i++){
                 let struct = global.queue.queue[i];
+                time = global.settings.qAny ? 0 : time;
 
                 let t_action = false;
                 if (deepScan.includes(struct.action)){
@@ -3996,16 +3997,17 @@ function midLoop(){
                             idx = i;
                         }
                         else {
-                            time += timeCheck(t_action,spent);
+                            time += timeCheck(t_action, global.settings.qAny ? { t: 0, r: {}} : spent);
                         }
                         global.queue.queue[i]['time'] = time;
-                        stop = true;
+                        stop = global.settings.qAny ? false : true;
                     }
                     else {
                         global.queue.queue[i].cna = true;
                         global.queue.queue[i]['time'] = -1;
                     }
                 }
+                global.queue.queue[i].qa = global.settings.qAny ? true : false;
             }
             if (idx >= 0 && c_action){
                 if (c_action.action()){
@@ -4048,6 +4050,7 @@ function midLoop(){
             for (let i=0; i<global.r_queue.queue.length; i++){
                 let struct = global.r_queue.queue[i];
                 let t_action = actions[struct.action][struct.type];
+                time = global.settings.qAny ? 0 : time;
 
                 if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.r_queue.queue.splice(i,1);
@@ -4061,16 +4064,17 @@ function midLoop(){
                             idx = i;
                         }
                         else {
-                            time += timeCheck(t_action,spent);
+                            time += timeCheck(t_action, global.settings.qAny ? { t: 0, r: {}} : spent);
                         }
                         global.r_queue.queue[i]['time'] = time;
-                        stop = true;
+                        stop = global.settings.qAny ? false : true;
                     }
                     else {
                         global.r_queue.queue[i].cna = true;
                         global.r_queue.queue[i]['time'] = -1;
                     }
                 }
+                global.r_queue.queue[i].qa = global.settings.qAny ? true : false;
             }
             if (idx >= 0 && c_action){
                 if (c_action.action()){
