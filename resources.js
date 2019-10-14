@@ -504,6 +504,7 @@ function marketItem(vue,mount,market_item,name,color,full){
         trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="import ${name}" class="sub has-text-success" @click="autoBuy('${name}')"><span>+</span></span></b-tooltip>`));
         trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
         trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="export ${name}" class="add has-text-danger" @click="autoSell('${name}')"><span>-</span></span></b-tooltip>`));
+        trade.append($(`<span role="button" class="zero has-text-advanced" @click="zero('${name}')">${loc('cancel_routes')}</span>`));
         tradeRouteColor(name);
     }
     
@@ -594,6 +595,11 @@ function marketItem(vue,mount,market_item,name,color,full){
                         global.resource[res].trade--;
                     }
                 }
+                tradeRouteColor(res);
+            },
+            zero(res){
+                global.city.market.trade += global.resource[res].trade;
+                global.resource[res].trade = 0;
                 tradeRouteColor(res);
             }
         },

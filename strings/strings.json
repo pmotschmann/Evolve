@@ -138,6 +138,7 @@
   "build_success": "%0 has been constructed.",
   "research_success": "%0 has been researched.",
   "action_ready": "Affordable in [%0]",
+  "cancel_routes": "Cancel Routes",
   "job_farmer": "Farmer",
   "job_farmer_desc": "Farmers create food to feed your population. Each farmer generates %0 food per second.",
   "job_lumberjack": "Lumberjack",
