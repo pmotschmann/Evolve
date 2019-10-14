@@ -2198,7 +2198,7 @@ function fastLoop(){
             let delta = graphene_production * 0.6 * zigguratBonus() * hunger * global_multiplier;
 
             let graphene_bd = {};
-            graphene_bd[loc('interstellar_g_factory_bd')] = graphene_production + 'v';
+            graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
             graphene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Graphene'] = graphene_bd;
             modRes('Graphene', delta * time_multiplier);
