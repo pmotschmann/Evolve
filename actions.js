@@ -6132,7 +6132,6 @@ export const actions = {
             cost: {
                 Knowledge(){ return 51750; }
             },
-            effect: loc('tech_tesla_coil_effect'),
             effect(){ return loc('tech_tesla_coil_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
             action(){
                 if (payCosts($(this)[0].cost)){
