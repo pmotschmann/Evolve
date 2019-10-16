@@ -6,11 +6,11 @@ import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './ra
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
-import { renderFortress, bloodwar } from './portal.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkCityRequirements, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
-import { events } from './events.js';
+import { renderFortress, bloodwar } from './portal.js';
 import { arpa } from './arpa.js';
+import { events } from './events.js';
 
 var intervals = {};
 
