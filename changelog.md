@@ -1,3 +1,10 @@
+#### 0.6.18 - 10/16/2019 ####
+Swarm Satellite redesign<br>
+Swarm Satellites cost and output decreased<br>
+Control Stations can now control 10/18 swarm satellites<br>
+Iron mining ship swarm plant discount now applies to all swarm plant costs<br>
+New upgrades to increase output of swarm satellites<br>
+
 #### 0.6.17 - 10/14/2019 ####
 "Q" key now works with research queue<br>
 Added settings option to not enforce queue order<br>

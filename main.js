@@ -887,7 +887,8 @@ function fastLoop(){
                 active = global.space.swarm_control.s_max;
             }
             global.space.swarm_control.support = active;
-            let output = powerModifier(active);
+            let solar = global.tech.swarm >= 4 ? (global.tech.swarm >= 5 ? 0.65 : 0.5) : 0.35;
+            let output = powerModifier(active * solar);
             max_power -= output;
             power_grid += output;
             power_generated[loc('space_sun_swarm_satellite_title')] = output;
@@ -3856,7 +3857,7 @@ function midLoop(){
         }
 
         if (global.space['swarm_control']){
-            global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 6 : 4);
+            global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10);
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){

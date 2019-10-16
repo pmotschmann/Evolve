@@ -9086,6 +9086,42 @@ export const actions = {
                 return false;
             }
         },
+        perovskite_cell: {
+            id: 'tech-perovskite_cell',
+            title: loc('tech_perovskite_cell'),
+            desc: loc('tech_perovskite_cell'),
+            reqs: { swarm: 3 },
+            grant: ['swarm',4],
+            cost: {
+                Knowledge(){ return 525000; },
+                Titanium(){ return 100000; }
+            },
+            effect: loc('tech_perovskite_cell_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        swarm_convection: {
+            id: 'tech-swarm_convection',
+            title: loc('tech_swarm_convection'),
+            desc: loc('tech_swarm_convection'),
+            reqs: { swarm: 4, stanene: 1 },
+            grant: ['swarm',5],
+            cost: {
+                Knowledge(){ return 725000; },
+                Stanene(){ return 100000; }
+            },
+            effect: loc('tech_swarm_convection_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson_net: {
             id: 'tech-dyson_net',
             title: loc('tech_dyson_net'),

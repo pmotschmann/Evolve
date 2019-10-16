@@ -329,7 +329,13 @@ if (convertVersion(global['version']) < 6016 && global.stats && global.stats['re
     }
 }
 
-global['version'] = '0.6.17';
+if (convertVersion(global['version']) < 6018){
+    if (global.space['swarm_satellite']){
+        global.space['swarm_satellite'].count *= 2;
+    }
+}
+
+global['version'] = '0.6.18';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
