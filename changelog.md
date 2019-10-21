@@ -2,6 +2,7 @@
 Fixed power errors with hell dimension turrets<br>
 Crate/Container rounding is now applied after spatial reasoning<br>
 Added extra text to the asteroid belt description to call out the necessity of assigning space miners<br>
+Evil Ents can now burn flesh in the smelter<br>
 
 #### 0.6.18 - 10/16/2019 ####
 Swarm Satellite redesign<br>

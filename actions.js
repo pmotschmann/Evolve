@@ -11239,7 +11239,7 @@ function smelterModal(modal){
     let fuelTypes = $('<div class="fuels"></div>');
     modal.append(fuelTypes);
 
-    if (!global.race['kindling_kindred']){
+    if (!global.race['kindling_kindred'] || global.race['evil']){
         let f_label = global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
         let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ s.Wood }}</span></b-tooltip>`);
         let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
@@ -11270,7 +11270,7 @@ function smelterModal(modal){
     let available = $('<div class="avail"></div>');
     modal.append(available);
 
-    if (!global.race['kindling_kindred']){
+    if (!global.race['kindling_kindred'] || global.race['evil']){
         if (global.race['evil']){
             if (global.race['soul_eater']){
                 available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);

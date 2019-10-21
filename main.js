@@ -1990,7 +1990,7 @@ function fastLoop(){
         let iron_smelter = 0;
         let titanium_bd = {};
         if (global.city['smelter'] && global.city['smelter'].count > 0){
-            if (global.race['kindling_kindred']){
+            if (global.race['kindling_kindred'] && !global.race['evil']){
                 global.city['smelter'].Wood = 0;
             }
             let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
