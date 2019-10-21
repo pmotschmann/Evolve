@@ -1217,7 +1217,9 @@ const spaceProjects = {
                 return loc('space_belt_info_name');
             },
             desc(){
-                return loc('space_belt_info_desc',[races[global.race.species].solar.red,races[global.race.species].solar.gas]);
+                return global.space['space_station'] && global.space.space_station.count > 0
+                    ? `<div>${loc('space_belt_info_desc',[races[global.race.species].solar.red,races[global.race.species].solar.gas])}</div><div class="has-text-special">${loc('space_belt_info_desc2')}</div>`
+                    : loc('space_belt_info_desc',[races[global.race.species].solar.red,races[global.race.species].solar.gas]);
             },
             support: 'space_station'
         },

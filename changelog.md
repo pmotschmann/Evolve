@@ -1,6 +1,7 @@
 #### 0.6.19 - 10/20/2019 ####
 Fixed power errors with hell dimension turrets<br>
 Crate/Container rounding is now applied after spatial reasoning<br>
+Added extra text to the asteroid belt description to call out the necessity of assigning space miners<br>
 
 #### 0.6.18 - 10/16/2019 ####
 Swarm Satellite redesign<br>
