@@ -29,7 +29,7 @@ const fortressModules = {
                 Nano_Tube(){ return costMultiplier('turret', 28000, 1.28, 'portal'); }
             },
             powered(){
-                return global.tech['turret'] ? 3 + global.tech['turret'] : 3;
+                return global.tech['turret'] ? 4 + global.tech['turret'] : 4;
             },
             postPower(){
                 if (vues['civ_fortress']){
@@ -39,7 +39,7 @@ const fortressModules = {
             },
             effect(){
                 let rating = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
-                let power = global.tech['turret'] ? $(this)[0].powered() + global.tech['turret'] : $(this)[0].powered();
+                let power = $(this)[0].powered();
                 return `<div>${loc('portal_turret_effect',[rating])}</div><div>${loc('minus_power',[power])}</div>`;
             },
             action(){

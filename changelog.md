@@ -1,3 +1,6 @@
+#### 0.6.19 - 10/20/2019 ####
+Fixed power errors with hell dimension turrets<br>
+
 #### 0.6.18 - 10/16/2019 ####
 Swarm Satellite redesign<br>
 Swarm Satellites cost and output decreased<br>
