@@ -55,7 +55,7 @@
   "settings6": "Enable Add to Queue Key (Q)",
   "settings7": "Do not enforce queue order",
   "enable_reset": "Enable Reset Buttons",
-  "reset_warn": "Warning: This completely resets all your progress and cannot be undone",
+  "reset_warn": "Warning: This completely resets all your progress and cannot be undone. This is NOT a prestige mechanic, you are wiping out your game data. Keep this button disabled.",
   "reset_soft": "Soft Reset Game",
   "reset_hard": "Hard Reset Game",
   "m_keys": "Multiplier Keys",
