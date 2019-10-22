@@ -325,12 +325,15 @@ export function svgViewBox(icon){
     }
 }
 
-export function format_emblem(achieve){
-    let emblem = global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].l)} ${loc('star')}"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></p>` : '';
-    emblem = emblem + (global.stats.achieve[achieve] && global.stats.achieve[achieve].a > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].a)} ${loc('universe_antimatter')}"><svg class="star${global.stats.achieve[achieve].a}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('atom')}" xml:space="preserve">${svgIcons('atom')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && global.stats.achieve[achieve].e > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].e)} ${loc('universe_evil')}"><svg class="star${global.stats.achieve[achieve].e}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('evil')}" xml:space="preserve">${svgIcons('evil')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && global.stats.achieve[achieve].h > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].h)} ${loc('universe_heavy')}"><svg class="star${global.stats.achieve[achieve].h}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('heavy')}" xml:space="preserve">${svgIcons('heavy')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && global.stats.achieve[achieve].m > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].m)} ${loc('universe_micro')}"><svg class="star${global.stats.achieve[achieve].m}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('micro')}" xml:space="preserve">${svgIcons('micro')}</svg></p>` : '');
+export function format_emblem(achieve,size){
+    if (!size){
+        size = 10;
+    }
+    let emblem = global.stats.achieve[achieve] && global.stats.achieve[achieve].l > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].l)} ${loc('star')}"><svg class="star${global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></p>` : '';
+    emblem = emblem + (global.stats.achieve[achieve] && global.stats.achieve[achieve].a > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].a)} ${loc('universe_antimatter')}"><svg class="star${global.stats.achieve[achieve].a}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('atom')}" xml:space="preserve">${svgIcons('atom')}</svg></p>` : '');
+    emblem = emblem + (global.stats.achieve[achieve] && global.stats.achieve[achieve].e > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].e)} ${loc('universe_evil')}"><svg class="star${global.stats.achieve[achieve].e}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('evil')}" xml:space="preserve">${svgIcons('evil')}</svg></p>` : '');
+    emblem = emblem + (global.stats.achieve[achieve] && global.stats.achieve[achieve].h > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].h)} ${loc('universe_heavy')}"><svg class="star${global.stats.achieve[achieve].h}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('heavy')}" xml:space="preserve">${svgIcons('heavy')}</svg></p>` : '');
+    emblem = emblem + (global.stats.achieve[achieve] && global.stats.achieve[achieve].m > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].m)} ${loc('universe_micro')}"><svg class="star${global.stats.achieve[achieve].m}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('micro')}" xml:space="preserve">${svgIcons('micro')}</svg></p>` : '');
     return emblem;
 }
 

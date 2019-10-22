@@ -106,6 +106,11 @@ var achievements = {
         desc: loc("achieve_blood_war_desc"),
         flair: loc("achieve_blood_war_flair")
     },
+    cross: {
+        name: loc("achieve_cross_name"),
+        desc: loc("achieve_cross_desc"),
+        flair: loc("achieve_cross_flair")
+    },
     landfill: {
         name: loc("achieve_landfill_name"),
         desc: loc("achieve_landfill_desc"),
@@ -675,7 +680,7 @@ export function drawAchieve(){
             if (achievement === 'joyless'){
                 level += global.stats.achieve[achievement].l;
             }
-            let emblem = format_emblem(achievement);            
+            let emblem = format_emblem(achievement,16);            
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${emblem}</div></b-tooltip>`));
         }
     });

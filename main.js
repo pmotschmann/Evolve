@@ -3891,6 +3891,9 @@ function midLoop(){
                     global.race.Plasmid.count++;
                     global.resource.Genes.amount += gene;
                     global.resource.Genes.display = true;
+                    if (global.race['universe'] === 'antimatter'){
+                        unlockAchieve('cross');
+                    }
                 }
                 arpa('Genetics');
                 drawTech();
