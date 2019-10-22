@@ -1,3 +1,7 @@
+#### 0.6.20 - 10/21/2019 ####
+Fixed application of plasmids with antiplasmids<br>
+Updated description of bleeding effect<br>
+
 #### 0.6.19 - 10/20/2019 ####
 Fixed power errors with hell dimension turrets<br>
 Crate/Container rounding is now applied after spatial reasoning<br>
