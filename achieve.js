@@ -51,6 +51,11 @@ var achievements = {
         desc: loc("achieve_madagascar_tree_desc"),
         flair: loc("achieve_madagascar_tree_flair")
     },
+    godwin: {
+        name: loc("achieve_godwin_name"),
+        desc: loc("achieve_godwin_desc"),
+        flair: loc("achieve_godwin_flair")
+    },
     laser_shark: {
         name: loc("achieve_laser_shark_name"),
         desc: loc("achieve_laser_shark_desc"),

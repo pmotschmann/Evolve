@@ -1,5 +1,6 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
+import { unlockAchieve } from './achieve.js';
 
 export const races = {
     protoplasm: {
@@ -1251,6 +1252,11 @@ export function cleanAddTrait(trait){
                 know: 0,
                 tax: 0
             };
+            break;
+        case 'toxic':
+            if (global.race.species === 'troll' && global.tech['science'] && global.tech['science'] >= 8){
+                unlockAchieve('godwin');
+            }
             break;
         default:
             break;

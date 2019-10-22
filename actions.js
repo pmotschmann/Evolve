@@ -6152,6 +6152,9 @@ export const actions = {
             effect: loc('tech_internet_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.race['toxic'] && global.race.species === 'troll'){
+                        unlockAchieve('godwin');
+                    }
                     return true;
                 }
                 return false;
