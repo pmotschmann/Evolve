@@ -1003,6 +1003,9 @@ export function drawStats(){
     
     stats.append(`<div><span class="has-text-success">${loc("achieve_stats_overall")}</span></div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_plasmid_earned")}</span> {{ plasmid }}</div>`);
+    if (global.stats.antiplasmid > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_antiplasmid_earned")}</span> {{ antiplasmid }}</div>`);
+    }
     if (global.stats.phage > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_phage_earned")}</span> {{ phage }}</div>`);
     }

@@ -3887,12 +3887,16 @@ function midLoop(){
                         gene *= global.stats.achieve['mass_extinction'].l + 1;
                     }
                     messageQueue(loc('gene_therapy',[trait,gene]),'success');
-                    global.stats.plasmid++;
-                    global.race.Plasmid.count++;
                     global.resource.Genes.amount += gene;
                     global.resource.Genes.display = true;
                     if (global.race['universe'] === 'antimatter'){
+                        global.stats.antiplasmid++;
+                        global.race.Plasmid.anti++;
                         unlockAchieve('cross');
+                    }
+                    else {
+                        global.stats.plasmid++;
+                        global.race.Plasmid.count++;
                     }
                 }
                 arpa('Genetics');
