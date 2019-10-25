@@ -1,4 +1,5 @@
 #### 0.6.21 - 10/24/2019 ####
+Freight Train upgrade now adds a trade route to freight yards instead of trade posts<br>
 Toxic troll achievement<br>
 Spatial reasoning rounding fix<br>
 

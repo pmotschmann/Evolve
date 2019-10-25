@@ -764,7 +764,7 @@
   "tech_diplomacy_effect": "Increase the effectiveness of each trade post by 1.",
   "tech_freight": "Freight Trains",
   "tech_freight_desc": "Increase trade volume with trains",
-  "tech_freight_effect": "Increase the effectiveness of each trade post by 1.",
+  "tech_freight_effect": "Each freight yard adds a trade route",
   "tech_wharf": "Wharves",
   "tech_wharf_desc": "Establish sea routes with wharves",
   "tech_wharf_effect": "Zone coastal areas of your city for constructing wharves.",

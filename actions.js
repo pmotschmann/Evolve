@@ -2628,7 +2628,12 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return loc('plus_max_resource',[cap,loc('resource_Crates_name')]);
+                if (global.tech['trade'] && global.tech['trade'] >= 3){
+                    return `<div>${loc('plus_max_resource',[cap,loc('resource_Crates_name')])}</div><div>${loc('city_trade_effect',[1])}</div>`;
+                }
+                else {
+                    return loc('plus_max_resource',[cap,loc('resource_Crates_name')]);
+                }
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3241,6 +3246,9 @@ export const actions = {
             },
             effect(){
                 let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+                if (global.tech['trade'] && global.tech['trade'] >= 3){
+                    routes--;
+                }
                 return loc('city_trade_effect',[routes]); 
             },
             action(){

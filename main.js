@@ -3665,6 +3665,9 @@ function midLoop(){
 
         if (global.city['trade']){
             let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+            if (global.tech['trade'] && global.tech['trade'] >= 3){
+                routes--;
+            }
             global.city.market.mtrade = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
                 global.city.market.mtrade += global.city.temple.count;
@@ -3675,6 +3678,9 @@ function midLoop(){
         }
         if (global.space['gps'] && global.space.gps.count >= 4){
             global.city.market.mtrade += global.space.gps.count * 2;
+        }
+        if (global.city['storage_yard'] && global.tech['trade'] && global.tech['trade'] >= 3){
+            global.city.market.mtrade += global.city.storage_yard.count;
         }
 
         if (global.race['inspired']){
