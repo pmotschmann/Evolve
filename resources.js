@@ -1280,16 +1280,14 @@ export function spatialReasoning(value){
             plasmids += global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
         }
         value *= 1 + (plasmids / divisor);
-        value = Math.round(value);
     }
     if (global.race.universe === 'standard'){
         value *= 1 + (global.race.Dark.count / 200);
-        value = Math.round(value);
     }
     if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
         value *= 1 + (global.city.temple.count * 0.06);
     }
-    return value;
+    return Math.round(value);
 }
 
 export function plasmidBonus(type){

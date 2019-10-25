@@ -1,3 +1,7 @@
+#### 0.6.21 - 10/24/2019 ####
+Toxic troll achievement<br>
+Spatial reasoning rounding fix<br>
+
 #### 0.6.20 - 10/21/2019 ####
 Fixed application of plasmids with antiplasmids<br>
 Updated description of bleeding effect<br>
