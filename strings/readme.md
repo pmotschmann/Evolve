@@ -19,11 +19,13 @@ This script read the strings.json and string.\<locale\>.json and output every li
 - is out of json format
 - the number of periods (.) in the strings.json differ from strings.\<locale\>.json. The translation not need to have the same number of periods, but this help find phrase that end with periods but is forget in the translation
 - the number of leading spaces (spaces before the first character) in the strings.json differ from strings.\<locale\>.json
-- the number of tokens (like %0) in the strings.json differ from strings.\<locale\>.json.
+- the number of tokens (like %0) in the strings.json differ from strings.\<locale\>.json
+- the numbers in the strings.json differ from strings.\<locale\>.json
 
 You can disable some of the checks if you open the script and change the values (to ```True``` or ```False```):
 ```python
 check_tokens = True
 check_leading_space = True
 check_periods = True
+check_numbers = True
 ```
