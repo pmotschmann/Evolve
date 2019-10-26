@@ -8,6 +8,7 @@ print()
 check_tokens = True
 check_leading_space = True
 check_periods = True
+check_numbers = True
 
 def led_spaces(str):
     return len(str) - len(str.lstrip(' '))
@@ -27,7 +28,8 @@ else:
         
         json_regex = re.compile(r'"(?P<key>.+)"\s*:\s"(?P<value>.*)"\s*$')
         period_count = re.compile(r'(\.(\D|$))|。')
-        tokens_regex = re.compile("%\d+(?!\d)");
+        tokens_regex = re.compile(r'%\d+(?!\d)')
+        numbers_regex = re.compile(r'\d+')
 
         for (nl, line) in enumerate(loc_file):
             line = line.strip()
@@ -67,4 +69,11 @@ else:
                 pcloc = len(period_count.findall(line['value']))
                 if pcdef != pcloc:
                     print("periods number differ (def: {} != loc: {}), in key '{}', line {}" \
+                        .format(pcdef, pcloc, line['key'], nl+1))
+            
+            if check_numbers:
+                pcdef = numbers_regex.findall(defline)
+                pcloc = numbers_regex.findall(line['value'])
+                if sorted(pcdef) != sorted(pcloc):
+                    print("Numbers differ (def: {} != loc: {}), in key '{}', line {}" \
                         .format(pcdef, pcloc, line['key'], nl+1))
