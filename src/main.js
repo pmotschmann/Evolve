@@ -2893,6 +2893,10 @@ function fastLoop(){
             diffCalc(res,main_timer);
         }
     });
+
+    if (global.settings.expose){
+        window.evolve = JSON.parse(JSON.stringify(global));
+    }
 }
 
 function midLoop(){
