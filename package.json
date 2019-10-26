@@ -1,0 +1,29 @@
+{
+  "name": "evolve",
+  "version": "0.6.21",
+  "description": "Evolve Idle",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pmotschmann/Evolve.git"
+  },
+  "keywords": [
+    "Evolve"
+  ],
+  "author": "Peter Motschmann",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/pmotschmann/Evolve/issues"
+  },
+  "homepage": "https://github.com/pmotschmann/Evolve#readme",
+  "devDependencies": {
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  },
+  "dependencies": {
+    "vue": "^2.6.10"
+  }
+}

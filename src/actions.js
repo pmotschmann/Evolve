@@ -1,6 +1,6 @@
 import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, queueIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, powerModifier, challenge_multiplier, adjustCosts, format_emblem, svgIcons, svgViewBox } from './functions.js';
+import { timeCheck, timeFormat, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
