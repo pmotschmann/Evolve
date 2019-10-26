@@ -490,6 +490,9 @@ if (typeof global.settings.qKey === 'undefined'){
 if (typeof global.settings.qAny === 'undefined'){
     global.settings['qAny'] = false;
 }
+if (typeof global.settings.expose === 'undefined'){
+    global.settings['expose'] = false;
+}
 if (!global.stats['reset']){
     global.stats['reset'] = 0;
 }
