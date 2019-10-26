@@ -608,7 +608,7 @@ export function bloodwar(){
 
     // Patrols
     let dead = 0;
-    let terminators = global.interstellar['war_droid'] ? p_on['war_droid'] : 0;
+    let terminators = p_on['war_droid'] ? p_on['war_droid'] : 0;
     let failed_drop = false;
     for (let i=0; i<global.portal.fortress.patrols; i++){
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
