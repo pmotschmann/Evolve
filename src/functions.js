@@ -139,10 +139,15 @@ export function timeCheck(c_action,track){
                     res_have = global.resource[res].max;
                 }
             }
-            if (testCost > res_have && global.resource[res].diff > 0){
-                let r_time = (testCost - res_have) / global.resource[res].diff;
-                if (r_time > time){
-                    time = r_time;
+            if (testCost > res_have){
+                if (global.resource[res].diff > 0){
+                    let r_time = (testCost - res_have) / global.resource[res].diff;
+                    if (r_time > time){
+                        time = r_time;
+                    }
+                }
+                else {
+                    time = -1;
                 }
             }
         });
@@ -159,7 +164,7 @@ export function timeCheck(c_action,track){
 export function timeFormat(time){
     let formatted;
     if (time < 0){
-        formatted = 'Never';
+        formatted = loc('time_never');
     }
     else {
         time = +(time.toFixed(0));

@@ -4030,7 +4030,7 @@ function midLoop(){
                             idx = i;
                         }
                         else {
-                            time += timeCheck(t_action, global.settings.qAny ? { t: 0, r: {}} : spent);
+                            time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
                         }
                         global.queue.queue[i]['time'] = time;
                         stop = global.settings.qAny ? false : true;
@@ -4097,7 +4097,7 @@ function midLoop(){
                             idx = i;
                         }
                         else {
-                            time += timeCheck(t_action, global.settings.qAny ? { t: 0, r: {}} : spent);
+                            time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
                         }
                         global.r_queue.queue[i]['time'] = time;
                         stop = global.settings.qAny ? false : true;
