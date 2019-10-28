@@ -13,6 +13,9 @@ import { arpa } from './arpa.js';
 import { events } from './events.js';
 
 var intervals = {};
+if (global.settings.expose){
+    enableScript();
+}
 
 if (Object.keys(locales).length > 1){
     $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="s.locale"></select></span>`));
@@ -2895,7 +2898,11 @@ function fastLoop(){
     });
 
     if (global.settings.expose){
-        window.evolve = JSON.parse(JSON.stringify(global));
+        if (!window['evolve']){
+            enableScript();
+        }
+        window.evolve.global = JSON.parse(JSON.stringify(global));
+        window.evolve.breakdown = JSON.parse(JSON.stringify(breakdown));
     }
 }
 
@@ -4810,4 +4817,17 @@ function resourceAlt(){
             alt = true;
         }
     });
+}
+
+function enableScript(){
+    window.evolve = {
+        actions: JSON.parse(JSON.stringify(actions)),
+        races: JSON.parse(JSON.stringify(races)),
+        tradeRatio: JSON.parse(JSON.stringify(tradeRatio)),
+        craftCost: JSON.parse(JSON.stringify(craftCost)),
+        atomic_mass: JSON.parse(JSON.stringify(craftCost)),
+        global: {},
+        breakdown: {},
+        checkTechRequirements: checkTechRequirements,
+    };
 }
