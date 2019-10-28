@@ -731,6 +731,13 @@ if (global.tech['fanaticism'] && global.tech['anthropology'] && !global.genes['t
     delete global.tech['anthropology'];
 }
 
+if (global.tech['unify']){
+    if (global.tech['unify'] === 1){
+        delete global.tech['m_boost'];
+        delete global.tech['world_control'];
+    }
+}
+
 global.settings.animated = true;
 global.settings.disableReset = false;
 
