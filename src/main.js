@@ -4825,7 +4825,7 @@ function enableScript(){
         races: JSON.parse(JSON.stringify(races)),
         tradeRatio: JSON.parse(JSON.stringify(tradeRatio)),
         craftCost: JSON.parse(JSON.stringify(craftCost)),
-        atomic_mass: JSON.parse(JSON.stringify(craftCost)),
+        atomic_mass: JSON.parse(JSON.stringify(atomic_mass)),
         global: {},
         breakdown: {},
         checkTechRequirements: checkTechRequirements,

@@ -344,7 +344,7 @@ if (convertVersion(global['version']) < 6020 && global.race['mutation'] && globa
     global.stats.achieve['cross'] = { l: a_level, a: a_level };
 }
 
-global['version'] = '0.6.22';
+global['version'] = '0.6.23';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -729,6 +729,13 @@ if (global.tech['fanaticism'] && global.tech['theology'] && global.tech['theolog
 
 if (global.tech['fanaticism'] && global.tech['anthropology'] && !global.genes['transcendence']){
     delete global.tech['anthropology'];
+}
+
+if (global.tech['unify']){
+    if (global.tech['unify'] === 1){
+        delete global.tech['m_boost'];
+        delete global.tech['world_control'];
+    }
 }
 
 global.settings.animated = true;
