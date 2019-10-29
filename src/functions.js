@@ -123,31 +123,34 @@ export function mainVue(){
 export function timeCheck(c_action,track){
     if (c_action.cost){
         let time = 0;
-        Object.keys(c_action.cost).forEach(function (res){
-            var testCost = adjustCosts(Number(c_action.cost[res]()) || 0);
-            let res_have = Number(global.resource[res].amount);
-            if (track){
-                res_have += global.resource[res].diff * track.t;
-                if (track.r[res]){
-                    res_have -= Number(track.r[res]);
-                    track.r[res] += testCost;
-                }
-                else {
-                    track.r[res] = testCost;
-                }
-                if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
-                    res_have = global.resource[res].max;
-                }
-            }
-            if (testCost > res_have){
-                if (global.resource[res].diff > 0){
-                    let r_time = (testCost - res_have) / global.resource[res].diff;
-                    if (r_time > time){
-                        time = r_time;
+        let costs = adjustCosts(c_action.cost);
+        Object.keys(costs).forEach(function (res){
+            var testCost = Number(costs[res]());
+            if (testCost > 0){
+                let res_have = Number(global.resource[res].amount);
+                if (track){
+                    res_have += global.resource[res].diff * track.t;
+                    if (track.r[res]){
+                        res_have -= Number(track.r[res]);
+                        track.r[res] += testCost;
+                    }
+                    else {
+                        track.r[res] = testCost;
+                    }
+                    if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
+                        res_have = global.resource[res].max;
                     }
                 }
-                else {
-                    time = -1;
+                if (testCost > res_have){
+                    if (global.resource[res].diff > 0){
+                        let r_time = (testCost - res_have) / global.resource[res].diff;
+                        if (r_time > time){
+                            time = r_time;
+                        }
+                    }
+                    else {
+                        time = -1;
+                    }
                 }
             }
         });
