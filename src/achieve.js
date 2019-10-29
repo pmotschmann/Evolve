@@ -276,6 +276,26 @@ var achievements = {
         desc: loc("achieve_genus_aquatic_desc"),
         flair: loc("achieve_genus_aquatic_flair")
     },
+    genus_fey: {
+        name: loc("achieve_genus_fey_name"),
+        desc: loc("achieve_genus_fey_desc"),
+        flair: loc("achieve_genus_fey_flair")
+    },
+    genus_heat: {
+        name: loc("achieve_genus_heat_name"),
+        desc: loc("achieve_genus_heat_desc"),
+        flair: loc("achieve_genus_heat_flair")
+    },
+    genus_polar: {
+        name: loc("achieve_genus_polar_name"),
+        desc: loc("achieve_genus_polar_desc"),
+        flair: loc("achieve_genus_polar_flair")
+    },
+    genus_sand: {
+        name: loc("achieve_genus_sand_name"),
+        desc: loc("achieve_genus_sand_desc"),
+        flair: loc("achieve_genus_sand_flair")
+    },
     genus_demonic: {
         name: loc("achieve_genus_demonic_name"),
         desc: loc("achieve_genus_demonic_desc"),
@@ -465,6 +485,46 @@ var achievements = {
         name: loc("achieve_extinct_octigoran_name"),
         desc: loc("achieve_extinct_octigoran_desc"),
         flair: loc("achieve_extinct_octigoran_flair")
+    },
+    extinct_dryad: {
+        name: loc("achieve_extinct_dryad_name"),
+        desc: loc("achieve_extinct_dryad_desc"),
+        flair: loc("achieve_extinct_dryad_flair")
+    },
+    extinct_satyr: {
+        name: loc("achieve_extinct_satyr_name"),
+        desc: loc("achieve_extinct_satyr_desc"),
+        flair: loc("achieve_extinct_satyr_flair")
+    },
+    extinct_phoenix: {
+        name: loc("achieve_extinct_phoenix_name"),
+        desc: loc("achieve_extinct_phoenix_desc"),
+        flair: loc("achieve_extinct_phoenix_flair")
+    },
+    extinct_salamander: {
+        name: loc("achieve_extinct_salamander_name"),
+        desc: loc("achieve_extinct_salamander_desc"),
+        flair: loc("achieve_extinct_salamander_flair")
+    },
+    extinct_yeti: {
+        name: loc("achieve_extinct_yeti_name"),
+        desc: loc("achieve_extinct_yeti_desc"),
+        flair: loc("achieve_extinct_yeti_flair")
+    },
+    extinct_wendigo: {
+        name: loc("achieve_extinct_wendigo_name"),
+        desc: loc("achieve_extinct_wendigo_desc"),
+        flair: loc("achieve_extinct_wendigo_flair")
+    },
+    extinct_tuskin: {
+        name: loc("achieve_extinct_tuskin_name"),
+        desc: loc("achieve_extinct_tuskin_desc"),
+        flair: loc("achieve_extinct_tuskin_flair")
+    },
+    extinct_kamel: {
+        name: loc("achieve_extinct_kamel_name"),
+        desc: loc("achieve_extinct_kamel_desc"),
+        flair: loc("achieve_extinct_kamel_flair")
     },
     extinct_balorg: {
         name: loc("achieve_extinct_balorg_name"),

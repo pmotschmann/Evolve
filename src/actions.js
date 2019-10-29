@@ -333,6 +333,22 @@ export const actions = {
                         global.evolution['aquatic'] = { count: 0 };
                         addAction('evolution','aquatic');
                     }
+                    if (global.city.biome === 'forest'){
+                        global.evolution['fey'] = { count: 0 };
+                        addAction('evolution','fey');
+                    }
+                    if (global.city.biome === 'desert'){
+                        global.evolution['sand'] = { count: 0 };
+                        addAction('evolution','sand');
+                    }
+                    if (global.city.biome === 'volcanic'){
+                        global.evolution['heat'] = { count: 0 };
+                        addAction('evolution','heat');
+                    }
+                    if (global.city.biome === 'tundra'){
+                        global.evolution['polar'] = { count: 0 };
+                        addAction('evolution','polar');
+                    }
 
                     evoProgress();
                 }
@@ -397,6 +413,22 @@ export const actions = {
                         removeAction(actions.evolution.aquatic.id);
                         delete global.evolution.aquatic;
                     }
+                    if (global.city.biome === 'forest'){
+                        removeAction(actions.evolution.fey.id);
+                        delete global.evolution.fey;
+                    }
+                    if (global.city.biome === 'desert'){
+                        removeAction(actions.evolution.sand.id);
+                        delete global.evolution.sand;
+                    }
+                    if (global.city.biome === 'volcanic'){
+                        removeAction(actions.evolution.heat.id);
+                        delete global.evolution.heat;
+                    }
+                    if (global.city.biome === 'tundra'){
+                        removeAction(actions.evolution.polar.id);
+                        delete global.evolution.polar;
+                    }
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -436,6 +468,22 @@ export const actions = {
                     if (global.city.biome === 'oceanic'){
                         removeAction(actions.evolution.aquatic.id);
                         delete global.evolution.aquatic;
+                    }
+                    if (global.city.biome === 'forest'){
+                        removeAction(actions.evolution.fey.id);
+                        delete global.evolution.fey;
+                    }
+                    if (global.city.biome === 'desert'){
+                        removeAction(actions.evolution.sand.id);
+                        delete global.evolution.sand;
+                    }
+                    if (global.city.biome === 'volcanic'){
+                        removeAction(actions.evolution.heat.id);
+                        delete global.evolution.heat;
+                    }
+                    if (global.city.biome === 'tundra'){
+                        removeAction(actions.evolution.polar.id);
+                        delete global.evolution.polar;
                     }
                     if (global.city.biome === 'hellscape'){
                         global.evolution['demonic'] = { count: 0 };
@@ -755,6 +803,150 @@ export const actions = {
                 return false;
             }
         },
+        fey: {
+            id: 'evo-fey',
+            title: loc('evo_fey_title'),
+            desc: loc('evo_fey_desc'),
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_fey_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['fey'].count++;
+                    removeAction(actions.evolution.athropods.id);
+                    removeAction(actions.evolution.mammals.id);
+                    removeAction(actions.evolution.eggshell.id);
+                    removeAction(actions.evolution.fey.id);
+                    delete global.evolution.athropods;
+                    delete global.evolution.mammals;
+                    delete global.evolution.eggshell;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    if (global.race.seeded || global.stats.achieve['creator']){
+                        global.evolution['dryad'] = { count: 0 };
+                        global.evolution['satyr'] = { count: 0 };
+                        addAction('evolution','dryad');
+                        addAction('evolution','satyr');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        heat: {
+            id: 'evo-heat',
+            title: loc('evo_heat_title'),
+            desc: loc('evo_heat_desc'),
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_heat_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['heat'].count++;
+                    removeAction(actions.evolution.athropods.id);
+                    removeAction(actions.evolution.mammals.id);
+                    removeAction(actions.evolution.eggshell.id);
+                    removeAction(actions.evolution.heat.id);
+                    delete global.evolution.athropods;
+                    delete global.evolution.mammals;
+                    delete global.evolution.eggshell;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    if (global.race.seeded || global.stats.achieve['creator']){
+                        global.evolution['phoenix'] = { count: 0 };
+                        global.evolution['salamander'] = { count: 0 };
+                        addAction('evolution','phoenix');
+                        addAction('evolution','salamander');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        polar: {
+            id: 'evo-polar',
+            title: loc('evo_polar_title'),
+            desc: loc('evo_polar_desc'),
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_polar_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['polar'].count++;
+                    removeAction(actions.evolution.athropods.id);
+                    removeAction(actions.evolution.mammals.id);
+                    removeAction(actions.evolution.eggshell.id);
+                    removeAction(actions.evolution.polar.id);
+                    delete global.evolution.athropods;
+                    delete global.evolution.mammals;
+                    delete global.evolution.eggshell;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    if (global.race.seeded || global.stats.achieve['creator']){
+                        global.evolution['yeti'] = { count: 0 };
+                        global.evolution['wendigo'] = { count: 0 };
+                        addAction('evolution','yeti');
+                        addAction('evolution','wendigo');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
+                    evoProgress();
+                }
+                return false;
+            }
+        },
+        sand: {
+            id: 'evo-sand',
+            title: loc('evo_sand_title'),
+            desc: loc('evo_sand_desc'),
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_sand_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sand'].count++;
+                    removeAction(actions.evolution.athropods.id);
+                    removeAction(actions.evolution.mammals.id);
+                    removeAction(actions.evolution.eggshell.id);
+                    removeAction(actions.evolution.sand.id);
+                    delete global.evolution.athropods;
+                    delete global.evolution.mammals;
+                    delete global.evolution.eggshell;
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    if (global.race.seeded || global.stats.achieve['creator']){
+                        global.evolution['tuskin'] = { count: 0 };
+                        global.evolution['kamel'] = { count: 0 };
+                        addAction('evolution','tuskin');
+                        addAction('evolution','kamel');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
+                    evoProgress();
+                }
+                return false;
+            }
+        },
         eggshell: {
             id: 'evo-eggshell',
             title: loc('evo_eggshell_title'),
@@ -774,6 +966,22 @@ export const actions = {
                     if (global.city.biome === 'oceanic'){
                         removeAction(actions.evolution.aquatic.id);
                         delete global.evolution.aquatic;
+                    }
+                    if (global.city.biome === 'forest'){
+                        removeAction(actions.evolution.fey.id);
+                        delete global.evolution.fey;
+                    }
+                    if (global.city.biome === 'desert'){
+                        removeAction(actions.evolution.sand.id);
+                        delete global.evolution.sand;
+                    }
+                    if (global.city.biome === 'volcanic'){
+                        removeAction(actions.evolution.heat.id);
+                        delete global.evolution.heat;
+                    }
+                    if (global.city.biome === 'tundra'){
+                        removeAction(actions.evolution.polar.id);
+                        delete global.evolution.polar;
                     }
                     global.evolution['endothermic'] = { count: 0 };
                     global.evolution['ectothermic'] = { count: 0 };
@@ -968,6 +1176,38 @@ export const actions = {
                         }
                         else {
                             global.race.species = 'octigoran';
+                        }
+                    }
+                    else if (global.evolution['fey']){
+                        if (path < 50){
+                            global.race.species = 'dryad';
+                        }
+                        else {
+                            global.race.species = 'satyr';
+                        }
+                    }
+                    else if (global.evolution['heat']){
+                        if (path < 50){
+                            global.race.species = 'phoenix';
+                        }
+                        else {
+                            global.race.species = 'salamander';
+                        }
+                    }
+                    else if (global.evolution['polar']){
+                        if (path < 50){
+                            global.race.species = 'yeti';
+                        }
+                        else {
+                            global.race.species = 'wendigo';
+                        }
+                    }
+                    else if (global.evolution['sand']){
+                        if (path < 50){
+                            global.race.species = 'tuskin';
+                        }
+                        else {
+                            global.race.species = 'kamel';
                         }
                     }
                     else if (global.evolution['demonic']){
@@ -1578,6 +1818,166 @@ export const actions = {
                 return false;
             },
             emblem(){ return format_emblem('extinct_octigoran'); }
+        },
+        dryad: {
+            id: 'evo-dryad',
+            title(){ return races.dryad.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.dryad.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.dryad.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'dryad';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_dryad'); }
+        },
+        satyr: {
+            id: 'evo-satyr',
+            title(){ return races.satyr.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.satyr.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.satyr.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'satyr';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_satyr'); }
+        },
+        phoenix: {
+            id: 'evo-phoenix',
+            title(){ return races.phoenix.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.phoenix.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.phoenix.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'phoenix';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_phoenix'); }
+        },
+        salamander: {
+            id: 'evo-salamander',
+            title(){ return races.salamander.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.salamander.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.salamander.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'salamander';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_salamander'); }
+        },
+        yeti: {
+            id: 'evo-yeti',
+            title(){ return races.yeti.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.yeti.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.yeti.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'yeti';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_yeti'); }
+        },
+        wendigo: {
+            id: 'evo-wendigo',
+            title(){ return races.wendigo.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.wendigo.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.wendigo.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'wendigo';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_wendigo'); }
+        },
+        tuskin: {
+            id: 'evo-tuskin',
+            title(){ return races.tuskin.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.tuskin.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.tuskin.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'tuskin';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_tuskin'); }
+        },
+        kamel: {
+            id: 'evo-kamel',
+            title(){ return races.kamel.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.kamel.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.kamel.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'kamel';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_kamel'); }
         },
         balorg: {
             id: 'evo-balorg',

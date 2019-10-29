@@ -1,3 +1,6 @@
+#### 0.7.0 - 10/??/2019 ####
+Biome races added for Forest, Desert, Tundra, and Volcanic<br>
+
 #### 0.6.22 - 10/26/2019 ####
 Game optimizations<br>
 Bug fixes for queues<br>

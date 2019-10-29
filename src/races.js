@@ -495,6 +495,146 @@ export const races = {
             dwarf: 'Jaws',
         }
     },
+    dryad: {
+        name: loc('race_dryad'),
+        desc: loc('race_dryad_desc'),
+        type: 'fey',
+        home: 'Tree',
+        entity: loc('race_dryad_entity'),
+        traits: {
+            befuddle: 1,
+            kindling_kindred: 1
+        },
+        solar: {
+            red: 'Meliae',
+            hell: 'Daphnaie',
+            gas: 'Hamadryad',
+            gas_moon: 'Karya',
+            dwarf: 'Epimeliad',
+        }
+    },
+    satyr: {
+        name: loc('race_satyr'),
+        desc: loc('race_satyr_desc'),
+        type: 'fey',
+        home: 'Feywood',
+        entity: loc('race_satyr_entity'),
+        traits: {
+            charming: 1,
+            musical: 1
+        },
+        solar: {
+            red: 'Hallerbos',
+            hell: 'Aokigahara',
+            gas: 'Tsingy',
+            gas_moon: 'Stanton Moor',
+            dwarf: 'Otzarreta',
+        }
+    },
+    phoenix: {
+        name: loc('race_phoenix'),
+        desc: loc('race_phoenix_desc'),
+        type: 'heat',
+        home: 'Inferno',
+        entity: loc('race_phoenix_entity'),
+        traits: {
+            revival: 1
+        },
+        solar: {
+            red: 'Rise',
+            hell: 'Ash',
+            gas: '???',
+            gas_moon: '???',
+            dwarf: '???',
+        }
+    },
+    salamander: {
+        name: loc('race_salamander'),
+        desc: loc('race_salamander_desc'),
+        type: 'heat',
+        home: '???',
+        entity: loc('race_salamander_entity'),
+        traits: {
+            forge: 1
+        },
+        solar: {
+            red: '???',
+            hell: '???',
+            gas: '???',
+            gas_moon: '???',
+            dwarf: '???',
+        }
+    },
+    yeti: {
+        name: loc('race_yeti'),
+        desc: loc('race_yeti_desc'),
+        type: 'polar',
+        home: '???',
+        entity: loc('race_yeti_entity'),
+        traits: {
+            blurry: 1
+        },
+        solar: {
+            red: '???',
+            hell: '???',
+            gas: '???',
+            gas_moon: '???',
+            dwarf: '???',
+        }
+    },
+    wendigo: {
+        name: loc('race_wendigo'),
+        desc: loc('race_wendigo_desc'),
+        type: 'polar',
+        home: '???',
+        entity: loc('race_wendigo_entity'),
+        traits: {
+            ravenous: 1,
+            ghostly: 1,
+            soul_eater: 1
+        },
+        solar: {
+            red: '???',
+            hell: '???',
+            gas: '???',
+            gas_moon: '???',
+            dwarf: '???',
+        }
+    },
+    tuskin: {
+        name: loc('race_tuskin'),
+        desc: loc('race_tuskin_desc'),
+        type: 'sand',
+        home: '???',
+        entity: loc('race_tuskin_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: '???',
+            hell: '???',
+            gas: '???',
+            gas_moon: '???',
+            dwarf: '???',
+        }
+    },
+    kamel: {
+        name: loc('race_kamel'),
+        desc: loc('race_kamel_desc'),
+        type: 'sand',
+        home: '???',
+        entity: loc('race_kamel_entity'),
+        traits: {
+            quenched: 1
+        },
+        solar: {
+            red: '???',
+            hell: '???',
+            gas: '???',
+            gas_moon: '???',
+            dwarf: '???',
+        }
+    },
     balorg: {
         name: loc('race_balorg'),
         desc: loc('race_balorg_desc'),
@@ -651,6 +791,21 @@ export const genus_traits = {
     aquatic: {
         submerged: 1,
         low_light: 1
+    },
+    fey: {
+        elusive: 1,
+        iron_allery: 1
+    },
+    heat: {
+        smoldering: 1,
+        cold_intolerance: 1
+    },
+    polar: {
+        chilled: 1,
+        heat_intolerance: 1
+    },
+    sand: {
+
     },
     demonic: {
         immoral: 1,
