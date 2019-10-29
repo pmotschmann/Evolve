@@ -1,3 +1,6 @@
+#### 0.6.23 - 10/28/2019 ####
+Exotic mass now counts towards Galactic Landfill and Supermassive<br>
+
 #### 0.6.22 - 10/26/2019 ####
 Game optimizations<br>
 Bug fixes for queues<br>

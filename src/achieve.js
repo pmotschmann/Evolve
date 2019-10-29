@@ -839,10 +839,10 @@ export function checkAchievements(){
     if (global.stats.died >= 250){
         unlockAchieve('red_tactics');
     }
-    if (global.interstellar['stellar_engine'] && global.interstellar['stellar_engine'].mass >= 12){
+    if (global.interstellar['stellar_engine'] && (global.interstellar['stellar_engine'].mass + global.interstellar['stellar_engine'].exotic) >= 12){
         unlockAchieve('landfill');
     }
-    if (global.interstellar['stellar_engine'] && global.interstellar['stellar_engine'].mass >= 100){
+    if (global.interstellar['stellar_engine'] && (global.interstellar['stellar_engine'].mass + global.interstellar['stellar_engine'].exotic) >= 100){
         unlockFeat('supermassive');
     }
 }
