@@ -7114,6 +7114,24 @@ export const actions = {
                 return false;
             }
         },
+        ai_core: {
+            id: 'tech-ai_core',
+            title: loc('tech_ai_core'),
+            desc: loc('tech_ai_core'),
+            reqs: { high_tech: 14, science: 15, blackhole: 3 },
+            grant: ['high_tech',15],
+            cost: {
+                Knowledge(){ return 1500000; },
+            },
+            effect: loc('tech_ai_core_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['citadel'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         fusion_power: {
             id: 'tech-fusion_power',
             title: loc('tech_fusion_power'),
