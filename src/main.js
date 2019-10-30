@@ -902,16 +902,17 @@ function fastLoop(){
         }
 
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
-            let power = global.city.mill.on * actions.city.mill.powered();
+            let power = powerModifier(global.city.mill.on * actions.city.mill.powered());
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
         }
 
         if (global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['carnivore'])){
-            max_power -= global.city.windmill.count;
-            power_grid += global.city.windmill.count;
-            power_generated[loc('city_mill_title2')] = global.city.windmill.count;
+            let power = powerModifier(global.city.windmill.count);
+            max_power -= power;
+            power_grid += power;
+            power_generated[loc('city_mill_title2')] = power;
         }
 
         // Power usage

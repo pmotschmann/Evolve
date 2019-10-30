@@ -197,7 +197,7 @@ const fortressModules = {
                 Stanene(){ return costMultiplier('attractor', 90000, 1.25, 'portal'); },
             },
             effect(){
-                return `<div>${loc('portal_attractor_effect1')}</div><div>${loc('portal_attractor_effect2')}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_attractor_effect1')}</div><div>${loc('portal_attractor_effect2',[global.resource.Soul_Gem.name])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
