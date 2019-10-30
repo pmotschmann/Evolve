@@ -9827,7 +9827,7 @@ export const actions = {
                 Knowledge(){ return 1500000; },
                 Soul_Gem(){ return 10; }
             },
-            effect(){ return `<div>${loc('tech_exotic_infusion_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
+            effect(){ return `<div>${loc('tech_exotic_infusion_effect',[global.resource.Soul_Gem.name])}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.resource.Soul_Gem.amount += 10;

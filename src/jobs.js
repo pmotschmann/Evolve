@@ -14,7 +14,7 @@ export const job_desc = {
         impact *= global.city.biome === 'hellscape' ? 0.25 : 1;
         impact *= global.city.ptrait === 'trashed' ? 0.75 : 1;
         let gain = +(impact * multiplier).toFixed(2);
-        return loc('job_farmer_desc',[gain]);
+        return loc('job_farmer_desc',[gain,global.resource.Food.name]);
     },
     lumberjack: function(){
         if (global.race['evil'] && !global.race['soul_eater']){
@@ -30,7 +30,7 @@ export const job_desc = {
             multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
             let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
             let gain = +(impact * multiplier).toFixed(1);
-            return loc('job_lumberjack_desc',[gain]);
+            return loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
         }
     },
     quarry_worker: function(){
@@ -40,7 +40,7 @@ export const job_desc = {
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
-        return loc('job_quarry_worker_desc',[gain]);
+        return loc('job_quarry_worker_desc',[gain,global.resource.Stone.name]);
     },
     scavenger: function(){
         return loc('job_scavenger_desc',[races[global.race.species].home,global.civic.scavenger.impact]);
