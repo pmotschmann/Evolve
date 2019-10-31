@@ -1,3 +1,6 @@
+#### 0.6.24 - 10/31/2019 ####
+The Halloween feat will now unlock inside a micro universe<br>
+
 #### 0.6.23 - 10/28/2019 ####
 Exotic mass now counts towards Galactic Landfill and Supermassive<br>
 Fixed issues with queue timers and kindling kindred trait<br>

@@ -852,7 +852,12 @@ export function checkAchievements(){
     }
     const date = new Date();
     if (date.getMonth() === 9 && date.getDate() === 31){
-        unlockFeat('halloween');
+        if (global.race.universe === 'micro'){
+            unlockFeat('halloween',true);
+        }
+        else {
+            unlockFeat('halloween');
+        }
     }
 }
 
