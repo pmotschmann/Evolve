@@ -1912,8 +1912,24 @@ export const actions = {
     city: {
         food: {
             id: 'city-food',
-            title: loc('city_food'),
-            desc: loc('city_food_desc'),
+            title(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_trick');
+                }
+                else {
+                    return loc('city_food');
+                }
+            },
+            desc(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_trick_desc');
+                }
+                else {
+                    return loc('city_food_desc');
+                }
+            },
             category: 'outskirts',
             reqs: { primitive: 1 },
             not_trait: ['soul_eater'],
@@ -1927,8 +1943,24 @@ export const actions = {
         },
         lumber: {
             id: 'city-lumber',
-            title: loc('city_lumber'),
-            desc: loc('city_lumber_desc'),
+            title(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_dig');
+                }
+                else {
+                    return loc('city_lumber');
+                }
+            },
+            desc(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_dig_desc');
+                }
+                else {
+                    return loc('city_lumber_desc');
+                }
+            },
             category: 'outskirts',
             reqs: {},
             not_trait: ['evil'],
