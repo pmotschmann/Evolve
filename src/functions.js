@@ -1,9 +1,9 @@
-import { global, vues, save } from './vars.js';
+import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
 
 export function mainVue(){
-    let settings = {
+    new Vue({
         el: '#mainColumn div:first-child',
         data: { 
             s: global.settings,
@@ -116,8 +116,7 @@ export function mainVue(){
                 }
             }
         }
-    }
-    vues['vue_tabs'] = new Vue(settings);
+    });
 }
 
 export function timeCheck(c_action,track){

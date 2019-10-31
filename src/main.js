@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, resizeGame, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
+import { global, save, poppers, resizeGame, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { mainVue, timeCheck, timeFormat, powerModifier } from './functions.js';
 import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
@@ -61,7 +61,8 @@ arpa('Crispr');
 
 resizeGame();
 
-vues['race'] = new Vue({
+new Vue({
+    el: '#race',
     data: {
         race: global.race,
         city: global.city
@@ -80,7 +81,6 @@ vues['race'] = new Vue({
         }
     }
 });
-vues['race'].$mount('#race');
 
 var moraleCap = 125;
 var moralePopper;
@@ -172,7 +172,8 @@ $('#powerStatus').on('mouseout',function(){
     powerPopper.remove();
 });
 
-vues['topBar'] = new Vue({
+new Vue({
+    el: '#topBar',
     data: {
         city: global.city,
         race: global.race
@@ -242,7 +243,6 @@ vues['topBar'] = new Vue({
         }
     }
 });
-vues['topBar'].$mount('#topBar');
 
 $('#topBar .planetWrap .planet').on('mouseover',function(){
     var popper = $(`<div id="topbarPop" class="popper has-background-light has-text-dark"></div>`);

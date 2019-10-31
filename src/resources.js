@@ -715,7 +715,6 @@ function assignContainer(res){
 }
 
 function containerItem(vue,mount,market_item,name,color){
-
     market_item.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
 
     if (global.resource.Crates.display){
@@ -844,7 +843,7 @@ function breakdownPopover(id,name,type){
         popper.show();
         poppers[type+name] = new Popper($(`#${id}`),popper);
 
-        vues[`res_${id}_temp`] = new Vue({
+        vues[`res_pop_temp`] = new Vue({
             data: {
                 'Global': breakdown[type]['Global'],
                 [name]: breakdown[type][name],
@@ -907,7 +906,7 @@ function breakdownPopover(id,name,type){
                 }
             }
         });
-        vues[`res_${id}_temp`].$mount(`#resBreak${id} > div`);
+        vues[`res_pop_temp`].$mount(`#resBreak${id} > div`);
     });
     $(`#${id}`).on('mouseout',function(){
         $(`#resBreak${id}`).hide();
@@ -915,7 +914,7 @@ function breakdownPopover(id,name,type){
             poppers[type+name].destroy();
         }
         $(`#resBreak${id}`).remove();
-        vues[`res_${id}_temp`].$destroy();
+        vues[`res_pop_temp`].$destroy();
     });
 }
 
@@ -923,23 +922,23 @@ function loadRouteCounter(){
     let no_market = global.race['no_trade'] ? ' nt' : '';
     var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><span class="tradeTotal${no_market}"><span class="has-text-warning">${loc('resource_market_trade_routes')}</span> {{ trade }} / {{ mtrade }}</span></div>`);
     $('#market').append(market_item);
-    vues['market_totals'] = new Vue({
+    new Vue({
+        el: '#tradeTotal',
         data: global.city.market
     });
-    vues['market_totals'].$mount('#tradeTotal');
 }
 
 function loadContainerCounter(){
     var market_item = $(`<div id="crateTotal" class="market-item"><span v-show="cr.display" class="crtTotal"><span class="has-text-warning">${loc('resource_Crates_name')}</span><span>{{ cr.amount }} / {{ cr.max }}</span></span><span v-show="cn.display" class="cntTotal"><span class="has-text-warning">${loc('resource_Containers_name')}</span><span>{{ cn.amount }} / {{ cn.max }}</span></span></div>`);
     $('#resStorage').append(market_item);
 
-    vues['crate_totals'] = new Vue({
+    new Vue({
+        el: '#crateTotal',
         data: {
             cr: global.resource.Crates,
             cn: global.resource.Containers
         }
     });
-    vues['crate_totals'].$mount('#crateTotal');
 }
 
 function tradeRouteColor(res){
@@ -1003,6 +1002,9 @@ function drawModal(name,color){
     let body = $('<div class="modalBody crateModal"></div>');
     $('#modalBox').append(body);
     
+    if (vues['modalCrates']){
+        vues['modalCrates'].$destroy();
+    }
     vues['modalCrates'] = new Vue({
         data: { 
             crates: global['resource']['Crates'],
@@ -1048,6 +1050,9 @@ function drawModal(name,color){
     vues['modalCrates'].$mount('#modalCrates');
     
     if (global.city['warehouse'] && global.city['warehouse'].count > 0){
+        if (vues['modalContainer']){
+            vues['modalContainer'].$destroy();
+        }
         vues['modalContainer'] = new Vue({
             data: { 
                 containers: global['resource']['Containers'],
@@ -1095,7 +1100,10 @@ function drawModal(name,color){
         vues['modalContainer'].$mount('#modalContainers');
     }
 
-    vues[`modal_res_${name}`] = new Vue({
+    if (vues[`modal_res`]){
+        vues[`modal_res`].$destroy();
+    }
+    vues[`modal_res`] = new Vue({
         data: global['resource'][name], 
         filters: {
             size: function (value){
@@ -1106,7 +1114,7 @@ function drawModal(name,color){
             }
         }
     });
-    vues[`modal_res_${name}`].$mount('#modalBoxTitle');
+    vues[`modal_res`].$mount('#modalBoxTitle');
 }
 
 export function crateValue(){
@@ -1146,7 +1154,7 @@ export function initMarket(){
     loadMarket();
 }
 
-export function initStorage(){
+function initStorage(){
     let store = $(`<div id="createHead" class="storage-header"><h2 class="is-sr-only">${loc('tab_storage')}</h2></div>`);
     $('#resStorage').empty();
     $('#resStorage').append(store);
@@ -1155,11 +1163,8 @@ export function initStorage(){
         store.append($(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" class="crate" animated multilined><button :aria-label="buildCrateLabel()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
         store.append($(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" class="container" animated multilined><button :aria-label="buildContainerLabel()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
 
-        if (vues['store_head']){
-            vues['store_head'].$destroy();
-        }
-
-        vues['store_head'] = new Vue({
+        new Vue({
+            el: '#createHead',
             data: {
                 cr: global.resource.Crates,
                 cn: global.resource.Containers
@@ -1179,7 +1184,6 @@ export function initStorage(){
                 },
             }
         });
-        vues['store_head'].$mount('#createHead');
     }
 }
 
@@ -1213,10 +1217,10 @@ export function loadMarket(){
     vues['market_qty'].$mount('#market-qty');
 }
 
-export function initEjector(){
+function initEjector(){
     $('#resEjector').empty();
     if (global.interstellar['mass_ejector']){
-        let ejector = $(`<div id="eject${name}" class="market-item"><h3 class="res has-text-warning">${loc('interstellar_mass_ejector_vol')}</h3></div>`);
+        let ejector = $(`<div id="eject" class="market-item"><h3 class="res has-text-warning">${loc('interstellar_mass_ejector_vol')}</h3></div>`);
         $('#resEjector').append(ejector);
 
         let eject = $(`<span class="trade"></span>`);
@@ -1224,7 +1228,8 @@ export function initEjector(){
 
         eject.append($(`<span>{{ total }} / {{ on | max }}</span><span class="mass">${loc('interstellar_mass_ejector_mass')}: {{ mass | approx }} kt/s</span>`));
 
-        vues['ejected'] = new Vue({
+        new Vue({
+            el: `#eject`,
             data: global.interstellar.mass_ejector,
             filters: {
                 max(num){
@@ -1235,7 +1240,6 @@ export function initEjector(){
                 }
             }
         });
-        vues['ejected'].$mount(`#eject${name}`);
     }
 }
 

@@ -2298,7 +2298,7 @@ const interstellarProjects = {
             desc: `<div>${loc('interstellar_citadel_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { neutron: 1, high_tech: 15 },
             cost: {
-                Money(){ return costMultiplier('citadel', 3000000, 1.25, 'interstellar'); },
+                Money(){ return costMultiplier('citadel', 5000000, 1.25, 'interstellar'); },
                 Knowledge(){ return costMultiplier('citadel', 1500000, 1.15, 'interstellar'); },
                 Graphene(){ return costMultiplier('citadel', 50000, 1.25, 'interstellar'); },
                 Stanene(){ return costMultiplier('citadel', 100000, 1.25, 'interstellar'); },
@@ -2306,11 +2306,8 @@ const interstellarProjects = {
                 Soul_Gem(){ return costMultiplier('citadel', 1, 1.25, 'interstellar'); },
             },
             effect(){
-                let neutronium = 0.055;
-                neutronium = +(neutronium * zigguratBonus()).toFixed(3);
-                let max_neutronium = spatialReasoning(500);
-                let helium = +int_fuel_adjust(3).toFixed(2);
-                return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max_neutronium,loc('resource_Neutronium_name')])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div>`;
+                let boost = quantum_level / 5;
+                return `<div>${loc('interstellar_citadel_effect',[boost])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return 50; },
             action(){
