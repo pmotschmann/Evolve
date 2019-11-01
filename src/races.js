@@ -543,9 +543,9 @@ export const races = {
         solar: {
             red: 'Rise',
             hell: 'Ash',
-            gas: '???',
-            gas_moon: '???',
-            dwarf: '???',
+            gas: 'Pyre',
+            gas_moon: 'Flame',
+            dwarf: 'Spark',
         }
     },
     salamander: {
@@ -569,24 +569,24 @@ export const races = {
         name: loc('race_yeti'),
         desc: loc('race_yeti_desc'),
         type: 'polar',
-        home: '???',
+        home: 'Hymalaia',
         entity: loc('race_yeti_entity'),
         traits: {
             blurry: 1
         },
         solar: {
-            red: '???',
+            red: 'Sasquatch',
             hell: '???',
-            gas: '???',
+            gas: 'Glacier',
             gas_moon: '???',
-            dwarf: '???',
+            dwarf: 'Human',
         }
     },
     wendigo: {
         name: loc('race_wendigo'),
         desc: loc('race_wendigo_desc'),
         type: 'polar',
-        home: '???',
+        home: 'Nitassinan',
         entity: loc('race_wendigo_entity'),
         traits: {
             ravenous: 1,
@@ -594,11 +594,11 @@ export const races = {
             soul_eater: 1
         },
         solar: {
-            red: '???',
-            hell: '???',
+            red: 'Wechuge',
+            hell: 'Bakadewin',
             gas: '???',
-            gas_moon: '???',
-            dwarf: '???',
+            gas_moon: 'Wiiyaasimaa',
+            dwarf: 'Anishinaabe',
         }
     },
     tuskin: {
@@ -622,17 +622,17 @@ export const races = {
         name: loc('race_kamel'),
         desc: loc('race_kamel_desc'),
         type: 'sand',
-        home: '???',
+        home: 'Wednes',
         entity: loc('race_kamel_entity'),
         traits: {
             quenched: 1
         },
         solar: {
-            red: '???',
-            hell: '???',
-            gas: '???',
-            gas_moon: '???',
-            dwarf: '???',
+            red: 'Dromedarius',
+            hell: 'Australia',
+            gas: 'Hump',
+            gas_moon: 'Day',
+            dwarf: 'Protylopus,
         }
     },
     balorg: {
