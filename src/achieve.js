@@ -524,6 +524,11 @@ const feats = {
         desc: loc("feat_supermassive_desc"),
         flair: loc("feat_supermassive_flair")
     },
+    halloween: {
+        name: loc("feat_boo_name"),
+        desc: loc("feat_boo_desc"),
+        flair: loc("feat_boo_flair")
+    },
     heavy_genus_humanoid: {
         name: loc("feat_heavy_genus_humanoid_name"),
         desc: loc("feat_heavy_genus_humanoid_desc"),
@@ -839,11 +844,20 @@ export function checkAchievements(){
     if (global.stats.died >= 250){
         unlockAchieve('red_tactics');
     }
-    if (global.interstellar['stellar_engine'] && global.interstellar['stellar_engine'].mass >= 12){
+    if (global.interstellar['stellar_engine'] && (global.interstellar['stellar_engine'].mass + global.interstellar['stellar_engine'].exotic) >= 12){
         unlockAchieve('landfill');
     }
-    if (global.interstellar['stellar_engine'] && global.interstellar['stellar_engine'].mass >= 100){
+    if (global.interstellar['stellar_engine'] && (global.interstellar['stellar_engine'].mass + global.interstellar['stellar_engine'].exotic) >= 100){
         unlockFeat('supermassive');
+    }
+    const date = new Date();
+    if (date.getMonth() === 9 && date.getDate() === 31){
+        if (global.race.universe === 'micro'){
+            unlockFeat('halloween',true);
+        }
+        else {
+            unlockFeat('halloween');
+        }
     }
 }
 

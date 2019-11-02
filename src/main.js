@@ -13,6 +13,9 @@ import { arpa } from './arpa.js';
 import { events } from './events.js';
 
 var intervals = {};
+if (global.settings.expose){
+    enableScript();
+}
 
 if (Object.keys(locales).length > 1){
     $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="s.locale"></select></span>`));
@@ -121,7 +124,7 @@ $('#morale').on('mouseover',function(){
         let type = global.city.morale.tax > 0 ? 'success' : 'danger';
         moralePopper.append(`<p class="modal_bd"><span>${loc('morale_taxes')}</span> <span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
     }
-    let total = 100 + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership + global.city.morale.shrine;
+    let total = 100 + global.city.morale.unemployed + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership + global.city.morale.shrine;
     if (global.city.morale['frenzy']){
         let type = global.city.morale.frenzy > 0 ? 'success' : 'danger';
         moralePopper.append(`<p class="modal_bd"><span>${loc('morale_frenzy')}</span> <span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
@@ -899,16 +902,17 @@ function fastLoop(){
         }
 
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
-            let power = global.city.mill.on * actions.city.mill.powered();
+            let power = powerModifier(global.city.mill.on * actions.city.mill.powered());
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
         }
 
         if (global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['carnivore'])){
-            max_power -= global.city.windmill.count;
-            power_grid += global.city.windmill.count;
-            power_generated[loc('city_mill_title2')] = global.city.windmill.count;
+            let power = powerModifier(global.city.windmill.count);
+            max_power -= power;
+            power_grid += power;
+            power_generated[loc('city_mill_title2')] = power;
         }
 
         // Power usage
@@ -2895,7 +2899,11 @@ function fastLoop(){
     });
 
     if (global.settings.expose){
-        window.evolve = JSON.parse(JSON.stringify(global));
+        if (!window['evolve']){
+            enableScript();
+        }
+        window.evolve.global = JSON.parse(JSON.stringify(global));
+        window.evolve.breakdown = JSON.parse(JSON.stringify(breakdown));
     }
 }
 
@@ -4030,7 +4038,7 @@ function midLoop(){
                             idx = i;
                         }
                         else {
-                            time += timeCheck(t_action, global.settings.qAny ? { t: 0, r: {}} : spent);
+                            time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
                         }
                         global.queue.queue[i]['time'] = time;
                         stop = global.settings.qAny ? false : true;
@@ -4097,7 +4105,7 @@ function midLoop(){
                             idx = i;
                         }
                         else {
-                            time += timeCheck(t_action, global.settings.qAny ? { t: 0, r: {}} : spent);
+                            time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
                         }
                         global.r_queue.queue[i]['time'] = time;
                         stop = global.settings.qAny ? false : true;
@@ -4810,4 +4818,17 @@ function resourceAlt(){
             alt = true;
         }
     });
+}
+
+function enableScript(){
+    window.evolve = {
+        actions: JSON.parse(JSON.stringify(actions)),
+        races: JSON.parse(JSON.stringify(races)),
+        tradeRatio: JSON.parse(JSON.stringify(tradeRatio)),
+        craftCost: JSON.parse(JSON.stringify(craftCost)),
+        atomic_mass: JSON.parse(JSON.stringify(atomic_mass)),
+        global: {},
+        breakdown: {},
+        checkTechRequirements: checkTechRequirements,
+    };
 }

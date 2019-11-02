@@ -1,3 +1,20 @@
+#### 0.6.25 - 11/2/2019 ####
+Geology bonus is now preserved on MAD reset<br>
+Key Mappings are now configurable for multiplier and queue keys<br>
+
+#### 0.6.24 - 10/31/2019 ####
+The Halloween feat will now unlock inside a micro universe<br>
+
+#### 0.6.23 - 10/28/2019 ####
+Exotic mass now counts towards Galactic Landfill and Supermassive<br>
+Fixed issues with queue timers and kindling kindred trait<br>
+Dark Energy now applies to windmills in antimatter universe<br>
+
+#### 0.6.22 - 10/26/2019 ####
+Game optimizations<br>
+Bug fixes for queues<br>
+Fixed bug with war droids<br>
+
 #### 0.6.21 - 10/24/2019 ####
 Freight Train upgrade now adds a trade route to freight yards instead of trade posts<br>
 Toxic troll achievement<br>

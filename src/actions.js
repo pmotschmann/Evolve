@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, queueIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, keyMap, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
@@ -1912,8 +1912,24 @@ export const actions = {
     city: {
         food: {
             id: 'city-food',
-            title: loc('city_food'),
-            desc: loc('city_food_desc'),
+            title(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_trick');
+                }
+                else {
+                    return loc('city_food');
+                }
+            },
+            desc(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_trick_desc');
+                }
+                else {
+                    return loc('city_food_desc');
+                }
+            },
             category: 'outskirts',
             reqs: { primitive: 1 },
             not_trait: ['soul_eater'],
@@ -1927,8 +1943,24 @@ export const actions = {
         },
         lumber: {
             id: 'city-lumber',
-            title: loc('city_lumber'),
-            desc: loc('city_lumber_desc'),
+            title(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_dig');
+                }
+                else {
+                    return loc('city_lumber');
+                }
+            },
+            desc(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_dig_desc');
+                }
+                else {
+                    return loc('city_lumber_desc');
+                }
+            },
             category: 'outskirts',
             reqs: {},
             not_trait: ['evil'],
@@ -9439,7 +9471,15 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             not_tech: ['m_boost'],
-            cost: {},
+            cost: {
+                Army(){
+                    let rating = global.race['no_plasmid'] ? 525 : 600;
+                    if (global.race['no_crispr']){
+                        rating -= 75;
+                    }
+                    return rating;
+                }
+            },
             effect(){ return `<div>${loc('tech_wc_conquest_effect')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
                 let rating = global.race['no_plasmid'] ? 525 : 600;
@@ -9472,7 +9512,15 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             not_tech: ['m_boost'],
-            cost: {},
+            cost: {
+                Morale(){
+                    let morale = global.race['no_plasmid'] ? 140 : 150;
+                    if (global.race['no_crispr']){
+                        morale -= 10;
+                    }
+                    return morale;
+                }
+            },
             effect(){
                 return `<div>${loc('tech_wc_morale_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`;
             }, 
@@ -9507,7 +9555,15 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             not_tech: ['m_boost'],
-            cost: {},
+            cost: {
+                Money(){
+                    let price = global.race['no_plasmid'] ? 3000000 : 5000000;
+                    if (global.race['no_crispr']){
+                        price -= 1000000;
+                    }
+                    return price;
+                }
+            },
             effect(){ return `<div>${loc('tech_wc_money_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
                 let price = global.race['no_plasmid'] ? 3000000 : 5000000;
@@ -9803,7 +9859,7 @@ export const actions = {
                 Knowledge(){ return 1500000; },
                 Soul_Gem(){ return 10; }
             },
-            effect(){ return `<div>${loc('tech_exotic_infusion_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
+            effect(){ return `<div>${loc('tech_exotic_infusion_effect',[global.resource.Soul_Gem.name])}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.resource.Soul_Gem.amount += 10;
@@ -10573,7 +10629,7 @@ export function setAction(c_action,action,type,old){
                 else {
                     switch (action){
                         case 'tech':
-                            if (!(global.settings.qKey && queueIsPressed) && c_action.action()){
+                            if (!(global.settings.qKey && keyMap.q) && c_action.action()){
                                 gainTech(type);
                                 if (c_action['post']){
                                     c_action.post();
@@ -10610,7 +10666,7 @@ export function setAction(c_action,action,type,old){
                             }
                             break;
                         default:
-                            if (demoIsPressed && 1 === 2){
+                            if (keyMap.d && 1 === 2){
                                 if (global[action][type]['count'] && global[action][type]['count'] > 0){
                                     global[action][type]['count']--;
                                     if (global[action][type]['on'] && global[action][type]['on'] > global[action][type]['count']){
@@ -10640,7 +10696,7 @@ export function setAction(c_action,action,type,old){
                                 let grant = false;
                                 let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 for (var i=0; i<keyMult; i++){
-                                    if ((global.settings.qKey && queueIsPressed) || !c_action.action()){
+                                    if ((global.settings.qKey && keyMap.q) || !c_action.action()){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){
@@ -10998,14 +11054,16 @@ function actionDesc(parent,c_action,obj,old){
     if (c_action.cost && !old){ 
         var cost = $('<div></div>');
         var costs = adjustCosts(c_action.cost);
-        Object.keys(costs).forEach(function (res) {
-            var res_cost = costs[res]();
-            if (res_cost > 0){
-                let label = res === 'Money' ? '$' : global.resource[res].name+': ';
-                label = label.replace("_", " ");
-                let color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
-                let display_cost = sizeApproximation(res_cost,1);
-                cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
+        Object.keys(costs).forEach(function (res){
+            if (res !== 'Morale' && res !== 'Army'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                    label = label.replace("_", " ");
+                    let color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
+                    let display_cost = sizeApproximation(res_cost,1);
+                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
+                }
             }
         });
         parent.append(cost);
@@ -11067,10 +11125,12 @@ export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            let cost = costs[res]();
-            global['resource'][res].amount -= cost;
-            if (res === 'Knowledge'){
-                global.stats.know += cost;
+            if (res !== 'Morale' && res !== 'Army'){
+                let cost = costs[res]();
+                global['resource'][res].amount -= cost;
+                if (res === 'Knowledge'){
+                    global.stats.know += cost;
+                }
             }
         });
         return true;
@@ -11093,8 +11153,18 @@ export function checkAffordable(c_action,max){
 function checkMaxCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        var testCost = Number(costs[res]()) || 0;
-        if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1) {
+        if (res !== 'Morale' && res !== 'Army'){
+            var testCost = Number(costs[res]()) || 0;
+            if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1) {
+                test = false;
+                return false;
+            }
+        }
+        else if (res === 'Morale' && global.city.morale.current < Number(costs[res]())){
+            test = false;
+            return false;
+        }
+        else if (res === 'Army' && armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
             test = false;
             return false;
         }
@@ -11105,9 +11175,19 @@ function checkMaxCosts(costs){
 function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        var testCost = Number(costs[res]()) || 0;
-        let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
-        if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
+        if (res !== 'Morale' && res !== 'Army'){
+            var testCost = Number(costs[res]()) || 0;
+            let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
+            if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
+                test = false;
+                return false;
+            }
+        }
+        else if (res === 'Morale' && global.city.morale.current < Number(costs[res]())){
+            test = false;
+            return false;
+        }
+        else if (res === 'Army' && armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
             test = false;
             return false;
         }
