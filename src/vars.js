@@ -344,7 +344,7 @@ if (convertVersion(global['version']) < 6020 && global.race['mutation'] && globa
     global.stats.achieve['cross'] = { l: a_level, a: a_level };
 }
 
-global['version'] = '0.6.24';
+global['version'] = '0.6.25';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -484,8 +484,14 @@ if (!global.settings['locale']){
 if (typeof global.settings.mKeys === 'undefined'){
     global.settings['mKeys'] = true;
 }
-if (typeof global.settings.qKey === 'undefined'){
-    global.settings['qKey'] = false;
+if (typeof global.settings.keyMap === 'undefined'){
+    global.settings['keyMap'] = {
+        x10: 'Control', //17
+        x25: 'Shift', //16
+        x100: 'Alt', //18
+        q: 'q', //81
+        d: 'd' //68
+    };
 }
 if (typeof global.settings.qAny === 'undefined'){
     global.settings['qAny'] = false;
@@ -783,45 +789,81 @@ export function modRes(res,val){
     return success;
 }
 
-export var shiftIsPressed = false;
-export var cntrlIsPressed = false;
-export var altIsPressed = false;
-export var demoIsPressed = false;
-export var queueIsPressed = false;
+export var keyMap = {
+    x10: false,
+    x25: false,
+    x100: false,
+    q: false,
+    d: false
+};
+
 $(document).keydown(function(e){
-    cntrlIsPressed = e.ctrlKey ? true : false;
-    shiftIsPressed = e.shiftKey ? true : false;
-    altIsPressed = e.altKey ? true : false;
-    demoIsPressed = e.keyCode === 68 ? true : false;
-    queueIsPressed = e.keyCode === 81 ? true : false;
+    e = e || window.event;
+    let key = e.key || e.keyCode;
+    if (key === global.settings.keyMap.x10){
+        keyMap.x10 = true;
+    }
+    if (key === global.settings.keyMap.x25){
+        keyMap.x25 = true;
+    }
+    if (key === global.settings.keyMap.x100){
+        keyMap.x100 = true;
+    }
+    if (key === global.settings.keyMap.q){
+        keyMap.q = true;
+    }
 });
 $(document).keyup(function(e){
-    cntrlIsPressed = e.ctrlKey ? true : false;
-    shiftIsPressed = e.shiftKey ? true : false;
-    altIsPressed = e.altKey ? true : false;
-    demoIsPressed = e.keyCode === 68  ? false : true;
-    queueIsPressed = e.keyCode === 81 ? false : true;
+    e = e || window.event;
+    let key = e.key || e.keyCode;
+    if (key === global.settings.keyMap.x10){
+        keyMap.x10 = false;
+    }
+    if (key === global.settings.keyMap.x25){
+        keyMap.x25 = false;
+    }
+    if (key === global.settings.keyMap.x100){
+        keyMap.x100 = false;
+    }
+    if (key === global.settings.keyMap.q){
+        keyMap.q = false;
+    }
 });
-
-window.onmousemove = function(e){
-    cntrlIsPressed = e.ctrlKey ? true : false;
-    shiftIsPressed = e.shiftKey ? true : false;
-    altIsPressed = e.altKey ? true : false;
-    demoIsPressed = e.keyCode === 68  ? true : false;
-    queueIsPressed = e.keyCode === 81 ? true : false;
-}
+$(document).mousemove(function(e){
+    e = e || window.event;
+    Object.keys(global.settings.keyMap).forEach(function(k){
+        switch(global.settings.keyMap[k]){
+            case 'Shift':
+            case 16:
+                keyMap[k] = e.shiftKey ? true : false;
+                break;
+            case 'Control':
+            case 17:
+                keyMap[k] = e.ctrlKey ? true : false;
+                break;            
+            case 'Alt':
+            case 18:
+                keyMap[k] = e.altKey ? true : false;
+                break;
+            case 'Meta':
+            case 91:
+                keyMap[k] = e.metaKey ? true : false;
+                break;
+        }
+    });
+});
 
 export var keyMultiplierNumber = 1;
 export function keyMultiplier(){
     let number = 1;
     if (global.settings['mKeys']){
-        if (cntrlIsPressed){
+        if (keyMap.x10){
             number *= 10;
         }
-        if (shiftIsPressed){
+        if (keyMap.x25){
             number *= 25;
         }
-        if (altIsPressed){
+        if (keyMap.x100){
             number *= 100;
         }
     }
@@ -990,6 +1032,7 @@ window.soft_reset = function reset(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
+    let geo = global.city.geology;
     global.city = {
         calendar: {
             day: 0,
@@ -1001,7 +1044,8 @@ window.soft_reset = function reset(){
             orbit: orbit
         },
         biome: biome,
-        ptrait: atmo
+        ptrait: atmo,
+        geology: geo
     };
 
     global.stats.days = 0;

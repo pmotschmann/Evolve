@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, queueIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, keyMap, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
@@ -10629,7 +10629,7 @@ export function setAction(c_action,action,type,old){
                 else {
                     switch (action){
                         case 'tech':
-                            if (!(global.settings.qKey && queueIsPressed) && c_action.action()){
+                            if (!(global.settings.qKey && keyMap.q) && c_action.action()){
                                 gainTech(type);
                                 if (c_action['post']){
                                     c_action.post();
@@ -10666,7 +10666,7 @@ export function setAction(c_action,action,type,old){
                             }
                             break;
                         default:
-                            if (demoIsPressed && 1 === 2){
+                            if (keyMap.d && 1 === 2){
                                 if (global[action][type]['count'] && global[action][type]['count'] > 0){
                                     global[action][type]['count']--;
                                     if (global[action][type]['on'] && global[action][type]['on'] > global[action][type]['count']){
@@ -10696,7 +10696,7 @@ export function setAction(c_action,action,type,old){
                                 let grant = false;
                                 let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 for (var i=0; i<keyMult; i++){
-                                    if ((global.settings.qKey && queueIsPressed) || !c_action.action()){
+                                    if ((global.settings.qKey && keyMap.q) || !c_action.action()){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){
