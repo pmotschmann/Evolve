@@ -1,21 +1,131 @@
+#### 0.6.25 - 11/2/2019 ####
+Geology bonus is now preserved on MAD reset<br>
+Key Mappings are now configurable for multiplier and queue keys<br>
 
-#### 0.6.5 - 9/21/2019
+#### 0.6.24 - 10/31/2019 ####
+The Halloween feat will now unlock inside a micro universe<br>
+
+#### 0.6.23 - 10/28/2019 ####
+Exotic mass now counts towards Galactic Landfill and Supermassive<br>
+Fixed issues with queue timers and kindling kindred trait<br>
+Dark Energy now applies to windmills in antimatter universe<br>
+
+#### 0.6.22 - 10/26/2019 ####
+Game optimizations<br>
+Bug fixes for queues<br>
+Fixed bug with war droids<br>
+
+#### 0.6.21 - 10/24/2019 ####
+Freight Train upgrade now adds a trade route to freight yards instead of trade posts<br>
+Toxic troll achievement<br>
+Spatial reasoning rounding fix<br>
+
+#### 0.6.20 - 10/21/2019 ####
+Fixed application of plasmids with antiplasmids<br>
+Updated description of bleeding effect<br>
+Added achievement for synthesizing an anti-plasmid<br>
+More readable achievement page<br>
+
+#### 0.6.19 - 10/20/2019 ####
+Fixed power errors with hell dimension turrets<br>
+Crate/Container rounding is now applied after spatial reasoning<br>
+Added extra text to the asteroid belt description to call out the necessity of assigning space miners<br>
+Evil Ents can now burn flesh in the smelter<br>
+
+#### 0.6.18 - 10/16/2019 ####
+Swarm Satellite redesign<br>
+Swarm Satellites cost and output decreased<br>
+Control Stations can now control 10/18 swarm satellites<br>
+Iron mining ship swarm plant discount now applies to all swarm plant costs<br>
+New upgrades to increase output of swarm satellites<br>
+
+#### 0.6.17 - 10/14/2019 ####
+"Q" key now works with research queue<br>
+Added settings option to not enforce queue order<br>
+Decay challenge no longer shows the star level for Joyless<br>
+All universe types can now be seen on achievements<br>
+Genus completion is now marked on sentience<br>
+Challenges can now be toggled during evolution<br>
+Inspiration event now gives a temporary buff to all science production<br>
+Added Slave Market for slaver races to buy slaves as an alternative to catching them<br>
+Added Crate/Container storage amount to the build crate/container tooltip<br>
+Added a button to cancel all trade routes for each resource<br>
+
+#### 0.6.16 - 10/13/2019 ####
+Employment is now color coded depending on staffing levels<br>
+GPS satellites now add additional trade routes<br>
+Added stats tracking on reset mechanics used<br>
+Added a message when completing the launch facility<br>
+Added icons to challenges and races in evolution stage to indicate level of challenge completion<br>
+
+#### 0.6.15 - 10/11/2019 ####
+Added a settings option to disable the queue hot key<br>
+The queue hot key is now disabled by default because it breaks the game for some users<br>
+
+#### 0.6.14 - 10/9/2019 ####
+Fixed several bugs with celestial races<br>
+Only one demonic invasion event is now required to reach a hellscape planet<br>
+New city categorization can now be switched off in the settings tab<br>
+Holding Q while clicking a building will now queue it instead of constructing it<br>
+
+#### 0.6.13 - 10/7/2019 ####
+Fixed bioseed reset bug when seeding from a planet without a special property<br>
+
+#### 0.6.12 - 10/6/2019 ####
+Added a hire merc option to fortress, mercs hired here go directly to the fortress<br>
+Default patrol size is now 10 instead of 4<br>
+Adjuted margins in city tab/space tabs to slightly reduce vertical scrolling<br>
+New Tower of Babel flair<br>
+
+#### 0.6.11 - 10/5/2019 ####
+New planetary modifiers: Toxic, Mellow, Rage, Stormy, Ozone, Magnetic, and Trashed<br>
+City Categorization by NotOats<br>
+Chinese Translation<br>
+
+#### 0.6.10 - 10/1/2019 ####
+Fixed issue with gene editing costing the wrong type of Plasmid<br>
+Fixed Bone label in Graphene plant<br>
+Fixed issue with Plywood not unlocking when removing Kindling Kindred trait<br>
+
+#### 0.6.9 - 9/30/2019 ####
+Antimatter Universe<br>
+Bleeding Effect line of CRISPR upgrades, requires Anti-Plasmids to unlock<br>
+Balorg can now unlock queues<br>
+Fixed aria labels in mass ejector<br>
+
+#### 0.6.8 - 9/24/2019 ####
+Queue reordering no longer swaps the dragged item with the one in the target spot<br>
+Added timers to research queue<br>
+Cost adjustments are now applied to queue timers increasing their accuracy<br>
+
+#### 0.6.7 - 9/24/2019 ####
+Cath windmills now generate power instead of just looking pretty<br>
+Fixed Spanish strings file, language now loads again<br>
+
+#### 0.6.6 - 9/23/2019 ####
+Added special tech tree to sacrifical altar to boost its effectiveness per sacrifice<br>
+Restored windmills to cath<br>
+Challenge Multiplier Dark Energy rounding calculation fixed<br>
+Added extra information to blackhole description when it reaches destabilization point<br>
+Added a warning to stabilize option that it will reset your exotic matter<br>
+
+#### 0.6.5 - 9/21/2019 ####
 Fixed display issue with frenzy appearing to never drop below 1%<br>
 Updated the tooltip values on farms and farmers to include the hellscape penalty<br>
 Fixed Evil Ents so they start with Gather Stone option<br>
 
-#### 0.6.4 - 9/19/2019
+#### 0.6.4 - 9/19/2019 ####
 Fixed double windmill issue with evil universe races<br>
 Spanish language updates<br>
 Added warnings to challenge modes in micro universe that you will not receive credit<br>
 
-#### 0.6.3 - 9/17/2019
+#### 0.6.3 - 9/17/2019 ####
 Restored broken perks<br>
 
-#### 0.6.2 - 9/17/2019
+#### 0.6.2 - 9/17/2019 ####
 Bug Fixes<br>
 
-#### 0.6.1 - 9/17/2019
+#### 0.6.1 - 9/17/2019 ####
 Universe Update, explore ~~ 4 ~~ 3 new universe types:<br>
 Heavy Gravity Universe<br>
 Micro Universe<br>

@@ -39,6 +39,7 @@ export const events = {
             var res = global.resource.Knowledge.amount + gain;
             if (res > global.resource.Knowledge.max){ res = global.resource.Knowledge.max; }
             global.resource.Knowledge.amount = res;
+            global.race['inspired'] = Math.rand(300,600);
             return loc('event_inspiration',[gain]);
         }
     },

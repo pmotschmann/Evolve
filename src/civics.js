@@ -1,4 +1,5 @@
 import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
+import { challenge_multiplier, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
@@ -40,7 +41,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna, 'qany': item.qa }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
 
     try {
         vues['builld_queue'] = new Vue({
@@ -53,27 +54,7 @@ export function buildQueue(){
             },
             filters: {
                 time(time){
-                    if (time < 0){
-                        return 'Never';
-                    }
-                    else {
-                        time = +(time.toFixed(0));
-                        if (time > 60){
-                            let secs = time % 60;
-                            let mins = (time - secs) / 60;
-                            if (mins >= 60){
-                                let r = mins % 60;
-                                let hours = (mins - r) / 60;
-                                return `${hours}h ${r}m`;
-                            }
-                            else {
-                                return `${mins}m ${secs}s`;
-                            }
-                        }
-                        else {
-                            return `${time}s`;
-                        }
-                    }
+                    return timeFormat(time);
                 }
             }
         });
@@ -319,6 +300,9 @@ export function buildGarrison(garrison){
                 if (army > enemy){
                     let deathCap = Math.floor(global.civic.garrison.raid / (5 - global.civic.garrison.tactic));
                     deathCap += wounded;
+                    if (global.city.ptrait === 'rage'){
+                        deathCap++;
+                    }
                     if (deathCap < 1){
                         deathCap = 1;
                     }
@@ -632,6 +616,9 @@ export function buildGarrison(garrison){
                     if (global.civic.garrison.tactic === 0){
                         deathCap = Math.floor(deathCap / 2);
                     }
+                    if (global.city.ptrait === 'rage'){
+                        deathCap++;
+                    }
                     if (deathCap < 1){
                         deathCap = 1;
                     }
@@ -750,19 +737,19 @@ export function buildGarrison(garrison){
                 if (global.race['evil']){
                     if (global.race['soul_eater']){
                         let bones = +(armyRating(garrisonSize(),'hunting') / 3).toFixed(2);
-                        return loc('civics_garrison_evil_soldier_desc',[food,fur,bones]);
+                        return loc('civics_garrison_evil_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
                     }
                     else {
                         let bones = +(armyRating(garrisonSize(),'hunting') / 5).toFixed(2);
                         return global.race['herbivore']
-                            ? loc('civics_garrison_evil_alt_soldier_desc_herb',[fur,bones])
-                            : loc('civics_garrison_evil_alt_soldier_desc',[food,fur,bones]);
+                            ? loc('civics_garrison_evil_alt_soldier_desc_herb',[fur,bones,global.resource.Furs.name,global.resource.Lumber.name])
+                            : loc('civics_garrison_evil_alt_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
                     }
                 }
                 else {
                     return global.race['herbivore']
-                        ? loc('civics_garrison_soldier_desc_herb',[fur])
-                        : loc('civics_garrison_soldier_desc',[food,fur]);
+                        ? loc('civics_garrison_soldier_desc_herb',[fur,global.resource.Furs.name])
+                        : loc('civics_garrison_soldier_desc',[food,fur,global.resource.Food.name,global.resource.Furs.name]);
                 }
             },
             woundedDesc(){
@@ -886,29 +873,31 @@ export function armyRating(val,type){
     let army = global.tech['military'] ? (val - (wounded / 2)) * weapon_tech : (val - (wounded / 2));
     if (type === 'army'){
         if (global.race['puny']){
-            army = Math.floor(army * 0.9);
+            army *= 0.9;
         }
         if (global.race['claws'] || global.race['chameleon']){
-            army = Math.floor(army * 1.2);
+            army *= 1.2;
         }
         if (global.race['cautious'] && global.city.calendar.weather === 0){
-            army = Math.floor(army * 0.9);
+            army *= 0.9;
         }
         if (global.race['apex_predator']){
-            army = Math.floor(army * 1.25);
+            army *= 1.25;
         }
         if (global.race['fiery']){
-            army = Math.floor(army * 1.65);
+            army *= 1.65;
         }
         if (global.race['pathetic']){
-            army = Math.floor(army * 0.75);
+            army *= 0.75;
         }
         if (global.race['tactical']){
-            let bonus = 1 + (global.race['tactical'] / 20);
-            army = Math.floor(army * bonus);
+            army *= 1 + (global.race['tactical'] / 20);
         }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
+        }
+        if (global.city.ptrait === 'rage'){
+            army *= 1.05;
         }
         if (global.race['parasite']){
             if (val === 1){
@@ -918,24 +907,28 @@ export function armyRating(val,type){
                 army += 4;
             }
         }
+        army = Math.floor(army);
     }
     else if (type === 'hunting'){
         if (global.race['tracker']){
-            army = Math.floor(army * 1.1);
+            army *= 1.1;
         }
         if (global.race['beast'] && global.city.calendar.wind === 1){
-            army = Math.floor(army * 1.15);
+            army *= 1.15;
         }
         if (global.race['apex_predator']){
-            army = Math.floor(army * 1.5);
+            army *= 1.5;
         }
         if (global.race['fiery']){
-            army = Math.floor(army * 1.25);
+            army *= 1.25;
+        }
+        if (global.city.ptrait === 'rage'){
+            army *= 1.02;
         }
         if (global.race['cunning']){
-            let bonus = 1 + (global.race['cunning'] / 20);
-            army = Math.floor(army * bonus);
+            army *= 1 + (global.race['cunning'] / 20);
         }
+        army = Math.floor(army);
     }
     return army * racialTrait(val,type);
 }
@@ -1022,36 +1015,12 @@ function defineMad(){
     vues['mad'].$mount('#mad');
 }
 
-export function challenge_multiplier(value,type){
-    let challenge_level = 0;
-    if (global.race.universe === 'micro'){ value = Math.round(value * 0.25); }
-    if (global.race.universe === 'heavy' && type !== 'mad'){ value = Math.round(value * 1.25); }
-    if (global.race['no_plasmid']){ challenge_level++; }
-    if (global.race['no_trade']){ challenge_level++; }
-    if (global.race['no_craft']){ challenge_level++; }
-    if (global.race['no_crispr']){ challenge_level++; }
-    switch (challenge_level){
-        case 1:
-            return Math.round(value * 1.05);
-        case 2:
-            return Math.round(value * 1.10);
-        case 3:
-            return Math.round(value * 1.20);
-        case 4:
-            return Math.round(value * 1.35);
-        default:
-            return value;
-    }
-}
-
 export function dragQueue(){
     let el = $('#buildQueue .buildList')[0];
     Sortable.create(el,{
         onEnd(e){
             let order = global.queue.queue;
-            var tmp = order[e.oldDraggableIndex];
-            order[e.oldDraggableIndex] = order[e.newDraggableIndex];
-            order[e.newDraggableIndex] = tmp;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
             global.queue.queue = order;
             buildQueue();
             resizeGame();
@@ -1067,6 +1036,8 @@ function warhead(){
     let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
@@ -1080,6 +1051,7 @@ function warhead(){
     }
     new_plasmid = challenge_multiplier(new_plasmid,'mad');
     global.stats.reset++;
+    global.stats.mad++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
     global.stats.tknow += global.stats.know;
@@ -1125,7 +1097,9 @@ function warhead(){
             wind: 0,
             orbit: orbit
         },
-        biome: biome
+        biome: biome,
+        ptrait: atmo,
+        geology: geo
     };
     global.tech = { theology: 1 };
     clearStates();

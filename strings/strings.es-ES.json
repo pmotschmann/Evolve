@@ -1158,7 +1158,7 @@
   "tech_swarm_plant_ai": "Planta de enjambre AI",
   "tech_swarm_plant_ai_effect": "La IA avanzada que controla la producción en las instalaciones de enjambre podría aumentar su productividad.",
   "tech_swarm_control_ai": "Control de enjambre AI",
-  "tech_swarm_control_ai_effect": "Con la IA controlando su enjambre solar, puede operar hasta 6 satélites por estación de control.",
+  "tech_swarm_control_ai_effect": "Con la IA controlando su enjambre solar, puede operar hasta 18 satélites por estación de control.",
   "tech_quantum_swarm": "Enjambre cuántico",
   "tech_quantum_swarm_effect": "Al actualizar la IA de su planta de enjambre con procesadores cuánticos, la eficiencia de las plantas está limitada solo por su capacidad de conocimiento.",
   "tech_dyson_net": "Red Dyson",
@@ -1752,8 +1752,8 @@
   "arpa_sequence_desc": "Ordena tu genoma. Esto desbloqueará los secretos del ADN. Más laboratorios de biociencia harán que esto vaya más rápido.",
   "arpa_gene_buy": "Compre un rango de %0 para %1 genes, los rangos comprados con genes duran solo para la especie actual",
   "arpa_phage_buy": "Compra un rango de %0 para %1 fago, clasifica las compras con fago transferido a todas las especies futuras",
-  "arpa_remove": "Elimina %0 de tu especie, cuesta %1 Plásmidos. Esto no es fácilmente reversible",
-  "arpa_gain": "Agregue %0 a su especie, cueste %1 Plásmidos. Esto no es fácilmente reversible",
+  "arpa_remove": "Elimina %0 de tu especie, cuesta %1 %2. Esto no es fácilmente reversible",
+  "arpa_gain": "Agregue %0 a su especie, cueste %1 %2. Esto no es fácilmente reversible",
   "time_never": "Nunca",
   "race_prehistoric": "Prehistórico",
   "race_protoplasm": "Protoplasma",
@@ -2434,5 +2434,5 @@
   "universe_evil_effect": "Si malvado es normal y normal es malvado, ¿Sigue siendo el mal 'mal'?",
   "universe_micro": "Micro",
   "universe_micro_desc": "Todo en este universo es pequeño",
-  "universe_micro_effect": "Todo en este universo es más barato. Sin embargo, todas las ganancias de recursos de prestigio se reducen en %0%. Solo se pueden obtener logros de microuniverso",
+  "universe_micro_effect": "Todo en este universo es más barato. Sin embargo, todas las ganancias de recursos de prestigio se reducen en %0%. Solo se pueden obtener logros de microuniverso"
 }

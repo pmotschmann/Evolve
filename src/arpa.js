@@ -1,4 +1,4 @@
-import { global, vues, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { global, vues, poppers, keyMultiplier, sizeApproximation, messageQueue, srSpeak } from './vars.js';
 import { timeFormat } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
@@ -128,7 +128,7 @@ const genePool = {
         reqs: {},
         grant: ['creep',1],
         cost: 25,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>25</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('genetic_memory')){
                 return true;
@@ -143,7 +143,7 @@ const genePool = {
         reqs: { creep: 1 },
         grant: ['creep',2],
         cost: 75,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>75</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('animus')){
                 return true;
@@ -158,7 +158,7 @@ const genePool = {
         reqs: { creep: 2 },
         grant: ['creep',3],
         cost: 225,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>225</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('divine_remembrance')){
                 return true;
@@ -173,7 +173,7 @@ const genePool = {
         reqs: { creep: 3 },
         grant: ['creep',4],
         cost: 618,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>618</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('divine_proportion')){
                 return true;
@@ -188,7 +188,7 @@ const genePool = {
         reqs: { creep: 4 },
         grant: ['creep',5],
         cost: 999,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>999</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('genetic_repository')){
                 return true;
@@ -203,7 +203,7 @@ const genePool = {
         reqs: {},
         grant: ['store',1],
         cost: 50,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>50</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('spatial_reasoning')){
                 return true;
@@ -218,7 +218,7 @@ const genePool = {
         reqs: { store: 1 },
         grant: ['store',2],
         cost: 125,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>125</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('spatial_superiority')){
                 return true;
@@ -233,7 +233,7 @@ const genePool = {
         reqs: { store: 2 },
         grant: ['store',3],
         cost: 325,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>325</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('spatial_supremacy')){
                 return true;
@@ -248,7 +248,7 @@ const genePool = {
         reqs: { store: 3 },
         grant: ['store',4],
         cost: 500,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>500</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('dimensional_warping')){
                 return true;
@@ -263,7 +263,7 @@ const genePool = {
         reqs: {},
         grant: ['evolve',1],
         cost: 10,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>10</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('morphogenesis')){
                 return true;
@@ -278,7 +278,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['evolve',2],
         cost: 35,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>35</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('recombination')){
                 return true;
@@ -293,7 +293,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['synthesis',1],
         cost: 25,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>25</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('synthesis')){
                 return true;
@@ -308,7 +308,7 @@ const genePool = {
         reqs: { synthesis: 1 },
         grant: ['synthesis',2],
         cost: 40,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>40</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('karyokinesis')){
                 return true;
@@ -323,7 +323,7 @@ const genePool = {
         reqs: { synthesis: 2 },
         grant: ['synthesis',3],
         cost: 55,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>55</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('cytokinesis')){
                 return true;
@@ -338,7 +338,7 @@ const genePool = {
         reqs: { synthesis: 3, creep: 5 },
         grant: ['mutation',1],
         cost: 1250,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>1250</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('mutation')){
                 global.genes['mutation'] = 1;
@@ -355,7 +355,7 @@ const genePool = {
         reqs: { mutation: 1 },
         grant: ['mutation',2],
         cost: 1500,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>1500</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('transformation')){
                 global.genes['mutation'] = 2;
@@ -372,7 +372,7 @@ const genePool = {
         reqs: { mutation: 2 },
         grant: ['mutation',3],
         cost: 1750,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>1750</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('metamorphosis')){
                 global.genes['mutation'] = 3;
@@ -389,7 +389,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['birth',1],
         cost: 65,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>65</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('replication')){
                 return true;
@@ -404,7 +404,7 @@ const genePool = {
         reqs: { evolve: 1 },
         grant: ['crafty',1],
         cost: 45,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>45</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('artificer')){
                 return true;
@@ -419,7 +419,7 @@ const genePool = {
         reqs: { crafty: 1 },
         grant: ['crafty',2],
         cost: 90,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>90</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('detail_oriented')){
                 return true;
@@ -434,7 +434,7 @@ const genePool = {
         reqs: { crafty: 2 },
         grant: ['crafty',3],
         cost: 135,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>135</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('rigorous')){
                 return true;
@@ -449,7 +449,7 @@ const genePool = {
         reqs: { store: 1 },
         grant: ['queue',1],
         cost: 75,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>75</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('geographer')){
                 return true;
@@ -464,7 +464,7 @@ const genePool = {
         reqs: { queue: 1 },
         grant: ['queue',2],
         cost: 160,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>160</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('architect')){
                 return true;
@@ -479,7 +479,7 @@ const genePool = {
         reqs: {},
         grant: ['challenge',1],
         cost: 5,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>5</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('hardened_genes')){
                 return true;
@@ -494,7 +494,7 @@ const genePool = {
         reqs: {challenge:1},
         grant: ['challenge',2],
         cost: 50,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>50</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('unlocked')){
                 return true;
@@ -509,7 +509,7 @@ const genePool = {
         reqs: { evolve: 2, old_gods: 1 },
         grant: ['ancients',1],
         cost: 120,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>120</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('ancients')){
                 global.genes['ancients'] = 1;
@@ -526,7 +526,7 @@ const genePool = {
         reqs: { ancients: 1, mutation: 3 },
         grant: ['transcendence',1],
         cost: 3000,
-        effect: `<div class="cost"><span class="has-text-special">${loc('arpa_genepool_effect_plasmid')}</span>: <span>3000</span></div>`,
+        effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('transcendence')){
                 global.genes['transcendence'] = 1;
@@ -535,13 +535,74 @@ const genePool = {
             }
             return false;
         }
+    },
+    bleeding_effect: {
+        id: 'genes-bleeding_effect',
+        title: loc('arpa_genepool_bleeding_effect_title'),
+        desc: loc('arpa_genepool_bleeding_effect_desc',[2.5]),
+        reqs: { creep: 2 },
+        grant: ['bleed',1],
+        condition(){
+            return global.race.universe === 'antimatter' ? true : false;
+        },
+        cost: 100,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('bleeding_effect')){
+                return true;
+            }
+            return false;
+        }
+    },
+    synchronicity: {
+        id: 'genes-synchronicity',
+        title: loc('arpa_genepool_synchronicity_title'),
+        desc: loc('arpa_genepool_synchronicity_desc',[25]),
+        reqs: { bleed: 1 },
+        grant: ['bleed',2],
+        cost: 500,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('synchronicity')){
+                return true;
+            }
+            return false;
+        }
+    },
+    astral_awareness: {
+        id: 'genes-astral_awareness',
+        title: loc('arpa_genepool_astral_awareness_title'),
+        desc: loc('arpa_genepool_astral_awareness_desc'),
+        reqs: { bleed: 2 },
+        grant: ['bleed',3],
+        cost: 1000,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('astral_awareness')){
+                return true;
+            }
+            return false;
+        }
     }
 }
 
+function crispr_effect(cost){
+    let plasmid = global.race.universe === 'antimatter' ? loc('arpa_genepool_effect_antiplasmid') : loc('arpa_genepool_effect_plasmid');
+    return `<div class="cost"><span class="has-text-special">${plasmid}</span>: <span>${cost}</span></div>`;
+}
+
 function payPlasmids(gene){
-    if (global.race.Plasmid.count >= genePool[gene].cost){
-        global.race.Plasmid.count -= genePool[gene].cost;
-        return true;
+    if (global.race.universe === 'antimatter'){
+        if (global.race.Plasmid.anti >= genePool[gene].cost){
+            global.race.Plasmid.anti -= genePool[gene].cost;
+            return true;
+        }
+    }
+    else {
+        if (global.race.Plasmid.count >= genePool[gene].cost){
+            global.race.Plasmid.count -= genePool[gene].cost;
+            return true;
+        }
     }
     return false;
 }
@@ -801,11 +862,12 @@ function genetics(){
             filters: {
                 timer(val){
                     if (global.city.biolab.on > 0){
+                        let labs = global.city.ptrait === 'toxic' ? global.city.biolab.on + 1 : global.city.biolab.on;
                         if (global.arpa.sequence.boost){
-                            return timeFormat(val / (global.city.biolab.on * 2));
+                            return timeFormat(val / (labs * 2));
                         }
                         else {
-                            return timeFormat(val / global.city.biolab.on);
+                            return timeFormat(val / labs);
                         }
                     }
                     else {
@@ -825,10 +887,10 @@ function genetics(){
             if (traits[trait] && traits[trait].type === 'minor'){
                 minor = true;
                 let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
-                let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button gene" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
+                let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
                 m_trait.append(gene);
                 if (global.race.Phage.count > 0){
-                    let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button gene" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
+                    let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
                     m_trait.append(phage);
                 }
                 if (global.race[trait] > 1){
@@ -919,8 +981,13 @@ function genetics(){
                 },
                 purge(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
-                    if (global.race.Plasmid.count >= cost){
-                        global.race.Plasmid.count -= cost;
+                    if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
+                        if (global.race.universe === 'antimatter'){
+                            global.race.Plasmid.anti -= cost;
+                        }
+                        else {
+                            global.race.Plasmid.count -= cost;
+                        }
                         delete global.race[t];
                         if (!global.race['modified']){
                             global.race['modified'] = 1;
@@ -946,8 +1013,13 @@ function genetics(){
                 },
                 gain(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
-                    if (global.race.Plasmid.count >= cost){
-                        global.race.Plasmid.count -= cost;
+                    if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
+                        if (global.race.universe === 'antimatter'){
+                            global.race.Plasmid.anti -= cost;
+                        }
+                        else {
+                            global.race.Plasmid.count -= cost;
+                        }
                         global.race[t] = 1;
                         if (!global.race['modified']){
                             global.race['modified'] = 1;
@@ -971,11 +1043,19 @@ function genetics(){
                 },
                 removeCost(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
-                    return loc('arpa_remove',[t,cost]);
+                    return loc('arpa_remove',[t,cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')]);
                 },
                 addCost(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
-                    return loc('arpa_gain',[t,cost]);
+                    return loc('arpa_gain',[t,cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')]);
+                },
+                genePurchasable(t){
+                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    return global.resource.Genes.amount >= cost;
+                },
+                phagePurchasable(t){
+                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    return global.race.Phage.count >= cost;
                 }
             }
         });
@@ -1056,6 +1136,7 @@ function addProject(parent,project){
                                     $(`#popArpa${pro}`).remove();
                                     physics();
                                     space();
+                                    messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
                                 }
                                 drawTech();
                             }

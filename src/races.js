@@ -1,5 +1,6 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
+import { unlockAchieve } from './achieve.js';
 
 export const races = {
     protoplasm: {
@@ -1132,6 +1133,9 @@ export function racialTrait(workers,type){
             modifier *= 1.15; 
         }
     }
+    if (global.city.ptrait === 'magnetic' && type === 'miner'){
+        modifier *= 0.985;
+    }
     if (global.race['weak'] && (type === 'miner' || type === 'lumberjack')){
         modifier *= 0.9;
     }
@@ -1249,6 +1253,11 @@ export function cleanAddTrait(trait){
                 tax: 0
             };
             break;
+        case 'toxic':
+            if (global.race.species === 'troll' && global.tech['science'] && global.tech['science'] >= 8){
+                unlockAchieve('godwin');
+            }
+            break;
         default:
             break;
     }
@@ -1258,6 +1267,9 @@ export function cleanRemoveTrait(trait){
     switch (trait){
         case 'kindling_kindred':
             global.resource.Lumber.display = true;
+            if (global.tech['foundry']){
+                global.resource.Plywood.display = true;
+            }
             break;
         case 'carnivore':
             global.civic.farmer.display = true;
@@ -1295,12 +1307,67 @@ export function cleanRemoveTrait(trait){
 }
 
 export const biomes = {
-    grassland: loc('biome_grassland'),
-    oceanic: loc('biome_oceanic'),
-    forest: loc('biome_forest'),
-    desert: loc('biome_desert'),
-    volcanic: loc('biome_volcanic'),
-    tundra: loc('biome_tundra'),
-    hellscape: loc('biome_hellscape'),
-    eden: loc('biome_eden')
+    grassland: {
+        label: loc('biome_grassland_name'),
+        desc: loc('biome_grassland')
+    },
+    oceanic: {
+        label: loc('biome_oceanic_name'),
+        desc: loc('biome_oceanic')
+    },
+    forest: {
+        label: loc('biome_forest_name'),
+        desc: loc('biome_forest')
+    },
+    desert: {
+        label: loc('biome_desert_name'),
+        desc: loc('biome_desert')
+    },
+    volcanic: {
+        label: loc('biome_volcanic_name'),
+        desc: loc('biome_volcanic')
+    },
+    tundra: {
+        label: loc('biome_tundra_name'),
+        desc: loc('biome_tundra')
+    },
+    hellscape: {
+        label: loc('biome_hellscape_name'),
+        desc: loc('biome_hellscape')
+    },
+    eden: {
+        label: loc('biome_eden_name'),
+        desc: loc('biome_eden')
+    }
+};
+
+export const planetTraits = {
+    toxic: {
+        label: loc('planet_toxic'),
+        desc: loc('planet_toxic_desc')
+    },
+    mellow: {
+        label: loc('planet_mellow'),
+        desc: loc('planet_mellow_desc')
+    },
+    rage: {
+        label: loc('planet_rage'),
+        desc: loc('planet_rage_desc')
+    },
+    stormy: {
+        label: loc('planet_stormy'),
+        desc: loc('planet_stormy_desc')
+    },
+    ozone: {
+        label: loc('planet_ozone'),
+        desc: loc('planet_ozone_desc')
+    },
+    magnetic: {
+        label: loc('planet_magnetic'),
+        desc: loc('planet_magnetic_desc')
+    },
+    trashed: {
+        label: loc('planet_trashed'),
+        desc: loc('planet_trashed_desc')
+    }
 };

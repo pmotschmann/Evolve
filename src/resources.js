@@ -212,6 +212,7 @@ export function defineResources(){
         loadContainerCounter();
     }
     loadSpecialResource('Plasmid');
+    loadSpecialResource('AntiPlasmid');
     loadSpecialResource('Phage');
     loadSpecialResource('Dark');
 }
@@ -241,7 +242,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
     if (global.race['soul_eater']){
         switch(name){
             case 'Food':
-                global['resource'][name].name = 'Souls';
+                global['resource'][name].name = loc('resource_Souls_name');
                 break;
         }
     }
@@ -249,13 +250,37 @@ function loadResource(name,max,rate,tradable,stackable,color){
     if (global.race['evil']){
         switch(name){
             case 'Lumber':
-                global['resource'][name].name = 'Bones';
+                global['resource'][name].name = loc('resource_Bones_name');
                 break;
             case 'Furs':
-                global['resource'][name].name = 'Flesh';
+                global['resource'][name].name = loc('resource_Flesh_name');
                 break;
             case 'Plywood':
-                global['resource'][name].name = 'Boneweave';
+                global['resource'][name].name = loc('resource_Boneweave_name');
+                break;
+        }
+    }
+
+    const date = new Date();
+    if (date.getMonth() === 9 && date.getDate() === 31){
+        switch(name){
+            case 'Food':
+                global['resource'][name].name = loc('resource_Candy_name');
+                break;
+            case 'Lumber':
+                global['resource'][name].name = loc('resource_Bones_name');
+                break;
+            case 'Stone':
+                global['resource'][name].name = loc('resource_RockCandy_name');
+                break;
+            case 'Furs':
+                global['resource'][name].name = loc('resource_Webs_name');
+                break;
+            case 'Plywood':
+                global['resource'][name].name = loc('resource_Boneweave_name');
+                break;
+            case 'Soul_Gem':
+                global['resource'][name].name = loc('resource_CandyCorn_name');
                 break;
         }
     }
@@ -465,15 +490,21 @@ function loadSpecialResource(name,color) {
         $('#resources').append(bind);
         return;
     }
-
     color = color || 'special';
+    let bind = name;
     
-    var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count }}</span></div>`);
-   
-    $('#resources').append(res_container);
+    if (name === 'AntiPlasmid'){
+        var res_container = $(`<div id="res${name}" class="resource" v-show="anti"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ anti }}</span></div>`);
+        $('#resources').append(res_container);
+        bind = 'Plasmid';
+    }
+    else {
+        var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count }}</span></div>`);
+        $('#resources').append(res_container);
+    }
     
     vues[`res_${name}`] = new Vue({
-        data: global.race[name]
+        data: global.race[bind]
     });
     vues[`res_${name}`].$mount(`#res${name}`);
 }
@@ -497,6 +528,7 @@ function marketItem(vue,mount,market_item,name,color,full){
         trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="import ${name}" class="sub has-text-success" @click="autoBuy('${name}')"><span>+</span></span></b-tooltip>`));
         trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
         trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="export ${name}" class="add has-text-danger" @click="autoSell('${name}')"><span>-</span></span></b-tooltip>`));
+        trade.append($(`<span role="button" class="zero has-text-advanced" @click="zero('${name}')">${loc('cancel_routes')}</span>`));
         tradeRouteColor(name);
     }
     
@@ -587,6 +619,11 @@ function marketItem(vue,mount,market_item,name,color,full){
                         global.resource[res].trade--;
                     }
                 }
+                tradeRouteColor(res);
+            },
+            zero(res){
+                global.city.market.trade += global.resource[res].trade;
+                global.resource[res].trade = 0;
                 tradeRouteColor(res);
             }
         },
@@ -923,11 +960,11 @@ function tradeRouteColor(res){
 function buildCrateLabel(){
     let material = global.race['kindling_kindred'] ? global.resource.Stone.name : (global.resource['Plywood'] ? global.resource.Plywood.name : loc('resource_Plywood_name'));
     let cost = global.race['kindling_kindred'] ? 200 : 10
-    return loc('resource_modal_crate_construct_desc',[cost,material]);
+    return loc('resource_modal_crate_construct_desc',[cost,material,crateValue()]);
 }
 
 function buildContainerLabel(){
-    return loc('resource_modal_container_construct_desc');
+    return loc('resource_modal_container_construct_desc',[125,containerValue()]);
 }
 
 function buildCrate(){
@@ -1000,7 +1037,7 @@ function drawModal(name,color){
     
     crates.append($(`<div class="crateHead"><span>${loc('resource_modal_crate_owned')} {{ crates.amount }}/{{ crates.max }}</span><span>${loc('resource_modal_crate_assigned')} {{ res.crates }}</span></div>`));
     
-    let buildCr = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
+    let buildCr = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated multilined><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
     let removeCr = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
     let addCr = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button></b-tooltip>`);
     
@@ -1047,7 +1084,7 @@ function drawModal(name,color){
         
         let position = global.race['terrifying'] ? 'is-top' : 'is-bottom';
 
-        let buildCon = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
+        let buildCon = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated multilined><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
         let removeCon = $(`<b-tooltip :label="removeContainerLabel()" position="${position}" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
         let addCon = $(`<b-tooltip :label="addContainerLabel()" position="${position}" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
         
@@ -1084,7 +1121,7 @@ export function crateValue(){
         create_value += global.tech['container'] >= 7 ? 1200 : 500;
     }
     create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-    return spatialReasoning(Math.round(create_value));
+    return Math.round(spatialReasoning(create_value));
 }
 
 export function containerValue(){
@@ -1099,7 +1136,7 @@ export function containerValue(){
         container_value += 1000;
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-    return spatialReasoning(Math.round(container_value));
+    return Math.round(spatialReasoning(container_value));
 }
 
 export function initMarket(){
@@ -1115,8 +1152,8 @@ export function initStorage(){
     $('#resStorage').append(store);
     
     if (global.resource['Crates'] && global.resource['Containers']){
-        store.append($(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" class="crate" animated><button :aria-label="buildCrateLabel()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
-        store.append($(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" class="container" animated><button :aria-label="buildContainerLabel()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
+        store.append($(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" class="crate" animated multilined><button :aria-label="buildCrateLabel()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
+        store.append($(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" class="container" animated multilined><button :aria-label="buildContainerLabel()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
 
         if (vues['store_head']){
             vues['store_head'].$destroy();
@@ -1210,9 +1247,9 @@ function loadEjector(name,color){
         let res = $(`<span class="trade"></span>`);
         ejector.append(res);
 
-        res.append($(`<span role="button" aria-label="eject more ${name} ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="eject less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
         res.append($(`<span class="current">{{ e.${name} }}</span>`));
-        res.append($(`<span role="button" aria-label="eject less ${name} ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
 
         res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${unitMass(name)}</span> kt</span>`));
 
@@ -1251,9 +1288,9 @@ function unitMass(name){
 }
 
 export function spatialReasoning(value){
-    let plasmids = global.race.Plasmid.count;
+    let plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
     if (global.race['no_plasmid']){
-        plasmids = global.race.mutation > global.race.Plasmid.count ? global.race.Plasmid.count : global.race.mutation;
+        plasmids = global.race.mutation > plasmids ? plasmids : global.race.mutation;
     }
     if (global.genes['store'] && global.genes['store'] >= 4){
         plasmids += global.race.Phage.count;
@@ -1263,41 +1300,81 @@ export function spatialReasoning(value){
         if (global.race.universe === 'antimatter'){
             divisor *= 2;
         }
+        if (global.genes['bleed'] && global.genes['bleed'] >= 3){
+            plasmids += global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
+        }
         value *= 1 + (plasmids / divisor);
-        value = Math.round(value);
     }
     if (global.race.universe === 'standard'){
         value *= 1 + (global.race.Dark.count / 200);
-        value = Math.round(value);
     }
-    return value;
+    if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
+        value *= 1 + (global.city.temple.count * 0.06);
+    }
+    return Math.round(value);
 }
 
-export function plasmidBonus(){
-    let plasmid_bonus = 0;
-    let plasmids = global.race['no_plasmid'] ? global.race.mutation : global.race.Plasmid.count;
-    if (plasmids > global.race.Plasmid.count){
-        plasmids = global.race.Plasmid.count;
-    }
-    if (global.race['decayed']){
-        plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
-    }
-    let p_cap = 250 + global.race.Phage.count;
-    if (plasmids > p_cap){
-        plasmid_bonus = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
-    }
-    else {
-        plasmid_bonus = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
-    }
-    if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid']){
-        let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
-        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            temple_bonus += global.civic.professor.workers * 0.002;
+export function plasmidBonus(type){
+    let standard = 0;
+    let anti = 0;    
+    if (global.race.universe !== 'antimatter' || global.genes['bleed']){
+        let plasmids = global.race['no_plasmid'] ? global.race.mutation : global.race.Plasmid.count;
+        if (plasmids > global.race.Plasmid.count){
+            plasmids = global.race.Plasmid.count;
         }
-        if (global.race['spiritual']){
-            temple_bonus *= 1.13;
+        if (global.race['decayed']){
+            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
         }
-        plasmid_bonus *= 1 + (global.city.temple.count * temple_bonus);
+        if (global.race.universe === 'antimatter' && global.genes['bleed']){
+            plasmids *= 0.025
+        }
+        let p_cap = 250 + global.race.Phage.count;
+        if (plasmids > p_cap){
+            standard = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
+        }
+        else {
+            standard = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+        }
+        if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
+            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
+            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                temple_bonus += global.civic.professor.workers * 0.002;
+            }
+            if (global.race['spiritual']){
+                temple_bonus *= 1.13;
+            }
+            standard *= 1 + (global.city.temple.count * temple_bonus);
+        }
     }
-    return plasmid_bonus;
+
+    if (global.race.universe === 'antimatter' || (global.genes['bleed'] && global.genes['bleed'] >= 2)){
+        let plasmids = global.race.Plasmid.anti;
+        if (plasmids > global.race.Plasmid.anti){
+            plasmids = global.race.Plasmid.anti;
+        }
+        if (global.race.universe !== 'antimatter' && global.genes['bleed'] && global.genes['bleed'] >= 2){
+            plasmids *= 0.25
+        }
+        if (global.race['decayed']){
+            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 25)); 
+        }
+        let p_cap = 250 + global.race.Phage.count;
+        if (plasmids > p_cap){
+            anti = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
+        }
+        else {
+            anti = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+        }
+        anti /= 3;
+    }
+
+    if (type && type === 'plasmid'){
+        return standard;
+    }
+    else if (type && type === 'antiplasmid'){
+        return anti;
+    }
+
+    let final = (1 + standard) * (1 + anti);
+    return final - 1;
 }

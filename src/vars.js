@@ -225,7 +225,7 @@ if (convertVersion(global['version']) === 5000){
 }
 
 if (convertVersion(global['version']) <= 5008 && global['queue'] && global['queue']['queue']){
-    global.queue.queue = []
+    global.queue.queue = [];
 }
 
 if (convertVersion(global['version']) <= 5011 && global.stats['died']){
@@ -261,11 +261,90 @@ if (convertVersion(global['version']) < 6001){
     }
 }
 
-if (convertVersion(global['version']) < 6004 && global.city['windmill'] && !global.race['soul_eater']){
+if (convertVersion(global['version']) < 6004 && global.city['windmill'] && !global.race['soul_eater'] && !global.race['carnivore']){
     delete global.city['windmill'];
 }
 
-global['version'] = '0.6.5';
+if (convertVersion(global['version']) < 6006 && !global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['carnivore'])){
+    global.city['windmill'] = { count: 0 };
+}
+
+if (convertVersion(global['version']) < 6006 && global.tech['wind_plant'] && !global.race['soul_eater'] && !global.race['carnivore']){
+    delete global.tech['wind_plant'];
+}
+
+if (convertVersion(global['version']) <= 6008 && global['r_queue'] && global['r_queue']['queue']){
+    for (let i=0; i<global.r_queue.queue.length; i++){
+        global.r_queue.queue[i]['time'] = 0;
+    }
+}
+
+if (convertVersion(global['version']) < 6010 && global.race['Plasmid']){
+    if (global.race.Plasmid.anti < 0){
+        global.race.Plasmid.anti = 0;
+    }
+    if (global.race.Plasmid.count < 0){
+        global.race.Plasmid.count = 0;
+    }
+
+    if (global.tech['foundry'] && !global.race['kindling_kindred']){
+        global.resource.Plywood.display = true;
+    }
+}
+
+if (convertVersion(global['version']) < 6011 && !global.city['ptrait']){
+    global.city['ptrait'] = 'none';
+}
+
+if (convertVersion(global['version']) < 6012 && global.portal['fortress']){
+    global.portal.fortress['s_ntfy'] = 'Yes';
+}
+
+if (convertVersion(global['version']) < 6014){
+    if (global.race['noble'] && global.tech['currency'] && global.tech['currency'] === 4){
+        global.tech['currency'] = 5;
+    }
+    if (global['settings']){
+        global.settings['cLabels'] = true;
+    }
+}
+
+if (convertVersion(global['version']) < 6016 && global.stats && global.stats['reset'] && global.stats['achieve']){
+    global.stats['mad'] = global.stats['reset'];
+    global.stats['bioseed'] = 0;
+    global.stats['blackhole'] = 0;
+    let blkhle = ['whitehole','heavy','canceled','eviltwin','microbang'];
+    for (let i=0; i<blkhle.length; i++){
+        if (global.stats.achieve[blkhle[i]]){
+            global.stats['blackhole']++;
+            global.stats['mad']--;
+        }
+    }
+    let genus = ['genus_humanoid','genus_animal','genus_small','genus_giant','genus_reptilian','genus_avian','genus_insectoid','genus_plant','genus_fungi','genus_aquatic','genus_demonic','genus_angelic'];
+    for (let i=0; i<genus.length; i++){
+        if (global.stats.achieve[genus[i]]){
+            global.stats['bioseed']++;
+            global.stats['mad']--;
+        }
+    }
+}
+
+if (convertVersion(global['version']) < 6018){
+    if (global.space['swarm_satellite']){
+        global.space['swarm_satellite'].count *= 2;
+    }
+}
+
+if (convertVersion(global['version']) < 6020 && global.race['mutation'] && global.race['universe'] && global.race['universe'] === 'antimatter' && global.race['mutation'] > 0){
+    let a_level = 1;
+    if (global.race['no_trade']){ a_level++; }
+    if (global.race['no_craft']){ a_level++; }
+    if (global.race['no_crispr']){ a_level++; }
+    if (global.race['weak_mastery']){ a_level++; }
+    global.stats.achieve['cross'] = { l: a_level, a: a_level };
+}
+
+global['version'] = '0.6.25';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -289,9 +368,10 @@ if (!global['settings']){
         showAchieve: false,
         animated: true,
         disableReset: false,
+        cLabels: true,
         theme: 'dark',
         locale: 'en-US',
-    }
+    };
 }
 
 if (!global.settings['showResources']){
@@ -404,7 +484,21 @@ if (!global.settings['locale']){
 if (typeof global.settings.mKeys === 'undefined'){
     global.settings['mKeys'] = true;
 }
-
+if (typeof global.settings.keyMap === 'undefined'){
+    global.settings['keyMap'] = {
+        x10: 'Control', //17
+        x25: 'Shift', //16
+        x100: 'Alt', //18
+        q: 'q', //81
+        d: 'd' //68
+    };
+}
+if (typeof global.settings.qAny === 'undefined'){
+    global.settings['qAny'] = false;
+}
+if (typeof global.settings.expose === 'undefined'){
+    global.settings['expose'] = false;
+}
 if (!global.stats['reset']){
     global.stats['reset'] = 0;
 }
@@ -444,11 +538,18 @@ if (!global.stats['portals']){
 if (!global.stats['attacks']){
     global.stats['attacks'] = 0;
 }
-
+if (!global.stats['mad']){
+    global.stats['mad'] = 0;
+}
+if (!global.stats['bioseed']){
+    global.stats['bioseed'] = 0;
+}
+if (!global.stats['blackhole']){
+    global.stats['blackhole'] = 0;
+}
 if (!global['lastMsg']){
     global['lastMsg'] = false;
 }
-
 if (!global.race['seeded']){
     global.race['seeded'] = false;
 }
@@ -504,6 +605,10 @@ if (!global.city['morale']){
         weather: 0,
         warmonger: 0,
     };
+}
+
+if (!global.city['sun']){
+    global.city['sun'] = 0;
 }
 
 if (!global.city.morale['unemployed']){
@@ -632,6 +737,13 @@ if (global.tech['fanaticism'] && global.tech['anthropology'] && !global.genes['t
     delete global.tech['anthropology'];
 }
 
+if (global.tech['unify']){
+    if (global.tech['unify'] === 1){
+        delete global.tech['m_boost'];
+        delete global.tech['world_control'];
+    }
+}
+
 global.settings.animated = true;
 global.settings.disableReset = false;
 
@@ -677,41 +789,81 @@ export function modRes(res,val){
     return success;
 }
 
-export var shiftIsPressed = false;
-export var cntrlIsPressed = false;
-export var altIsPressed = false;
-export var demoIsPressed = false;
+export var keyMap = {
+    x10: false,
+    x25: false,
+    x100: false,
+    q: false,
+    d: false
+};
+
 $(document).keydown(function(e){
-    cntrlIsPressed = e.ctrlKey ? true : false;
-    shiftIsPressed = e.shiftKey ? true : false;
-    altIsPressed = e.altKey ? true : false;
-    demoIsPressed = e.keyCode === 68 ? true : false;
+    e = e || window.event;
+    let key = e.key || e.keyCode;
+    if (key === global.settings.keyMap.x10){
+        keyMap.x10 = true;
+    }
+    if (key === global.settings.keyMap.x25){
+        keyMap.x25 = true;
+    }
+    if (key === global.settings.keyMap.x100){
+        keyMap.x100 = true;
+    }
+    if (key === global.settings.keyMap.q){
+        keyMap.q = true;
+    }
 });
 $(document).keyup(function(e){
-    cntrlIsPressed = e.ctrlKey ? true : false;
-    shiftIsPressed = e.shiftKey ? true : false;
-    altIsPressed = e.altKey ? true : false;
-    demoIsPressed = e.keyCode === 68  ? false : true;
+    e = e || window.event;
+    let key = e.key || e.keyCode;
+    if (key === global.settings.keyMap.x10){
+        keyMap.x10 = false;
+    }
+    if (key === global.settings.keyMap.x25){
+        keyMap.x25 = false;
+    }
+    if (key === global.settings.keyMap.x100){
+        keyMap.x100 = false;
+    }
+    if (key === global.settings.keyMap.q){
+        keyMap.q = false;
+    }
 });
-
-window.onmousemove = function(e){
-    cntrlIsPressed = e.ctrlKey ? true : false;
-    shiftIsPressed = e.shiftKey ? true : false;
-    altIsPressed = e.altKey ? true : false;
-    demoIsPressed = e.keyCode === 68  ? true : false;
-}
+$(document).mousemove(function(e){
+    e = e || window.event;
+    Object.keys(global.settings.keyMap).forEach(function(k){
+        switch(global.settings.keyMap[k]){
+            case 'Shift':
+            case 16:
+                keyMap[k] = e.shiftKey ? true : false;
+                break;
+            case 'Control':
+            case 17:
+                keyMap[k] = e.ctrlKey ? true : false;
+                break;            
+            case 'Alt':
+            case 18:
+                keyMap[k] = e.altKey ? true : false;
+                break;
+            case 'Meta':
+            case 91:
+                keyMap[k] = e.metaKey ? true : false;
+                break;
+        }
+    });
+});
 
 export var keyMultiplierNumber = 1;
 export function keyMultiplier(){
     let number = 1;
     if (global.settings['mKeys']){
-        if (cntrlIsPressed){
+        if (keyMap.x10){
             number *= 10;
         }
-        if (shiftIsPressed){
+        if (keyMap.x25){
             number *= 25;
         }
-        if (altIsPressed){
+        if (keyMap.x100){
             number *= 100;
         }
     }
@@ -879,6 +1031,8 @@ window.soft_reset = function reset(){
 
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
     global.city = {
         calendar: {
             day: 0,
@@ -889,7 +1043,9 @@ window.soft_reset = function reset(){
             wind: 0,
             orbit: orbit
         },
-        biome: biome
+        biome: biome,
+        ptrait: atmo,
+        geology: geo
     };
 
     global.stats.days = 0;
