@@ -1,4 +1,4 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, demoIsPressed, queueIsPressed, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
+import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, keyMap, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
@@ -2312,8 +2312,24 @@ export const actions = {
     city: {
         food: {
             id: 'city-food',
-            title: loc('city_food'),
-            desc: loc('city_food_desc'),
+            title(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_trick');
+                }
+                else {
+                    return loc('city_food');
+                }
+            },
+            desc(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_trick_desc');
+                }
+                else {
+                    return loc('city_food_desc');
+                }
+            },
             category: 'outskirts',
             reqs: { primitive: 1 },
             not_trait: ['soul_eater'],
@@ -2327,8 +2343,24 @@ export const actions = {
         },
         lumber: {
             id: 'city-lumber',
-            title: loc('city_lumber'),
-            desc: loc('city_lumber_desc'),
+            title(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_dig');
+                }
+                else {
+                    return loc('city_lumber');
+                }
+            },
+            desc(){
+                const date = new Date();
+                if (date.getMonth() === 9 && date.getDate() === 31){
+                    return loc('city_dig_desc');
+                }
+                else {
+                    return loc('city_lumber_desc');
+                }
+            },
             category: 'outskirts',
             reqs: {},
             not_trait: ['evil'],
@@ -11015,7 +11047,7 @@ export function setAction(c_action,action,type,old){
                 else {
                     switch (action){
                         case 'tech':
-                            if (!(global.settings.qKey && queueIsPressed) && c_action.action()){
+                            if (!(global.settings.qKey && keyMap.q) && c_action.action()){
                                 gainTech(type);
                                 if (c_action['post']){
                                     c_action.post();
@@ -11052,7 +11084,7 @@ export function setAction(c_action,action,type,old){
                             }
                             break;
                         default:
-                            if (demoIsPressed && 1 === 2){
+                            if (keyMap.d && 1 === 2){
                                 if (global[action][type]['count'] && global[action][type]['count'] > 0){
                                     global[action][type]['count']--;
                                     if (global[action][type]['on'] && global[action][type]['on'] > global[action][type]['count']){
@@ -11082,7 +11114,7 @@ export function setAction(c_action,action,type,old){
                                 let grant = false;
                                 let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 for (var i=0; i<keyMult; i++){
-                                    if ((global.settings.qKey && queueIsPressed) || !c_action.action()){
+                                    if ((global.settings.qKey && keyMap.q) || !c_action.action()){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){

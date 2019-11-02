@@ -632,7 +632,7 @@ export const races = {
             hell: 'Australia',
             gas: 'Hump',
             gas_moon: 'Day',
-            dwarf: 'Protylopus,
+            dwarf: 'Protylopus'
         }
     },
     balorg: {

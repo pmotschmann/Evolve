@@ -1,5 +1,12 @@
-#### 0.7.0 - 10/??/2019 ####
+#### 0.7.0 - 11/??/2019 ####
 Biome races added for Forest, Desert, Tundra, and Volcanic<br>
+
+#### 0.6.25 - 11/2/2019 ####
+Geology bonus is now preserved on MAD reset<br>
+Key Mappings are now configurable for multiplier and queue keys<br>
+
+#### 0.6.24 - 10/31/2019 ####
+The Halloween feat will now unlock inside a micro universe<br>
 
 #### 0.6.23 - 10/28/2019 ####
 Exotic mass now counts towards Galactic Landfill and Supermassive<br>

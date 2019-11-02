@@ -183,6 +183,13 @@
                             <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="qKey()" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
                             <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="qAny()" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
                             <b-switch class="setting" v-model="s.expose"><b-tooltip :label="expose()" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
+                            <div>
+                                <div>Key Mappings</div>
+                                <div class="keyMap"><span>10X Multiplier</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>
+                                <div class="keyMap"><span>25X Multiplier</span> <b-input class="keyMap" v-model="s.keyMap.x25" id="x25Key"></b-input></div>
+                                <div class="keyMap"><span>100X Multiplier</span> <b-input class="keyMap" v-model="s.keyMap.x100" id="x100Key"></b-input></div>
+                                <div class="keyMap"><span>Queue Key</span> <b-input class="keyMap" v-model="s.keyMap.q" id="queueKey"></b-input></div>
+                            </div>
                             <div class="importExport">
                                 <b-field label="Import/Export Save">
                                     <b-input id="importExport" type="textarea"></b-input>
