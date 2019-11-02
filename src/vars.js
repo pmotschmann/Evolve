@@ -610,6 +610,12 @@ if (!global.city['morale']){
 if (!global.city['sun']){
     global.city['sun'] = 0;
 }
+if (!global.city['cold']){
+    global.city['cold'] = 0;
+}
+if (!global.city['hot']){
+    global.city['hot'] = 0;
+}
 
 if (!global.city.morale['unemployed']){
     global.city.morale['unemployed'] = 0;

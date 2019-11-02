@@ -891,6 +891,22 @@ export const traits = {
         desc: loc('trait_spongy'),
         type: 'genus',
     },
+    smoldering: { // Hot weather is a bonus
+        desc: loc('trait_smoldering'),
+        type: 'genus',
+    },
+    cold_intolerance: { // Cold weather is a detriment
+        desc: loc('trait_cold_intolerance'),
+        type: 'genus',
+    },
+    chilled: { // Cold weather is a bonus
+        desc: loc('trait_chilled'),
+        type: 'genus',
+    },
+    heat_intolerance: { // Hot weather is a detriment
+        desc: loc('trait_heat_intolerance'),
+        type: 'genus',
+    },
     submerged: { // Immune to weather effects
         desc: loc('trait_submerged'),
         type: 'genus',

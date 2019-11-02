@@ -527,6 +527,26 @@ function fastLoop(){
         breakdown.p['Global'][loc('planet_ozone_bd')] = `-${uv}%`;
         global_multiplier *= 1 - (uv / 100);
     }
+    if (global.race['smoldering'] && global.city['hot']){
+        let heat = global.city['hot'] * 0.35;
+        breakdown.p['Global'][loc('hot')] = `${heat}%`;
+        global_multiplier *= 1 + (heat / 100);
+    }
+    if (global.race['heat_intolerance'] && global.city['hot']){
+        let heat = global.city['hot'] * 0.25;
+        breakdown.p['Global'][loc('hot')] = `-${heat}%`;
+        global_multiplier *= 1 - (heat / 100);
+    }
+    if (global.race['chilled'] && global.city['cold']){
+        let cold = global.city['cold'] * 0.35;
+        breakdown.p['Global'][loc('cold')] = `${cold}%`;
+        global_multiplier *= 1 + (cold / 100);
+    }
+    if (global.race['cold_intolerance'] && global.city['cold']){
+        let cold = global.city['cold'] * 0.25;
+        breakdown.p['Global'][loc('cold')] = `-${cold}%`;
+        global_multiplier *= 1 - (cold / 100);
+    }
 
     breakdown.p['consume'] = {
         Money: {},
@@ -629,13 +649,24 @@ function fastLoop(){
         // Rest of game
 
         let morale = 100;
-        if (global.city.calendar.season === 0 && global.city.calendar.year > 0){
-            morale += 5; // Spring
+        if (global.city.calendar.season === 0 && global.city.calendar.year > 0){ // Spring
+            let spring = global.race['chilled'] || global.race['smoldering'] ? 0 : 5;
+            morale += spring;
+            global.city.morale.season = spring;
+        }
+        else if (global.city.calendar.season === 1 && global.race['smoldering']){ // Summer
+            morale += 5; 
             global.city.morale.season = 5;
         }
-        else if (global.city.calendar.season === 3){
-            morale -= global.race['leathery'] ? 2 : 5; // Winter
-            global.city.morale.season = global.race['leathery'] ? -2 : -5;
+        else if (global.city.calendar.season === 3){ // Winter
+            if (global.race['chilled']){
+                morale += 5; 
+                global.city.morale.season = 5;
+            }
+            else {
+                morale -= global.race['leathery'] ? 2 : 5; 
+                global.city.morale.season = global.race['leathery'] ? -2 : -5;
+            }
         }
         else {
             global.city.morale.season = 0;
@@ -1417,14 +1448,14 @@ function fastLoop(){
                 if (!global.race['submerged']){
                     if (global.city.calendar.temp === 0){
                         if (global.city.calendar.weather === 0){
-                            weather_multiplier *= 0.7;
+                            weather_multiplier *= global.race['chilled'] ? 1.2 : 0.7;
                         }
                         else {
-                            weather_multiplier *= 0.85;
+                            weather_multiplier *= global.race['chilled'] ? 1.1 : 0.85;
                         }
                     }
                     if (global.city.calendar.weather === 2){
-                        weather_multiplier *= 1.1;
+                        weather_multiplier *= global.race['chilled'] ? 0.85 : 1.1;
                     }
                 }
 
@@ -4393,6 +4424,18 @@ function longLoop(){
             }
             else {
                 global.city.sun = 0;
+            }
+            if (global.city.calendar.temp === 0){
+                global.city.cold++;
+            }
+            else {
+                global.city.cold = 0;
+            }
+            if (global.city.calendar.temp === 2){
+                global.city.hot++;
+            }
+            else {
+                global.city.hot = 0;
             }
 
             // Moon Phase
