@@ -3620,6 +3620,12 @@ function midLoop(){
             let gain = (global.city['bank'].count * spatialReasoning(vault));
             caps['Money'] += gain;
             bd_Money[loc('city_bank')] = gain+'v';
+
+            if (global.interstellar['exchange']){
+                let g_vault = spatialReasoning(int_on['exchange'] * (vault * global.city['bank'].count / 18));
+                caps['Money'] += g_vault;
+                bd_Money[loc('interstellar_exchange_bd')] = g_vault+'v';
+            }
         }
         if (global.city['casino']){
             let vault = global.city['casino'].count * spatialReasoning(global.tech['gambling'] >= 3 ? 60000 : 40000);
@@ -3631,11 +3637,6 @@ function midLoop(){
             }
             caps['Money'] += vault;
             bd_Money[loc('city_casino')] = vault+'v';
-        }
-        if (global.interstellar['exchange']){
-            let vault = spatialReasoning(int_on['exchange'] * 450000);
-            caps['Money'] += vault;
-            bd_Money[loc('interstellar_exchange_bd')] = vault+'v';
         }
         if (global.tech['banking'] >= 4){
             let cm = 250;

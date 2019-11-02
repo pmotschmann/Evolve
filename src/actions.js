@@ -3155,34 +3155,7 @@ export const actions = {
                 Stone(){ return costMultiplier('bank', 100, 1.35); }
             },
             effect(){ 
-                let vault = 1800;
-                if (global.tech['vault'] >= 1){
-                    vault = (global.tech['vault'] + 1) * 7500;
-                } 
-                else if (global.tech['banking'] >= 5){
-                    vault = 9000;
-                }
-                else if (global.tech['banking'] >= 3){
-                    vault = 4000;
-                }
-                if (global.race['paranoid']){
-                    vault *= 0.9;
-                }
-                else if (global.race['hoarder']){
-                    vault *= 1.2;
-                }
-                if (global.tech['banking'] >= 7){
-                    vault *= 1 + (global.civic.banker.workers * 0.05);
-                }
-                if (global.tech['banking'] >= 8){
-                    vault += 25 * global.resource[global.race.species].amount;
-                }
-                if (global.tech['stock_exchange']){
-                    vault *= 1 + (global.tech['stock_exchange'] * 0.1);
-                }
-                if (global.tech['world_control']){
-                    vault *= 1.25;
-                }
+                let vault = bank_vault();
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
 
@@ -12841,6 +12814,38 @@ export function resDragQueue(){
             resQueue();
         }
     });
+}
+
+export function bank_vault(){
+    let vault = 1800;
+    if (global.tech['vault'] >= 1){
+        vault = (global.tech['vault'] + 1) * 7500;
+    } 
+    else if (global.tech['banking'] >= 5){
+        vault = 9000;
+    }
+    else if (global.tech['banking'] >= 3){
+        vault = 4000;
+    }
+    if (global.race['paranoid']){
+        vault *= 0.9;
+    }
+    else if (global.race['hoarder']){
+        vault *= 1.2;
+    }
+    if (global.tech['banking'] >= 7){
+        vault *= 1 + (global.civic.banker.workers * 0.05);
+    }
+    if (global.tech['banking'] >= 8){
+        vault += 25 * global.resource[global.race.species].amount;
+    }
+    if (global.tech['stock_exchange']){
+        vault *= 1 + (global.tech['stock_exchange'] * 0.1);
+    }
+    if (global.tech['world_control']){
+        vault *= 1.25;
+    }
+    return vault;
 }
 
 function bioseed(){

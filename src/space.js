@@ -4,7 +4,7 @@ import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech } from './actions.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -1781,7 +1781,7 @@ const interstellarProjects = {
                 Graphene(){ return costMultiplier('exchange', 78000, 1.28, 'interstellar'); }
             },
             effect(){
-                let vault = spatialReasoning(450000);
+                let vault = spatialReasoning(bank_vault() * global.city['bank'].count / 18);
                 vault = +(vault).toFixed(0);
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div>`;
             },
