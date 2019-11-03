@@ -900,7 +900,7 @@ function breakdownPopover(id,name,type){
                     }
                 },
                 direction(val){
-                    return val >= 0 ? 'To Full' : 'To Empty';
+                    return val >= 0 ? loc('to_full') : loc('to_empty');
                 },
                 namespace(name){
                     return name.replace("_"," ");
