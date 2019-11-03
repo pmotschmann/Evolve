@@ -360,7 +360,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 return `${n} ${diff} per second`;
             },
             trigModal(){
-                this.$modal.open({
+                this.$buefy.modal.open({
                     parent: this,
                     component: modal
                 });

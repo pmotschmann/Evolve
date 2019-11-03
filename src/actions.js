@@ -7137,6 +7137,40 @@ export const actions = {
                 return false;
             }
         },
+        cement_processing: {
+            id: 'tech-cement_processing',
+            title: loc('tech_cement_processing'),
+            desc: loc('tech_cement_processing'),
+            reqs: { high_tech: 15 },
+            grant: ['ai_core',1],
+            cost: {
+                Knowledge(){ return 1750000; },
+            },
+            effect: loc('tech_cement_processing_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        adamantite_processing: {
+            id: 'tech-adamantite_processing',
+            title: loc('tech_adamantite_processing'),
+            desc: loc('tech_adamantite_processing'),
+            reqs: { ai_core: 1 },
+            grant: ['ai_core',2],
+            cost: {
+                Knowledge(){ return 2000000; },
+            },
+            effect: loc('tech_adamantite_processing_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         fusion_power: {
             id: 'tech-fusion_power',
             title: loc('tech_fusion_power'),
@@ -11134,7 +11168,7 @@ export function setAction(c_action,action,type,old){
                 srSpeak(srDesc(c_action,old));
             },
             trigModal(){
-                this.$modal.open({
+                this.$buefy.modal.open({
                     parent: this,
                     component: modal
                 });

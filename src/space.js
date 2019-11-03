@@ -1690,6 +1690,9 @@ const interstellarProjects = {
             },
             effect(){
                 let bonus = 12;
+                if (global.tech['ai_core'] && global.tech['ai_core'] >= 2 && p_on['citadel'] > 0){
+                    bonus += p_on['citadel'] * 2;
+                }
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_processing_effect',[bonus])}</div>`;
             },
             support: -1,
@@ -2306,10 +2309,21 @@ const interstellarProjects = {
                 Soul_Gem(){ return costMultiplier('citadel', 1, 1.25, 'interstellar'); },
             },
             effect(){
-                let boost = quantum_level / 5;
-                return `<div>${loc('interstellar_citadel_effect',[boost])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let desc = `<div>${loc('interstellar_citadel_effect',[5])}</div>`;
+                if (global.tech['ai_core']){
+                    desc = desc + `<div>${loc('interstellar_citadel_effect2',[5])}</div>`;
+                    if (global.tech['ai_core'] >= 2){
+                        desc = desc + `<div>${loc('interstellar_citadel_effect3',[2])}</div>`;
+                    }
+                }
+                return `${desc}<div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
-            powered(){ return 50; },
+            powered(){
+                if (p_on['citadel'] && p_on['citadel'] > 1){
+                    return 30 + ((p_on['citadel'] - 1) * 5);
+                }
+                return 30;
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('citadel','interstellar');
@@ -2319,6 +2333,9 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            flair(){
+                return loc('interstellar_citadel_flair');
             }
         },
     },

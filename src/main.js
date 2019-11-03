@@ -950,7 +950,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','int_blackhole:mass_ejector','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','int_blackhole:mass_ejector','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : 'interstellar');
@@ -2019,13 +2019,21 @@ function fastLoop(){
                 let rate = global.tech['cement'] >= 6 ? 0.08 : 0.05;
                 powered_mult += (p_on['cement_plant'] * rate);
             }
+
+            let ai_core = 1;
+            if (global.tech['ai_core'] && p_on['citadel'] > 0){
+                ai_core += (p_on['citadel'] * 0.05);
+            }
             
-            let delta = factory_output * powered_mult;
+            let delta = factory_output * powered_mult * ai_core;
             delta *= hunger * global_multiplier;
 
             let cement_bd = {};
             cement_bd[loc('city_cement_plant_bd')] = factory_output + 'v';
             cement_bd[loc('power')] = ((powered_mult - 1) * 100) + '%';
+            if (global.tech['ai_core'] && p_on['citadel'] > 0){
+                cement_bd[loc('interstellar_citadel_effect_bd')] = ((ai_core - 1) * 100) + '%';
+            }
             cement_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Cement'] = cement_bd;
             modRes('Cement', delta * time_multiplier);
@@ -2729,7 +2737,11 @@ function fastLoop(){
             let driod_delta = driod_base * global_multiplier;
             adamantite_bd[loc('interstellar_mining_droid_title')] = driod_base + 'v';
             if (global.interstellar['processing'] && int_on['processing']){
-                let bonus = int_on['processing'] * 0.12;
+                let rate = 0.12;
+                if (global.tech['ai_core'] && global.tech['ai_core'] >= 2 && p_on['citadel'] > 0){
+                    rate += (p_on['citadel'] * 0.02);
+                }
+                let bonus = int_on['processing'] * rate;
                 driod_delta *= 1 + bonus;
                 adamantite_bd[loc('interstellar_processing_title')] = (bonus * 100) + '%';
             }
@@ -4655,6 +4667,9 @@ function q_check(){
             qbits++;
         }
         qbits += +(k_base / k_inc).toFixed(2);
+        if (global.tech['high_tech'] && global.tech['high_tech'] >= 15 && p_on['citadel'] > 0){
+            qbits *= 1 + (p_on['citadel'] * 0.05);
+        }
         set_qlevel(qbits);
     }
 }
