@@ -3,7 +3,6 @@ import { challenge_multiplier, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 // Sets up government in civics tab
 export function defineGovernment(){
