@@ -2320,7 +2320,7 @@ const interstellarProjects = {
             },
             powered(){
                 if (p_on['citadel'] && p_on['citadel'] > 1){
-                    return 30 + ((p_on['citadel'] - 1) * 5);
+                    return 30 + ((p_on['citadel'] - 1) * 2.5);
                 }
                 return 30;
             },

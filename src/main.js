@@ -3957,14 +3957,23 @@ function midLoop(){
                     messageQueue(loc('gene_therapy',[trait,gene]),'success');
                     global.resource.Genes.amount += gene;
                     global.resource.Genes.display = true;
+                    let plasma = global.genes['plasma'] ? global.race.mutation : 1;
+                    if (global.genes['plasma'] && plasma > 3){
+                        if (global.genes['plasma'] >= 2){
+                            plasma = plasma > 5 ? 5 : plasma;
+                        }
+                        else {
+                            plasma = 3;
+                        }
+                    }
                     if (global.race['universe'] === 'antimatter'){
-                        global.stats.antiplasmid++;
-                        global.race.Plasmid.anti++;
+                        global.stats.antiplasmid += plasma;
+                        global.race.Plasmid.anti += plasma;
                         unlockAchieve('cross');
                     }
                     else {
-                        global.stats.plasmid++;
-                        global.race.Plasmid.count++;
+                        global.stats.plasmid += plasma;
+                        global.race.Plasmid.count += plasma;
                     }
                 }
                 arpa('Genetics');

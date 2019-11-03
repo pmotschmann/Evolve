@@ -331,6 +331,36 @@ const genePool = {
             return false;
         }
     },
+    mitosis: {
+        id: 'genes-mitosis',
+        title: loc('arpa_genepool_mitosis_title'),
+        desc: loc('arpa_genepool_mitosis_desc',[3]),
+        reqs: { synthesis: 3, evolve: 2 },
+        grant: ['plasma',1],
+        cost: 90,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('mitosis')){
+                return true;
+            }
+            return false;
+        }
+    },
+    metaphase: {
+        id: 'genes-metaphase',
+        title: loc('arpa_genepool_metaphase_title'),
+        desc: loc('arpa_genepool_mitosis_desc',[5]),
+        reqs: { plasma: 1 },
+        grant: ['plasma',2],
+        cost: 165,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('mitosis')){
+                return true;
+            }
+            return false;
+        }
+    },
     mutation: {
         id: 'genes-mutation',
         title: loc('arpa_genepool_mutation_title'),

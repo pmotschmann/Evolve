@@ -502,7 +502,7 @@ export const races = {
         home: 'Tree',
         entity: loc('race_dryad_entity'),
         traits: {
-            befuddle: 1,
+            befuddle: 1, // Not Implemented
             kindling_kindred: 1
         },
         solar: {
@@ -520,7 +520,7 @@ export const races = {
         home: 'Feywood',
         entity: loc('race_satyr_entity'),
         traits: {
-            charming: 1,
+            charming: 1, // Not Implemented
             musical: 1
         },
         solar: {
@@ -572,7 +572,7 @@ export const races = {
         home: 'Hymalaia',
         entity: loc('race_yeti_entity'),
         traits: {
-            blurry: 1
+            blurry: 1 // Not Implemented
         },
         solar: {
             red: 'Sasquatch',
@@ -589,8 +589,8 @@ export const races = {
         home: 'Nitassinan',
         entity: loc('race_wendigo_entity'),
         traits: {
-            ravenous: 1,
-            ghostly: 1,
+            ravenous: 1, // Not Implemented
+            ghostly: 1, // Not Implemented
             soul_eater: 1
         },
         solar: {
@@ -625,7 +625,7 @@ export const races = {
         home: 'Wednes',
         entity: loc('race_kamel_entity'),
         traits: {
-            quenched: 1
+            quenched: 1 // Not Implemented
         },
         solar: {
             red: 'Dromedarius',
@@ -793,8 +793,8 @@ export const genus_traits = {
         low_light: 1
     },
     fey: {
-        elusive: 1,
-        iron_allery: 1
+        elusive: 1, // Not Implemented
+        iron_allery: 1 // Not Implemented
     },
     heat: {
         smoldering: 1,
