@@ -552,18 +552,6 @@ function casualties(demons,pat_armor,ambush){
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
     }
-
-    if (global.civic.garrison.wounded > global.civic.garrison.workers){
-        global.civic.garrison.wounded = global.civic.garrison.workers;
-    }
-
-    if (global.civic.garrison.workers < global.portal.fortress.garrison){
-        global.portal.fortress.garrison = global.civic.garrison.workers;
-    }
-
-    if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
-        global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
-    }
     return dead;
 }
 
@@ -661,9 +649,33 @@ export function bloodwar(){
             }
         }
     }
-    if (dead > 0 && global.portal.fortress.notify === 'Yes'){
-        messageQueue(loc('fortress_patrol_casualties',[dead]));
+
+    let revive = 0;
+    if (global.race['revive']){
+        revive = Math.floor(Math.seededRandom(0,Math.floor(dead / 3)));
+        global.civic.garrison.workers += revive;
     }
+
+    // Soldier Rebalancing
+    if (global.civic.garrison.wounded > global.civic.garrison.workers){
+        global.civic.garrison.wounded = global.civic.garrison.workers;
+    }
+    if (global.civic.garrison.workers < global.portal.fortress.garrison){
+        global.portal.fortress.garrison = global.civic.garrison.workers;
+    }
+    if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+        global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+    }
+
+    if (dead > 0 && global.portal.fortress.notify === 'Yes'){
+        if (revive > 0){
+            messageQueue(loc('fortress_patrol_casualties_revive',[dead,revive]));
+        }
+        else {
+            messageQueue(loc('fortress_patrol_casualties',[dead]));
+        }
+    }
+    
     if (failed_drop && global.portal.fortress.pity < 10000){
         global.portal.fortress.pity++;
     }

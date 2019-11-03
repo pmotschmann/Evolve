@@ -11718,60 +11718,62 @@ function smelterModal(modal){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span class="has-text-info">{{s.count | on}}/{{ s.count }}</span></div>`);
     modal.append(fuel);
 
-    let fuelTypes = $('<div class="fuels"></div>');
-    modal.append(fuelTypes);
+    if (!global.race['forge']){
+        let fuelTypes = $('<div class="fuels"></div>');
+        modal.append(fuelTypes);
 
-    if (!global.race['kindling_kindred'] || global.race['evil']){
-        let f_label = global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
-        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ s.Wood }}</span></b-tooltip>`);
-        let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
-        let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
-        fuelTypes.append(subWood);
-        fuelTypes.append(wood);
-        fuelTypes.append(addWood);
-    }
+        if (!global.race['kindling_kindred'] || global.race['evil']){
+            let f_label = global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
+            let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ s.Wood }}</span></b-tooltip>`);
+            let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
+            let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
+            fuelTypes.append(subWood);
+            fuelTypes.append(wood);
+            fuelTypes.append(addWood);
+        }
 
-    if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ s.Coal }}</span></b-tooltip>`);
-        let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
-        let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
-        fuelTypes.append(subCoal);
-        fuelTypes.append(coal);
-        fuelTypes.append(addCoal);
-    }
+        if (global.resource.Coal.display){
+            let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ s.Coal }}</span></b-tooltip>`);
+            let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
+            let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
+            fuelTypes.append(subCoal);
+            fuelTypes.append(coal);
+            fuelTypes.append(addCoal);
+        }
 
-    if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ s.Oil }}</span></b-tooltip>`);
-        let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
-        let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
-        fuelTypes.append(subOil);
-        fuelTypes.append(oil);
-        fuelTypes.append(addOil);
-    }
+        if (global.resource.Oil.display){
+            let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ s.Oil }}</span></b-tooltip>`);
+            let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
+            let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
+            fuelTypes.append(subOil);
+            fuelTypes.append(oil);
+            fuelTypes.append(addOil);
+        }
 
-    let available = $('<div class="avail"></div>');
-    modal.append(available);
+        let available = $('<div class="avail"></div>');
+        modal.append(available);
 
-    if (!global.race['kindling_kindred'] || global.race['evil']){
-        if (global.race['evil']){
-            if (global.race['soul_eater']){
-                available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
+        if (!global.race['kindling_kindred'] || global.race['evil']){
+            if (global.race['evil']){
+                if (global.race['soul_eater']){
+                    available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
+                }
+                else {
+                    available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
+                }
             }
             else {
-                available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
+                available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
             }
         }
-        else {
-            available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
+
+        if (global.resource.Coal.display){
+            available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
         }
-    }
 
-    if (global.resource.Coal.display){
-        available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
-    }
-
-    if (global.resource.Oil.display){
-        available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
+        if (global.resource.Oil.display){
+            available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
+        }
     }
 
     if (global.resource.Steel.display && global.tech.smelting >= 2){
@@ -12742,6 +12744,15 @@ function fanaticism(god){
             break;
         case 'octigoran':
             fanaticTrait('suction_grip');
+            break;
+        case 'satyr':
+            fanaticTrait('musical');
+            break;
+        case 'phoenix':
+            fanaticTrait('revive');
+            break;
+        case 'salamander':
+            fanaticTrait('forge');
             break;
         case 'balorg':
             fanaticTrait('fiery');

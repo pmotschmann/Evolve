@@ -3,6 +3,7 @@ import { challenge_multiplier, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 // Sets up government in civics tab
 export function defineGovernment(){
@@ -564,7 +565,30 @@ export function buildGarrison(garrison){
                     loot = loot.slice(0,-2);
                     loot = loot + '.';
                     messageQueue(loot,'warning');
-                    messageQueue(loc('civics_garrison_victorious',[death]),'success');
+                    
+                    let revive = 0;
+                    if (global.race['revive']){
+                        switch (global.city.calendar.temp){
+                            case 0:
+                                revive = Math.floor(Math.seededRandom(0,Math.floor(death / 5)));
+                                break;
+                            case 1:
+                                revive = Math.floor(Math.seededRandom(0,Math.floor(death / 3)));
+                                break;
+                            case 2:
+                                revive = Math.floor(Math.seededRandom(0,Math.floor(death / 1.5)));
+                                break;
+                        }
+                        global.civic.garrison.workers += revive;
+                    }
+                    if (revive > 0){
+                        messageQueue(loc('civics_garrison_victorious_revive',[death,revive]),'success');
+                    }
+                    else {
+                        messageQueue(loc('civics_garrison_victorious',[death]),'success');
+                    }
+
+
                     if (global.race['slaver'] && global.city['slave_pen']){
                         let max = global.city.slave_pen.count * 5;
                         if (max > global.city.slave_pen.slaves){
@@ -660,9 +684,29 @@ export function buildGarrison(garrison){
                         global.civic.garrison.wounded -= death;
                         wounded -= death;
                     }
-
                     global.civic.garrison.wounded += 1 + Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death));
-                    messageQueue(loc('civics_garrison_defeat',[death]),'danger');
+
+                    let revive = 0;
+                    if (global.race['revive']){
+                        switch (global.city.calendar.temp){
+                            case 0:
+                                revive = Math.floor(Math.seededRandom(0,Math.floor(death / 6)));
+                                break;
+                            case 1:
+                                revive = Math.floor(Math.seededRandom(0,Math.floor(death / 4)));
+                                break;
+                            case 2:
+                                revive = Math.floor(Math.seededRandom(0,Math.floor(death / 2)));
+                                break;
+                        }
+                        global.civic.garrison.workers += revive;
+                    }
+                    if (revive > 0){
+                        messageQueue(loc('civics_garrison_defeat_revive',[death,revive]),'danger');
+                    }
+                    else {
+                        messageQueue(loc('civics_garrison_defeat',[death]),'danger');
+                    }
                 }
                 if (global.civic.garrison.wounded > global.civic.garrison.workers){
                     global.civic.garrison.wounded = global.civic.garrison.workers;

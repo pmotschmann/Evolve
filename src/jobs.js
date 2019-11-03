@@ -82,7 +82,7 @@ export const job_desc = {
         return loc('job_banker_desc',[interest]);
     },
     entertainer: function(){
-        let morale = global.tech['theatre'];
+        let morale = global.race['musical'] ? global.tech['theatre'] + 1: global.tech['theatre'];
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
     },
     professor: function(){

@@ -538,7 +538,7 @@ export const races = {
         home: 'Inferno',
         entity: loc('race_phoenix_entity'),
         traits: {
-            revival: 1
+            revive: 1
         },
         solar: {
             red: 'Rise',
@@ -576,10 +576,10 @@ export const races = {
         },
         solar: {
             red: 'Sasquatch',
-            hell: '???',
+            hell: 'Spring',
             gas: 'Glacier',
-            gas_moon: '???',
-            dwarf: 'Human',
+            gas_moon: 'Iceberg',
+            dwarf: 'Homosapien',
         }
     },
     wendigo: {
@@ -605,17 +605,17 @@ export const races = {
         name: loc('race_tuskin'),
         desc: loc('race_tuskin_desc'),
         type: 'sand',
-        home: '???',
+        home: 'Rakis',
         entity: loc('race_tuskin_entity'),
         traits: {
 
         },
         solar: {
-            red: '???',
-            hell: '???',
-            gas: '???',
-            gas_moon: '???',
-            dwarf: '???',
+            red: 'Bestine',
+            hell: 'Sarlacc',
+            gas: 'Krayt',
+            gas_moon: 'Eisley',
+            dwarf: 'Toshi',
         }
     },
     kamel: {
@@ -1149,6 +1149,18 @@ export const traits = {
     },
     suction_grip: { // Global productivity boost
         desc: loc('trait_suction_grip'),
+        type: 'major',
+    },
+    musical: { // Entertainers are more effective
+        desc: loc('trait_musical'),
+        type: 'major',
+    },
+    revive: { // Soldiers sometimes self res
+        desc: loc('trait_revive'),
+        type: 'major',
+    },
+    forge: { // Smelters do not require fuel
+        desc: loc('trait_forge'),
         type: 'major',
     },
     fiery: { // Major war bonus

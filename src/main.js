@@ -1308,6 +1308,9 @@ function fastLoop(){
         let entertainment = 0;
         if (global.tech['theatre']){
             entertainment += global.civic.entertainer.workers * global.tech.theatre;
+            if (global.race['musical']){
+                entertainment += global.civic.entertainer.workers;
+            }
         }
         if (global.tech['broadcast']){
             entertainment += global.city.wardenclyffe.on * global.tech.broadcast;
@@ -2048,9 +2051,9 @@ function fastLoop(){
                 }
             }
 
-            let consume_wood = global.city['smelter'].Wood * (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
-            let consume_coal = global.city['smelter'].Coal * coal_fuel;
-            let consume_oil = global.city['smelter'].Oil * 0.35;
+            let consume_wood = global.race['forge'] ? 0 : global.city['smelter'].Wood * (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
+            let consume_coal = global.race['forge'] ? 0 : global.city['smelter'].Coal * coal_fuel;
+            let consume_oil = global.race['forge'] ? 0 : global.city['smelter'].Oil * 0.35;
             iron_smelter = global.city['smelter'].Iron;
             let steel_smelter = global.city['smelter'].Steel;
             let oil_bonus = global.city['smelter'].Oil;
