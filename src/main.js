@@ -11,11 +11,14 @@ import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUnive
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa } from './arpa.js';
 import { events } from './events.js';
+import { index } from './index.js';
 
 var intervals = {};
 if (global.settings.expose){
     enableScript();
 }
+
+index();
 
 if (Object.keys(locales).length > 1){
     $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="s.locale"></select></span>`));
