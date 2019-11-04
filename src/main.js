@@ -19,6 +19,7 @@ if (global.settings.expose){
 }
 
 index();
+$('#topBar .version > a').html('v'+global.version);
 
 if (Object.keys(locales).length > 1){
     $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="s.locale"></select></span>`));

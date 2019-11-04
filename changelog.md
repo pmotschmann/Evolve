@@ -1,5 +1,7 @@
 #### 0.7.0 - 11/??/2019 ####
 Biome races added for Forest, Desert, Tundra, and Volcanic<br>
+New CRISPR upgrades: Mitosis & Metaphase<br>
+Construct advanced AI stations in deep space<br>
 
 #### 0.6.25 - 11/2/2019 ####
 Geology bonus is now preserved on MAD reset<br>

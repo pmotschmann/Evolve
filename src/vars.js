@@ -350,8 +350,6 @@ if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25)
     global.civic.cement_worker.impact = 0.4;
 }
 
-$('#topBar .version > a').html('v'+global.version);
-
 if (!global['settings']){
     global['settings'] = {
         civTabs: 0,
