@@ -149,7 +149,6 @@ function drawModal(){
         data: global.civic['govern'],
         methods: {
             setGov(g){
-                console.log(g);
                 global.civic.govern.type = g;
                 global.civic.govern.rev = 2000;
             }

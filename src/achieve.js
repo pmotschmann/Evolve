@@ -584,6 +584,11 @@ const feats = {
         desc: loc("feat_supermassive_desc"),
         flair: loc("feat_supermassive_flair")
     },
+    rocky_road: {
+        name: loc("feat_rocky_road_name"),
+        desc: loc("feat_rocky_road_desc"),
+        flair: loc("feat_rocky_road_flair")
+    },
     halloween: {
         name: loc("feat_boo_name"),
         desc: loc("feat_boo_desc"),

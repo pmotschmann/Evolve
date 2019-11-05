@@ -13023,6 +13023,15 @@ function bioseed(){
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         if (unlockFeat('ill_advised')){ new_achieve = true; };
     }
+    let bad_rocks = 0;
+    Object.keys(global.city.geology).forEach(function (g){
+        if (global.city.geology[g] < 0){
+            bad_rocks++;
+        }
+    });
+    if (bad_rocks >= 3){
+        if (unlockFeat('rocky_road')){ new_achieve = true; };
+    }
 
     switch (global.race.universe){
         case 'heavy':
