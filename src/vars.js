@@ -586,6 +586,13 @@ if (!global.race['minor']){
     global.race['minor'] = {};
 }
 
+if (!global.civic['govern']){
+    global.civic['govern'] = {
+        type: 'anarchy',
+        rev: 2000,
+    };
+}
+
 if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
 }

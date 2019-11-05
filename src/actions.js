@@ -5841,6 +5841,78 @@ export const actions = {
                 return false;
             }
         },
+        government: {
+            id: 'tech-government',
+            title: loc('tech_government'),
+            desc: loc('tech_government_desc'),
+            reqs: { currency: 1 },
+            grant: ['govern',1],
+            cost: {
+                Knowledge(){ return 750; }
+            },
+            effect: loc('tech_government_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.civic['govern'] = {
+                        type: 'anarchy',
+                        rev: 0,
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
+        theocracy: {
+            id: 'tech-theocracy',
+            title: loc('govern_theocracy'),
+            desc: loc('govern_theocracy'),
+            reqs: { govern: 1, theology: 1 },
+            grant: ['gov_theo',1],
+            cost: {
+                Knowledge(){ return 1200; }
+            },
+            effect: loc('tech_theocracy_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        republic: {
+            id: 'tech-republic',
+            title: loc('govern_republic'),
+            desc: loc('govern_republic'),
+            reqs: { govern: 1, trade: 2 },
+            grant: ['govern',2],
+            cost: {
+                Knowledge(){ return 17000; }
+            },
+            effect: loc('tech_republic_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        technocracy: {
+            id: 'tech-technocracy',
+            title: loc('govern_technocracy'),
+            desc: loc('govern_technocracy'),
+            reqs: { govern: 2, high_tech: 3 },
+            grant: ['govern',3],
+            cost: {
+                Knowledge(){ return 26000; }
+            },
+            effect: loc('tech_technocracy_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: loc('tech_currency'),
@@ -5864,7 +5936,7 @@ export const actions = {
             id: 'tech-market',
             title: loc('tech_market'),
             desc: loc('tech_market_desc'),
-            reqs: { banking: 1, currency: 1 },
+            reqs: { banking: 1, govern: 1 },
             not_trait: ['terrifying'],
             grant: ['currency',2],
             cost: {

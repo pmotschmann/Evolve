@@ -17,11 +17,12 @@ export function defineGovernment(){
         };
     }
 
-    vues['gov_header'] = new Vue({
+    new Vue({
+        el: '#government .header',
         data: global.civic['taxes']
     });
-    vues['gov_header'].$mount('#government .header');
     
+    government(govern);
     taxRates(govern);
 }
 
@@ -65,6 +66,110 @@ export function buildQueue(){
     }
 }
 
+function government(govern){
+    var gov = $('<div id="govType" class="govType"></div>');
+    govern.append(gov);
+    
+    var type = $(`<div>${loc('civics_government_type')} <span id="govLabel" class="has-text-warning">{{ type | govern }}</span></div>`);
+    gov.append(type);
+    
+    var change = $(`<div><button class="button" @click="trigModal">${loc('civics_change')}</button></div>`);
+    gov.append(change);
+
+    var modal = {
+        template: '<div id="modalBox" class="modalBox"></div>'
+    };
+
+    new Vue({
+        el: '#govType',
+        data: global.civic['govern'],
+        filters: {
+            govern(type){
+                return loc(`govern_${type}`);
+            }
+        },
+        methods: {
+            trigModal(){
+                this.$buefy.modal.open({
+                    parent: this,
+                    component: modal
+                });
+                
+                var checkExist = setInterval(function() {
+                   if ($('#modalBox').length > 0) {
+                      clearInterval(checkExist);
+                      drawModal();
+                   }
+                }, 50);
+            }
+        }
+    });
+
+    $('#govLabel').on('mouseover',function(){
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${loc(`govern_${global.civic.govern.type}_effect`)}</div></div>`);
+        $('#main').append(popper);
+        popper.show();
+        poppers['govPop'] = new Popper($('#govLabel'),popper);
+    });
+    $('#govLabel').on('mouseout',function(){
+        $('#popGov').hide();
+        poppers['govPop'].destroy();
+        $('#popGov').remove();
+    });
+}
+
+function drawModal(){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_government_type')}</p>`));
+    
+    var body = $('<div id="govModal" class="modalBody max40"></div>');
+    $('#modalBox').append(body);
+
+    if (global.tech['govern']){
+        body.append($(`<button class="button gap" data-gov="anarchy" @click="setGov('anarchy')">${loc('govern_anarchy')}</button>`));
+        body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc('govern_autocracy')}</button>`));
+        body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${loc('govern_democracy')}</button>`));
+        body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc('govern_oligarchy')}</button>`));
+
+        if (global.tech['gov_theo']){
+            body.append($(`<button class="button gap" data-gov="theocracy" @click="setGov('theocracy')">${loc('govern_theocracy')}</button>`));
+        }
+        if (global.tech['govern'] >= 2){
+            body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc('govern_republic')}</button>`));
+        }
+        if (global.tech['govern'] >= 3){
+            body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc('govern_technocracy')}</button>`));
+        }
+    }
+
+    if (vues['specialModal']){
+        vues['specialModal'].$destroy();
+    }
+    vues['specialModal'] = new Vue({
+        el: '#govModal',
+        data: global.civic['govern'],
+        methods: {
+            setGov(g){
+                console.log(g);
+                global.civic.govern.type = g;
+                global.civic.govern.rev = 2000;
+            }
+        }
+    });
+
+    $('#govModal button').on('mouseover',function(){
+        let govType = $(this).data('gov');
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${loc(`govern_${govType}_effect`)}</div></div>`);
+        $('#main').append(popper);
+        popper.show();
+        poppers['govPop'] = new Popper(this,popper);
+    });
+    $('#govModal button').on('mouseout',function(){
+        $('#popGov').hide();
+        poppers['govPop'].destroy();
+        $('#popGov').remove();
+    });
+}
+
 function taxRates(govern){
     var tax_rates = $('<div id="tax_rates" v-show="display" class="taxRate"></div>');
     govern.append(tax_rates);
@@ -79,7 +184,8 @@ function taxRates(govern){
     tax_rates.append(tax_level);
     tax_rates.append(add);
     
-    vues['civ_taxes'] = new Vue({
+    new Vue({
+        el: '#tax_rates',
         data: global.civic['taxes'],
         filters: {
             tax_level(rate){
@@ -133,7 +239,6 @@ function taxRates(govern){
             }
         }
     });
-    vues['civ_taxes'].$mount('#tax_rates');
     
     $('#taxRateLabel').on('mouseover',function(){
             var popper = $(`<div id="popTaxRate" class="popper has-background-light has-text-dark">${loc('civics_tax_rates_desc')}</div>`);

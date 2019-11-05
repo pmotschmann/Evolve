@@ -4226,6 +4226,10 @@ function longLoop(){
             bloodwar();
         }
 
+        if (global.civic.govern.rev > 0){
+            global.civic.govern.rev--;
+        }
+
         if (global.city.ptrait === 'trashed'){
             global.civic.scavenger.display = true;
         }
@@ -4840,7 +4844,6 @@ function setWeather(){
     $('#weather').removeClass('wi-storm-showers');
     $('#weather').removeClass('wi-snow');
     $('#weather').removeClass('wi-snow-wind');
-    
     
     let weather;
     if (global.city.calendar.weather === 0){
