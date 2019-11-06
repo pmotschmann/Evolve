@@ -1334,6 +1334,9 @@ export function racialTrait(workers,type){
     if (global.race['analytical'] && type === 'science'){
         modifier *= 1 + (global.race['analytical'] / 100);
     }
+    if (global.civic.govern.type === 'democracy'){
+        entertainment *= 0.95;
+    }
     return modifier;
 }
 

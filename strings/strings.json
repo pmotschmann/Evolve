@@ -766,6 +766,7 @@
   "tech_government_effect": "Unlocks basic government types to help your people work together to build a society.",
   "tech_theocracy_effect": "Unlock the theocracy government type.",
   "tech_republic_effect": "Unlock the republic government type.",
+  "tech_technocracy_effect": "Unlock the technocracy government type.",
   "tech_currency": "Currency",
   "tech_currency_desc": "Invent the concept of currency",
   "tech_currency_effect": "Unlocks currency, an important step in developing a society. Also creates taxes, not quite as popular with the public.",

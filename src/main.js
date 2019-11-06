@@ -551,6 +551,11 @@ function fastLoop(){
         breakdown.p['Global'][loc('cold')] = `-${cold}%`;
         global_multiplier *= 1 - (cold / 100);
     }
+    if (global.civic.govern.type === 'anarchy' && global.resource[global.race.species].amount >= 10){
+        let chaos = (global.resource[global.race.species].amount - 9) * 0.25;
+        breakdown.p['Global'][loc('govern_anarchy')] = `-${chaos}%`;
+        global_multiplier *= 1 - (chaos / 100);
+    }
 
     breakdown.p['consume'] = {
         Money: {},
@@ -746,7 +751,7 @@ function fastLoop(){
             global.city.morale.unemployed = -(global.civic.free);
         }
         else {
-            stress -= Math.round(global.civic.free / (global.city.ptrait === 'mellow' ? 5.5 : 5));
+            stress -= global.civic.free / (global.city.ptrait === 'mellow' ? 5.5 : 5);
             global.city.morale.unemployed = 0;
         }
 
@@ -759,7 +764,7 @@ function fastLoop(){
         }
 
         if (global.civic['garrison']){
-            stress -= Math.round(global.civic.garrison.max / 2);
+            stress -= global.civic.garrison.max / 2;
         }
 
         let money_bd = {};
@@ -1297,7 +1302,7 @@ function fastLoop(){
                     stress_level += global.race['content'] * effectiveness;
                 }
 
-                stress -= +(global.civic[job].workers / stress_level).toFixed(0);
+                stress -= global.civic[job].workers / stress_level
             }
         });
         global.civic.free = global.resource[global.race.species].amount - total;
@@ -1322,8 +1327,18 @@ function fastLoop(){
         if (red_on['vr_center']){
             entertainment += red_on['vr_center'];
         }
+        if (global.civic.govern.type === 'democracy'){
+            entertainment *= 1.2;
+        }
         global.city.morale.entertain = entertainment;
         morale += entertainment;
+        if (global.civic.govern.type === 'anarchy'){
+            stress /= 2;
+        }
+        if (global.civic.govern.type === 'autocracy'){
+            stress *= 1.25;
+        }
+        stress = +(stress).toFixed(1);
         global.city.morale.stress = stress;
         morale += stress;
 
@@ -2798,6 +2813,9 @@ function fastLoop(){
             }
             
             income_base *= (global.civic.taxes.tax_rate / 20);
+            if (global.civic.govern.type === 'oligarchy'){
+                income_base *= 0.9;
+            }
 
             let temple_mult = 1;
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
@@ -4646,6 +4664,22 @@ function longLoop(){
         }
         else {
             global.event--;
+        }
+
+        {
+            let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
+            let tax_cap = global.civic.govern.type === 'oligarchy' ? 40 : 30;
+            if (extreme || global.race['terrifying']){
+                tax_cap += 20;
+            }
+            if (global.race['noble']){
+                if (global.civic.taxes.tax_rate > 20){
+                    global.civic.taxes.tax_rate = 20;
+                }
+            }
+            else if (global.civic.taxes.tax_rate > tax_cap){
+                global.civic.taxes.tax_rate = tax_cap;
+            }
         }
 
         if (!global.tech['whitehole'] && global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025){

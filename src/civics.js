@@ -195,22 +195,20 @@ function taxRates(govern){
             add(){
                 let inc = keyMultiplier();
                 let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
+                let cap = global.civic.govern.type === 'oligarchy' ? 40 : 30;
+                if (extreme || global.race['terrifying']){
+                    cap += 20;
+                }
                 if (global.race['noble']){
                     global.civic.taxes.tax_rate += inc;
                     if (global.civic.taxes.tax_rate > 20){
                         global.civic.taxes.tax_rate = 20;
                     }
                 }
-                else if ((extreme || global.race['terrifying']) && global.civic.taxes.tax_rate < 50){
+                else if (global.civic.taxes.tax_rate < cap){
                     global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > 50){
-                        global.civic.taxes.tax_rate = 50;
-                    }
-                }
-                else if (global.civic.taxes.tax_rate < 30){
-                    global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > 30){
-                        global.civic.taxes.tax_rate = 30;
+                    if (global.civic.taxes.tax_rate > cap){
+                        global.civic.taxes.tax_rate = cap;
                     }
                 }
             },
@@ -1054,7 +1052,6 @@ export function armyRating(val,type){
                 army += 4;
             }
         }
-        army = Math.floor(army);
     }
     else if (type === 'hunting'){
         if (global.race['tracker']){
@@ -1075,8 +1072,11 @@ export function armyRating(val,type){
         if (global.race['cunning']){
             army *= 1 + (global.race['cunning'] / 20);
         }
-        army = Math.floor(army);
     }
+    if (global.civic.govern.type === 'autocracy'){
+        army *= 1.35;
+    }
+    army = Math.floor(army);
     return army * racialTrait(val,type);
 }
 

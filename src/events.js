@@ -170,10 +170,12 @@ export const events = {
         }
     },
     tax_revolt: {
-        reqs: { 
-            high_tax_rate: 26,
+        reqs: {
             low_morale: 99,
             notrait: 'blissful'
+        },
+        condition(){
+            return global.civic.govern.type === 'oligarchy' ? global.civic.taxes.tax_rate > 35 : global.civic.taxes.tax_rate > 25;
         },
         effect: function(){
             return tax_revolt();
@@ -228,7 +230,8 @@ export const events = {
 
 function tax_revolt(){
     global.city.morale.current - 100;
-    let risk = (global.civic.taxes.tax_rate - 25) * 0.04;
+    let ramp = global.civic.govern.type === 'oligarchy' ? 35 : 25;
+    let risk = (global.civic.taxes.tax_rate - ramp) * 0.04;
     Object.keys(global.resource).forEach(function (res) {
         let loss = Math.rand(1,Math.round(global.resource[res].amount * risk));
         let remain = global.resource[res].amount - loss;
