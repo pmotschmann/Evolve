@@ -3763,6 +3763,9 @@ function midLoop(){
         if (global.city['storage_yard'] && global.tech['trade'] && global.tech['trade'] >= 3){
             global.city.market.mtrade += global.city.storage_yard.count;
         }
+        if (global.tech['railway']){
+            global.city.market.mtrade += global.tech['railway'];
+        }
 
         if (global.race['inspired']){
             global.race['inspired']--;

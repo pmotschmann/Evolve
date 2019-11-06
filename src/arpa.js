@@ -49,7 +49,7 @@ const arpaProjects = {
             Knowledge: function(){ return costMultiplier('lhc', 500000, 1.05); },
             Copper: function(){ return costMultiplier('lhc', 125000, 1.05); },
             Cement: function(){ return costMultiplier('lhc', 250000, 1.05); },
-            Steel: function(){ return costMultiplier('lhc', 187500, 1.05); },
+            Aluminium: function(){ return costMultiplier('lhc', 350000, 1.05); },
             Titanium: function(){ return costMultiplier('lhc', 50000, 1.05); },
             Polymer: function(){ return costMultiplier('lhc', 12000, 1.05); }
         }
@@ -117,7 +117,22 @@ const arpaProjects = {
             Cement: function(){ return monument_costs('Cement') },
             Steel: function(){ return monument_costs('Steel') }
         }
-    }
+    },
+    railway: {
+        title: loc('arpa_projects_railway_title'),
+        desc: loc('arpa_projects_railway_desc'),
+        reqs: { high_tech: 6 },
+        grant: 'railway',
+        effect(){
+            return loc('arpa_projects_railway_effect1',[1,0.2]);
+        },
+        cost: {
+            Money: function(){ return costMultiplier('railway', 500000, 1.08); },
+            Lumber: function(){ return costMultiplier('railway', 75000, 1.08); },
+            Iron: function(){ return costMultiplier('railway', 30000, 1.08); },
+            Steel: function(){ return costMultiplier('railway', 45000, 1.08); }
+        }
+    },
 };
 
 const genePool = {
@@ -756,6 +771,7 @@ function physics(){
     addProject(parent,'stock_exchange');
     addProject(parent,'launch_facility');
     addProject(parent,'monument');
+    addProject(parent,'railway');
 }
 
 function genetics(){

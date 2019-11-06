@@ -776,14 +776,17 @@ export function tradeBuyPrice(res){
     if (global.race['conniving']){
         rate *= 0.9;
     }    
-    let price = Math.round(rate * tradeRatio[res]);
-
+    let price = rate * tradeRatio[res];
     if (global.city['wharf']){
-        price = Math.round(price * (0.99 ** global.city['wharf'].count));
+        price = price * (0.99 ** global.city['wharf'].count);
     }
     if (global.space['gps'] && global.space['gps'].count > 3){
-        price = Math.round(price * (0.99 ** global.space['gps'].count));
+        price = price * (0.99 ** global.space['gps'].count);
     }
+    if (global.tech['railway']){
+        price = price * (0.998 ** global.tech['railway']);
+    }
+    price = Math.round(price);
     return price;
 }
 
