@@ -204,7 +204,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('moon_base');
-                    if (global.city.power >= 5){
+                    if (global.city.power >= $(this)[0].powered()){
                         global.space['moon_base'].on++;
                     }
                     if (global.space['moon_base'].count === 1){
@@ -372,7 +372,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('spaceport');
-                    if (global.city.power >= 5){
+                    if (global.city.power >= $(this)[0].powered()){
                         global.space['spaceport'].on++;
                     }
                     if (!global.tech['mars']){
@@ -1012,7 +1012,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('gas_mining');
-                    if (global.city.powered && global.city.power >= 2){
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.space.gas_mining.on++;
                     }
                     return true;
@@ -1140,7 +1140,7 @@ const spaceProjects = {
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('outpost');
                     global.resource['Neutronium'].display = true;
-                    if (global.city.power >= 3){
+                    if (global.city.power >= $(this)[0].powered()){
                         global.space['outpost'].on++;
                     }
                     return true;
@@ -1202,7 +1202,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('oil_extractor');
-                    if (global.city.power >= 1){
+                    if (global.city.power >= $(this)[0].powered()){
                         global.space['oil_extractor'].on++;
                     }
                     return true;
@@ -1281,7 +1281,7 @@ const spaceProjects = {
                     if (global.tech['asteroid'] < 3){
                         global.tech['asteroid'] = 3;
                     }
-                    if (global.city.power >= 3){
+                    if (global.city.power >= $(this)[0].powered()){
                         global.space.space_station.on++;
                     }
                     return true;
@@ -2001,7 +2001,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('xfer_station','interstellar');
-                    if (global.city.power >= 4){
+                    if (global.city.power >= $(this)[0].powered()){
                         global.interstellar['xfer_station'].on++;
                         global['resource']['Helium_3'].max += spatialReasoning(5000);
                         global['resource']['Oil'].max += spatialReasoning(4000);
@@ -2163,7 +2163,7 @@ const interstellarProjects = {
                         global.interstellar['harvester'] = { count: 0, on: 0 };
                         global.tech['nebula'] = 2;
                     }
-                    if (global.city.power >= 3){
+                    if (global.city.power >= $(this)[0].powered()){
                         global.interstellar['nexus'].on++;
                         global['resource']['Oil'].max += spatialReasoning(2500);
                         global['resource']['Helium_3'].max += spatialReasoning(4000);
