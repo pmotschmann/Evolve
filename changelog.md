@@ -1,3 +1,6 @@
+#### 0.6.26 - 11/7/2019 ####
+ARPA costs now update without mousing off and back on the buttons<br>
+
 #### 0.6.25 - 11/2/2019 ####
 Geology bonus is now preserved on MAD reset<br>
 Key Mappings are now configurable for multiplier and queue keys<br>

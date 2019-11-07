@@ -1112,6 +1112,7 @@ function addProject(parent,project){
             data: global.arpa[project],
             methods: {
                 build(pro,num){
+                    let oNum = num;
                     if (num === 100){
                         num = 100 - global.arpa[project].complete;
                     }
@@ -1141,6 +1142,10 @@ function addProject(parent,project){
                                 drawTech();
                             }
                         }
+                    }
+                    if ($(`#popArpa${pro}`).length > 0){
+                        $(`#popArpa${pro}`).empty();
+                        $(`#popArpa${pro}`).append(arpaProjectCosts(oNum,pro));
                     }
                 },
                 srDesc(){
