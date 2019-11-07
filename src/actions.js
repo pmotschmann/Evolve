@@ -3822,6 +3822,9 @@ export const actions = {
                     if (global.race['spiritual']){
                         faith *= 1.13;
                     }
+                    if (global.civic.govern.type === 'theocracy'){
+                        faith *= 1.05;
+                    }
                     faith = +(faith).toFixed(2);
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[6])}</div>`;
                 }
@@ -3833,6 +3836,9 @@ export const actions = {
                     if (global.race['spiritual']){
                         faith *= 1.13;
                     }
+                    if (global.civic.govern.type === 'theocracy'){
+                        faith *= 1.05;
+                    }
                     faith = +(faith).toFixed(2);
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
                 }
@@ -3843,6 +3849,9 @@ export const actions = {
                     }
                     if (global.race['spiritual']){
                         plasmid *= 1.13;
+                    }
+                    if (global.civic.govern.type === 'theocracy'){
+                        plasmid *= 1.05;
                     }
                     plasmid = +(plasmid).toFixed(2);
                     desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;

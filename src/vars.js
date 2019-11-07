@@ -588,7 +588,7 @@ if (!global.race['minor']){
 
 if (!global.civic['govern']){
     global.civic['govern'] = {
-        type: 'anarchy',
+        type: 'oligarchy',
         rev: 2000,
     };
 }

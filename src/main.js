@@ -481,7 +481,7 @@ function fastLoop(){
                 temple_bonus *= 1.13;
             }
             if (global.civic.govern.type === 'theocracy'){
-                temple_bonus *= 1.15;
+                temple_bonus *= 1.05;
             }
             let faith = global.city.temple.count * temple_bonus;
             breakdown.p['Global'][loc('faith')] = (faith * 100) + '%';
@@ -1716,6 +1716,9 @@ function fastLoop(){
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
                 professors_base *= 1 + (global.city.temple.count * 0.05);
             }
+            if (global.civic.govern.type === 'theocracy'){
+                professors_base *= 0.75;
+            }
 
             let scientist_base = global.civic.scientist.workers;
             scientist_base *= global.civic.scientist.impact;
@@ -1725,6 +1728,9 @@ function fastLoop(){
             }
             if (global.space['satellite']){
                 scientist_base *= 1 + (global.space.satellite.count * 0.01);
+            }
+            if (global.civic.govern.type === 'theocracy'){
+                scientist_base *= 0.5;
             }
             
             let library_mult = global.city['library'] ? 1 + (global.city.library.count * 0.05) : 1;
@@ -2811,6 +2817,9 @@ function fastLoop(){
                     }
                     if (global.race['truthful']){
                         impact /= 2;
+                    }
+                    if (global.civic.govern.type === 'republic'){
+                        impact *= 1.25;
                     }
                     income_base *= 1 + (global.civic.banker.workers * impact);
                 }

@@ -1351,7 +1351,7 @@ export function plasmidBonus(type){
                 temple_bonus *= 1.13;
             }
             if (global.civic.govern.type === 'theocracy'){
-                temple_bonus *= 1.15;
+                temple_bonus *= 1.05;
             }
             standard *= 1 + (global.city.temple.count * temple_bonus);
         }
