@@ -125,7 +125,7 @@ function drawModal(){
     $('#modalBox').append(body);
 
     if (global.tech['govern']){
-        body.append($(`<button class="button gap" data-gov="anarchy" @click="setGov('anarchy')">${loc('govern_anarchy')}</button>`));
+        //body.append($(`<button class="button gap" data-gov="anarchy" @click="setGov('anarchy')">${loc('govern_anarchy')}</button>`));
         body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc('govern_autocracy')}</button>`));
         body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${loc('govern_democracy')}</button>`));
         body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc('govern_oligarchy')}</button>`));
@@ -151,6 +151,9 @@ function drawModal(){
             setGov(g){
                 global.civic.govern.type = g;
                 global.civic.govern.rev = 2000;
+                if (global.stats.achieve['anarchist']){
+                    global.civic.govern.rev -= global.stats.achieve['anarchist'].l * 250;
+                }
             }
         }
     });
@@ -1218,6 +1221,9 @@ function warhead(){
     let new_achieve = unlockAchieve(`apocalypse`);
     if (unlockAchieve(`squished`,true)){ new_achieve = true; }
     if (unlockAchieve(`extinct_${god}`)){ new_achieve = true; }
+    if (global.civic.govern.type === 'anarchy'){
+        if (unlockAchieve(`anarchist`)){ new_achieve = true; }
+    }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         unlockFeat('take_no_advice');
     }

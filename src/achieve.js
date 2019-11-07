@@ -16,6 +16,11 @@ var achievements = {
         desc: loc("achieve_apocalypse_desc"),
         flair: loc("achieve_apocalypse_flair")
     },
+    anarchist: {
+        name: loc("achieve_anarchist_name"),
+        desc: loc("achieve_anarchist_desc"),
+        flair: loc("achieve_anarchist_flair")
+    },
     squished: {
         name: loc("achieve_squished_name"),
         desc: loc("achieve_squished_desc"),
@@ -982,6 +987,16 @@ export function drawPerks(){
         if (global.stats.achieve['dissipated'].l >= 4){
             perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated4",[1])}</span></div>`);
         }
+    }
+
+    if (global.stats.achieve['anarchist']){
+        unlocked++;
+        let bonus = global.stats.achieve['anarchist'].l * 250;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_anarchist",[bonus])}</span></div>`);
+    }
+
+    if (global.stats.achieve['anarchist']){
+        global.civic.govern.rev -= global.stats.achieve['anarchist'].l * 250;
     }
 
     if (global.genes['creep']){
