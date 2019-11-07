@@ -237,10 +237,30 @@ export function adjustCosts(costs){
         });
         return newCosts;
     }
+    costs = technoAdjust(costs);
     costs = kindlingAdjust(costs);
     costs = scienceAdjust(costs);
     costs = rebarAdjust(costs);
     return craftAdjust(costs);
+}
+
+function technoAdjust(costs){
+    if (global.civic.govern.type === 'technocracy'){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Knowledge'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
+            }
+            else if (res === 'Money'){
+                newCosts[res] = function(){ return costs[res](); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res]() * 1.02); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function scienceAdjust(costs){

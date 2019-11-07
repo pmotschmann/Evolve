@@ -1,6 +1,7 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
+import { housingLabel } from './actions.js';
 import { unlockAchieve } from './achieve.js';
 
 export const events = {
@@ -226,6 +227,39 @@ export const events = {
             }
         }
     },
+    protest: {
+        condition(){
+            return global.civic.govern.type === 'republic' ? true : false;
+        },
+        effect: function(){
+            global.civic.govern['protest'] = Math.rand(30,60);
+            switch(Math.rand(0,10)){
+                case 0:
+                    return loc('event_protest0',[housingLabel('small')]);
+                case 1:
+                    return loc('event_protest1');
+                case 2:
+                    return loc('event_protest2');
+                case 3:
+                    global.civic.govern['protest'] = Math.rand(45,75);
+                    return loc('event_protest3');
+                case 4:
+                    return loc('event_protest4');
+                case 5:
+                    global.civic.govern['protest'] = Math.rand(45,75);
+                    return loc('event_protest5');
+                case 6:
+                    return loc('event_protest6');
+                case 7:
+                    return loc('event_protest7');
+                case 8:
+                    return loc('event_protest8');
+                case 9:
+                    global.civic.govern['protest'] = Math.rand(60,90);
+                    return loc('event_protest9');
+            }
+        }
+    }
 };
 
 function tax_revolt(){

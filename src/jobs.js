@@ -77,8 +77,12 @@ export const job_desc = {
             interest += 2 * global.tech['stock_exchange'];
         }
         if (global.race['truthful']){
-            interest = +(interest / 2).toFixed(0);
+            interest = interest / 2;
         }
+        if (global.civic.govern.type === 'republic'){
+            impact *= 1.25;
+        }
+        interest = +(interest).toFixed(0);
         return loc('job_banker_desc',[interest]);
     },
     entertainer: function(){
@@ -95,6 +99,9 @@ export const job_desc = {
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
             impact *= 1 + (global.city.temple.count * 0.05);
         }
+        if (global.civic.govern.type === 'theocracy'){
+            impact *= 0.75;
+        }
         impact = +impact.toFixed(2);
         return loc('job_professor_desc',[impact]);
     },
@@ -106,6 +113,9 @@ export const job_desc = {
         }
         if (global.space['satellite']){
             impact *= 1 + (global.space.satellite.count * 0.01);
+        }
+        if (global.civic.govern.type === 'theocracy'){
+            impact *= 0.5;
         }
         impact = +impact.toFixed(2);
         return loc('job_scientist_desc',[impact]);

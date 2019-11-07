@@ -480,6 +480,9 @@ function fastLoop(){
             if (global.race['spiritual']){
                 temple_bonus *= 1.13;
             }
+            if (global.civic.govern.type === 'theocracy'){
+                temple_bonus *= 1.15;
+            }
             let faith = global.city.temple.count * temple_bonus;
             breakdown.p['Global'][loc('faith')] = (faith * 100) + '%';
             global_multiplier *= (1 + faith);
@@ -555,6 +558,10 @@ function fastLoop(){
         let chaos = (global.resource[global.race.species].amount - 9) * 0.25;
         breakdown.p['Global'][loc('govern_anarchy')] = `-${chaos}%`;
         global_multiplier *= 1 - (chaos / 100);
+    }
+    if (global.civic.govern['protest'] && global.civic.govern.protest > 0){
+        breakdown.p['Global'][loc('event_protest')] = `-${30}%`;
+        global_multiplier *= 0.7;
     }
 
     breakdown.p['consume'] = {
@@ -4667,6 +4674,10 @@ function longLoop(){
         }
         else {
             global.event--;
+        }
+
+        if (global.civic.govern['protest'] && global.civic.govern.protest > 0){
+            global.civic.govern.protest--;
         }
 
         {
