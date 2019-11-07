@@ -11583,7 +11583,7 @@ function smelterModal(modal){
             buildLabel(type){
                 switch(type){
                     case 'wood':
-                        return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name]);
+                        return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && ! global.race['soul_eater'] ? 1 : 3]);
                     case 'coal':
                         let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
                         if (global.tech['uranium'] && global.tech['uranium'] >= 3){

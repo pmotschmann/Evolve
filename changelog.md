@@ -1,6 +1,7 @@
 #### 0.6.26 - 11/7/2019 ####
 ARPA costs now update without mousing off and back on the buttons<br>
 Fixed issues with incorrectly powering on newly built structures<br>
+None-demonic evil smelters now correctly state they burn 1 flesh/s<br>
 
 #### 0.6.25 - 11/2/2019 ####
 Geology bonus is now preserved on MAD reset<br>
