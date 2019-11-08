@@ -1234,6 +1234,10 @@ export function cleanAddTrait(trait){
             });
             global.settings.showMarket = false;
             break;
+        case 'slaver':
+            global.tech['slaves'] = 2;
+            global.city['slave_pen'] = { count: 0, slaves: 0 };
+            break;
         case 'cannibalize':
             global.city['s_alter'] = {
                 count: 0,
@@ -1252,6 +1256,14 @@ export function cleanAddTrait(trait){
                 know: 0,
                 tax: 0
             };
+            break;
+        case 'noble':
+            if (global.civic.taxes.tax_rate < 10) {
+                global.civic.taxes.tax_rate = 10;
+            }
+            else if (global.civic.taxes.tax_rate > 20) {
+                global.civic.taxes.tax_rate = 20;
+            }
             break;
         case 'toxic':
             if (global.race.species === 'troll' && global.tech['science'] && global.tech['science'] >= 8){
@@ -1294,6 +1306,10 @@ export function cleanRemoveTrait(trait){
             break;
         case 'terrifying':
             global.settings.showMarket = true;
+            break;
+        case 'slaver':
+            delete global.city['slave_pen'];
+            delete global.tech['slaves'];
             break;
         case 'cannibalize':
             delete global.city['s_alter'];
