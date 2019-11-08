@@ -124,13 +124,13 @@ const arpaProjects = {
         reqs: { high_tech: 6 },
         grant: 'railway',
         effect(){
-            return loc('arpa_projects_railway_effect1',[1,0.2]);
+            return loc('arpa_projects_railway_effect1',[5,2]);
         },
         cost: {
-            Money: function(){ return costMultiplier('railway', 500000, 1.08); },
-            Lumber: function(){ return costMultiplier('railway', 75000, 1.08); },
-            Iron: function(){ return costMultiplier('railway', 30000, 1.08); },
-            Steel: function(){ return costMultiplier('railway', 45000, 1.08); }
+            Money: function(){ return costMultiplier('railway', 2500000, 1.08); },
+            Lumber: function(){ return costMultiplier('railway', 750000, 1.08); },
+            Iron: function(){ return costMultiplier('railway', 300000, 1.08); },
+            Steel: function(){ return costMultiplier('railway', 450000, 1.08); }
         }
     },
 };

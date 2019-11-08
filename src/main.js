@@ -3780,7 +3780,7 @@ function midLoop(){
             global.city.market.mtrade += global.city.storage_yard.count;
         }
         if (global.tech['railway']){
-            global.city.market.mtrade += global.tech['railway'];
+            global.city.market.mtrade += global.tech['railway'] * 5;
         }
 
         if (global.race['inspired']){
