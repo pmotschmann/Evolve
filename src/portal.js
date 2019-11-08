@@ -45,8 +45,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('turret','portal');
-                    let power = global.tech['turret'] ? $(this)[0].powered() + global.tech['turret'] : $(this)[0].powered();
-                    if (global.city.powered && global.city.power >= power){
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.turret.on++;
                         if (vues['civ_fortress']){
                             p_on['turret']++;
