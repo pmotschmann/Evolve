@@ -901,7 +901,7 @@ export function drawPerks(){
     if (global.stats.achieve['whitehole']){
         unlocked++;
         let bonus = global.stats.achieve['whitehole'].l * 5;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole",[bonus])}</span></div>`);
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole")}</span></div>`);
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole2",[bonus])}</span></div>`);
     }
 

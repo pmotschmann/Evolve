@@ -1206,7 +1206,7 @@ function addProject(parent,project){
             $(`#popArpa${project}`).remove();
         });
 
-        let classes = ['1','10','25','100'];
+        let classes = [1,10,25,100];
         for (let i=0; i<classes.length; i++){
             let id = classes[i];
             $(`#arpa${project} .buy .x${id}`).on('mouseover',function(){
@@ -1229,7 +1229,7 @@ function addProject(parent,project){
 }
 
 function arpaProjectCosts(id,project){
-    let inc = id === '100' ? 100 - global.arpa[project].complete : id;
+    let inc = id === 100 ? 100 - global.arpa[project].complete : id;
     var cost = $('<div></div>');
     var costs = adjustCosts(arpaProjects[project].cost);
     Object.keys(costs).forEach(function (res){
