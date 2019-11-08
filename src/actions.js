@@ -10443,7 +10443,7 @@ export const actions = {
             effect: loc('tech_stabilize_blackhole_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.interstellar.stellar_engine.mass += (atomic_mass.Neutronium.mass * atomic_mass.Neutronium.size * 20000 / 10000000000);
+                    global.interstellar.stellar_engine.mass += (atomic_mass.Neutronium * 20000 / 10000000000);
                     global.interstellar.stellar_engine.mass += global.interstellar.stellar_engine.exotic * 25;
                     global.interstellar.stellar_engine.exotic = 0;
                     delete global.tech['whitehole'];

@@ -1434,9 +1434,9 @@ function fastLoop(){
                     }
 
                     modRes(res, -(time_multiplier * volume));
-                    mass += volume * (atomic_mass[res].mass / atomic_mass[res].size);
+                    mass += volume * atomic_mass[res];
                     if (res === 'Elerium' || res === 'Infernite'){
-                        exotic += volume * (atomic_mass[res].mass / atomic_mass[res].size);
+                        exotic += volume * atomic_mass[res];
                     }
                 }
             });
@@ -4607,7 +4607,7 @@ function longLoop(){
                 if (events[event]['condition'] && !events[event].condition()){
                     isOk = false;
                 }
-                else {
+                else if (events[event]['reqs']){
                     Object.keys(events[event].reqs).forEach(function (req) {
                         switch(req){
                             case 'race':

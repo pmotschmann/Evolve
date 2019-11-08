@@ -61,37 +61,37 @@ export const tradeRatio = {
 }
 
 export const atomic_mass = {
-    Food: { mass: 43.557, size: 10 },
-    Lumber: { mass: 582.5951, size: 76 },
-    Stone: { mass: 100.0869, size: 5 },
-    Furs: { mass: 26.0174, size: 2 },
-    Copper: { mass: 63.546, size: 1 },
-    Iron: { mass: 55.845, size: 1 },
-    Aluminium: { mass: 26.9815, size: 1 },
-    Cement: { mass: 200.0869, size: 10 },
-    Coal: { mass: 12.0107, size: 1 },
-    Oil: { mass: 16.02658, size: 3 },
-    Uranium: { mass: 238.0289, size: 1 },
-    Steel: { mass: 55.9, size: 1 },
-    Titanium: { mass: 47.867, size: 1 },
-    Alloy: { mass: 90.5275, size: 2 },
-    Polymer: { mass: 120.054, size: 1 },
-    Iridium: { mass: 192.217, size: 1 },
-    Helium_3: { mass: 3.0026, size: 1 },
-    Deuterium: { mass: 2.014, size: 1 },
-    Neutronium: { mass: 248.74, size: 1 },
-    Adamantite: { mass: 178.803, size: 1 },
-    Infernite: { mass: 667.998, size: 3 },
-    Elerium: { mass: 297.115, size: 1 },
-    Nano_Tube: { mass: 15.083, size: 1 },
-    Graphene: { mass: 26.9615, size: 1 },
-    Stanene: { mass: 33.9615, size: 1 },
-    Plywood: { mass: 582.5951, size: 76 },
-    Brick: { mass: 200.0869, size: 10 },
-    Wrought_Iron: { mass: 55.845, size: 1 },
-    Sheet_Metal: { mass: 26.9815, size: 1 },
-    Mythril: { mass: 282.717, size: 3 },
-    Aerogel: { mass: 47.04, size: 6 }
+    Food: 4.355,
+    Lumber: 7.668,
+    Stone: 20.017,
+    Furs: 13.009,
+    Copper: 63.546,
+    Iron: 55.845,
+    Aluminium: 26.9815,
+    Cement: 20.009,
+    Coal: 12.0107,
+    Oil: 5.342,
+    Uranium: 238.0289,
+    Steel: 55.9,
+    Titanium: 47.867,
+    Alloy: 45.264,
+    Polymer: 120.054,
+    Iridium: 192.217,
+    Helium_3: 3.0026,
+    Deuterium: 2.014,
+    Neutronium: 248.74,
+    Adamantite: 178.803,
+    Infernite: 222.666,
+    Elerium: 297.115,
+    Nano_Tube: 15.083,
+    Graphene: 26.9615,
+    Stanene: 33.9615,
+    Plywood: 7.666,
+    Brick: 20.009,
+    Wrought_Iron: 55.845,
+    Sheet_Metal: 26.9815,
+    Mythril: 94.239,
+    Aerogel: 7.84
 };
 
 export const craftCost = {
@@ -1261,7 +1261,7 @@ function loadEjector(name,color){
         res.append($(`<span class="current">{{ e.${name} }}</span>`));
         res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
 
-        res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${unitMass(name)}</span> kt</span>`));
+        res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${atomic_mass[name]}</span> kt</span>`));
 
         vues['eject_'+name] = new Vue({
             data: {
@@ -1291,10 +1291,6 @@ function loadEjector(name,color){
         });
         vues['eject_'+name].$mount(`#eject${name}`);
     }
-}
-
-function unitMass(name){
-    return +(atomic_mass[name].mass / atomic_mass[name].size).toFixed(3);
 }
 
 export function spatialReasoning(value){
