@@ -1395,6 +1395,8 @@
   "achieve_perks_creator2": "Start with %0 bonus RNA and DNA during evolution",
   "achieve_perks_explorer": "Gain %0 free extra planet options during bioseeding",
   "achieve_perks_enlightened": "Gain +1 base knowledge generation and +900 base knowledge storage",
+  "achieve_perks_whitehole": "Can roll Iridium deposits on the moon during planet selection",
+  "achieve_perks_whitehole2": "Max quality of geology deposits increased by %0%",
   "achieve_perks_heavyweight": "Transport fuel costs reduced by %0%",
   "achieve_perks_dissipated1": "Coal Powerplants generate +%0kW energy",
   "achieve_perks_dissipated2": "Oil Powerplants generate +%0kW energy",

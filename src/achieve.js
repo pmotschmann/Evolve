@@ -898,6 +898,13 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
     }
 
+    if (global.stats.achieve['whitehole']){
+        unlocked++;
+        let bonus = global.stats.achieve['whitehole'].l * 5;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole",[bonus])}</span></div>`);
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole2",[bonus])}</span></div>`);
+    }
+
     if (global.stats.achieve['heavyweight']){
         unlocked++;
         let bonus = global.stats.achieve['heavyweight'].l * 4;
@@ -977,7 +984,7 @@ export function drawPerks(){
     if (global.genes['transcendence']){ 
         unlocked++; 
         perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_transcendence_desc")}</span></div>`); 
-    } 
+    }
 
     if (global.genes['queue']){ 
         unlocked++; 
