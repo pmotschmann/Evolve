@@ -506,7 +506,7 @@
   "city_s_alter_regen": "Regeneración: +%0% [%1]",
   "city_s_alter_mind": "Ganancia de conocimiento: +%0% [%1]",
   "city_s_alter_mine": "Mineros: +%0% [%1]",
-  "city_s_alter_harvest": "Leñadores: +%0% [%1]",
+  "city_s_alter_harvest": "%0: +%1% [%2]",
   "city_max_knowledge": "Conocimiento máximo +%0",
   "city_university": "Universidad",
   "city_university_desc": "Universidad %0",
