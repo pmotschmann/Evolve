@@ -907,6 +907,8 @@
   "tech_de_novo_sequencing_effect": "Unlock an option to produce genetic material from excess knowledge.",
   "tech_dna_sequencer": "DNA sequencer",
   "tech_dna_sequencer_effect": "Automatically convert excess knowledge into Genes once per day if knowledge capped.",
+  "tech_rapid_sequencing": "Rapid Gene Sequencing",
+  "tech_rapid_sequencing_effect": "Auto gene creation can occur upto 5 times per day.",
   "tech_mad_science": "Mad Science",
   "tech_mad_science_desc": "Mad Science",
   "tech_mad_science_effect": "The greatest leaps in science are often made by \"misunderstood\" individuals.",

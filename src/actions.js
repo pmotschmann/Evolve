@@ -6901,6 +6901,23 @@ export const actions = {
                 return false;
             }
         },
+        rapid_sequencing: {
+            id: 'tech-rapid_sequencing',
+            title: loc('tech_rapid_sequencing'),
+            desc: loc('tech_rapid_sequencing'),
+            reqs: { genetics: 7, high_tech: 12 },
+            grant: ['genetics',8],
+            cost: {
+                Knowledge(){ return 800000; }
+            },
+            effect: loc('tech_rapid_sequencing_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mad_science: {
             id: 'tech-mad_science',
             title: loc('tech_mad_science'),

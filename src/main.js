@@ -4247,6 +4247,10 @@ function midLoop(){
             }
         }
 
+        if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] >= 8){
+            buildGene();
+        }
+
         if (global['loadFoundry']){
             loadFoundry();
             delete global['loadFoundry'];
@@ -4741,17 +4745,21 @@ function longLoop(){
             drawTech();
         }
 
-        if (global.arpa.sequence && global.arpa.sequence['auto']){
-            if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - 10000){
-                global.resource.Knowledge.amount -= 200000;
-                let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
-                global.resource.Genes.amount += gene;
-            }
+        if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] === 7){
+            buildGene();
         }
     }
 
     // Save game state
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+}
+
+function buildGene(){
+    if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - 10000){
+        global.resource.Knowledge.amount -= 200000;
+        let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
+        global.resource.Genes.amount += gene;
+    }
 }
 
 function q_check(){

@@ -337,7 +337,7 @@ export const races = {
         name: loc('race_entish'),
         desc: loc('race_entish_desc'),
         type: 'plant',
-        home: loc('race__home'),
+        home: loc('race_entish_home'),
         entity: loc('race_entish_entity'),
         traits: {
             kindling_kindred: 1,

@@ -4,6 +4,7 @@ Biome races added for Forest, Desert, Tundra, and Volcanic<br>
 New ARPA Project: Railway<br>
 New CRISPR upgrades: Mitosis & Metaphase<br>
 Construct advanced AI stations in deep space<br>
+Rapid Gene Squencing upgrade<br>
 Added Rocky Road Feat<br>
 
 #### 0.6.26 - 11/7/2019 ####
