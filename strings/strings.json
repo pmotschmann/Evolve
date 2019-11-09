@@ -534,7 +534,7 @@
   "city_s_alter_regen": "Regeneration: +%0% [%1]",
   "city_s_alter_mind": "Knowledge Gain: +%0% [%1]",
   "city_s_alter_mine": "Miners: +%0% [%1]",
-  "city_s_alter_harvest": "Lumberjacks: +%0% [%1]",
+  "city_s_alter_harvest": "%2: +%0% [%1]",
   "city_max_knowledge": "+%0 Max Knowledge",
   "city_university": "University",
   "city_university_desc": "%0 University",

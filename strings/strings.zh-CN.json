@@ -1919,7 +1919,7 @@
     "tech_war_drones_effect": "设计无人驾驶飞机巡逻恶魔的废土，帮助保护你的行动。",
     "modal_factory_operate": "操作",
     "interstellar_neutron_miner_title": "中子矿船",
-    "city_s_alter_harvest": "伐木工: +%0% [%1]",
+    "city_s_alter_harvest": "%0: +%1% [%2]",
     "tech_silo_effect": "为食品储存介质制定设计图。",
     "tech_housing_cost": "减少房屋的成本",
     "plus_max_crates": "+%0 板条箱上限",
