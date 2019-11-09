@@ -2464,7 +2464,7 @@
   "civics_change_desc2": "You can change your government",
   "civics_force_rev": "Start Revolution",
   "civics_force_rev_desc": "You can start a revolution to change your government now but you'll suffer a heavy morale penalty",
-  "civics_force_rev_desc2": "A revolution not necessary",
+  "civics_force_rev_desc2": "A revolution is not necessary",
   "civics_tax_rates": "Tax Rates",
   "civics_tax_rates_desc": "High tax rates yield more money but reduce morale, low taxes have the inverse effect.",
   "civics_garrison": "Garrison",
