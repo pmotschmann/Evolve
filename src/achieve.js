@@ -1,5 +1,5 @@
-import { global, vues, messageQueue, set_alevel, poppers } from './vars.js';
-import { svgIcons, svgViewBox, format_emblem } from './functions.js'; 
+import { global, messageQueue, set_alevel, poppers } from './vars.js';
+import { svgIcons, svgViewBox, format_emblem, vBind } from './functions.js'; 
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
@@ -743,10 +743,6 @@ export function setupStats(){
 }
 
 export function drawAchieve(){
-    if (vues['vue_achieve']){
-        vues['vue_achieve'].$destroy();
-    }
-
     $('#achievePanel').empty();
     let achieve = $('#achievePanel');
     let earned = 0;
@@ -774,8 +770,9 @@ export function drawAchieve(){
     });
 
     achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}</div>`);
-
-    let avue = {
+    
+    vBind({
+        el: '#achievePanel',
         methods: {
             flair(flair){
                 return achievements[flair].flair;
@@ -784,10 +781,7 @@ export function drawAchieve(){
                 return feats[flair].flair;
             }
         }
-    }
-    
-    vues['vue_achieve'] = new Vue(avue);
-    vues['vue_achieve'].$mount('#achievePanel');
+    });
 
     let a_level = 1;
     if (global.race['no_plasmid']){ a_level++; }
@@ -1100,10 +1094,6 @@ export function drawPerks(){
 }
 
 export function drawStats(){
-    if (vues['vue_stats']){
-        vues['vue_stats'].$destroy();
-    }
-
     $('#statsPanel').empty();
     let stats = $('#statsPanel');
     
@@ -1138,8 +1128,9 @@ export function drawStats(){
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_attacks_made")}</span> {{ attacks }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days }}</div>`);
-
-    let svue = {
+    
+    vBind({
+        el: '#statsPanel',
         data: global.stats,
         filters: {
             played(d){
@@ -1155,8 +1146,5 @@ export function drawStats(){
                 return d + global.stats.tdied;
             }
         }
-    }
-    
-    vues['vue_stats'] = new Vue(svue);
-    vues['vue_stats'].$mount('#statsPanel');
+    });
 }

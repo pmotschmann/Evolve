@@ -1,4 +1,4 @@
-import { global, vues, keyMultiplier, poppers } from './vars.js';
+import { global, keyMultiplier, poppers } from './vars.js';
 import { loc } from './locale.js';
 import { racialTrait, races } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
@@ -162,7 +162,8 @@ function loadUnemployed(){
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
-    vues['civ_free'] = new Vue({
+    new Vue({
+        el: `#${id}`,
         data: global.civic,
         filters: {
             title(){
@@ -170,7 +171,6 @@ function loadUnemployed(){
             }
         }
     });
-    vues['civ_free'].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
             let text = global.race['carnivore'] || global.race['soul_eater'] ? (global.race['soul_eater'] ? loc('job_evil_hunter_desc') : loc('job_hunter_desc')) : loc('job_unemployed_desc');
@@ -233,7 +233,8 @@ function loadJob(job, impact, stress, color){
     controls.append(sub);
     controls.append(add);
     
-    vues[`civ_+${job}`] = new Vue({
+    new Vue({
+        el: `#${id}`,
         data: global.civic[job],
         methods: {
             add(){
@@ -281,7 +282,6 @@ function loadJob(job, impact, stress, color){
             }
         }
     });
-    vues[`civ_+${job}`].$mount(`#${id}`);
     
     $(`#${id} .job_label`).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
@@ -297,9 +297,10 @@ function loadJob(job, impact, stress, color){
         });
 }
 
+var v_foundry;
 export function loadFoundry(){
-    if (vues['foundry']){
-        vues['foundry'].$destroy();
+    if (v_foundry){
+        v_foundry.$destroy();
     }
     $('#foundry').empty();
     if (global.city['foundry']){
@@ -327,7 +328,8 @@ export function loadFoundry(){
                 controls.append(add);
             }
         }
-        vues['foundry'] = new Vue({
+        v_foundry = new Vue({
+            el: `#foundry`,
             data: {
                 f: global.city.foundry,
                 c: global.civic.craftsman
@@ -392,7 +394,6 @@ export function loadFoundry(){
                 }
             }
         });
-        vues['foundry'].$mount(`#foundry`);
 
         $(`#foundry .foundry`).on('mouseover',function(){
             var popper = $(`<div id="popFoundry" class="popper has-background-light has-text-dark"></div>`);

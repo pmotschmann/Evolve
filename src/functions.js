@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { races } from './races.js';
 
 export function mainVue(){
-    new Vue({
+    vBind({
         el: '#mainColumn div:first-child',
         data: { 
             s: global.settings,
@@ -160,6 +160,21 @@ export function timeCheck(c_action,track){
     }
     else {
         return 0;
+    }
+}
+
+export function vBind(bind,action){
+    action = action || 'create';
+    if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue__ !== "undefined"){
+        if (action === 'update'){
+            $(bind.el)[0].__vue__.$forceUpdate();
+        }
+        else {
+            $(bind.el)[0].__vue__.$destroy();
+        }
+    }
+    if (action === 'create'){
+        new Vue(bind);
     }
 }
 

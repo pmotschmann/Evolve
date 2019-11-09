@@ -1,6 +1,6 @@
-import { global, vues, save, poppers, messageQueue, keyMultiplier, clearStates, keyMap, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
+import { global, save, poppers, messageQueue, keyMultiplier, clearStates, keyMap, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -8497,9 +8497,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.bows.grant[0];
                     global.tech[tech] = actions.tech.bows.grant[1];
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                     return true;
                 }
                 return false;
@@ -8520,9 +8518,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.flintlock_rifle.grant[0];
                     global.tech[tech] = actions.tech.flintlock_rifle.grant[1];
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                     return true;
                 }
                 return false;
@@ -8543,9 +8539,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.machine_gun.grant[0];
                     global.tech[tech] = actions.tech.machine_gun.grant[1];
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                     return true;
                 }
                 return false;
@@ -8585,9 +8579,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.rail_guns.grant[0];
                     global.tech[tech] = actions.tech.rail_guns.grant[1];
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                     return true;
                 }
                 return false;
@@ -8608,14 +8600,10 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.laser_rifles.grant[0];
                     global.tech[tech] = actions.tech.laser_rifles.grant[1];
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
-
+                    vBind({el: `#garrison`},'update');
                     if (global.race.species === 'sharkin'){
                         unlockAchieve('laser_shark');
                     }
-
                     return true;
                 }
                 return false;
@@ -8636,9 +8624,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.plasma_rifles.grant[0];
                     global.tech[tech] = actions.tech.plasma_rifles.grant[1];
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                     return true;
                 }
                 return false;
@@ -8659,9 +8645,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = actions.tech.disruptor_rifles.grant[0];
                     global.tech[tech] = actions.tech.disruptor_rifles.grant[1];
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                     return true;
                 }
                 return false;
@@ -8775,9 +8759,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
-                    if (vues['civ_fortress']){
-                        vues['civ_fortress'].$forceUpdate();
-                    }
+                    vBind({el: `#fort`},'update');
                     return true;
                 }
                 return false;
@@ -8798,9 +8780,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     var tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
-                    if (vues['civ_fortress']){
-                        vues['civ_fortress'].$forceUpdate();
-                    }
+                    vBind({el: `#fort`},'update');
                     return true;
                 }
                 return false;
@@ -11155,10 +11135,8 @@ export function setAction(c_action,action,type,old){
         template: '<div id="modalBox" class="modalBox"></div>'
     };
 
-    if (vues[id]){
-        vues[id].$destroy();
-    }
-    vues[id] = new Vue({
+    vBind({
+        el: '#'+id,
         data: {
             title: typeof c_action.title === 'string' ? c_action.title : c_action.title(),
             act: global[action][type]
@@ -11341,7 +11319,6 @@ export function setAction(c_action,action,type,old){
             }
         }
     });
-    vues[id].$mount('#'+id);
     let pop_target = action === 'starDock' ? 'body .modal' : '#main';
     $('#'+id).on('mouseover',function(){
             let wide = c_action['wide'] ? ' wide' : '';
@@ -11353,9 +11330,7 @@ export function setAction(c_action,action,type,old){
         });
     $('#'+id).on('mouseout',function(){
             $(`#pop${id}`).hide();
-            if (vues['popTimer']){
-                vues['popTimer'].$destroy();
-            }
+            vBind({el: `#popTimer`},'destroy');
             if (poppers[id]){
                 poppers[id].destroy();
             }
@@ -11623,11 +11598,9 @@ function actionDesc(parent,c_action,obj,old){
     }
     if (!old && !checkAffordable(c_action) && checkAffordable(c_action,true)){
         if (obj && obj['time']){
-            if (vues['popTimer']){
-                vues['popTimer'].$destroy();
-            }
             parent.append($(`<div id="popTimer" class="flair has-text-advanced">{{ time | timer }}</div>`));
-            vues['popTimer'] = new Vue({
+            vBind({
+                el: '#popTimer',
                 data: obj,
                 filters: {
                     timer(t){
@@ -11635,7 +11608,6 @@ function actionDesc(parent,c_action,obj,old){
                     }
                 }
             });
-            vues['popTimer'].$mount('#popTimer');
         }
         else {
             let time = timeFormat(timeCheck(c_action));
@@ -11936,10 +11908,8 @@ function smelterModal(modal){
         smelt.append(steelSmelt);
     }
 
-    if (vues['specialModal']){
-        vues['specialModal'].$destroy();
-    }
-    vues['specialModal'] = new Vue({
+    vBind({
+        el: '#specialModal',
         data: {
             s: global.city['smelter'],
             lum: global.resource.Lumber,
@@ -12159,8 +12129,6 @@ function smelterModal(modal){
             },
         }
     });
-
-    vues['specialModal'].$mount('#specialModal');
 }
 
 export const f_rate = {
@@ -12251,10 +12219,8 @@ function factoryModal(modal){
         stanene.append(addStanene);
     }
 
-    if (vues['specialModal']){
-        vues['specialModal'].$destroy();
-    }
-    vues['specialModal'] = new Vue({
+    vBind({
+        el: '#specialModal',
         data: global.city['factory'],
         methods: {
             subItem: function(item){
@@ -12329,8 +12295,6 @@ function factoryModal(modal){
             }
         }
     });
-
-    vues['specialModal'].$mount('#specialModal');
 }
 
 function droidModal(modal){
@@ -12373,10 +12337,8 @@ function droidModal(modal){
     alum.append(alumCount);
     alum.append(alumAdd);
 
-    if (vues['specialModal']){
-        vues['specialModal'].$destroy();
-    }
-    vues['specialModal'] = new Vue({
+    vBind({
+        el: '#specialModal',
         data: global.interstellar['mining_droid'],
         methods: {
             subItem: function(item){
@@ -12426,8 +12388,6 @@ function droidModal(modal){
             }
         }
     });
-
-    vues['specialModal'].$mount('#specialModal');
 }
 
 function grapheneModal(modal){
@@ -12465,10 +12425,8 @@ function grapheneModal(modal){
         fuelTypes.append(addOil);
     }
 
-    if (vues['specialModal']){
-        vues['specialModal'].$destroy();
-    }
-    vues['specialModal'] = new Vue({
+    vBind({
+        el: '#specialModal',
         data: global.interstellar['g_factory'],
         methods: {
             subWood(){
@@ -12614,8 +12572,6 @@ function grapheneModal(modal){
             }
         }
     });
-
-    vues['specialModal'].$mount('#specialModal');
 }
 
 export function evoProgress(){
@@ -12950,7 +12906,7 @@ export function resQueue(){
     queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna, 'qany': item.qa }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
     
     try {
-        let bind = {
+        vBind({
             el: '#resQueue .buildList',
             data: global.r_queue,
             methods: {
@@ -12963,8 +12919,7 @@ export function resQueue(){
                     return timeFormat(time);
                 }
             }
-        }
-        vues['vue_res_queue'] = new Vue(bind);
+        });
         resDragQueue();
     }
     catch {
@@ -13017,9 +12972,6 @@ export function bank_vault(){
 }
 
 function bioseed(){
-    Object.keys(vues).forEach(function (v){
-        vues[v].$destroy();
-    });
     let god = global.race.species;
     let old_god = global.race.gods;
     let genus = races[god].type;
@@ -13169,9 +13121,6 @@ function big_bang(){
         unlockAchieve(`dissipated`);
     }
 
-    Object.keys(vues).forEach(function (v){
-        vues[v].$destroy();
-    });
     let god = global.race.species;
     let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;

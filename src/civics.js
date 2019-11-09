@@ -1,5 +1,5 @@
-import { global, vues, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
-import { challenge_multiplier, timeFormat } from './functions.js';
+import { global, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
+import { challenge_multiplier, timeFormat, vBind } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loc } from './locale.js';
@@ -17,7 +17,7 @@ export function defineGovernment(){
         };
     }
 
-    new Vue({
+    vBind({
         el: '#government .header',
         data: global.civic['taxes']
     });
@@ -45,7 +45,7 @@ export function buildQueue(){
     queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna, 'qany': item.qa }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
 
     try {
-        vues['builld_queue'] = new Vue({
+        vBind({
             el: '#buildQueue',
             data: global.queue,
             methods: {
@@ -85,7 +85,7 @@ function government(govern){
         template: '<div id="modalBox" class="modalBox"></div>'
     };
 
-    new Vue({
+    vBind({
         el: '#govType',
         data: global.civic['govern'],
         filters: {
@@ -160,10 +160,7 @@ function drawModal(){
         }
     }
 
-    if (vues['specialModal']){
-        vues['specialModal'].$destroy();
-    }
-    vues['specialModal'] = new Vue({
+    vBind({
         el: '#govModal',
         data: global.civic['govern'],
         methods: {
@@ -207,7 +204,7 @@ function taxRates(govern){
     tax_rates.append(tax_level);
     tax_rates.append(add);
     
-    new Vue({
+    vBind({
         el: '#tax_rates',
         data: global.civic['taxes'],
         filters: {
@@ -352,7 +349,8 @@ export function buildGarrison(garrison){
         global.civic.garrison['m_use'] = 0;
     }
 
-    vues['civ_garrison'] = new Vue({
+    vBind({
+        el: '#garrison',
         data: global.civic['garrison'],
         methods: {
             hire(){
@@ -988,7 +986,6 @@ export function buildGarrison(garrison){
             }
         }
     });
-    vues['civ_garrison'].$mount('#garrison');
 }
 
 function looters(){
@@ -1135,7 +1132,8 @@ function defineMad(){
         $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
     }
 
-    vues['mad'] = new Vue({
+    vBind({
+        el: '#mad',
         data: global.civic['mad'],
         methods: {
             launch(){
@@ -1183,7 +1181,6 @@ function defineMad(){
             }
         }
     });
-    vues['mad'].$mount('#mad');
 }
 
 export function dragQueue(){
@@ -1200,9 +1197,6 @@ export function dragQueue(){
 }
 
 function warhead(){
-    Object.keys(vues).forEach(function (v){
-        vues[v].$destroy();
-    });
     let god = global.race.species;
     let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;

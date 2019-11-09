@@ -1,4 +1,5 @@
-import { global, vues, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
+import { global, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
+import { vBind } from './functions.js';
 import { races } from './races.js';
 import { loc } from './locale.js';
 
@@ -285,10 +286,6 @@ function loadResource(name,max,rate,tradable,stackable,color){
         }
     }
 
-    if (vues[`res_${name}`]){
-        vues[`res_${name}`].$destroy();
-    }
-
     global['resource'][name]['stackable'] = stackable;
     if (!global['resource'][name]['crates']){
         global['resource'][name]['crates'] = 0;
@@ -341,7 +338,8 @@ function loadResource(name,max,rate,tradable,stackable,color){
             template: '<div id="modalBox" class="modalBox"></div>'
         };
     
-    vues[`res_${name}`] = new Vue({
+    vBind({
+        el: `#res${name}`,
         data: global['resource'][name], 
         filters: {
             size: function (value){
@@ -426,7 +424,6 @@ function loadResource(name,max,rate,tradable,stackable,color){
             }
         }
     });
-    vues[`res_${name}`].$mount(`#res${name}`);
 
     breakdownPopover(`cnt${name}`,name,'c');
 
@@ -448,7 +445,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
         });
         var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
         $('#resStorage').append(market_item);
-        containerItem(`stack_${name}`,`#stack-${name}`,market_item,name,color,true);
+        containerItem(`#stack-${name}`,market_item,name,color,true);
     }
 
     if (name !== global.race.species && name !== 'Crates' && name !== 'Containers'){
@@ -458,7 +455,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
     if (tradable){
         var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
         $('#market').append(market_item);
-        marketItem(`market_${name}`,`#market-${name}`,market_item,name,color,true);
+        marketItem(`#market-${name}`,market_item,name,color,true);
     }
 
     $(`#res${name}`).on('mouseover',function(){
@@ -503,13 +500,13 @@ function loadSpecialResource(name,color) {
         $('#resources').append(res_container);
     }
     
-    vues[`res_${name}`] = new Vue({
+    vBind({
+        el: `#res${name}`,
         data: global.race[bind]
     });
-    vues[`res_${name}`].$mount(`#res${name}`);
 }
 
-function marketItem(vue,mount,market_item,name,color,full){
+function marketItem(mount,market_item,name,color,full){
     if (full){
         market_item.append($(`<h3 class="res has-text-${color}">{{ r.name | namespace }}</h3>`));
     }
@@ -532,7 +529,8 @@ function marketItem(vue,mount,market_item,name,color,full){
         tradeRouteColor(name);
     }
     
-    vues[vue] = new Vue({
+    vBind({
+        el: mount,
         data: { 
             r: global.resource[name],
             m: global.city.market
@@ -550,7 +548,7 @@ function marketItem(vue,mount,market_item,name,color,full){
             },
             purchase(res){
                 if (!global.race['no_trade']){
-                    let qty = Number(vues['market_qty'].qty);
+                    let qty = global.city.market.qty;
                     let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
                     if (global.race['conniving']){
                         value *= 0.95;
@@ -566,7 +564,7 @@ function marketItem(vue,mount,market_item,name,color,full){
             },
             sell(res){
                 if (!global.race['no_trade']){
-                    var qty = Number(vues['market_qty'].qty);
+                    var qty = global.city.market.qty;
                     if (global.resource[res].amount >= qty){
                         let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
                         if (global.race['conniving']){
@@ -632,11 +630,11 @@ function marketItem(vue,mount,market_item,name,color,full){
                 if (global.race['arrogant']){
                     value = Math.round(value * 1.1);
                 }
-                return sizeApproximation(value * vues['market_qty'].qty,0);
+                return sizeApproximation(value * global.city.market.qty,0);
             },
             sell(value){
                 let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
-                return sizeApproximation(value * vues['market_qty'].qty / divide,0);
+                return sizeApproximation(value * global.city.market.qty / divide,0);
             },
             trade(val){
                 if (val < 0){
@@ -655,7 +653,6 @@ function marketItem(vue,mount,market_item,name,color,full){
             }
         }
     });
-    vues[vue].$mount(mount);
 }
 
 function unassignCrate(res){
@@ -714,7 +711,7 @@ function assignContainer(res){
     }
 }
 
-function containerItem(vue,mount,market_item,name,color){
+function containerItem(mount,market_item,name,color){
     market_item.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
 
     if (global.resource.Crates.display){
@@ -735,7 +732,8 @@ function containerItem(vue,mount,market_item,name,color){
         container.append($(`<span role="button" aria-label="add ${name} ${loc('resource_Containers_name')}" class="add has-text-success" @click="addCon('${name}')"><span>&raquo;</span></span>`));
     }
 
-    vues[vue] = new Vue({
+    vBind({
+        el: mount,
         data: global.resource[name],
         methods: {
             addCrate(res){
@@ -752,7 +750,6 @@ function containerItem(vue,mount,market_item,name,color){
             }
         }
     });
-    vues[vue].$mount(mount);
 }
 
 export function tradeSellPrice(res){
@@ -849,7 +846,8 @@ function breakdownPopover(id,name,type){
         popper.show();
         poppers[type+name] = new Popper($(`#${id}`),popper);
 
-        vues[`res_pop_temp`] = new Vue({
+        vBind({
+            el: `#resBreak${id} > div`,
             data: {
                 'Global': breakdown[type]['Global'],
                 [name]: breakdown[type][name],
@@ -912,7 +910,6 @@ function breakdownPopover(id,name,type){
                 }
             }
         });
-        vues[`res_pop_temp`].$mount(`#resBreak${id} > div`);
     });
     $(`#${id}`).on('mouseout',function(){
         $(`#resBreak${id}`).hide();
@@ -920,7 +917,7 @@ function breakdownPopover(id,name,type){
             poppers[type+name].destroy();
         }
         $(`#resBreak${id}`).remove();
-        vues[`res_pop_temp`].$destroy();
+        vBind({el: `#resBreak${id} > div`},'destroy');
     });
 }
 
@@ -928,7 +925,7 @@ function loadRouteCounter(){
     let no_market = global.race['no_trade'] ? ' nt' : '';
     var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><span class="tradeTotal${no_market}"><span class="has-text-warning">${loc('resource_market_trade_routes')}</span> {{ trade }} / {{ mtrade }}</span></div>`);
     $('#market').append(market_item);
-    new Vue({
+    vBind({
         el: '#tradeTotal',
         data: global.city.market
     });
@@ -938,7 +935,7 @@ function loadContainerCounter(){
     var market_item = $(`<div id="crateTotal" class="market-item"><span v-show="cr.display" class="crtTotal"><span class="has-text-warning">${loc('resource_Crates_name')}</span><span>{{ cr.amount }} / {{ cr.max }}</span></span><span v-show="cn.display" class="cntTotal"><span class="has-text-warning">${loc('resource_Containers_name')}</span><span>{{ cn.amount }} / {{ cn.max }}</span></span></div>`);
     $('#resStorage').append(market_item);
 
-    new Vue({
+    vBind({
         el: '#crateTotal',
         data: {
             cr: global.resource.Crates,
@@ -1008,10 +1005,21 @@ function drawModal(name,color){
     let body = $('<div class="modalBody crateModal"></div>');
     $('#modalBox').append(body);
     
-    if (vues['modalCrates']){
-        vues['modalCrates'].$destroy();
-    }
-    vues['modalCrates'] = new Vue({
+    let crates = $('<div id="modalCrates" class="crates"></div>');
+    body.append(crates);
+    
+    crates.append($(`<div class="crateHead"><span>${loc('resource_modal_crate_owned')} {{ crates.amount }}/{{ crates.max }}</span><span>${loc('resource_modal_crate_assigned')} {{ res.crates }}</span></div>`));
+    
+    let buildCr = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated multilined><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
+    let removeCr = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
+    let addCr = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button></b-tooltip>`);
+    
+    crates.append(buildCr);
+    crates.append(removeCr);
+    crates.append(addCr);
+    
+    vBind({
+        el: `#modalCrates`,
         data: { 
             crates: global['resource']['Crates'],
             res: global['resource'][name],
@@ -1040,26 +1048,24 @@ function drawModal(name,color){
         }
     });
     
-    let crates = $('<div id="modalCrates" class="crates"></div>');
-    body.append(crates);
-    
-    crates.append($(`<div class="crateHead"><span>${loc('resource_modal_crate_owned')} {{ crates.amount }}/{{ crates.max }}</span><span>${loc('resource_modal_crate_assigned')} {{ res.crates }}</span></div>`));
-    
-    let buildCr = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated multilined><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
-    let removeCr = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
-    let addCr = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button></b-tooltip>`);
-    
-    crates.append(buildCr);
-    crates.append(removeCr);
-    crates.append(addCr);
-    
-    vues['modalCrates'].$mount('#modalCrates');
-    
     if (global.city['warehouse'] && global.city['warehouse'].count > 0){
-        if (vues['modalContainer']){
-            vues['modalContainer'].$destroy();
-        }
-        vues['modalContainer'] = new Vue({
+        let containers = $('<div id="modalContainers" class="crates divide"></div>');
+        body.append(containers);
+        
+        containers.append($(`<div class="crateHead"><span>${loc('resource_modal_container_owned')} {{ containers.amount }}/{{ containers.max }}</span><span>${loc('resource_modal_container_assigned')} {{ res.containers }}</span></div>`));
+        
+        let position = global.race['terrifying'] ? 'is-top' : 'is-bottom';
+
+        let buildCon = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated multilined><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
+        let removeCon = $(`<b-tooltip :label="removeContainerLabel()" position="${position}" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
+        let addCon = $(`<b-tooltip :label="addContainerLabel()" position="${position}" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
+        
+        containers.append(buildCon);
+        containers.append(removeCon);
+        containers.append(addCon);
+        
+        vBind({
+            el: `#modalContainers`,
             data: { 
                 containers: global['resource']['Containers'],
                 res: global['resource'][name],
@@ -1087,29 +1093,10 @@ function drawModal(name,color){
                 }
             }
         });
-        
-        let containers = $('<div id="modalContainers" class="crates divide"></div>');
-        body.append(containers);
-        
-        containers.append($(`<div class="crateHead"><span>${loc('resource_modal_container_owned')} {{ containers.amount }}/{{ containers.max }}</span><span>${loc('resource_modal_container_assigned')} {{ res.containers }}</span></div>`));
-        
-        let position = global.race['terrifying'] ? 'is-top' : 'is-bottom';
-
-        let buildCon = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated multilined><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
-        let removeCon = $(`<b-tooltip :label="removeContainerLabel()" position="${position}" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
-        let addCon = $(`<b-tooltip :label="addContainerLabel()" position="${position}" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
-        
-        containers.append(buildCon);
-        containers.append(removeCon);
-        containers.append(addCon);
-        
-        vues['modalContainer'].$mount('#modalContainers');
     }
 
-    if (vues[`modal_res`]){
-        vues[`modal_res`].$destroy();
-    }
-    vues[`modal_res`] = new Vue({
+    vBind({
+        el: `#modalBoxTitle`,
         data: global['resource'][name], 
         filters: {
             size: function (value){
@@ -1120,7 +1107,6 @@ function drawModal(name,color){
             }
         }
     });
-    vues[`modal_res`].$mount('#modalBoxTitle');
 }
 
 export function crateValue(){
@@ -1169,7 +1155,7 @@ function initStorage(){
         store.append($(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" class="crate" animated multilined><button :aria-label="buildCrateLabel()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
         store.append($(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" class="container" animated multilined><button :aria-label="buildContainerLabel()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
 
-        new Vue({
+        vBind({
             el: '#createHead',
             data: {
                 cr: global.resource.Crates,
@@ -1197,10 +1183,6 @@ export function loadMarket(){
     let market = $('#market-qty');
     market.empty();
 
-    if (vues['market_qty']){
-        vues['market_qty'].$destroy();
-    }
-
     if (!global.race['no_trade']){
         market.append($(`<h3 class="is-sr-only">${loc('resource_trade_qty')}</h3>`));
         market.append($('<b-radio v-model="qty" native-value="10">10x</b-radio>'));
@@ -1217,10 +1199,10 @@ export function loadMarket(){
         }
     }
 
-    vues['market_qty'] = new Vue({
+    vBind({
+        el: `#market-qty`,
         data: global.city.market
     });
-    vues['market_qty'].$mount('#market-qty');
 }
 
 function initEjector(){
@@ -1234,7 +1216,7 @@ function initEjector(){
 
         eject.append($(`<span>{{ total }} / {{ on | max }}</span><span class="mass">${loc('interstellar_mass_ejector_mass')}: {{ mass | approx }} kt/s</span>`));
 
-        new Vue({
+        vBind({
             el: `#eject`,
             data: global.interstellar.mass_ejector,
             filters: {
@@ -1263,7 +1245,8 @@ function loadEjector(name,color){
 
         res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${atomic_mass[name]}</span> kt</span>`));
 
-        vues['eject_'+name] = new Vue({
+        vBind({
+            el: `#eject${name}`,
             data: {
                 r: global.resource[name],
                 e: global.interstellar.mass_ejector
@@ -1289,7 +1272,6 @@ function loadEjector(name,color){
                 },
             }
         });
-        vues['eject_'+name].$mount(`#eject${name}`);
     }
 }
 

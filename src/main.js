@@ -1325,6 +1325,12 @@ function fastLoop(){
                 global.civic.free--;
             }
         });
+
+        if (global.civic.new > 0 && !global.race['carnivore'] && !global.race['soul_eater'] && global.civic.farmer.display){
+            global.civic.farmer.workers += global.civic.new;
+            global.civic.free -= global.civic.new;
+        }
+        global.civic.new = 0;
         
         let entertainment = 0;
         if (global.tech['theatre']){
@@ -1667,6 +1673,9 @@ function fastLoop(){
                 let base = global.city.ptrait === 'toxic' ? global['resource'][global.race.species].amount * 1.25 : global['resource'][global.race.species].amount;
                 if(Math.rand(0, base * (3 - (2 ** time_multiplier))) <= lowerBound){
                     global['resource'][global.race.species].amount++;
+                    if (global.civic['hell_surveyor'].workers + global.civic.free >= global.civic['hell_surveyor'].assigned){
+                        global.civic.new++;
+                    }
                 }
             }
         }

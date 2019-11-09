@@ -1,4 +1,5 @@
-import { global, vues, poppers, messageQueue, keyMultiplier, p_on, modRes } from './vars.js';
+import { global, poppers, messageQueue, keyMultiplier, p_on } from './vars.js';
+import { vBind } from './functions.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
 import { costMultiplier, checkRequirements, incrementStruct } from './space.js';
@@ -32,10 +33,8 @@ const fortressModules = {
                 return global.tech['turret'] ? 4 + global.tech['turret'] : 4;
             },
             postPower(){
-                if (vues['civ_fortress']){
-                    p_on['turret'] = global.portal.turret.on;
-                    vues['civ_fortress'].$forceUpdate();
-                }
+                p_on['turret'] = global.portal.turret.on;
+                vBind({el: `#fort`},'update');
             },
             effect(){
                 let rating = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
@@ -47,10 +46,8 @@ const fortressModules = {
                     incrementStruct('turret','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.turret.on++;
-                        if (vues['civ_fortress']){
-                            p_on['turret']++;
-                            vues['civ_fortress'].$forceUpdate();
-                        }
+                        p_on['turret']++;
+                        vBind({el: `#fort`},'update');
                     }
                     return true;
                 }
@@ -233,10 +230,10 @@ export function renderFortress(){
             if (fortressModules[region].info['support']){
                 let support = fortressModules[region].info['support'];
                 parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
-                vues[`sr${region}`] = new Vue({
+                vBind({
+                    el: `#sr${region}`,
                     data: global.portal[support]
                 });
-                vues[`sr${region}`].$mount(`#sr${region}`);
             }
             else {
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
@@ -319,7 +316,7 @@ function buildFortress(parent){
 
     fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
 
-    vues['civ_fortress'] = new Vue({
+    vBind({
         el: '#fort',
         data: {
             f: global.portal.fortress,
@@ -378,9 +375,7 @@ function buildFortress(parent){
                         global.portal.fortress.garrison = global.civic.garrison.workers;
                     }
                     global.portal.fortress['assigned'] = global.portal.fortress.garrison;
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                 }
             },
             aLast(){
@@ -394,9 +389,7 @@ function buildFortress(parent){
                         global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
                     }
                     global.portal.fortress['assigned'] = global.portal.fortress.garrison;
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                 }
             },
             patInc(){
@@ -477,9 +470,7 @@ function buildFortress(parent){
                     global.civic.garrison.m_use++;
                     global.portal.fortress.garrison++;
                     global.portal.fortress['assigned'] = global.portal.fortress.garrison;
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                 }
             },
             hireLabel(){

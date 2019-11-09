@@ -1,5 +1,5 @@
-import { global, vues, poppers, messageQueue, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
-import { powerModifier, challenge_multiplier } from './functions.js';
+import { global, poppers, messageQueue, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
+import { powerModifier, challenge_multiplier, vBind } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -2658,10 +2658,10 @@ export function space(){
             if (spaceProjects[region].info['support']){
                 let support = spaceProjects[region].info['support'];
                 parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
-                vues[`sr${region}`] = new Vue({
+                vBind({
+                    el: `#sr${region}`,
                     data: global.space[support]
                 });
-                vues[`sr${region}`].$mount(`#sr${region}`);
             }
             else {
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
@@ -2709,10 +2709,10 @@ export function deepSpace(){
             if (interstellarProjects[region].info['support']){
                 let support = interstellarProjects[region].info['support'];
                 parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
-                vues[`sr${region}`] = new Vue({
+                vBind({
+                    el: `#sr${region}`,
                     data: global.interstellar[support]
                 });
-                vues[`sr${region}`].$mount(`#sr${region}`);
             }
             else {
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);

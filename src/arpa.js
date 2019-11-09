@@ -1,5 +1,5 @@
-import { global, vues, poppers, keyMultiplier, sizeApproximation, messageQueue, srSpeak } from './vars.js';
-import { timeFormat } from './functions.js';
+import { global, poppers, keyMultiplier, sizeApproximation, messageQueue, srSpeak } from './vars.js';
+import { timeFormat, vBind } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { space } from './space.js';
@@ -782,9 +782,6 @@ function genetics(){
     }
 
     if (global.tech['genetics'] > 1){
-        if (vues[`arpaSequence`]){
-            vues[`arpaSequence`].$destroy();
-        }
         let genome = $(`<div id="arpaSequence" class="genome"></div>`);
         parent.append(genome);
 
@@ -841,8 +838,8 @@ function genetics(){
             $('#arpaSequence button.auto').addClass('has-text-success');
         }
 
-
-        vues[`arpaSequence`] = new Vue({
+        vBind({
+            el: `#arpaSequence`,
             data: global.arpa.sequence,
             methods: {
                 seq(){
@@ -922,7 +919,6 @@ function genetics(){
                 }
             }
         });
-        vues[`arpaSequence`].$mount(`#arpaSequence`);
     }
     if (global.tech['genetics'] > 2){
         let breakdown = $('<div id="geneticBreakdown" class="geneticTraits"></div>');
@@ -998,10 +994,8 @@ function genetics(){
             breakdown.prepend(`<div class="trait minor has-text-success">${loc('arpa_race_genetic_minor_traits',[races[global.race.species].name])}</div>`)
         }
 
-        if (vues[`arpaGenes`]){
-            vues[`arpaGenes`].$destroy();
-        }
-        vues[`arpaGenes`] = new Vue({
+        vBind({
+            el: `#geneticBreakdown`,
             data: {
                 genes: global.genes,
                 race: global.race
@@ -1105,7 +1099,6 @@ function genetics(){
                 }
             }
         });
-        vues[`arpaGenes`].$mount(`#geneticBreakdown`);
     }
 }
 
@@ -1154,7 +1147,8 @@ function addProject(parent,project){
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('100','${project}')" class="button x100" @click="build('${project}',100)">{{ complete | remain }}%</button>`));
 
-        vues[`arpa${project}`] = new Vue({
+        vBind({
+            el: `#arpa${project}`,
             data: global.arpa[project],
             methods: {
                 build(pro,num){
@@ -1221,7 +1215,6 @@ function addProject(parent,project){
                 }
             }
         });
-        vues[`arpa${project}`].$mount(`#arpa${project}`);
 
         $(`#arpa${project} .head .desc`).on('mouseover',function(){
             var popper = $(`<div id="popArpa${project}" class="popper has-background-light has-text-dark">${arpaProjects[project].desc}</div>`);

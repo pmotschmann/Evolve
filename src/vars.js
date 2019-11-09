@@ -761,6 +761,10 @@ if (global.tech['unify']){
     }
 }
 
+if (!global.civic['new']){
+    global.civic['new'] = 0;
+}
+
 global.settings.animated = true;
 global.settings.disableReset = false;
 
@@ -1011,10 +1015,6 @@ window.reset = function reset(){
 
 // executes a soft reset
 window.soft_reset = function reset(){
-    Object.keys(vues).forEach(function (v){
-        vues[v].$destroy();
-    });
-
     let replace = {
         species : 'protoplasm', 
         Plasmid: { count: global.race.Plasmid.count },
@@ -1093,7 +1093,7 @@ export function clearStates(){
     global.interstellar = {};
     global.portal = {};
     global.starDock = {};
-    global.civic = { free: 0 };
+    global.civic = { free: 0, new: 0 };
     global.resource = {};
     global.evolution = {};
     global.event = 100;
