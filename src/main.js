@@ -134,6 +134,10 @@ $('#morale').on('mouseover',function(){
         let type = global.city.morale.frenzy > 0 ? 'success' : 'danger';
         moralePopper.append(`<p class="modal_bd"><span>${loc('morale_frenzy')}</span> <span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
     }
+    if (global.city.morale['rev']){
+        total -= global.city.morale.rev;
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_rev')}</span> <span class="has-text-danger"> -${global.city.morale.rev}%</span></p>`);
+    }
     
     if (total > moraleCap || total < 50){
         moralePopper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
@@ -1377,6 +1381,15 @@ function fastLoop(){
         }
 
         let m_min = global.race['optimistic'] ? 60 : 50;
+        if (global.civic.govern.fr > 0){
+            let rev = morale / 2;
+            global.city.morale.rev = rev;
+            morale -= rev;
+            m_min -= 10;
+        }
+        else {
+            global.city.morale.rev = 0;
+        }
         if (morale < m_min){
             morale = m_min;
         }
@@ -4276,6 +4289,9 @@ function longLoop(){
 
         if (global.civic.govern.rev > 0){
             global.civic.govern.rev--;
+        }
+        if (global.civic.govern.fr > 0){
+            global.civic.govern.fr--;
         }
 
         if (global.city.ptrait === 'trashed'){

@@ -590,6 +590,7 @@ if (!global.civic['govern']){
     global.civic['govern'] = {
         type: 'oligarchy',
         rev: 2000,
+        fr: 0,
     };
 }
 
@@ -609,6 +610,7 @@ if (!global.city['morale']){
         season: 0,
         weather: 0,
         warmonger: 0,
+        rev: 0
     };
 }
 
@@ -632,6 +634,10 @@ if (!global.city.morale['leadership']){
 
 if (!global.city.morale['warmonger']){
     global.city.morale['warmonger'] = 0;
+}
+
+if (!global.city.morale['rev']){
+    global.city.morale['rev'] = 0;
 }
 
 if (!global.city.morale['tax']){

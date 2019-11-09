@@ -73,8 +73,13 @@ function government(govern){
     var type = $(`<div>${loc('civics_government_type')} <span id="govLabel" class="has-text-warning">{{ type | govern }}</span></div>`);
     gov.append(type);
     
-    var change = $(`<div><button class="button" @click="trigModal">${loc('civics_change')}</button></div>`);
-    gov.append(change);
+    var setgov = $(`<div></div>`);
+    gov.append(setgov);
+
+    var change = $(`<b-tooltip :label="change()" position="is-bottom" animated multilined><button class="button" @click="trigModal" :disabled="rev > 0">${loc('civics_change')}</button></b-tooltip>`);
+    setgov.append(change);
+    var force = $(`<b-tooltip :label="force()" position="is-bottom" animated multilined><button class="button revolution" @click="startrev" :disabled="rev === 0">${loc('civics_force_rev')}</button></b-tooltip>`);
+    setgov.append(force);
 
     var modal = {
         template: '<div id="modalBox" class="modalBox"></div>'
@@ -101,6 +106,16 @@ function government(govern){
                       drawModal();
                    }
                 }, 50);
+            },
+            startrev(){
+                global.civic.govern.fr = global.civic.govern.rev;
+                global.civic.govern.rev = 0;
+            },
+            change(){                
+                return global.civic.govern.rev > 0 ? loc('civics_change_desc',[global.civic.govern.rev]) : loc('civics_change_desc2');
+            },
+            force(){                
+                return global.civic.govern.rev > 0 ? loc('civics_force_rev_desc') : loc('civics_force_rev_desc2');
             }
         }
     });
@@ -125,18 +140,22 @@ function drawModal(){
     $('#modalBox').append(body);
 
     if (global.tech['govern']){
-        //body.append($(`<button class="button gap" data-gov="anarchy" @click="setGov('anarchy')">${loc('govern_anarchy')}</button>`));
-        body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc('govern_autocracy')}</button>`));
-        body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${loc('govern_democracy')}</button>`));
-        body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc('govern_oligarchy')}</button>`));
-
-        if (global.tech['gov_theo']){
+        if (global.civic.govern.type !== 'autocracy'){
+            body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc('govern_autocracy')}</button>`));
+        }
+        if (global.civic.govern.type !== 'democracy'){
+            body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${loc('govern_democracy')}</button>`));
+        }
+        if (global.civic.govern.type !== 'oligarchy'){
+            body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc('govern_oligarchy')}</button>`));
+        }
+        if (global.tech['gov_theo'] && global.civic.govern.type !== 'theocracy'){
             body.append($(`<button class="button gap" data-gov="theocracy" @click="setGov('theocracy')">${loc('govern_theocracy')}</button>`));
         }
-        if (global.tech['govern'] >= 2){
+        if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic'){
             body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc('govern_republic')}</button>`));
         }
-        if (global.tech['govern'] >= 3){
+        if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy'){
             body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc('govern_technocracy')}</button>`));
         }
     }
@@ -149,10 +168,12 @@ function drawModal(){
         data: global.civic['govern'],
         methods: {
             setGov(g){
-                global.civic.govern.type = g;
-                global.civic.govern.rev = 2000;
-                if (global.stats.achieve['anarchist']){
-                    global.civic.govern.rev -= global.stats.achieve['anarchist'].l * 250;
+                if (global.civic.govern.rev === 0){
+                    global.civic.govern.type = g;
+                    global.civic.govern.rev = 2000 + global.civic.govern.fr;
+                    if (global.stats.achieve['anarchist']){
+                        global.civic.govern.rev -= global.stats.achieve['anarchist'].l * 250;
+                    }
                 }
             }
         }

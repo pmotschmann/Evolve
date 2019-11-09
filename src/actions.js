@@ -5866,6 +5866,7 @@ export const actions = {
                     global.civic['govern'] = {
                         type: 'anarchy',
                         rev: 0,
+                        fr: 0
                     };
                     return true;
                 }
@@ -12754,6 +12755,12 @@ function sentience(){
     global.settings.civTabs = 1;
     global.settings.showEvolve = false;
     global.settings.showCity = true;
+
+    global.civic['govern'] = {
+        type: 'anarchy',
+        rev: 0,
+        fr: 0
+    };
 
     if (global.race.gods !== 'none'){
         global.tech['religion'] = 1;
