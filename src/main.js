@@ -2051,7 +2051,8 @@ function fastLoop(){
 
             let ai_core = 1;
             if (global.tech['ai_core'] && p_on['citadel'] > 0){
-                ai_core += (p_on['citadel'] * 0.05);
+                let ai = +(quantum_level / 1.75).toFixed(1) / 100;
+                ai_core += (p_on['citadel'] * ai);
             }
             
             let delta = factory_output * powered_mult * ai_core;
@@ -2282,10 +2283,19 @@ function fastLoop(){
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
 
-            let delta = graphene_production * 0.6 * zigguratBonus() * hunger * global_multiplier;
+            let ai = 1;
+            if (global.tech['ai_core'] >= 3){
+                let graph = +(quantum_level / 5).toFixed(1) / 100;
+                ai += graph * p_on['citadel'];
+            }
+
+            let delta = graphene_production * ai * 0.6 * zigguratBonus() * hunger * global_multiplier;
 
             let graphene_bd = {};
             graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
+            if (p_on['citadel'] > 0){
+                graphene_bd[loc('interstellar_citadel_effect_bd')] = ((ai - 1) * 100) + '%';
+            }
             graphene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Graphene'] = graphene_bd;
             modRes('Graphene', delta * time_multiplier);

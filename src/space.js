@@ -2311,9 +2311,14 @@ const interstellarProjects = {
             effect(){
                 let desc = `<div>${loc('interstellar_citadel_effect',[5])}</div>`;
                 if (global.tech['ai_core']){
-                    desc = desc + `<div>${loc('interstellar_citadel_effect2',[5])}</div>`;
+                    let cement = +(quantum_level / 1.75).toFixed(1);
+                    desc = desc + `<div>${loc('interstellar_citadel_effect2',[cement])}</div>`;
                     if (global.tech['ai_core'] >= 2){
                         desc = desc + `<div>${loc('interstellar_citadel_effect3',[2])}</div>`;
+                    }
+                    if (global.tech['ai_core'] >= 3){
+                        let graph = +(quantum_level / 5).toFixed(1);
+                        desc = desc + `<div>${loc('interstellar_citadel_effect4',[graph])}</div>`;
                     }
                 }
                 return `${desc}<div>${loc('minus_power',[$(this)[0].powered()])}</div>`;

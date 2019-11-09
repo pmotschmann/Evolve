@@ -7252,6 +7252,23 @@ export const actions = {
                 return false;
             }
         },
+        graphene_processing: {
+            id: 'tech-graphene_processing',
+            title: loc('tech_graphene_processing'),
+            desc: loc('tech_graphene_processing'),
+            reqs: { ai_core: 2 },
+            grant: ['ai_core',3],
+            cost: {
+                Knowledge(){ return 2500000; },
+            },
+            effect: loc('tech_graphene_processing_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         fusion_power: {
             id: 'tech-fusion_power',
             title: loc('tech_fusion_power'),
