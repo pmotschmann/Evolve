@@ -49,414 +49,414 @@ export const races = {
         name: loc('race_orc'),
         desc: loc('race_orc_desc'),
         type: 'humanoid',
-        home: 'Roneard',
+        home: loc('race_orc_home'),
         entity: loc('race_orc_entity'),
         traits: { 
             brute: 1,
             angry: 1
         },
         solar: {
-            red: 'Krom',
-            hell: 'Mordor',
-            gas: 'Crush',
-            gas_moon: 'Hammerfell',
-            dwarf: 'Mace',
+            red: loc('race_orc_solar_red'),
+            hell: loc('race_orc_solar_hell'),
+            gas: loc('race_orc_solar_gas'),
+            gas_moon: loc('race_orc_solar_gas_moon'),
+            dwarf: loc('race_orc_solar_dwarf'),
         }
     },
     cath: {
         name: loc('race_cath'),
         desc: loc('race_cath_desc'),
         type: 'animal',
-        home: 'Cathar',
+        home: loc('race_cath_home'),
         entity: loc('race_cath_entity'),
         traits: { 
             lazy: 1,
             carnivore: 1
         },
         solar: {
-            red: 'Tabbi',
-            hell: 'Vac',
-            gas: 'Garth',
-            gas_moon: 'Purrth',
-            dwarf: 'Kith',
+            red: loc('race_cath_solar_red'),
+            hell: loc('race_cath_solar_hell'),
+            gas: loc('race_cath_solar_gas'),
+            gas_moon: loc('race_cath_solar_gas_moon'),
+            dwarf: loc('race_cath_solar_dwarf'),
         }
     },
     wolven: {
         name: loc('race_wolven'),
         desc: loc('race_wolven_desc'),
         type: 'animal',
-        home: 'Wolvar',
+        home: loc('race_wolven_home'),
         entity: loc('race_wolven_entity'),
         traits: { 
             pack_mentality: 1,
             tracker: 1
         },
         solar: {
-            red: 'Pack',
-            hell: 'Howl',
-            gas: 'Rayet',
-            gas_moon: 'Fang',
-            dwarf: 'Runt',
+            red: loc('race_wolven_solar_red'),
+            hell: loc('race_wolven_solar_hell'),
+            gas: loc('race_wolven_solar_gas'),
+            gas_moon: loc('race_wolven_solar_gas_moon'),
+            dwarf: loc('race_wolven_solar_dwarf'),
         }
     },
     centaur: {
         name: loc('race_centaur'),
         desc: loc('race_centaur_desc'),
         type: 'animal',
-        home: 'Sagittarius',
+        home: loc('race_centaur_home'),
         entity: loc('race_centaur_entity'),
         traits: {
             beast_of_burden: 1,
             herbivore: 1
         },
         solar: {
-            red: 'Chiron',
-            hell: 'Hydra',
-            gas: 'Barnard',
-            gas_moon: 'Hay',
-            dwarf: 'Pony',
+            red: loc('race_centaur_solar_red'),
+            hell: loc('race_centaur_solar_hell'),
+            gas: loc('race_centaur_solar_gas'),
+            gas_moon: loc('race_centaur_solar_gas_moon'),
+            dwarf: loc('race_centaur_solar_dwarf'),
         }
     },
     kobold: {
         name: loc('race_kobold'),
         desc: loc('race_kobold_desc'),
         type: 'small',
-        home: 'Wax',
+        home: loc('race_kobold_home'),
         entity: loc('race_kobold_entity'),
         traits: {
             pack_rat: 1,
             paranoid: 1
         },
         solar: {
-            red: 'Wick',
-            hell: 'Melt',
-            gas: 'Horde',
-            gas_moon: 'Task',
-            dwarf: 'Satchel',
+            red: loc('race_kobold_solar_red'),
+            hell: loc('race_kobold_solar_hell'),
+            gas: loc('race_kobold_solar_gas'),
+            gas_moon: loc('race_kobold_solar_gas_moon'),
+            dwarf: loc('race_kobold_solar_dwarf'),
         }
     },
     goblin: {
         name: loc('race_goblin'),
         desc: loc('race_goblin_desc'),
         type: 'small',
-        home: 'Crassus',
+        home: loc('race_goblin_home'),
         entity: loc('race_goblin_entity'),
         traits: { 
             greedy: 1,
             merchant: 1
         },
         solar: {
-            red: 'Cixi',
-            hell: 'Sixtus',
-            gas: 'Ponzi',
-            gas_moon: 'Tweed',
-            dwarf: 'Marcos',
+            red: loc('race_goblin_solar_red'),
+            hell: loc('race_goblin_solar_hell'),
+            gas: loc('race_goblin_solar_gas'),
+            gas_moon: loc('race_goblin_solar_gas_moon'),
+            dwarf: loc('race_goblin_solar_dwarf'),
         }
     },
     gnome: {
         name: loc('race_gnome'),
         desc: loc('race_gnome_desc'),
         type: 'small',
-        home: 'Lawn',
+        home: loc('race_gnome_home'),
         entity: loc('race_gnome_entity'),
         traits: { 
             smart: 1,
             puny: 1
         },
         solar: {
-            red: 'Shire',
-            hell: 'Boot',
-            gas: 'Dwarf',
-            gas_moon: 'Trogg',
-            dwarf: 'Napoleon',
+            red: loc('race_gnome_solar_red'),
+            hell: loc('race_gnome_solar_hell'),
+            gas: loc('race_gnome_solar_gas'),
+            gas_moon: loc('race_gnome_solar_gas_moon'),
+            dwarf: loc('race_gnome_solar_dwarf'),
         }
     },
     orge: {
         name: loc('race_ogre'),
         desc: loc('race_ogre_desc'),
         type: 'giant',
-        home: 'Mourn',
+        home: loc('race_orge_home'),
         entity: loc('race_ogre_entity'),
         traits: { 
             dumb: 1,
             tough: 1
         },
         solar: {
-            red: 'Latva',
-            hell: 'Maw',
-            gas: 'Tanoth',
-            gas_moon: 'Goria',
-            dwarf: 'Grok',
+            red: loc('race_orge_solar_red'),
+            hell: loc('race_orge_solar_hell'),
+            gas: loc('race_orge_solar_gas'),
+            gas_moon: loc('race_orge_solar_gas_moon'),
+            dwarf: loc('race_orge_solar_dwarf'),
         }
     },
     cyclops: {
         name: loc('race_cyclops'),
         desc: loc('race_cyclops_desc'),
         type: 'giant',
-        home: 'Unus',
+        home: loc('race_cyclops_home'),
         entity: loc('race_cyclops_entity'),
         traits: {
             nearsighted: 1,
             intelligent: 1
         },
         solar: {
-            red: 'Hesiod',
-            hell: 'Phemus',
-            gas: 'Balor',
-            gas_moon: 'Jian',
-            dwarf: 'Sokhor',
+            red: loc('race_cyclops_solar_red'),
+            hell: loc('race_cyclops_solar_hell'),
+            gas: loc('race_cyclops_solar_gas'),
+            gas_moon: loc('race_cyclops_solar_gas_moon'),
+            dwarf: loc('race_cyclops_solar_dwarf'),
         }
     },
     troll: {
         name: loc('race_troll'),
         desc: loc('race_troll_desc'),
         type: 'giant',
-        home: 'Brücke',
+        home: loc('race_troll_home'),
         entity: loc('race_troll_entity'),
         traits: {
             regenerative: 1,
             gluttony: 1
         },
         solar: {
-            red: 'Mojo',
-            hell: 'Sulfide',
-            gas: 'Voodoo',
-            gas_moon: 'Hex',
-            dwarf: 'Shadow',
+            red: loc('race_troll_solar_red'),
+            hell: loc('race_troll_solar_hell'),
+            gas: loc('race_troll_solar_gas'),
+            gas_moon: loc('race_troll_solar_gas_moon'),
+            dwarf: loc('race_troll_solar_dwarf'),
         }
     },
     tortoisan: {
         name: loc('race_tortoisan'),
         desc: loc('race_tortoisan_desc'),
         type: 'reptilian',
-        home: 'Splinter',
+        home: loc('race_tortoisan_home'),
         entity: loc('race_tortoisan_entity'),
         traits: { 
             slow: 1,
             armored: 1
         },
         solar: {
-            red: 'Rock',
-            hell: 'Shade',
-            gas: 'Ooze',
-            gas_moon: 'Shred',
-            dwarf: 'Shell',
+            red: loc('race_tortoisan_solar_red'),
+            hell: loc('race_tortoisan_solar_hell'),
+            gas: loc('race_tortoisan_solar_gas'),
+            gas_moon: loc('race_tortoisan_solar_gas_moon'),
+            dwarf: loc('race_tortoisan_solar_dwarf'),
         }
     },
     gecko: {
         name: loc('race_gecko'),
         desc: loc('race_gecko_desc'),
         type: 'reptilian',
-        home: 'Ijsabom',
+        home: loc('race_gecko_home'),
         entity: loc('race_gecko_entity'),
         traits: {
             optimistic: 1,
             chameleon: 1
         },
         solar: {
-            red: 'Setae',
-            hell: 'Claim',
-            gas: 'Godzilla',
-            gas_moon: 'Gekkota',
-            dwarf: 'Ackie',
+            red: loc('race_gecko_solar_red'),
+            hell: loc('race_gecko_solar_hell'),
+            gas: loc('race_gecko_solar_gas'),
+            gas_moon: loc('race_gecko_solar_gas_moon'),
+            dwarf: loc('race_gecko_solar_dwarf'),
         }
     },
     slitheryn: {
         name: loc('race_slitheryn'),
         desc: loc('race_slitheryn_desc'),
         type: 'reptilian',
-        home: 'Viper',
+        home: loc('race_slitheryn_home'),
         entity: loc('race_slitheryn_entity'),
         traits: {
             slow_digestion: 1,
             hard_of_hearing: 1
         },
         solar: {
-            red: 'Cobra',
-            hell: 'Ecdysis',
-            gas: 'Serpens',
-            gas_moon: 'Python',
-            dwarf: 'Boa',
+            red: loc('race_slitheryn_solar_red'),
+            hell: loc('race_slitheryn_solar_hell'),
+            gas: loc('race_slitheryn_solar_gas'),
+            gas_moon: loc('race_slitheryn_solar_gas_moon'),
+            dwarf: loc('race_slitheryn_solar_dwarf'),
         }
     },
     arraak: {
         name: loc('race_arraak'),
         desc: loc('race_arraak_desc'),
         type: 'avian',
-        home: 'Daphne',
+        home: loc('race_arraak_home'),
         entity: loc('race_arraak_entity'),
         traits: {
             resourceful: 1,
             selenophobia: 1
         },
         solar: {
-            red: 'Hitch',
-            hell: 'Flock',
-            gas: 'Down',
-            gas_moon: 'Peck',
-            dwarf: 'Chick',
+            red: loc('race_arraak_solar_red'),
+            hell: loc('race_arraak_solar_hell'),
+            gas: loc('race_arraak_solar_gas'),
+            gas_moon: loc('race_arraak_solar_gas_moon'),
+            dwarf: loc('race_arraak_solar_dwarf'),
         }
     },
     pterodacti: {
         name: loc('race_pterodacti'),
         desc: loc('race_pterodacti_desc'),
         type: 'avian',
-        home: 'Crichton',
+        home: loc('race_pterodacti_home'),
         entity: loc('race_pterodacti_entity'),
         traits: {
             leathery: 1,
             pessimistic: 1
         },
         solar: {
-            red: 'Jurassic',
-            hell: 'Prey',
-            gas: 'Andromeda',
-            gas_moon: 'Sphere',
-            dwarf: 'Micro',
+            red: loc('race_pterodacti_solar_red'),
+            hell: loc('race_pterodacti_solar_hell'),
+            gas: loc('race_pterodacti_solar_gas'),
+            gas_moon: loc('race_pterodacti_solar_gas_moon'),
+            dwarf: loc('race_pterodacti_solar_dwarf'),
         }
     },
     dracnid: {
         name: loc('race_dracnid'),
         desc: loc('race_dracnid_desc'),
         type: 'avian',
-        home: 'Draco',
+        home: loc('race_dracnid_home'),
         entity: loc('race_dracnid_entity'),
         traits: {
             hoarder: 1,
             solitary: 1
         },
         solar: {
-            red: 'Onyx',
-            hell: 'Slayer',
-            gas: 'Ancalagon',
-            gas_moon: 'Wyrm',
-            dwarf: 'Drake',
+            red: loc('race_dracnid_solar_red'),
+            hell: loc('race_dracnid_solar_hell'),
+            gas: loc('race_dracnid_solar_gas'),
+            gas_moon: loc('race_dracnid_solar_gas_moon'),
+            dwarf: loc('race_dracnid_solar_dwarf'),
         }
     },
     entish: {
         name: loc('race_entish'),
         desc: loc('race_entish_desc'),
         type: 'plant',
-        home: 'Fangorn',
+        home: loc('race__home'),
         entity: loc('race_entish_entity'),
         traits: {
             kindling_kindred: 1,
             pyrophobia: 1
         },
         solar: {
-            red: 'Entmoot',
-            hell: 'Orthanc',
-            gas: 'Yavanna',
-            gas_moon: 'Onodrim',
-            dwarf: 'Branch',
+            red: loc('race_entish_solar_red'),
+            hell: loc('race_entish_solar_hell'),
+            gas: loc('race_entish_solar_gas'),
+            gas_moon: loc('race_entish_solar_gas_moon'),
+            dwarf: loc('race_entish_solar_dwarf'),
         }
     },
     cacti: {
         name: loc('race_cacti'),
         desc: loc('race_cacti_desc'),
         type: 'plant',
-        home: 'Bikanel',
+        home: loc('race_cacti_home'),
         entity: loc('race_cacti_entity'),
         traits: {
             hyper: 1,
             skittish: 1
         },
         solar: {
-            red: 'Corel',
-            hell: 'Ruin',
-            gas: 'Saguaro',
-            gas_moon: 'Cholla',
-            dwarf: 'Thorn',
+            red: loc('race_cacti_solar_red'),
+            hell: loc('race_cacti_solar_hell'),
+            gas: loc('race_cacti_solar_gas'),
+            gas_moon: loc('race_cacti_solar_gas_moon'),
+            dwarf: loc('race_cacti_solar_dwarf'),
         }
     },
     sporgar: {
         name: loc('race_sporgar'),
         desc: loc('race_sporgar_desc'),
         type: 'fungi',
-        home: 'Zanger',
+        home: loc('race_sporgar_home'),
         entity: loc('race_sporgar_entity'),
         traits: {
             infectious: 1,
             parasite: 1
         },
         solar: {
-            red: 'Ophio',
-            hell: 'Cymbo',
-            gas: 'Tyrant',
-            gas_moon: 'Nemesis',
-            dwarf: 'Whesker',
+            red: loc('race_sporgar_solar_red'),
+            hell: loc('race_sporgar_solar_hell'),
+            gas: loc('race_sporgar_solar_gas'),
+            gas_moon: loc('race_sporgar_solar_gas_moon'),
+            dwarf: loc('race_sporgar_solar_dwarf'),
         }
     },
     shroomi: {
         name: loc('race_shroomi'),
         desc: loc('race_shroomi_desc'),
         type: 'fungi',
-        home: 'Armillaria',
+        home: loc('race_shroomi_home'),
         entity: loc('race_shroomi_entity'),
         traits: {
             toxic: 1,
             nyctophilia: 1
         },
         solar: {
-            red: 'Bloom',
-            hell: 'Polypore',
-            gas: 'Psilocybin',
-            gas_moon: 'Skullcap',
-            dwarf: 'Crimini',
+            red: loc('race_shroomi_solar_red'),
+            hell: loc('race_shroomi_solar_hell'),
+            gas: loc('race_shroomi_solar_gas'),
+            gas_moon: loc('race_shroomi_solar_gas_moon'),
+            dwarf: loc('race_shroomi_solar_dwarf'),
         }
     },
     mantis: {
         name: loc('race_mantis'),
         desc: loc('race_mantis_desc'),
         type: 'insectoid',
-        home: 'Chryssalid',
+        home: loc('race_mantis_home'),
         entity: loc('race_mantis_entity'),
         traits: {
             cannibalize: 1,
             malnutrition: 1
         },
         solar: {
-            red: 'Nineveh',
-            hell: 'Molt',
-            gas: 'Devil',
-            gas_moon: 'Ghost',
-            dwarf: 'Empusa',
+            red: loc('race_mantis_solar_red'),
+            hell: loc('race_mantis_solar_hell'),
+            gas: loc('race_mantis_solar_gas'),
+            gas_moon: loc('race_mantis_solar_gas_moon'),
+            dwarf: loc('race_mantis_solar_dwarf'),
         }
     },
     scorpid: {
         name: loc('race_scorpid'),
         desc: loc('race_scorpid_desc'),
         type: 'insectoid',
-        home: 'Scorpio',
+        home: loc('race_scorpid_home'),
         entity: loc('race_scorpid_entity'),
         traits: {
             claws: 1,
             atrophy: 1
         },
         solar: {
-            red: 'Pincer',
-            hell: 'Boil',
-            gas: 'Emperor',
-            gas_moon: 'Utescorpio',
-            dwarf: 'Leiurus',
+            red: loc('race_scorpid_solar_red'),
+            hell: loc('race_scorpid_solar_hell'),
+            gas: loc('race_scorpid_solar_gas'),
+            gas_moon: loc('race_scorpid_solar_gas_moon'),
+            dwarf: loc('race_scorpid_solar_dwarf'),
         }
     },
     antid: {
         name: loc('race_antid'),
         desc: loc('race_antid_desc'),
         type: 'insectoid',
-        home: 'Menzel',
+        home: loc('race_antid_home'),
         entity: loc('race_antid_entity'),
         traits: {
             hivemind: 1,
             tunneler: 1
         },
         solar: {
-            red: 'Hill',
-            hell: 'Fluva',
-            gas: 'Thorax',
-            gas_moon: 'Pharaoh',
-            dwarf: 'Odorous',
+            red: loc('race_antid_solar_red'),
+            hell: loc('race_antid_solar_hell'),
+            gas: loc('race_antid_solar_gas'),
+            gas_moon: loc('race_antid_solar_gas_moon'),
+            dwarf: loc('race_antid_solar_dwarf'),
         }
     },
     sharkin: {
