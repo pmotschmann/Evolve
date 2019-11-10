@@ -5919,7 +5919,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 26000; }
             },
-            effect: loc('govern_corpocracy_effect'),
+            effect: loc('tech_corpocracy_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
