@@ -67,7 +67,7 @@ export function buildQueue(){
 }
 
 function government(govern){
-    var gov = $('<div id="govType" class="govType"></div>');
+    var gov = $('<div id="govType" class="govType" v-show="vis()"></div>');
     govern.append(gov);
     
     var type = $(`<div>${loc('civics_government_type')} <span id="govLabel" class="has-text-warning">{{ type | govern }}</span></div>`);
@@ -116,6 +116,9 @@ function government(govern){
             },
             force(){                
                 return global.civic.govern.rev > 0 ? loc('civics_force_rev_desc') : loc('civics_force_rev_desc2');
+            },
+            vis(){
+                return global.tech['govern'] ? true : false;
             }
         }
     });
