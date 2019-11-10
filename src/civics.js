@@ -174,6 +174,9 @@ function drawModal(){
                     if (global.stats.achieve['anarchist']){
                         global.civic.govern.rev -= global.stats.achieve['anarchist'].l * 250;
                     }
+                    if (global.race['lawless']){
+                        global.civic.govern.rev = Math.round(global.civic.govern.rev / 10);
+                    }
                 }
             }
         }

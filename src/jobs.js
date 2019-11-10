@@ -43,7 +43,11 @@ export const job_desc = {
         return loc('job_quarry_worker_desc',[gain,global.resource.Stone.name]);
     },
     scavenger: function(){
-        return loc('job_scavenger_desc',[races[global.race.species].home,global.civic.scavenger.impact]);
+        let scavanger = global.civic.scavenger.impact;
+        if (global.city.ptrait === 'trashed' && global.race['scavanger']){
+            scavanger *= 1.25;
+        }
+        return loc('job_scavenger_desc',[races[global.race.species].home,scavanger]);
     },
     miner: function(){
         if (global.tech['mining'] >= 3){

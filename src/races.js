@@ -589,7 +589,7 @@ export const races = {
         home: loc('race_wendigo_home'),
         entity: loc('race_wendigo_entity'),
         traits: {
-            ravenous: 1, // Not Implemented
+            ravenous: 1,
             ghostly: 1, // Not Implemented
             soul_eater: 1
         },
@@ -608,7 +608,8 @@ export const races = {
         home: loc('race_tuskin_home'),
         entity: loc('race_tuskin_entity'),
         traits: {
-
+            lawless: 1,
+            fearful: 1 // Not Implemented
         },
         solar: {
             red: loc('race_tuskin_solar_red'),
@@ -794,7 +795,7 @@ export const genus_traits = {
     },
     fey: {
         elusive: 1, // Not Implemented
-        iron_allery: 1 // Not Implemented
+        iron_allery: 1
     },
     heat: {
         smoldering: 1,
@@ -805,7 +806,7 @@ export const genus_traits = {
         heat_intolerance: 1
     },
     sand: {
-
+        scavanger: 1
     },
     demonic: {
         immoral: 1,
@@ -891,6 +892,14 @@ export const traits = {
         desc: loc('trait_spongy'),
         type: 'genus',
     },
+    submerged: { // Immune to weather effects
+        desc: loc('trait_submerged'),
+        type: 'genus',
+    },
+    low_light: { // Farming effectiveness decreased
+        desc: loc('trait_low_light'),
+        type: 'genus',
+    },
     smoldering: { // Hot weather is a bonus
         desc: loc('trait_smoldering'),
         type: 'genus',
@@ -907,12 +916,8 @@ export const traits = {
         desc: loc('trait_heat_intolerance'),
         type: 'genus',
     },
-    submerged: { // Immune to weather effects
-        desc: loc('trait_submerged'),
-        type: 'genus',
-    },
-    low_light: { // Farming effectiveness decreased
-        desc: loc('trait_low_light'),
+    scavanger: { // Scavanger job is always available
+        desc: loc('trait_scavanger'),
         type: 'genus',
     },
     immoral: { // Warmonger is a bonus instead of a penalty
@@ -1161,6 +1166,18 @@ export const traits = {
     },
     forge: { // Smelters do not require fuel
         desc: loc('trait_forge'),
+        type: 'major',
+    },
+    ravenous: { // Drastically increases food consumption
+        desc: loc('trait_ravenous'),
+        type: 'major',
+    },
+    lawless: { // Government lockout timer is reduced by 90%
+        desc: loc('trait_lawless'),
+        type: 'major',
+    },
+    fearful: { // ???
+        desc: loc('trait_fearful'),
         type: 'major',
     },
     fiery: { // Major war bonus

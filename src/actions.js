@@ -12878,6 +12878,9 @@ function fanaticism(god){
         case 'octigoran':
             fanaticTrait('suction_grip');
             break;
+        case 'dryad':
+            fanaticTrait('befuddle');
+            break;
         case 'satyr':
             fanaticTrait('musical');
             break;
@@ -12886,6 +12889,18 @@ function fanaticism(god){
             break;
         case 'salamander':
             fanaticTrait('forge');
+            break;
+        case 'yeti':
+            fanaticTrait('blurry');
+            break;
+        case 'wendigo':
+            fanaticTrait('ghostly');
+            break;
+        case 'tuskin':
+            fanaticTrait('scavanger');
+            break;
+        case 'kamel':
+            fanaticTrait('quenched');
             break;
         case 'balorg':
             fanaticTrait('fiery');

@@ -850,7 +850,7 @@ export function checkAchievements(){
                 }
             }
         }
-        if (total >= 25){
+        if (total >= 12){
             unlockAchieve('vigilante');
         }
     }

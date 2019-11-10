@@ -626,7 +626,7 @@ export function bloodwar(){
                 }
             }
 
-            if (Math.rand(0,global.race['chameleon'] ? 50 : 30) === 0){
+            if (Math.rand(0,global.race['chameleon'] || global.race['elusive'] ? 50 : 30) === 0){
                 dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true);
                 let remain = demons - Math.round(pat_rating / 2);
                 if (remain > 0){

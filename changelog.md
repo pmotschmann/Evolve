@@ -7,6 +7,7 @@ Construct advanced AI stations in deep space<br>
 Rapid Gene Squencing upgrade<br>
 Added Rocky Road Feat<br>
 Inspiration no longer adds an upfront knowledge bonus<br>
+Vigilante requirement lowerd to 12<br>
 
 #### 0.6.26 - 11/7/2019 ####
 ARPA costs now update without mousing off and back on the buttons<br>

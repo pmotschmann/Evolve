@@ -528,8 +528,11 @@ function fastLoop(){
         breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
-    if (global.city.ptrait === 'trashed' && global.civic['scavenger'] && global.civic.scavenger.workers > 0){
+    if ((global.city.ptrait === 'trashed' || global.race['scavanger']) && global.civic['scavenger'] && global.civic.scavenger.workers > 0){
         let bonus = (global.civic.scavenger.workers * global.civic.scavenger.impact);
+        if (global.city.ptrait === 'trashed' && global.race['scavanger']){
+            bonus *= 1.25;
+        }
         breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
@@ -1585,6 +1588,10 @@ function fastLoop(){
                         break;
                 }
             }
+            if (global.race['ravenous']){
+                consume *= 1.2;
+                consume += (global.resource.Food.amount / 3);
+            }
             breakdown.p.consume.Food[races[global.race.species].name] = -(consume);
 
             let tourism = 0;
@@ -2544,6 +2551,9 @@ function fastLoop(){
                 let iron_bd = {};
                 let iron_mult = 1/4;
                 let iron_base = miner_base * iron_mult;
+                if (global.race['iron_allery']){
+                    iron_base *= 0.75;
+                }
                 let smelter_mult = 1 + (iron_smelter * 0.1);
 
                 if (global.city.geology['Iron']){
@@ -4343,7 +4353,7 @@ function longLoop(){
             global.civic.govern.fr--;
         }
 
-        if (global.city.ptrait === 'trashed'){
+        if (global.city.ptrait === 'trashed' || global.race['scavanger']){
             global.civic.scavenger.display = true;
         }
         else {
