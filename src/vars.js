@@ -344,6 +344,16 @@ if (convertVersion(global['version']) < 6020 && global.race['mutation'] && globa
     global.stats.achieve['cross'] = { l: a_level, a: a_level };
 }
 
+if (convertVersion(global['version']) < 7000){
+    if (!global.civic['govern']){
+        global.civic['govern'] = {
+            type: 'oligarchy',
+            rev: 0,
+            fr: 0,
+        };
+    }
+}
+
 global['version'] = '0.7.0';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){

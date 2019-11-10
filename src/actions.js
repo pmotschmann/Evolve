@@ -5866,11 +5866,7 @@ export const actions = {
             effect: loc('tech_government_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.civic['govern'] = {
-                        type: 'anarchy',
-                        rev: 0,
-                        fr: 0
-                    };
+                    vBind({el: '#govType'},'update');
                     return true;
                 }
                 return false;
@@ -12749,11 +12745,9 @@ function sentience(){
     global.settings.showEvolve = false;
     global.settings.showCity = true;
 
-    global.civic['govern'] = {
-        type: 'anarchy',
-        rev: 0,
-        fr: 0
-    };
+    global.civic.govern.type = 'anarchy';
+    global.civic.govern.rev = 0;
+    global.civic.govern.fr = 0;
 
     if (global.race.gods !== 'none'){
         global.tech['religion'] = 1;
