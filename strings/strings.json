@@ -192,7 +192,7 @@
   "job_craftsman_desc2": "Craftsman will work to produce the assigned resources. All produced materials will be delivered every 14 days.",
   "event_dna": "Some DNA molecules have replicated. You gain %0 DNA.",
   "event_rna": "A meteor has impacted the planet bringing new genetic material with it. Gained %0 RNA.",
-  "event_inspiration": "Your scientists have become inspired. Gain %0 Knowledge.",
+  "event_inspiration": "Your scientists have become inspired. Knowledge generation has been doubled temporarily.",
   "event_inspiration_bd": "Inspired",
   "event_fire": "A fire has broken out destroying %0 lumber.",
   "event_raid1": "An attack by a rival city has been repelled, %0 soldiers were killed and %1 soldiers were wounded.",
