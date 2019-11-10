@@ -1369,6 +1369,11 @@ function fastLoop(){
 
         global.city.morale.tax = 20 - global.civic.taxes.tax_rate;
         morale -= global.civic.taxes.tax_rate - 20;
+        if (global.civic.taxes.tax_rate > 40){
+            let high_tax = global.civic.taxes.tax_rate - 40;
+            global.city.morale.tax -= high_tax * 0.5;
+            morale -= high_tax * 0.5;
+        }
 
         if (!global.race['frenzy'] && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
             let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue));
