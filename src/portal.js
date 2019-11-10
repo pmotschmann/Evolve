@@ -521,11 +521,18 @@ function buildFortress(parent){
 
 function fortressDefenseRating(v){
     let army = v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+    let wounded = 0;
+    if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
+        wounded = global.civic.garrison.wounded - (global.civic.garrison.workers - global.portal.fortress.garrison);
+        if (wounded > army){
+            wounded = army;
+        }
+    }
     if (p_on['war_droid']){
         army += p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
     }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
-    return Math.round(armyRating(army,'army')) + (p_on['turret'] ? p_on['turret'] * turret : 0);
+    return Math.round(armyRating(army,'army',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
 }
 
 function casualties(demons,pat_armor,ambush){
@@ -588,14 +595,27 @@ export function bloodwar(){
     let dead = 0;
     let terminators = p_on['war_droid'] ? p_on['war_droid'] : 0;
     let failed_drop = false;
+    let wounded = 0;
+    if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
+        wounded = global.civic.garrison.wounded - (global.civic.garrison.workers - global.portal.fortress.garrison);
+        if (wounded > global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size)){
+            wounded -= global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+            wounded /= global.portal.fortress.patrols;
+        }
+        else {
+            wounded = 0;
+        }
+    }
+    let brkpnt = +(wounded % 1).toFixed(10);
     for (let i=0; i<global.portal.fortress.patrols; i++){
+        let hurt = brkpnt > (1 / global.portal.fortress.patrols * i) ? Math.floor(wounded) : Math.ceil(wounded);
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
                 pat_size++;
                 terminators--;
             }
-            let pat_rating = Math.round(armyRating(pat_size,'army'));
+            let pat_rating = Math.round(armyRating(pat_size,'army',hurt));
 
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 

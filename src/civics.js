@@ -1032,9 +1032,12 @@ function lootModify(val){
     return Math.floor(loot);
 }
 
-export function armyRating(val,type){
+export function armyRating(val,type,wound){
     let wounded = 0;
-    if (val > global.civic.garrison.workers - global.civic.garrison.wounded){
+    if (wound){
+        wounded = wound;
+    }
+    else if (val > global.civic.garrison.workers - global.civic.garrison.wounded){
         wounded = val - (global.civic.garrison.workers - global.civic.garrison.wounded);
     }
 
