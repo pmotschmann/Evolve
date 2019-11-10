@@ -674,7 +674,7 @@ export function bloodwar(){
     if (global.portal.fortress.garrison > 0 && global.portal.fortress.siege > 0){
         global.portal.fortress.siege--;
     }
-    if (global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
+    if (global.portal.fortress.siege <= 900 && global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
         let defense = fortressDefenseRating(global.portal.fortress.garrison);
         let defend = defense / 35 > 1 ? defense / 35 : 1;
         let siege = Math.round(global.portal.fortress.threat / 2);
