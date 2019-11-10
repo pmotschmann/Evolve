@@ -3770,6 +3770,9 @@ export const actions = {
                 if (global.race['gambler']){
                     money *= 1 + (global.race['gambler'] * 0.04);
                 }
+                if (global.civic.govern.type === 'corpocracy'){
+                    money *= 2;
+                }
                 if (global.tech['world_control']){
                     money = money * 1.25;
                 }
@@ -5900,6 +5903,23 @@ export const actions = {
                 Knowledge(){ return 17000; }
             },
             effect: loc('tech_republic_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        corpocracy: {
+            id: 'tech-corpocracy',
+            title: loc('govern_corpocracy'),
+            desc: loc('govern_corpocracy'),
+            reqs: { govern: 2, high_tech: 3 },
+            grant: ['gov_corp',1],
+            cost: {
+                Knowledge(){ return 26000; }
+            },
+            effect: loc('govern_corpocracy_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;

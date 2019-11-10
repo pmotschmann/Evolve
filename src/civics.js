@@ -155,6 +155,9 @@ function drawModal(){
         if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic'){
             body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc('govern_republic')}</button>`));
         }
+        if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy'){
+            body.append($(`<button class="button gap" data-gov="corpocracy" @click="setGov('corpocracy')">${loc('govern_corpocracy')}</button>`));
+        }
         if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy'){
             body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc('govern_technocracy')}</button>`));
         }
