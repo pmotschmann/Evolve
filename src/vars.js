@@ -603,6 +603,7 @@ if (!global.civic['govern']){
         fr: 0,
     };
 }
+global.civic.govern.fr = 0;
 
 if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
