@@ -2874,6 +2874,7 @@ export const actions = {
                     global.civic['garrison'].max += gain;
                     global.city['garrison'].count++;
                     global.resource.Furs.display = true;
+                    global.settings['showMil'] = true;
                     return true;
                 }
                 return false;

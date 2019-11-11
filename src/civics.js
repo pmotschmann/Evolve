@@ -29,7 +29,7 @@ export function defineGovernment(){
 // Sets up garrison in civics tab
 export function defineGarrison(){
     var garrison = $('<div id="garrison" v-show="display" class="garrison tile is-child"></div>');
-    $('#r_civics').append(garrison);
+    $('#military').append(garrison);
     
     buildGarrison(garrison);
     defineMad();
@@ -329,21 +329,21 @@ export function buildGarrison(garrison){
     var barracks = $('<div class="columns is-mobile bunk"></div>');
     garrison.append(barracks);
 
-    var bunks = $('<div class="column"></div>');
+    var bunks = $('<div class="bunks"></div>');
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
     
     bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ workers | stationed }} / {{ max | s_max }}</span></div>`));
     bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span>{{ wounded }}</span></div>`));
 
-    barracks.append($(`<div class="column hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
+    barracks.append($(`<div class="hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
     
     garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="progress" max="100">{{ progress }}%</progress></div>`));
 
     var campaign = $('<div class="columns is-mobile"></div>');
     garrison.append(campaign);
 
-    var wrap = $('<div class="column war"></div>');
+    var wrap = $('<div class="war"></div>');
     campaign.append(wrap);
 
     if (!global.tech['world_control']){
@@ -367,7 +367,7 @@ export function buildGarrison(garrison){
         battalion.append(armysize);
         battalion.append(anext);
 
-        campaign.append($(`<div class="column launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
     }
 
     if (!global.civic['garrison']){

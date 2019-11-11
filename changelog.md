@@ -5,6 +5,7 @@ New ARPA Project: Railway<br>
 New CRISPR upgrades: Mitosis & Metaphase<br>
 Construct advanced AI stations in deep space<br>
 Rapid Gene Squencing upgrade<br>
+Civics tab split into Government and Military sections<br>
 Inspiration no longer adds an upfront knowledge bonus<br>
 Vigilante requirement lowered to 12<br>
 Added Rocky Road Feat<br>

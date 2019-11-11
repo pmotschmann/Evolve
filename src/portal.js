@@ -256,7 +256,8 @@ export function renderFortress(){
             });
 
             if (region === 'prtl_fortress'){
-                buildFortress(parent);
+                buildFortress(parent,true);
+                buildFortress($('#military'),false);
             } 
 
             Object.keys(fortressModules[region]).forEach(function (tech){
@@ -269,8 +270,9 @@ export function renderFortress(){
     });
 }
 
-function buildFortress(parent){
-    let fort = $(`<div id="fort" class="fort"></div>`);
+function buildFortress(parent,full){
+    let id = full ? 'fort' : 'gFort';
+    let fort = $(`<div id="${id}" class="fort"></div>`);
     parent.append(fort);
 
     let status = $('<div></div>');
@@ -314,10 +316,12 @@ function buildFortress(parent){
     reports.append($(`<b-checkbox class="patrol" v-model="f.notify" true-value="Yes" false-value="No"${color}>${loc('fortress_patrol_reports')}</b-checkbox>`));
     reports.append($(`<b-checkbox class="patrol" v-model="f.s_ntfy" true-value="Yes" false-value="No"${color}>${loc('fortress_surv_reports')}</b-checkbox>`));
 
-    fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+    if (full){
+        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+    }
 
     vBind({
-        el: '#fort',
+        el: `#${id}`,
         data: {
             f: global.portal.fortress,
             g: global.civic.garrison

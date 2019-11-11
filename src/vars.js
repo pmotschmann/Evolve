@@ -369,6 +369,7 @@ if (!global['settings']){
         showIndustry: false,
         showResearch: false,
         showCivic: false,
+        showMil: false,
         showResources: false,
         showMarket: false,
         showStorage: false,
@@ -477,6 +478,9 @@ if (!global.settings['showEjector']){
 }
 if (!global.settings['resTabs']){
     global.settings['resTabs'] = 0;
+}
+if (!global.settings['govTabs']){
+    global.settings['govTabs'] = 0;
 }
 if (!global.settings['marketTabs']){
     global.settings['marketTabs'] = 0;
@@ -595,6 +599,10 @@ if (!global.genes['minor']){
 
 if (!global.race['minor']){
     global.race['minor'] = {};
+}
+
+if (!global.settings['showMil']){
+    global.settings['showMil'] = true;
 }
 
 if (!global.civic['govern']){
@@ -1120,6 +1128,7 @@ export function clearStates(){
     global.settings.showIndustry = false;
     global.settings.showResearch = false;
     global.settings.showCivic = false;
+    global.settings.showMil = false;
     global.settings.showResources = false;
     global.settings.showMarket = false;
     global.settings.showStorage = false;
