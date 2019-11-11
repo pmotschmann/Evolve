@@ -134,6 +134,9 @@ export function craftingRatio(res){
     if (global.race['rigid']){
         multiplier -= 0.01;
     }
+    if (global.civic.govern.type === 'socialist'){
+        multiplier *= 1.25;
+    }
     if (global.race.Plasmid.count > 0){
         multiplier *= plasmidBonus() / 8 + 1;
     }

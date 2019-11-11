@@ -5906,6 +5906,23 @@ export const actions = {
                 return false;
             }
         },
+        socialist: {
+            id: 'tech-socialist',
+            title: loc('govern_socialist'),
+            desc: loc('govern_socialist'),
+            reqs: { govern: 1, trade: 2 },
+            grant: ['gov_soc',1],
+            cost: {
+                Knowledge(){ return 17000; }
+            },
+            effect: loc('tech_socialist_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         corpocracy: {
             id: 'tech-corpocracy',
             title: loc('govern_corpocracy'),

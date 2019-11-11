@@ -1,3 +1,4 @@
+import { global } from './vars.js';
 import { loc } from './locale.js';
 
 export function index(){
@@ -14,7 +15,7 @@ export function index(){
         <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
         </span>
     </span>
-    <span class="version"><a href="https://github.com/pmotschmann/Evolve/blob/master/changelog.md" target="_blank"></a></span>
+    <span class="version"><a href="https://github.com/${global.beta ? 'evolvebeta' : 'pmotschmann'}/Evolve/blob/master/changelog.md" target="_blank"></a></span>
 </div>
 <div id="main" class="main">
     <div class="columns is-gapless">

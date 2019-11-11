@@ -73,6 +73,7 @@ const government_desc = {
     oligarchy: loc('govern_oligarchy_effect',[10,10]),
     theocracy: loc('govern_theocracy_effect',[5,25,50]),
     republic: loc('govern_republic_effect',[25]),
+    socialist: loc('govern_socialist_effect',[25,5,10,20]),
     corpocracy: loc('govern_corpocracy_effect',[100,50,50,15,15]),
     technocracy: loc('govern_technocracy_effect',[5,2]),
     federation: loc('govern_federation_effect'),
@@ -112,12 +113,7 @@ function government(govern){
             trigModal(){
                 this.$buefy.modal.open({
                     parent: this,
-                    component: modal,
-                    events: {
-                        closeModal(){
-                            this.close();
-                        }
-                    }
+                    component: modal
                 });
 
                 var checkExist = setInterval(function() {
@@ -177,6 +173,9 @@ function drawModal(){
         }
         if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic'){
             body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc(`govern_republic`)}</button>`));
+        }
+        if (global.tech['gov_soc'] >= 2 && global.civic.govern.type !== 'socialist'){
+            body.append($(`<button class="button gap" data-gov="socialist" @click="setGov('socialist')">${loc(`govern_socialist`)}</button>`));
         }
         if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy'){
             body.append($(`<button class="button gap" data-gov="corpocracy" @click="setGov('corpocracy')">${loc(`govern_corpocracy`)}</button>`));

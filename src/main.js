@@ -19,7 +19,12 @@ if (global.settings.expose){
 }
 
 index();
-$('#topBar .version > a').html('v'+global.version);
+if (global['beta']){
+    $('#topBar .version > a').html(`beta v${global.version}.${global.beta}`);
+}
+else {
+    $('#topBar .version > a').html('v'+global.version);
+}
 
 if (Object.keys(locales).length > 1){
     $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="s.locale"></select></span>`));
@@ -1366,6 +1371,9 @@ function fastLoop(){
         if (global.civic.govern.type === 'autocracy'){
             stress *= 1.25;
         }
+        if (global.civic.govern.type === 'socialist'){
+            stress *= 1.1;
+        }
         stress = +(stress).toFixed(1);
         global.city.morale.stress = stress;
         morale += stress;
@@ -1855,6 +1863,9 @@ function fastLoop(){
                 if (global.civic.govern.type === 'corpocracy'){
                     delta *= 1.5;
                 }
+                if (global.civic.govern.type === 'socialist'){
+                    delta *= 0.8;
+                }
 
                 delta *= hunger;
                 FactoryMoney = delta + 'v'; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
@@ -1902,6 +1913,9 @@ function fastLoop(){
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= 1.15;
+                }
+                if (global.civic.govern.type === 'socialist'){
+                    delta *= 1.05;
                 }
 
                 let delta = factory_output;
@@ -1958,6 +1972,9 @@ function fastLoop(){
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= 1.15;
                 }
+                if (global.civic.govern.type === 'socialist'){
+                    delta *= 1.05;
+                }
 
                 let delta = factory_output;
                 delta *= hunger * global_multiplier;
@@ -2013,6 +2030,9 @@ function fastLoop(){
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= 1.15;
                 }
+                if (global.civic.govern.type === 'socialist'){
+                    delta *= 1.05;
+                }
 
                 let delta = factory_output;
                 delta *= hunger * global_multiplier;
@@ -2062,6 +2082,9 @@ function fastLoop(){
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= 1.15;
                 }
+                if (global.civic.govern.type === 'socialist'){
+                    delta *= 1.05;
+                }
 
                 let delta = factory_output;
                 delta *= hunger * global_multiplier;
@@ -2098,6 +2121,9 @@ function fastLoop(){
             let factory_output = workDone * cement_base;
             if (global.race['toxic']){
                 factory_output *= 1.08;
+            }
+            if (global.civic.govern.type === 'socialist'){
+                factory_output *= 1.05;
             }
 
             let powered_mult = 1;
@@ -2339,6 +2365,10 @@ function fastLoop(){
             modRes('Lumber', -(consume_wood * time_multiplier));
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
+
+            if (global.civic.govern.type === 'socialist'){
+                graphene_production *= 1.05;
+            }
 
             let ai = 1;
             if (global.tech['ai_core'] >= 3){
@@ -2905,6 +2935,9 @@ function fastLoop(){
             if (global.civic.govern.type === 'corpocracy'){
                 income_base *= 0.5;
             }
+            if (global.civic.govern.type === 'socialist'){
+                income_base *= 0.8;
+            }
 
             let temple_mult = 1;
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
@@ -2932,6 +2965,9 @@ function fastLoop(){
                 if (global.civic.govern.type === 'corpocracy'){
                     cash *= 2;
                 }
+                if (global.civic.govern.type === 'socialist'){
+                    cash *= 0.8;
+                }
                 cash *= p_on['casino'];
                 money_bd[loc('city_casino')] = cash + 'v';
                 modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
@@ -2951,6 +2987,9 @@ function fastLoop(){
             }
             if (global.civic.govern.type === 'corpocracy'){
                 tourism *= 1.5;
+            }
+            if (global.civic.govern.type === 'socialist'){
+                tourism *= 0.8;
             }
             money_bd[loc('tech_tourism')] = Math.round(tourism) + 'v';
             modRes('Money', +(tourism * time_multiplier * global_multiplier * hunger).toFixed(2));
