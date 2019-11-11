@@ -272,15 +272,28 @@ export function renderFortress(){
 
 function buildFortress(parent,full){
     let id = full ? 'fort' : 'gFort';
-    let fort = $(`<div id="${id}" class="fort"></div>`);
-    parent.append(fort);
+    let fort = full ? $(`<div id="${id}" class="fort"></div>`) : $('#gFort');
+    if (full){
+        parent.append(fort);
+    }
+    else {
+        if (fort.length > 0){
+            fort.empty();
+        }
+        else {
+            fort = $(`<div id="${id}" class="fort gFort"></div>`);
+            parent.append(fort);
+        }
+        fort.append(`<div><h3 class="has-text-warning">${loc('portal_fortress_name')}</h3></div>`);
+    }
+    
 
     let status = $('<div></div>');
     fort.append(status);
 
     let defense = $(`<span class="defense has-text-success" :aria-label="defense()">${loc('fortress_defense')} {{ f.garrison | defensive }}</span>`);
     status.append(defense);
-    let activity = $(`<b-tooltip :label="hostiles()" position="is-bottom" multilined animated><span class="has-text-danger" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span></b-tooltip>`);
+    let activity = $(`<b-tooltip :label="hostiles()" position="is-bottom" multilined animated><span class="has-text-danger pad" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span></b-tooltip>`);
     status.append(activity);
     let threatLevel = $(`<b-tooltip :label="threatLevel()" position="is-bottom" multilined animated><span :class="threaten()" :aria-label="threatLevel()">{{ f.threat | threat }}</span></b-tooltip>`);
     status.append(threatLevel);
