@@ -174,7 +174,7 @@ function drawModal(){
         if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic'){
             body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc(`govern_republic`)}</button>`));
         }
-        if (global.tech['gov_soc'] >= 2 && global.civic.govern.type !== 'socialist'){
+        if (global.tech['gov_soc'] && global.civic.govern.type !== 'socialist'){
             body.append($(`<button class="button gap" data-gov="socialist" @click="setGov('socialist')">${loc(`govern_socialist`)}</button>`));
         }
         if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy'){
