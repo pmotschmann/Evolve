@@ -1916,7 +1916,7 @@ function fastLoop(){
                     factory_output *= 1.15;
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    delta *= 1.05;
+                    factory_output *= 1.05;
                 }
 
                 let delta = factory_output;
@@ -1974,7 +1974,7 @@ function fastLoop(){
                     factory_output *= 1.15;
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    delta *= 1.05;
+                    factory_output *= 1.05;
                 }
 
                 let delta = factory_output;
@@ -2032,7 +2032,7 @@ function fastLoop(){
                     factory_output *= 1.15;
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    delta *= 1.05;
+                    factory_output *= 1.05;
                 }
 
                 let delta = factory_output;
@@ -2084,7 +2084,7 @@ function fastLoop(){
                     factory_output *= 1.15;
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    delta *= 1.05;
+                    factory_output *= 1.05;
                 }
 
                 let delta = factory_output;
