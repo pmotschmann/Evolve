@@ -98,60 +98,61 @@ $('#morale').on('mouseover',function(){
     $('#main').append(moralePopper);
     if (global.city.morale.unemployed !== 0){
         let type = global.city.morale.unemployed > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_unemployed')}</span> <span class="has-text-${type}"> ${global.city.morale.unemployed}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_unemployed')}</span> <span class="has-text-${type}"> ${+(global.city.morale.unemployed).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.stress !== 0){
         let type = global.city.morale.stress > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_stress')}</span> <span class="has-text-${type}"> ${global.city.morale.stress}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_stress')}</span> <span class="has-text-${type}"> ${+(global.city.morale.stress).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.shrine !== 0){
         let type = global.city.morale.shrine > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('city_shrine')}</span> <span class="has-text-${type}"> ${global.city.morale.shrine}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('city_shrine')}</span> <span class="has-text-${type}"> ${+(global.city.morale.shrine).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.leadership !== 0){
         let type = global.city.morale.leadership > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_leadership')}</span> <span class="has-text-${type}"> ${global.city.morale.leadership}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_leadership')}</span> <span class="has-text-${type}"> ${+(global.city.morale.leadership).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.warmonger !== 0){
         let type = global.city.morale.warmonger > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_warmonger')}</span> <span class="has-text-${type}"> ${global.city.morale.warmonger}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_warmonger')}</span> <span class="has-text-${type}"> ${+(global.city.morale.warmonger).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.entertain !== 0){
         let type = global.city.morale.entertain > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_entertainment')}</span> <span class="has-text-${type}"> ${global.city.morale.entertain}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_entertainment')}</span> <span class="has-text-${type}"> ${+(global.city.morale.entertain).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.season !== 0){
         let season = global.city.calendar.season === 0 ? loc('morale_spring') : loc('morale_winter');
         let type = global.city.morale.season > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${season}</span> <span class="has-text-${type}"> ${global.city.morale.season}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${season}</span> <span class="has-text-${type}"> ${+(global.city.morale.season).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.weather !== 0){
         let type = global.city.morale.weather > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_weather')}</span> <span class="has-text-${type}"> ${global.city.morale.weather}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_weather')}</span> <span class="has-text-${type}"> ${+(global.city.morale.weather).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.tax !== 0){
         let type = global.city.morale.tax > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_taxes')}</span> <span class="has-text-${type}"> ${global.city.morale.tax}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_taxes')}</span> <span class="has-text-${type}"> ${+(global.city.morale.tax).toFixed(1)}%</span></p>`);
     }
     let total = 100 + global.city.morale.unemployed + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership + global.city.morale.shrine;
     if (global.city.morale['frenzy']){
         total += global.city.morale.frenzy;
         let type = global.city.morale.frenzy > 0 ? 'success' : 'danger';
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_frenzy')}</span> <span class="has-text-${type}"> ${global.city.morale.frenzy}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_frenzy')}</span> <span class="has-text-${type}"> ${+(global.city.morale.frenzy).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale['rev']){
         total -= global.city.morale.rev;
-        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_rev')}</span> <span class="has-text-danger"> -${global.city.morale.rev}%</span></p>`);
+        moralePopper.append(`<p class="modal_bd"><span>${loc('morale_rev')}</span> <span class="has-text-danger"> -${+(global.city.morale.rev).toFixed(1)}%</span></p>`);
     }
     if (global.civic.govern.type === 'corpocracy'){
         moralePopper.append(`<p class="modal_bd"><span>${loc('govern_corpocracy')}</span> <span class="has-text-danger"> -15%</span></p>`);
     }
     
+    total = +(total).toFixed(1);
     if (total > moraleCap || total < 50){
-        moralePopper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${global.city.morale.current}% (${total}%)</span></div>`);
+        moralePopper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${+(global.city.morale.current).toFixed(1)}% (${total}%)</span></div>`);
     }
     else {
-        moralePopper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${global.city.morale.current}%</span></div>`);
+        moralePopper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${+(global.city.morale.current).toFixed(1)}%</span></div>`);
     }
     moralePopper.show();
     poppers['morale'] = new Popper($('#morale'),moralePopper);
