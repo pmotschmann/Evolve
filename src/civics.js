@@ -192,13 +192,26 @@ function drawModal(){
             setGov(g){
                 if (global.civic.govern.rev === 0){
                     global.civic.govern.type = g;
-                    global.civic.govern.rev = 2000 + global.civic.govern.fr;
+                    let time = 1000;
+                    if (global.tech['high_tech']){
+                        time += 250;
+                        if (global.tech['high_tech'] >= 3){
+                            time += 250;
+                        }
+                        if (global.tech['high_tech'] >= 6){
+                            time += 250;
+                        }
+                    }
+                    if (global.tech['space_explore'] && global.tech['space_explore'] >= 3){
+                        time += 250;
+                    }
                     if (global.stats.achieve['anarchist']){
-                        global.civic.govern.rev -= global.stats.achieve['anarchist'].l * 250;
+                        time = Math.round(time * (global.stats.achieve['anarchist'].l / 10));
                     }
                     if (global.race['lawless']){
-                        global.civic.govern.rev = Math.round(global.civic.govern.rev / 10);
+                        time = Math.round(time / 10);
                     }
+                    global.civic.govern.rev = time + global.civic.govern.fr;
                     vBind({el: '#govModal'},'destroy');
                     $('.modal-background').click();
                     $('#popGov').hide();

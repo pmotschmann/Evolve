@@ -992,7 +992,7 @@ export function drawPerks(){
 
     if (global.stats.achieve['anarchist']){
         unlocked++;
-        let bonus = global.stats.achieve['anarchist'].l * 250;
+        let bonus = global.stats.achieve['anarchist'].l * 10;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_anarchist",[bonus])}</span></div>`);
     }
 
