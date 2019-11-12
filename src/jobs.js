@@ -84,7 +84,7 @@ export const job_desc = {
             interest = interest / 2;
         }
         if (global.civic.govern.type === 'republic'){
-            impact *= 1.25;
+            interest *= 1.25;
         }
         interest = +(interest).toFixed(0);
         return loc('job_banker_desc',[interest]);
