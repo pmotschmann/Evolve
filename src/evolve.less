@@ -71,6 +71,7 @@ a {
 
 .tabs:not(:last-child){
     margin-bottom: .5rem;
+    overflow: hidden;
 }
 
 .modal .animation-content {
@@ -334,7 +335,13 @@ a {
     }
 
     .content {
+        .settings {
+            margin-left: 1rem;
+        }
         .tab-content {
+            padding: 0 .25rem 1rem 0;
+        }
+        > .tab-content {
             padding: 0 .25rem 1rem 1rem;
         }
         .tab-item {
@@ -983,6 +990,9 @@ body .modal > div.popper.wide {
 .resTabs {
     ul {
         margin-top: 0;
+    }
+    .tabs > ul {
+        margin-left: 1rem;
     }
 }
 

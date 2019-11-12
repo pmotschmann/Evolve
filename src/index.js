@@ -203,7 +203,7 @@ export function index(){
     tabs.append(stats);
 
     // Settings Tab
-    let settings = $(`<b-tab-item>
+    let settings = $(`<b-tab-item class="settings">
         <template slot="header">
             {{ 'tab_settings' | label }}
         </template>
