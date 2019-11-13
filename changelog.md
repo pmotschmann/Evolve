@@ -3,13 +3,15 @@ Tundra planets are now always cold in winter<br>
 Volcanic planets are now always hot in summer<br>
 Stormy planets are now more likely to be windy<br>
 Fixed issue with last rites not showing up as affordable<br>
+<br>
 2-4x Challenge Multipliers changed:<br>
 2 Challenges: +12% Prestige<br>
 3 Challenges: +25% Prestige<br>
 4 Challenges: +45% Prestige<br>
+<br>
 Heavy Universe prestige bonus now scales with challenge level:<br>
 0 Challenges: +5% Prestige<br>
-2 Challenges: +10% Prestige<br>
+1 Challenge: +10% Prestige<br>
 2 Challenges: +15% Prestige<br>
 3 Challenges: +20% Prestige<br>
 4 Challenges: +25% Prestige<br>
