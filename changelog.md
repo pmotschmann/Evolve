@@ -1,3 +1,15 @@
+#### 0.6.27 - 11/12/2019 ####
+2-4x Challenge Multipliers changed:<br>
+2 Challenges: +12% Prestige<br>
+3 Challenges: +25% Prestige<br>
+4 Challenges: +45% Prestige<br>
+Heavy Universe prestige bonus now scales with challenge level:<br>
+0 Challenges: +5% Prestige<br>
+2 Challenges: +10% Prestige<br>
+2 Challenges: +15% Prestige<br>
+3 Challenges: +20% Prestige<br>
+4 Challenges: +25% Prestige<br>
+
 #### 0.6.26 - 11/7/2019 ####
 ARPA costs now update without mousing off and back on the buttons<br>
 Fixed issues with incorrectly powering on newly built structures<br>

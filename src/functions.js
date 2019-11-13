@@ -209,7 +209,20 @@ export function challenge_multiplier(value,type,decimals){
     decimals = decimals || 0;
     let challenge_level = 0;
     if (global.race.universe === 'micro'){ value = value * 0.25; }
-    if (global.race.universe === 'heavy' && type !== 'mad'){ value = value * 1.25; }
+    if (global.race.universe === 'heavy' && type !== 'mad'){
+        switch (challenge_level){
+            case 1:
+                value = value * 1.1;
+            case 2:
+                value = value * 1.15;
+            case 3:
+                value = value * 1.2;
+            case 4:
+                value = value * 1.25;
+            default:
+                value = value * 1.05;
+        }
+    }
     if (global.race['no_plasmid']){ challenge_level++; }
     if (global.race['no_trade']){ challenge_level++; }
     if (global.race['no_craft']){ challenge_level++; }
@@ -218,11 +231,11 @@ export function challenge_multiplier(value,type,decimals){
         case 1:
             return +(value * 1.05).toFixed(decimals);
         case 2:
-            return +(value * 1.10).toFixed(decimals);
+            return +(value * 1.12).toFixed(decimals);
         case 3:
-            return +(value * 1.20).toFixed(decimals);
+            return +(value * 1.25).toFixed(decimals);
         case 4:
-            return +(value * 1.35).toFixed(decimals);
+            return +(value * 1.45).toFixed(decimals);
         default:
             return +(value).toFixed(decimals);
     }
