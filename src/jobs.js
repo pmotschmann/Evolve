@@ -244,9 +244,14 @@ function loadJob(job, impact, stress, color){
             add(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && global.civic.free > 0){
+                    if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic.free > 0 || global.civic.farmer.workers > 0)){
                         global.civic[job].workers++;
-                        global.civic.free--;
+                        if (global.civic.free > 0){
+                            global.civic.free--;
+                        }
+                        else {
+                            global.civic.farmer.workers--;
+                        }
                         global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
