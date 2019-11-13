@@ -4518,7 +4518,7 @@ function longLoop(){
                         break;
                     case 'tundra':
                         if (global.city.calendar.season === 3){
-                            temp--;
+                            temp = 0;
                         }
                         else if (Math.rand(0,2) === 0 && temp > 0){
                             temp--;
@@ -4531,7 +4531,7 @@ function longLoop(){
                         break;
                     case 'volcanic':
                         if (global.city.calendar.season === 1){
-                            temp++;
+                            temp = 2;
                         }
                         else if (Math.rand(0,2) === 0 && temp < 2){
                             temp++;
