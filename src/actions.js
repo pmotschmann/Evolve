@@ -12563,6 +12563,9 @@ function big_bang(){
             break;
     }
 
+    if (global.race.universe === 'evil' && races[global.race.species].type === 'angelic'){
+        unlockFeat('nephilim');
+    }
     if (global.race.species === 'junker'){
         unlockFeat('the_misery');
     }
