@@ -114,6 +114,9 @@ export function mainVue(){
                     default:
                         return loc(lbl);
                 }
+            },
+            mRound(m){
+                return +(m).toFixed(1);
             }
         }
     });

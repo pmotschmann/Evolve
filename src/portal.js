@@ -625,7 +625,7 @@ export function bloodwar(){
     }
     let brkpnt = +(wounded % 1).toFixed(10);
     for (let i=0; i<global.portal.fortress.patrols; i++){
-        let hurt = brkpnt > (1 / global.portal.fortress.patrols * i) ? Math.floor(wounded) : Math.ceil(wounded);
+        let hurt = brkpnt > (1 / global.portal.fortress.patrols * i) ? Math.ceil(wounded) : Math.floor(wounded);
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
@@ -679,7 +679,7 @@ export function bloodwar(){
 
     let revive = 0;
     if (global.race['revive']){
-        revive = Math.floor(Math.seededRandom(0,Math.floor(dead / 3)));
+        revive = Math.round(Math.seededRandom(0,(dead / 3) + 0.25));
         global.civic.garrison.workers += revive;
     }
 
