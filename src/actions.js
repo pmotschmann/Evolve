@@ -7797,7 +7797,7 @@ export const actions = {
             }
         },
         ancient_infusion: {
-            id: 'tech-last_rites',
+            id: 'tech-ancient_infusion',
             title: loc('tech_ancient_infusion'),
             desc: loc('tech_ancient_infusion'),
             reqs: { sacrifice: 2, theology: 4 },
