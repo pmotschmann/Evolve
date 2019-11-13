@@ -1,4 +1,7 @@
 #### 0.6.27 - 11/12/2019 ####
+Tundra planets are now always cold in winter<br>
+Volcanic planets are now always hot in summer<br>
+Stormy planets are now more likely to be windy<br>
 2-4x Challenge Multipliers changed:<br>
 2 Challenges: +12% Prestige<br>
 3 Challenges: +25% Prestige<br>

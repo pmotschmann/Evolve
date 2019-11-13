@@ -4291,7 +4291,10 @@ function longLoop(){
                         }
                         break;
                     case 'tundra':
-                        if (Math.rand(0,2) === 0 && temp > 0){
+                        if (global.city.calendar.season === 3){
+                            temp--;
+                        }
+                        else if (Math.rand(0,2) === 0 && temp > 0){
                             temp--;
                         }
                         break;
@@ -4301,7 +4304,10 @@ function longLoop(){
                         }
                         break;
                     case 'volcanic':
-                        if (Math.rand(0,2) === 0 && temp < 2){
+                        if (global.city.calendar.season === 1){
+                            temp++;
+                        }
+                        else if (Math.rand(0,2) === 0 && temp < 2){
                             temp++;
                         }
                         break;
@@ -4334,7 +4340,7 @@ function longLoop(){
                         break;
                 }
 
-                if (global.city.ptrait === 'stormy' && wind > 0 && Math.rand(0,3) === 0){
+                if (global.city.ptrait === 'stormy' && wind > 0 && Math.rand(0,2) === 0){
                     wind--;
                 }
 
