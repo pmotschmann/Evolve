@@ -89,6 +89,9 @@ new Vue({
     filters: {
         approx(kw){
             return +(kw).toFixed(2);
+        },
+        mRound(m){
+            return +(m).toFixed(1);
         }
     }
 });
