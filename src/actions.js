@@ -1841,7 +1841,12 @@ export const actions = {
                 if (payCosts(actions.evolution.junker.cost)){
                     global.race.species = 'junker';
                     global.race['junker'] = 1;
-                    global.race['no_plasmid'] = 1;
+                    if (global.race.universe === 'antimatter') {
+                        global.race['weak_mastery'] = 1; 
+                    }
+                    else {
+                        global.race['no_plasmid'] = 1;
+                    }
                     global.race['no_trade'] = 1;
                     global.race['no_craft'] = 1;
                     global.race['no_crispr'] = 1;
