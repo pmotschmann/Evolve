@@ -355,7 +355,7 @@ if (convertVersion(global['version']) < 7000){
 }
 
 global['version'] = '0.7.0';
-global['beta'] = '5';
+global['beta'] = '6';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -601,6 +601,9 @@ if (!global.race['minor']){
     global.race['minor'] = {};
 }
 
+if (!global.settings['showMil']){
+    global.settings['showMil'] = true;
+}
 if (!global.settings['showMil']){
     global.settings['showMil'] = true;
 }

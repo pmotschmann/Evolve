@@ -93,14 +93,6 @@ export function index(){
     </b-tab-item>`);
     tabs.append(city);
 
-    /* Civics Tab
-    let civic = $(`<b-tab-item id="civic" :visible="s.showCivic" class="columns">
-        <template slot="header">
-            {{ 'tab_civics' | label }}
-        </template>
-    </b-tab-item>`);
-    tabs.append(civic);*/
-
     let civic = $(`<b-tab-item :visible="s.showCivic">
         <template slot="header">
             {{ 'tab_civics' | label }}
@@ -110,6 +102,12 @@ export function index(){
                 <template slot="header">
                     <h2 class="is-sr-only">{{ 'tab_gov' | label }}</h2>
                     <span aria-hidden="true">{{ 'tab_gov' | label }}</span>
+                </template>
+            </b-tab-item>
+            <b-tab-item id="industry" :visible="s.showIndustry">
+                <template slot="header">
+                    <h2 class="is-sr-only">{{ 'tab_industry' | label }}</h2>
+                    <span aria-hidden="true">{{ 'tab_industry' | label }}</span>
                 </template>
             </b-tab-item>
             <b-tab-item id="military" :visible="s.showMil">

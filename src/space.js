@@ -4,6 +4,7 @@ import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
+import { defineIndustry } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { loc } from './locale.js';
 
@@ -624,6 +625,8 @@ const spaceProjects = {
                     if (global.city.power > 2){
                         global.space['red_factory'].on++;
                     }
+                    global.settings.showIndustry = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -1672,6 +1675,8 @@ const interstellarProjects = {
                         global.tech['droids'] = 1;
                         global.interstellar['processing'] = { count: 0, on: 0 };
                     }
+                    global.settings.showIndustry = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -1827,6 +1832,8 @@ const interstellarProjects = {
                         global.interstellar.g_factory.on++;
                         global.interstellar.g_factory.Lumber++;
                     }
+                    global.settings.showIndustry = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;

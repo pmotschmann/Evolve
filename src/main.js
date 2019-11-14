@@ -5,8 +5,9 @@ import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
-import { defineGovernment, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, f_rate, setPlanet, resQueue } from './actions.js';
+import { f_rate } from './industry.js';
+import { defineGovernment, defineIndustry, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa } from './arpa.js';
@@ -61,6 +62,7 @@ defineGovernment();
 if (global.race.species !== 'protoplasm'){
     defineGarrison();
 }
+defineIndustry();
 
 buildQueue();
 

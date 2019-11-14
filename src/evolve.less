@@ -996,7 +996,8 @@ body .modal > div.popper.wide {
     }
 }
 
-.modalBox {
+.modalBox,
+.industry {
     padding: 1rem;
     border-radius: 1rem;
     text-align: center;
@@ -1051,6 +1052,18 @@ body .modal > div.popper.wide {
     }
     .crateModal {
         margin-bottom: 1.25rem;
+    }
+}
+
+.industry {
+    margin-bottom: .5rem;
+    border-bottom: .0625rem solid;
+    border-top: .0625rem solid;
+
+    .header {
+        margin-bottom: .25rem;
+        padding-bottom: .25rem;
+        width: 100%;
     }
 }
 
@@ -1490,7 +1503,7 @@ html.dark {
                     border: .0625rem solid #282f2f;
                     background: #1f2424;
                     .gear {
-                        fill: #3a4344;
+                        fill: #ad5f12;
                     }
                 }
                 span.on {
@@ -1514,7 +1527,7 @@ html.dark {
                 div.special:hover {
                     border: .0625rem solid #3a4344;
                     .gear {
-                        fill: #4a5354;
+                        fill: #d4af37;
                     }
                 }
                 &.hl .button {
@@ -1601,7 +1614,8 @@ html.dark {
         }
     }
 
-    .modalBox {
+    .modalBox,
+    .industry {
         background: #282f2f;
         p {
             border-bottom: #ccc solid .0625rem;
@@ -1614,6 +1628,20 @@ html.dark {
         }
         .smelting {
             border-top: #ccc solid .0625rem;
+        }
+    }
+    .industry {
+        background: none;
+        .smelting {
+            border-top: 0;
+        }
+        .header {
+            border-bottom: #ccc solid .0625rem;
+        }
+        .avail {
+            span {
+                margin: 0 2.5rem 0 2.125rem;
+            }
         }
     }
     .modal .actionSpace {
@@ -1872,7 +1900,8 @@ html.light {
         }
     }
 
-    .modalBox {
+    .modalBox,
+    .industry {
         background: #ffffff;
         p {
             border-bottom: #4e4e4e solid .0625rem;
@@ -1885,6 +1914,15 @@ html.light {
         }
         .smelting {
             border-top: #4e4e4e solid .0625rem;
+        }
+    }
+    .industry {
+        background: none;
+        .smelting {
+            border-top: 0;
+        }
+        .header {
+            border-bottom: #4e4e4e solid .0625rem;
         }
     }
     .progress::-webkit-progress-value,

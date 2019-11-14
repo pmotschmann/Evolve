@@ -1,8 +1,9 @@
 import { global, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
+import { loc } from './locale.js';
 import { challenge_multiplier, timeFormat, vBind } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
-import { loc } from './locale.js';
+import { loadIndustry } from './industry.js';
 
 // Sets up government in civics tab
 export function defineGovernment(){
@@ -24,6 +25,31 @@ export function defineGovernment(){
     
     government(govern);
     taxRates(govern);
+}
+
+export function defineIndustry(){
+    $(`#industry`).empty();
+
+    if (global.city['smelter'] && global.city.smelter.count > 0){
+        var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
+        $(`#industry`).append(smelter);
+        loadIndustry('smelter',smelter,'#iSmelter');
+    }
+    if (global.city['factory'] && global.city.factory.count > 0){
+        var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
+        $(`#industry`).append(factory);
+        loadIndustry('factory',factory,'#iFactory');
+    }
+    if (global.interstellar['mining_droid'] && global.interstellar.mining_droid.count > 0){
+        var droid = $(`<div id="iDroid" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_mining_droid_title')}</h2></div>`);
+        $(`#industry`).append(droid);
+        loadIndustry('droid',droid,'#iDroid');
+    }
+    if (global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0){
+        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
+        $(`#industry`).append(graphene);
+        loadIndustry('graphene',graphene,'#iGraphene');
+    }
 }
 
 // Sets up garrison in civics tab
