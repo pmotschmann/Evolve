@@ -121,7 +121,7 @@ const arpaProjects = {
     railway: {
         title: loc('arpa_projects_railway_title'),
         desc: loc('arpa_projects_railway_desc'),
-        reqs: { high_tech: 6 },
+        reqs: { high_tech: 6, trade: 3 },
         grant: 'railway',
         effect(){
             return loc('arpa_projects_railway_effect1',[5,2]);
