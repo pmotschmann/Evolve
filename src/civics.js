@@ -232,7 +232,7 @@ function drawModal(){
                         time += 250;
                     }
                     if (global.stats.achieve['anarchist']){
-                        time = Math.round(time * (global.stats.achieve['anarchist'].l / 10));
+                        time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
                     }
                     if (global.race['lawless']){
                         time = Math.round(time / 10);
