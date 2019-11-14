@@ -124,7 +124,8 @@ const arpaProjects = {
         reqs: { high_tech: 6, trade: 3 },
         grant: 'railway',
         effect(){
-            return loc('arpa_projects_railway_effect1',[5,2]);
+            let routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
+            return loc('arpa_projects_railway_effect1',[routes,2,6,1]);
         },
         cost: {
             Money: function(){ return costMultiplier('railway', 2500000, 1.08); },

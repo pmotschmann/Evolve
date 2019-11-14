@@ -3904,7 +3904,8 @@ function midLoop(){
             global.city.market.mtrade += global.city.storage_yard.count;
         }
         if (global.tech['railway']){
-            global.city.market.mtrade += global.tech['railway'] * 5;
+            let routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
+            global.city.market.mtrade += global.tech['railway'] * routes;
         }
 
         if (global.race['inspired']){
