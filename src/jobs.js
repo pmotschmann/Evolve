@@ -347,11 +347,16 @@ export function loadFoundry(){
                 add(res){
                     let keyMult = keyMultiplier();
                     for (let i=0; i<keyMult; i++){
-                        if (global.city.foundry.crafting < global.civic.craftsman.max && global.civic.free > 0){
+                        if (global.city.foundry.crafting < global.civic.craftsman.max && (global.civic.free > 0 || global.civic.farmer.workers > 0)){
                             global.civic.craftsman.workers++;
                             global.city.foundry.crafting++;
                             global.city.foundry[res]++;
-                            global.civic.free--;
+                            if (global.civic.free > 0){
+                                global.civic.free--;
+                            }
+                            else {
+                                global.civic.farmer.workers--;
+                            }
                         }
                         else {
                             break;
