@@ -2567,7 +2567,7 @@
   "universe_standard_effect": "This is a vanilla universe, no special rules apply.",
   "universe_heavy": "Heavy Gravity",
   "universe_heavy_desc": "The force of gravity in this universe is much stronger than normal",
-  "universe_heavy_effect": "Transportation fuel costs will be much higher in this universe, but prestige resources earned from resets other than MAD are increased by %0%.",
+  "universe_heavy_effect": "Transportation fuel costs will be much higher in this universe, but prestige resources earned from resets other than MAD are increased by %0% and an extra %0% for each active challenge gene.",
   "universe_antimatter": "Antimatter",
   "universe_antimatter_desc": "This universe consists primarily of antimatter",
   "universe_antimatter_effect": "Weaker Anti-Plasmids replace Plasmids. Temples always give faith and boost Anti-Plasmid storage effects.",
