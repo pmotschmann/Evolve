@@ -222,6 +222,11 @@ export function powerModifier(energy){
 export function challenge_multiplier(value,type,decimals){
     decimals = decimals || 0;
     let challenge_level = 0;
+    if (global.race['no_plasmid']){ challenge_level++; }
+    if (global.race['no_trade']){ challenge_level++; }
+    if (global.race['no_craft']){ challenge_level++; }
+    if (global.race['no_crispr']){ challenge_level++; }
+    if (global.race['weak_mastery']){ challenge_level++; }
     if (global.race.universe === 'micro'){ value = value * 0.25; }
     if (global.race.universe === 'heavy' && type !== 'mad'){
         switch (challenge_level){
@@ -237,10 +242,6 @@ export function challenge_multiplier(value,type,decimals){
                 value = value * 1.05;
         }
     }
-    if (global.race['no_plasmid']){ challenge_level++; }
-    if (global.race['no_trade']){ challenge_level++; }
-    if (global.race['no_craft']){ challenge_level++; }
-    if (global.race['no_crispr']){ challenge_level++; }
     switch (challenge_level){
         case 1:
             return +(value * 1.05).toFixed(decimals);

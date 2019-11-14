@@ -2844,7 +2844,7 @@ export const universe_types = {
     heavy: {
         name: loc('universe_heavy'),
         desc: loc('universe_heavy_desc'),
-        effect: loc('universe_heavy_effect',[25])
+        effect: loc('universe_heavy_effect',[5])
     },
     antimatter: {
         name: loc('universe_antimatter'),
