@@ -5905,7 +5905,10 @@ export const actions = {
             id: 'tech-republic',
             title: loc('govern_republic'),
             desc: loc('govern_republic'),
-            reqs: { govern: 1, trade: 2 },
+            reqs: { govern: 1 },
+            condition(){
+                return (global.tech['trade'] && global.tech['trade'] >= 2) || global.race['terrifying'] ? true : false;
+            },
             grant: ['govern',2],
             cost: {
                 Knowledge(){ return 17000; }
@@ -5922,7 +5925,10 @@ export const actions = {
             id: 'tech-socialist',
             title: loc('govern_socialist'),
             desc: loc('govern_socialist'),
-            reqs: { govern: 1, trade: 2 },
+            reqs: { govern: 1 },
+            condition(){
+                return (global.tech['trade'] && global.tech['trade'] >= 2) || global.race['terrifying'] ? true : false;
+            },
             grant: ['gov_soc',1],
             cost: {
                 Knowledge(){ return 17000; }
