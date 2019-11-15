@@ -5233,6 +5233,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.resource.Steel.display = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -7655,6 +7656,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.resource.Polymer.display = true;
                     messageQueue(loc('tech_polymer_avail'));
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -7693,6 +7695,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.resource.Stanene.display = true;
                     messageQueue(loc('tech_stanene_avail'));
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -7715,6 +7718,7 @@ export const actions = {
                     global.resource.Nano_Tube.display = true;
                     global.city.factory['Nano'] = 0;
                     messageQueue('Nano Tubes are now available for manufacture');
+                    defineIndustry();
                     return true;
                 }
                 return false;

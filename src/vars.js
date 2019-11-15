@@ -330,7 +330,7 @@ if (convertVersion(global['version']) < 6016 && global.stats && global.stats['re
 }
 
 if (convertVersion(global['version']) < 6018){
-    if (global.space['swarm_satellite']){
+    if (global['space'] && global.space['swarm_satellite']){
         global.space['swarm_satellite'].count *= 2;
     }
 }
