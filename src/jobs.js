@@ -279,7 +279,10 @@ function loadJob(job, impact, stress, color){
                 else if (global.civic[job].workers === global.civic[job].max){
                     return 'count has-text-success';
                 }
-                else if (global.civic[job].workers <= global.civic[job].max / 2){
+                else if (global.civic[job].workers <= global.civic[job].max / 3){
+                    return 'count has-text-caution';
+                }
+                else if (global.civic[job].workers <= global.civic[job].max * 0.66){
                     return 'count has-text-warning';
                 }
                 else if (global.civic[job].workers < global.civic[job].max){
@@ -313,7 +316,7 @@ export function loadFoundry(){
     }
     $('#foundry').empty();
     if (global.city['foundry']){
-        var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span class="count">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
+        var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span :class="level()">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
         let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel'];
@@ -405,6 +408,26 @@ export function loadFoundry(){
                     $(`#popCraft${res}`).hide();
                     poppers[`cr${res}`].destroy();
                     $(`#popCraft${res}`).remove();
+                },
+                level(){
+                    if (global.civic.craftsman.workers === 0){
+                        return 'count has-text-danger';
+                    }
+                    else if (global.civic.craftsman.workers === global.civic.craftsman.max){
+                        return 'count has-text-success';
+                    }
+                    else if (global.civic.craftsman.workers <= global.civic.craftsman.max / 3){
+                        return 'count has-text-caution';
+                    }
+                    else if (global.civic.craftsman.workers <= global.civic.craftsman.max * 0.66){
+                        return 'count has-text-warning';
+                    }
+                    else if (global.civic.craftsman.workers < global.civic.craftsman.max){
+                        return 'count has-text-info';
+                    }
+                    else {
+                        return 'count';
+                    }
                 }
             }
         });

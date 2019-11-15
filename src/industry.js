@@ -48,7 +48,7 @@ export const f_rate = {
 };
 
 function loadSmelter(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span class="has-text-info">{{s.count | on}}/{{ s.count }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{s.count | on}}/{{ s.count }}</span></div>`);
     parent.append(fuel);
 
     if (!global.race['forge']){
@@ -328,10 +328,14 @@ function loadSmelter(parent,bind){
             },
             net(res){
                 return global.resource[res].diff >= 0 ? 'has-text-success' : 'has-text-danger';
+            },
+            level(){
+                let workers = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+                return colorRange(workers,global.city.smelter.count);
             }
         },
         filters: {
-            on: function(count){
+            on: function(c){
                 return global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
             },
             diffSize: function (value){
@@ -342,7 +346,7 @@ function loadSmelter(parent,bind){
 }
 
 function loadFactory(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
     parent.append(fuel);
 
     let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" :aria-label="buildLabel('Lux') + ariaProd('Lux')" position="is-left" size="is-small" multilined animated><span>${loc('modal_factory_lux')}</span></b-tooltip></div>`);
@@ -467,6 +471,11 @@ function loadFactory(parent,bind){
             ariaProd(prod){
                 return `. ${global.city.factory[prod]} factories producing ${prod}.`;
             },
+            level(){
+                let on = global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
+                let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                return colorRange(on,max);
+            }
         },
         filters: {
             on(){
@@ -480,7 +489,7 @@ function loadFactory(parent,bind){
 }
 
 function loadDroid(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span class="has-text-info">{{count | on}}/{{ on | max }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
     parent.append(fuel);
 
     let adam = $(`<div class="factory"><b-tooltip :label="buildLabel('adam')" :aria-label="buildLabel('adam') + ariaProd('adam')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Adamantite_name')}</span></b-tooltip></div>`);
@@ -560,6 +569,11 @@ function loadDroid(parent,bind){
             ariaProd(prod){
                 return `. ${global.interstellar.mining_droid[prod]} driod mining ${prod}.`;
             },
+            level(){
+                let on = global.interstellar.mining_droid.adam + global.interstellar.mining_droid.uran + global.interstellar.mining_droid.coal + global.interstellar.mining_droid.alum;
+                let max = global.interstellar.mining_droid.on;
+                return colorRange(on,max);
+            }
         },
         filters: {
             on(){
@@ -573,7 +587,7 @@ function loadDroid(parent,bind){
 }
 
 function loadGraphene(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span class="has-text-info">{{count | on}}/{{ count }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{count | on}}/{{ count }}</span></div>`);
     parent.append(fuel);
 
     let fuelTypes = $('<div></div>');
@@ -746,12 +760,38 @@ function loadGraphene(parent,bind){
             },
             ariaProd(res){
                 return `. ${global.interstellar.g_factory[res]} producing ${res}.`;
+            },
+            level(){
+                let on = global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
+                let max = global.interstellar.g_factory.count;
+                return colorRange(on,max);
             }
         },
         filters: {
-            on: function(count){
+            on: function(c){
                 return global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
             }
         }
     });
+}
+
+function colorRange(num,max){
+    if (num === 0){
+        return 'has-text-danger';
+    }
+    else if (num === max){
+        return 'has-text-success';
+    }
+    else if (num <= max / 3){
+        return 'has-text-caution';
+    }
+    else if (num <= max * 0.66){
+        return 'has-text-warning';
+    }
+    else if (num < max){
+        return 'has-text-info';
+    }
+    else {
+        return '';
+    }
 }
