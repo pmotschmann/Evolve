@@ -1836,7 +1836,9 @@ export const actions = {
             cost: {
                 DNA(){ return 25; }
             },
-            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_challenge_junker_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect'); },
+            effect(){ 
+                let challengeType = global.race.universe === 'antimatter' ? loc('evo_challenge_mastery') : loc('evo_challenge_plasmid');
+                return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_challenge_junker_effect',[challengeType])}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect',[challengeType]); },
             action(){
                 if (payCosts(actions.evolution.junker.cost)){
                     global.race.species = 'junker';
@@ -10261,9 +10263,10 @@ export const actions = {
                     k_base -= k_inc;
                     k_inc *= 1.015;
                 }
+                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
                 plasmid = challenge_multiplier(plasmid,'bioseed');
                 let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
-                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
             },
             action(){
                 global.tech['genesis'] = 7;
@@ -10293,9 +10296,10 @@ export const actions = {
                     k_base -= k_inc;
                     k_inc *= 1.015;
                 }
+                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
                 plasmid = challenge_multiplier(plasmid,'bioseed');
                 let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
-                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
             },
             action(){
                 bioseed();

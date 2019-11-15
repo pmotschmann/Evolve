@@ -2311,13 +2311,14 @@ const interstellarProjects = {
                             k_base -= k_inc;
                             k_inc *= 1.012;
                         }
+                        let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
                         plasmid = challenge_multiplier(plasmid,'bigbang');
                         let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 2.5),'bigbang');
                         let dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
                         dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
                         dark = challenge_multiplier(dark,'bigbang',3);
 
-                        return `<div>${loc('interstellar_blackhole_desc4',[home,mass,exotic])}</div><div class="has-text-advanced">${loc('interstellar_blackhole_desc5',[plasmid,phage,dark])}</div>`;
+                        return `<div>${loc('interstellar_blackhole_desc4',[home,mass,exotic])}</div><div class="has-text-advanced">${loc('interstellar_blackhole_desc5',[plasmid,phage,dark,plasmidType])}</div>`;
                     }
                     else {
                         return global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_blackhole_desc4',[home,mass,exotic]) : loc('interstellar_blackhole_desc3',[home,mass]);

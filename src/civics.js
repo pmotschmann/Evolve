@@ -948,13 +948,13 @@ function defineMad(){
             armed: true
         };
     }
-
+    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
     var mad_command = $('<div id="mad" v-show="display" class="tile is-child"></div>');
     $('#r_civics').append(mad_command);
     var mad = $('<div class="mad"></div>');
     mad_command.append(mad);
 
-    mad.append($(`<div class="warn">${loc('civics_mad_reset_desc')}</div>`));
+    mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
     mad.append($(`<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button arm" @click="arm">${loc('civics_mad_arm_missiles')}</button></b-tooltip></div>`));
     mad.append($(`<div class="defcon"><b-tooltip :label="warning()" position="is-bottom" multilined animated><button class="button" @click="launch" :disabled="armed">${loc('civics_mad_launch_missiles')}</button></b-tooltip></div>`));
@@ -1008,7 +1008,7 @@ function defineMad(){
                     k_inc *= 1.1;
                 }
                 plasma = challenge_multiplier(plasma,'mad');
-                return loc('civics_mad_missiles_warning',[plasma]);
+                return loc('civics_mad_missiles_warning',[plasma,plasmidType]);
             }
         }
     });
