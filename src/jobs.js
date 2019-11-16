@@ -396,9 +396,10 @@ export function loadFoundry(){
 
                     popper.append($(`<div>+${bonus}% Craftsman ${name}</div>`));
                     popper.append($(`<div>+${final} ${name}/cycle</div>`));
-                    for (let i=0; i<craftCost[res].length; i++){
-                        let cost = +(craftCost[res][i].a * global.city.foundry[res]).toFixed(2);
-                        popper.append($(`<div>-${cost} ${global.resource[craftCost[res][i].r].name}/cycle<div>`));
+                    let craft_cost = craftCost();
+                    for (let i=0; i<craft_cost[res].length; i++){
+                        let cost = +(craft_cost[res][i].a * global.city.foundry[res]).toFixed(2);
+                        popper.append($(`<div>-${cost} ${global.resource[craft_cost[res][i].r].name}/cycle<div>`));
                     }
     
                     popper.show();
