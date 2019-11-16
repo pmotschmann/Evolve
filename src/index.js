@@ -104,7 +104,7 @@ export function index(){
                     <span aria-hidden="true">{{ 'tab_gov' | label }}</span>
                 </template>
             </b-tab-item>
-            <b-tab-item id="industry" :visible="s.showIndustry">
+            <b-tab-item id="industry" class="industryTab" :visible="s.showIndustry">
                 <template slot="header">
                     <h2 class="is-sr-only">{{ 'tab_industry' | label }}</h2>
                     <span aria-hidden="true">{{ 'tab_industry' | label }}</span>

@@ -11941,6 +11941,10 @@ function basicHousingLabel(){
             return loc('city_basic_housing_seraph_title');
         case 'unicorn':
             return loc('city_basic_housing_unicorn_title');
+        case 'tuskin':
+            return loc('city_basic_housing_sand_title');
+        case 'kamel':
+            return loc('city_basic_housing_sand_title');
         default:
             return global.city.ptrait === 'trashed' ? loc('city_basic_housing_trash_title') : loc('city_basic_housing_title');
     }

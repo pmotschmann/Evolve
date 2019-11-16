@@ -755,7 +755,7 @@ export const races = {
 export const genus_traits = {
     humanoid: {
         adaptable: 1,
-        xenophobic: 1
+        wasteful: 1
     },
     animal: {
         beast: 1,
@@ -806,7 +806,8 @@ export const genus_traits = {
         heat_intolerance: 1
     },
     sand: {
-        scavanger: 1
+        scavanger: 1,
+        nomadic: 1
     },
     demonic: {
         immoral: 1,
@@ -822,6 +823,10 @@ export const genus_traits = {
 export const traits = {
     adaptable: { // Genetic Mutations occur faster from gene tampering
         desc: loc('trait_adaptable'),
+        type: 'genus',
+    },
+    wasteful: { // Craftings cost more materials
+        desc: loc('trait_wasteful'),
         type: 'genus',
     },
     xenophobic: { // Trade posts suffer a -1 penalty per post
@@ -900,6 +905,14 @@ export const traits = {
         desc: loc('trait_low_light'),
         type: 'genus',
     },
+    elusive: { // ???
+        desc: loc('trait_elusive'),
+        type: 'genus',
+    },
+    iron_allery: { // Iron mining reduced
+        desc: loc('trait_iron_allery'),
+        type: 'genus',
+    },
     smoldering: { // Hot weather is a bonus
         desc: loc('trait_smoldering'),
         type: 'genus',
@@ -918,6 +931,10 @@ export const traits = {
     },
     scavanger: { // Scavanger job is always available
         desc: loc('trait_scavanger'),
+        type: 'genus',
+    },
+    nomadic: { // -1 Trade route from trade post
+        desc: loc('trait_nomadic'),
         type: 'genus',
     },
     immoral: { // Warmonger is a bonus instead of a penalty

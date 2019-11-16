@@ -3111,6 +3111,7 @@ function fastLoop(){
             enableScript();
         }
         window.evolve.global = JSON.parse(JSON.stringify(global));
+        window.evolve.craftCost = JSON.parse(JSON.stringify(craftCost())),
         window.evolve.breakdown = JSON.parse(JSON.stringify(breakdown));
     }
 }
@@ -3885,7 +3886,7 @@ function midLoop(){
         }
 
         if (global.city['trade']){
-            let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+            let routes = global.race['nomadic'] || global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
             if (global.tech['trade'] && global.tech['trade'] >= 3){
                 routes--;
             }
@@ -3895,7 +3896,7 @@ function midLoop(){
             }
         }
         if (global.city['wharf']){
-            global.city.market.mtrade += global.city.wharf.count * (global.race['xenophobic'] ? 1 : 2);
+            global.city.market.mtrade += global.city.wharf.count * (global.race['nomadic'] || global.race['xenophobic'] ? 1 : 2);
         }
         if (global.space['gps'] && global.space.gps.count >= 4){
             global.city.market.mtrade += global.space.gps.count * 2;
@@ -4151,7 +4152,8 @@ function midLoop(){
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
                 global.city.foundry['Plywood'] = 0;
             }
-            Object.keys(craftCost).forEach(function (craft){
+            let craft_costs = craftCost();
+            Object.keys(craft_costs).forEach(function (craft){
                 while (global.city.foundry[craft] > fworkers && global.city.foundry[craft] > 0){
                     global.city.foundry[craft]--;
                     global.city.foundry.crafting--;
@@ -4655,7 +4657,8 @@ function longLoop(){
             // Crafting
             if (global.tech['foundry'] && (global.city.calendar.moon === 0 || (global.city.calendar.moon === 14 && global.genes['crafty']))){
                 let craft_costs = global.race['resourceful'] ? 0.9 : 1;
-                Object.keys(craftCost).forEach(function (craft){
+                let crafting_costs = craftCost();
+                Object.keys(crafting_costs).forEach(function (craft){
                     let num = global.city.foundry[craft];
                     let craft_ratio = craftingRatio(craft);
                     if (global.tech['v_train']){
@@ -4668,9 +4671,9 @@ function longLoop(){
                         craft_ratio *= 1 + (global.race['ambidextrous'] * 0.02);
                     }
 
-                    let volume = Math.floor(global.resource[craftCost[craft][0].r].amount / (craftCost[craft][0].a * craft_costs));
-                    for (let i=1; i<craftCost[craft].length; i++){
-                        let temp = Math.floor(global.resource[craftCost[craft][i].r].amount / (craftCost[craft][i].a * craft_costs));
+                    let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (crafting_costs[craft][0].a * craft_costs));
+                    for (let i=1; i<crafting_costs[craft].length; i++){
+                        let temp = Math.floor(global.resource[crafting_costs[craft][i].r].amount / (crafting_costs[craft][i].a * craft_costs));
                         if (temp < volume){
                             volume = temp;
                         }
@@ -4678,9 +4681,9 @@ function longLoop(){
                     if (num < volume){
                         volume = num;
                     }
-                    for (let i=0; i<craftCost[craft].length; i++){
-                        let final = volume * craftCost[craft][i].a * craft_costs;
-                        global.resource[craftCost[craft][i].r].amount -= final;
+                    for (let i=0; i<crafting_costs[craft].length; i++){
+                        let final = volume * crafting_costs[craft][i].a * craft_costs;
+                        global.resource[crafting_costs[craft][i].r].amount -= final;
                     }
                     global.resource[craft].amount += craft_ratio * volume;
 
@@ -5102,7 +5105,7 @@ function enableScript(){
         actions: JSON.parse(JSON.stringify(actions)),
         races: JSON.parse(JSON.stringify(races)),
         tradeRatio: JSON.parse(JSON.stringify(tradeRatio)),
-        craftCost: JSON.parse(JSON.stringify(craftCost)),
+        craftCost: JSON.parse(JSON.stringify(craftCost())),
         atomic_mass: JSON.parse(JSON.stringify(atomic_mass)),
         global: {},
         breakdown: {},

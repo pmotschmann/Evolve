@@ -95,14 +95,25 @@ export const atomic_mass = {
     Aerogel: 7.84
 };
 
-export const craftCost = {
-    Plywood: [{ r: 'Lumber', a: 100 }],
-    Brick: [{ r: 'Cement', a: 40 }],
-    Wrought_Iron: [{ r: 'Iron', a: 80 }],
-    Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
-    Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
-    Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
-};
+export function craftCost(){
+    return global.race['wasteful'] 
+        ? {
+            Plywood: [{ r: 'Lumber', a: 110 }],
+            Brick: [{ r: 'Cement', a: 45 }],
+            Wrought_Iron: [{ r: 'Iron', a: 85 }],
+            Sheet_Metal: [{ r: 'Aluminium', a: 130 }],
+            Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 260 }],
+            Aerogel: [{ r: 'Graphene', a: 2550 },{ r: 'Infernite', a: 55 }],
+        }
+        : {
+            Plywood: [{ r: 'Lumber', a: 100 }],
+            Brick: [{ r: 'Cement', a: 40 }],
+            Wrought_Iron: [{ r: 'Iron', a: 80 }],
+            Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
+            Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
+            Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
+        };
+}
 
 export function craftingRatio(res){
     let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
@@ -378,9 +389,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
             },
             craft(res,vol){
                 let craft_bonus = craftingRatio(res);
-                let volume = Math.floor(global.resource[craftCost[res][0].r].amount / craftCost[res][0].a);
-                for (let i=1; i<craftCost[res].length; i++){
-                    let temp = Math.floor(global.resource[craftCost[res][i].r].amount / craftCost[res][i].a);
+                let craft_costs = craftCost();
+                let volume = Math.floor(global.resource[craft_costs[res][0].r].amount / craft_costs[res][0].a);
+                for (let i=1; i<craft_costs[res].length; i++){
+                    let temp = Math.floor(global.resource[craft_costs[res][i].r].amount / craft_costs[res][i].a);
                     if (temp < volume){
                         volume = temp;
                     }
@@ -391,17 +403,18 @@ function loadResource(name,max,rate,tradable,stackable,color){
                         volume = total;
                     }
                 }
-                for (let i=0; i<craftCost[res].length; i++){
-                    let num = volume * craftCost[res][i].a;
-                    global.resource[craftCost[res][i].r].amount -= num;
+                for (let i=0; i<craft_costs[res].length; i++){
+                    let num = volume * craft_costs[res][i].a;
+                    global.resource[craft_costs[res][i].r].amount -= num;
                 }
                 global.resource[res].amount += volume * craft_bonus;
             },
             craftCost(res,vol){
                 let costs = '';
-                for (let i=0; i<craftCost[res].length; i++){
-                    let num = vol * craftCost[res][i].a * keyMultiplier();
-                    costs = costs + `<div>${global.resource[craftCost[res][i].r].name} ${num}</div>`;
+                let craft_costs = craftCost();
+                for (let i=0; i<craft_costs[res].length; i++){
+                    let num = vol * craft_costs[res][i].a * keyMultiplier();
+                    costs = costs + `<div>${global.resource[craft_costs[res][i].r].name} ${num}</div>`;
                 }
                 return costs;
             },
@@ -412,9 +425,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 let bonus = (craftingRatio(res) * 100).toFixed(0);
                 popper.append($(`<div>+${bonus}% Crafted ${global.resource[res].name}</div>`));
 
-                for (let i=0; i<craftCost[res].length; i++){
-                    let num = typeof vol === 'number' ? vol * craftCost[res][i].a : vol;
-                    popper.append($(`<div>${global.resource[craftCost[res][i].r].name} <span class="craft" data-val="${num}">${num}</span></div>`));
+                let craft_costs = craftCost();
+                for (let i=0; i<craft_costs[res].length; i++){
+                    let num = typeof vol === 'number' ? vol * craft_costs[res][i].a : vol;
+                    popper.append($(`<div>${global.resource[craft_costs[res][i].r].name} <span class="craft" data-val="${num}">${num}</span></div>`));
                 }
 
                 popper.show();
