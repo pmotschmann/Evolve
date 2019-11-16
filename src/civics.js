@@ -119,8 +119,6 @@ function government(govern){
 
     var change = $(`<b-tooltip :label="change()" position="is-bottom" animated multilined><button class="button" @click="trigModal" :disabled="rev > 0">{{ type | set }}</button></b-tooltip>`);
     setgov.append(change);
-    /*var force = $(`<b-tooltip :label="force()" position="is-bottom" animated multilined><button class="button revolution" @click="startrev" :disabled="rev === 0">${loc('civics_force_rev')}</button></b-tooltip>`);
-    setgov.append(force);*/
 
     var modal = {
         template: '<div id="modalBox" class="modalBox"></div>'
@@ -195,33 +193,42 @@ function foreign(){
         let gov = $(`<div id="gov${i}" class="foreign"><div class="has-text-caution">${title[i]}</div></div>`);
         foreign.append(gov);
 
-        gov.append($(`<div><span class="has-text-advanced glabel">Military Ranking:</span> <span class="glevel">{{ mil | military}}</span></div>`));
-        gov.append($(`<div><span class="has-text-advanced glabel">Relations:</span> <span class="glevel">{{ hstl | relation }}</span></div>`));
-        gov.append($(`<div><span class="has-text-advanced glabel">Economic Strength:</span> <span class="glevel">{{ eco | eco }}</span></div>`));
-        gov.append($(`<div><span class="has-text-advanced glabel">Unreset:</span> <span class="glevel">{{ unrest | discontent }}</span></div>`));
+        gov.append($(`<div v-show="t.spy >= 1"><b-tooltip :label="spyDesc()" position="is-bottom" animated multilined><button class="button glabel" @click="spy">${loc('tech_spy')} - {{ f.spy }}</button></b-tooltip></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f.mil | military}}</span></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f.hstl | relation }}</span></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f.eco | eco }}</span></div>`));
+        gov.append($(`<div v-show="f.spy >= 2"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f.unrest | discontent }}</span></div>`));
 
         vBind({
             el: `#gov${i}`,
-            data: global.civic.foreign[`gov${i}`],
+            data: {
+                f: global.civic.foreign[`gov${i}`],
+                t: global.tech
+            },
             filters: {
                 military(m){
-                    if (m < 50){
-                        return loc('civics_gov_v_weak');
-                    }
-                    else if (m < 75){
-                        return loc('civics_gov_weak');
-                    }
-                    else if (m > 200){
-                        return loc('civics_gov_superpower');
-                    }
-                    else if (m > 160){
-                        return loc('civics_gov_v_strong');
-                    }
-                    else if (m > 125){
-                        return loc('civics_gov_strong');
+                    if (global.civic.foreign[`gov${i}`].spy >= 1){
+                        if (m < 50){
+                            return loc('civics_gov_v_weak');
+                        }
+                        else if (m < 75){
+                            return loc('civics_gov_weak');
+                        }
+                        else if (m > 200){
+                            return loc('civics_gov_superpower');
+                        }
+                        else if (m > 160){
+                            return loc('civics_gov_v_strong');
+                        }
+                        else if (m > 125){
+                            return loc('civics_gov_strong');
+                        }
+                        else {
+                            return loc('civics_gov_average');
+                        }
                     }
                     else {
-                        return loc('civics_gov_average');
+                        return '???';
                     }
                 },
                 relation(r){
@@ -245,39 +252,61 @@ function foreign(){
                     }
                 },
                 eco(e){
-                    if (e < 60){
-                        return loc('civics_gov_weak');
-                    }
-                    else if (e < 80){
-                        return loc('civics_gov_recession');
-                    }
-                    else if (e > 120){
-                        return loc('civics_gov_strong');
+                    if (global.civic.foreign[`gov${i}`].spy >= 2){
+                        if (e < 60){
+                            return loc('civics_gov_weak');
+                        }
+                        else if (e < 80){
+                            return loc('civics_gov_recession');
+                        }
+                        else if (e > 120){
+                            return loc('civics_gov_strong');
+                        }
+                        else {
+                            return loc('civics_gov_average');
+                        }
                     }
                     else {
-                        return loc('civics_gov_average');
+                        return '???';
                     }
                 },
                 discontent(r){
-                    if (r < 25){
-                        return loc('civics_gov_none');
-                    }
-                    else if (r < 50){
-                        return loc('civics_gov_low');
-                    }
-                    else if (r < 75){
-                        return loc('civics_gov_medium');
-                    }
-                    else if (r < 100){
-                        return loc('civics_gov_high');
+                    if (global.civic.foreign[`gov${i}`].spy >= 3){
+                        if (r < 25){
+                            return loc('civics_gov_none');
+                        }
+                        else if (r < 50){
+                            return loc('civics_gov_low');
+                        }
+                        else if (r < 75){
+                            return loc('civics_gov_medium');
+                        }
+                        else if (r < 100){
+                            return loc('civics_gov_high');
+                        }
+                        else {
+                            return loc('civics_gov_extreme');
+                        }
                     }
                     else {
-                        return loc('civics_gov_extreme');
+                        return '???';
                     }
                 }
             },
             methods: {
-
+                spy(){
+                    if (global.tech['spy']){
+                        let cost = Math.round(global.civic.foreign[`gov${i}`].mil ** (global.civic.foreign[`gov${i}`].spy + 1));
+                        if (global.resource.Money.amount >= cost){
+                            global.civic.foreign[`gov${i}`].spy++;
+                            global.resource.Money.amount -= cost;
+                        }
+                    }
+                },
+                spyDesc(){
+                    let cost = Math.round(global.civic.foreign[`gov${i}`].mil ** (global.civic.foreign[`gov${i}`].spy + 1));
+                    return loc('civics_gov_spy_desc',[cost]);
+                }
             }
         });
     }

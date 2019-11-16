@@ -5978,6 +5978,28 @@ export const actions = {
                 return false;
             }
         },
+        spy: {
+            id: 'tech-spy',
+            title: loc('tech_spy'),
+            desc: loc('tech_spy'),
+            reqs: { govern: 1 },
+            grant: ['spy',1],
+            cost: {
+                Knowledge(){ return 1250; }
+            },
+            effect: loc('tech_spy_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    vBind({el: '#gov0'},'update');
+                    vBind({el: '#gov1'},'update');
+                    vBind({el: '#gov2'},'update');
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: loc('tech_currency'),

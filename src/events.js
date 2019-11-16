@@ -255,6 +255,32 @@ export const events = {
                     return loc('event_protest9');
             }
         }
+    },
+    spy: {
+        condition(){
+            if (global.race['elusive']){
+                return false;
+            }
+            return global.civic.foreign.gov0.spy > 0 || global.civic.foreign.gov1.spy > 0 || global.civic.foreign.gov2.spy > 0 ? true : false;
+        },
+        effect: function(){
+            let govs = [];
+            for (let i=0; i<3; i++){
+                if (global.civic.foreign[`gov${i}`].spy > 0){
+                    govs.push(i);
+                }
+            }
+            let gov = Math.rand(0,govs.length);
+            global.civic.foreign[`gov${gov}`].spy--;
+            switch (gov){
+                case 0:
+                    return loc('event_spy',[loc('civics_gov0',[races[global.race.species].name])]);
+                case 1:
+                    return loc('event_spy',[loc('civics_gov1')]);
+                case 2:
+                    return loc('event_spy',[loc('civics_gov2',[races[global.race.species].home])]);
+            }
+        }
     }
 };
 
