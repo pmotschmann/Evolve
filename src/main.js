@@ -14,6 +14,8 @@ import { arpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
 
+delete global.tech['world_control'];
+
 var intervals = {};
 if (global.settings.expose){
     enableScript();

@@ -2328,7 +2328,7 @@ const interstellarProjects = {
                         desc = desc + `<div>${loc('interstellar_citadel_effect4',[graph])}</div>`;
                     }
                 }
-                return `${desc}<div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `${desc}<div class="has-text-advanced">${loc('interstellar_citadel_power',[$(this)[0].powered(),2.5])}</div>`;
             },
             powered(){
                 if (p_on['citadel'] && p_on['citadel'] > 1){

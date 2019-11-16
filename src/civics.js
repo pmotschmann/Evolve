@@ -231,6 +231,9 @@ function drawModal(){
                     if (global.tech['space_explore'] && global.tech['space_explore'] >= 3){
                         time += 250;
                     }
+                    if (global.race['unorganized']){
+                        time = Math.round(time * 1.5);
+                    }
                     if (global.stats.achieve['anarchist']){
                         time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
                     }
@@ -366,7 +369,7 @@ export function buildGarrison(garrison){
     
     garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="progress" max="100">{{ progress }}%</progress></div>`));
 
-    var campaign = $('<div class="columns is-mobile"></div>');
+    var campaign = $('<div class="columns is-mobile battle"></div>');
     garrison.append(campaign);
 
     var wrap = $('<div class="war"></div>');

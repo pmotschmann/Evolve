@@ -520,7 +520,7 @@ export const races = {
         home: loc('race_satyr_home'),
         entity: loc('race_satyr_entity'),
         traits: {
-            charming: 1, // Not Implemented
+            unorganized: 1,
             musical: 1
         },
         solar: {
@@ -1171,6 +1171,10 @@ export const traits = {
     },
     suction_grip: { // Global productivity boost
         desc: loc('trait_suction_grip'),
+        type: 'major',
+    },
+    unorganized: { // Increased time between revolutions
+        desc: loc('trait_unorganized'),
         type: 'major',
     },
     musical: { // Entertainers are more effective
