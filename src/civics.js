@@ -7,7 +7,7 @@ import { loadIndustry } from './industry.js';
 
 // Sets up government in civics tab
 export function defineGovernment(){
-    var govern = $('<div id="government" class="government tile is-child"></div>');
+    var govern = $('<div id="government" class="government is-child"></div>');
     govern.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_government')}</h2></div>`));
     $('#r_civics').append(govern);
     
@@ -25,6 +25,7 @@ export function defineGovernment(){
     
     government(govern);
     taxRates(govern);
+    //foreign();
 }
 
 export function defineIndustry(){
@@ -177,6 +178,44 @@ function government(govern){
         poppers['govPop'].destroy();
         $('#popGov').remove();
     });
+}
+
+function foreign(){
+    let foreign = $('<div id="foreign" class="government is-child"></div>');
+    foreign.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
+    $('#r_civics').append(foreign);
+
+    if (!global.civic['foreign']){
+        global.civic['foreign'] = {
+            gov1: {
+                unrest: 0,
+                hstl: 100,
+                mil: 75,
+                eco: 45,
+            },
+            gov2: {
+                unrest: 0,
+                hstl: 0,
+                mil: 150,
+                eco: 60,
+            },
+            gov3: {
+                unrest: 0,
+                hstl: 50,
+                mil: 250,
+                eco: 80,
+            }
+        };
+    }
+
+    let gov1 = $(`<div class="has-text-danger foreign">${loc('civics_gov1',[races[global.race.species].name])}</div>`);
+    foreign.append(gov1);
+
+    let gov2 = $(`<div class="has-text-danger foreign">${loc('civics_gov2')}</div>`);
+    foreign.append(gov2);
+
+    let gov3 = $(`<div class="has-text-danger foreign">${loc('civics_gov3',[races[global.race.species].home])}</div>`);
+    foreign.append(gov3);
 }
 
 function drawModal(){
