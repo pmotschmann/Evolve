@@ -569,11 +569,11 @@ function marketItem(mount,market_item,name,color,full){
                     let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
                     if (global.race['conniving']){
                         value *= 0.95;
-                    } 
+                    }
                     var price = Math.round(value * qty);
                     if (global.resource.Money.amount >= price){
-                        global.resource[res].amount += qty;
-                        global.resource.Money.amount -= price;
+                        global.resource[res].amount += Number(qty);
+                        global.resource.Money.amount -= Number(price);
                         
                         global.resource[res].value += Number((qty / Math.rand(1000,10000)).toFixed(2));
                     }
@@ -588,8 +588,8 @@ function marketItem(mount,market_item,name,color,full){
                             divide -= 0.5;
                         } 
                         let price = Math.round(global.resource[res].value * qty / divide);
-                        global.resource[res].amount -= qty;
-                        global.resource.Money.amount += price;
+                        global.resource[res].amount -= Number(qty);
+                        global.resource.Money.amount += Number(price);
                         
                         global.resource[res].value -= Number((qty / Math.rand(1000,10000)).toFixed(2));
                         if (global.resource[res].value < Number(resource_values[res] / 2)){

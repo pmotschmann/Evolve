@@ -25,7 +25,7 @@ export function defineGovernment(){
     
     government(govern);
     taxRates(govern);
-    //foreign();
+    foreign();
 }
 
 export function defineIndustry(){
@@ -185,37 +185,102 @@ function foreign(){
     foreign.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
     $('#r_civics').append(foreign);
 
-    if (!global.civic['foreign']){
-        global.civic['foreign'] = {
-            gov1: {
-                unrest: 0,
-                hstl: 100,
-                mil: 75,
-                eco: 45,
+    let title = [
+        loc('civics_gov0',[races[global.race.species].name]),
+        loc('civics_gov1'),
+        loc('civics_gov2',[races[global.race.species].home])
+    ];
+
+    for (let i=0;i<3;i++){
+        let gov = $(`<div id="gov${i}" class="foreign"><div class="has-text-caution">${title[i]}</div></div>`);
+        foreign.append(gov);
+
+        gov.append($(`<div><span class="has-text-advanced glabel">Military Ranking:</span> <span class="glevel">{{ mil | military}}</span></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">Relations:</span> <span class="glevel">{{ hstl | relation }}</span></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">Economic Strength:</span> <span class="glevel">{{ eco | eco }}</span></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">Unreset:</span> <span class="glevel">{{ unrest | discontent }}</span></div>`));
+
+        vBind({
+            el: `#gov${i}`,
+            data: global.civic.foreign[`gov${i}`],
+            filters: {
+                military(m){
+                    if (m < 50){
+                        return loc('civics_gov_v_weak');
+                    }
+                    else if (m < 75){
+                        return loc('civics_gov_weak');
+                    }
+                    else if (m > 200){
+                        return loc('civics_gov_superpower');
+                    }
+                    else if (m > 160){
+                        return loc('civics_gov_v_strong');
+                    }
+                    else if (m > 125){
+                        return loc('civics_gov_strong');
+                    }
+                    else {
+                        return loc('civics_gov_average');
+                    }
+                },
+                relation(r){
+                    if (r > 80){
+                        return loc('civics_gov_hated');
+                    }
+                    else if (r > 60){
+                        return loc('civics_gov_hostile');
+                    }
+                    else if (r > 40){
+                        return loc('civics_gov_poor');
+                    }
+                    else if (r > 25){
+                        return loc('civics_gov_neutral');
+                    }
+                    else if (r > 10){
+                        return loc('civics_gov_liked');
+                    }
+                    else {
+                        return loc('civics_gov_good');
+                    }
+                },
+                eco(e){
+                    if (e < 60){
+                        return loc('civics_gov_weak');
+                    }
+                    else if (e < 80){
+                        return loc('civics_gov_recession');
+                    }
+                    else if (e > 120){
+                        return loc('civics_gov_strong');
+                    }
+                    else {
+                        return loc('civics_gov_average');
+                    }
+                },
+                discontent(r){
+                    if (r < 25){
+                        return loc('civics_gov_none');
+                    }
+                    else if (r < 50){
+                        return loc('civics_gov_low');
+                    }
+                    else if (r < 75){
+                        return loc('civics_gov_medium');
+                    }
+                    else if (r < 100){
+                        return loc('civics_gov_high');
+                    }
+                    else {
+                        return loc('civics_gov_extreme');
+                    }
+                }
             },
-            gov2: {
-                unrest: 0,
-                hstl: 0,
-                mil: 150,
-                eco: 60,
-            },
-            gov3: {
-                unrest: 0,
-                hstl: 50,
-                mil: 250,
-                eco: 80,
+            methods: {
+
             }
-        };
+        });
     }
-
-    let gov1 = $(`<div class="has-text-danger foreign">${loc('civics_gov1',[races[global.race.species].name])}</div>`);
-    foreign.append(gov1);
-
-    let gov2 = $(`<div class="has-text-danger foreign">${loc('civics_gov2')}</div>`);
-    foreign.append(gov2);
-
-    let gov3 = $(`<div class="has-text-danger foreign">${loc('civics_gov3',[races[global.race.species].home])}</div>`);
-    foreign.append(gov3);
 }
 
 function drawModal(){
@@ -436,7 +501,9 @@ export function buildGarrison(garrison){
         battalion.append(armysize);
         battalion.append(anext);
 
-        campaign.append($(`<div class="launch"><b-tooltip :label="battleAssessment()" position="is-bottom" multilined animated><button class="button campaign" @click="campaign">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov0',[races[global.race.species].name])}</div><b-tooltip :label="battleAssessment(0)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(0)">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov1')}</div><b-tooltip :label="battleAssessment(1)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(1)">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov2',[races[global.race.species].home])}</div><b-tooltip :label="battleAssessment(2)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(2)">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
     }
 
     if (!global.civic['garrison']){
@@ -487,7 +554,7 @@ export function buildGarrison(garrison){
                     global.civic.garrison.m_use++;
                 }
             },
-            campaign(){
+            campaign(gov){
                 if (global.civic.garrison.raid === 0){
                     messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning');
                     return;
@@ -507,21 +574,22 @@ export function buildGarrison(garrison){
 
                 switch(global.civic.garrison.tactic){
                     case 0:
-                        enemy = Math.floor(Math.seededRandom(0,10));
+                        enemy = Math.seededRandom(0,10);
                         break;
                     case 1:
-                        enemy = Math.floor(Math.seededRandom(5,50));
+                        enemy = Math.seededRandom(5,50);
                         break;
                     case 2:
-                        enemy = Math.floor(Math.seededRandom(25,100));
+                        enemy = Math.seededRandom(25,100);
                         break;
                     case 3:
-                        enemy = Math.floor(Math.seededRandom(50,200));
+                        enemy = Math.seededRandom(50,200);
                         break;
                     case 4:
-                        enemy = Math.floor(Math.seededRandom(100,500));
+                        enemy = Math.seededRandom(100,500);
                         break;
                 }
+                enemy = Math.floor(enemy * global.civic.foreign[`gov${gov}`].mil / 100);
 
                 if (global.race['frenzy']){
                     global.race['frenzy'] += Math.ceil(enemy / 5);
@@ -749,53 +817,53 @@ export function buildGarrison(garrison){
 
                     let loot = loc('civics_garrison_gained');
                     if (global.resource.Money.display && money > 0){
-                        money = lootModify(money);
+                        money = lootModify(money,gov);
                         loot = loot + loc('civics_garrison_quant_money',[money]);
                         modRes('Money',money);
                     }
                     if (global.resource.Food.display && food > 0){
-                        food = lootModify(food);
+                        food = lootModify(food,gov);
                         loot = loot + loc('civics_garrison_quant_res',[food,global.resource.Food.name]);
                         modRes('Food',food);
                     }
                     if (global.resource.Lumber.display && lumber > 0){
-                        lumber = lootModify(lumber);
+                        lumber = lootModify(lumber,gov);
                         loot = loot + loc('civics_garrison_quant_res',[lumber,global.resource.Lumber.name]);
                         modRes('Lumber',lumber);
                     }
                     if (global.resource.Stone.display && stone > 0){
-                        stone = lootModify(stone);
+                        stone = lootModify(stone,gov);
                         loot = loot + loc('civics_garrison_quant_res',[stone,global.resource.Stone.name]);
-                        modRes('Stone',stone);
+                        modRes('Stone',stone,gov);
                     }
                     if (global.resource.Copper.display && copper > 0){
-                        copper = lootModify(copper);
+                        copper = lootModify(copper,gov);
                         loot = loot + loc('civics_garrison_quant_res',[copper,global.resource.Copper.name]);
                         modRes('Copper',copper);
                     }
                     if (global.resource.Iron.display && iron > 0){
-                        iron = lootModify(iron);
+                        iron = lootModify(iron,gov);
                         loot = loot + loc('civics_garrison_quant_res',[iron,global.resource.Iron.name]);
                         modRes('Iron',iron);
                     }
                     if (global.resource.Aluminium.display && aluminium > 0){
-                        aluminium = lootModify(aluminium);
+                        aluminium = lootModify(aluminium,gov);
                         loot = loot + loc('civics_garrison_quant_res',[aluminium,global.resource.Aluminium.name]);
                         modRes('Aluminium',aluminium);
                     }
                     if (global.resource.Cement.display && cement > 0){
-                        cement = lootModify(cement);
+                        cement = lootModify(cement,gov);
                         loot = loot + loc('civics_garrison_quant_res',[cement,global.resource.Cement.name]);
                         modRes('Cement',cement);
                     }
                     if (steel > 0){
-                        steel = lootModify(steel);
+                        steel = lootModify(steel,gov);
                         global.resource.Steel.display = true;
                         loot = loot + loc('civics_garrison_quant_res',[steel,global.resource.Steel.name]);
                         modRes('Steel',steel);
                     }
                     if (titanium > 0){
-                        titanium = lootModify(titanium);
+                        titanium = lootModify(titanium,gov);
                         global.resource.Titanium.display = true;
                         loot = loot + loc('civics_garrison_quant_res',[titanium,global.resource.Titanium.name]);
                         modRes('Titanium',titanium);
@@ -982,7 +1050,7 @@ export function buildGarrison(garrison){
                 cost = Math.round(cost);
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
             },
-            battleAssessment(){
+            battleAssessment(gov){
                 let army = armyRating(global.civic.garrison.raid,'army');
                 let enemy = 0;
                 switch(global.civic.garrison.tactic){
@@ -1002,6 +1070,7 @@ export function buildGarrison(garrison){
                         enemy = 300;
                         break;
                 }
+                enemy *= global.civic.foreign[`gov${gov}`].mil / 100;
 
                 if (army < enemy){
                     return loc('civics_garrison_disadvantage',[+((1 - (army / enemy)) * 100).toFixed(1)]);
@@ -1130,7 +1199,7 @@ function looters(){
     return looting;
 }
 
-function lootModify(val){
+function lootModify(val,gov){
     let looting = looters();
     let loot = val * Math.log(looting + 1);
     if (global.race['beast_of_burden']){
@@ -1142,7 +1211,7 @@ function lootModify(val){
     if (global.race.universe === 'evil'){
         loot = loot * (1 + ((Math.log2(10 + global.race.Dark.count) - 3.321928094887362) / 5));
     }
-    return Math.floor(loot);
+    return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }
 
 export function armyRating(val,type,wound){

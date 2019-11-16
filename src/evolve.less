@@ -553,6 +553,11 @@ a {
 
         .foreign {
             margin-bottom: 1rem;
+
+            .glabel {
+                display: inline-block;
+                width: 9rem;
+            }
         }
     }
 
@@ -663,10 +668,13 @@ a {
             }
         }
         .launch {
+            width: 10rem;
             margin-top: .75rem;
+            margin-right: .5rem;
+            text-align: center;
+
             .campaign {
-                width: 6rem;
-                height: 3rem;
+                width: 10rem;
                 white-space: normal;
                 margin-top: .5rem;
             }
@@ -679,8 +687,11 @@ a {
                 margin-bottom: .5rem;
                 .war,
                 .launch {
-                    margin-top: .25rem;
+                    margin: .25rem 0 0 .75rem;
                 }
+            }
+            .columns {
+                flex-wrap: wrap;
             }
         }
     }

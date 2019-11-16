@@ -617,6 +617,35 @@ if (!global.civic['govern']){
 }
 global.civic.govern.fr = 0;
 
+if (!global.civic['foreign']){
+    global.civic['foreign'] = {
+        gov0: {
+            unrest: 0,
+            hstl: 100,
+            mil: 100,
+            eco: 75,
+            spy: 0,
+            occ: false
+        },
+        gov1: {
+            unrest: 0,
+            hstl: 0,
+            mil: 150,
+            eco: 100,
+            spy: 0,
+            occ: false
+        },
+        gov2: {
+            unrest: 0,
+            hstl: 50,
+            mil: 250,
+            eco: 150,
+            spy: 0,
+            occ: false
+        }
+    };
+}
+
 if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
 }

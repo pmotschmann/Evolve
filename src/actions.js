@@ -2105,7 +2105,8 @@ export const actions = {
                     }
                 }
                 return false;
-            }
+            },
+            flair: loc('evo_bunker_flair')
         },
         plasmid: {
             id: 'evo-plasmid',
@@ -5890,7 +5891,7 @@ export const actions = {
             id: 'tech-theocracy',
             title: loc('govern_theocracy'),
             desc: loc('govern_theocracy'),
-            reqs: { govern: 1, theology: 1 },
+            reqs: { govern: 1, theology: 2 },
             grant: ['gov_theo',1],
             cost: {
                 Knowledge(){ return 1200; }
