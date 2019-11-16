@@ -794,7 +794,7 @@ export const genus_traits = {
         low_light: 1
     },
     fey: {
-        elusive: 1, // Not Implemented
+        elusive: 1,
         iron_allery: 1
     },
     heat: {
@@ -905,7 +905,7 @@ export const traits = {
         desc: loc('trait_low_light'),
         type: 'genus',
     },
-    elusive: { // ???
+    elusive: { // Spies are never caught
         desc: loc('trait_elusive'),
         type: 'genus',
     },

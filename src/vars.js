@@ -625,6 +625,7 @@ if (!global.civic['foreign']){
             mil: 100,
             eco: 75,
             spy: 0,
+            esp: 0,
             occ: false
         },
         gov1: {
@@ -633,6 +634,7 @@ if (!global.civic['foreign']){
             mil: 150,
             eco: 100,
             spy: 0,
+            esp: 0,
             occ: false
         },
         gov2: {
@@ -641,6 +643,7 @@ if (!global.civic['foreign']){
             mil: 250,
             eco: 150,
             spy: 0,
+            esp: 0,
             occ: false
         }
     };
@@ -1146,6 +1149,35 @@ export function clearStates(){
     global.portal = {};
     global.starDock = {};
     global.civic = { free: 0, new: 0 };
+    global.civic['foreign'] = {
+        gov0: {
+            unrest: 0,
+            hstl: Math.floor(Math.seededRandom(80,100)),
+            mil: Math.floor(Math.seededRandom(75,125)),
+            eco: Math.floor(Math.seededRandom(60,90)),
+            spy: 0,
+            esp: 0,
+            occ: false
+        },
+        gov1: {
+            unrest: 0,
+            hstl: Math.floor(Math.seededRandom(0,20)),
+            mil: Math.floor(Math.seededRandom(125,175)),
+            eco: Math.floor(Math.seededRandom(80,120)),
+            spy: 0,
+            esp: 0,
+            occ: false
+        },
+        gov2: {
+            unrest: 0,
+            hstl: Math.floor(Math.seededRandom(40,60)),
+            mil: Math.floor(Math.seededRandom(200,300)),
+            eco: Math.floor(Math.seededRandom(130,170)),
+            spy: 0,
+            esp: 0,
+            occ: false
+        }
+    };
     global.resource = {};
     global.evolution = {};
     global.event = 100;
