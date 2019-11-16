@@ -1,4 +1,4 @@
-import { global, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame } from './vars.js';
+import { global, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
 import { challenge_multiplier, timeFormat, vBind } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
@@ -304,7 +304,7 @@ function foreign(){
                     }
                 },
                 spyDesc(){
-                    let cost = Math.round(global.civic.foreign[`gov${i}`].mil ** (global.civic.foreign[`gov${i}`].spy + 1));
+                    let cost = sizeApproximation(Math.round(global.civic.foreign[`gov${i}`].mil ** (global.civic.foreign[`gov${i}`].spy + 1)));
                     return loc('civics_gov_spy_desc',[cost]);
                 }
             }
