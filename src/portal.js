@@ -257,7 +257,7 @@ export function renderFortress(){
 
             if (region === 'prtl_fortress'){
                 buildFortress(parent,true);
-                buildFortress($('#military'),false);
+                buildFortress($('#fortress'),false);
             } 
 
             Object.keys(fortressModules[region]).forEach(function (tech){

@@ -56,6 +56,7 @@ export function defineIndustry(){
 export function defineGarrison(){
     var garrison = $('<div id="garrison" v-show="display" class="garrison tile is-child"></div>');
     $('#military').append(garrison);
+    $('#military').append($(`<div id="fortress"></div>`));
     
     buildGarrison(garrison);
     defineMad();
@@ -1197,7 +1198,7 @@ function defineMad(){
     }
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
     var mad_command = $('<div id="mad" v-show="display" class="tile is-child"></div>');
-    $('#r_civics').append(mad_command);
+    $('#military').append(mad_command);
     var mad = $('<div class="mad"></div>');
     mad_command.append(mad);
 
