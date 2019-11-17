@@ -145,7 +145,7 @@ function government(govern){
                 var checkExist = setInterval(function() {
                    if ($('#modalBox').length > 0) {
                       clearInterval(checkExist);
-                      drawModal();
+                      drawGovModal();
                    }
                 }, 50);
             },
@@ -178,22 +178,112 @@ function government(govern){
     });
 }
 
+function drawGovModal(){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_government_type')}</p>`));
+    
+    var body = $('<div id="govModal" class="modalBody max40"></div>');
+    $('#modalBox').append(body);
+
+    if (global.tech['govern']){
+        if (global.civic.govern.type !== 'autocracy'){
+            body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc(`govern_autocracy`)}</button>`));
+        }
+        if (global.civic.govern.type !== 'democracy'){
+            body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${loc(`govern_democracy`)}</button>`));
+        }
+        if (global.civic.govern.type !== 'oligarchy'){
+            body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc(`govern_oligarchy`)}</button>`));
+        }
+        if (global.tech['gov_theo'] && global.civic.govern.type !== 'theocracy'){
+            body.append($(`<button class="button gap" data-gov="theocracy" @click="setGov('theocracy')">${loc(`govern_theocracy`)}</button>`));
+        }
+        if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic'){
+            body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc(`govern_republic`)}</button>`));
+        }
+        if (global.tech['gov_soc'] && global.civic.govern.type !== 'socialist'){
+            body.append($(`<button class="button gap" data-gov="socialist" @click="setGov('socialist')">${loc(`govern_socialist`)}</button>`));
+        }
+        if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy'){
+            body.append($(`<button class="button gap" data-gov="corpocracy" @click="setGov('corpocracy')">${loc(`govern_corpocracy`)}</button>`));
+        }
+        if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy'){
+            body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc(`govern_technocracy`)}</button>`));
+        }
+    }
+
+    vBind({
+        el: '#govModal',
+        data: global.civic['govern'],
+        methods: {
+            setGov(g){
+                if (global.civic.govern.rev === 0){
+                    global.civic.govern.type = g;
+                    let time = 1000;
+                    if (global.tech['high_tech']){
+                        time += 250;
+                        if (global.tech['high_tech'] >= 3){
+                            time += 250;
+                        }
+                        if (global.tech['high_tech'] >= 6){
+                            time += 250;
+                        }
+                    }
+                    if (global.tech['space_explore'] && global.tech['space_explore'] >= 3){
+                        time += 250;
+                    }
+                    if (global.race['unorganized']){
+                        time = Math.round(time * 1.5);
+                    }
+                    if (global.stats.achieve['anarchist']){
+                        time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
+                    }
+                    if (global.race['lawless']){
+                        time = Math.round(time / 10);
+                    }
+                    global.civic.govern.rev = time + global.civic.govern.fr;
+                    vBind({el: '#govModal'},'destroy');
+                    $('.modal-background').click();
+                    $('#popGov').hide();
+                    poppers['govPop'].destroy();
+                    $('#popGov').remove();
+                }
+            }
+        }
+    });
+
+    $('#govModal button').on('mouseover',function(){
+        let govType = $(this).data('gov');
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc[govType]}</div></div>`);
+        $('#main').append(popper);
+        popper.show();
+        poppers['govPop'] = new Popper(this,popper);
+        window.pop = poppers['govPop'];
+    });
+    $('#govModal button').on('mouseout',function(){
+        $('#popGov').hide();
+        poppers['govPop'].destroy();
+        $('#popGov').remove();
+    });
+}
+
 function foreign(){
     let foreign = $('<div id="foreign" class="government is-child"></div>');
     foreign.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
     $('#r_civics').append(foreign);
 
-    let title = [
-        loc('civics_gov0',[races[global.race.species].name]),
-        loc('civics_gov1'),
-        loc('civics_gov2',[races[global.race.species].home])
-    ];
+    var modal = {
+        template: '<div id="modalBox" class="modalBox"></div>'
+    };
 
     for (let i=0;i<3;i++){
-        let gov = $(`<div id="gov${i}" class="foreign"><div class="has-text-caution">${title[i]}</div></div>`);
+        let gov = $(`<div id="gov${i}" class="foreign"><div class="has-text-caution">{{ '${i}' | gov }}</div></div>`);
         foreign.append(gov);
 
-        gov.append($(`<div v-show="t.spy >= 1"><b-tooltip :label="spyDesc()" position="is-bottom" animated multilined><button class="button glabel" @click="spy">${loc('tech_spy')} - {{ f.spy }}</button></b-tooltip></div>`));
+        let spying = $(`<div v-show="t.spy >= 1"></div>`);
+        spying.append($(`<b-tooltip :label="spyDesc()" position="is-bottom" animated multilined><button class="button glabel" @click="spy">${loc('tech_spy')} - {{ f.spy }}</button></b-tooltip>`));
+        spying.append($(`<b-tooltip v-show="t.spy >= 2 && f.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button class="button glabel" @click="trigModal">${loc('tech_espionage')}</button></b-tooltip>`));
+        gov.append(spying);
+
         gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f.mil | military}}</span></div>`));
         gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f.hstl | relation }}</span></div>`));
         gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f.eco | eco }}</span></div>`));
@@ -291,9 +381,30 @@ function foreign(){
                     else {
                         return '???';
                     }
+                },
+                gov(id){
+                    let title = [
+                        loc('civics_gov0',[races[global.race.species].name]),
+                        loc('civics_gov1'),
+                        loc('civics_gov2',[races[global.race.species].home])
+                    ];
+                    return title[id];
                 }
             },
             methods: {
+                trigModal(){
+                    this.$buefy.modal.open({
+                        parent: this,
+                        component: modal
+                    });
+    
+                    var checkExist = setInterval(function() {
+                       if ($('#modalBox').length > 0) {
+                          clearInterval(checkExist);
+                          drawEspModal(i);
+                       }
+                    }, 50);
+                },
                 spy(){
                     if (global.tech['spy']){
                         let cost = Math.round(global.civic.foreign[`gov${i}`].mil ** (global.civic.foreign[`gov${i}`].spy + 1));
@@ -306,94 +417,58 @@ function foreign(){
                 spyDesc(){
                     let cost = sizeApproximation(Math.round(global.civic.foreign[`gov${i}`].mil ** (global.civic.foreign[`gov${i}`].spy + 1)));
                     return loc('civics_gov_spy_desc',[cost]);
+                },
+                espDesc(){
+                    return loc('civics_gov_esp_desc');
                 }
             }
         });
     }
 }
 
-function drawModal(){
-    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_government_type')}</p>`));
+function drawEspModal(gov){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_espionage_actions')}</p>`));
     
-    var body = $('<div id="govModal" class="modalBody max40"></div>');
+    var body = $('<div id="espModal" class="modalBody max40"></div>');
     $('#modalBox').append(body);
 
-    if (global.tech['govern']){
-        if (global.civic.govern.type !== 'autocracy'){
-            body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc(`govern_autocracy`)}</button>`));
-        }
-        if (global.civic.govern.type !== 'democracy'){
-            body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${loc(`govern_democracy`)}</button>`));
-        }
-        if (global.civic.govern.type !== 'oligarchy'){
-            body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc(`govern_oligarchy`)}</button>`));
-        }
-        if (global.tech['gov_theo'] && global.civic.govern.type !== 'theocracy'){
-            body.append($(`<button class="button gap" data-gov="theocracy" @click="setGov('theocracy')">${loc(`govern_theocracy`)}</button>`));
-        }
-        if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic'){
-            body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc(`govern_republic`)}</button>`));
-        }
-        if (global.tech['gov_soc'] && global.civic.govern.type !== 'socialist'){
-            body.append($(`<button class="button gap" data-gov="socialist" @click="setGov('socialist')">${loc(`govern_socialist`)}</button>`));
-        }
-        if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy'){
-            body.append($(`<button class="button gap" data-gov="corpocracy" @click="setGov('corpocracy')">${loc(`govern_corpocracy`)}</button>`));
-        }
-        if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy'){
-            body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc(`govern_technocracy`)}</button>`));
-        }
+    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${gov}`].spy >= 1){
+        body.append($(`<button class="button gap" data-esp="influence" @click="influence('${gov}')">${loc(`civics_spy_influence`)}</button>`));
+        body.append($(`<button class="button gap" data-esp="sabotage" @click="sabotage('${gov}')">${loc(`civics_spy_sabotage`)}</button>`));
+        body.append($(`<button class="button gap" data-esp="incite" @click="incite('${gov}')">${loc(`civics_spy_incite`)}</button>`));
     }
 
     vBind({
-        el: '#govModal',
-        data: global.civic['govern'],
+        el: '#espModal',
+        data: global.civic.foreign[`gov${gov}`],
         methods: {
-            setGov(g){
-                if (global.civic.govern.rev === 0){
-                    global.civic.govern.type = g;
-                    let time = 1000;
-                    if (global.tech['high_tech']){
-                        time += 250;
-                        if (global.tech['high_tech'] >= 3){
-                            time += 250;
-                        }
-                        if (global.tech['high_tech'] >= 6){
-                            time += 250;
-                        }
-                    }
-                    if (global.tech['space_explore'] && global.tech['space_explore'] >= 3){
-                        time += 250;
-                    }
-                    if (global.race['unorganized']){
-                        time = Math.round(time * 1.5);
-                    }
-                    if (global.stats.achieve['anarchist']){
-                        time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
-                    }
-                    if (global.race['lawless']){
-                        time = Math.round(time / 10);
-                    }
-                    global.civic.govern.rev = time + global.civic.govern.fr;
-                    vBind({el: '#govModal'},'destroy');
-                    $('.modal-background').click();
-                    $('#popGov').hide();
-                    poppers['govPop'].destroy();
-                    $('#popGov').remove();
+            influence(g){
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+
+                }
+            },
+            sabotage(g){
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                    
+                }
+            },
+            incite(g){
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                    
                 }
             }
         }
     });
 
-    $('#govModal button').on('mouseover',function(){
-        let govType = $(this).data('gov');
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc[govType]}</div></div>`);
+    $('#espModal button').on('mouseover',function(){
+        let esp = $(this).data('esp');
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`)}</div><div class="has-text-advanced"></div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);
         window.pop = poppers['govPop'];
     });
-    $('#govModal button').on('mouseout',function(){
+    $('#espModal button').on('mouseout',function(){
         $('#popGov').hide();
         poppers['govPop'].destroy();
         $('#popGov').remove();
@@ -1080,6 +1155,13 @@ export function buildGarrison(garrison){
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
             },
             battleAssessment(gov){
+                if (
+                    (global.civic.garrison.tactic <= 1 && global.civic.foreign[`gov${gov}`].spy < 1) || 
+                    (global.civic.garrison.tactic >= 2 && global.civic.garrison.tactic <= 3 && global.civic.foreign[`gov${gov}`].spy < 2) || 
+                    (global.civic.garrison.tactic === 4 && global.civic.foreign[`gov${gov}`].spy < 3)
+                    ){
+                    return loc('civics_garrison_no_spy');
+                }
                 let army = armyRating(global.civic.garrison.raid,'army');
                 let enemy = 0;
                 switch(global.civic.garrison.tactic){

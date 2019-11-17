@@ -355,7 +355,7 @@ if (convertVersion(global['version']) < 7000){
 }
 
 global['version'] = '0.7.0';
-global['beta'] = '9';
+global['beta'] = '10';
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -1203,7 +1203,7 @@ export function clearStates(){
     global.stats.starved = 0;
     global.stats.died = 0;
     global.stats.attacks = 0;
-    global.settings.civTabs = 0;
+    
     global.settings.showEvolve = true;
     global.settings.showCity = false;
     global.settings.showIndustry = false;
@@ -1236,8 +1236,12 @@ export function clearStates(){
     global.settings.portal.badlands = false;
     global.settings.portal.pit = false;
     global.settings.arpa = false;
+    global.settings.civTabs = 0;
+    global.settings.govTabs = 0;
     global.settings.resTabs = 0;
     global.settings.spaceTabs = 0;
+    global.settings.marketTabs = 0
+    global.settings.statsTabs = 0
     global.settings.disableReset = false;
     global.arpa = {};
 }

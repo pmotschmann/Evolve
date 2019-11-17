@@ -6000,6 +6000,28 @@ export const actions = {
                 return false;
             }
         },
+        espionage: {
+            id: 'tech-espionage',
+            title: loc('tech_espionage'),
+            desc: loc('tech_espionage'),
+            reqs: { spy: 1, high_tech: 1, locked: 1 },
+            grant: ['spy',2],
+            cost: {
+                Knowledge(){ return 7500; }
+            },
+            effect: loc('tech_espionage_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    vBind({el: '#gov0'},'update');
+                    vBind({el: '#gov1'},'update');
+                    vBind({el: '#gov2'},'update');
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: loc('tech_currency'),
