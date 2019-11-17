@@ -10,6 +10,7 @@ Inspiration no longer adds an upfront knowledge bonus<br>
 Vigilante requirement lowered to 12<br>
 Xenophobic replaced with Wasteful<br>
 Added Rocky Road Feat<br>
+Configurable number notations<br>
 
 #### 0.6.27 - 11/12/2019 ####
 Tundra planets are now always cold in winter<br>

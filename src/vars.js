@@ -607,6 +607,9 @@ if (!global.settings['showMil']){
 if (!global.settings['showMil']){
     global.settings['showMil'] = true;
 }
+if (!global.settings['affix']){
+    global.settings['affix'] = 'si';
+}
 
 if (!global.civic['govern']){
     global.civic['govern'] = {
@@ -993,33 +996,47 @@ export function resizeGame(){
     }
 }
 
+var affix_list = {
+    si: ['K','M','G','T','P','E','Z','Y'],
+    sci: ['e3','e6','e9','e12','e15','e18','e21','e24'],
+    sln: ['K','M','B','t','q','Q','s','S']
+};
+
 export function sizeApproximation(value,precision,fixed){
     if (value <= 9999){
         return +value.toFixed(precision);
     }
     else if (value <= 1000000){
-        return fixed ? +(value / 1000).toFixed(1) + 'K' : (Math.floor(value / 100) / 10) + 'K';
+        let affix = affix_list[global.settings.affix][0];
+        return fixed ? +(value / 1000).toFixed(1) + affix : (Math.floor(value / 100) / 10) + affix;
     }
     else if (value <= 1000000000){
-        return fixed ? +(value / 1000000).toFixed(1) + 'M' : (Math.floor(value / 10000) / 100) + 'M';
+        let affix = affix_list[global.settings.affix][1];
+        return fixed ? +(value / 1000000).toFixed(1) + affix : (Math.floor(value / 10000) / 100) + affix;
     }
     else if (value <= 1000000000000){
-        return fixed ? +(value / 1000000000).toFixed(1) + 'G' : (Math.floor(value / 10000000) / 100) + 'G';
+        let affix = affix_list[global.settings.affix][2];
+        return fixed ? +(value / 1000000000).toFixed(1) + affix : (Math.floor(value / 10000000) / 100) + affix;
     }
     else if (value <= 1000000000000000){
-        return fixed ? +(value / 1000000000000).toFixed(1) + 'T' : (Math.floor(value / 10000000000) / 100) + 'T';
+        let affix = affix_list[global.settings.affix][3];
+        return fixed ? +(value / 1000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000) / 100) + affix;
     }
     else if (value <= 1000000000000000000){
-        return fixed ? +(value / 1000000000000000).toFixed(1) + 'P' : (Math.floor(value / 10000000000000) / 100) + 'P';
+        let affix = affix_list[global.settings.affix][4];
+        return fixed ? +(value / 1000000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000000) / 100) + affix;
     }
     else if (value <= 1000000000000000000000){
-        return fixed ? +(value / 1000000000000000000).toFixed(1) + 'E' : (Math.floor(value / 10000000000000000) / 100) + 'E';
+        let affix = affix_list[global.settings.affix][5];
+        return fixed ? +(value / 1000000000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000000000) / 100) + affix;
     }
     else if (value <= 1000000000000000000000000){
-        return fixed ? +(value / 1000000000000000000000).toFixed(1) + 'Z' : (Math.floor(value / 10000000000000000000) / 100) + 'Z';
+        let affix = affix_list[global.settings.affix][6];
+        return fixed ? +(value / 1000000000000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000000000000) / 100) + affix;
     }
     else {
-        return fixed ? +(value / 1000000000000000000000000).toFixed(1) + 'Y' : (Math.floor(value / 10000000000000000000000) / 100) + 'Y';
+        let affix = affix_list[global.settings.affix][7];
+        return fixed ? +(value / 1000000000000000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000000000000000) / 100) + affix;
     }
 }
 

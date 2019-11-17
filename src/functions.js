@@ -35,6 +35,15 @@ export function mainVue(){
                 $('html').removeClass();
                 $('html').addClass('redgreen');
             },
+            si(){
+                global.settings.affix = 'si';
+            },
+            sci(){
+                global.settings.affix = 'sci';
+            },
+            sln(){
+                global.settings.affix = 'sln';
+            },
             keys(){
                 return loc('settings1');
             },

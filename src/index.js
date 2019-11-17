@@ -217,6 +217,16 @@ export function index(){
                 <b-dropdown-item v-on:click="night">{{ 'theme_night' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="redgreen">{{ 'theme_redgreen' | label }}</b-dropdown-item>
             </b-dropdown>
+            <span>{{ 'units' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ s.affix }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="si">{{ 'metric' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="sci">{{ 'scientific' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="sln">{{ 'sln' | label }}</b-dropdown-item>
+            </b-dropdown>
         </div>
         <div id="localization" class="localization"></div>
         <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
