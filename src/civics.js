@@ -407,7 +407,12 @@ function foreign(){
                 },
                 spy(){
                     if (global.tech['spy']){
-                        let cost = Math.round(global.civic.foreign[`gov${i}`].mil ** (global.civic.foreign[`gov${i}`].spy + 1));
+                        let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
+                        if (base < 50){
+                            base = 50;
+                        }
+                        let cost = Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
+                        console.log(cost);
                         if (global.resource.Money.amount >= cost){
                             global.civic.foreign[`gov${i}`].spy++;
                             global.resource.Money.amount -= cost;
@@ -415,7 +420,11 @@ function foreign(){
                     }
                 },
                 spyDesc(){
-                    let cost = sizeApproximation(Math.round(global.civic.foreign[`gov${i}`].mil ** (global.civic.foreign[`gov${i}`].spy + 1)));
+                    let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
+                    if (base < 50){
+                        base = 50;
+                    }
+                    let cost = sizeApproximation(Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500);
                     return loc('civics_gov_spy_desc',[cost]);
                 },
                 espDesc(){
@@ -462,7 +471,7 @@ function drawEspModal(gov){
 
     $('#espModal button').on('mouseover',function(){
         let esp = $(this).data('esp');
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`)}</div><div class="has-text-advanced"></div></div>`);
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`)}</div><div class="has-text-advanced">${calcEspRisk(esp,gov)}</div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);
@@ -473,6 +482,10 @@ function drawEspModal(gov){
         poppers['govPop'].destroy();
         $('#popGov').remove();
     });
+}
+
+function calcEspRisk(esp,gov){
+    return "Feature Pending";
 }
 
 function taxRates(govern){

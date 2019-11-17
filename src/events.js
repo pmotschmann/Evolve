@@ -59,6 +59,9 @@ export const events = {
             tech: 'military',
             notech: 'world_control'
         },
+        condition(){
+            return global.civic.foreign.gov0.hstl > 60 || global.civic.foreign.gov1.hstl > 60 || global.civic.foreign.gov2.hstl > 60 ? true : false;
+        },
         effect: function(){
             let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
             let enemy = global['resource'][global.race.species].amount / Math.rand(1,4);
@@ -88,6 +91,46 @@ export const events = {
                 if (res < 0){ res = 0; }
                 global.resource.Money.amount = res;
                 return loc('event_raid2',[loss,killed,wounded]);
+            }
+        }
+    },
+    seige: {
+        reqs: { 
+            tech: 'military',
+            notech: 'world_control'
+        },
+        condition(){
+            return global.civic.foreign.gov0.hstl > 80 && global.civic.foreign.gov1.hstl > 80 && global.civic.foreign.gov2.hstl > 80 ? true : false;
+        },
+        effect: function(){
+            let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
+            let enemy = global.civic.foreign.gov0.mil + global.civic.foreign.gov1.mil + global.civic.foreign.gov2.mil;
+            
+            let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
+            let wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+            global.civic.garrison.workers -= killed;
+            global.civic.garrison.wounded += wounded;
+            global.stats.died += killed;
+            if (global.civic.garrison.wounded > global.civic.garrison.workers){
+                global.civic.garrison.wounded = global.civic.garrison.workers;
+            }
+
+            if (global.race['frenzy']){
+                global.race['frenzy'] += Math.ceil(enemy / 5);
+                if (global.race['frenzy'] > 1000000){
+                    global.race['frenzy'] = 1000000;
+                }
+            }
+
+            if (army > enemy){
+                return loc('event_seige1',[killed,wounded]);
+            }
+            else {
+                var loss = Math.rand(1,Math.round(global.resource.Money.amount / 2));
+                var res = global.resource.Money.amount - loss;
+                if (res < 0){ res = 0; }
+                global.resource.Money.amount = res;
+                return loc('event_seige2',[loss,killed,wounded]);
             }
         }
     },

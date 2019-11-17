@@ -6004,7 +6004,7 @@ export const actions = {
             id: 'tech-espionage',
             title: loc('tech_espionage'),
             desc: loc('tech_espionage'),
-            reqs: { spy: 1, high_tech: 1, locked: 1 },
+            reqs: { spy: 1, high_tech: 1 },
             grant: ['spy',2],
             cost: {
                 Knowledge(){ return 7500; }
