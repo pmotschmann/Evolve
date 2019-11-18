@@ -4447,6 +4447,9 @@ function longLoop(){
         if (global.civic.govern.fr > 0){
             global.civic.govern.fr--;
         }
+        if (global.civic.govern.rev < 0){
+            global.civic.govern.rev = 0;
+        }
 
         if (global.city.ptrait === 'trashed' || global.race['scavanger']){
             global.civic.scavenger.display = true;

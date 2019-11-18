@@ -1001,10 +1001,6 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_anarchist",[bonus])}</span></div>`);
     }
 
-    if (global.stats.achieve['anarchist']){
-        global.civic.govern.rev -= global.stats.achieve['anarchist'].l * 250;
-    }
-
     if (global.genes['creep']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_creep",[global.genes.creep])}</span></div>`);
