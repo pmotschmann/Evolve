@@ -629,6 +629,9 @@ if (!global.civic['foreign']){
             eco: 75,
             spy: 0,
             esp: 0,
+            trn: 0,
+            sab: 0,
+            act: 'none',
             occ: false
         },
         gov1: {
@@ -638,6 +641,9 @@ if (!global.civic['foreign']){
             eco: 100,
             spy: 0,
             esp: 0,
+            trn: 0,
+            sab: 0,
+            act: 'none',
             occ: false
         },
         gov2: {
@@ -647,9 +653,24 @@ if (!global.civic['foreign']){
             eco: 150,
             spy: 0,
             esp: 0,
+            trn: 0,
+            sab: 0,
+            act: 'none',
             occ: false
         }
     };
+}
+
+if (typeof global.civic.foreign.gov0['trn'] === "undefined"){
+    global.civic.foreign.gov0['trn'] = 0;
+    global.civic.foreign.gov1['trn'] = 0;
+    global.civic.foreign.gov2['trn'] = 0;
+    global.civic.foreign.gov0['sab'] = 0;
+    global.civic.foreign.gov1['sab'] = 0;
+    global.civic.foreign.gov2['sab'] = 0;
+    global.civic.foreign.gov0['act'] = 'none';
+    global.civic.foreign.gov1['act'] = 'none';
+    global.civic.foreign.gov2['act'] = 'none';
 }
 
 if (!global.race['evil'] && global.race['immoral']){
@@ -1174,6 +1195,8 @@ export function clearStates(){
             eco: Math.floor(Math.seededRandom(60,90)),
             spy: 0,
             esp: 0,
+            trn: 0,
+            sab: 0,
             occ: false
         },
         gov1: {
@@ -1183,6 +1206,8 @@ export function clearStates(){
             eco: Math.floor(Math.seededRandom(80,120)),
             spy: 0,
             esp: 0,
+            trn: 0,
+            sab: 0,
             occ: false
         },
         gov2: {
@@ -1192,6 +1217,8 @@ export function clearStates(){
             eco: Math.floor(Math.seededRandom(130,170)),
             spy: 0,
             esp: 0,
+            trn: 0,
+            sab: 0,
             occ: false
         }
     };

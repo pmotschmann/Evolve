@@ -502,7 +502,7 @@ export const races = {
         home: loc('race_dryad_home'),
         entity: loc('race_dryad_entity'),
         traits: {
-            befuddle: 1, // Not Implemented
+            befuddle: 1,
             kindling_kindred: 1
         },
         solar: {
@@ -572,7 +572,7 @@ export const races = {
         home: loc('race_yeti_home'),
         entity: loc('race_yeti_entity'),
         traits: {
-            blurry: 1 // Not Implemented
+            blurry: 1
         },
         solar: {
             red: loc('race_yeti_solar_red'),
@@ -1173,6 +1173,10 @@ export const traits = {
         desc: loc('trait_suction_grip'),
         type: 'major',
     },
+    befuddle: { // Spy actions complete in 1/2 time
+        desc: loc('trait_befuddle'),
+        type: 'major',
+    },
     unorganized: { // Increased time between revolutions
         desc: loc('trait_unorganized'),
         type: 'major',
@@ -1187,6 +1191,10 @@ export const traits = {
     },
     forge: { // Smelters do not require fuel
         desc: loc('trait_forge'),
+        type: 'major',
+    },
+    blurry: { // Spy actions complete in 1/2 time
+        desc: loc('trait_blurry'),
         type: 'major',
     },
     ravenous: { // Drastically increases food consumption
@@ -1364,7 +1372,7 @@ export function racialTrait(workers,type){
         modifier *= 0.75;
     }
     if (global.race['toxic'] && type === 'factory'){
-        modifier *= 1.25;
+        modifier *= 1.3;
     }
     if (global.race['hardy'] && type === 'factory'){
         modifier *= 1 + (global.race['hardy'] / 100);

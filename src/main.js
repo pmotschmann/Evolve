@@ -2125,9 +2125,6 @@ function fastLoop(){
             cement_base *= racialTrait(global.civic.cement_worker.workers,'factory');
 
             let factory_output = workDone * cement_base;
-            if (global.race['toxic']){
-                factory_output *= 1.08;
-            }
             if (global.civic.govern.type === 'socialist'){
                 factory_output *= 1.05;
             }
@@ -4009,6 +4006,56 @@ function midLoop(){
             global.space.space_station.s_max = global.civic.space_miner.workers;
         }
 
+        
+        for (let i=0; i<3; i++){
+            if (global.civic.foreign[`gov${i}`].trn > 0){
+                global.civic.foreign[`gov${i}`].trn--;
+                if (global.civic.foreign[`gov${i}`].trn === 0){
+                    global.civic.foreign[`gov${i}`].spy++;
+                }
+            }
+            if (global.civic.foreign[`gov${i}`].sab > 0){
+                global.civic.foreign[`gov${i}`].sab--;
+                if (global.civic.foreign[`gov${i}`].sab === 0){
+                    switch (global.civic.foreign[`gov${i}`].act){
+                        case 'influence':
+                            if (Math.floor(Math.seededRandom(0,global.race['blurry'] ? 6 : 4)) === 0){
+                                spyCaught(i);
+                            }
+                            else {
+                                global.civic.foreign[`gov${i}`].hstl -= Math.floor(Math.seededRandom(1,6));
+                                if (global.civic.foreign[`gov${i}`].hstl < 0){
+                                    global.civic.foreign[`gov${i}`].hstl = 0;
+                                }
+                            }
+                            break;
+                        case 'sabotage':
+                            if (Math.floor(Math.seededRandom(0,global.race['blurry'] ? 5 : 3)) === 0){
+                                spyCaught(i);
+                            }
+                            else {
+                                global.civic.foreign[`gov${i}`].mil -= Math.floor(Math.seededRandom(1,6));
+                                if (global.civic.foreign[`gov${i}`].mil < 50){
+                                    global.civic.foreign[`gov${i}`].mil = 50;
+                                }
+                            }
+                            break;
+                        case 'incite':
+                            if (Math.floor(Math.seededRandom(0,global.race['blurry'] ? 3 : 2)) === 0){
+                                spyCaught(i);
+                            }
+                            else {
+                                global.civic.foreign[`gov${i}`].unrest += Math.floor(Math.seededRandom(1,6));
+                                if (global.civic.foreign[`gov${i}`].unrest > 100){
+                                    global.civic.foreign[`gov${i}`].unrest = 100;
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
         Object.keys(global.city).forEach(function (action){
             if (actions.city[action] && actions.city[action].cost){
                 let c_action = actions.city[action];
@@ -5098,6 +5145,21 @@ function resourceAlt(){
             alt = true;
         }
     });
+}
+
+function spyCaught(i){
+    global.civic.foreign[`gov${i}`].spy--;
+    switch (i){
+        case 0:
+            messageQueue(loc('event_spy',[loc('civics_gov0',[races[global.race.species].name])]),'danger');
+            break;
+        case 1:
+            messageQueue(loc('event_spy',[loc('civics_gov1')]),'danger');
+            break;
+        case 2:
+            messageQueue(loc('event_spy',[loc('civics_gov2',[races[global.race.species].home])]),'danger');
+            break;
+    }
 }
 
 function enableScript(){

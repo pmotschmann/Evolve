@@ -280,8 +280,8 @@ function foreign(){
         foreign.append(gov);
 
         let spying = $(`<div v-show="t.spy >= 1"></div>`);
-        spying.append($(`<b-tooltip :label="spyDesc()" position="is-bottom" animated multilined><button class="button glabel" @click="spy">${loc('tech_spy')} - {{ f.spy }}</button></b-tooltip>`));
-        spying.append($(`<b-tooltip v-show="t.spy >= 2 && f.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button class="button glabel" @click="trigModal">${loc('tech_espionage')}</button></b-tooltip>`));
+        spying.append($(`<b-tooltip :label="spyDesc()" position="is-bottom" animated multilined><button :disabled="f.trn > 0" class="button glabel" @click="spy"><span v-show="f.trn === 0">${loc('tech_spy')} - {{ f.spy }}</span><span v-show="f.trn > 0">${loc('civics_train')}: {{ f.trn }}</span></button></b-tooltip>`));
+        spying.append($(`<b-tooltip v-show="t.spy >= 2 && f.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f.sab > 0" class="button glabel" @click="trigModal"><span v-show="f.sab === 0">${loc('tech_espionage')}</span><span v-show="f.sab > 0">{{ f.act | sab }}: {{ f.sab }}</span></button></b-tooltip>`));
         gov.append(spying);
 
         gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f.mil | military}}</span></div>`));
@@ -389,6 +389,9 @@ function foreign(){
                         loc('civics_gov2',[races[global.race.species].home])
                     ];
                     return title[id];
+                },
+                sab(s){
+                    return s === 'none' ? '' : loc(`civics_spy_${s}`);
                 }
             },
             methods: {
@@ -406,20 +409,22 @@ function foreign(){
                     }, 50);
                 },
                 spy(){
-                    if (global.tech['spy']){
+                    if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
                         let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
                         if (base < 50){
                             base = 50;
                         }
                         let cost = Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
-                        console.log(cost);
                         if (global.resource.Money.amount >= cost){
-                            global.civic.foreign[`gov${i}`].spy++;
                             global.resource.Money.amount -= cost;
+                            global.civic.foreign[`gov${i}`].trn = 300;
                         }
                     }
                 },
                 spyDesc(){
+                    if (global.civic.foreign[`gov${i}`].trn > 0){
+                        return loc('civics_progress');
+                    }
                     let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
                     if (base < 50){
                         base = 50;
@@ -453,25 +458,49 @@ function drawEspModal(gov){
         methods: {
             influence(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? 150 : 300;
+                    global.civic.foreign[`gov${g}`].act = 'influence';
+                    vBind({el: '#espModal'},'destroy');
+                    $('.modal-background').click();
+                    $('#popGov').hide();
+                    poppers['govPop'].destroy();
+                    $('#popGov').remove();
                 }
             },
             sabotage(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? 300 : 600;
+                    global.civic.foreign[`gov${g}`].act = 'sabotage';
+                    vBind({el: '#espModal'},'destroy');
+                    $('.modal-background').click();
+                    $('#popGov').hide();
+                    poppers['govPop'].destroy();
+                    $('#popGov').remove();
                 }
             },
             incite(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? 450 : 900;
+                    global.civic.foreign[`gov${g}`].act = 'incite';
+                    vBind({el: '#espModal'},'destroy');
+                    $('.modal-background').click();
+                    $('#popGov').hide();
+                    poppers['govPop'].destroy();
+                    $('#popGov').remove();
                 }
             }
         }
     });
 
+    let title = [
+        loc('civics_gov0',[races[global.race.species].name]),
+        loc('civics_gov1'),
+        loc('civics_gov2',[races[global.race.species].home])
+    ];
+
     $('#espModal button').on('mouseover',function(){
         let esp = $(this).data('esp');
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`)}</div><div class="has-text-advanced">${calcEspRisk(esp,gov)}</div></div>`);
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[title[gov]])}</div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);
@@ -482,10 +511,6 @@ function drawEspModal(gov){
         poppers['govPop'].destroy();
         $('#popGov').remove();
     });
-}
-
-function calcEspRisk(esp,gov){
-    return "Feature Pending";
 }
 
 function taxRates(govern){
