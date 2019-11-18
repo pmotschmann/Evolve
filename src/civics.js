@@ -284,10 +284,10 @@ function foreign(){
         spying.append($(`<b-tooltip v-show="t.spy >= 2 && f.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f.sab > 0" class="button glabel" @click="trigModal"><span v-show="f.sab === 0">${loc('tech_espionage')}</span><span v-show="f.sab > 0">{{ f.act | sab }}: {{ f.sab }}</span></button></b-tooltip>`));
         gov.append(spying);
 
-        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f.mil | military}}<span class="has-text-warning" v-show="t.spy >= 2"> ({{ f.mil }})</span></span></div>`));
-        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f.hstl | relation }}<span class="has-text-warning" v-show="t.spy >= 1"> ({{ f.hstl | hate }})</span></span></div>`));
-        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f.eco | eco }}<span class="has-text-warning" v-show="t.spy >= 3"> ({{ f.eco }})</span></span></div>`));
-        gov.append($(`<div v-show="f.spy >= 2"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f.unrest | discontent }}<span class="has-text-warning" v-show="t.spy >= 4"> ({{ f.unrest | turmoil }})</span></span></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f.mil | military}}<span class="has-text-warning" v-show="f.spy >= 2"> ({{ f.mil }})</span></span></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f.hstl | relation }}<span class="has-text-warning" v-show="f.spy >= 1"> ({{ f.hstl | hate }})</span></span></div>`));
+        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f.eco | eco }}<span class="has-text-warning" v-show="f.spy >= 3"> ({{ f.eco }})</span></span></div>`));
+        gov.append($(`<div v-show="f.spy >= 2"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f.unrest | discontent }}<span class="has-text-warning" v-show="f.spy >= 4"> ({{ f.unrest | turmoil }})</span></span></div>`));
 
         vBind({
             el: `#gov${i}`,
