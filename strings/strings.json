@@ -1324,7 +1324,7 @@
   "tech_wc_morale_effect": "Use your superior culture to try and take over %0.",
   "tech_wc_money": "Buy the World",
   "tech_wc_money_desc": "%0 Subversion",
-  "tech_wc_money_desc_req": "Requires $%0 Million",
+  "tech_wc_money_desc_req": "Requires $%0",
   "tech_wc_money_effect": "Attempt to seize control of %0 by funding subversive activities.",
   "tech_wc_reject": "Reject Unity",
   "tech_wc_reject_effect": "Give up on your plans for world domination. Instead focus on improving your own society",

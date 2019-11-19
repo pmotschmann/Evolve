@@ -10192,7 +10192,7 @@ export const actions = {
             title: loc('tech_wc_money'),
             desc(){
                 let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
-                price *= 15384;
+                price = sizeApproximation(price * 15384);
                 return `<div>${loc('tech_wc_money_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_money_desc_req',[price])}</div>`;
             },
             reqs: { unify: 1 },
