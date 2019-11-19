@@ -6022,6 +6022,40 @@ export const actions = {
                 return false;
             }
         },
+        spy_gadgets: {
+            id: 'tech-spy_gadgets',
+            title: loc('tech_spy_gadgets'),
+            desc: loc('tech_spy_gadgets'),
+            reqs: { spy: 2, high_tech: 2 },
+            grant: ['spy',3],
+            cost: {
+                Knowledge(){ return 15000; }
+            },
+            effect: loc('tech_spy_gadgets_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        code_breakers: {
+            id: 'tech-code_breakers',
+            title: loc('tech_code_breakers'),
+            desc: loc('tech_code_breakers'),
+            reqs: { spy: 3, high_tech: 4 },
+            grant: ['spy',4],
+            cost: {
+                Knowledge(){ return 55000; }
+            },
+            effect: loc('tech_code_breakers_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         currency: {
             id: 'tech-currency',
             title: loc('tech_currency'),

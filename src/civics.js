@@ -55,7 +55,7 @@ export function defineIndustry(){
 
 // Sets up garrison in civics tab
 export function defineGarrison(){
-    var garrison = $('<div id="garrison" v-show="display" class="garrison tile is-child"></div>');
+    var garrison = $('<div id="garrison" v-show="g.display" class="garrison tile is-child"></div>');
     $('#military').append(garrison);
     $('#military').append($(`<div id="fortress"></div>`));
     
@@ -279,15 +279,16 @@ function foreign(){
         let gov = $(`<div id="gov${i}" class="foreign"><div class="has-text-caution">{{ '${i}' | gov }}</div></div>`);
         foreign.append(gov);
 
-        let spying = $(`<div v-show="t.spy >= 1"></div>`);
+        let spying = $(`<div v-show="t.spy >= 1 && !f.occ"></div>`);
         spying.append($(`<b-tooltip :label="spyDesc()" position="is-bottom" animated multilined><button :disabled="f.trn > 0" class="button glabel" @click="spy"><span v-show="f.trn === 0">${loc('tech_spy')} - {{ f.spy }}</span><span v-show="f.trn > 0">${loc('civics_train')}: {{ f.trn }}</span></button></b-tooltip>`));
         spying.append($(`<b-tooltip v-show="t.spy >= 2 && f.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f.sab > 0" class="button glabel" @click="trigModal"><span v-show="f.sab === 0">${loc('tech_espionage')}</span><span v-show="f.sab > 0">{{ f.act | sab }}: {{ f.sab }}</span></button></b-tooltip>`));
         gov.append(spying);
 
-        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f.mil | military}}<span class="has-text-warning" v-show="f.spy >= 2"> ({{ f.mil }})</span></span></div>`));
-        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f.hstl | relation }}<span class="has-text-warning" v-show="f.spy >= 1"> ({{ f.hstl | hate }})</span></span></div>`));
-        gov.append($(`<div><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f.eco | eco }}<span class="has-text-warning" v-show="f.spy >= 3"> ({{ f.eco }})</span></span></div>`));
-        gov.append($(`<div v-show="f.spy >= 2"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f.unrest | discontent }}<span class="has-text-warning" v-show="f.spy >= 4"> ({{ f.unrest | turmoil }})</span></span></div>`));
+        gov.append($(`<div v-show="!f.occ"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f.mil | military}}<span class="has-text-warning" v-show="f.spy >= 2"> ({{ f.mil }})</span></span></div>`));
+        gov.append($(`<div v-show="!f.occ"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f.hstl | relation }}<span class="has-text-warning" v-show="f.spy >= 1"> ({{ f.hstl | hate }})</span></span></div>`));
+        gov.append($(`<div v-show="!f.occ"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f.eco | eco }}<span class="has-text-warning" v-show="f.spy >= 3"> ({{ f.eco }})</span></span></div>`));
+        gov.append($(`<div v-show="f.spy >= 2 && !f.occ"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f.unrest | discontent }}<span class="has-text-warning" v-show="f.spy >= 4"> ({{ f.unrest | turmoil }})</span></span></div>`));
+        gov.append($(`<div v-show="f.occ" class="has-text-advanced">${loc('civics_garrison_occupy')}</div>`));
 
         vBind({
             el: `#gov${i}`,
@@ -464,7 +465,8 @@ function drawEspModal(gov){
         methods: {
             influence(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? 150 : 300;
+                    let timer = global.tech['spy'] >= 3 ? 200 : 300;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'influence';
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
@@ -475,7 +477,8 @@ function drawEspModal(gov){
             },
             sabotage(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? 300 : 600;
+                    let timer = global.tech['spy'] >= 3 ? 400 : 600;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'sabotage';
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
@@ -486,7 +489,8 @@ function drawEspModal(gov){
             },
             incite(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? 450 : 900;
+                    let timer = global.tech['spy'] >= 3 ? 600 : 900;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'incite';
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
@@ -602,10 +606,10 @@ function taxRates(govern){
 
 export function buildGarrison(garrison){
     if (global.tech['world_control']){
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | hell | rating }}</b-tooltip></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ g.workers | hell | rating }}</b-tooltip></div>`));
     }
     else {
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ workers | hell | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ raid | rating }}</b-tooltip></span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ g.workers | hell | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ g.raid | rating }}</b-tooltip></span></div>`));
     }
 
     var barracks = $('<div class="columns is-mobile bunk"></div>');
@@ -615,12 +619,12 @@ export function buildGarrison(garrison){
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
     
-    bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ workers | stationed }} / {{ max | s_max }}</span></div>`));
-    bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span>{{ wounded }}</span></div>`));
+    bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></div>`));
+    bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span>{{ g.wounded }}</span></div>`));
 
-    barracks.append($(`<div class="hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
+    barracks.append($(`<div class="hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="g.mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
     
-    garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="progress" max="100">{{ progress }}%</progress></div>`));
+    garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
 
     var campaign = $('<div class="columns is-mobile battle"></div>');
     garrison.append(campaign);
@@ -629,29 +633,29 @@ export function buildGarrison(garrison){
     campaign.append(wrap);
 
     if (!global.tech['world_control']){
-        var tactics = $(`<div id="tactics" v-show="display" class="tactics"><span>${loc('civics_garrison_campaign')}</span></div>`);
+        var tactics = $(`<div id="tactics" v-show="g.display" class="tactics"><span>${loc('civics_garrison_campaign')}</span></div>`);
         wrap.append(tactics);
             
-        var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ tactic | tactics }}</span></b-tooltip>');
+        var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ g.tactic | tactics }}</span></b-tooltip>');
         var last = $('<span role="button" aria-label="easier campaign" class="sub" @click="last">&laquo;</span>');
         var next = $('<span role="button" aria-label="harder campaign" class="add" @click="next">&raquo;</span>');
         tactics.append(last);
         tactics.append(strategy);
         tactics.append(next);
 
-        var battalion = $(`<div id="battalion" v-show="display" class="tactics"><span>${loc('civics_garrison_battalion')}</span></div>`);
+        var battalion = $(`<div id="battalion" v-show="g.display" class="tactics"><span>${loc('civics_garrison_battalion')}</span></div>`);
         wrap.append(battalion);
             
-        var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ raid }}</span></b-tooltip>');
+        var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ g.raid }}</span></b-tooltip>');
         var alast = $('<span role="button" aria-label="remove soldiers from campaign" class="sub" @click="aLast">&laquo;</span>');
         var anext = $('<span role="button" aria-label="add soldiers to campaign" class="add" @click="aNext">&raquo;</span>');
         battalion.append(alast);
         battalion.append(armysize);
         battalion.append(anext);
 
-        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov0',[races[global.race.species].name])}</div><b-tooltip :label="battleAssessment(0)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(0)">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
-        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov1')}</div><b-tooltip :label="battleAssessment(1)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(1)">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
-        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov2',[races[global.race.species].home])}</div><b-tooltip :label="battleAssessment(2)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(2)">${loc('civics_garrison_launch_campaign')}</button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov0',[races[global.race.species].name])}</div><b-tooltip :label="battleAssessment(0)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(0)"><span v-show="!g0.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g0.occ">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov1')}</div><b-tooltip :label="battleAssessment(1)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(1)"><span v-show="!g1.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g1.occ">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov2',[races[global.race.species].home])}</div><b-tooltip :label="battleAssessment(2)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(2)"><span v-show="!g2.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g2.occ">${loc('civics_garrison_deoccupy')}</span></b-tooltip></div>`));
     }
 
     if (!global.civic['garrison']){
@@ -682,7 +686,12 @@ export function buildGarrison(garrison){
 
     vBind({
         el: '#garrison',
-        data: global.civic['garrison'],
+        data: { 
+            g: global.civic['garrison'],
+            g0: global.civic.foreign.gov0,
+            g1: global.civic.foreign.gov1,
+            g2: global.civic.foreign.gov2,
+        },
         methods: {
             hire(){
                 let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
@@ -703,6 +712,12 @@ export function buildGarrison(garrison){
                 }
             },
             campaign(gov){
+                if (global.civic.foreign[`gov${gov}`].occ){
+                    global.civic.foreign[`gov${gov}`].occ = false;
+                    global.civic.garrison.max += 20;
+                    global.civic.garrison.workers += 20;
+                    return;
+                }
                 if (global.civic.garrison.raid === 0){
                     messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning');
                     return;
@@ -1088,6 +1103,11 @@ export function buildGarrison(garrison){
                             messageQueue(loc('civics_garrison_soldiers_infected',[infected]),'special');
                         }
                     }
+
+                    if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= 20){
+                        global.civic.garrison.workers -= 20;
+                        global.civic.foreign[`gov${gov}`].occ = true;
+                    }
                 }
                 else {
                     let deathCap = global.civic.garrison.raid;
@@ -1181,7 +1201,7 @@ export function buildGarrison(garrison){
                     case 3:
                         return loc('civics_garrison_tactic_assault_desc');
                     case 4:
-                        return loc('civics_garrison_tactic_siege_desc');
+                        return loc('civics_garrison_tactic_siege_desc',[20]);
                 }
             },
             hireLabel(){
@@ -1199,7 +1219,10 @@ export function buildGarrison(garrison){
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
             },
             battleAssessment(gov){
-                if (
+                if (global.civic.foreign[`gov${gov}`].occ){
+                    return loc('civics_garrison_deoccupy_desc');
+                }
+                else if (
                     (global.civic.garrison.tactic <= 1 && global.civic.foreign[`gov${gov}`].spy < 1) || 
                     (global.civic.garrison.tactic >= 2 && global.civic.garrison.tactic <= 3 && global.civic.foreign[`gov${gov}`].spy < 2) || 
                     (global.civic.garrison.tactic === 4 && global.civic.foreign[`gov${gov}`].spy < 3)

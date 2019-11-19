@@ -515,6 +515,18 @@ function fastLoop(){
         breakdown.p['Global'][loc('tech_unification')] = '25%';
         global_multiplier *= 1.25;
     }
+    else {
+        let occupy = 0;
+        for (let i=0; i<3; i++){
+            if (global.civic.foreign[`gov${i}`].occ){
+                occupy += 5;
+            }
+        }
+        if (occupy > 0){
+            breakdown.p['Global'][loc('civics_garrison_occupy')] = `${occupy}%`;
+            global_multiplier *= 1 + (occupy / 100);
+        }
+    }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
         if (global.race['weak_mastery']){
             breakdown.p['Global'][loc('mastery')] = (achieve_level * 0.025) + '%';
@@ -3366,6 +3378,18 @@ function midLoop(){
         if (global.interstellar['cruiser']){
             lCaps['garrison'] += int_on['cruiser'] * 3;
         }
+        if (!global.tech['world_control']){
+            if (global.civic.foreign.gov0.occ){
+                lCaps['garrison'] -= 20;
+            }
+            if (global.civic.foreign.gov1.occ){
+                lCaps['garrison'] -= 20;
+            }
+            if (global.civic.foreign.gov2.occ){
+                lCaps['garrison'] -= 20;
+            }
+        }
+        
         if (global.city['basic_housing']){
             caps[global.race.species] += global.city['basic_housing'].count;
             bd_Citizen[housingLabel('small')] = global.city['basic_housing'].count + 'v';
@@ -4006,6 +4030,11 @@ function midLoop(){
             global.space.space_station.s_max = global.civic.space_miner.workers;
         }
 
+        let gov_title = [
+            loc('civics_gov0',[races[global.race.species].name]),
+            loc('civics_gov1'),
+            loc('civics_gov2',[races[global.race.species].home])
+        ];
         
         for (let i=0; i<3; i++){
             if (global.civic.foreign[`gov${i}`].trn > 0){
@@ -4023,10 +4052,12 @@ function midLoop(){
                                 spyCaught(i);
                             }
                             else {
-                                global.civic.foreign[`gov${i}`].hstl -= Math.floor(Math.seededRandom(1,6));
+                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 4 ? 2 : 1, global.tech['spy'] >= 4 ? 8 : 6));
+                                global.civic.foreign[`gov${i}`].hstl -= covert;
                                 if (global.civic.foreign[`gov${i}`].hstl < 0){
                                     global.civic.foreign[`gov${i}`].hstl = 0;
                                 }
+                                messageQueue(loc('civics_spy_influence_success',[gov_title[i],covert]),'success');
                             }
                             break;
                         case 'sabotage':
@@ -4034,10 +4065,12 @@ function midLoop(){
                                 spyCaught(i);
                             }
                             else {
-                                global.civic.foreign[`gov${i}`].mil -= Math.floor(Math.seededRandom(1,6));
+                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 4 ? 2 : 1, global.tech['spy'] >= 4 ? 8 : 6));
+                                global.civic.foreign[`gov${i}`].mil -= covert;
                                 if (global.civic.foreign[`gov${i}`].mil < 50){
                                     global.civic.foreign[`gov${i}`].mil = 50;
                                 }
+                                messageQueue(loc('civics_spy_sabotage_success',[gov_title[i],covert]),'success');
                             }
                             break;
                         case 'incite':
@@ -4045,10 +4078,12 @@ function midLoop(){
                                 spyCaught(i);
                             }
                             else {
-                                global.civic.foreign[`gov${i}`].unrest += Math.floor(Math.seededRandom(1,6));
+                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 4 ? 2 : 1, global.tech['spy'] >= 4 ? 8 : 6));
+                                global.civic.foreign[`gov${i}`].unrest += covert;
                                 if (global.civic.foreign[`gov${i}`].unrest > 100){
                                     global.civic.foreign[`gov${i}`].unrest = 100;
                                 }
+                                messageQueue(loc('civics_spy_incite_success',[gov_title[i],covert]),'success');
                             }
                             break;
                     }

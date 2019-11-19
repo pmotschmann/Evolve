@@ -94,12 +94,15 @@ export const events = {
             }
         }
     },
-    seige: {
+    siege: {
         reqs: { 
             tech: 'military',
             notech: 'world_control'
         },
         condition(){
+            if (global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ){
+                return false;
+            }
             return global.civic.foreign.gov0.hstl > 80 && global.civic.foreign.gov1.hstl > 80 && global.civic.foreign.gov2.hstl > 80 ? true : false;
         },
         effect: function(){
@@ -123,14 +126,14 @@ export const events = {
             }
 
             if (army > enemy){
-                return loc('event_seige1',[killed,wounded]);
+                return loc('event_siege1',[killed,wounded]);
             }
             else {
                 var loss = Math.rand(1,Math.round(global.resource.Money.amount / 2));
                 var res = global.resource.Money.amount - loss;
                 if (res < 0){ res = 0; }
                 global.resource.Money.amount = res;
-                return loc('event_seige2',[loss,killed,wounded]);
+                return loc('event_siege2',[loss,killed,wounded]);
             }
         }
     },
@@ -304,12 +307,12 @@ export const events = {
             if (global.race['elusive']){
                 return false;
             }
-            return global.civic.foreign.gov0.spy > 0 || global.civic.foreign.gov1.spy > 0 || global.civic.foreign.gov2.spy > 0 ? true : false;
+            return (global.civic.foreign.gov0.spy > 0 && !global.civic.foreign.gov0.occ) || (global.civic.foreign.gov1.spy > 0  && !global.civic.foreign.gov1.occ) || (global.civic.foreign.gov2.spy > 0 && !global.civic.foreign.gov2.occ) ? true : false;
         },
         effect: function(){
             let govs = [];
             for (let i=0; i<3; i++){
-                if (global.civic.foreign[`gov${i}`].spy > 0){
+                if (global.civic.foreign[`gov${i}`].spy > 0 && !global.civic.foreign[`gov${i}`].occ){
                     govs.push(i);
                 }
             }
