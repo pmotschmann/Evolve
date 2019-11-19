@@ -10119,22 +10119,14 @@ export const actions = {
             id: 'tech-wc_conquest',
             title: loc('tech_wc_conquest'),
             desc(){
-                let military = global.race['no_plasmid'] ? 525 : 600;
-                if (global.race['no_crispr']){
-                    military -= 75;
-                }
-                return `<div>${loc('tech_wc_conquest_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_conquest_desc_req',[military])}</div>`;
+                return `<div>${loc('tech_wc_conquest_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_conquest_desc_req')}</div>`;
             },
             reqs: { unify: 1 },
             grant: ['unify',2],
             not_tech: ['m_boost'],
             cost: {
                 Army(){
-                    let rating = global.race['no_plasmid'] ? 525 : 600;
-                    if (global.race['no_crispr']){
-                        rating -= 75;
-                    }
-                    return rating;
+                    return global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ ? true : false;
                 }
             },
             effect(){ return `<div>${loc('tech_wc_conquest_effect')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
@@ -10160,10 +10152,9 @@ export const actions = {
             id: 'tech-wc_morale',
             title: loc('tech_wc_morale'),
             desc(){
-                let morale = global.race['no_plasmid'] ? 140 : 150;
-                if (global.race['no_crispr']){
-                    morale -= 10;
-                }
+                let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 2;
+                morale += (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl) / 2;
+                morale = 400 - morale;
                 return `<div>${loc('tech_wc_morale_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_morale_desc_req',[morale])}</div>`;
             },
             reqs: { unify: 1 },
@@ -10171,10 +10162,7 @@ export const actions = {
             not_tech: ['m_boost'],
             cost: {
                 Morale(){
-                    let morale = global.race['no_plasmid'] ? 140 : 150;
-                    if (global.race['no_crispr']){
-                        morale -= 10;
-                    }
+                    let morale = 400 - global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest;
                     return morale;
                 }
             },
@@ -10203,10 +10191,8 @@ export const actions = {
             id: 'tech-wc_money',
             title: loc('tech_wc_money'),
             desc(){
-                let price = global.race['no_plasmid'] ? 3 : 5;
-                if (global.race['no_crispr']){
-                    price -= 1;
-                }
+                let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
+                price *= 15384;
                 return `<div>${loc('tech_wc_money_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_money_desc_req',[price])}</div>`;
             },
             reqs: { unify: 1 },
@@ -10214,10 +10200,8 @@ export const actions = {
             not_tech: ['m_boost'],
             cost: {
                 Money(){
-                    let price = global.race['no_plasmid'] ? 3000000 : 5000000;
-                    if (global.race['no_crispr']){
-                        price -= 1000000;
-                    }
+                    let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
+                    price *= 15384;
                     return price;
                 }
             },
@@ -11838,7 +11822,7 @@ function checkCosts(costs){
             test = false;
             return false;
         }
-        else if (res === 'Army' && armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
+        else if (res === 'Army' && costs[res]() === false){
             test = false;
             return false;
         }

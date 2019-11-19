@@ -1315,7 +1315,7 @@
   "tech_unification_effect": "Come up with a plan to unify the world under your control.",
   "tech_wc_conquest": "Conquest",
   "tech_wc_conquest_desc": "%0 Conquest",
-  "tech_wc_conquest_desc_req": "Requires %0 Army Rating",
+  "tech_wc_conquest_desc_req": "Requires all enemy cities occupied",
   "tech_wc_conquest_effect": "Attempt to conquer the world with your superior military might.",
   "tech_unification_warning": "Unification changes the game. There will be no more conflict but you'll gain +25% global production and approximately double storage capacity.",
   "tech_wc_morale": "Cultural Supremacy",
