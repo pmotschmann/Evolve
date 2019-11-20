@@ -5235,6 +5235,8 @@ export const actions = {
             effect: loc('tech_steel_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Steel.display = true;
                     defineIndustry();
                     return true;
@@ -6125,8 +6127,8 @@ export const actions = {
             effect: loc('tech_large_trades_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.large_trades.grant[0];
-                    global.tech[tech] = actions.tech.large_trades.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     loadMarket();
                     return true;
                 }
@@ -6169,8 +6171,8 @@ export const actions = {
             effect: loc('tech_massive_trades_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.massive_trades.grant[0];
-                    global.tech[tech] = actions.tech.massive_trades.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     loadMarket();
                     return true;
                 }
@@ -6409,8 +6411,8 @@ export const actions = {
             effect: loc('tech_stock_market_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.stock_market.grant[0];
-                    global.tech[tech] = actions.tech.stock_market.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     arpa('Physics');
                     return true;
                 }
@@ -6620,8 +6622,8 @@ export const actions = {
             effect: loc('tech_monument_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.monument.grant[0];
-                    global.tech[tech] = actions.tech.monument.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.arpa['m_type'] = arpa('Monument');
                     arpa('Physics');
                     return true;
@@ -6939,8 +6941,8 @@ export const actions = {
             effect: loc('tech_genetics_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.genetics.grant[0];
-                    global.tech[tech] = actions.tech.genetics.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.settings.arpa.genetics = true;
                     arpa('Genetics');
                     return true;
@@ -6960,8 +6962,8 @@ export const actions = {
             effect: loc('tech_crispr_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.crispr.grant[0];
-                    global.tech[tech] = actions.tech.crispr.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.settings.arpa.crispr = true;
                     global.settings.arpa.arpaTabs = 2;
                     arpa('Genetics');
@@ -6983,8 +6985,8 @@ export const actions = {
             effect: loc('tech_shotgun_sequencing_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.shotgun_sequencing.grant[0];
-                    global.tech[tech] = actions.tech.shotgun_sequencing.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.arpa.sequence.boost = true;
                     arpa('Genetics');
                     return true;
@@ -7004,8 +7006,8 @@ export const actions = {
             effect: loc('tech_de_novo_sequencing_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.de_novo_sequencing.grant[0];
-                    global.tech[tech] = actions.tech.de_novo_sequencing.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     arpa('Genetics');
                     return true;
                 }
@@ -7024,8 +7026,8 @@ export const actions = {
             effect: loc('tech_dna_sequencer_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.dna_sequencer.grant[0];
-                    global.tech[tech] = actions.tech.dna_sequencer.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.arpa.sequence.auto = true;
                     arpa('Genetics');
                     return true;
@@ -7185,8 +7187,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.settings.showGenetics = true;
-                    var tech = actions.tech.arpa.grant[0];
-                    global.tech[tech] = actions.tech.arpa.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     arpa('Physics');
                     return true;
                 }
@@ -7206,8 +7208,8 @@ export const actions = {
             effect: loc('tech_rocketry_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.rocketry.grant[0];
-                    global.tech[tech] = actions.tech.rocketry.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     arpa('Physics');
                     return true;
                 }
@@ -7741,6 +7743,8 @@ export const actions = {
             effect: loc('tech_polymer_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Polymer.display = true;
                     messageQueue(loc('tech_polymer_avail'));
                     defineIndustry();
@@ -7780,6 +7784,8 @@ export const actions = {
             effect: loc('tech_stanene_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Stanene.display = true;
                     messageQueue(loc('tech_stanene_avail'));
                     defineIndustry();
@@ -7802,6 +7808,8 @@ export const actions = {
             effect: loc('tech_nano_tubes_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Nano_Tube.display = true;
                     global.city.factory['Nano'] = 0;
                     messageQueue('Nano Tubes are now available for manufacture');
@@ -8630,8 +8638,8 @@ export const actions = {
             effect: loc('tech_bows_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.bows.grant[0];
-                    global.tech[tech] = actions.tech.bows.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#garrison`},'update');
                     return true;
                 }
@@ -8651,8 +8659,8 @@ export const actions = {
             effect: loc('tech_flintlock_rifle_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.flintlock_rifle.grant[0];
-                    global.tech[tech] = actions.tech.flintlock_rifle.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#garrison`},'update');
                     return true;
                 }
@@ -8672,8 +8680,8 @@ export const actions = {
             effect: loc('tech_machine_gun_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.machine_gun.grant[0];
-                    global.tech[tech] = actions.tech.machine_gun.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#garrison`},'update');
                     return true;
                 }
@@ -8712,8 +8720,8 @@ export const actions = {
             effect: loc('tech_rail_guns_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.rail_guns.grant[0];
-                    global.tech[tech] = actions.tech.rail_guns.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#garrison`},'update');
                     return true;
                 }
@@ -8733,8 +8741,8 @@ export const actions = {
             effect: loc('tech_laser_rifles_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.laser_rifles.grant[0];
-                    global.tech[tech] = actions.tech.laser_rifles.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#garrison`},'update');
                     if (global.race.species === 'sharkin'){
                         unlockAchieve('laser_shark');
@@ -8757,8 +8765,8 @@ export const actions = {
             effect: loc('tech_plasma_rifles_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.plasma_rifles.grant[0];
-                    global.tech[tech] = actions.tech.plasma_rifles.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#garrison`},'update');
                     return true;
                 }
@@ -8778,8 +8786,8 @@ export const actions = {
             effect: loc('tech_disruptor_rifles_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = actions.tech.disruptor_rifles.grant[0];
-                    global.tech[tech] = actions.tech.disruptor_rifles.grant[1];
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#garrison`},'update');
                     return true;
                 }
@@ -8892,7 +8900,7 @@ export const actions = {
             effect(){ return `<div>${loc('tech_laser_turret_effect1')}</div><div class="has-text-special">${loc('tech_laser_turret_effect2')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = $(this)[0].grant[0];
+                    let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#fort`},'update');
                     return true;
@@ -8913,7 +8921,7 @@ export const actions = {
             effect(){ return `<div>${loc('tech_plasma_turret_effect')}</div><div class="has-text-special">${loc('tech_laser_turret_effect2')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    var tech = $(this)[0].grant[0];
+                    let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     vBind({el: `#fort`},'update');
                     return true;
@@ -10671,7 +10679,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.settings.showPortal = true;
                     global.settings.portal.fortress = true;
-                    var tech = $(this)[0].grant[0];
+                    let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     global.portal['fortress'] = {
                         threat: 10000,
