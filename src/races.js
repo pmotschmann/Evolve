@@ -2,6 +2,8 @@ import { global } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve } from './achieve.js';
 
+const date = new Date();
+
 export const races = {
     protoplasm: {
         name: loc('race_protoplasm'),
@@ -280,21 +282,21 @@ export const races = {
         }
     },
     arraak: {
-        name: loc('race_arraak'),
-        desc: loc('race_arraak_desc'),
+        name: loc(date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey' : 'race_arraak'),
+        desc: loc(date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_desc' : 'race_arraak_desc'),
         type: 'avian',
-        home: loc('race_arraak_home'),
+        home: loc(date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_home' : 'race_arraak_home'),
         entity: loc('race_arraak_entity'),
         traits: {
             resourceful: 1,
             selenophobia: 1
         },
         solar: {
-            red: loc('race_arraak_solar_red'),
-            hell: loc('race_arraak_solar_hell'),
-            gas: loc('race_arraak_solar_gas'),
-            gas_moon: loc('race_arraak_solar_gas_moon'),
-            dwarf: loc('race_arraak_solar_dwarf'),
+            red: loc(date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_red' : 'race_arraak_solar_red'),
+            hell: loc(date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_hell' : 'race_arraak_solar_hell'),
+            gas: loc(date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_gas' : 'race_arraak_solar_gas'),
+            gas_moon: loc(date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_gas_moon' : 'race_arraak_solar_gas_moon'),
+            dwarf: loc(date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_dwarf' : 'race_arraak_solar_dwarf'),
         }
     },
     pterodacti: {
