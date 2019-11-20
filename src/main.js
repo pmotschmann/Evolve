@@ -6,7 +6,7 @@ import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './ra
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
-import { defineGovernment, defineIndustry, defineGarrison, garrisonSize, armyRating, buildQueue } from './civics.js';
+import { defineGovernment, defineIndustry, defineGarrison, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
@@ -4029,12 +4029,6 @@ function midLoop(){
         if (global.civic.space_miner.display && global.space['space_station']){
             global.space.space_station.s_max = global.civic.space_miner.workers;
         }
-
-        let gov_title = [
-            loc('civics_gov0',[races[global.race.species].name]),
-            loc('civics_gov1'),
-            loc('civics_gov2',[races[global.race.species].home])
-        ];
         
         for (let i=0; i<3; i++){
             if (global.civic.foreign[`gov${i}`].trn > 0){
@@ -4057,7 +4051,7 @@ function midLoop(){
                                 if (global.civic.foreign[`gov${i}`].hstl < 0){
                                     global.civic.foreign[`gov${i}`].hstl = 0;
                                 }
-                                messageQueue(loc('civics_spy_influence_success',[gov_title[i],covert]),'success');
+                                messageQueue(loc('civics_spy_influence_success',[govTitle(i),covert]),'success');
                             }
                             break;
                         case 'sabotage':
@@ -4070,7 +4064,7 @@ function midLoop(){
                                 if (global.civic.foreign[`gov${i}`].mil < 50){
                                     global.civic.foreign[`gov${i}`].mil = 50;
                                 }
-                                messageQueue(loc('civics_spy_sabotage_success',[gov_title[i],covert]),'success');
+                                messageQueue(loc('civics_spy_sabotage_success',[govTitle(i),covert]),'success');
                             }
                             break;
                         case 'incite':
@@ -4083,7 +4077,7 @@ function midLoop(){
                                 if (global.civic.foreign[`gov${i}`].unrest > 100){
                                     global.civic.foreign[`gov${i}`].unrest = 100;
                                 }
-                                messageQueue(loc('civics_spy_incite_success',[gov_title[i],covert]),'success');
+                                messageQueue(loc('civics_spy_incite_success',[govTitle(i),covert]),'success');
                             }
                             break;
                     }

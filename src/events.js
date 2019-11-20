@@ -1,6 +1,7 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
+import { govTitle } from './civics.js';
 import { housingLabel } from './actions.js';
 import { unlockAchieve } from './achieve.js';
 
@@ -316,16 +317,10 @@ export const events = {
                     govs.push(i);
                 }
             }
-            let gov = Math.rand(0,govs.length);
+            let gov = govs[Math.rand(0,govs.length)];
             global.civic.foreign[`gov${gov}`].spy--;
-            switch (gov){
-                case 0:
-                    return loc('event_spy',[loc('civics_gov0',[races[global.race.species].name])]);
-                case 1:
-                    return loc('event_spy',[loc('civics_gov1')]);
-                case 2:
-                    return loc('event_spy',[loc('civics_gov2',[races[global.race.species].home])]);
-            }
+            
+            return loc('event_spy',[govTitle(gov)]);
         }
     }
 };

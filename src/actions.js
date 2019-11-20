@@ -10152,9 +10152,9 @@ export const actions = {
             id: 'tech-wc_morale',
             title: loc('tech_wc_morale'),
             desc(){
-                let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 2;
-                morale += (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl) / 2;
-                morale = 400 - morale;
+                let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
+                morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
+                morale = +(200 - morale).toFixed(1);
                 return `<div>${loc('tech_wc_morale_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_morale_desc_req',[morale])}</div>`;
             },
             reqs: { unify: 1 },
@@ -10162,8 +10162,9 @@ export const actions = {
             not_tech: ['m_boost'],
             cost: {
                 Morale(){
-                    let morale = 400 - global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest;
-                    return morale;
+                    let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
+                    morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
+                    return +(200 - morale).toFixed(1);
                 }
             },
             effect(){

@@ -94,6 +94,15 @@ export function buildQueue(){
     }
 }
 
+export function govTitle(id){
+    let title = [
+        loc('civics_gov0',[races[global.race.species].name]),
+        loc('civics_gov1'),
+        loc('civics_gov2',[races[global.race.species].home])
+    ];
+    return title[id];
+}
+
 const government_desc = {
     anarchy: loc('govern_anarchy_effect'),
     autocracy: loc('govern_autocracy_effect',[25,35]),
@@ -267,8 +276,8 @@ function drawGovModal(){
 }
 
 function foreign(){
-    let foreign = $('<div id="foreign" class="government is-child"></div>');
-    foreign.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
+    let foreign = $('<div id="foreign" v-show="t.govern && !t.world_control" class="government is-child"></div>');
+    foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
     $('#r_civics').append(foreign);
 
     var modal = {
@@ -279,172 +288,169 @@ function foreign(){
         let gov = $(`<div id="gov${i}" class="foreign"><div class="has-text-caution">{{ '${i}' | gov }}</div></div>`);
         foreign.append(gov);
 
-        let spying = $(`<div v-show="t.spy >= 1 && !f.occ"></div>`);
-        spying.append($(`<b-tooltip :label="spyDesc()" position="is-bottom" animated multilined><button :disabled="f.trn > 0" class="button glabel" @click="spy"><span v-show="f.trn === 0">${loc('tech_spy')} - {{ f.spy }}</span><span v-show="f.trn > 0">${loc('civics_train')}: {{ f.trn }}</span></button></b-tooltip>`));
-        spying.append($(`<b-tooltip v-show="t.spy >= 2 && f.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f.sab > 0" class="button glabel" @click="trigModal"><span v-show="f.sab === 0">${loc('tech_espionage')}</span><span v-show="f.sab > 0">{{ f.act | sab }}: {{ f.sab }}</span></button></b-tooltip>`));
+        let spying = $(`<div v-show="t.spy >= 1 && !f${i}.occ"></div>`);
+        spying.append($(`<b-tooltip :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="f${i}.trn > 0" class="button glabel" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')} - {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
+        spying.append($(`<b-tooltip v-show="t.spy >= 2 && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button glabel" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
         gov.append(spying);
 
-        gov.append($(`<div v-show="!f.occ"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f.mil | military}}<span class="has-text-warning" v-show="f.spy >= 2"> ({{ f.mil }})</span></span></div>`));
-        gov.append($(`<div v-show="!f.occ"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f.hstl | relation }}<span class="has-text-warning" v-show="f.spy >= 1"> ({{ f.hstl | hate }})</span></span></div>`));
-        gov.append($(`<div v-show="!f.occ"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f.eco | eco }}<span class="has-text-warning" v-show="f.spy >= 3"> ({{ f.eco }})</span></span></div>`));
-        gov.append($(`<div v-show="f.spy >= 2 && !f.occ"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f.unrest | discontent }}<span class="has-text-warning" v-show="f.spy >= 4"> ({{ f.unrest | turmoil }})</span></span></div>`));
-        gov.append($(`<div v-show="f.occ" class="has-text-advanced">${loc('civics_garrison_occupy')}</div>`));
+        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
+        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f${i}.hstl | relation }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ f${i}.hstl | hate }})</span></span></div>`));
+        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f${i}.eco | eco(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
+        gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f${i}.unrest | discontent(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ f${i}.unrest | turmoil }})</span></span></div>`));
+        gov.append($(`<div v-show="f${i}.occ" class="has-text-advanced">${loc('civics_garrison_occupy')}</div>`));
+    }
 
-        vBind({
-            el: `#gov${i}`,
-            data: {
-                f: global.civic.foreign[`gov${i}`],
-                t: global.tech
-            },
-            filters: {
-                military(m){
-                    if (global.civic.foreign[`gov${i}`].spy >= 1){
-                        if (m < 50){
-                            return loc('civics_gov_v_weak');
-                        }
-                        else if (m < 75){
-                            return loc('civics_gov_weak');
-                        }
-                        else if (m > 200){
-                            return loc('civics_gov_superpower');
-                        }
-                        else if (m > 160){
-                            return loc('civics_gov_v_strong');
-                        }
-                        else if (m > 125){
-                            return loc('civics_gov_strong');
-                        }
-                        else {
-                            return loc('civics_gov_average');
-                        }
+    vBind({
+        el: `#foreign`,
+        data: {
+            f0: global.civic.foreign[`gov0`],
+            f1: global.civic.foreign[`gov1`],
+            f2: global.civic.foreign[`gov2`],
+            t: global.tech
+        },
+        filters: {
+            military(m,i){
+                if (global.civic.foreign[`gov${i}`].spy >= 1){
+                    if (m < 50){
+                        return loc('civics_gov_v_weak');
+                    }
+                    else if (m < 75){
+                        return loc('civics_gov_weak');
+                    }
+                    else if (m > 200){
+                        return loc('civics_gov_superpower');
+                    }
+                    else if (m > 160){
+                        return loc('civics_gov_v_strong');
+                    }
+                    else if (m > 125){
+                        return loc('civics_gov_strong');
                     }
                     else {
-                        return '???';
+                        return loc('civics_gov_average');
                     }
-                },
-                relation(r){
-                    if (r > 80){
-                        return loc('civics_gov_hated');
-                    }
-                    else if (r > 60){
-                        return loc('civics_gov_hostile');
-                    }
-                    else if (r > 40){
-                        return loc('civics_gov_poor');
-                    }
-                    else if (r > 25){
-                        return loc('civics_gov_neutral');
-                    }
-                    else if (r > 10){
-                        return loc('civics_gov_liked');
-                    }
-                    else {
-                        return loc('civics_gov_good');
-                    }
-                },
-                eco(e){
-                    if (global.civic.foreign[`gov${i}`].spy >= 2){
-                        if (e < 60){
-                            return loc('civics_gov_weak');
-                        }
-                        else if (e < 80){
-                            return loc('civics_gov_recession');
-                        }
-                        else if (e > 120){
-                            return loc('civics_gov_strong');
-                        }
-                        else {
-                            return loc('civics_gov_average');
-                        }
-                    }
-                    else {
-                        return '???';
-                    }
-                },
-                discontent(r){
-                    if (global.civic.foreign[`gov${i}`].spy >= 3){
-                        if (r < 25){
-                            return loc('civics_gov_none');
-                        }
-                        else if (r < 50){
-                            return loc('civics_gov_low');
-                        }
-                        else if (r < 75){
-                            return loc('civics_gov_medium');
-                        }
-                        else if (r < 100){
-                            return loc('civics_gov_high');
-                        }
-                        else {
-                            return loc('civics_gov_extreme');
-                        }
-                    }
-                    else {
-                        return '???';
-                    }
-                },
-                gov(id){
-                    let title = [
-                        loc('civics_gov0',[races[global.race.species].name]),
-                        loc('civics_gov1'),
-                        loc('civics_gov2',[races[global.race.species].home])
-                    ];
-                    return title[id];
-                },
-                sab(s){
-                    return s === 'none' ? '' : loc(`civics_spy_${s}`);
-                },
-                hate(h){
-                    return `${100 - h}%`;
-                },
-                turmoil(u){
-                    return `${u}%`;
+                }
+                else {
+                    return '???';
                 }
             },
-            methods: {
-                trigModal(){
-                    this.$buefy.modal.open({
-                        parent: this,
-                        component: modal
-                    });
-    
-                    var checkExist = setInterval(function() {
-                       if ($('#modalBox').length > 0) {
-                          clearInterval(checkExist);
-                          drawEspModal(i);
-                       }
-                    }, 50);
-                },
-                spy(){
-                    if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
-                        let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
-                        if (base < 50){
-                            base = 50;
-                        }
-                        let cost = Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
-                        if (global.resource.Money.amount >= cost){
-                            global.resource.Money.amount -= cost;
-                            global.civic.foreign[`gov${i}`].trn = 300;
-                        }
+            relation(r){
+                if (r > 80){
+                    return loc('civics_gov_hated');
+                }
+                else if (r > 60){
+                    return loc('civics_gov_hostile');
+                }
+                else if (r > 40){
+                    return loc('civics_gov_poor');
+                }
+                else if (r > 25){
+                    return loc('civics_gov_neutral');
+                }
+                else if (r > 10){
+                    return loc('civics_gov_liked');
+                }
+                else {
+                    return loc('civics_gov_good');
+                }
+            },
+            eco(e,i){
+                if (global.civic.foreign[`gov${i}`].spy >= 2){
+                    if (e < 60){
+                        return loc('civics_gov_weak');
                     }
-                },
-                spyDesc(){
-                    if (global.civic.foreign[`gov${i}`].trn > 0){
-                        return loc('civics_progress');
+                    else if (e < 80){
+                        return loc('civics_gov_recession');
                     }
+                    else if (e > 120){
+                        return loc('civics_gov_strong');
+                    }
+                    else {
+                        return loc('civics_gov_average');
+                    }
+                }
+                else {
+                    return '???';
+                }
+            },
+            discontent(r,i){
+                if (global.civic.foreign[`gov${i}`].spy >= 3){
+                    if (r < 25){
+                        return loc('civics_gov_none');
+                    }
+                    else if (r < 50){
+                        return loc('civics_gov_low');
+                    }
+                    else if (r < 75){
+                        return loc('civics_gov_medium');
+                    }
+                    else if (r < 100){
+                        return loc('civics_gov_high');
+                    }
+                    else {
+                        return loc('civics_gov_extreme');
+                    }
+                }
+                else {
+                    return '???';
+                }
+            },
+            gov(id){
+                return govTitle(id);
+            },
+            sab(s){
+                return s === 'none' ? '' : loc(`civics_spy_${s}`);
+            },
+            hate(h){
+                return `${100 - h}%`;
+            },
+            turmoil(u){
+                return `${u}%`;
+            }
+        },
+        methods: {
+            trigModal(i){
+                this.$buefy.modal.open({
+                    parent: this,
+                    component: modal
+                });
+
+                var checkExist = setInterval(function() {
+                   if ($('#modalBox').length > 0) {
+                      clearInterval(checkExist);
+                      drawEspModal(i);
+                   }
+                }, 50);
+            },
+            spy(i){
+                if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
                     let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
                     if (base < 50){
                         base = 50;
                     }
-                    let cost = sizeApproximation(Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500);
-                    return loc('civics_gov_spy_desc',[cost]);
-                },
-                espDesc(){
-                    return loc('civics_gov_esp_desc');
+                    let cost = Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
+                    if (global.resource.Money.amount >= cost){
+                        global.resource.Money.amount -= cost;
+                        global.civic.foreign[`gov${i}`].trn = 300;
+                    }
                 }
+            },
+            spyDesc(i){
+                if (global.civic.foreign[`gov${i}`].trn > 0){
+                    return loc('civics_progress');
+                }
+                let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
+                if (base < 50){
+                    base = 50;
+                }
+                let cost = sizeApproximation(Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500);
+                return loc('civics_gov_spy_desc',[cost]);
+            },
+            espDesc(){
+                return loc('civics_gov_esp_desc');
             }
-        });
-    }
+        }
+    });
 }
 
 function drawEspModal(gov){
@@ -502,15 +508,9 @@ function drawEspModal(gov){
         }
     });
 
-    let title = [
-        loc('civics_gov0',[races[global.race.species].name]),
-        loc('civics_gov1'),
-        loc('civics_gov2',[races[global.race.species].home])
-    ];
-
     $('#espModal button').on('mouseover',function(){
         let esp = $(this).data('esp');
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[title[gov]])}</div></div>`);
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);
