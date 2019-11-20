@@ -2432,6 +2432,7 @@ const interstellarProjects = {
                     }
                     if (global.tech['blackhole'] === 1){
                         global.tech['blackhole'] = 2;
+                        drawTech();
                     }
                     return true;
                 }

@@ -738,21 +738,32 @@ export function buildGarrison(garrison){
                 switch(global.civic.garrison.tactic){
                     case 0:
                         enemy = Math.seededRandom(0,10);
+                        global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(0,2));
                         break;
                     case 1:
                         enemy = Math.seededRandom(5,50);
+                        global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(0,3));
                         break;
                     case 2:
                         enemy = Math.seededRandom(25,100);
+                        global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(1,5));
                         break;
                     case 3:
                         enemy = Math.seededRandom(50,200);
+                        global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(4,12));
                         break;
                     case 4:
                         enemy = Math.seededRandom(100,500);
+                        global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(10,25));
                         break;
                 }
                 enemy = Math.floor(enemy * global.civic.foreign[`gov${gov}`].mil / 100);
+                if (global.race['mistrustful']){
+                    global.civic.foreign[`gov${gov}`].hstl++;
+                }
+                if (global.civic.foreign[`gov${gov}`].hstl > 100){
+                    global.civic.foreign[`gov${gov}`].hstl = 100;
+                }
 
                 if (global.race['frenzy']){
                     global.race['frenzy'] += Math.ceil(enemy / 5);

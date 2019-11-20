@@ -540,7 +540,8 @@ export const races = {
         home: loc('race_phoenix_home'),
         entity: loc('race_phoenix_entity'),
         traits: {
-            revive: 1
+            revive: 1,
+            slow_regen: 1
         },
         solar: {
             red: loc('race_phoenix_solar_red'),
@@ -611,7 +612,7 @@ export const races = {
         entity: loc('race_tuskin_entity'),
         traits: {
             lawless: 1,
-            fearful: 1 // Not Implemented
+            mistrustful: 1
         },
         solar: {
             red: loc('race_tuskin_solar_red'),
@@ -1191,11 +1192,15 @@ export const traits = {
         desc: loc('trait_revive'),
         type: 'major',
     },
+    slow_regen: { // Your soldiers wounds heal slower.
+        desc: loc('trait_revive'),
+        type: 'major',
+    },
     forge: { // Smelters do not require fuel
         desc: loc('trait_forge'),
         type: 'major',
     },
-    blurry: { // Spy actions complete in 1/2 time
+    blurry: { // Increased success chance of spies
         desc: loc('trait_blurry'),
         type: 'major',
     },
@@ -1207,8 +1212,8 @@ export const traits = {
         desc: loc('trait_lawless'),
         type: 'major',
     },
-    fearful: { // ???
-        desc: loc('trait_fearful'),
+    mistrustful: { // Lose standing with rival cities quicker
+        desc: loc('trait_mistrustful'),
         type: 'major',
     },
     fiery: { // Major war bonus

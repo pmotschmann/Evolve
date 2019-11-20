@@ -4542,12 +4542,13 @@ function longLoop(){
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc += 3
             }
+            let max_bound = global.race['slow_regen'] ? 25 : 20;
             if (hc > 0){
-                while (hc >= 20){
+                while (hc >= max_bound){
                     healed++;
-                    hc -= 20;
+                    hc -= max_bound;
                 }
-                if (Math.rand(0,hc) > Math.rand(0,20)){
+                if (Math.rand(0,hc) > Math.rand(0,max_bound)){
                     healed++;
                 }
             }
