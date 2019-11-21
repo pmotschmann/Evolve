@@ -1510,16 +1510,19 @@ function fastLoop(){
 
         // Consumption
         fed = true;
-        if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['tourist_center']){
+        if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['tourist_center']){
             let food_bd = {};
             let food_base = 0;
             if (global.race['carnivore'] || global.race['soul_eater']){
                 let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 0.5);
+                if (global.race['ghostly']){
+                    food_base *= 1.5;
+                }
                 food_bd[loc('job_hunter')] = food_base + 'v';
 
                 if (global.city['soul_well']){
-                    let souls = global.city['soul_well'].count * 2;
+                    let souls = global.city['soul_well'].count * (global.race['ghostly'] ? 3.5 : 2);
                     food_bd[loc('city_soul_well')] = souls + 'v';
                     food_base += souls;
                 }
@@ -2205,7 +2208,7 @@ function fastLoop(){
                     iron_smelter--;
                 }
             }
-            let l_type = global.race['soul_eater'] ? 'Food' : (global.race['evil'] ? 'Furs' : 'Lumber');
+            let l_type = global.race['soul_eater'] && global.race.species !== 'wendigo' ? 'Food' : (global.race['evil'] ? 'Furs' : 'Lumber');
             while (consume_wood * time_multiplier > global.resource[l_type].amount && consume_wood > 0){
                 consume_wood -= (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
                 if (steel_smelter > 0){
@@ -2246,7 +2249,7 @@ function fastLoop(){
             }
 
             if (global.race['evil']){
-                if (global.race['soul_eater']){
+                if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
                     breakdown.p.consume.Food[loc('city_smelter')] = -(consume_wood);
                 }
                 else {
@@ -2406,7 +2409,7 @@ function fastLoop(){
 
         // Lumber
         { //block scope
-            if (global.race['soul_eater']){
+            if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
                 let lumber_bd = {};
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.free * weapons / 2;

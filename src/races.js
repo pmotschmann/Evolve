@@ -595,7 +595,7 @@ export const races = {
         entity: loc('race_wendigo_entity'),
         traits: {
             ravenous: 1,
-            ghostly: 1, // Not Implemented
+            ghostly: 1,
             soul_eater: 1
         },
         solar: {
@@ -1216,6 +1216,10 @@ export const traits = {
     },
     ravenous: { // Drastically increases food consumption
         desc: loc('trait_ravenous'),
+        type: 'major',
+    },
+    ghostly: { // More souls from hunting and soul wells, increased soul gem drop chance
+        desc: loc('trait_ghostly'),
         type: 'major',
     },
     lawless: { // Government lockout timer is reduced by 90%

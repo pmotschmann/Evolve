@@ -2700,7 +2700,7 @@ export const actions = {
             effect(){
                 let souls = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ souls = Math.round(souls * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
-                return `<div>${loc('city_soul_well_effect',[2])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`; 
+                return `<div>${loc('city_soul_well_effect',[global.race['ghostly'] ? 3.5 : 2])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`; 
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -4320,9 +4320,32 @@ export const actions = {
             desc: loc('tech_bone_tools_desc'),
             reqs: { primitive: 1 },
             grant: ['primitive',2],
+            condition(){
+                return global.race.species === 'wendigo' ? false : true; 
+            },
             cost: {
                 Food(){ return global.race['evil'] ? 0 : 10; },
                 Lumber(){ return global.race['evil'] ? 10 : 0; },
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Stone.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        wooden_tools: {
+            id: 'tech-wooden_tools',
+            title: loc('tech_wooden_tools'),
+            desc: loc('tech_wooden_tools_desc'),
+            reqs: { primitive: 1 },
+            grant: ['primitive',2],
+            condition(){
+                return global.race.species === 'wendigo' ? true : false; 
+            },
+            cost: {
+                Lumber(){ return 10; },
             },
             action(){
                 if (payCosts($(this)[0].cost)){

@@ -607,6 +607,9 @@ export function bloodwar(){
             gem_chance = Math.round(gem_chance * 0.92);
         }
     }
+    if (global.race['ghostly']){
+        gem_chance = Math.round(gem_chance * 0.85);
+    }
 
     // Patrols
     let dead = 0;
