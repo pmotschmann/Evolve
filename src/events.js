@@ -304,6 +304,9 @@ export const events = {
         }
     },
     spy: {
+        reqs: { 
+            notech: 'world_control'
+        },
         condition(){
             if (global.race['elusive']){
                 return false;
