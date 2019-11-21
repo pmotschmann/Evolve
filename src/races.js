@@ -800,7 +800,7 @@ export const genus_traits = {
     },
     fey: {
         elusive: 1,
-        iron_allery: 1
+        iron_allergy: 1
     },
     heat: {
         smoldering: 1,
@@ -914,8 +914,8 @@ export const traits = {
         desc: loc('trait_elusive'),
         type: 'genus',
     },
-    iron_allery: { // Iron mining reduced
-        desc: loc('trait_iron_allery'),
+    iron_allergy: { // Iron mining reduced
+        desc: loc('trait_iron_allergy'),
         type: 'genus',
     },
     smoldering: { // Hot weather is a bonus
