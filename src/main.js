@@ -4046,7 +4046,7 @@ function midLoop(){
                                 spyCaught(i);
                             }
                             else {
-                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 4 ? 2 : 1, global.tech['spy'] >= 4 ? 8 : 6));
+                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
                                 global.civic.foreign[`gov${i}`].hstl -= covert;
                                 if (global.civic.foreign[`gov${i}`].hstl < 0){
                                     global.civic.foreign[`gov${i}`].hstl = 0;
@@ -4059,7 +4059,7 @@ function midLoop(){
                                 spyCaught(i);
                             }
                             else {
-                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 4 ? 2 : 1, global.tech['spy'] >= 4 ? 8 : 6));
+                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
                                 global.civic.foreign[`gov${i}`].mil -= covert;
                                 if (global.civic.foreign[`gov${i}`].mil < 50){
                                     global.civic.foreign[`gov${i}`].mil = 50;
@@ -4072,7 +4072,7 @@ function midLoop(){
                                 spyCaught(i);
                             }
                             else {
-                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 4 ? 2 : 1, global.tech['spy'] >= 4 ? 8 : 6));
+                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
                                 global.civic.foreign[`gov${i}`].unrest += covert;
                                 if (global.civic.foreign[`gov${i}`].unrest > 100){
                                     global.civic.foreign[`gov${i}`].unrest = 100;

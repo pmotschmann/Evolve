@@ -2926,7 +2926,7 @@ export const actions = {
             },
             effect(){
                 let rate = global.tech['boot_camp'] >= 2 ? 8 : 5;
-                return loc('city_boot_camp_effect',[rate]);
+                return global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : loc('city_boot_camp_effect',[rate]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -6024,12 +6024,29 @@ export const actions = {
                 return false;
             }
         },
+        spy_training: {
+            id: 'tech-spy_training',
+            title: loc('tech_spy_training'),
+            desc: loc('tech_spy_training'),
+            reqs: { spy: 2, boot_camp: 1 },
+            grant: ['spy',3],
+            cost: {
+                Knowledge(){ return 10000; }
+            },
+            effect: loc('tech_spy_training_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         spy_gadgets: {
             id: 'tech-spy_gadgets',
             title: loc('tech_spy_gadgets'),
             desc: loc('tech_spy_gadgets'),
-            reqs: { spy: 2, high_tech: 2 },
-            grant: ['spy',3],
+            reqs: { spy: 3, high_tech: 2 },
+            grant: ['spy',4],
             cost: {
                 Knowledge(){ return 15000; }
             },
@@ -6045,8 +6062,8 @@ export const actions = {
             id: 'tech-code_breakers',
             title: loc('tech_code_breakers'),
             desc: loc('tech_code_breakers'),
-            reqs: { spy: 3, high_tech: 4 },
-            grant: ['spy',4],
+            reqs: { spy: 4, high_tech: 4 },
+            grant: ['spy',5],
             cost: {
                 Knowledge(){ return 55000; }
             },

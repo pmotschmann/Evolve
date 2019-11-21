@@ -431,7 +431,14 @@ function foreign(){
                     let cost = Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
                     if (global.resource.Money.amount >= cost){
                         global.resource.Money.amount -= cost;
-                        global.civic.foreign[`gov${i}`].trn = 300;
+                        let time = 300;
+                        if (global.tech['spy'] >= 3 && global.city['boot_camp']){
+                            time -= global.city['boot_camp'].count * 10;
+                            if (time < 10){
+                                time = 10;
+                            }
+                        }
+                        global.civic.foreign[`gov${i}`].trn = time;
                     }
                 }
             },
@@ -471,7 +478,7 @@ function drawEspModal(gov){
         methods: {
             influence(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    let timer = global.tech['spy'] >= 3 ? 200 : 300;
+                    let timer = global.tech['spy'] >= 4 ? 200 : 300;
                     global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'influence';
                     vBind({el: '#espModal'},'destroy');
@@ -483,7 +490,7 @@ function drawEspModal(gov){
             },
             sabotage(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    let timer = global.tech['spy'] >= 3 ? 400 : 600;
+                    let timer = global.tech['spy'] >= 4 ? 400 : 600;
                     global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'sabotage';
                     vBind({el: '#espModal'},'destroy');
@@ -495,7 +502,7 @@ function drawEspModal(gov){
             },
             incite(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    let timer = global.tech['spy'] >= 3 ? 600 : 900;
+                    let timer = global.tech['spy'] >= 4 ? 600 : 900;
                     global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'incite';
                     vBind({el: '#espModal'},'destroy');
