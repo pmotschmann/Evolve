@@ -505,7 +505,7 @@ export const races = {
         entity: loc('race_dryad_entity'),
         traits: {
             befuddle: 1,
-            enviromentalist: 1,
+            environmentalist: 1,
             kindling_kindred: 1
         },
         solar: {
@@ -1182,7 +1182,7 @@ export const traits = {
         desc: loc('trait_befuddle'),
         type: 'major',
     },
-    enviromentalist: { // Use renewable energy instead of dirtly coal & oil power.
+    environmentalist: { // Use renewable energy instead of dirtly coal & oil power.
         desc: loc('trait_befuddle'),
         type: 'major',
     },

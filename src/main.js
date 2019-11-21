@@ -871,7 +871,7 @@ function fastLoop(){
         let uranium_bd = {};
         if (global.city['coal_power']){
             let power = global.city.coal_power.on * actions.city.coal_power.powered();
-            let consume = global.city.coal_power.on * (global.race['enviromentalist'] ? 0 : 0.35);
+            let consume = global.city.coal_power.on * (global.race['environmentalist'] ? 0 : 0.35);
             while ((consume * time_multiplier) > global.resource.Coal.amount && consume > 0){
                 power -= actions.city.coal_power.powered();
                 consume -= 0.35;
@@ -881,10 +881,10 @@ function fastLoop(){
 
             max_power += power;
             power_grid -= power;
-            power_generated[global.race['enviromentalist'] ? loc('city_hydro_power') : loc('city_coal_power')] = -(power);
+            power_generated[global.race['environmentalist'] ? loc('city_hydro_power') : loc('city_coal_power')] = -(power);
 
             // Uranium
-            if (!global.race['enviromentalist'] && global.tech['uranium'] && global.tech['uranium'] >= 3){
+            if (!global.race['environmentalist'] && global.tech['uranium'] && global.tech['uranium'] >= 3){
                 uranium_bd[loc('city_coal_ash')] = (consume / 65 / global_multiplier);
                 modRes('Uranium', (consume * time_multiplier) / 65);
             }
@@ -892,7 +892,7 @@ function fastLoop(){
 
         if (global.city['oil_power']){
             let power = global.city.oil_power.on * actions.city.oil_power.powered();
-            let consume = global.city.oil_power.on * (global.race['enviromentalist'] ? 0 : 0.65);
+            let consume = global.city.oil_power.on * (global.race['environmentalist'] ? 0 : 0.65);
             while ((consume * time_multiplier) > global.resource.Oil.amount && consume > 0){
                 power -= actions.city.oil_power.powered();
                 consume -= 0.65;
@@ -902,7 +902,7 @@ function fastLoop(){
 
             max_power += power;
             power_grid -= power;
-            power_generated[global.race['enviromentalist'] ? loc('city_wind_power') : loc('city_oil_power')] = -(power);
+            power_generated[global.race['environmentalist'] ? loc('city_wind_power') : loc('city_oil_power')] = -(power);
         }
 
         if (global.city['fission_power']){
@@ -994,7 +994,7 @@ function fastLoop(){
         }
 
         if (global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['carnivore'])){
-            let power = powerModifier(global.race['enviromentalist'] ? (global.city.windmill.count * 1.5) : global.city.windmill.count);
+            let power = powerModifier(global.race['environmentalist'] ? (global.city.windmill.count * 1.5) : global.city.windmill.count);
             max_power -= power;
             power_grid += power;
             power_generated[loc('city_mill_title2')] = power;

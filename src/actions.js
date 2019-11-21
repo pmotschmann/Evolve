@@ -2790,7 +2790,7 @@ export const actions = {
                 Iron(){ return costMultiplier('mill', 150, 1.33); },
                 Cement(){ return costMultiplier('mill', 125, 1.33); },
             },
-            powered(){ return global.race['enviromentalist'] ? -1.5 : -1; },
+            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
             power_reqs: { agriculture: 6 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -4153,10 +4153,10 @@ export const actions = {
         coal_power: {
             id: 'city-coal_power',
             title(){
-                return global.race['enviromentalist'] ? loc('city_hydro_power') : loc('city_coal_power');
+                return global.race['environmentalist'] ? loc('city_hydro_power') : loc('city_coal_power');
             },
             desc(){
-                return global.race['enviromentalist'] 
+                return global.race['environmentalist'] 
                     ? `<div>${loc('city_hydro_power_desc')}</div>`
                     : `<div>${loc('city_coal_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Coal_name')])}</div>`;
             },
@@ -4171,10 +4171,10 @@ export const actions = {
             effect(){
                 let consume = 0.35;
                 let power = -($(this)[0].powered());
-                return global.race['enviromentalist'] ? `+${power}kW` : `+${power}kW. ${loc('city_coal_power_effect',[consume])}`;
+                return global.race['environmentalist'] ? `+${power}kW` : `+${power}kW. ${loc('city_coal_power_effect',[consume])}`;
             },
             powered(){
-                return global.race['enviromentalist']
+                return global.race['environmentalist']
                     ? powerModifier(global.stats.achieve['dissipated'] ? -5 : -4)
                     : powerModifier(global.stats.achieve['dissipated'] ? -6 : -5);
             },
@@ -4191,10 +4191,10 @@ export const actions = {
         oil_power: {
             id: 'city-oil_power',
             title(){
-                return global.race['enviromentalist'] ? loc('city_wind_power') : loc('city_oil_power');
+                return global.race['environmentalist'] ? loc('city_wind_power') : loc('city_oil_power');
             },
             desc(){
-                return global.race['enviromentalist'] 
+                return global.race['environmentalist'] 
                     ? `<div>${loc('city_wind_power_desc')}</div>`
                     : `<div>${loc('city_oil_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Oil_name')])}</div>`
             },
@@ -4209,10 +4209,10 @@ export const actions = {
             effect(){
                 let consume = 0.65;
                 let power = -($(this)[0].powered());
-                return global.race['enviromentalist'] ? `+${power}kW` : `+${power}kW. ${loc('city_oil_power_effect',[consume])}`;
+                return global.race['environmentalist'] ? `+${power}kW` : `+${power}kW. ${loc('city_oil_power_effect',[consume])}`;
             },
             powered(){
-                if (global.race['enviromentalist']){
+                if (global.race['environmentalist']){
                     if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
                         let base = global.city.calendar.wind === 1 ? -7 : -5;
                         return powerModifier(global.stats.achieve['dissipated'].l >= 5 ? (base - 2) : (base - 1));
