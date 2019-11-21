@@ -1182,7 +1182,7 @@ export const traits = {
         desc: loc('trait_befuddle'),
         type: 'major',
     },
-    enviromentalist: { // Use renewable energy instead of dirtly coal, oil, and fission power.
+    enviromentalist: { // Use renewable energy instead of dirtly coal & oil power.
         desc: loc('trait_befuddle'),
         type: 'major',
     },
