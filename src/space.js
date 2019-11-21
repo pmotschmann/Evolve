@@ -823,9 +823,9 @@ const spaceProjects = {
             },
             effect(){
                 let helium = +(fuel_adjust(0.5)).toFixed(2);
-                return loc('space_hell_geothermal_effect1',[helium]);
+                return loc('space_hell_geothermal_effect1',[helium,-($(this)[0].powered())]);
             },
-            powered(){ return powerModifier(-8); },
+            powered(){ return powerModifier(global.race['forge'] ? -9 : -8); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('geothermal');

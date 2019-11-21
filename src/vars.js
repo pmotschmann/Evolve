@@ -1197,6 +1197,7 @@ export function clearStates(){
             esp: 0,
             trn: 0,
             sab: 0,
+            act: 'none',
             occ: false
         },
         gov1: {
@@ -1208,6 +1209,7 @@ export function clearStates(){
             esp: 0,
             trn: 0,
             sab: 0,
+            act: 'none',
             occ: false
         },
         gov2: {
@@ -1219,6 +1221,7 @@ export function clearStates(){
             esp: 0,
             trn: 0,
             sab: 0,
+            act: 'none',
             occ: false
         }
     };

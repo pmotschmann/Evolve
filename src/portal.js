@@ -765,7 +765,7 @@ export function bloodwar(){
 
     // Surveyor threats
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
-        let danger = global.portal.fortress.threat / 1000;
+        let danger = global.portal.fortress.threat / (global.race['blurry'] ? 1250 : 1000);
         let exposure = global.civic.hell_surveyor.workers > 10 ? 10 : global.civic.hell_surveyor.workers;
         let risk = 10 - (Math.rand(0,exposure + 1));
 

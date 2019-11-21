@@ -505,6 +505,7 @@ export const races = {
         entity: loc('race_dryad_entity'),
         traits: {
             befuddle: 1,
+            enviromentalist: 1,
             kindling_kindred: 1
         },
         solar: {
@@ -558,7 +559,8 @@ export const races = {
         home: loc('race_salamander_home'),
         entity: loc('race_salamander_entity'),
         traits: {
-            forge: 1
+            forge: 1,
+            autoignition: 1
         },
         solar: {
             red: loc('race_salamander_solar_red'),
@@ -1180,6 +1182,10 @@ export const traits = {
         desc: loc('trait_befuddle'),
         type: 'major',
     },
+    enviromentalist: { // Use renewable energy instead of dirtly coal, oil, and fission power.
+        desc: loc('trait_befuddle'),
+        type: 'major',
+    },
     unorganized: { // Increased time between revolutions
         desc: loc('trait_unorganized'),
         type: 'major',
@@ -1198,6 +1204,10 @@ export const traits = {
     },
     forge: { // Smelters do not require fuel
         desc: loc('trait_forge'),
+        type: 'major',
+    },
+    autoignition: { // Library knowledge bonus reduced
+        desc: loc('trait_autoignition'),
         type: 'major',
     },
     blurry: { // Increased success chance of spies
