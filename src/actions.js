@@ -10156,11 +10156,7 @@ export const actions = {
             },
             effect(){ return `<div>${loc('tech_wc_conquest_effect')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
-                let rating = global.race['no_plasmid'] ? 525 : 600;
-                if (global.race['no_crispr']){
-                    rating -= 75;
-                }
-                if (armyRating(global.civic.garrison.raid,'army') >= rating){
+                if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
                     buildGarrison($('#garrison'));
