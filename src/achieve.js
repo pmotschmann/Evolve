@@ -654,6 +654,26 @@ const feats = {
         desc: loc("feat_heavy_genus_fungi_desc"),
         flair: loc("feat_heavy_genus_fungi_flair")
     },
+    heavy_genus_fey: {
+        name: loc("feat_heavy_genus_fey_name"),
+        desc: loc("feat_heavy_genus_fey_desc"),
+        flair: loc("feat_heavy_genus_fey_flair")
+    },
+    heavy_genus_heat: {
+        name: loc("feat_heavy_genus_heat_name"),
+        desc: loc("feat_heavy_genus_heat_desc"),
+        flair: loc("feat_heavy_genus_heat_flair")
+    },
+    heavy_genus_polar: {
+        name: loc("feat_heavy_genus_polar_name"),
+        desc: loc("feat_heavy_genus_polar_desc"),
+        flair: loc("feat_heavy_genus_polar_flair")
+    },
+    heavy_genus_sand: {
+        name: loc("feat_heavy_genus_sand_name"),
+        desc: loc("feat_heavy_genus_sand_desc"),
+        flair: loc("feat_heavy_genus_sand_flair")
+    },
     heavy_genus_aquatic: {
         name: loc("feat_heavy_genus_aquatic_name"),
         desc: loc("feat_heavy_genus_aquatic_desc"),
