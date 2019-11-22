@@ -2380,7 +2380,7 @@
   "trait_cold_intolerance": "You despise cold weather losing increasing production the longer it lasts.",
   "trait_chilled": "You revel in cold weather gaining increasing production the longer it lasts.",
   "trait_heat_intolerance": "You despise hot weather losing increasing production the longer it lasts.",
-  "trait_scavanger": "You can assign scavangers to look for useful items which boost productivity.",
+  "trait_scavenger": "You can assign scavengers to look for useful items which boost productivity.",
   "trait_nomadic": "You move around a lot making established trade more difficult.",
   "trait_submerged": "Your species lives primarily underwater and is thus not affected by most weather.",
   "trait_low_light": "Sunlight does not penetrate into the depths of the ocean easily and farming activities are less effective as a result.",

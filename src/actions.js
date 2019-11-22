@@ -5934,6 +5934,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     vBind({el: '#govType'},'update');
+                    vBind({el: '#foreign'},'update');
                     return true;
                 }
                 return false;
@@ -12387,7 +12388,7 @@ function fanaticism(god){
             fanaticTrait('ghostly');
             break;
         case 'tuskin':
-            fanaticTrait('scavanger');
+            fanaticTrait('lawless');
             break;
         case 'kamel':
             fanaticTrait('quenched');

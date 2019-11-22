@@ -276,7 +276,7 @@ function drawGovModal(){
 }
 
 function foreign(){
-    let foreign = $('<div id="foreign" v-show="t.govern && !t.world_control" class="government is-child"></div>');
+    let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
     foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
     $('#r_civics').append(foreign);
 
@@ -455,6 +455,9 @@ function foreign(){
             },
             espDesc(){
                 return loc('civics_gov_esp_desc');
+            },
+            vis(){
+                return global.tech['govern'] && !global.tech['world_control'] ? true : false;
             }
         }
     });

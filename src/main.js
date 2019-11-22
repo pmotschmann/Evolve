@@ -551,9 +551,9 @@ function fastLoop(){
         breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
-    if ((global.city.ptrait === 'trashed' || global.race['scavanger']) && global.civic['scavenger'] && global.civic.scavenger.workers > 0){
+    if ((global.city.ptrait === 'trashed' || global.race['scavenger']) && global.civic['scavenger'] && global.civic.scavenger.workers > 0){
         let bonus = (global.civic.scavenger.workers * global.civic.scavenger.impact);
-        if (global.city.ptrait === 'trashed' && global.race['scavanger']){
+        if (global.city.ptrait === 'trashed' && global.race['scavenger']){
             bonus *= 1.25;
         }
         breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
@@ -4484,7 +4484,7 @@ function longLoop(){
             global.civic.govern.rev = 0;
         }
 
-        if (global.city.ptrait === 'trashed' || global.race['scavanger']){
+        if (global.city.ptrait === 'trashed' || global.race['scavenger']){
             global.civic.scavenger.display = true;
         }
         else {

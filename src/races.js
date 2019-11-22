@@ -811,7 +811,7 @@ export const genus_traits = {
         heat_intolerance: 1
     },
     sand: {
-        scavanger: 1,
+        scavenger: 1,
         nomadic: 1
     },
     demonic: {
@@ -934,8 +934,8 @@ export const traits = {
         desc: loc('trait_heat_intolerance'),
         type: 'genus',
     },
-    scavanger: { // Scavanger job is always available
-        desc: loc('trait_scavanger'),
+    scavenger: { // scavenger job is always available
+        desc: loc('trait_scavenger'),
         type: 'genus',
     },
     nomadic: { // -1 Trade route from trade post
