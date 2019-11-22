@@ -2627,7 +2627,7 @@
   "civics_garrison_tactic_siege": "Siege",
   "civics_garrison_tactic_siege_desc": "Attempt to siege a rival city. Allows you to occupy an enemy city as long as %0 troops remain alive after the siege.",
   "civics_garrison_hire_mercenary_cost": "Hire a mercenary: $%0",
-  "civics_garrison_no_spy": "Not Enough Intel",
+  "civics_garrison_no_spy": "Low Intel, Battle Assessment Unavailable. Embed more spies.",
   "civics_garrison_advantage": "%0% advantage",
   "civics_garrison_disadvantage": "%0% disadvantage",
   "civics_garrison_army_label": "Number of soldiers to commit to military campaigns.",
