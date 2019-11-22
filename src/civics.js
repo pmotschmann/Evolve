@@ -95,12 +95,27 @@ export function buildQueue(){
 }
 
 export function govTitle(id){
-    let title = [
-        loc('civics_gov0',[races[global.race.species].name]),
-        loc('civics_gov1'),
-        loc('civics_gov2',[races[global.race.species].home])
-    ];
-    return title[id];
+    if (typeof global.civic.foreign[`gov${id}`]['name'] == "undefined"){
+        const filler = [
+            races[global.race.species].name,
+            races[global.race.species].home,
+            loc(`biome_${global.city.biome}_name`),
+            loc(`evo_${races[global.race.species].type}_title`),
+            loc(`civics_gov_name0`),
+            loc(`civics_gov_name1`),
+            loc(`civics_gov_name2`),
+            loc(`civics_gov_name3`),
+            loc(`civics_gov_name4`),
+            loc(`civics_gov_name5`),
+        ];
+
+        global.civic.foreign[`gov${id}`]['name'] = {
+            s0: Math.rand(0,5),
+            s1: filler[Math.rand(0,10)]
+        };
+    }
+
+    return loc(`civics_gov${global.civic.foreign[`gov${id}`].name.s0}`,[global.civic.foreign[`gov${id}`].name.s1]);
 }
 
 const government_desc = {
@@ -663,9 +678,9 @@ export function buildGarrison(garrison){
         battalion.append(armysize);
         battalion.append(anext);
 
-        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov0',[races[global.race.species].name])}</div><b-tooltip :label="battleAssessment(0)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(0)"><span v-show="!g0.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g0.occ">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
-        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov1')}</div><b-tooltip :label="battleAssessment(1)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(1)"><span v-show="!g1.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g1.occ">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
-        campaign.append($(`<div class="launch"><div class="has-text-caution">${loc('civics_gov2',[races[global.race.species].home])}</div><b-tooltip :label="battleAssessment(2)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(2)"><span v-show="!g2.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g2.occ">${loc('civics_garrison_deoccupy')}</span></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(0)}</div><b-tooltip :label="battleAssessment(0)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(0)"><span v-show="!g0.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g0.occ">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(1)}</div><b-tooltip :label="battleAssessment(1)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(1)"><span v-show="!g1.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g1.occ">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
+        campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(2)}</div><b-tooltip :label="battleAssessment(2)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(2)"><span v-show="!g2.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g2.occ">${loc('civics_garrison_deoccupy')}</span></b-tooltip></div>`));
     }
 
     if (!global.civic['garrison']){
