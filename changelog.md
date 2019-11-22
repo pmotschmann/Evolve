@@ -1,5 +1,6 @@
 #### 0.7.0 - 11/??/2019 ####
 Establish a Government<br>
+Battle rival cities<br>
 Biome races added for Forest, Desert, Tundra, and Volcanic<br>
 New ARPA Project: Railway<br>
 New CRISPR upgrades: Mitosis & Metaphase<br>
