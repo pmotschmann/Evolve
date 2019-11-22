@@ -3689,6 +3689,7 @@ export const actions = {
             desc: loc('city_wharf_desc'),
             category: 'trade',
             reqs: { wharf: 1 },
+            not_trait: ['thalassophobia'],
             cost: { 
                 Money(){ return costMultiplier('wharf', 62000, 1.32); },
                 Lumber(){ return costMultiplier('wharf', 44000, 1.32); },
@@ -6301,6 +6302,7 @@ export const actions = {
             title: loc('tech_wharf'),
             desc: loc('tech_wharf_desc'),
             reqs: { trade: 1, high_tech: 3, oil: 1 },
+            not_trait: ['thalassophobia'],
             grant: ['wharf',1],
             cost: {
                 Knowledge(){ return 44000; }
@@ -12387,7 +12389,7 @@ function fanaticism(god){
             fanaticTrait('lawless');
             break;
         case 'kamel':
-            fanaticTrait('quenched');
+            fanaticTrait('humpback');
             break;
         case 'balorg':
             fanaticTrait('fiery');

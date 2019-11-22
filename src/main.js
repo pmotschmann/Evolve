@@ -1666,6 +1666,9 @@ function fastLoop(){
             if (!modRes('Food', delta * time_multiplier)){
                 fed = false;
                 let threshold = global.race['slow_digestion'] ? 2 : 1.25;
+                if (global.race['humpback']){
+                    threshold += 0.5;
+                }
                 if (global.race['atrophy']){
                     threshold -= 0.15;
                 }

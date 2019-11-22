@@ -632,7 +632,8 @@ export const races = {
         home: loc('race_kamel_home'),
         entity: loc('race_kamel_entity'),
         traits: {
-            quenched: 1 // Not Implemented
+            humpback: 1,
+            thalassophobia: 1
         },
         solar: {
             red: loc('race_kamel_solar_red'),
@@ -1235,6 +1236,14 @@ export const traits = {
         desc: loc('trait_mistrustful'),
         type: 'major',
     },
+    humpback: { // Starvation resistance and miner/lumberjack boost
+        desc: loc('trait_humpback'),
+        type: 'major',
+    },
+    thalassophobia: { // Wharves are unavailable
+        desc: loc('trait_humpback'),
+        type: 'major',
+    },
     fiery: { // Major war bonus
         desc: loc('trait_fiery'),
         type: 'major',
@@ -1388,6 +1397,9 @@ export function racialTrait(workers,type){
             modifier *= 1.15; 
         }
     }
+    if (global.race['humpback'] && (type === 'miner' || type === 'lumberjack')){
+        modifier *= 1.2;
+    }
     if (global.city.ptrait === 'magnetic' && type === 'miner'){
         modifier *= 0.985;
     }
@@ -1528,6 +1540,9 @@ export function cleanAddTrait(trait){
                 unlockAchieve('godwin');
             }
             break;
+        case 'thalassophobia':
+            delete global.city['wharf'];
+            break;
         default:
             break;
     }
@@ -1574,6 +1589,11 @@ export function cleanRemoveTrait(trait){
             break;
         case 'magnificent':
             delete global.city['shrine'];
+            break;
+        case 'thalassophobia':
+            if (global.tech['thalassophobia']){
+                global.city['wharf'] = { count: 0 };
+            }
             break;
         default:
             break;
