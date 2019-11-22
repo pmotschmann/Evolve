@@ -96,11 +96,36 @@ export function buildQueue(){
 
 export function govTitle(id){
     if (typeof global.civic.foreign[`gov${id}`]['name'] == "undefined"){
+        let genus = races[global.race.species].type;
+        switch (genus){
+            case 'animal':
+                genus = 'animalism';
+                break;
+            case 'small':
+                genus = 'dwarfism';
+                break;
+            case 'giant':
+                genus = 'gigantism';
+                break;
+            case 'avian':
+            case 'reptilian':
+                genus = 'Eggshell';
+                break;
+            case 'fungi':
+                genus = 'chitin';
+                break;
+            case 'insectoid':
+                genus = 'athropods';
+                break;
+            case 'angelic':
+                genus = 'celestial';
+                break;
+        }
         const filler = [
             races[global.race.species].name,
             races[global.race.species].home,
             loc(`biome_${global.city.biome}_name`),
-            loc(`evo_${races[global.race.species].type}_title`),
+            loc(`evo_${genus}_title`),
             loc(`civics_gov_name0`),
             loc(`civics_gov_name1`),
             loc(`civics_gov_name2`),
