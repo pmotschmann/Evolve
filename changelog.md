@@ -1,4 +1,4 @@
-#### 0.7.0 - 11/??/2019 ####
+#### 0.7.0 - 11/21/2019 ####
 Establish a Government<br>
 Battle rival cities<br>
 Biome races added for Forest, Desert, Tundra, and Volcanic<br>
