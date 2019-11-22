@@ -577,7 +577,8 @@ export const races = {
         home: loc('race_yeti_home'),
         entity: loc('race_yeti_entity'),
         traits: {
-            blurry: 1
+            blurry: 1,
+            snowy: 1
         },
         solar: {
             red: loc('race_yeti_solar_red'),
@@ -1212,6 +1213,10 @@ export const traits = {
     },
     blurry: { // Increased success chance of spies
         desc: loc('trait_blurry'),
+        type: 'major',
+    },
+    snowy: { // You lose morale if it's not snowing
+        desc: loc('trait_snowy'),
         type: 'major',
     },
     ravenous: { // Drastically increases food consumption

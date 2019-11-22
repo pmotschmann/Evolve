@@ -787,6 +787,10 @@ function fastLoop(){
                 weather_morale = 2;
             }
         }
+        if (global.race['snowy'] && (global.city.calendar.temp !== 0 || global.city.calendar.weather !== 0)){
+            weather_morale -= global.city.calendar.temp >= 2 ? 5 : 2;
+        }
+
         global.city.morale.weather = global.race['submerged'] ? 0 : weather_morale;
         morale += global.race['submerged'] ? 0 : weather_morale;
 

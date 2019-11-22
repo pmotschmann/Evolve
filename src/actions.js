@@ -6045,9 +6045,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
-                    vBind({el: '#gov0'},'update');
-                    vBind({el: '#gov1'},'update');
-                    vBind({el: '#gov2'},'update');
+                    vBind({el: '#foreign'},'update');
                     return true;
                 }
                 return false;
@@ -6067,9 +6065,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
-                    vBind({el: '#gov0'},'update');
-                    vBind({el: '#gov1'},'update');
-                    vBind({el: '#gov2'},'update');
+                    vBind({el: '#foreign'},'update');
                     return true;
                 }
                 return false;
