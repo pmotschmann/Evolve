@@ -1,6 +1,6 @@
 import { global, save, poppers, messageQueue, keyMultiplier, clearStates, keyMap, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, genCivName, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -10208,7 +10208,7 @@ export const actions = {
                 if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    buildGarrison($('#garrison'));
+                    buildGarrison($('#garrison'),true);
                     unlockAchieve(`world_domination`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
@@ -10260,7 +10260,7 @@ export const actions = {
                 if (global.city.morale.current >= morale){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    buildGarrison($('#garrison'));
+                    buildGarrison($('#garrison'),true);
                     unlockAchieve(`illuminati`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
@@ -10310,7 +10310,7 @@ export const actions = {
                     global.resource.Money.amount -= price;
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
-                    buildGarrison($('#garrison'));
+                    buildGarrison($('#garrison'),true);
                     unlockAchieve(`syndicate`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
@@ -12261,6 +12261,28 @@ function sentience(){
     if (global.genes['evolve'] && global.genes['evolve'] >= 2){
         randomMinorTrait();
     }
+
+    let civ0name = genCivName();
+    global.civic.foreign.gov0['name'] = {
+        s0: civ0name.s0,
+        s1: civ0name.s1
+    };
+    let civ1name = genCivName();
+    while (civ0name.s0 === civ1name.s0 && civ0name.s1 === civ1name.s1){
+        civ1name = genCivName();
+    }
+    global.civic.foreign.gov1['name'] = {
+        s0: civ1name.s0,
+        s1: civ1name.s1
+    };
+    let civ2name = genCivName();
+    while ((civ0name.s0 === civ2name.s0 && civ0name.s1 === civ2name.s1) || (civ1name.s0 === civ2name.s0 && civ1name.s1 === civ2name.s1)){
+        civ2name = genCivName();
+    }
+    global.civic.foreign.gov2['name'] = {
+        s0: civ2name.s0,
+        s1: civ2name.s1
+    };
 
     messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]));
 

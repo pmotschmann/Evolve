@@ -128,6 +128,55 @@ export function mainVue(){
     });
 }
 
+export function genCivName(){
+    let genus = races[global.race.species].type;
+    switch (genus){
+        case 'animal':
+            genus = 'animalism';
+            break;
+        case 'small':
+            genus = 'dwarfism';
+            break;
+        case 'giant':
+            genus = 'gigantism';
+            break;
+        case 'avian':
+        case 'reptilian':
+            genus = 'Eggshell';
+            break;
+        case 'fungi':
+            genus = 'chitin';
+            break;
+        case 'insectoid':
+            genus = 'athropods';
+            break;
+        case 'angelic':
+            genus = 'celestial';
+            break;
+        case 'organism':
+            genus = 'sentience';
+            break;
+    }
+
+    const filler = [
+        races[global.race.species].name,
+        races[global.race.species].home,
+        loc(`biome_${global.city.biome}_name`),
+        loc(`evo_${genus}_title`),
+        loc(`civics_gov_name0`),
+        loc(`civics_gov_name1`),
+        loc(`civics_gov_name2`),
+        loc(`civics_gov_name3`),
+        loc(`civics_gov_name4`),
+        loc(`civics_gov_name5`),
+    ];
+
+    return {
+        s0: Math.rand(0,6),
+        s1: filler[Math.rand(0,10)]
+    };
+}
+
 export function timeCheck(c_action,track){
     if (c_action.cost){
         let time = 0;

@@ -1,3 +1,9 @@
+#### 0.7.1 - 11/23/2019 ####
+Garrison controls reintegrated into government section<br>
+Mutation plasmids now track correctly in no plasmid challenge runs<br>
+Fixed many issues with foreign power name generation<br>
+Feat star icon is no longer tiny<br>
+
 #### 0.7.0 - 11/21/2019 ####
 Establish a Government<br>
 Battle rival cities<br>

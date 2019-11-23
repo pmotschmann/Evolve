@@ -354,7 +354,7 @@ if (convertVersion(global['version']) < 7000){
     }
 }
 
-global['version'] = '0.7.0';
+global['version'] = '0.7.1';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -601,10 +601,7 @@ if (!global.race['minor']){
     global.race['minor'] = {};
 }
 
-if (!global.settings['showMil']){
-    global.settings['showMil'] = true;
-}
-if (!global.settings['showMil']){
+if (typeof global.settings['showMil'] === "undefined"){
     global.settings['showMil'] = true;
 }
 if (!global.settings['affix']){
@@ -671,6 +668,16 @@ if (typeof global.civic.foreign.gov0['trn'] === "undefined"){
     global.civic.foreign.gov0['act'] = 'none';
     global.civic.foreign.gov1['act'] = 'none';
     global.civic.foreign.gov2['act'] = 'none';
+}
+
+if (typeof global.civic.foreign.gov0['name'] !== "undefined" && global.civic.foreign.gov0.name.s1 === 'evo_organism_title'){
+    global.civic.foreign.gov0.name.s1 = 'Northern';
+}
+if (typeof global.civic.foreign.gov1['name'] !== "undefined" && global.civic.foreign.gov1.name.s1 === 'evo_organism_title'){
+    global.civic.foreign.gov1.name.s1 = 'Southern';
+}
+if (typeof global.civic.foreign.gov2['name'] !== "undefined" && global.civic.foreign.gov2.name.s1 === 'evo_organism_title'){
+    global.civic.foreign.gov2.name.s1 = 'Divine';
 }
 
 if (!global.race['evil'] && global.race['immoral']){
@@ -816,6 +823,9 @@ if (global.city['factory']){
 
 if (!global.race['mutation']){
     global.race['mutation'] = 0;
+}
+if (!global.race['p_mutation']){
+    global.race['p_mutation'] = 0;
 }
 
 if (global.race['old_gods'] && global.race['old_gods'] != 'none'){
