@@ -5210,7 +5210,9 @@ function resourceAlt(){
 }
 
 function spyCaught(i){
-    global.civic.foreign[`gov${i}`].spy--;
+    if (global.civic.foreign[`gov${i}`].spy > 0){
+        global.civic.foreign[`gov${i}`].spy--;
+    }
     switch (i){
         case 0:
             messageQueue(loc('event_spy',[loc('civics_gov0',[races[global.race.species].name])]),'danger');
