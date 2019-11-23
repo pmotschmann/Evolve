@@ -1,6 +1,6 @@
 import { global, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { challenge_multiplier, timeFormat, vBind } from './functions.js';
+import { challenge_multiplier, timeFormat, vBind, genCivName } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -25,7 +25,7 @@ export function defineGovernment(){
     
     government(govern);
     taxRates(govern);
-    
+
     var civ_garrison = $('<div id="c_garrison" v-show="g.display" class="garrison tile is-child"></div>');
     $('#r_civics').append(civ_garrison);
     buildGarrison(civ_garrison,false);
@@ -101,47 +101,10 @@ export function buildQueue(){
 
 export function govTitle(id){
     if (typeof global.civic.foreign[`gov${id}`]['name'] == "undefined"){
-        let genus = races[global.race.species].type;
-        switch (genus){
-            case 'animal':
-                genus = 'animalism';
-                break;
-            case 'small':
-                genus = 'dwarfism';
-                break;
-            case 'giant':
-                genus = 'gigantism';
-                break;
-            case 'avian':
-            case 'reptilian':
-                genus = 'Eggshell';
-                break;
-            case 'fungi':
-                genus = 'chitin';
-                break;
-            case 'insectoid':
-                genus = 'athropods';
-                break;
-            case 'angelic':
-                genus = 'celestial';
-                break;
-        }
-        const filler = [
-            races[global.race.species].name,
-            races[global.race.species].home,
-            loc(`biome_${global.city.biome}_name`),
-            loc(`evo_${genus}_title`),
-            loc(`civics_gov_name0`),
-            loc(`civics_gov_name1`),
-            loc(`civics_gov_name2`),
-            loc(`civics_gov_name3`),
-            loc(`civics_gov_name4`),
-            loc(`civics_gov_name5`),
-        ];
-
+        let nameFrags = genCivName();
         global.civic.foreign[`gov${id}`]['name'] = {
-            s0: Math.rand(0,5),
-            s1: filler[Math.rand(0,10)]
+            s0: nameFrags.s0,
+            s1: nameFrags.s1
         };
     }
 

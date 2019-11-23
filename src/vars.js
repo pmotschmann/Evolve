@@ -601,10 +601,7 @@ if (!global.race['minor']){
     global.race['minor'] = {};
 }
 
-if (!global.settings['showMil']){
-    global.settings['showMil'] = true;
-}
-if (!global.settings['showMil']){
+if (typeof global.settings['showMil'] === "undefined"){
     global.settings['showMil'] = true;
 }
 if (!global.settings['affix']){
