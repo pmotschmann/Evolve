@@ -71,6 +71,7 @@ a {
 
 .tabs:not(:last-child){
     margin-bottom: .5rem;
+    overflow: hidden;
 }
 
 .modal .animation-content {
@@ -334,7 +335,13 @@ a {
     }
 
     .content {
+        .settings {
+            margin-left: 1rem;
+        }
         .tab-content {
+            padding: 0 .25rem 1rem 0;
+        }
+        > .tab-content {
             padding: 0 .25rem 1rem 1rem;
         }
         .tab-item {
@@ -510,13 +517,28 @@ a {
     
     .civics {
         padding-top: 0;
+
+        .revolution {
+            margin-left: .375rem;
+        }
     }
 
     .government {
-        max-height: 3rem;
+        margin-bottom: 1rem;
 
         .header {
             margin-bottom: .5rem;
+        }
+
+        .govType {
+            margin-bottom: .25rem;
+            
+            button {
+                margin-top: .25rem;
+                height: 1.75rem;
+                line-height: 1.75rem;
+                padding: 0 .5rem;
+            }
         }
 
         .taxRate {
@@ -526,6 +548,25 @@ a {
                 cursor: default;
                 display: inline-block;
                 line-height: 1.25rem;
+            }
+        }
+
+        .foreign {
+            margin-bottom: 1rem;
+
+            .glabel {
+                display: inline-block;
+                width: 9rem;
+            }
+            .glevel {
+                display: inline-block;
+                width: 8rem;
+            }
+            button {
+                margin-top: .25rem;
+                height: 1.75rem;
+                line-height: 1.75rem;
+                padding: 0 .5rem;
             }
         }
     }
@@ -589,13 +630,16 @@ a {
         .header {
             margin-bottom: .5rem;
         }
+        .bunks {
+            margin: .75rem .75rem 0;
+        }
         .bunk {
             > div {
                 padding-bottom: 0;
             }
             .hire {
                 padding-left: 0;
-                margin-top: .5rem;
+                margin-top: 1rem;
             }
             margin-bottom: 0;
         }
@@ -621,6 +665,7 @@ a {
         }
         .war {
             padding-right: 0;
+            margin: .75rem .75rem 0;
             .tactics {
                 margin: .5rem 0;
                 height: 1.25rem;
@@ -633,16 +678,46 @@ a {
             }
         }
         .launch {
+            width: 10rem;
+            margin-top: .75rem;
+            margin-right: .5rem;
+            text-align: center;
+
             .campaign {
-                width: 6rem;
-                height: 3rem;
+                width: 10rem;
                 white-space: normal;
                 margin-top: .5rem;
             }
         }
     }
 
+    .militaryTab {
+        .garrison {
+            .battle {
+                margin-bottom: .5rem;
+                .war,
+                .launch {
+                    margin: .25rem 0 0 .75rem;
+                }
+            }
+            .columns {
+                flex-wrap: wrap;
+            }
+        }
+    }
+
+    .gFort {
+        padding-top: .5rem;
+        border-bottom: 0;
+        margin-top: .5rem;
+        .pad {
+            margin-right: .25rem;
+        }
+    }
+
     .mad {
+        margin-top: 1rem;
+        max-width: 28rem;
         padding: 1rem;
         border: .0625rem solid #fff;
         border-radius: .5rem;
@@ -776,6 +851,19 @@ a {
     .city:first-child {
         margin-top: 0;
     }
+}
+
+.modalBody {
+    .gap {
+        margin: 0 .25rem .5rem;
+    }
+    &.max40 {
+        max-width: 40rem;
+    }
+}
+
+.popper {
+    z-index: 100000;
 }
 
 .storage-header {
@@ -943,9 +1031,13 @@ body .modal > div.popper.wide {
     ul {
         margin-top: 0;
     }
+    .tabs > ul {
+        margin-left: 1rem;
+    }
 }
 
-.modalBox {
+.modalBox,
+.industry {
     padding: 1rem;
     border-radius: 1rem;
     text-align: center;
@@ -1000,6 +1092,25 @@ body .modal > div.popper.wide {
     }
     .crateModal {
         margin-bottom: 1.25rem;
+    }
+}
+
+.industryTab {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.industry {
+    margin-bottom: .5rem;
+    border-bottom: .0625rem solid;
+    border-top: .0625rem solid;
+    width: 27.5rem;
+
+    .header {
+        margin-bottom: .25rem;
+        padding-bottom: .25rem;
+        width: 100%;
     }
 }
 
@@ -1326,6 +1437,9 @@ html.dark {
     .has-text-advanced {
         color: #00ac95 !important;
     }
+    .has-text-caution {
+        color: #ffa500 !important;
+    }
     .has-text-alert {
         color: #af5d00 !important;
     }
@@ -1439,7 +1553,7 @@ html.dark {
                     border: .0625rem solid #282f2f;
                     background: #1f2424;
                     .gear {
-                        fill: #3a4344;
+                        fill: #ad5f12;
                     }
                 }
                 span.on {
@@ -1463,7 +1577,7 @@ html.dark {
                 div.special:hover {
                     border: .0625rem solid #3a4344;
                     .gear {
-                        fill: #4a5354;
+                        fill: #d4af37;
                     }
                 }
                 &.hl .button {
@@ -1550,7 +1664,8 @@ html.dark {
         }
     }
 
-    .modalBox {
+    .modalBox,
+    .industry {
         background: #282f2f;
         p {
             border-bottom: #ccc solid .0625rem;
@@ -1563,6 +1678,20 @@ html.dark {
         }
         .smelting {
             border-top: #ccc solid .0625rem;
+        }
+    }
+    .industry {
+        background: none;
+        .smelting {
+            border-top: 0;
+        }
+        .header {
+            border-bottom: #ccc solid .0625rem;
+        }
+        .avail {
+            span {
+                margin: 0 2.5rem 0 2.125rem;
+            }
         }
     }
     .modal .actionSpace {
@@ -1630,6 +1759,9 @@ html.light {
     }
     .has-text-special {
         color: #91006c !important;
+    }
+    .has-text-caution {
+        color: #966100 !important;
     }
     .has-text-advanced {
         color: #0098a3 !important;
@@ -1821,7 +1953,8 @@ html.light {
         }
     }
 
-    .modalBox {
+    .modalBox,
+    .industry {
         background: #ffffff;
         p {
             border-bottom: #4e4e4e solid .0625rem;
@@ -1834,6 +1967,15 @@ html.light {
         }
         .smelting {
             border-top: #4e4e4e solid .0625rem;
+        }
+    }
+    .industry {
+        background: none;
+        .smelting {
+            border-top: 0;
+        }
+        .header {
+            border-bottom: #4e4e4e solid .0625rem;
         }
     }
     .progress::-webkit-progress-value,

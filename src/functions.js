@@ -1,9 +1,9 @@
-import { global, vues, save } from './vars.js';
+import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
 
 export function mainVue(){
-    let settings = {
+    vBind({
         el: '#mainColumn div:first-child',
         data: { 
             s: global.settings,
@@ -34,6 +34,15 @@ export function mainVue(){
                 global.settings.theme = 'redgreen';
                 $('html').removeClass();
                 $('html').addClass('redgreen');
+            },
+            si(){
+                global.settings.affix = 'si';
+            },
+            sci(){
+                global.settings.affix = 'sci';
+            },
+            sln(){
+                global.settings.affix = 'sln';
             },
             keys(){
                 return loc('settings1');
@@ -116,8 +125,7 @@ export function mainVue(){
                 }
             }
         }
-    }
-    vues['vue_tabs'] = new Vue(settings);
+    });
 }
 
 export function timeCheck(c_action,track){
@@ -161,6 +169,21 @@ export function timeCheck(c_action,track){
     }
     else {
         return 0;
+    }
+}
+
+export function vBind(bind,action){
+    action = action || 'create';
+    if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue__ !== "undefined"){
+        if (action === 'update'){
+            $(bind.el)[0].__vue__.$forceUpdate();
+        }
+        else {
+            $(bind.el)[0].__vue__.$destroy();
+        }
+    }
+    if (action === 'create'){
+        new Vue(bind);
     }
 }
 
@@ -252,10 +275,30 @@ export function adjustCosts(costs){
         });
         return newCosts;
     }
+    costs = technoAdjust(costs);
     costs = kindlingAdjust(costs);
     costs = scienceAdjust(costs);
     costs = rebarAdjust(costs);
     return craftAdjust(costs);
+}
+
+function technoAdjust(costs){
+    if (global.civic.govern.type === 'technocracy'){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Knowledge'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
+            }
+            else if (res === 'Money'){
+                newCosts[res] = function(){ return costs[res](); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res]() * 1.02); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function scienceAdjust(costs){

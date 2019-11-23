@@ -1,10 +1,11 @@
-import { global, vues, poppers, messageQueue, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
-import { powerModifier, challenge_multiplier } from './functions.js';
+import { global, poppers, messageQueue, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
+import { powerModifier, challenge_multiplier, vBind } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech } from './actions.js';
+import { defineIndustry } from './civics.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -624,6 +625,8 @@ const spaceProjects = {
                     if (global.city.power > 2){
                         global.space['red_factory'].on++;
                     }
+                    global.settings.showIndustry = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -820,9 +823,9 @@ const spaceProjects = {
             },
             effect(){
                 let helium = +(fuel_adjust(0.5)).toFixed(2);
-                return loc('space_hell_geothermal_effect1',[helium]);
+                return loc('space_hell_geothermal_effect1',[helium,-($(this)[0].powered())]);
             },
-            powered(){ return powerModifier(-8); },
+            powered(){ return powerModifier(global.race['forge'] ? -9 : -8); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('geothermal');
@@ -1672,6 +1675,8 @@ const interstellarProjects = {
                         global.tech['droids'] = 1;
                         global.interstellar['processing'] = { count: 0, on: 0 };
                     }
+                    global.settings.showIndustry = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -1690,6 +1695,9 @@ const interstellarProjects = {
             },
             effect(){
                 let bonus = 12;
+                if (global.tech['ai_core'] && global.tech['ai_core'] >= 2 && p_on['citadel'] > 0){
+                    bonus += p_on['citadel'] * 2;
+                }
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_processing_effect',[bonus])}</div>`;
             },
             support: -1,
@@ -1781,7 +1789,7 @@ const interstellarProjects = {
                 Graphene(){ return costMultiplier('exchange', 78000, 1.28, 'interstellar'); }
             },
             effect(){
-                let vault = spatialReasoning(450000);
+                let vault = spatialReasoning(bank_vault() * global.city['bank'].count / 18);
                 vault = +(vault).toFixed(0);
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div>`;
             },
@@ -1824,6 +1832,8 @@ const interstellarProjects = {
                         global.interstellar.g_factory.on++;
                         global.interstellar.g_factory.Lumber++;
                     }
+                    global.settings.showIndustry = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -2292,6 +2302,54 @@ const interstellarProjects = {
                 return false;
             }
         },
+        citadel: {
+            id: 'interstellar-citadel',
+            title: loc('interstellar_citadel_title'),
+            desc: `<div>${loc('interstellar_citadel_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { neutron: 1, high_tech: 15 },
+            cost: {
+                Money(){ return costMultiplier('citadel', 5000000, 1.25, 'interstellar'); },
+                Knowledge(){ return costMultiplier('citadel', 1500000, 1.15, 'interstellar'); },
+                Graphene(){ return costMultiplier('citadel', 50000, 1.25, 'interstellar'); },
+                Stanene(){ return costMultiplier('citadel', 100000, 1.25, 'interstellar'); },
+                Elerium(){ return costMultiplier('citadel', 250, 1.25, 'interstellar'); },
+                Soul_Gem(){ return costMultiplier('citadel', 1, 1.25, 'interstellar'); },
+            },
+            effect(){
+                let desc = `<div>${loc('interstellar_citadel_effect',[5])}</div>`;
+                if (global.tech['ai_core']){
+                    let cement = +(quantum_level / 1.75).toFixed(1);
+                    desc = desc + `<div>${loc('interstellar_citadel_effect2',[cement])}</div>`;
+                    if (global.tech['ai_core'] >= 2){
+                        desc = desc + `<div>${loc('interstellar_citadel_effect3',[2])}</div>`;
+                    }
+                    if (global.tech['ai_core'] >= 3){
+                        let graph = +(quantum_level / 5).toFixed(1);
+                        desc = desc + `<div>${loc('interstellar_citadel_effect4',[graph])}</div>`;
+                    }
+                }
+                return `${desc}<div class="has-text-advanced">${loc('interstellar_citadel_power',[$(this)[0].powered(),2.5])}</div>`;
+            },
+            powered(){
+                if (p_on['citadel'] && p_on['citadel'] > 1){
+                    return 30 + ((p_on['citadel'] - 1) * 2.5);
+                }
+                return 30;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('citadel','interstellar');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.interstellar['citadel'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return loc('interstellar_citadel_flair');
+            }
+        },
     },
     int_blackhole: {
         info: {
@@ -2374,6 +2432,7 @@ const interstellarProjects = {
                     }
                     if (global.tech['blackhole'] === 1){
                         global.tech['blackhole'] = 2;
+                        drawTech();
                     }
                     return true;
                 }
@@ -2608,10 +2667,10 @@ export function space(){
             if (spaceProjects[region].info['support']){
                 let support = spaceProjects[region].info['support'];
                 parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
-                vues[`sr${region}`] = new Vue({
+                vBind({
+                    el: `#sr${region}`,
                     data: global.space[support]
                 });
-                vues[`sr${region}`].$mount(`#sr${region}`);
             }
             else {
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
@@ -2659,10 +2718,10 @@ export function deepSpace(){
             if (interstellarProjects[region].info['support']){
                 let support = interstellarProjects[region].info['support'];
                 parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
-                vues[`sr${region}`] = new Vue({
+                vBind({
+                    el: `#sr${region}`,
                     data: global.interstellar[support]
                 });
-                vues[`sr${region}`].$mount(`#sr${region}`);
             }
             else {
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);

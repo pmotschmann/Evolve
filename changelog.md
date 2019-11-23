@@ -1,3 +1,18 @@
+#### 0.7.0 - 11/21/2019 ####
+Establish a Government<br>
+Battle rival cities<br>
+Biome races added for Forest, Desert, Tundra, and Volcanic<br>
+New ARPA Project: Railway<br>
+New CRISPR upgrades: Mitosis & Metaphase<br>
+Construct advanced AI stations in deep space<br>
+Rapid Gene Squencing upgrade<br>
+Civics tab split into Government, Industry, and Military sections<br>
+Inspiration no longer adds an upfront knowledge bonus<br>
+Vigilante requirement lowered to 12<br>
+Xenophobic replaced with Wasteful<br>
+Added Rocky Road Feat<br>
+Configurable number notations<br>
+
 #### 0.6.27 - 11/12/2019 ####
 Tundra planets are now always cold in winter<br>
 Volcanic planets are now always hot in summer<br>
