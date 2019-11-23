@@ -418,7 +418,7 @@ function foreign(){
         },
         methods: {
             campaign(gov){
-                campaign(gov);
+                war_campaign(gov);
             },
             battleAssessment(gov){
                 return battleAssessment(gov);
@@ -740,7 +740,7 @@ export function buildGarrison(garrison,full){
                 }
             },
             campaign(gov){
-                campaign(gov);
+                war_campaign(gov);
             },
             strategyLabel(){
                 switch (global.civic.garrison.tactic){
@@ -907,7 +907,7 @@ function battleAssessment(gov){
     }
 }
 
-function campaign(gov){
+function war_campaign(gov){
     if (global.civic.foreign[`gov${gov}`].occ){
         global.civic.foreign[`gov${gov}`].occ = false;
         global.civic.garrison.max += 20;
