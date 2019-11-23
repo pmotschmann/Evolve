@@ -670,6 +670,16 @@ if (typeof global.civic.foreign.gov0['trn'] === "undefined"){
     global.civic.foreign.gov2['act'] = 'none';
 }
 
+if (typeof global.civic.foreign.gov0['name'] !== "undefined" && global.civic.foreign.gov0.name.s1 === 'evo_organism_title'){
+    global.civic.foreign.gov0.name.s1 = 'Northern';
+}
+if (typeof global.civic.foreign.gov1['name'] !== "undefined" && global.civic.foreign.gov1.name.s1 === 'evo_organism_title'){
+    global.civic.foreign.gov1.name.s1 = 'Southern';
+}
+if (typeof global.civic.foreign.gov2['name'] !== "undefined" && global.civic.foreign.gov2.name.s1 === 'evo_organism_title'){
+    global.civic.foreign.gov2.name.s1 = 'Divine';
+}
+
 if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
 }

@@ -153,7 +153,13 @@ export function genCivName(){
         case 'angelic':
             genus = 'celestial';
             break;
+        case 'organism':
+            genus = 'sentience';
+            break;
     }
+
+    evo_organism_title
+
     const filler = [
         races[global.race.species].name,
         races[global.race.species].home,
@@ -168,7 +174,7 @@ export function genCivName(){
     ];
 
     return {
-        s0: Math.rand(0,5),
+        s0: Math.rand(0,6),
         s1: filler[Math.rand(0,10)]
     };
 }
