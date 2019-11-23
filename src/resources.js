@@ -1295,7 +1295,7 @@ function loadEjector(name,color){
 export function spatialReasoning(value){
     let plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
     if (global.race['no_plasmid']){
-        plasmids = global.race.mutation > plasmids ? plasmids : global.race.mutation;
+        plasmids = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
     }
     if (global.genes['store'] && global.genes['store'] >= 4){
         plasmids += global.race.Phage.count;
@@ -1323,7 +1323,7 @@ export function plasmidBonus(type){
     let standard = 0;
     let anti = 0;    
     if (global.race.universe !== 'antimatter' || global.genes['bleed']){
-        let plasmids = global.race['no_plasmid'] ? global.race.mutation : global.race.Plasmid.count;
+        let plasmids = global.race['no_plasmid'] ? global.race.p_mutation : global.race.Plasmid.count;
         if (plasmids > global.race.Plasmid.count){
             plasmids = global.race.Plasmid.count;
         }

@@ -4937,6 +4937,24 @@ function longLoop(){
             }
         }
 
+        if (global.race.mutation > 0){
+            let total = 0;
+            for (let i=0; i<global.race.mutation; i++){
+                let mut_level = i + 1;
+                let plasma = global.genes['plasma'] ? mut_level : 1;
+                if (global.genes['plasma'] && plasma > 3){
+                    if (global.genes['plasma'] >= 2){
+                        plasma = plasma > 5 ? 5 : plasma;
+                    }
+                    else {
+                        plasma = 3;
+                    }
+                }
+                total += plasma;
+            }
+            global.race['p_mutation'] = total;
+        }
+
         if (!global.tech['whitehole'] && global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025){
             global.tech['whitehole'] = 1;
             if (global.tech['stablized']){
