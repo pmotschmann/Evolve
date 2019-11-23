@@ -158,8 +158,6 @@ export function genCivName(){
             break;
     }
 
-    evo_organism_title
-
     const filler = [
         races[global.race.species].name,
         races[global.race.species].home,
