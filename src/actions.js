@@ -10225,6 +10225,10 @@ export const actions = {
                         global.civic['garrison'].max += 20;
                         global.civic['garrison'].workers += 20;
                     }
+                    for (let i=0; i<3; i++){
+                        global.civic.foreign[`gov${i}`].sab = 0;
+                        global.civic.foreign[`gov${i}`].act = 'none';
+                    }
                     return true;
                 }
                 return false;
@@ -10253,10 +10257,9 @@ export const actions = {
                 return `<div>${loc('tech_wc_morale_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`;
             }, 
             action(){
-                let morale = global.race['no_plasmid'] ? 140 : 150;
-                if (global.race['no_crispr']){
-                    morale -= 10;
-                }
+                let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
+                morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
+                morale = +(200 - morale).toFixed(1);
                 if (global.city.morale.current >= morale){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
@@ -10276,6 +10279,10 @@ export const actions = {
                     if (global.civic.foreign.gov2.occ){
                         global.civic['garrison'].max += 20;
                         global.civic['garrison'].workers += 20;
+                    }
+                    for (let i=0; i<3; i++){
+                        global.civic.foreign[`gov${i}`].sab = 0;
+                        global.civic.foreign[`gov${i}`].act = 'none';
                     }
                     return true;
                 }
@@ -10302,10 +10309,8 @@ export const actions = {
             },
             effect(){ return `<div>${loc('tech_wc_money_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
-                let price = global.race['no_plasmid'] ? 3000000 : 5000000;
-                if (global.race['no_crispr']){
-                    price -= 1000000;
-                }
+                let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
+                price *= 15384;
                 if (global.resource.Money.amount >= price){
                     global.resource.Money.amount -= price;
                     global.tech['world_control'] = 1;
@@ -10326,6 +10331,10 @@ export const actions = {
                     if (global.civic.foreign.gov2.occ){
                         global.civic['garrison'].max += 20;
                         global.civic['garrison'].workers += 20;
+                    }
+                    for (let i=0; i<3; i++){
+                        global.civic.foreign[`gov${i}`].sab = 0;
+                        global.civic.foreign[`gov${i}`].act = 'none';
                     }
                     return true;
                 }
@@ -10994,7 +11003,13 @@ export const actions = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+                let garrisoned = global.civic.garrison.workers;
+                for (let i=0; i<3; i++){
+                    if (global.civic.foreign[`gov${i}`].occ){
+                        garrisoned += 20;
+                    }
+                }
+                let pop = global['resource'][global.race.species].amount + garrisoned;
                 let plasmid = Math.round(pop / 3);
                 let k_base = global.stats.know;
                 let k_inc = 50000;
@@ -11027,7 +11042,13 @@ export const actions = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+                let garrisoned = global.civic.garrison.workers;
+                for (let i=0; i<3; i++){
+                    if (global.civic.foreign[`gov${i}`].occ){
+                        garrisoned += 20;
+                    }
+                }
+                let pop = global['resource'][global.race.species].amount + garrisoned;
                 let plasmid = Math.round(pop / 3);
                 let k_base = global.stats.know;
                 let k_inc = 50000;
@@ -12527,7 +12548,13 @@ function bioseed(){
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
-    let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+    let garrisoned = global.civic.garrison.workers;
+    for (let i=0; i<3; i++){
+        if (global.civic.foreign[`gov${i}`].occ){
+            garrisoned += 20;
+        }
+    }
+    let pop = global['resource'][global.race.species].amount + garrisoned;
     let new_plasmid = Math.round(pop / 3);
     let k_base = global.stats.know;
     let k_inc = 50000;
@@ -12679,7 +12706,13 @@ function big_bang(){
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
     let dark = global.race.Dark.count;
-    let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+    let garrisoned = global.civic.garrison.workers;
+    for (let i=0; i<3; i++){
+        if (global.civic.foreign[`gov${i}`].occ){
+            garrisoned += 20;
+        }
+    }
+    let pop = global['resource'][global.race.species].amount + garrisoned;
     let new_plasmid = Math.round(pop / 2);
     let k_base = global.stats.know;
     let k_inc = 40000;

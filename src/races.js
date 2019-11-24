@@ -1201,7 +1201,7 @@ export const traits = {
         type: 'major',
     },
     slow_regen: { // Your soldiers wounds heal slower.
-        desc: loc('trait_revive'),
+        desc: loc('trait_slow_regen'),
         type: 'major',
     },
     forge: { // Smelters do not require fuel
