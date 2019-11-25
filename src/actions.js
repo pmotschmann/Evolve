@@ -10209,6 +10209,7 @@ export const actions = {
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
                     buildGarrison($('#garrison'),true);
+                    defineGovernment();
                     unlockAchieve(`world_domination`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
@@ -10265,6 +10266,7 @@ export const actions = {
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
                     buildGarrison($('#garrison'),true);
+                    defineGovernment();
                     unlockAchieve(`illuminati`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
@@ -10318,6 +10320,7 @@ export const actions = {
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
                     buildGarrison($('#garrison'),true);
+                    defineGovernment();
                     unlockAchieve(`syndicate`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);

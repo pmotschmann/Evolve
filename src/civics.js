@@ -7,6 +7,8 @@ import { loadIndustry } from './industry.js';
 
 // Sets up government in civics tab
 export function defineGovernment(){
+    $(`#r_civics`).empty();
+    
     var govern = $('<div id="government" class="government is-child"></div>');
     govern.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_government')}</h2></div>`));
     $('#r_civics').append(govern);
