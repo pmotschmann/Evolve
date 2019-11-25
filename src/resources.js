@@ -1202,24 +1202,44 @@ export function loadMarket(){
 
     if (!global.race['no_trade']){
         market.append($(`<h3 class="is-sr-only">${loc('resource_trade_qty')}</h3>`));
-        market.append($('<b-radio v-model="qty" native-value="10">10x</b-radio>'));
-        market.append($('<b-radio v-model="qty" native-value="25">25x</b-radio>'));
-        market.append($('<b-radio v-model="qty" native-value="100">100x</b-radio>'));
-        if (global.tech['currency'] >= 4){
-            market.append($('<b-radio v-model="qty" native-value="250">250x</b-radio>'));
-            market.append($('<b-radio v-model="qty" native-value="1000">1000x</b-radio>'));
-            market.append($('<b-radio v-model="qty" native-value="2500">2500x</b-radio>'));
-        }
-        if (global.tech['currency'] >= 6){
-            market.append($('<b-radio v-model="qty" native-value="10000">10000x</b-radio>'));
-            market.append($('<b-radio v-model="qty" native-value="25000">25000x</b-radio>'));
-        }
+        market.append($(`<b-field class="market"><span class="button has-text-danger" role="button" @click="less">-</span><b-numberinput :input="val()" min="1" :max="limit()" v-model="qty" :controls="false"></b-numberinput><span class="button has-text-success" role="button" @click="more">+</span></b-field>`));
     }
 
     vBind({
         el: `#market-qty`,
-        data: global.city.market
+        data: global.city.market,
+        methods: {
+            val(){
+                if (global.city.market.qty < 1){
+                    global.city.market.qty = 1;
+                }
+                else if (global.city.market.qty > tradeMax()){
+                    global.city.market.qty = tradeMax();
+                }
+            },
+            limit(){
+                return tradeMax();
+            },
+            less(){
+                global.city.market.qty -= keyMultiplier();
+            },
+            more(){
+                global.city.market.qty += keyMultiplier();
+            }
+        }
     });
+}
+
+function tradeMax(){
+    if (global.tech['currency'] >= 6){
+        return 1000000;
+    }
+    else if (global.tech['currency'] >= 4){
+        return 5000;
+    }
+    else {
+        return 100;
+    }
 }
 
 function initEjector(){

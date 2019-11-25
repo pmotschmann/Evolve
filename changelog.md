@@ -1,3 +1,9 @@
+#### 0.7.2 - 11/24/2019 ####
+New market buy/sell volume control<br>
+Large Trade upgrade now raises the buy/sell cap to 5,000<br>
+Massive Trades upgrade now raises the buy/sell cap to 1,000,000<br>
+Various bug fixes by Beorseder<br>
+
 #### 0.7.1 - 11/23/2019 ####
 Garrison controls reintegrated into government section<br>
 Mutation plasmids now track correctly in no plasmid challenge runs<br>
