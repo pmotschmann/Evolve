@@ -10208,7 +10208,9 @@ export const actions = {
                 if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
+                    $('#c_garrison').empty();
                     buildGarrison($('#garrison'),true);
+                    buildGarrison($('#c_garrison'),false);
                     unlockAchieve(`world_domination`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
@@ -10264,7 +10266,9 @@ export const actions = {
                 if (global.city.morale.current >= morale){
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
+                    $('#c_garrison').empty();
                     buildGarrison($('#garrison'),true);
+                    buildGarrison($('#c_garrison'),false);
                     unlockAchieve(`illuminati`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
@@ -10317,7 +10321,9 @@ export const actions = {
                     global.resource.Money.amount -= price;
                     global.tech['world_control'] = 1;
                     $('#garrison').empty();
+                    $('#c_garrison').empty();
                     buildGarrison($('#garrison'),true);
+                    buildGarrison($('#c_garrison'),false);
                     unlockAchieve(`syndicate`);
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
