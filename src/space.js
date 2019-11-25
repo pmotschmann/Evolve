@@ -1473,7 +1473,7 @@ const spaceProjects = {
                 let power = $(this)[0].powered() * -1;
                 return `<div>${loc('space_dwarf_reactor_effect1',[power])}</div><div>${loc('space_dwarf_reactor_effect2',[elerium])}</div>`;
             },
-            powered(){ return -25; },
+            powered(){ return powerModifier(-25); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('e_reactor');
@@ -2360,7 +2360,13 @@ const interstellarProjects = {
                     let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
                     let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                     if (global.tech['whitehole']){
-                        let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+                        let garrisoned = global.civic.garrison.workers;
+                        for (let i=0; i<3; i++){
+                            if (global.civic.foreign[`gov${i}`].occ){
+                                garrisoned += 20;
+                            }
+                        }
+                        let pop = global['resource'][global.race.species].amount + garrisoned;
                         let plasmid = Math.round(pop / 2);
                         let k_base = global.stats.know;
                         let k_inc = 40000;

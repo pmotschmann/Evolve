@@ -1581,7 +1581,13 @@ function defineMad(){
                     : loc('civics_mad_missiles_desc');
             },
             warning(){
-                let plasma = Math.round((global['resource'][global.race.species].amount + global.civic.garrison.workers) / 3);
+                let garrisoned = global.civic.garrison.workers;
+                for (let i=0; i<3; i++){
+                    if (global.civic.foreign[`gov${i}`].occ){
+                        garrisoned += 20;
+                    }
+                }
+                let plasma = Math.round((global['resource'][global.race.species].amount + garrisoned) / 3);
                 let k_base = global.stats.know;
                 let k_inc = 100000;
                 while (k_base > k_inc){
@@ -1618,7 +1624,13 @@ function warhead(){
     let geo = global.city.geology;
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
-    let pop = global['resource'][global.race.species].amount + global.civic.garrison.workers;
+    let garrisoned = global.civic.garrison.workers;
+    for (let i=0; i<3; i++){
+        if (global.civic.foreign[`gov${i}`].occ){
+            garrisoned += 20;
+        }
+    }
+    let pop = global['resource'][global.race.species].amount + garrisoned;
     let new_plasmid = Math.round(pop / 3);
     let k_base = global.stats.know;
     let k_inc = 100000;

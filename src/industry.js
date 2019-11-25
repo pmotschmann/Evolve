@@ -436,7 +436,17 @@ function loadFactory(parent,bind){
                 let assembly = global.tech['factory'] ? true : false;
                 switch(type){
                     case 'Lux':{
-                        let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0])).toFixed(2);
+                        let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]))
+                        if (global.race['toxic']){
+                            demand *= 1.20;
+                        }
+                        if (global.civic.govern.type === 'corpocracy'){
+                            demand *= 1.5;
+                        }
+                        if (global.civic.govern.type === 'socialist'){
+                            demand *= 0.8;
+                        }
+                        demand = demand.toFixed(2);
                         let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
                         return loc('modal_factory_lux_label',[fur,loc('resource_Furs_name'),demand]);
                     }

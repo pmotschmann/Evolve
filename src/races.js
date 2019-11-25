@@ -1185,7 +1185,7 @@ export const traits = {
         type: 'major',
     },
     environmentalist: { // Use renewable energy instead of dirtly coal & oil power.
-        desc: loc('trait_befuddle'),
+        desc: loc('trait_environmentalist'),
         type: 'major',
     },
     unorganized: { // Increased time between revolutions
@@ -1201,7 +1201,7 @@ export const traits = {
         type: 'major',
     },
     slow_regen: { // Your soldiers wounds heal slower.
-        desc: loc('trait_revive'),
+        desc: loc('trait_slow_regen'),
         type: 'major',
     },
     forge: { // Smelters do not require fuel
@@ -1241,7 +1241,7 @@ export const traits = {
         type: 'major',
     },
     thalassophobia: { // Wharves are unavailable
-        desc: loc('trait_humpback'),
+        desc: loc('trait_thalassophobia'),
         type: 'major',
     },
     fiery: { // Major war bonus

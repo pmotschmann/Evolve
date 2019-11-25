@@ -5215,13 +5215,13 @@ function spyCaught(i){
     }
     switch (i){
         case 0:
-            messageQueue(loc('event_spy',[loc('civics_gov0',[races[global.race.species].name])]),'danger');
+            messageQueue(loc('event_spy',[govTitle(i)]),'danger');
             break;
         case 1:
-            messageQueue(loc('event_spy',[loc('civics_gov1')]),'danger');
+            messageQueue(loc('event_spy',[govTitle(i)]),'danger');
             break;
         case 2:
-            messageQueue(loc('event_spy',[loc('civics_gov2',[races[global.race.species].home])]),'danger');
+            messageQueue(loc('event_spy',[govTitle(i)]),'danger');
             break;
     }
 }
