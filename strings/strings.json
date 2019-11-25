@@ -1007,6 +1007,7 @@
   "tech_oil_depot_effect": "Design a facility specially made to increase your oil reserves.",
   "tech_oil_power": "Oil Powerplant",
   "tech_oil_power_effect": "Design a power facility that runs on oil.",
+  "tech_wind_power_effect": "Design an organized collection of machines that utilize the wind for energy.",
   "tech_titanium_drills": "Titanium Drills",
   "tech_titanium_drills_effect": "New oil drills made from titanium will increase oil production by an estimated 20%.",
   "tech_alloy_drills": "Alloy Drills",

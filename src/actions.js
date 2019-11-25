@@ -7687,14 +7687,20 @@ export const actions = {
         },
         oil_power: {
             id: 'tech-oil_power',
-            title: loc('tech_oil_power'),
-            desc: loc('tech_oil_power'),
+            title(){
+                return global.race['environmentalist'] ? loc('city_wind_power') : loc('tech_oil_power');
+            },
+            desc(){
+                return global.race['environmentalist'] ? loc('city_wind_power') : loc('tech_oil_power');
+            },
             reqs: { oil: 2 },
             grant: ['oil',3],
             cost: {
                 Knowledge(){ return 44000; }
             },
-            effect: loc('tech_oil_power_effect'),
+            effect(){
+                return global.race['environmentalist'] ? loc('tech_wind_power_effect') : loc('tech_oil_power_effect');
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['oil_power'] = { count: 0 };
@@ -10215,20 +10221,12 @@ export const actions = {
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
                     }
-                    if (global.civic.foreign.gov0.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
-                    if (global.civic.foreign.gov1.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
-                    if (global.civic.foreign.gov2.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
                     for (let i=0; i<3; i++){
-                        global.civic.foreign[`gov${i}`].occ = false;
+                        if (global.civic.foreign[`gov${i}`].occ){
+                            global.civic['garrison'].max += 20;
+                            global.civic['garrison'].workers += 20;
+                            global.civic.foreign[`gov${i}`].occ = false;
+                        }
                         global.civic.foreign[`gov${i}`].sab = 0;
                         global.civic.foreign[`gov${i}`].act = 'none';
                     }
@@ -10273,20 +10271,12 @@ export const actions = {
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
                     }
-                    if (global.civic.foreign.gov0.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
-                    if (global.civic.foreign.gov1.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
-                    if (global.civic.foreign.gov2.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
                     for (let i=0; i<3; i++){
-                        global.civic.foreign[`gov${i}`].occ = false;
+                        if (global.civic.foreign[`gov${i}`].occ){
+                            global.civic['garrison'].max += 20;
+                            global.civic['garrison'].workers += 20;
+                            global.civic.foreign[`gov${i}`].occ = false;
+                        }
                         global.civic.foreign[`gov${i}`].sab = 0;
                         global.civic.foreign[`gov${i}`].act = 'none';
                     }
@@ -10328,20 +10318,12 @@ export const actions = {
                     if (global.stats.attacks === 0){
                         unlockAchieve(`pacifist`);
                     }
-                    if (global.civic.foreign.gov0.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
-                    if (global.civic.foreign.gov1.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
-                    if (global.civic.foreign.gov2.occ){
-                        global.civic['garrison'].max += 20;
-                        global.civic['garrison'].workers += 20;
-                    }
                     for (let i=0; i<3; i++){
-                        global.civic.foreign[`gov${i}`].occ = false;
+                        if (global.civic.foreign[`gov${i}`].occ){
+                            global.civic['garrison'].max += 20;
+                            global.civic['garrison'].workers += 20;
+                            global.civic.foreign[`gov${i}`].occ = false;
+                        }
                         global.civic.foreign[`gov${i}`].sab = 0;
                         global.civic.foreign[`gov${i}`].act = 'none';
                     }
