@@ -10226,6 +10226,7 @@ export const actions = {
                         global.civic['garrison'].workers += 20;
                     }
                     for (let i=0; i<3; i++){
+                        global.civic.foreign[`gov${i}`].occ = false;
                         global.civic.foreign[`gov${i}`].sab = 0;
                         global.civic.foreign[`gov${i}`].act = 'none';
                     }
@@ -10281,6 +10282,7 @@ export const actions = {
                         global.civic['garrison'].workers += 20;
                     }
                     for (let i=0; i<3; i++){
+                        global.civic.foreign[`gov${i}`].occ = false;
                         global.civic.foreign[`gov${i}`].sab = 0;
                         global.civic.foreign[`gov${i}`].act = 'none';
                     }
@@ -10333,6 +10335,7 @@ export const actions = {
                         global.civic['garrison'].workers += 20;
                     }
                     for (let i=0; i<3; i++){
+                        global.civic.foreign[`gov${i}`].occ = false;
                         global.civic.foreign[`gov${i}`].sab = 0;
                         global.civic.foreign[`gov${i}`].act = 'none';
                     }
