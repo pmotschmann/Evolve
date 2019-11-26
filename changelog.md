@@ -1,3 +1,6 @@
+#### 0.7.3 - 11/25/2019 ####
+Night Theme trade volume control made more night theme freindly<br>
+
 #### 0.7.2 - 11/24/2019 ####
 New market buy/sell volume control<br>
 Large Trade upgrade now raises the buy/sell cap to 5,000<br>
