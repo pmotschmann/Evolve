@@ -11833,7 +11833,7 @@ function actionDesc(parent,c_action,obj,old){
     }
     if (c_action.flair){
         var flair = typeof c_action.flair === 'string' ? c_action.flair : c_action.flair();
-        parent.append($(`<div class="flair has-text-special">${flair}</div>`));
+        parent.append($(`<div class="flair has-text-flair">${flair}</div>`));
         parent.addClass('flair');
     }
     if (!old && !checkAffordable(c_action) && checkAffordable(c_action,true)){
