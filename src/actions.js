@@ -8875,7 +8875,7 @@ export const actions = {
             id: 'tech-disruptor_rifles',
             title: loc('tech_disruptor_rifles'),
             desc: loc('tech_disruptor_rifles'),
-            reqs: { military: 8, high_tech: 14, neutron: 1, infernite: 1 },
+            reqs: { military: 8, high_tech: 14, science: 15, infernite: 1 },
             grant: ['military',9],
             cost: {
                 Knowledge(){ return 1000000; },

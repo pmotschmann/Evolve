@@ -1,5 +1,7 @@
 #### 0.7.4 - 11/27/2019 ####
 Wendigo can now build hunting lodges<br>
+Elusive spies will no longer be killed when they fail a mission<br>
+Disruptor Rifles now require researching Quantum Entanglement<br>
 
 #### 0.7.3 - 11/26/2019 ####
 Night Theme trade volume control made more night theme friendly<br>
