@@ -2645,7 +2645,10 @@ export const actions = {
             title: loc('city_lodge'),
             desc: loc('city_lodge_desc'),
             category: 'residential',
-            reqs: { hunting: 2 },
+            reqs: { housing: 1, currency: 1 },
+            condition(){
+                return (global.race['soul_eater'] && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false; 
+            },
             cost: { 
                 Money(){ return costMultiplier('lodge', 50, 1.32); },
                 Lumber(){ return costMultiplier('lodge', 20, 1.36); },
@@ -4553,6 +4556,29 @@ export const actions = {
             desc: loc('tech_lodge'),
             reqs: { hunting: 1, housing: 1, currency: 1 },
             grant: ['hunting',2],
+            not_trait: ['soul_eater'],
+            cost: {
+                Knowledge(){ return 180; }
+            },
+            effect: loc('tech_lodge_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['lodge'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        soul_lodge: {
+            id: 'tech-soul_lodge',
+            title: loc('tech_lodge'),
+            desc: loc('tech_lodge'),
+            reqs: { housing: 1, currency: 1 },
+            trait: ['soul_eater'],
+            grant: ['s_lodge',1],
+            condition(){
+                return global.race.species === 'wendigo' ? true : false; 
+            },
             cost: {
                 Knowledge(){ return 180; }
             },
