@@ -1,5 +1,6 @@
 #### 0.7.4 - 11/27/2019 ####
 Wendigo can now build hunting lodges<br>
+Trade route prices are now tracked to 1 decimal<br>
 Elusive spies will no longer be killed when they fail a mission<br>
 Disruptor Rifles now require researching Quantum Entanglement<br>
 

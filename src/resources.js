@@ -784,7 +784,7 @@ export function tradeSellPrice(res){
     if (global.tech['railway']){
         price = price * (1 + (global.tech['railway'] * 0.02));
     }
-    price = Math.round(price);
+    price = +(price).toFixed(1);
     return price;
 }
 
@@ -803,7 +803,7 @@ export function tradeBuyPrice(res){
     if (global.tech['railway']){
         price = price * (0.98 ** global.tech['railway']);
     }
-    price = Math.round(price);
+    price = +(price).toFixed(1);
     return price;
 }
 
