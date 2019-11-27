@@ -229,6 +229,7 @@
   "event_protest9": "Protests have broken out after some officials were caught in a scandal.",
   "event_protest": "Protests",
   "event_spy": "A spy was caught and executed in the %0.",
+  "event_spy_fail": "A spy failed their mission in the %0.",
   "evo_rna": "Creates %0 RNA",
   "evo_dna_title": "Form DNA",
   "evo_dna_desc": "Creates a new strand of DNA",

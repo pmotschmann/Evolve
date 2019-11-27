@@ -5211,17 +5211,17 @@ function resourceAlt(){
 
 function spyCaught(i){
     if (global.civic.foreign[`gov${i}`].spy > 0){
-        global.civic.foreign[`gov${i}`].spy--;
+        global.civic.foreign[`gov${i}`].spy -= global.race['elusive'] ? 0 : 1;
     }
     switch (i){
         case 0:
-            messageQueue(loc('event_spy',[govTitle(i)]),'danger');
+            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger');
             break;
         case 1:
-            messageQueue(loc('event_spy',[govTitle(i)]),'danger');
+            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger');
             break;
         case 2:
-            messageQueue(loc('event_spy',[govTitle(i)]),'danger');
+            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger');
             break;
     }
 }

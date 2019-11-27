@@ -1,3 +1,6 @@
+#### 0.7.4 - 11/27/2019 ####
+Wendigo can now build hunting lodges<br>
+
 #### 0.7.3 - 11/26/2019 ####
 Night Theme trade volume control made more night theme friendly<br>
 Contrast improvements for Night and R/G Theme<br>
