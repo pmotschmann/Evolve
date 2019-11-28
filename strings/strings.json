@@ -75,6 +75,7 @@
   "c_cat": "City Categorization",
   "q_key": "Queue Key",
   "q_any": "No Queue Order",
+  "queue": "Queue",
   "expose": "Enable Script Support",
   "import": "Import Game",
   "export": "Export Game",

@@ -75,7 +75,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna, 'qany': item.qa }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -83,12 +83,23 @@ export function buildQueue(){
             data: global.queue,
             methods: {
                 remove(index){
-                    global.queue.queue.splice(index,1);
+                    if (global.queue.queue[index].q > 1){
+                        global.queue.queue[index].q--;
+                    }
+                    else {
+                        global.queue.queue.splice(index,1);
+                    }
                 }
             },
             filters: {
                 time(time){
                     return timeFormat(time);
+                },
+                count(q){
+                    return q > 1 ? ` (${q})`: '';
+                },
+                max_t(max,time){
+                    return time === max || time < 0 ? '' : ` / ${timeFormat(max)}`;
                 }
             }
         });

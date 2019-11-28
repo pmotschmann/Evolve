@@ -1,5 +1,6 @@
 import { global, poppers, keyMultiplier, sizeApproximation, messageQueue, srSpeak } from './vars.js';
 import { timeFormat, vBind } from './functions.js';
+import { dragQueue } from './civics.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { space } from './space.js';
@@ -24,7 +25,7 @@ export function arpa(type) {
     }
 }
 
-const arpaProjects = {
+export const arpaProjects = {
     lhc: {
         title: loc('arpa_projects_lhc_title'),
         desc: loc('arpa_projects_lhc_desc'),
@@ -45,13 +46,13 @@ const arpaProjects = {
             }
         },
         cost: {
-            Money: function(){ return costMultiplier('lhc', 2500000, 1.05); },
-            Knowledge: function(){ return costMultiplier('lhc', 500000, 1.05); },
-            Copper: function(){ return costMultiplier('lhc', 125000, 1.05); },
-            Cement: function(){ return costMultiplier('lhc', 250000, 1.05); },
-            Aluminium: function(){ return costMultiplier('lhc', 350000, 1.05); },
-            Titanium: function(){ return costMultiplier('lhc', 50000, 1.05); },
-            Polymer: function(){ return costMultiplier('lhc', 12000, 1.05); }
+            Money(offset){ return costMultiplier('lhc', offset, 2500000, 1.05); },
+            Knowledge(offset){ return costMultiplier('lhc', offset, 500000, 1.05); },
+            Copper(offset){ return costMultiplier('lhc', offset, 125000, 1.05); },
+            Cement(offset){ return costMultiplier('lhc', offset, 250000, 1.05); },
+            Aluminium(offset){ return costMultiplier('lhc', offset, 350000, 1.05); },
+            Titanium(offset){ return costMultiplier('lhc', offset, 50000, 1.05); },
+            Polymer(offset){ return costMultiplier('lhc', offset, 12000, 1.05); }
         }
     },
     stock_exchange: {
@@ -68,10 +69,10 @@ const arpaProjects = {
             }
         },
         cost: {
-            Money: function(){ return costMultiplier('stock_exchange', 3000000, 1.06); },
-            Plywood: function(){ return costMultiplier('stock_exchange', 25000, 1.06); },
-            Brick: function(){ return costMultiplier('stock_exchange', 20000, 1.06); },
-            Wrought_Iron: function(){ return costMultiplier('stock_exchange', 10000, 1.06); }
+            Money(offset){ return costMultiplier('stock_exchange', offset, 3000000, 1.06); },
+            Plywood(offset){ return costMultiplier('stock_exchange', offset, 25000, 1.06); },
+            Brick(offset){ return costMultiplier('stock_exchange', offset, 20000, 1.06); },
+            Wrought_Iron(offset){ return costMultiplier('stock_exchange', offset, 10000, 1.06); }
         }
     },
     launch_facility: {
@@ -84,12 +85,12 @@ const arpaProjects = {
             return loc('arpa_projects_launch_facility_effect1');
         },
         cost: {
-            Money: function(){ return costMultiplier('launch_facility', 2000000, 1.1); },
-            Knowledge: function(){ return costMultiplier('launch_facility', 500000, 1.1); },
-            Cement: function(){ return costMultiplier('launch_facility', 150000, 1.1); },
-            Oil: function(){ return costMultiplier('launch_facility', 20000, 1.1); },
-            Sheet_Metal: function(){ return costMultiplier('launch_facility', 15000, 1.1); },
-            Alloy: function(){ return costMultiplier('launch_facility', 25000, 1.1); }
+            Money(offset){ return costMultiplier('launch_facility', offset, 2000000, 1.1); },
+            Knowledge(offset){ return costMultiplier('launch_facility', offset, 500000, 1.1); },
+            Cement(offset){ return costMultiplier('launch_facility', offset, 150000, 1.1); },
+            Oil(offset){ return costMultiplier('launch_facility', offset, 20000, 1.1); },
+            Sheet_Metal(offset){ return costMultiplier('launch_facility', offset, 15000, 1.1); },
+            Alloy(offset){ return costMultiplier('launch_facility', offset, 25000, 1.1); }
         }
     },
     monument: {
@@ -112,10 +113,10 @@ const arpaProjects = {
             return loc('arpa_projects_monument_effect1');
         },
         cost: {
-            Stone: function(){ return monument_costs('Stone') },
-            Aluminium: function(){ return monument_costs('Aluminium') },
-            Cement: function(){ return monument_costs('Cement') },
-            Steel: function(){ return monument_costs('Steel') }
+            Stone(offset){ return monument_costs('Stone', offset) },
+            Aluminium(offset){ return monument_costs('Aluminium', offset) },
+            Cement(offset){ return monument_costs('Cement', offset) },
+            Steel(offset){ return monument_costs('Steel', offset) }
         }
     },
     railway: {
@@ -128,10 +129,10 @@ const arpaProjects = {
             return loc('arpa_projects_railway_effect1',[routes,2,6,1]);
         },
         cost: {
-            Money: function(){ return costMultiplier('railway', 2500000, 1.08); },
-            Lumber: function(){ return costMultiplier('railway', 750000, 1.08); },
-            Iron: function(){ return costMultiplier('railway', 300000, 1.08); },
-            Steel: function(){ return costMultiplier('railway', 450000, 1.08); }
+            Money(offset){ return costMultiplier('railway', offset, 2500000, 1.08); },
+            Lumber(offset){ return costMultiplier('railway', offset, 750000, 1.08); },
+            Iron(offset){ return costMultiplier('railway', offset, 300000, 1.08); },
+            Steel(offset){ return costMultiplier('railway', offset, 450000, 1.08); }
         }
     },
 };
@@ -694,16 +695,16 @@ function pick_monument(){
     }
 }
 
-function monument_costs(res){
+function monument_costs(res,offset){
     switch(global.arpa.m_type){
         case 'Obelisk':
-            return res === 'Stone' ? costMultiplier('monument', 1000000, 1.1) : 0;
+            return res === 'Stone' ? costMultiplier('monument', offset, 1000000, 1.1) : 0;
         case 'Statue':
-            return res === 'Aluminium' ? costMultiplier('monument', 350000, 1.1) : 0;
+            return res === 'Aluminium' ? costMultiplier('monument', offset, 350000, 1.1) : 0;
         case 'Sculpture':
-            return res === 'Steel' ? costMultiplier('monument', 300000, 1.1) : 0;
+            return res === 'Steel' ? costMultiplier('monument', offset, 300000, 1.1) : 0;
         case 'Monolith':
-            return res === 'Cement' ? costMultiplier('monument', 300000, 1.1) : 0;
+            return res === 'Cement' ? costMultiplier('monument', offset, 300000, 1.1) : 0;
     }
 }
 
@@ -757,10 +758,13 @@ function kindlingAdjust(costs){
     return costs;
 }
 
-function costMultiplier(project,base,mutiplier){
+function costMultiplier(project,offset,base,mutiplier){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
     if (global.race['creative']){
         mutiplier -= 0.01;
+    }
+    if (offset){
+        rank += offset;
     }
     return Math.round((mutiplier ** rank) * base);
 }
@@ -1143,6 +1147,7 @@ function addProject(parent,project){
         let buy = $('<div class="buy"></div>');
         current.append(buy);
 
+        buy.append($(`<button aria-label="${loc('queue')} ${project}" class="button" @click="queue('${project}')">${loc('queue')}</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('1','${project}')" class="button x1" @click="build('${project}',1)">1%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
@@ -1152,42 +1157,30 @@ function addProject(parent,project){
             el: `#arpa${project}`,
             data: global.arpa[project],
             methods: {
-                build(pro,num){
-                    let oNum = num;
-                    if (num === 100){
-                        num = 100 - global.arpa[project].complete;
-                    }
-                    for (let i=0; i<num; i++){
-                        if (payCosts(arpaProjects[pro].cost)){
-                            global.arpa[pro].complete++;
-                            if (global.arpa[pro].complete >= 100){
-                                global.arpa[pro].rank++;
-                                global.arpa[pro].complete = 0;
-                                global.tech[arpaProjects[pro].grant] = global.arpa[pro].rank;
-                                if (pro === 'monument'){
-                                    global.arpa['m_type'] = pick_monument();
-                                    $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
-                                }
-                                if (pro === 'launch_facility'){
-                                    global.settings.showSpace = true;
-                                    global.tech['space'] = 1;
-                                    $(`#popArpa${pro}`).hide();
-                                    if (poppers[`popArpa${pro}`]){
-                                        poppers[`popArpa${pro}`].destroy();
-                                    }
-                                    $(`#popArpa${pro}`).remove();
-                                    physics();
-                                    space();
-                                    messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
-                                }
-                                drawTech();
+                queue(pro){
+                    if (global.tech['queue']){
+                        let arpaId = `arpa${pro}`;
+                        let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
+                        if (global.genes['queue'] && global.genes['queue'] >= 2){
+                            max_queue += 2;
+                        }
+                        let used = 0;
+                        for (var j=0; j<global.queue.queue.length; j++){
+                            used += global.queue.queue[j].q;
+                        }
+                        if (used < max_queue){
+                            if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
+                                global.queue.queue[global.queue.queue.length-1].q++;
                             }
+                            else {
+                                global.queue.queue.push({ id: arpaId, action: pro, type: 'arpa', label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, t_max: 0 });
+                            }
+                            dragQueue();
                         }
                     }
-                    if ($(`#popArpa${pro}`).length > 0){
-                        $(`#popArpa${pro}`).empty();
-                        $(`#popArpa${pro}`).append(arpaProjectCosts(oNum,pro));
-                    }
+                },
+                build(pro,num){
+                    buildArpa(pro,num,true);
                 },
                 srDesc(){
                     return srSpeak(arpaProjects[project].desc);
@@ -1266,6 +1259,47 @@ function addProject(parent,project){
             });
         }
     }
+}
+
+export function buildArpa(pro,num,update){
+    let oNum = num;
+    let completed = false;
+    if (num === 100){
+        num = 100 - global.arpa[pro].complete;
+    }
+    for (let i=0; i<num; i++){
+        if (payCosts(arpaProjects[pro].cost)){
+            global.arpa[pro].complete++;
+            if (global.arpa[pro].complete >= 100){
+                global.arpa[pro].rank++;
+                global.arpa[pro].complete = 0;
+                global.tech[arpaProjects[pro].grant] = global.arpa[pro].rank;
+                completed = true;
+                if (pro === 'monument'){
+                    global.arpa['m_type'] = pick_monument();
+                    $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
+                }
+                if (pro === 'launch_facility'){
+                    global.settings.showSpace = true;
+                    global.tech['space'] = 1;
+                    $(`#popArpa${pro}`).hide();
+                    if (poppers[`popArpa${pro}`]){
+                        poppers[`popArpa${pro}`].destroy();
+                    }
+                    $(`#popArpa${pro}`).remove();
+                    physics();
+                    space();
+                    messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
+                }
+                drawTech();
+            }
+        }
+    }
+    if (update && $(`#popArpa${pro}`).length > 0){
+        $(`#popArpa${pro}`).empty();
+        $(`#popArpa${pro}`).append(arpaProjectCosts(oNum,pro));
+    }
+    return completed;
 }
 
 function arpaProjectCosts(id,project){

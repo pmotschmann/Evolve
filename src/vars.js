@@ -354,7 +354,14 @@ if (convertVersion(global['version']) < 7000){
     }
 }
 
-global['version'] = '0.7.4';
+if (convertVersion(global['version']) < 7004 && global['queue'] && global['queue']['queue']){
+    for (let i=0; i<global.queue.queue.length; i++){
+        global.queue.queue[i]['q'] = 1;
+        global.queue.queue[i]['t_max'] = global.queue.queue[i]['time'];
+    }
+}
+
+global['version'] = '0.7.5';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){

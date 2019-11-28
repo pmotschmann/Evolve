@@ -10,7 +10,7 @@ import { defineGovernment, defineIndustry, defineGarrison, garrisonSize, armyRat
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
-import { arpa } from './arpa.js';
+import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
 
@@ -4318,26 +4318,50 @@ function midLoop(){
             let stop = false;
             let deepScan = ['space','interstellar','portal'];
             let time = 0;
-            let spent = { t: 0, r: {}};
+            let spent = { t: 0, r: {}, id: {}};
+            let arpa = false;
             for (let i=0; i<global.queue.queue.length; i++){
                 let struct = global.queue.queue[i];
                 time = global.settings.qAny ? 0 : time;
 
                 let t_action = false;
-                if (deepScan.includes(struct.action)){
-                    let scan = true;
-                    Object.keys(actions[struct.action]).forEach(function (region){
-                        if (actions[struct.action][region][struct.type] && scan){
-                            t_action = actions[struct.action][region][struct.type];
-                            scan = false;
-                        }
-                    });
+                if (struct.type === 'arpa'){
+                    t_action = arpaProjects[struct.action];
                 }
                 else {
-                    t_action = actions[struct.action][struct.type];
+                    if (deepScan.includes(struct.action)){
+                        let scan = true;
+                        Object.keys(actions[struct.action]).forEach(function (region){
+                            if (actions[struct.action][region][struct.type] && scan){
+                                t_action = actions[struct.action][region][struct.type];
+                                scan = false;
+                            }
+                        });
+                    }
+                    else {
+                        t_action = actions[struct.action][struct.type];
+                    }
                 }
 
-                if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
+                if (struct.type === 'arpa'){
+                    if (!stop){
+                        c_action = t_action;
+                        idx = i;
+                        arpa = true;
+                    }
+                    stop = global.settings.qAny ? false : true;
+                    let base_time = global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                    let remain = (100 - global.arpa[global.queue.queue[i].action].complete) / 100;
+                    time += base_time * remain;
+                    global.queue.queue[i]['time'] = time;
+                    if (global.queue.queue[i].q > 1){
+                        for (let j=1; j<global.queue.queue[i].q; j++){
+                            time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                        }
+                    }
+                    global.queue.queue[i]['t_max'] = time;
+                }
+                else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.queue.queue.splice(i,1);
                     break;
                 }
@@ -4347,12 +4371,19 @@ function midLoop(){
                         if (checkAffordable(t_action) && !stop){
                             c_action = t_action;
                             idx = i;
+                            arpa = false;
                         }
                         else {
                             time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
                         }
                         global.queue.queue[i]['time'] = time;
                         stop = global.settings.qAny ? false : true;
+                        if (global.queue.queue[i].q > 1){
+                            for (let j=1; j<global.queue.queue[i].q; j++){
+                                time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                            }
+                        }
+                        global.queue.queue[i]['t_max'] = time;
                     }
                     else {
                         global.queue.queue[i].cna = true;
@@ -4362,9 +4393,25 @@ function midLoop(){
                 global.queue.queue[i].qa = global.settings.qAny ? true : false;
             }
             if (idx >= 0 && c_action){
-                if (c_action.action()){
+                if (arpa){
+                    if (buildArpa(global.queue.queue[idx].action,100)){
+                        messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                        if (global.queue.queue[idx].q > 1){
+                            global.queue.queue[idx].q--;
+                        }
+                        else {
+                            global.queue.queue.splice(idx,1);
+                        }
+                    }
+                }
+                else if (c_action.action()){
                     messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
-                    global.queue.queue.splice(idx,1);
+                    if (global.queue.queue[idx].q > 1){
+                        global.queue.queue[idx].q--;
+                    }
+                    else {
+                        global.queue.queue.splice(idx,1);
+                    }
                     if (c_action['grant']){
                         let tech = c_action.grant[0];
                         global.tech[tech] = c_action.grant[1];
@@ -4398,7 +4445,7 @@ function midLoop(){
             let c_action = false;
             let stop = false;
             let time = 0;
-            let spent = { t: 0, r: {}};
+            let spent = { t: 0, r: {}, id: {}};
             for (let i=0; i<global.r_queue.queue.length; i++){
                 let struct = global.r_queue.queue[i];
                 let t_action = actions[struct.action][struct.type];
