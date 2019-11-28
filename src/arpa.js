@@ -972,7 +972,7 @@ function genetics(){
             Object.keys(races).forEach(function (race){
                 if (races[race].type === races[global.race.species].type){
                     Object.keys(races[race].traits).forEach(function (trait){
-                        if (!global.race[trait]){
+                        if (!global.race[trait] && trait !== 'soul_eater'){
                             trait_list.push(trait);
                         }
                     });
