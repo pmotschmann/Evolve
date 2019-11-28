@@ -4318,7 +4318,7 @@ function midLoop(){
             let stop = false;
             let deepScan = ['space','interstellar','portal'];
             let time = 0;
-            let spent = { t: 0, r: {}};
+            let spent = { t: 0, r: {}, id: {}};
             for (let i=0; i<global.queue.queue.length; i++){
                 let struct = global.queue.queue[i];
                 time = global.settings.qAny ? 0 : time;
@@ -4410,7 +4410,7 @@ function midLoop(){
             let c_action = false;
             let stop = false;
             let time = 0;
-            let spent = { t: 0, r: {}};
+            let spent = { t: 0, r: {}, id: {}};
             for (let i=0; i<global.r_queue.queue.length; i++){
                 let struct = global.r_queue.queue[i];
                 let t_action = actions[struct.action][struct.type];
