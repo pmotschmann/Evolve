@@ -11488,8 +11488,17 @@ export function setAction(c_action,action,type,old){
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){
                                                 max_queue += 2;
                                             }
-                                            if (global.queue.queue.length < max_queue){
-                                                global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
+                                            let used = 0;
+                                            for (var j=0; j<global.queue.queue.length; j++){
+                                                used += global.queue.queue[j].q;
+                                            }
+                                            if (used < max_queue){
+                                                if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
+                                                    global.queue.queue[global.queue.queue.length-1].q++;
+                                                }
+                                                else {
+                                                    global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: 1, t_max: 0 });
+                                                }
                                                 dragQueue();
                                             }
                                         }
@@ -12487,7 +12496,7 @@ export function resQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'has-text-danger': item.cna, 'qany': item.qa }" @click="remove(index)">{{ item.label }} [{{ item.time | time }}]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}</span>]</a></li>`));
     
     try {
         vBind({

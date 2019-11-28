@@ -4353,6 +4353,12 @@ function midLoop(){
                         }
                         global.queue.queue[i]['time'] = time;
                         stop = global.settings.qAny ? false : true;
+                        if (global.queue.queue[i].q > 1){
+                            for (let j=1; j<global.queue.queue[i].q; j++){
+                                time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                            }
+                        }
+                        global.queue.queue[i]['t_max'] = time;
                     }
                     else {
                         global.queue.queue[i].cna = true;
@@ -4365,6 +4371,12 @@ function midLoop(){
                 if (c_action.action()){
                     messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
                     global.queue.queue.splice(idx,1);
+                    if (global.queue.queue[idx].q > 1){
+                        global.queue.queue[idx].q--;
+                    }
+                    else {
+                        global.queue.queue.splice(idx,1);
+                    }
                     if (c_action['grant']){
                         let tech = c_action.grant[0];
                         global.tech[tech] = c_action.grant[1];
