@@ -876,7 +876,6 @@ function newGameData(){
 }
 
 export function messageQueue(msg,color){
-    console.log(msg);
     color = color || 'warning';
     var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
     $('#msgQueue').prepend(new_message);
