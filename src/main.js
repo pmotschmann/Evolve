@@ -5275,13 +5275,13 @@ function spyCaught(i){
 
 function enableScript(){
     window.evolve = {
-        actions: JSON.parse(JSON.stringify(actions)),
-        races: JSON.parse(JSON.stringify(races)),
+        actions: _.cloneDeep(actions),
+        races: _.cloneDeep(races),
         tradeRatio: JSON.parse(JSON.stringify(tradeRatio)),
         craftCost: JSON.parse(JSON.stringify(craftCost())),
         atomic_mass: JSON.parse(JSON.stringify(atomic_mass)),
+        checkTechRequirements: Object.assign(checkTechRequirements),
         global: {},
         breakdown: {},
-        checkTechRequirements: checkTechRequirements,
     };
 }
