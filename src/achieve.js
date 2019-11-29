@@ -1,5 +1,5 @@
-import { global, messageQueue, set_alevel, poppers } from './vars.js';
-import { svgIcons, svgViewBox, format_emblem, vBind } from './functions.js'; 
+import { global, set_alevel, poppers } from './vars.js';
+import { svgIcons, svgViewBox, format_emblem, vBind, messageQueue } from './functions.js'; 
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){

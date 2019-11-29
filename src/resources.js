@@ -1,5 +1,5 @@
-import { global, keyMultiplier, modRes, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind } from './functions.js';
+import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
+import { vBind, modRes } from './functions.js';
 import { races } from './races.js';
 import { loc } from './locale.js';
 

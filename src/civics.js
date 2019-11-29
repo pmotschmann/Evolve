@@ -1,6 +1,6 @@
-import { global, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
+import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { challenge_multiplier, timeFormat, vBind, genCivName } from './functions.js';
+import { challenge_multiplier, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loadIndustry } from './industry.js';
