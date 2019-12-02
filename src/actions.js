@@ -6,7 +6,7 @@ import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTra
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
-import { defineIndustry, defineGarrison, buildGarrison, armyRating, dragQueue } from './civics.js';
+import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating, dragQueue } from './civics.js';
 import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
@@ -8610,6 +8610,13 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.civic['garrison'].display = true;
                     global.city['garrison'] = { count: 0 };
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    $('#garrison').empty();
+                    $('#c_garrison').empty();
+                    buildGarrison($('#garrison'),true);
+                    buildGarrison($('#c_garrison'),false);
+                    foreignGov();
                     return true;
                 }
                 return false;

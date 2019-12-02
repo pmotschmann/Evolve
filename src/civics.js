@@ -28,10 +28,8 @@ export function defineGovernment(){
 
     var civ_garrison = $('<div id="c_garrison" v-show="g.display" class="garrison tile is-child"></div>');
     $('#r_civics').append(civ_garrison);
-    buildGarrison(civ_garrison,false);
-
-    foreign();
 }
+
 
 export function defineIndustry(){
     $(`#industry`).empty();
@@ -294,7 +292,7 @@ function drawGovModal(){
     });
 }
 
-function foreign(){
+export function foreignGov(){
     let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
     foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
     $('#r_civics').append(foreign);

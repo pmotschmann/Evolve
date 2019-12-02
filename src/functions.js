@@ -169,7 +169,7 @@ export function genCivName(){
             break;
         case 'avian':
         case 'reptilian':
-            genus = 'Eggshell';
+            genus = 'eggshell';
             break;
         case 'fungi':
             genus = 'chitin';

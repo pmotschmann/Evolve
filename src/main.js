@@ -6,7 +6,7 @@ import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './ra
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
-import { defineGovernment, defineIndustry, defineGarrison, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
+import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
@@ -65,6 +65,8 @@ $('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent civi
 defineGovernment();
 if (global.race.species !== 'protoplasm'){
     defineGarrison();
+    buildGarrison($('#c_garrison'),false);
+    foreignGov();
 }
 defineIndustry();
 
