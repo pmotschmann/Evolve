@@ -4448,7 +4448,7 @@ function midLoop(){
             let last = false;
             for (let i=0; i<global.queue.queue.length; i++){
                 if (last === global.queue.queue[i].id){
-                    global.queue.queue[i-1].q++;
+                    global.queue.queue[i-1].q += global.queue.queue[i].q;
                     global.queue.queue.splice(i,1);
                     break;
                 }
