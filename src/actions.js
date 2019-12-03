@@ -5905,7 +5905,9 @@ export const actions = {
             cost: {
                 Knowledge(){ return 28000; }
             },
-            effect: loc('tech_zoning_permits_effect'),
+            effect(){
+                return loc('tech_zoning_permits_effect',[global.genes['queue'] && global.genes['queue'] >= 2 ? 4 : 2]);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5922,7 +5924,9 @@ export const actions = {
             cost: {
                 Knowledge(){ return 95000; }
             },
-            effect: loc('tech_urbanization_effect'),
+            effect(){
+                return loc('tech_urbanization_effect',[global.genes['queue'] && global.genes['queue'] >= 2 ? 6 : 3]);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -11432,7 +11436,7 @@ export function setAction(c_action,action,type,old){
                                 if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
                                     let max_queue = 3;
                                     if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                        max_queue += 2;
+                                        max_queue *= 2;
                                     }
                                     if (global.r_queue.queue.length < max_queue){
                                         let queued = false;
@@ -11493,7 +11497,7 @@ export function setAction(c_action,action,type,old){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                                max_queue += 2;
+                                                max_queue *= 2;
                                             }
                                             let used = 0;
                                             for (var j=0; j<global.queue.queue.length; j++){

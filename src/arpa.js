@@ -1162,7 +1162,7 @@ function addProject(parent,project){
                         let arpaId = `arpa${pro}`;
                         let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                         if (global.genes['queue'] && global.genes['queue'] >= 2){
-                            max_queue += 2;
+                            max_queue *= 2;
                         }
                         let used = 0;
                         for (var j=0; j<global.queue.queue.length; j++){
