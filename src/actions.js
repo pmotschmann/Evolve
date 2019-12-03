@@ -1,12 +1,12 @@
-import { global, save, poppers, messageQueue, keyMultiplier, clearStates, keyMap, srSpeak, modRes, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
+import { global, save, poppers, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
-import { defineIndustry, defineGarrison, buildGarrison, armyRating, dragQueue } from './civics.js';
+import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating, dragQueue } from './civics.js';
 import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
@@ -5905,7 +5905,9 @@ export const actions = {
             cost: {
                 Knowledge(){ return 28000; }
             },
-            effect: loc('tech_zoning_permits_effect'),
+            effect(){
+                return loc('tech_zoning_permits_effect',[global.genes['queue'] && global.genes['queue'] >= 2 ? 4 : 2]);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5922,7 +5924,9 @@ export const actions = {
             cost: {
                 Knowledge(){ return 95000; }
             },
-            effect: loc('tech_urbanization_effect'),
+            effect(){
+                return loc('tech_urbanization_effect',[global.genes['queue'] && global.genes['queue'] >= 2 ? 6 : 3]);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -8610,6 +8614,13 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.civic['garrison'].display = true;
                     global.city['garrison'] = { count: 0 };
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    $('#garrison').empty();
+                    $('#c_garrison').empty();
+                    buildGarrison($('#garrison'),true);
+                    buildGarrison($('#c_garrison'),false);
+                    foreignGov();
                     return true;
                 }
                 return false;
@@ -11425,7 +11436,7 @@ export function setAction(c_action,action,type,old){
                                 if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
                                     let max_queue = 3;
                                     if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                        max_queue += 2;
+                                        max_queue *= 2;
                                     }
                                     if (global.r_queue.queue.length < max_queue){
                                         let queued = false;
@@ -11486,7 +11497,7 @@ export function setAction(c_action,action,type,old){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                                max_queue += 2;
+                                                max_queue *= 2;
                                             }
                                             let used = 0;
                                             for (var j=0; j<global.queue.queue.length; j++){

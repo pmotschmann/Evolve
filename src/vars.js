@@ -361,7 +361,7 @@ if (convertVersion(global['version']) < 7004 && global['queue'] && global['queue
     }
 }
 
-global['version'] = '0.7.5';
+global['version'] = '0.7.6';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -873,33 +873,6 @@ function newGameData(){
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
     global['new'] = true;
-}
-
-export function messageQueue(msg,color){
-    color = color || 'warning';
-    var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
-    $('#msgQueue').prepend(new_message);
-    global.lastMsg = { m: msg, c: color };
-    if ($('#msgQueue').children().length > 30){
-        $('#msgQueue').children().last().remove();
-    }
-}
-
-export function modRes(res,val){
-    let count = global.resource[res].amount + val;
-    let success = true;
-    if (count > global.resource[res].max && global.resource[res].max != -1){
-        count = global.resource[res].max;
-    }
-    else if (count < 0){
-        count = 0;
-        success = false;
-    }
-    if (!Number.isNaN(count)){
-        global.resource[res].amount = count;
-        global.resource[res].delta += val;
-    }
-    return success;
 }
 
 export var keyMap = {

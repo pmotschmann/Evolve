@@ -1,3 +1,8 @@
+#### 0.7.6 - 12/2/2019 ####
+Adjacent queue items of the same type will now combine<br>
+Architect now doubles queue sizes instead of adding a flat +2<br>
+Misc minor bug fixes<br>
+
 #### 0.7.5 - 11/28/2019 ####
 Queueing 2x or more of the same building in a row will now stack them in the queue<br>
 Queue timer now adjusts for cost creep<br>

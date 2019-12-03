@@ -1,5 +1,5 @@
-import { global, poppers, keyMultiplier, sizeApproximation, messageQueue, srSpeak } from './vars.js';
-import { timeFormat, vBind } from './functions.js';
+import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { timeFormat, vBind, messageQueue } from './functions.js';
 import { dragQueue } from './civics.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
@@ -1162,7 +1162,7 @@ function addProject(parent,project){
                         let arpaId = `arpa${pro}`;
                         let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                         if (global.genes['queue'] && global.genes['queue'] >= 2){
-                            max_queue += 2;
+                            max_queue *= 2;
                         }
                         let used = 0;
                         for (var j=0; j<global.queue.queue.length; j++){

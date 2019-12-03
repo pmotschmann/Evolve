@@ -1,5 +1,5 @@
-import { global, poppers, messageQueue, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
-import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind } from './functions.js';
+import { global, poppers, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
+import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
