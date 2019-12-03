@@ -4444,6 +4444,16 @@ function midLoop(){
                     }
                 }
             }
+
+            let last = false;
+            for (let i=0; i<global.queue.queue.length; i++){
+                if (last === global.queue.queue[i].id){
+                    global.queue.queue[i-1].q++;
+                    global.queue.queue.splice(i,1);
+                    break;
+                }
+                last = global.queue.queue[i].id;
+            }
         }
 
         if (global.tech['r_queue'] && global.r_queue.display){
