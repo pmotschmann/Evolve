@@ -361,7 +361,7 @@ if (convertVersion(global['version']) < 7004 && global['queue'] && global['queue
     }
 }
 
-global['version'] = '0.7.6';
+global['version'] = '0.7.7';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -689,6 +689,11 @@ if (typeof global.civic.foreign.gov2['name'] !== "undefined" && global.civic.for
 
 if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
+}
+
+const date = new Date();
+if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
+    global.race['slaver'] = 1;
 }
 
 $('html').addClass(global.settings.theme);

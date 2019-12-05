@@ -4529,6 +4529,8 @@ function midLoop(){
             }
         });
     });
+
+    
 }
 
 let sythMap = {
@@ -4538,6 +4540,7 @@ let sythMap = {
 };
 
 function longLoop(){
+    const date = new Date();
     if (global.race.species !== 'protoplasm'){
         
         if (global.portal['fortress']){
@@ -5030,6 +5033,14 @@ function longLoop(){
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] === 7){
             buildGene();
         }
+    }
+
+    if (date.getMonth() === 11 && date.getDate() >= 17 && date.getDate() <= 24){
+        global['special'] = { gift: true };
+        global.tech['santa'] = 1;
+    }
+    else {
+        delete global.tech['santa'];
     }
 
     // Save game state

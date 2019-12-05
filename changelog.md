@@ -1,3 +1,5 @@
+#### 0.7.7 - 12/5/2019 ####
+
 #### 0.7.6 - 12/2/2019 ####
 Adjacent queue items of the same type will now combine<br>
 Architect now doubles queue sizes instead of adding a flat +2<br>

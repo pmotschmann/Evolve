@@ -609,6 +609,11 @@ const feats = {
         desc: loc("feat_gobble_gobble_desc"),
         flair: loc("feat_gobble_gobble_flair")
     },
+    xmas: {
+        name: loc("feat_xmas_name"),
+        desc: loc("feat_xmas_desc"),
+        flair: loc("feat_xmas_flair")
+    },
     heavy_genus_humanoid: {
         name: loc("feat_heavy_genus_humanoid_name"),
         desc: loc("feat_heavy_genus_humanoid_desc"),
@@ -959,6 +964,14 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('thanksgiving');
+        }
+    }
+    else if (date.getMonth() === 11 && date.getDate() == 25){
+        if (global.race.universe === 'micro'){
+            unlockFeat('xmas',true);
+        }
+        else {
+            unlockFeat('xmas');
         }
     }
 }

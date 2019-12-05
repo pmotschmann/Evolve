@@ -31,20 +31,20 @@ export const races = {
     },
     elven: {
         name: loc('race_elven'),
-        desc: loc('race_elven_desc'),
+        desc: loc(date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_desc' : 'race_elven_desc'),
         type: 'humanoid',
-        home: loc('race_elven_home'),
+        home: loc(date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_home' : 'race_elven_home'),
         entity: loc('race_elven_entity'),
         traits: { 
             studious: 1,
             arrogant: 1
         },
         solar: {
-            red: loc('race_elven_solar_red'),
-            hell: loc('race_elven_solar_hell'),
-            gas: loc('race_elven_solar_gas'),
-            gas_moon: loc('race_elven_solar_gas_moon'),
-            dwarf: loc('race_elven_solar_dwarf'),
+            red: loc(date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_red' : 'race_elven_solar_red'),
+            hell: loc(date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_hell' : 'race_elven_solar_hell'),
+            gas: loc(date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_gas' : 'race_elven_solar_gas'),
+            gas_moon: loc(date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_gas_moon' : 'race_elven_solar_gas_moon'),
+            dwarf: loc(date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_dwarf' : 'race_elven_solar_dwarf'),
         }
     },
     orc: {

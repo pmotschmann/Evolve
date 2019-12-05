@@ -2319,6 +2319,42 @@ export const actions = {
         },
     },
     city: {
+        gift: {
+            id: 'city-gift',
+            title: loc('city_gift'),
+            desc: loc('city_gift_desc'),
+            category: 'outskirts',
+            reqs: { primitive: 1 },
+            no_queue(){ return true },
+            not_tech: ['santa'],
+            condition(){
+                const date = new Date();
+                if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
+                    return global['special'] && global.special['gift'] ? true : false;
+                }
+                return false;
+            },
+            action(){
+                const date = new Date();
+                if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
+                    if (global['special'] && global.special['gift']){
+                        delete global.special['gift'];
+                        if (global.race.universe === 'antimatter'){
+                            global.race.Plasmid.anti += 100;
+                            global.stats.antiplasmid += 100;
+                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'success');
+                        }
+                        else {
+                            global.race.Plasmid.count += 100;
+                            global.stats.plasmid += 100;
+                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'success');
+                        }
+                        drawCity();
+                    }
+                }
+                return false;
+            }
+        },
         food: {
             id: 'city-food',
             title(){
@@ -2375,7 +2411,7 @@ export const actions = {
             not_trait: ['evil'],
             no_queue(){ return true },
             action(){
-                if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
+                if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',global.race['strong'] ? 2 : 1);
                 }
                 return false;
@@ -2389,7 +2425,7 @@ export const actions = {
             reqs: { primitive: 2 },
             no_queue(){ return true },
             action(){
-                if(global['resource']['Stone'].amount < global['resource']['Stone'].max){
+                if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     modRes('Stone',global.race['strong'] ? 2 : 1);
                 }
                 return false;
@@ -2412,10 +2448,10 @@ export const actions = {
             not_trait: ['kindling_kindred'],
             no_queue(){ return true },
             action(){
-                if(global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
+                if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',1);
                 }
-                if(global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
+                if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
                     modRes('Food',1);
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
@@ -12189,6 +12225,11 @@ function sentience(){
     Object.keys(races[global.race.species].traits).forEach(function (trait) {
         global.race[trait] = races[global.race.species].traits[trait];
     });
+
+    const date = new Date();
+    if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
+        global.race['slaver'] = 1;
+    }
 
     if (global.race['no_crispr']){
         let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','fraile','atrophy','invertebrate','pathetic'];
