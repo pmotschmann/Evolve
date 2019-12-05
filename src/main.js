@@ -4411,7 +4411,14 @@ function midLoop(){
                     }
                 }
                 else if (c_action.action()){
-                    messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                    if (c_action['queue_complete']){
+                        if (c_action.queue_complete()){
+                            messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                        }
+                    }
+                    else {
+                        messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                    }
                     if (global.queue.queue[idx].q > 1){
                         global.queue.queue[idx].q--;
                     }
@@ -4529,8 +4536,6 @@ function midLoop(){
             }
         });
     });
-
-    
 }
 
 let sythMap = {

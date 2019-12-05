@@ -11031,6 +11031,8 @@ export const actions = {
             },
             reqs: { genesis: 5 },
             no_queue(){ return global.starDock.seeder.count < 100 ? false : true },
+            queue_size: 10,
+            queue_complete(){ return global.starDock.seeder.count >= 100 ? true : false; },
             cost: {
                 Money(){ return global.starDock.seeder.count < 100 ? 100000 : 0; },
                 Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
@@ -11537,14 +11539,15 @@ export function setAction(c_action,action,type,old){
                                             }
                                             let used = 0;
                                             for (var j=0; j<global.queue.queue.length; j++){
-                                                used += global.queue.queue[j].q;
+                                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
                                             }
                                             if (used < max_queue){
+                                                let q_size = c_action['queue_size'] ? c_action['queue_size'] : 1;
                                                 if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
-                                                    global.queue.queue[global.queue.queue.length-1].q++;
+                                                    global.queue.queue[global.queue.queue.length-1].q += q_size;
                                                 }
                                                 else {
-                                                    global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: 1, t_max: 0 });
+                                                    global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size, qs: q_size, t_max: 0 });
                                                 }
                                                 dragQueue();
                                             }

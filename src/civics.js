@@ -82,7 +82,10 @@ export function buildQueue(){
             methods: {
                 remove(index){
                     if (global.queue.queue[index].q > 1){
-                        global.queue.queue[index].q--;
+                        global.queue.queue[index].q -= global.queue.queue[index].qs;
+                        if (global.queue.queue[index].q <= 0){
+                            global.queue.queue.splice(index,1);
+                        }
                     }
                     else {
                         global.queue.queue.splice(index,1);

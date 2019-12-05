@@ -922,7 +922,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('swarm_control');
-                    global.space['swarm_control'].s_max += global.tech['swarm'] && global.tech['swarm'] >= 2 ? 6 : 4;
+                    global.space['swarm_control'].s_max += global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10;
                     return true;
                 }
                 return false;
@@ -1496,6 +1496,8 @@ const spaceProjects = {
             },
             reqs: { science: 10 },
             no_queue(){ return global.space.world_collider.count < 1859 ? false : true },
+            queue_size: 100,
+            queue_complete(){ return global.space.world_collider.count >= 1859 ? true : false; },
             cost: {
                 Money(){ return global.space.world_collider.count < 1859 ? 25000 : 0; },
                 Copper(){ return global.space.world_collider.count < 1859 ? 750 : 0; },
@@ -2092,6 +2094,8 @@ const interstellarProjects = {
             },
             reqs: { proxima: 3 },
             no_queue(){ return global.interstellar.dyson.count ? false : true },
+            queue_size: 10,
+            queue_complete(){ return global.interstellar.dyson.count >= 100 ? true : false; },
             cost: {
                 Money(){ return global.interstellar.dyson.count < 100 ? 250000 : 0; },
                 Adamantite(){ return global.interstellar.dyson.count < 100 ? 10000 : 0; },
@@ -2459,6 +2463,8 @@ const interstellarProjects = {
             },
             reqs: { blackhole: 3 },
             no_queue(){ return global.interstellar.stellar_engine.count < 100 ? false : true },
+            queue_size: 10,
+            queue_complete(){ return global.interstellar.stellar_engine.count >= 100 ? true : false; },
             cost: {
                 Money(){ return global.interstellar.stellar_engine.count < 100 ? 500000 : 0; },
                 Neutronium(){ return global.interstellar.stellar_engine.count < 100 ? 450 : 0; },

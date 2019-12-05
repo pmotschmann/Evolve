@@ -361,6 +361,12 @@ if (convertVersion(global['version']) < 7004 && global['queue'] && global['queue
     }
 }
 
+if (convertVersion(global['version']) < 7007 && global['queue'] && global['queue']['queue']){
+    for (let i=0; i<global.queue.queue.length; i++){
+        global.queue.queue[i]['qs'] = 1;
+    }
+}
+
 global['version'] = '0.7.7';
 delete global['beta'];
 
