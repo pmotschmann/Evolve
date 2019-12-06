@@ -594,6 +594,31 @@ const feats = {
         desc: loc("feat_rocky_road_desc"),
         flair: loc("feat_rocky_road_flair")
     },
+    novice: {
+        name: loc("feat_novice_name"),
+        desc: loc("feat_achievement_hunter_desc",[10]),
+        flair: loc("feat_novice_flair")
+    },
+    journeyman: {
+        name: loc("feat_journeyman_name"),
+        desc: loc("feat_achievement_hunter_desc",[25]),
+        flair: loc("feat_journeyman_flair")
+    },
+    adept: {
+        name: loc("feat_adept_name"),
+        desc: loc("feat_achievement_hunter_desc",[50]),
+        flair: loc("feat_adept_flair")
+    },
+    master: {
+        name: loc("feat_master_name"),
+        desc: loc("feat_achievement_hunter_desc",[75]),
+        flair: loc("feat_master_flair")
+    },
+    grandmaster: {
+        name: loc("feat_grandmaster_name"),
+        desc: loc("feat_achievement_hunter_desc",[100]),
+        flair: loc("feat_grandmaster_flair")
+    },
     nephilim: {
         name: loc("feat_nephilim_name"),
         desc: loc("feat_nephilim_desc"),
@@ -867,7 +892,7 @@ export function checkAchievements(){
         for (const key of keys) {
             if (key.includes('extinct_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -881,7 +906,7 @@ export function checkAchievements(){
         for (const key of keys) {
             if (key.includes('extinct_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -895,7 +920,7 @@ export function checkAchievements(){
         for (const key of keys){
             if (key.includes('genus_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -909,7 +934,7 @@ export function checkAchievements(){
         for (const key of keys){
             if (key.includes('biome_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -923,7 +948,7 @@ export function checkAchievements(){
         for (const key of keys) {
             if (key.includes('heavy_genus_')){
                 if (global.stats.feat[key] && global.stats.feat[key] >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -972,6 +997,34 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('xmas');
+        }
+    }
+
+    // total achievements feat
+    {
+        let total = 0;
+        const keys = Object.keys(achievements)
+        for (const key of keys) {
+            if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
+                total++;
+            }
+        }
+        let progress = [
+            {c: 10, f: 'novice'},
+            {c: 25, f: 'journeyman'},
+            {c: 50, f: 'adept'},
+            {c: 75, f: 'master'},
+            {c: 100, f: 'grandmaster'}
+        ];
+        for (let i=0; i<5; i++){
+            if (total >= progress[i].c){
+                if (global.race.universe === 'micro'){
+                    unlockFeat(progress[i].f,true);
+                }
+                else {
+                    unlockFeat(progress[i].f);
+                }
+            }
         }
     }
 }

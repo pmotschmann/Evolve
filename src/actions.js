@@ -11473,6 +11473,9 @@ export function setAction(c_action,action,type,old){
                             else {
                                 if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
                                     let max_queue = 3;
+                                    if (global.stats.feat['journeyman']){
+                                        max_queue += global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
+                                    }
                                     if (global.genes['queue'] && global.genes['queue'] >= 2){
                                         max_queue *= 2;
                                     }
@@ -11534,6 +11537,9 @@ export function setAction(c_action,action,type,old){
                                     if ((global.settings.qKey && keyMap.q) || !c_action.action()){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
+                                            if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
+                                                max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+                                            }
                                             if (global.genes['queue'] && global.genes['queue'] >= 2){
                                                 max_queue *= 2;
                                             }

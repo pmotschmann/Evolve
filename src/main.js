@@ -666,6 +666,10 @@ function fastLoop(){
             }
             modRes('RNA',global.evolution['organelles'].count * rna_multiplier * global_multiplier * time_multiplier);
         }
+        if (global.stats.feat['novice']){
+            modRes('RNA', (global.stats.feat['novice'] / 2) * time_multiplier * global_multiplier);
+            modRes('DNA', (global.stats.feat['novice'] / 4) * time_multiplier * global_multiplier);
+        }
         // Detect new unlocks
         if (global['resource']['RNA'].amount >= 2 && !global.evolution['dna']){
             global.evolution['dna'] = 1;

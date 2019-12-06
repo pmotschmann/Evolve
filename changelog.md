@@ -1,3 +1,6 @@
+#### 0.7.8 - 12/6/2019 ####
+New line of feats for achievement hunting<br>
+
 #### 0.7.7 - 12/5/2019 ####
 Super projects now queue in larger batches<br>
 Super projects now only report completion by the queue if actually complete instead of for each segment constructed<br>
