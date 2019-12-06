@@ -155,6 +155,7 @@
   "research_success": "%0 has been researched.",
   "action_ready": "Affordable in [%0]",
   "cancel_routes": "Cancel Routes",
+  "job_default": "%0 is the default job for new citizens.",
   "job_farmer": "Farmer",
   "job_farmer_desc": "Farmers create %1 to feed your population. Each farmer generates %0 %1 per second.",
   "job_lumberjack": "Lumberjack",

@@ -872,6 +872,10 @@ if (!global.civic['new']){
     global.civic['new'] = 0;
 }
 
+if (!global.civic['d_job']){
+    global.civic['d_job'] = 'farmer';
+}
+
 global.settings.animated = true;
 global.settings.disableReset = false;
 

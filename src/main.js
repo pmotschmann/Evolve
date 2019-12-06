@@ -1373,8 +1373,12 @@ function fastLoop(){
             }
         });
 
-        if (global.civic.new > 0 && !global.race['carnivore'] && !global.race['soul_eater'] && global.civic.farmer.display){
+        if (global.civic.d_job === 'farmer' && global.civic.new > 0 && !global.race['carnivore'] && !global.race['soul_eater'] && global.civic.farmer.display){
             global.civic.farmer.workers += global.civic.new;
+            global.civic.free -= global.civic.new;
+        }
+        else if (global.civic.d_job !== 'unemployed'){
+            global.civic[global.civic.d_job].workers += global.civic.new;
             global.civic.free -= global.civic.new;
         }
         global.civic.new = 0;

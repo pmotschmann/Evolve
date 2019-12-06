@@ -1,4 +1,5 @@
 #### 0.7.8 - 12/6/2019 ####
+The default job can now be set to: Unemployed, Farmer, Lumberjack, Quarry Worker, or Scavanger<br>
 New line of feats for achievement hunting<br>
 
 #### 0.7.7 - 12/5/2019 ####
