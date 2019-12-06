@@ -1145,7 +1145,6 @@ export function drawPerks(){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge")}</span></div>`);
         if (global.genes['challenge'] >= 2){
-            unlocked++;
             perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_unlocked_desc")}</span></div>`);
         }
     }
@@ -1163,11 +1162,29 @@ export function drawPerks(){
     if (global.genes['queue']){ 
         unlocked++; 
         perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_geographer_desc")}</span></div>`); 
-        if (global.genes['queue'] >= 2) { 
-            unlocked++; 
+        if (global.genes['queue'] >= 2) {
             perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_architect_desc")}</span></div>`); 
         } 
-    } 
+    }
+
+    if (global.stats.feat['journeyman']){
+        unlocked++;
+        if (global.stats.feat['journeyman'] > 1){
+            let rqueue = global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
+            let queue = global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_journeyman2",[rqueue,queue])}</span></div>`); 
+        }
+        else {
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_journeyman1",[1])}</span></div>`); 
+        }
+    }
+
+    if (global.stats.feat['novice']){
+        unlocked++;
+        let rna = global.stats.feat['novice'] / 2;
+        let dna = global.stats.feat['novice'] / 4;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_novice",[rna,dna])}</span></div>`); 
+    }
 
     if (global.genes['mutation']){ 
         unlocked++;
@@ -1175,7 +1192,7 @@ export function drawPerks(){
         if (global.genes['mutation'] >= 3){
             perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation3")}</span></div>`); 
         } 
-    } 
+    }
 
     if (global.genes['bleed']){ 
         unlocked++; 
