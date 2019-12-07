@@ -1,3 +1,21 @@
+#### 0.7.9 - 12/7/2019 ####
+Many bug fixes<br>
+
+#### 0.7.8 - 12/6/2019 ####
+The default job can now be set to: Unemployed, Farmer, Lumberjack, Quarry Worker, or Scavanger<br>
+New line of feats for achievement hunting<br>
+Novice Perk<br>
+Journeyman Perk<br>
+
+#### 0.7.7 - 12/5/2019 ####
+Super projects now queue in larger batches<br>
+Super projects now only report completion by the queue if actually complete instead of for each segment constructed<br>
+
+#### 0.7.6 - 12/2/2019 ####
+Adjacent queue items of the same type will now combine<br>
+Architect now doubles queue sizes instead of adding a flat +2<br>
+Misc minor bug fixes<br>
+
 #### 0.7.5 - 11/28/2019 ####
 Queueing 2x or more of the same building in a row will now stack them in the queue<br>
 Queue timer now adjusts for cost creep<br>

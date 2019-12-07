@@ -361,7 +361,13 @@ if (convertVersion(global['version']) < 7004 && global['queue'] && global['queue
     }
 }
 
-global['version'] = '0.7.5';
+if (convertVersion(global['version']) < 7007 && global['queue'] && global['queue']['queue']){
+    for (let i=0; i<global.queue.queue.length; i++){
+        global.queue.queue[i]['qs'] = 1;
+    }
+}
+
+global['version'] = '0.7.9';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -691,6 +697,11 @@ if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
 }
 
+const date = new Date();
+if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
+    global.race['slaver'] = 1;
+}
+
 $('html').addClass(global.settings.theme);
 
 if (!global.city['morale']){
@@ -861,6 +872,10 @@ if (!global.civic['new']){
     global.civic['new'] = 0;
 }
 
+if (!global.civic['d_job']){
+    global.civic['d_job'] = 'farmer';
+}
+
 global.settings.animated = true;
 global.settings.disableReset = false;
 
@@ -873,33 +888,6 @@ function newGameData(){
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
     global['new'] = true;
-}
-
-export function messageQueue(msg,color){
-    color = color || 'warning';
-    var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
-    $('#msgQueue').prepend(new_message);
-    global.lastMsg = { m: msg, c: color };
-    if ($('#msgQueue').children().length > 30){
-        $('#msgQueue').children().last().remove();
-    }
-}
-
-export function modRes(res,val){
-    let count = global.resource[res].amount + val;
-    let success = true;
-    if (count > global.resource[res].max && global.resource[res].max != -1){
-        count = global.resource[res].max;
-    }
-    else if (count < 0){
-        count = 0;
-        success = false;
-    }
-    if (!Number.isNaN(count)){
-        global.resource[res].amount = count;
-        global.resource[res].delta += val;
-    }
-    return success;
 }
 
 export var keyMap = {
@@ -1077,23 +1065,6 @@ export function sizeApproximation(value,precision,fixed){
 $(window).resize(function(){
     resizeGame();
 });
-
-window.exportGame = function exportGame(){
-    $('#importExport').val(LZString.compressToBase64(JSON.stringify(global)));
-    $('#importExport').select();
-    document.execCommand('copy');
-}
-
-window.importGame = function importGame(){
-    if ($('#importExport').val().length > 0){
-        let saveState = JSON.parse(LZString.decompressFromBase64($('#importExport').val()));
-        if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
-            global = saveState;
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-            window.location.reload();
-        }
-    }
-}
 
 export function srSpeak(text, priority) {
     var el = document.createElement("div");

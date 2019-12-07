@@ -1,5 +1,5 @@
-import { global, messageQueue, set_alevel, poppers } from './vars.js';
-import { svgIcons, svgViewBox, format_emblem, vBind } from './functions.js'; 
+import { global, set_alevel, poppers } from './vars.js';
+import { svgIcons, svgViewBox, format_emblem, vBind, messageQueue } from './functions.js'; 
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
@@ -594,6 +594,31 @@ const feats = {
         desc: loc("feat_rocky_road_desc"),
         flair: loc("feat_rocky_road_flair")
     },
+    novice: {
+        name: loc("feat_novice_name"),
+        desc: loc("feat_achievement_hunter_desc",[10]),
+        flair: loc("feat_novice_flair")
+    },
+    journeyman: {
+        name: loc("feat_journeyman_name"),
+        desc: loc("feat_achievement_hunter_desc",[25]),
+        flair: loc("feat_journeyman_flair")
+    },
+    adept: {
+        name: loc("feat_adept_name"),
+        desc: loc("feat_achievement_hunter_desc",[50]),
+        flair: loc("feat_adept_flair")
+    },
+    master: {
+        name: loc("feat_master_name"),
+        desc: loc("feat_achievement_hunter_desc",[75]),
+        flair: loc("feat_master_flair")
+    },
+    grandmaster: {
+        name: loc("feat_grandmaster_name"),
+        desc: loc("feat_achievement_hunter_desc",[100]),
+        flair: loc("feat_grandmaster_flair")
+    },
     nephilim: {
         name: loc("feat_nephilim_name"),
         desc: loc("feat_nephilim_desc"),
@@ -608,6 +633,11 @@ const feats = {
         name: loc("feat_gobble_gobble_name"),
         desc: loc("feat_gobble_gobble_desc"),
         flair: loc("feat_gobble_gobble_flair")
+    },
+    xmas: {
+        name: loc("feat_xmas_name"),
+        desc: loc("feat_xmas_desc"),
+        flair: loc("feat_xmas_flair")
     },
     heavy_genus_humanoid: {
         name: loc("feat_heavy_genus_humanoid_name"),
@@ -862,7 +892,7 @@ export function checkAchievements(){
         for (const key of keys) {
             if (key.includes('extinct_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -876,7 +906,7 @@ export function checkAchievements(){
         for (const key of keys) {
             if (key.includes('extinct_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -890,7 +920,7 @@ export function checkAchievements(){
         for (const key of keys){
             if (key.includes('genus_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -904,7 +934,7 @@ export function checkAchievements(){
         for (const key of keys){
             if (key.includes('biome_')){
                 if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -918,7 +948,7 @@ export function checkAchievements(){
         for (const key of keys) {
             if (key.includes('heavy_genus_')){
                 if (global.stats.feat[key] && global.stats.feat[key] >= a_level){
-                    total++
+                    total++;
                 }
             }
         }
@@ -959,6 +989,42 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('thanksgiving');
+        }
+    }
+    else if (date.getMonth() === 11 && date.getDate() == 25){
+        if (global.race.universe === 'micro'){
+            unlockFeat('xmas',true);
+        }
+        else {
+            unlockFeat('xmas');
+        }
+    }
+
+    // total achievements feat
+    {
+        let total = 0;
+        const keys = Object.keys(achievements)
+        for (const key of keys) {
+            if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
+                total++;
+            }
+        }
+        let progress = [
+            {c: 10, f: 'novice'},
+            {c: 25, f: 'journeyman'},
+            {c: 50, f: 'adept'},
+            {c: 75, f: 'master'},
+            {c: 100, f: 'grandmaster'}
+        ];
+        for (let i=0; i<5; i++){
+            if (total >= progress[i].c){
+                if (global.race.universe === 'micro'){
+                    unlockFeat(progress[i].f,true);
+                }
+                else {
+                    unlockFeat(progress[i].f);
+                }
+            }
         }
     }
 }
@@ -1079,7 +1145,6 @@ export function drawPerks(){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge")}</span></div>`);
         if (global.genes['challenge'] >= 2){
-            unlocked++;
             perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_unlocked_desc")}</span></div>`);
         }
     }
@@ -1097,11 +1162,29 @@ export function drawPerks(){
     if (global.genes['queue']){ 
         unlocked++; 
         perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_geographer_desc")}</span></div>`); 
-        if (global.genes['queue'] >= 2) { 
-            unlocked++; 
+        if (global.genes['queue'] >= 2) {
             perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_architect_desc")}</span></div>`); 
         } 
-    } 
+    }
+
+    if (global.stats.feat['journeyman']){
+        unlocked++;
+        if (global.stats.feat['journeyman'] > 1){
+            let rqueue = global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
+            let queue = global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_journeyman2",[rqueue,queue])}</span></div>`); 
+        }
+        else {
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_journeyman1",[1])}</span></div>`); 
+        }
+    }
+
+    if (global.stats.feat['novice']){
+        unlocked++;
+        let rna = global.stats.feat['novice'] / 2;
+        let dna = global.stats.feat['novice'] / 4;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_novice",[rna,dna])}</span></div>`); 
+    }
 
     if (global.genes['mutation']){ 
         unlocked++;
@@ -1109,7 +1192,7 @@ export function drawPerks(){
         if (global.genes['mutation'] >= 3){
             perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation3")}</span></div>`); 
         } 
-    } 
+    }
 
     if (global.genes['bleed']){ 
         unlocked++; 

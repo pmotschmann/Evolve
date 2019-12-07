@@ -10,6 +10,16 @@ export function mainVue(){
             rq: global.r_queue
         },
         methods: {
+            saveImport(){
+                if ($('#importExport').val().length > 0){
+                    importGame($('#importExport').val());
+                }
+            },
+            saveExport(){
+                $('#importExport').val(exportGame());
+                $('#importExport').select();
+                document.execCommand('copy');
+            },
             lChange(){
                 global.settings.locale = $('#localization select').children("option:selected").val();
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -128,6 +138,46 @@ export function mainVue(){
     });
 }
 
+window.exportGame = function exportGame(){
+    return LZString.compressToBase64(JSON.stringify(global));
+}
+
+window.importGame = function importGame(data){
+    let saveState = JSON.parse(LZString.decompressFromBase64(data));
+    if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
+        global = saveState;
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        window.location.reload();
+    }
+}
+
+export function messageQueue(msg,color){
+    color = color || 'warning';
+    var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
+    $('#msgQueue').prepend(new_message);
+    global.lastMsg = { m: msg, c: color };
+    if ($('#msgQueue').children().length > 30){
+        $('#msgQueue').children().last().remove();
+    }
+}
+
+export function modRes(res,val){
+    let count = global.resource[res].amount + val;
+    let success = true;
+    if (count > global.resource[res].max && global.resource[res].max != -1){
+        count = global.resource[res].max;
+    }
+    else if (count < 0){
+        count = 0;
+        success = false;
+    }
+    if (!Number.isNaN(count)){
+        global.resource[res].amount = count;
+        global.resource[res].delta += val;
+    }
+    return success;
+}
+
 export function genCivName(){
     let genus = races[global.race.species].type;
     switch (genus){
@@ -142,7 +192,7 @@ export function genCivName(){
             break;
         case 'avian':
         case 'reptilian':
-            genus = 'Eggshell';
+            genus = 'eggshell';
             break;
         case 'fungi':
             genus = 'chitin';

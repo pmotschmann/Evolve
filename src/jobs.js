@@ -14,7 +14,11 @@ export const job_desc = {
         impact *= global.city.biome === 'hellscape' ? 0.25 : 1;
         impact *= global.city.ptrait === 'trashed' ? 0.75 : 1;
         let gain = +(impact * multiplier).toFixed(2);
-        return loc('job_farmer_desc',[gain,global.resource.Food.name]);
+        let desc = loc('job_farmer_desc',[gain,global.resource.Food.name]);
+        if (global.civic.d_job === 'farmer'){
+            desc = desc + ' ' + loc('job_default',[loc('job_farmer')]);
+        }
+        return desc;
     },
     lumberjack: function(){
         if (global.race['evil'] && !global.race['soul_eater']){
@@ -23,14 +27,22 @@ export const job_desc = {
             let impact = global.civic.lumberjack.impact;
             let bone = +(impact * multiplier).toFixed(2);
             let flesh = +(impact / 4 * multiplier).toFixed(2);
-            return loc('job_reclaimer_desc',[bone,flesh]);
+            let desc = loc('job_reclaimer_desc',[bone,flesh]);
+            if (global.civic.d_job === 'lumberjack'){
+                desc = desc + ' ' + loc('job_default',[loc('job_reclaimer')]);
+            }
+            return desc;
         }
         else {
             let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
             multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
             let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
             let gain = +(impact * multiplier).toFixed(1);
-            return loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
+            let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
+            if (global.civic.d_job === 'lumberjack'){
+                desc = desc + ' ' + loc('job_default',[loc('job_lumberjack')]);
+            }
+            return desc;
         }
     },
     quarry_worker: function(){
@@ -40,14 +52,22 @@ export const job_desc = {
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
-        return loc('job_quarry_worker_desc',[gain,global.resource.Stone.name]);
+        let desc = loc('job_quarry_worker_desc',[gain,global.resource.Stone.name]);
+        if (global.civic.d_job === 'quarry_worker'){
+            desc = desc + ' ' + loc('job_default',[loc('job_quarry_worker')]);
+        }
+        return desc;
     },
     scavenger: function(){
         let scavanger = global.civic.scavenger.impact;
         if (global.city.ptrait === 'trashed' && global.race['scavanger']){
             scavanger *= 1.25;
         }
-        return loc('job_scavenger_desc',[races[global.race.species].home,scavanger]);
+        let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavanger]);
+        if (global.civic.d_job === 'scavenger'){
+            desc = desc + ' ' + loc('job_default',[loc('job_scavenger')]);
+        }
+        return desc;
     },
     miner: function(){
         if (global.tech['mining'] >= 3){
@@ -162,22 +182,33 @@ function loadUnemployed(){
     
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ 'job' | title }}</h3><span class="count">{{ free }}</span></div>`);
+    let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault()">{{ 'job' | title }}{{ 'unemployed' | d_state }}</a></h3><span class="count">{{ free }}</span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
     new Vue({
         el: `#${id}`,
         data: global.civic,
+        methods: {
+            setDefault(){
+                global.civic.d_job = 'unemployed';
+            }
+        },
         filters: {
             title(){
                 return global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed');
+            },
+            d_state(j){
+                return global.civic.d_job === j ? '*' : '';
             }
         }
     });
     
     $(`#${id} .job_label`).on('mouseover',function(){
             let text = global.race['carnivore'] || global.race['soul_eater'] ? (global.race['soul_eater'] ? (global.race.species === 'wendigo' ? loc('job_hunter_desc') : loc('job_evil_hunter_desc')) : loc('job_hunter_desc')) : loc('job_unemployed_desc');
+            if (global.civic.d_job === 'unemployed'){
+                text = text + ' ' + loc('job_default',[global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed')]);
+            }
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
             $('#main').append(popper);
             popper.show();
@@ -221,7 +252,7 @@ function loadJob(job, impact, stress, color){
     var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
     var controls = $('<div class="controls"></div>');
     if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker' || job === 'scavenger'){
-        let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ name }}</h3><span class="count">{{ workers }}</span></div>`);
+        let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ name }}{{ '${job}' | d_state }}</a></h3><span class="count">{{ workers }}</span></div>`);
         civ_container.append(job_label);
     }
     else {
@@ -244,13 +275,13 @@ function loadJob(job, impact, stress, color){
             add(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic.free > 0 || global.civic.farmer.workers > 0)){
+                    if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic.free > 0 || (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0))){
                         global.civic[job].workers++;
                         if (global.civic.free > 0){
                             global.civic.free--;
                         }
                         else {
-                            global.civic.farmer.workers--;
+                            global.civic[global.civic.d_job].workers--;
                         }
                         global.civic[job].assigned = global.civic[job].workers;
                     }
@@ -291,6 +322,14 @@ function loadJob(job, impact, stress, color){
                 else {
                     return 'count';
                 }
+            },
+            setDefault(j){
+                global.civic.d_job = j;
+            }
+        },
+        filters: {
+            d_state(j){
+                return global.civic.d_job === j ? '*' : '';
             }
         }
     });
@@ -350,7 +389,7 @@ export function loadFoundry(){
                 add(res){
                     let keyMult = keyMultiplier();
                     for (let i=0; i<keyMult; i++){
-                        if (global.city.foundry.crafting < global.civic.craftsman.max && (global.civic.free > 0 || global.civic.farmer.workers > 0)){
+                        if (global.city.foundry.crafting < global.civic.craftsman.max && (global.civic.free > 0 || (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0))){
                             global.civic.craftsman.workers++;
                             global.city.foundry.crafting++;
                             global.city.foundry[res]++;
@@ -358,7 +397,7 @@ export function loadFoundry(){
                                 global.civic.free--;
                             }
                             else {
-                                global.civic.farmer.workers--;
+                                global.civic[global.civic.d_job].workers--;
                             }
                         }
                         else {

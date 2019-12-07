@@ -245,8 +245,8 @@ export function index(){
             <b-field label="Import/Export Save">
                 <b-input id="importExport" type="textarea"></b-input>
             </b-field>
-            <button class="button" onclick="importGame()">{{ 'import' | label }}</button>
-            <button class="button" onclick="exportGame()">{{ 'export' | label }}</button>
+            <button class="button" @click="saveImport">{{ 'import' | label }}</button>
+            <button class="button" @click="saveExport">{{ 'export' | label }}</button>
         </div>
         <div class="reset">
             <b-collapse :open="false">

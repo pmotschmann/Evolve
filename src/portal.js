@@ -1,5 +1,5 @@
-import { global, poppers, messageQueue, keyMultiplier, p_on } from './vars.js';
-import { vBind, spaceCostMultiplier } from './functions.js';
+import { global, poppers, keyMultiplier, p_on } from './vars.js';
+import { vBind, spaceCostMultiplier, messageQueue } from './functions.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';

@@ -1,6 +1,6 @@
-import { global, poppers, messageQueue, clearStates, modRes, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
+import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { challenge_multiplier, timeFormat, vBind, genCivName } from './functions.js';
+import { challenge_multiplier, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -28,10 +28,8 @@ export function defineGovernment(){
 
     var civ_garrison = $('<div id="c_garrison" v-show="g.display" class="garrison tile is-child"></div>');
     $('#r_civics').append(civ_garrison);
-    buildGarrison(civ_garrison,false);
-
-    foreign();
 }
+
 
 export function defineIndustry(){
     $(`#industry`).empty();
@@ -84,7 +82,10 @@ export function buildQueue(){
             methods: {
                 remove(index){
                     if (global.queue.queue[index].q > 1){
-                        global.queue.queue[index].q--;
+                        global.queue.queue[index].q -= global.queue.queue[index].qs;
+                        if (global.queue.queue[index].q <= 0){
+                            global.queue.queue.splice(index,1);
+                        }
                     }
                     else {
                         global.queue.queue.splice(index,1);
@@ -294,7 +295,7 @@ function drawGovModal(){
     });
 }
 
-function foreign(){
+export function foreignGov(){
     let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
     foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
     $('#r_civics').append(foreign);
@@ -309,7 +310,7 @@ function foreign(){
 
         let actions = $(`<div></div>`);
         actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
-        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="f${i}.trn > 0" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')} - {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
+        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
         actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
         gov.append(actions);
 
@@ -447,13 +448,12 @@ function foreign(){
                    }
                 }, 50);
             },
+            spy_disabled(i){
+                return global.civic.foreign[`gov${i}`].trn > 0 || spyCost(i) > global.resource.Money.amount ? true : false;
+            },
             spy(i){
                 if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
-                    let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
-                    if (base < 50){
-                        base = 50;
-                    }
-                    let cost = Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
+                    let cost = spyCost(i)
                     if (global.resource.Money.amount >= cost){
                         global.resource.Money.amount -= cost;
                         let time = 300;
@@ -471,11 +471,7 @@ function foreign(){
                 if (global.civic.foreign[`gov${i}`].trn > 0){
                     return loc('civics_progress');
                 }
-                let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
-                if (base < 50){
-                    base = 50;
-                }
-                let cost = sizeApproximation(Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500);
+                let cost = sizeApproximation(spyCost(i));
                 return loc('civics_gov_spy_desc',[cost]);
             },
             espDesc(){
@@ -486,6 +482,14 @@ function foreign(){
             }
         }
     });
+}
+
+function spyCost(i){
+    let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
+    if (base < 50){
+        base = 50;
+    }
+    return Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
 }
 
 function drawEspModal(gov){

@@ -1,12 +1,12 @@
-import { global, save, poppers, resizeGame, messageQueue, modRes, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
+import { global, save, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
-import { mainVue, timeCheck, timeFormat, powerModifier } from './functions.js';
+import { mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue } from './functions.js';
 import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
-import { defineGovernment, defineIndustry, defineGarrison, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
+import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
@@ -65,6 +65,8 @@ $('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent civi
 defineGovernment();
 if (global.race.species !== 'protoplasm'){
     defineGarrison();
+    buildGarrison($('#c_garrison'),false);
+    foreignGov();
 }
 defineIndustry();
 
@@ -366,7 +368,7 @@ if (global.race.species === 'protoplasm'){
         addAction('evolution','chitin');
     }
     else {
-        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','demonic','celestial','sentience','bunker'];
+        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','fey','sand','heat','polar','demonic','celestial','sentience','bunker'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -663,6 +665,13 @@ function fastLoop(){
                 rna_multiplier++;
             }
             modRes('RNA',global.evolution['organelles'].count * rna_multiplier * global_multiplier * time_multiplier);
+        }
+
+        if (global.stats.feat['novice'] && global.race.universe !== 'bigbang' && (!global.race.seeded || (global.race.seeded && global.race['chose']))){
+            modRes('RNA', (global.stats.feat['novice'] / 2) * time_multiplier * global_multiplier);
+            if (global.resource.DNA.display){
+                modRes('DNA', (global.stats.feat['novice'] / 4) * time_multiplier * global_multiplier);
+            }
         }
         // Detect new unlocks
         if (global['resource']['RNA'].amount >= 2 && !global.evolution['dna']){
@@ -1367,8 +1376,12 @@ function fastLoop(){
             }
         });
 
-        if (global.civic.new > 0 && !global.race['carnivore'] && !global.race['soul_eater'] && global.civic.farmer.display){
+        if (global.civic.d_job === 'farmer' && global.civic.new > 0 && !global.race['carnivore'] && !global.race['soul_eater'] && global.civic.farmer.display){
             global.civic.farmer.workers += global.civic.new;
+            global.civic.free -= global.civic.new;
+        }
+        else if (global.civic.d_job !== 'unemployed'){
+            global.civic[global.civic.d_job].workers += global.civic.new;
             global.civic.free -= global.civic.new;
         }
         global.civic.new = 0;
@@ -4409,7 +4422,14 @@ function midLoop(){
                     }
                 }
                 else if (c_action.action()){
-                    messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                    if (c_action['queue_complete']){
+                        if (c_action.queue_complete()){
+                            messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                        }
+                    }
+                    else {
+                        messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                    }
                     if (global.queue.queue[idx].q > 1){
                         global.queue.queue[idx].q--;
                     }
@@ -4441,6 +4461,16 @@ function midLoop(){
                         renderFortress();
                     }
                 }
+            }
+
+            let last = false;
+            for (let i=0; i<global.queue.queue.length; i++){
+                if (last === global.queue.queue[i].id){
+                    global.queue.queue[i-1].q += global.queue.queue[i].q;
+                    global.queue.queue.splice(i,1);
+                    break;
+                }
+                last = global.queue.queue[i].id;
             }
         }
 
@@ -4526,6 +4556,7 @@ let sythMap = {
 };
 
 function longLoop(){
+    const date = new Date();
     if (global.race.species !== 'protoplasm'){
         
         if (global.portal['fortress']){
@@ -5018,6 +5049,14 @@ function longLoop(){
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] === 7){
             buildGene();
         }
+    }
+
+    if (date.getMonth() === 11 && date.getDate() >= 17 && date.getDate() <= 24){
+        global['special'] = { gift: true };
+        global.tech['santa'] = 1;
+    }
+    else {
+        delete global.tech['santa'];
     }
 
     // Save game state
