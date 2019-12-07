@@ -10,6 +10,16 @@ export function mainVue(){
             rq: global.r_queue
         },
         methods: {
+            saveImport(){
+                if ($('#importExport').val().length > 0){
+                    importGame($('#importExport').val());
+                }
+            },
+            saveExport(){
+                $('#importExport').val(exportGame());
+                $('#importExport').select();
+                document.execCommand('copy');
+            },
             lChange(){
                 global.settings.locale = $('#localization select').children("option:selected").val();
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -126,6 +136,19 @@ export function mainVue(){
             }
         }
     });
+}
+
+window.exportGame = function exportGame(){
+    return LZString.compressToBase64(JSON.stringify(global));
+}
+
+window.importGame = function importGame(data){
+    let saveState = JSON.parse(LZString.decompressFromBase64(data));
+    if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
+        global = saveState;
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        window.location.reload();
+    }
 }
 
 export function messageQueue(msg,color){

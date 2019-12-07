@@ -1066,23 +1066,6 @@ $(window).resize(function(){
     resizeGame();
 });
 
-window.exportGame = function exportGame(){
-    $('#importExport').val(LZString.compressToBase64(JSON.stringify(global)));
-    $('#importExport').select();
-    document.execCommand('copy');
-}
-
-window.importGame = function importGame(){
-    if ($('#importExport').val().length > 0){
-        let saveState = JSON.parse(LZString.decompressFromBase64($('#importExport').val()));
-        if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
-            global = saveState;
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-            window.location.reload();
-        }
-    }
-}
-
 export function srSpeak(text, priority) {
     var el = document.createElement("div");
     var id = "speak-" + Date.now();
