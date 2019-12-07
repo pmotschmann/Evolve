@@ -1161,6 +1161,9 @@ function addProject(parent,project){
                     if (global.tech['queue']){
                         let arpaId = `arpa${pro}`;
                         let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
+                        if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
+                            max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+                        }
                         if (global.genes['queue'] && global.genes['queue'] >= 2){
                             max_queue *= 2;
                         }
@@ -1173,7 +1176,7 @@ function addProject(parent,project){
                                 global.queue.queue[global.queue.queue.length-1].q++;
                             }
                             else {
-                                global.queue.queue.push({ id: arpaId, action: pro, type: 'arpa', label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, t_max: 0 });
+                                global.queue.queue.push({ id: arpaId, action: pro, type: 'arpa', label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
                             }
                             dragQueue();
                         }
