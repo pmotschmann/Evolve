@@ -310,7 +310,7 @@ export function foreignGov(){
 
         let actions = $(`<div></div>`);
         actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
-        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="f${i}.trn > 0" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')} - {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
+        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="f${i}.trn > 0" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
         actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
         gov.append(actions);
 
