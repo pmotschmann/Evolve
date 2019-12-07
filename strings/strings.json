@@ -34,6 +34,7 @@
   "tab_arpa_crispr": "Crispr",
   "to_full": "To Full",
   "to_empty": "To Empty",
+  "per_cycle": "cycle",
   "requires_power": "Requires Power",
   "requires_power_combo": "Requires Power and %0",
   "requires_res": "Requires %0",
