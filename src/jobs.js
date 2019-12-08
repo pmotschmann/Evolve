@@ -432,14 +432,13 @@ export function loadFoundry(){
                     }
                     let final = +(global.city.foundry[res] * multiplier).toFixed(2);
                     let bonus = (multiplier * 100).toFixed(0);
-                    let cycle = loc("per_cycle");
-
-                    popper.append($(`<div>+${bonus}% Craftsman ${name}</div>`));
-                    popper.append($(`<div>+${final} ${name}/${cycle}</div>`));
+                    
+                    popper.append($(`<div>${loc('craftsman_hover_bonus', [bonus, name])}</div>`));
+                    popper.append($(`<div>${loc('craftsman_hover_prod', [final, name])}</div>`));
                     let craft_cost = craftCost();
                     for (let i=0; i<craft_cost[res].length; i++){
                         let cost = +(craft_cost[res][i].a * global.city.foundry[res]).toFixed(2);
-                        popper.append($(`<div>-${cost} ${global.resource[craft_cost[res][i].r].name}/${cycle}<div>`));
+                        popper.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
                     }
     
                     popper.show();
