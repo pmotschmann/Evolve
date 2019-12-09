@@ -873,7 +873,15 @@ if (!global.civic['new']){
 }
 
 if (!global.civic['d_job']){
-    global.civic['d_job'] = 'farmer';
+    if (global.race['carnivore'] || global.race['soul_eater']){
+        global.civic['d_job'] = 'unemployed';
+    }
+    else if (global.tech['agriculture'] && global.tech['agriculture'] >= 1){
+        global.civic['d_job'] = 'farmer';
+    }
+    else{
+        global.civic['d_job'] = 'unemployed';
+    }
 }
 
 global.settings.animated = true;
