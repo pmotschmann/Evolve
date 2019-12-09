@@ -11835,6 +11835,21 @@ export function setPlanet(hell){
                 case 6:
                     popper.append($(`<div>${loc('set_planet_extra3',[array[0],array[1],array[2],array[3],array[4],array[5]])}</div>`));
                     break;
+                case 8:
+                    popper.append($(`<div>${loc('set_planet_extra4',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7]])}</div>`));
+                    break;
+                case 10:
+                    popper.append($(`<div>${loc('set_planet_extra5',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9]])}</div>`));
+                    break;
+                case 12:
+                    popper.append($(`<div>${loc('set_planet_extra6',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9],array[10],array[11]])}</div>`));
+                    break;
+                case 14:
+                    popper.append($(`<div>${loc('set_planet_extra7',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9],array[10],array[11],array[12],array[13]])}</div>`));
+                    break;
+                case 16:
+                    popper.append($(`<div>${loc('set_planet_extra8',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9],array[10],array[11],array[12],array[13],array[14],array[15]])}</div>`));
+                    break;
                 default:
                     break;
             }
