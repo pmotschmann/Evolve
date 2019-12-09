@@ -207,6 +207,12 @@ if (convertVersion(global['version']) < 4031){
     }
 }
 
+if (convertVersion(global['version']) < 4032){
+    if (global.race.species === 'balorg'){
+        global.race['slaver'] = 1;  
+    }
+}
+
 if (convertVersion(global['version']) < 5000){
     global['portal'] = {};
     if (global['city'] && global.city['factory'] && !global.city.factory['Stanene']){
@@ -821,10 +827,6 @@ if (!global.settings.arpa['crispr']){
 
 if (!global['arpa']){
     global['arpa'] = {};
-}
-
-if (global.race.species === 'balorg'){
-    global.race['slaver'] = 1;
 }
 
 if (global.city['factory']){
