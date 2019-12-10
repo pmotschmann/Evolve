@@ -2814,7 +2814,8 @@ export const actions = {
             desc(){ 
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
-                    return loc('city_mill_desc2',[bonus]);
+                    let power = global.race['environmentalist'] ? 1.5 : 1;
+                    return loc('city_mill_desc2',[bonus,power]);
                 }
                 else {
                     return loc('city_mill_desc1',[bonus]);
@@ -2853,7 +2854,8 @@ export const actions = {
                 return loc('city_mill_title2');
             },
             desc(){
-                return loc('city_windmill_desc');
+                let power = global.race['environmentalist'] ? 1.5 : 1;
+                return loc('city_windmill_desc',[power]);
             },
             category: 'utility',
             reqs: { wind_plant: 1 },
@@ -6358,6 +6360,9 @@ export const actions = {
             effect: loc('tech_freight_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.tech['high_tech'] >= 6) {
+                        arpa('Physics');
+                    }
                     return true;
                 }
                 return false;
