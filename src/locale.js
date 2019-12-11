@@ -1,6 +1,7 @@
 import { global } from './vars.js';
 
 let strings;
+let tokens = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',' j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 getString(global.settings.locale);
 
 export function loc(key, variables) {
@@ -13,9 +14,9 @@ export function loc(key, variables) {
     if (variables) {
         if(variables instanceof Array) {
             for (let i = 0; i < variables.length; i++){
-                let re = new RegExp(`%${i}(?!\d)`, "g");
+                let re = new RegExp(`%${tokens[i]}(?!\d)`, "g");
                 if(!re.exec(string)){
-                    console.error(`"%${i}" was not found in the string "${key}" to be replace by "${variables[i]}"`);
+                    console.error(`"%${tokens[i]}" was not found in the string "${key}" to be replace by "${variables[i]}"`);
                     continue;
                 }
                 string = string.replace(re, variables[i]);
