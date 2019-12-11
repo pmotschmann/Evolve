@@ -11822,41 +11822,27 @@ export function setPlanet(hell){
                 popper.append($(`<div>${planetTraits[trait].desc}</div>`));
             }
 
-            let array = [];
+            let geo = '';
+            let cnt = 0;
+            let end = Object.keys(geology).length;
             for (let key in geology){
                 if (key !== 0){
-                    array.push(geology[key] > 0 ? loc('set_planet_rich') : loc('set_planet_poor'));
-                    array.push(key);
+                    cnt++;
+                    let label = geology[key] > 0 ? loc('set_planet_rich') : loc('set_planet_poor');
+                    if (cnt === 1){
+                        geo = loc('set_planet_extra',[label,key]);
+                    }
+                    else if (cnt === end){
+                        geo = geo + loc('set_planet_extra_frag2',[label,key]);
+                    }
+                    else {
+                        geo = geo + loc('set_planet_extra_frag1',[label,key])
+                    }
                 }
             }
-            
-            switch (array.length){
-                case 2:
-                    popper.append($(`<div>${loc('set_planet_extra1',[array[0],array[1]])}</div>`));
-                    break;
-                case 4:
-                    popper.append($(`<div>${loc('set_planet_extra2',[array[0],array[1],array[2],array[3]])}</div>`));
-                    break;
-                case 6:
-                    popper.append($(`<div>${loc('set_planet_extra3',[array[0],array[1],array[2],array[3],array[4],array[5]])}</div>`));
-                    break;
-                case 8:
-                    popper.append($(`<div>${loc('set_planet_extra4',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7]])}</div>`));
-                    break;
-                case 10:
-                    popper.append($(`<div>${loc('set_planet_extra5',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9]])}</div>`));
-                    break;
-                case 12:
-                    popper.append($(`<div>${loc('set_planet_extra6',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9],array[10],array[11]])}</div>`));
-                    break;
-                case 14:
-                    popper.append($(`<div>${loc('set_planet_extra7',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9],array[10],array[11],array[12],array[13]])}</div>`));
-                    break;
-                case 16:
-                    popper.append($(`<div>${loc('set_planet_extra8',[array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9],array[10],array[11],array[12],array[13],array[14],array[15]])}</div>`));
-                    break;
-                default:
-                    break;
+
+            if (geo.length > 0){
+                popper.append($(`<div>${geo}.</div>`));
             }
 
             popper.show();
