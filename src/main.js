@@ -3040,6 +3040,61 @@ function fastLoop(){
 
         breakdown.p['Money'] = money_bd;
 
+        // Crafting
+        if (global.tech['foundry']){
+            let craft_costs = global.race['resourceful'] ? 0.9 : 1;
+            let crafting_costs = craftCost();
+            let crafting_usage = {};
+
+            Object.keys(crafting_costs).forEach(function (craft){
+                let num = global.city.foundry[craft];
+                let craft_ratio = craftingRatio(craft);
+                if (global.tech['v_train']){
+                    craft_ratio *= 2;
+                }
+                if (global.genes['crafty']){
+                    craft_ratio *= 1 + ((global.genes.crafty - 1) * 0.5);
+                }
+                if (global.race['ambidextrous']){
+                    craft_ratio *= 1 + (global.race['ambidextrous'] * 0.02);
+                }
+
+                let speed = global.genes['crafty'] ? 2 : 1;
+                let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (crafting_costs[craft][0].a * speed * craft_costs / 140));
+                for (let i=1; i<crafting_costs[craft].length; i++){
+                    let temp = Math.floor(global.resource[crafting_costs[craft][i].r].amount / (crafting_costs[craft][i].a * speed * craft_costs / 140));
+                    if (temp < volume){
+                        volume = temp;
+                    }
+                }
+                if (num < volume){
+                    volume = num;
+                }
+
+                for (let i=0; i<crafting_costs[craft].length; i++){
+                    let final = volume * crafting_costs[craft][i].a * craft_costs * speed * time_multiplier / 140;
+                    modRes(crafting_costs[craft][i].r, -(final));
+                    if (typeof crafting_usage[crafting_costs[craft][i].r] === 'undefined'){
+                        crafting_usage[crafting_costs[craft][i].r] = final / time_multiplier;
+                    }
+                    else {
+                        crafting_usage[crafting_costs[craft][i].r] += final / time_multiplier;
+                    }
+                }
+
+                modRes(craft, craft_ratio * volume * speed * time_multiplier / 140);
+            });
+
+            Object.keys(crafting_usage).forEach(function (used){
+                if (crafting_usage[used] > 0){
+                    breakdown.p.consume[used][loc('job_craftsman')] = -(crafting_usage[used]);
+                    if (used === 'Alloy'){
+                        //console.log(crafting_usage[used]);
+                    }
+                }
+            });
+        }
+
         // Detect new unlocks
         if (!global.settings.showResearch && (global.resource.Lumber.amount >= 5 || global.resource.Stone.amount >= 6)){
             global.settings.showResearch = true;
@@ -4825,45 +4880,6 @@ function longLoop(){
             global.city.calendar.moon++;
             if (global.city.calendar.moon > 27){
                 global.city.calendar.moon = 0;
-            }
-
-            // Crafting
-            if (global.tech['foundry'] && (global.city.calendar.moon === 0 || (global.city.calendar.moon === 14 && global.genes['crafty']))){
-                let craft_costs = global.race['resourceful'] ? 0.9 : 1;
-                let crafting_costs = craftCost();
-                Object.keys(crafting_costs).forEach(function (craft){
-                    let num = global.city.foundry[craft];
-                    let craft_ratio = craftingRatio(craft);
-                    if (global.tech['v_train']){
-                        craft_ratio *= 2;
-                    }
-                    if (global.genes['crafty']){
-                        craft_ratio *= 1 + ((global.genes.crafty - 1) * 0.5);
-                    }
-                    if (global.race['ambidextrous']){
-                        craft_ratio *= 1 + (global.race['ambidextrous'] * 0.02);
-                    }
-
-                    let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (crafting_costs[craft][0].a * craft_costs));
-                    for (let i=1; i<crafting_costs[craft].length; i++){
-                        let temp = Math.floor(global.resource[crafting_costs[craft][i].r].amount / (crafting_costs[craft][i].a * craft_costs));
-                        if (temp < volume){
-                            volume = temp;
-                        }
-                    }
-                    if (num < volume){
-                        volume = num;
-                    }
-                    for (let i=0; i<crafting_costs[craft].length; i++){
-                        let final = volume * crafting_costs[craft][i].a * craft_costs;
-                        global.resource[crafting_costs[craft][i].r].amount -= final;
-                    }
-                    global.resource[craft].amount += craft_ratio * volume;
-
-                    let sec = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
-                    let time = global.genes['crafty'] ? 70000 : 140000;
-                    global.resource[craft].diff = +((craft_ratio * volume) / (time / sec)).toFixed(5);
-                });
             }
 
             setWeather();

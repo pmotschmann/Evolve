@@ -1,3 +1,6 @@
+#### 0.7.10 - 12/12/2019 ####
+Craftsman now continuously output product instead of once/twice a month<br>
+
 #### 0.7.9 - 12/7/2019 ####
 Many bug fixes<br>
 
