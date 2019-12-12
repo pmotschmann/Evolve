@@ -716,7 +716,7 @@ const feats = {
     }
 }
 
-export function unlockAchieve(achievement,small){
+export function unlockAchieve(achievement,small,rank){
     if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
         return false;
     }
@@ -727,13 +727,16 @@ export function unlockAchieve(achievement,small){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
-    if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < a_level)){
+    if (typeof rank === "undefined" || rank > a_level){
+        rank = a_level;
+    }
+    if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < rank)){
         global.settings.showAchieve = true;
         if (global.stats.achieve[achievement]){
-            global.stats.achieve[achievement].l = a_level;
+            global.stats.achieve[achievement].l = rank;
         }
         else {
-            global.stats.achieve[achievement] = { l: a_level };
+            global.stats.achieve[achievement] = { l: rank };
         }
         messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
         drawPerks();
@@ -743,23 +746,23 @@ export function unlockAchieve(achievement,small){
     if (global.stats.achieve[achievement]){
         switch (global.race.universe){
             case 'antimatter':
-                if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < a_level)){
-                    global.stats.achieve[achievement]['a'] = a_level;
+                if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < rank)){
+                    global.stats.achieve[achievement]['a'] = rank;
                 }
                 break;
             case 'heavy':
-                if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < a_level)){
-                    global.stats.achieve[achievement]['h'] = a_level;
+                if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < rank)){
+                    global.stats.achieve[achievement]['h'] = rank;
                 }
                 break;
             case 'evil':
-                if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < a_level)){
-                    global.stats.achieve[achievement]['e'] = a_level;
+                if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < rank)){
+                    global.stats.achieve[achievement]['e'] = rank;
                 }
                 break;
             case 'micro':
-                if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < a_level)){
-                    global.stats.achieve[achievement]['m'] = a_level;
+                if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < rank)){
+                    global.stats.achieve[achievement]['m'] = rank;
                 }
                 break;
         }
@@ -780,7 +783,6 @@ export function unlockFeat(feat,small,rank){
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
     }
-    console.log(rank);
     if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < rank)){
         global.settings.showAchieve = true;
         global.stats.feat[feat] = rank;
