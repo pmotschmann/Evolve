@@ -14,11 +14,6 @@ import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
 
-global.race['no_plasmid'] = 1;
-global.race['no_trade'] = 1;
-global.race['no_craft'] = 1;
-global.race['no_crispr'] = 1;
-
 var intervals = {};
 if (global.settings.expose){
     enableScript();
