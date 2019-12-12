@@ -14,6 +14,11 @@ import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
 
+global.race['no_plasmid'] = 1;
+global.race['no_trade'] = 1;
+global.race['no_craft'] = 1;
+global.race['no_crispr'] = 1;
+
 var intervals = {};
 if (global.settings.expose){
     enableScript();
@@ -3088,9 +3093,6 @@ function fastLoop(){
             Object.keys(crafting_usage).forEach(function (used){
                 if (crafting_usage[used] > 0){
                     breakdown.p.consume[used][loc('job_craftsman')] = -(crafting_usage[used]);
-                    if (used === 'Alloy'){
-                        //console.log(crafting_usage[used]);
-                    }
                 }
             });
         }

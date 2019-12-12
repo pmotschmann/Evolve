@@ -767,7 +767,7 @@ export function unlockAchieve(achievement,small){
     return unlock;
 }
 
-export function unlockFeat(feat,small){
+export function unlockFeat(feat,small,rank){
     if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
         return false;
     }
@@ -777,9 +777,13 @@ export function unlockFeat(feat,small){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
-    if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < a_level)){
+    if (typeof rank === "undefined" || rank > a_level){
+        rank = a_level;
+    }
+    console.log(rank);
+    if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < rank)){
         global.settings.showAchieve = true;
-        global.stats.feat[feat] = a_level;
+        global.stats.feat[feat] = rank;
         messageQueue(loc('feat_unlocked', [feats[feat].name] ),'special');
         drawPerks();
         drawAchieve();
@@ -886,76 +890,80 @@ export function checkAchievements(){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
-    if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(achievements)
-        for (const key of keys) {
-            if (key.includes('extinct_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++;
+
+    for (let t_level=a_level; t_level >= 0; t_level--){
+        if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(achievements)
+            for (const key of keys) {
+                if (key.includes('extinct_')){
+                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
+                        total++;
+                    }
                 }
             }
-        }
-        if (total >= 25){
-            unlockAchieve('mass_extinction');
-        }
-    }
-    if (!global.stats.achieve['vigilante'] || global.stats.achieve['vigilante'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(achievements)
-        for (const key of keys) {
-            if (key.includes('extinct_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= a_level){
-                    total++;
-                }
+            if (total >= 25){
+                unlockAchieve('mass_extinction',false,t_level);
             }
         }
-        if (total >= 12){
-            unlockAchieve('vigilante');
-        }
-    }
-    if (!global.stats.achieve['creator'] || global.stats.achieve['creator'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(achievements);
-        for (const key of keys){
-            if (key.includes('genus_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++;
+        if (!global.stats.achieve['vigilante'] || global.stats.achieve['vigilante'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(achievements)
+            for (const key of keys) {
+                if (key.includes('extinct_')){
+                    if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= t_level){
+                        total++;
+                    }
                 }
             }
-        }
-        if (total >= 9){
-            unlockAchieve('creator');
-        }
-    }
-    if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(achievements);
-        for (const key of keys){
-            if (key.includes('biome_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++;
-                }
+            if (total >= 12){
+                unlockAchieve('vigilante',false,t_level);
             }
         }
-        if (total >= 6){
-            unlockAchieve('explorer');
-        }
-    }
-    if (!global.stats.achieve['heavyweight'] || global.stats.achieve['heavyweight'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(feats)
-        for (const key of keys) {
-            if (key.includes('heavy_genus_')){
-                if (global.stats.feat[key] && global.stats.feat[key] >= a_level){
-                    total++;
+        if (!global.stats.achieve['creator'] || global.stats.achieve['creator'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(achievements);
+            for (const key of keys){
+                if (key.includes('genus_')){
+                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
+                        total++;
+                    }
                 }
             }
+            if (total >= 9){
+                unlockAchieve('creator',false,t_level);
+            }
         }
-        if (total >= 8){
-            unlockAchieve('heavyweight');
+        if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(achievements);
+            for (const key of keys){
+                if (key.includes('biome_')){
+                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
+                        total++;
+                    }
+                }
+            }
+            if (total >= 6){
+                unlockAchieve('explorer',false,t_level);
+            }
+        }
+        if (!global.stats.achieve['heavyweight'] || global.stats.achieve['heavyweight'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(feats)
+            for (const key of keys) {
+                if (key.includes('heavy_genus_')){
+                    if (global.stats.feat[key] && global.stats.feat[key] >= t_level){
+                        total++;
+                    }
+                }
+            }
+            if (total >= 8){
+                unlockAchieve('heavyweight',false,t_level);
+            }
         }
     }
+
     if (global.tech['supercollider'] && global.tech['supercollider'] >= 99){
         unlockAchieve('blackhole');
     }
@@ -1002,27 +1010,31 @@ export function checkAchievements(){
 
     // total achievements feat
     {
-        let total = 0;
-        const keys = Object.keys(achievements)
-        for (const key of keys) {
-            if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                total++;
-            }
-        }
-        let progress = [
-            {c: 10, f: 'novice'},
-            {c: 25, f: 'journeyman'},
-            {c: 50, f: 'adept'},
-            {c: 75, f: 'master'},
-            {c: 100, f: 'grandmaster'}
-        ];
-        for (let i=0; i<5; i++){
-            if (total >= progress[i].c){
-                if (global.race.universe === 'micro'){
-                    unlockFeat(progress[i].f,true);
+        for (let t_level=a_level; t_level >= 0; t_level--){
+
+            let total = 0;
+            const keys = Object.keys(achievements)
+            for (const key of keys) {
+                if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
+                    total++;
                 }
-                else {
-                    unlockFeat(progress[i].f);
+            }
+            //console.log(`${t_level}: ${total}`);
+            let progress = [
+                {c: 10, f: 'novice'},
+                {c: 25, f: 'journeyman'},
+                {c: 50, f: 'adept'},
+                {c: 75, f: 'master'},
+                {c: 100, f: 'grandmaster'}
+            ];
+            for (let i=0; i<5; i++){
+                if (total >= progress[i].c){
+                    if (global.race.universe === 'micro'){
+                        unlockFeat(progress[i].f,true,t_level);
+                    }
+                    else {
+                        unlockFeat(progress[i].f,false,t_level);
+                    }
                 }
             }
         }
