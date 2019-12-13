@@ -430,10 +430,12 @@ export function loadFoundry(){
                     if (global.genes['crafty']){
                         multiplier *= 1 + ((global.genes.crafty - 1) * 0.5);
                     }
+                    if (global.race['ambidextrous']){
+                        multiplier *= 1 + (global.race['ambidextrous'] * 0.02);
+                    }
                     let speed = global.genes['crafty'] ? 2 : 1;
-                    multiplier *= speed;
-                    let final = +(global.city.foundry[res] * multiplier / 140).toFixed(2);
-                    let bonus = (multiplier * 100).toFixed(0);
+                    let final = +(global.city.foundry[res] * multiplier * speed / 140).toFixed(2);
+                    let bonus = (multiplier * speed * 100).toFixed(0);
                     
                     popper.append($(`<div>${loc('craftsman_hover_bonus', [bonus, name])}</div>`));
                     popper.append($(`<div>${loc('craftsman_hover_prod', [final, name])}</div>`));

@@ -3190,7 +3190,7 @@ function fastLoop(){
 
     // main resource delta tracking
     Object.keys(global.resource).forEach(function (res) {
-        if (global['resource'][res].rate > 0){
+        if (global['resource'][res].rate > 0 || (global['resource'][res].rate === 0 && global['resource'][res].max === -1 && global.race['no_craft'])){
             diffCalc(res,main_timer);
         }
     });
