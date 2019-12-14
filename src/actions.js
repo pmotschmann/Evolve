@@ -11822,29 +11822,34 @@ export function setPlanet(hell){
                 popper.append($(`<div>${planetTraits[trait].desc}</div>`));
             }
 
-            let geo = '';
-            let cnt = 0;
-            let end = Object.keys(geology).length;
+            let good = $('<div></div>');
+            let bad = $('<div></div>');
+            let goodCnt = 0;
+            let badCnt = 0;
             for (let key in geology){
                 if (key !== 0){
-                    cnt++;
-                    let label = geology[key] > 0 ? loc('set_planet_rich') : loc('set_planet_poor');
-                    if (cnt === 1){
-                        geo = loc('set_planet_extra',[label,key]);
-                    }
-                    else if (cnt === end){
-                        geo = geo + loc('set_planet_extra_frag2',[label,key]);
+                    if (geology[key] > 0) {
+                        goodCnt++;
+                        if (goodCnt === 1) {
+                            good.append($(`<div>${loc('set_planet_extra_rich')}</div>`));
+                        }
+                        good.append($(`<div class="has-text-success">${loc(`resource_${key}_name`)}: ${Math.round((geology[key] + 1) * 100)}%</div>`));
                     }
                     else {
-                        geo = geo + loc('set_planet_extra_frag1',[label,key])
+                        badCnt++;
+                        if (badCnt === 1) {
+                            bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
+                        }
+                        bad.append($(`<div class="has-text-warning">${loc(`resource_${key}_name`)}: ${Math.round((geology[key] + 1) * 100)}%</div>`));
                     }
                 }
             }
-
-            if (geo.length > 0){
-                popper.append($(`<div>${geo}.</div>`));
+            if (badCnt > 0){
+                good.append(bad);
             }
-
+            if (goodCnt > 0){
+                popper.append(good);
+            }
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
