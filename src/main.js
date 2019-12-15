@@ -4250,6 +4250,25 @@ function midLoop(){
             });
         }
 
+        let genePool = arpa('GeneTech');
+        Object.keys(genePool).forEach(function (action){
+            if (genePool[action] && genePool[action].cost){
+                let c_action = genePool[action];
+                let element = $('#'+c_action.id);
+                console.log(c_action.id);
+                if (element.length > 0){
+                    if ( (global.race['universe'] !== 'antimatter' && c_action.cost > global.race.Plasmid.count) || (global.race['universe'] === 'antimatter' && c_action.cost > global.race.Plasmid.anti) ){
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
+                    }
+                    else if (element.hasClass('cna')){
+                        element.removeClass('cna');
+                    }
+                }
+            }
+        });
+
         if (global.space['swarm_control']){
             global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10);
         }
