@@ -11905,7 +11905,9 @@ function actionDesc(parent,c_action,obj,old){
     parent.empty();
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     parent.append($('<div>'+desc+'</div>'));
-    if (c_action.cost && !old){ 
+
+    let tc = timeCheck(c_action,false,true);
+    if (c_action.cost && !old){
         var cost = $('<div></div>');
         var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
@@ -11914,7 +11916,10 @@ function actionDesc(parent,c_action,obj,old){
                 if (res_cost > 0){
                     let label = res === 'Money' ? '$' : global.resource[res].name+': ';
                     label = label.replace("_", " ");
-                    let color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
+                    let color = 'has-text-dark';
+                    if (global.resource[res].amount < res_cost){
+                        color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                    }
                     let display_cost = sizeApproximation(res_cost,1);
                     cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
                 }
@@ -11947,7 +11952,7 @@ function actionDesc(parent,c_action,obj,old){
             });
         }
         else {
-            let time = timeFormat(timeCheck(c_action));
+            let time = tc.t;
             parent.append($(`<div class="flair has-text-advanced">${loc('action_ready',[time])}</div>`));
         }
     }

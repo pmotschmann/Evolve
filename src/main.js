@@ -4186,7 +4186,9 @@ function midLoop(){
                     element.addClass('cnam');
                 }
                 if (global.city[action]){
-                    global.city[action]['time'] = timeFormat(timeCheck(c_action));
+                    let tc = timeCheck(c_action,false,true);
+                    global.city[action]['time'] = timeFormat(tc.t);
+                    global.city[action]['bn'] = tc.r;
                 }
             }
         });
@@ -4593,7 +4595,7 @@ function midLoop(){
                     $(this).addClass('has-text-danger');
                 }
             }
-            else if ($(this).hasClass('has-text-danger')){
+            else if ($(this).hasClass('has-text-danger') || $(this).hasClass('has-text-alert')){
                 $(this).removeClass('has-text-danger');
                 $(this).addClass('has-text-dark');
             }
