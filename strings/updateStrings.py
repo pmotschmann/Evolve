@@ -14,8 +14,8 @@ else:
         exit()
 
     with open('strings.json', encoding='utf-8') as default_file, \
-        open('strings.{}.json'.format(locale), encoding='utf-8') as loc_file, \
-        open('update.{}.json'.format(locale), 'w', encoding='utf-8') as wr_file:
+        open('strings.{}.json'.format(locale), 'r+', encoding='utf-8') as loc_file:#, \
+        # open('update.{}.json'.format(locale), 'w', encoding='utf-8') as wr_file:
         defstr = json.load(default_file)
         locstr = json.load(loc_file)
 
@@ -38,4 +38,6 @@ else:
         print("{} values are marked with tag 'TRANS:'".format(trans_count))
         print("{} keys was deleted".format(len(locstr)))
 
-        json.dump(wr, wr_file, ensure_ascii=False, indent=4)
+        loc_file.seek(0,0);
+        loc_file.truncate(0);
+        json.dump(wr, loc_file, ensure_ascii=False, indent=2)
