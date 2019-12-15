@@ -5108,11 +5108,33 @@ function diffCalc(res,period){
     let sec = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;
-    if (global.resource[res].diff < 0 && !$(`#res${res} .diff`).hasClass('has-text-danger')){
-        $(`#res${res} .diff`).addClass('has-text-danger');
+    if (global.race['decay']){
+        if (global.resource[res].diff < 0){
+            if (breakdown.p.consume[res][loc('evo_challenge_decay')] > global.resource[res].diff){
+                if (!$(`#res${res} .diff`).hasClass('has-text-danger')){
+                    $(`#res${res} .diff`).removeClass('has-text-warning');
+                    $(`#res${res} .diff`).addClass('has-text-danger');
+                }
+            }
+            else {
+                if (!$(`#res${res} .diff`).hasClass('has-text-warning')){
+                    $(`#res${res} .diff`).removeClass('has-text-danger');
+                    $(`#res${res} .diff`).addClass('has-text-warning');
+                }
+            }
+        }
+        else if (global.resource[res].diff >= 0 && ($(`#res${res} .diff`).hasClass('has-text-danger') || $(`#res${res} .diff`).hasClass('has-text-warning'))){
+            $(`#res${res} .diff`).removeClass('has-text-danger');
+            $(`#res${res} .diff`).removeClass('has-text-warning');
+        }
     }
-    else if (global.resource[res].diff >= 0 && $(`#res${res} .diff`).hasClass('has-text-danger')){
-        $(`#res${res} .diff`).removeClass('has-text-danger');
+    else {
+        if (global.resource[res].diff < 0 && !$(`#res${res} .diff`).hasClass('has-text-danger')){
+            $(`#res${res} .diff`).addClass('has-text-danger');
+        }
+        else if (global.resource[res].diff >= 0 && $(`#res${res} .diff`).hasClass('has-text-danger')){
+            $(`#res${res} .diff`).removeClass('has-text-danger');
+        }
     }
 }
 
