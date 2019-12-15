@@ -11816,7 +11816,7 @@ export function setPlanet(hell){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
             
-            popper.append($(`<div>${loc('set_planet',[id,biome,orbit])}</div>`));
+            popper.append($(`<div>${loc('set_planet',[title,biomes[biome].label,orbit])}</div>`));
             popper.append($(`<div>${biomes[biome].desc}</div>`));
             if (trait !== 'none'){
                 popper.append($(`<div>${planetTraits[trait].desc}</div>`));
