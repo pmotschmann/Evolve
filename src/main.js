@@ -4255,7 +4255,6 @@ function midLoop(){
             if (genePool[action] && genePool[action].cost){
                 let c_action = genePool[action];
                 let element = $('#'+c_action.id);
-                console.log(c_action.id);
                 if (element.length > 0){
                     if ( (global.race['universe'] !== 'antimatter' && c_action.cost > global.race.Plasmid.count) || (global.race['universe'] === 'antimatter' && c_action.cost > global.race.Plasmid.anti) ){
                         if (!element.hasClass('cna')){
