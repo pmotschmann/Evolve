@@ -311,9 +311,10 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     return Math.round((mutiplier ** count) * base);
 }
 
-export function timeCheck(c_action,track){
+export function timeCheck(c_action,track,detailed){
     if (c_action.cost){
         let time = 0;
+        let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
             var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
@@ -336,6 +337,7 @@ export function timeCheck(c_action,track){
                     if (global.resource[res].diff > 0){
                         let r_time = (testCost - res_have) / global.resource[res].diff;
                         if (r_time > time){
+                            bottleneck = res;
                             time = r_time;
                         }
                     }
@@ -354,7 +356,7 @@ export function timeCheck(c_action,track){
             }
             track.t += time;
         }
-        return time;
+        return detailed ? { t: time, r: bottleneck } : time;
     }
     else {
         return 0;
