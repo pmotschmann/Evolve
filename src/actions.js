@@ -4379,8 +4379,12 @@ export const actions = {
         },
         wooden_tools: {
             id: 'tech-wooden_tools',
-            title: loc('tech_wooden_tools'),
-            desc: loc('tech_wooden_tools_desc'),
+            title() {
+                return global.race['evil'] ? loc('tech_bone_tools') : loc('tech_wooden_tools');
+            },
+            desc() {
+                return global.race['evil'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc');
+            },
             reqs: { primitive: 1 },
             grant: ['primitive',2],
             condition(){
@@ -7969,7 +7973,9 @@ export const actions = {
             reqs: { primitive: 3 },
             grant: ['reclaimer',1],
             trait: ['evil'],
-            not_trait: ['kindling_kindred','soul_eater'],
+            condition(){
+                return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            },
             cost: {
                 Knowledge(){ return 45; },
                 Lumber(){ return 20; },
@@ -7992,7 +7998,9 @@ export const actions = {
             reqs: { reclaimer: 1, mining: 2 },
             grant: ['reclaimer',2],
             trait: ['evil'],
-            not_trait: ['kindling_kindred','soul_eater'],
+            condition(){
+                return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            },
             cost: {
                 Knowledge(){ return 540; },
                 Copper(){ return 25; }
@@ -8012,7 +8020,9 @@ export const actions = {
             reqs: { reclaimer: 2, mining: 3 },
             grant: ['reclaimer',3],
             trait: ['evil'],
-            not_trait: ['kindling_kindred','soul_eater'],
+            condition(){
+                return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            },
             cost: {
                 Knowledge(){ return 2700; },
                 Iron(){ return 250; }
@@ -8032,7 +8042,9 @@ export const actions = {
             reqs: { reclaimer: 3, smelting: 2 },
             grant: ['reclaimer',4],
             trait: ['evil'],
-            not_trait: ['kindling_kindred','soul_eater'],
+            condition(){
+                return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            },
             cost: {
                 Knowledge(){ return 9000; },
                 Steel(){ return 250; }
@@ -8052,7 +8064,9 @@ export const actions = {
             reqs: { reclaimer: 4, high_tech: 3 },
             grant: ['reclaimer',5],
             trait: ['evil'],
-            not_trait: ['kindling_kindred','soul_eater'],
+            condition(){
+                return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            },
             cost: {
                 Knowledge(){ return 38000; },
                 Titanium(){ return 350; }
@@ -8072,7 +8086,9 @@ export const actions = {
             reqs: { reclaimer: 5, high_tech: 4 },
             grant: ['reclaimer',6],
             trait: ['evil'],
-            not_trait: ['kindling_kindred','soul_eater'],
+            condition(){
+                return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            },
             cost: {
                 Knowledge(){ return 67500; },
                 Alloy(){ return 750; }
@@ -8092,7 +8108,9 @@ export const actions = {
             reqs: { reclaimer: 6, space: 3 },
             grant: ['reclaimer',7],
             trait: ['evil'],
-            not_trait: ['kindling_kindred','soul_eater'],
+            condition(){
+                return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            },
             cost: {
                 Knowledge(){ return 160000; },
                 Mythril(){ return 880; }
@@ -8112,7 +8130,9 @@ export const actions = {
             reqs: { reclaimer: 7, alpha: 2 },
             grant: ['reclaimer',8],
             trait: ['evil'],
-            not_trait: ['kindling_kindred','soul_eater'],
+            condition(){
+                return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            },
             cost: {
                 Knowledge(){ return 525000; },
                 Adamantite(){ return 10000; }

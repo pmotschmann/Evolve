@@ -1591,7 +1591,7 @@ export function cleanRemoveTrait(trait){
             delete global.city['shrine'];
             break;
         case 'thalassophobia':
-            if (global.tech['thalassophobia']){
+            if (global.tech['wharf']){
                 global.city['wharf'] = { count: 0 };
             }
             break;
