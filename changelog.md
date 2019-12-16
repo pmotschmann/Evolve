@@ -3,6 +3,7 @@ Decaying resources will now use a warning color if you are losing that resource 
 The most bottlenecked resource will now display in red while other trouble resources will be marked with an alert color<br>
 CRISPR upgrades are now darkened when unaffordable<br>
 Transfer Station now lists its uranium storage<br>
+Wendigo bug fixes<br>
 
 #### 0.7.10 - 12/12/2019 ####
 Craftsman now continuously output product instead of once/twice a month<br>

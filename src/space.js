@@ -2016,6 +2016,7 @@ const interstellarProjects = {
                     incrementStruct('xfer_station','interstellar');
                     if (global.city.power >= $(this)[0].powered()){
                         global.interstellar['xfer_station'].on++;
+                        global['resource']['Uranium'].max += spatialReasoning(2500);
                         global['resource']['Helium_3'].max += spatialReasoning(5000);
                         global['resource']['Oil'].max += spatialReasoning(4000);
                         global['resource']['Deuterium'].max += spatialReasoning(2000);

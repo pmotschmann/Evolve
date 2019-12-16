@@ -1210,9 +1210,9 @@ export function drawPerks(){
 
     if (global.genes['bleed']){ 
         unlocked++; 
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_bleeding_effect_desc",[25])}</span></div>`); 
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_bleeding_effect_desc",[2.5])}</span></div>`); 
         if (global.genes['bleed'] >= 2){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_synchronicity_desc",[2.5])}</span></div>`); 
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_synchronicity_desc",[25])}</span></div>`); 
             if (global.genes['bleed'] >= 3){
                 perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_astral_awareness_desc")}</span></div>`); 
             } 
