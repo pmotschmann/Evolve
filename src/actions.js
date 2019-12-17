@@ -11972,7 +11972,7 @@ function actionDesc(parent,c_action,obj,old){
             });
         }
         else {
-            let time = tc.t;
+            let time = timeFormat(tc.t);
             parent.append($(`<div class="flair has-text-advanced">${loc('action_ready',[time])}</div>`));
         }
     }
