@@ -1,5 +1,6 @@
 #### 0.7.12 - 12/19/2019 ####
 Gene Fortification<br>
+Fixed Cultural Supremacy popover<br>
 
 #### 0.7.11 - 12/15/2019 ####
 Decaying resources will now use a warning color if you are losing that resource but at a slower rate then the decay rate<br>

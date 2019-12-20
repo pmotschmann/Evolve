@@ -317,32 +317,34 @@ export function timeCheck(c_action,track,detailed){
         let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
-            var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
-            if (testCost > 0){
-                let res_have = Number(global.resource[res].amount);
-                if (track){
-                    res_have += global.resource[res].diff * track.t;
-                    if (track.r[res]){
-                        res_have -= Number(track.r[res]);
-                        track.r[res] += testCost;
-                    }
-                    else {
-                        track.r[res] = testCost;
-                    }
-                    if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
-                        res_have = global.resource[res].max;
-                    }
-                }
-                if (testCost > res_have){
-                    if (global.resource[res].diff > 0){
-                        let r_time = (testCost - res_have) / global.resource[res].diff;
-                        if (r_time > time){
-                            bottleneck = res;
-                            time = r_time;
+            if (res !== 'Morale'){
+                var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
+                if (testCost > 0){
+                    let res_have = Number(global.resource[res].amount);
+                    if (track){
+                        res_have += global.resource[res].diff * track.t;
+                        if (track.r[res]){
+                            res_have -= Number(track.r[res]);
+                            track.r[res] += testCost;
+                        }
+                        else {
+                            track.r[res] = testCost;
+                        }
+                        if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
+                            res_have = global.resource[res].max;
                         }
                     }
-                    else {
-                        time = -1;
+                    if (testCost > res_have){
+                        if (global.resource[res].diff > 0){
+                            let r_time = (testCost - res_have) / global.resource[res].diff;
+                            if (r_time > time){
+                                bottleneck = res;
+                                time = r_time;
+                            }
+                        }
+                        else {
+                            time = -1;
+                        }
                     }
                 }
             }
