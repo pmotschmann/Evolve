@@ -930,6 +930,25 @@ function genetics(){
         $('#arpaGenetics').append(breakdown);
 
         let minor = false;
+        if (global.tech['decay'] && global.tech['decay'] >= 2){
+            let trait = 'fortify';
+            minor = true;
+            let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
+            let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
+            m_trait.append(gene);
+            if (global.race.Phage.count > 0){
+                let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
+                m_trait.append(phage);
+            }
+            if (global.race[trait] > 1){
+                m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
+            }
+            else {
+                m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
+            }
+            breakdown.append(m_trait);
+        }
+
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type === 'minor'){
                 minor = true;
@@ -953,7 +972,7 @@ function genetics(){
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[races[global.race.species].name])}</div>`)
         
         Object.keys(global.race).forEach(function (trait){
-            if (traits[trait] && traits[trait].type !== 'minor' && trait !== 'evil' && trait !== 'soul_eater'){
+            if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater'){
                 if ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2)){
                     let major = $(`<div class="traitRow"></div>`);
                     let purge = $(`<b-tooltip :label="removeCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">Remove</span></b-tooltip>`);
@@ -1079,11 +1098,11 @@ function genetics(){
                     }
                 },
                 geneCost(t){
-                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    let cost = sizeApproximation(fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4));
                     return loc('arpa_gene_buy',[t,cost]);
                 },
                 phageCost(t){
-                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    let cost = sizeApproximation(fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4));
                     return loc('arpa_phage_buy',[t,cost]);
                 },
                 removeCost(t){

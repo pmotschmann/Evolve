@@ -1339,6 +1339,10 @@ export const traits = {
     gambler: { // Alloy bonus
         desc: loc('trait_gambler'),
         type: 'minor',
+    },
+    fortify: { // gene fortification
+        desc: loc('trait_fortify'),
+        type: 'special',
     }
 };
 

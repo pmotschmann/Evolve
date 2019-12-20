@@ -4932,6 +4932,20 @@ function longLoop(){
             drawTech();
         }
 
+        if (global.tech['decay'] && global.tech['decay'] >= 2){
+            let fortify = 0;
+            if (global.genes.minor['fortify']){
+                fortify += global.genes.minor['fortify'];
+            }
+            if (global.race.minor['fortify']){
+                fortify += global.race.minor['fortify'];
+            }
+            global.race.gene_fortify = fortify;
+        }
+        else {
+            global.race.gene_fortify = 0;
+        }
+
         if (!global.tech['genesis'] && global.race.deterioration >= 1 && global.tech['high_tech'] && global.tech['high_tech'] >= 10){
             global.tech['genesis'] = 1;
             messageQueue(loc('genesis'),'special');
