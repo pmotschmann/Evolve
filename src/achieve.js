@@ -1,5 +1,5 @@
-import { global, vues, messageQueue, set_alevel, poppers } from './vars.js';
-import { svgIcons, svgViewBox, format_emblem } from './functions.js'; 
+import { global, set_alevel, poppers } from './vars.js';
+import { svgIcons, svgViewBox, format_emblem, vBind, messageQueue } from './functions.js'; 
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
@@ -15,6 +15,11 @@ var achievements = {
         name: loc("achieve_apocalypse_name"),
         desc: loc("achieve_apocalypse_desc"),
         flair: loc("achieve_apocalypse_flair")
+    },
+    anarchist: {
+        name: loc("achieve_anarchist_name"),
+        desc: loc("achieve_anarchist_desc"),
+        flair: loc("achieve_anarchist_flair")
     },
     squished: {
         name: loc("achieve_squished_name"),
@@ -276,6 +281,26 @@ var achievements = {
         desc: loc("achieve_genus_aquatic_desc"),
         flair: loc("achieve_genus_aquatic_flair")
     },
+    genus_fey: {
+        name: loc("achieve_genus_fey_name"),
+        desc: loc("achieve_genus_fey_desc"),
+        flair: loc("achieve_genus_fey_flair")
+    },
+    genus_heat: {
+        name: loc("achieve_genus_heat_name"),
+        desc: loc("achieve_genus_heat_desc"),
+        flair: loc("achieve_genus_heat_flair")
+    },
+    genus_polar: {
+        name: loc("achieve_genus_polar_name"),
+        desc: loc("achieve_genus_polar_desc"),
+        flair: loc("achieve_genus_polar_flair")
+    },
+    genus_sand: {
+        name: loc("achieve_genus_sand_name"),
+        desc: loc("achieve_genus_sand_desc"),
+        flair: loc("achieve_genus_sand_flair")
+    },
     genus_demonic: {
         name: loc("achieve_genus_demonic_name"),
         desc: loc("achieve_genus_demonic_desc"),
@@ -466,6 +491,46 @@ var achievements = {
         desc: loc("achieve_extinct_octigoran_desc"),
         flair: loc("achieve_extinct_octigoran_flair")
     },
+    extinct_dryad: {
+        name: loc("achieve_extinct_dryad_name"),
+        desc: loc("achieve_extinct_dryad_desc"),
+        flair: loc("achieve_extinct_dryad_flair")
+    },
+    extinct_satyr: {
+        name: loc("achieve_extinct_satyr_name"),
+        desc: loc("achieve_extinct_satyr_desc"),
+        flair: loc("achieve_extinct_satyr_flair")
+    },
+    extinct_phoenix: {
+        name: loc("achieve_extinct_phoenix_name"),
+        desc: loc("achieve_extinct_phoenix_desc"),
+        flair: loc("achieve_extinct_phoenix_flair")
+    },
+    extinct_salamander: {
+        name: loc("achieve_extinct_salamander_name"),
+        desc: loc("achieve_extinct_salamander_desc"),
+        flair: loc("achieve_extinct_salamander_flair")
+    },
+    extinct_yeti: {
+        name: loc("achieve_extinct_yeti_name"),
+        desc: loc("achieve_extinct_yeti_desc"),
+        flair: loc("achieve_extinct_yeti_flair")
+    },
+    extinct_wendigo: {
+        name: loc("achieve_extinct_wendigo_name"),
+        desc: loc("achieve_extinct_wendigo_desc"),
+        flair: loc("achieve_extinct_wendigo_flair")
+    },
+    extinct_tuskin: {
+        name: loc("achieve_extinct_tuskin_name"),
+        desc: loc("achieve_extinct_tuskin_desc"),
+        flair: loc("achieve_extinct_tuskin_flair")
+    },
+    extinct_kamel: {
+        name: loc("achieve_extinct_kamel_name"),
+        desc: loc("achieve_extinct_kamel_desc"),
+        flair: loc("achieve_extinct_kamel_flair")
+    },
     extinct_balorg: {
         name: loc("achieve_extinct_balorg_name"),
         desc: loc("achieve_extinct_balorg_desc"),
@@ -524,10 +589,55 @@ const feats = {
         desc: loc("feat_supermassive_desc"),
         flair: loc("feat_supermassive_flair")
     },
+    rocky_road: {
+        name: loc("feat_rocky_road_name"),
+        desc: loc("feat_rocky_road_desc"),
+        flair: loc("feat_rocky_road_flair")
+    },
+    novice: {
+        name: loc("feat_novice_name"),
+        desc: loc("feat_achievement_hunter_desc",[10]),
+        flair: loc("feat_novice_flair")
+    },
+    journeyman: {
+        name: loc("feat_journeyman_name"),
+        desc: loc("feat_achievement_hunter_desc",[25]),
+        flair: loc("feat_journeyman_flair")
+    },
+    adept: {
+        name: loc("feat_adept_name"),
+        desc: loc("feat_achievement_hunter_desc",[50]),
+        flair: loc("feat_adept_flair")
+    },
+    master: {
+        name: loc("feat_master_name"),
+        desc: loc("feat_achievement_hunter_desc",[75]),
+        flair: loc("feat_master_flair")
+    },
+    grandmaster: {
+        name: loc("feat_grandmaster_name"),
+        desc: loc("feat_achievement_hunter_desc",[100]),
+        flair: loc("feat_grandmaster_flair")
+    },
+    nephilim: {
+        name: loc("feat_nephilim_name"),
+        desc: loc("feat_nephilim_desc"),
+        flair: loc("feat_nephilim_flair")
+    },
     halloween: {
         name: loc("feat_boo_name"),
         desc: loc("feat_boo_desc"),
         flair: loc("feat_boo_flair")
+    },
+    thanksgiving: {
+        name: loc("feat_gobble_gobble_name"),
+        desc: loc("feat_gobble_gobble_desc"),
+        flair: loc("feat_gobble_gobble_flair")
+    },
+    xmas: {
+        name: loc("feat_xmas_name"),
+        desc: loc("feat_xmas_desc"),
+        flair: loc("feat_xmas_flair")
     },
     heavy_genus_humanoid: {
         name: loc("feat_heavy_genus_humanoid_name"),
@@ -574,6 +684,26 @@ const feats = {
         desc: loc("feat_heavy_genus_fungi_desc"),
         flair: loc("feat_heavy_genus_fungi_flair")
     },
+    heavy_genus_fey: {
+        name: loc("feat_heavy_genus_fey_name"),
+        desc: loc("feat_heavy_genus_fey_desc"),
+        flair: loc("feat_heavy_genus_fey_flair")
+    },
+    heavy_genus_heat: {
+        name: loc("feat_heavy_genus_heat_name"),
+        desc: loc("feat_heavy_genus_heat_desc"),
+        flair: loc("feat_heavy_genus_heat_flair")
+    },
+    heavy_genus_polar: {
+        name: loc("feat_heavy_genus_polar_name"),
+        desc: loc("feat_heavy_genus_polar_desc"),
+        flair: loc("feat_heavy_genus_polar_flair")
+    },
+    heavy_genus_sand: {
+        name: loc("feat_heavy_genus_sand_name"),
+        desc: loc("feat_heavy_genus_sand_desc"),
+        flair: loc("feat_heavy_genus_sand_flair")
+    },
     heavy_genus_aquatic: {
         name: loc("feat_heavy_genus_aquatic_name"),
         desc: loc("feat_heavy_genus_aquatic_desc"),
@@ -586,7 +716,7 @@ const feats = {
     }
 }
 
-export function unlockAchieve(achievement,small){
+export function unlockAchieve(achievement,small,rank){
     if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
         return false;
     }
@@ -597,13 +727,16 @@ export function unlockAchieve(achievement,small){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
-    if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < a_level)){
+    if (typeof rank === "undefined" || rank > a_level){
+        rank = a_level;
+    }
+    if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < rank)){
         global.settings.showAchieve = true;
         if (global.stats.achieve[achievement]){
-            global.stats.achieve[achievement].l = a_level;
+            global.stats.achieve[achievement].l = rank;
         }
         else {
-            global.stats.achieve[achievement] = { l: a_level };
+            global.stats.achieve[achievement] = { l: rank };
         }
         messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
         drawPerks();
@@ -613,23 +746,23 @@ export function unlockAchieve(achievement,small){
     if (global.stats.achieve[achievement]){
         switch (global.race.universe){
             case 'antimatter':
-                if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < a_level)){
-                    global.stats.achieve[achievement]['a'] = a_level;
+                if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < rank)){
+                    global.stats.achieve[achievement]['a'] = rank;
                 }
                 break;
             case 'heavy':
-                if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < a_level)){
-                    global.stats.achieve[achievement]['h'] = a_level;
+                if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < rank)){
+                    global.stats.achieve[achievement]['h'] = rank;
                 }
                 break;
             case 'evil':
-                if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < a_level)){
-                    global.stats.achieve[achievement]['e'] = a_level;
+                if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < rank)){
+                    global.stats.achieve[achievement]['e'] = rank;
                 }
                 break;
             case 'micro':
-                if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < a_level)){
-                    global.stats.achieve[achievement]['m'] = a_level;
+                if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < rank)){
+                    global.stats.achieve[achievement]['m'] = rank;
                 }
                 break;
         }
@@ -637,7 +770,7 @@ export function unlockAchieve(achievement,small){
     return unlock;
 }
 
-export function unlockFeat(feat,small){
+export function unlockFeat(feat,small,rank){
     if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
         return false;
     }
@@ -647,9 +780,12 @@ export function unlockFeat(feat,small){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
-    if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < a_level)){
+    if (typeof rank === "undefined" || rank > a_level){
+        rank = a_level;
+    }
+    if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < rank)){
         global.settings.showAchieve = true;
-        global.stats.feat[feat] = a_level;
+        global.stats.feat[feat] = rank;
         messageQueue(loc('feat_unlocked', [feats[feat].name] ),'special');
         drawPerks();
         drawAchieve();
@@ -673,10 +809,6 @@ export function setupStats(){
 }
 
 export function drawAchieve(){
-    if (vues['vue_achieve']){
-        vues['vue_achieve'].$destroy();
-    }
-
     $('#achievePanel').empty();
     let achieve = $('#achievePanel');
     let earned = 0;
@@ -698,14 +830,15 @@ export function drawAchieve(){
 
     Object.keys(feats).forEach(function (feat){
         if (global.stats.feat[feat]){
-            let star = global.stats.feat[feat] > 1 ? `<p class="flair"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="10px" height="10px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></p>` : '';
+            let star = global.stats.feat[feat] > 1 ? `<p class="flair"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></p>` : '';
             achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
         }
     });
 
     achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}</div>`);
-
-    let avue = {
+    
+    vBind({
+        el: '#achievePanel',
         methods: {
             flair(flair){
                 return achievements[flair].flair;
@@ -714,10 +847,7 @@ export function drawAchieve(){
                 return feats[flair].flair;
             }
         }
-    }
-    
-    vues['vue_achieve'] = new Vue(avue);
-    vues['vue_achieve'].$mount('#achievePanel');
+    });
 
     let a_level = 1;
     if (global.race['no_plasmid']){ a_level++; }
@@ -762,76 +892,80 @@ export function checkAchievements(){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
-    if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(achievements)
-        for (const key of keys) {
-            if (key.includes('extinct_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
+
+    for (let t_level=a_level; t_level >= 0; t_level--){
+        if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(achievements)
+            for (const key of keys) {
+                if (key.includes('extinct_')){
+                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
+                        total++;
+                    }
                 }
             }
-        }
-        if (total >= 25){
-            unlockAchieve('mass_extinction');
-        }
-    }
-    if (!global.stats.achieve['vigilante'] || global.stats.achieve['vigilante'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(achievements)
-        for (const key of keys) {
-            if (key.includes('extinct_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= a_level){
-                    total++
-                }
+            if (total >= 25){
+                unlockAchieve('mass_extinction',false,t_level);
             }
         }
-        if (total >= 25){
-            unlockAchieve('vigilante');
-        }
-    }
-    if (!global.stats.achieve['creator'] || global.stats.achieve['creator'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(achievements);
-        for (const key of keys){
-            if (key.includes('genus_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
+        if (!global.stats.achieve['vigilante'] || global.stats.achieve['vigilante'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(achievements)
+            for (const key of keys) {
+                if (key.includes('extinct_')){
+                    if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= t_level){
+                        total++;
+                    }
                 }
             }
-        }
-        if (total >= 9){
-            unlockAchieve('creator');
-        }
-    }
-    if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(achievements);
-        for (const key of keys){
-            if (key.includes('biome_')){
-                if (global.stats.achieve[key] && global.stats.achieve[key].l >= a_level){
-                    total++
-                }
+            if (total >= 12){
+                unlockAchieve('vigilante',false,t_level);
             }
         }
-        if (total >= 6){
-            unlockAchieve('explorer');
-        }
-    }
-    if (!global.stats.achieve['heavyweight'] || global.stats.achieve['heavyweight'].l < a_level){
-        let total = 0;
-        const keys = Object.keys(feats)
-        for (const key of keys) {
-            if (key.includes('heavy_genus_')){
-                if (global.stats.feat[key] && global.stats.feat[key] >= a_level){
-                    total++
+        if (!global.stats.achieve['creator'] || global.stats.achieve['creator'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(achievements);
+            for (const key of keys){
+                if (key.includes('genus_')){
+                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
+                        total++;
+                    }
                 }
             }
+            if (total >= 9){
+                unlockAchieve('creator',false,t_level);
+            }
         }
-        if (total >= 8){
-            unlockAchieve('heavyweight');
+        if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(achievements);
+            for (const key of keys){
+                if (key.includes('biome_')){
+                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
+                        total++;
+                    }
+                }
+            }
+            if (total >= 6){
+                unlockAchieve('explorer',false,t_level);
+            }
+        }
+        if (!global.stats.achieve['heavyweight'] || global.stats.achieve['heavyweight'].l < t_level){
+            let total = 0;
+            const keys = Object.keys(feats)
+            for (const key of keys) {
+                if (key.includes('heavy_genus_')){
+                    if (global.stats.feat[key] && global.stats.feat[key] >= t_level){
+                        total++;
+                    }
+                }
+            }
+            if (total >= 8){
+                unlockAchieve('heavyweight',false,t_level);
+            }
         }
     }
+
     if (global.tech['supercollider'] && global.tech['supercollider'] >= 99){
         unlockAchieve('blackhole');
     }
@@ -857,6 +991,54 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('halloween');
+        }
+    }
+    else if (date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28){
+        if (global.race.universe === 'micro'){
+            unlockFeat('thanksgiving',true);
+        }
+        else {
+            unlockFeat('thanksgiving');
+        }
+    }
+    else if (date.getMonth() === 11 && date.getDate() == 25){
+        if (global.race.universe === 'micro'){
+            unlockFeat('xmas',true);
+        }
+        else {
+            unlockFeat('xmas');
+        }
+    }
+
+    // total achievements feat
+    {
+        for (let t_level=a_level; t_level >= 0; t_level--){
+
+            let total = 0;
+            const keys = Object.keys(achievements)
+            for (const key of keys) {
+                if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
+                    total++;
+                }
+            }
+            //console.log(`${t_level}: ${total}`);
+            let progress = [
+                {c: 10, f: 'novice'},
+                {c: 25, f: 'journeyman'},
+                {c: 50, f: 'adept'},
+                {c: 75, f: 'master'},
+                {c: 100, f: 'grandmaster'}
+            ];
+            for (let i=0; i<5; i++){
+                if (total >= progress[i].c){
+                    if (global.race.universe === 'micro'){
+                        unlockFeat(progress[i].f,true,t_level);
+                    }
+                    else {
+                        unlockFeat(progress[i].f,false,t_level);
+                    }
+                }
+            }
         }
     }
 }
@@ -898,6 +1080,13 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
     }
 
+    if (global.stats.achieve['whitehole']){
+        unlocked++;
+        let bonus = global.stats.achieve['whitehole'].l * 5;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole")}</span></div>`);
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole2",[bonus])}</span></div>`);
+    }
+
     if (global.stats.achieve['heavyweight']){
         unlocked++;
         let bonus = global.stats.achieve['heavyweight'].l * 4;
@@ -917,6 +1106,12 @@ export function drawPerks(){
         if (global.stats.achieve['dissipated'].l >= 4){
             perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated4",[1])}</span></div>`);
         }
+    }
+
+    if (global.stats.achieve['anarchist']){
+        unlocked++;
+        let bonus = global.stats.achieve['anarchist'].l * 10;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_anarchist",[bonus])}</span></div>`);
     }
 
     if (global.genes['creep']){
@@ -964,7 +1159,6 @@ export function drawPerks(){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge")}</span></div>`);
         if (global.genes['challenge'] >= 2){
-            unlocked++;
             perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_unlocked_desc")}</span></div>`);
         }
     }
@@ -977,16 +1171,34 @@ export function drawPerks(){
     if (global.genes['transcendence']){ 
         unlocked++; 
         perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_transcendence_desc")}</span></div>`); 
-    } 
+    }
 
     if (global.genes['queue']){ 
         unlocked++; 
         perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_geographer_desc")}</span></div>`); 
-        if (global.genes['queue'] >= 2) { 
-            unlocked++; 
+        if (global.genes['queue'] >= 2) {
             perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_architect_desc")}</span></div>`); 
         } 
-    } 
+    }
+
+    if (global.stats.feat['journeyman']){
+        unlocked++;
+        if (global.stats.feat['journeyman'] > 1){
+            let rqueue = global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
+            let queue = global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_journeyman2",[rqueue,queue])}</span></div>`); 
+        }
+        else {
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_journeyman1",[1])}</span></div>`); 
+        }
+    }
+
+    if (global.stats.feat['novice']){
+        unlocked++;
+        let rna = global.stats.feat['novice'] / 2;
+        let dna = global.stats.feat['novice'] / 4;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_novice",[rna,dna])}</span></div>`); 
+    }
 
     if (global.genes['mutation']){ 
         unlocked++;
@@ -994,13 +1206,13 @@ export function drawPerks(){
         if (global.genes['mutation'] >= 3){
             perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation3")}</span></div>`); 
         } 
-    } 
+    }
 
     if (global.genes['bleed']){ 
         unlocked++; 
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_bleeding_effect_desc",[25])}</span></div>`); 
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_bleeding_effect_desc",[2.5])}</span></div>`); 
         if (global.genes['bleed'] >= 2){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_synchronicity_desc",[2.5])}</span></div>`); 
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_synchronicity_desc",[25])}</span></div>`); 
             if (global.genes['bleed'] >= 3){
                 perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_astral_awareness_desc")}</span></div>`); 
             } 
@@ -1013,10 +1225,6 @@ export function drawPerks(){
 }
 
 export function drawStats(){
-    if (vues['vue_stats']){
-        vues['vue_stats'].$destroy();
-    }
-
     $('#statsPanel').empty();
     let stats = $('#statsPanel');
     
@@ -1051,8 +1259,9 @@ export function drawStats(){
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_attacks_made")}</span> {{ attacks }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days }}</div>`);
-
-    let svue = {
+    
+    vBind({
+        el: '#statsPanel',
         data: global.stats,
         filters: {
             played(d){
@@ -1068,8 +1277,5 @@ export function drawStats(){
                 return d + global.stats.tdied;
             }
         }
-    }
-    
-    vues['vue_stats'] = new Vue(svue);
-    vues['vue_stats'].$mount('#statsPanel');
+    });
 }

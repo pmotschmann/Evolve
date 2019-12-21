@@ -1,3 +1,103 @@
+#### 0.7.12 - 12/19/2019 ####
+Gene Fortification<br>
+Fixed Cultural Supremacy popover<br>
+
+#### 0.7.11 - 12/15/2019 ####
+Decaying resources will now use a warning color if you are losing that resource but at a slower rate then the decay rate<br>
+The most bottlenecked resource will now display in red while other trouble resources will be marked with an alert color<br>
+CRISPR upgrades are now darkened when unaffordable<br>
+Transfer Station now lists its uranium storage<br>
+Wendigo bug fixes<br>
+
+#### 0.7.10 - 12/12/2019 ####
+Craftsman now continuously output product instead of once/twice a month<br>
+Cumulative achievements now check for lower tier unlocks<br>
+
+#### 0.7.9 - 12/7/2019 ####
+Many bug fixes<br>
+
+#### 0.7.8 - 12/6/2019 ####
+The default job can now be set to: Unemployed, Farmer, Lumberjack, Quarry Worker, or Scavanger<br>
+New line of feats for achievement hunting<br>
+Novice Perk<br>
+Journeyman Perk<br>
+
+#### 0.7.7 - 12/5/2019 ####
+Super projects now queue in larger batches<br>
+Super projects now only report completion by the queue if actually complete instead of for each segment constructed<br>
+
+#### 0.7.6 - 12/2/2019 ####
+Adjacent queue items of the same type will now combine<br>
+Architect now doubles queue sizes instead of adding a flat +2<br>
+Misc minor bug fixes<br>
+
+#### 0.7.5 - 11/28/2019 ####
+Queueing 2x or more of the same building in a row will now stack them in the queue<br>
+Queue timer now adjusts for cost creep<br>
+ARPA Projects can now be queued<br>
+Fixed a bug that could break the game when Yeti or Wendigo unlocked the genetics lab<br>
+
+#### 0.7.4 - 11/27/2019 ####
+Wendigo can now build hunting lodges<br>
+Trade route prices are now tracked to 1 decimal<br>
+Elusive spies will no longer be killed when they fail a mission<br>
+Disruptor Rifles now require researching Quantum Entanglement<br>
+
+#### 0.7.3 - 11/26/2019 ####
+Night Theme trade volume control made more night theme friendly<br>
+Contrast improvements for Night and R/G Theme<br>
+
+#### 0.7.2 - 11/24/2019 ####
+New market buy/sell volume control<br>
+Large Trade upgrade now raises the buy/sell cap to 5,000<br>
+Massive Trades upgrade now raises the buy/sell cap to 1,000,000<br>
+Various bug fixes by Beorseder<br>
+
+#### 0.7.1 - 11/23/2019 ####
+Garrison controls reintegrated into government section<br>
+Mutation plasmids now track correctly in no plasmid challenge runs<br>
+Fixed many issues with foreign power name generation<br>
+Feat star icon is no longer tiny<br>
+
+#### 0.7.0 - 11/21/2019 ####
+Establish a Government<br>
+Battle rival cities<br>
+Biome races added for Forest, Desert, Tundra, and Volcanic<br>
+New ARPA Project: Railway<br>
+New CRISPR upgrades: Mitosis & Metaphase<br>
+Construct advanced AI stations in deep space<br>
+Rapid Gene Squencing upgrade<br>
+Civics tab split into Government, Industry, and Military sections<br>
+Inspiration no longer adds an upfront knowledge bonus<br>
+Vigilante requirement lowered to 12<br>
+Xenophobic replaced with Wasteful<br>
+Added Rocky Road Feat<br>
+Configurable number notations<br>
+
+#### 0.6.27 - 11/12/2019 ####
+Tundra planets are now always cold in winter<br>
+Volcanic planets are now always hot in summer<br>
+Stormy planets are now more likely to be windy<br>
+Fixed issue with last rites not showing up as affordable<br>
+<br>
+2-4x Challenge Multipliers changed:<br>
+2 Challenges: +12% Prestige<br>
+3 Challenges: +25% Prestige<br>
+4 Challenges: +45% Prestige<br>
+<br>
+Heavy Universe prestige bonus now scales with challenge level:<br>
+0 Challenges: +5% Prestige<br>
+1 Challenge: +10% Prestige<br>
+2 Challenges: +15% Prestige<br>
+3 Challenges: +20% Prestige<br>
+4 Challenges: +25% Prestige<br>
+
+#### 0.6.26 - 11/7/2019 ####
+ARPA costs now update without mousing off and back on the buttons<br>
+Fixed issues with incorrectly powering on newly built structures<br>
+None-demonic evil smelters now correctly state they burn 1 flesh/s<br>
+Added whitehole perk to stats page<br>
+
 #### 0.6.25 - 11/2/2019 ####
 Geology bonus is now preserved on MAD reset<br>
 Key Mappings are now configurable for multiplier and queue keys<br>

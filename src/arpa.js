@@ -1,5 +1,6 @@
-import { global, vues, poppers, keyMultiplier, sizeApproximation, messageQueue, srSpeak } from './vars.js';
-import { timeFormat } from './functions.js';
+import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { timeFormat, vBind, messageQueue } from './functions.js';
+import { dragQueue } from './civics.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { space } from './space.js';
@@ -24,7 +25,7 @@ export function arpa(type) {
     }
 }
 
-const arpaProjects = {
+export const arpaProjects = {
     lhc: {
         title: loc('arpa_projects_lhc_title'),
         desc: loc('arpa_projects_lhc_desc'),
@@ -45,13 +46,13 @@ const arpaProjects = {
             }
         },
         cost: {
-            Money: function(){ return costMultiplier('lhc', 2500000, 1.05); },
-            Knowledge: function(){ return costMultiplier('lhc', 500000, 1.05); },
-            Copper: function(){ return costMultiplier('lhc', 125000, 1.05); },
-            Cement: function(){ return costMultiplier('lhc', 250000, 1.05); },
-            Steel: function(){ return costMultiplier('lhc', 187500, 1.05); },
-            Titanium: function(){ return costMultiplier('lhc', 50000, 1.05); },
-            Polymer: function(){ return costMultiplier('lhc', 12000, 1.05); }
+            Money(offset){ return costMultiplier('lhc', offset, 2500000, 1.05); },
+            Knowledge(offset){ return costMultiplier('lhc', offset, 500000, 1.05); },
+            Copper(offset){ return costMultiplier('lhc', offset, 125000, 1.05); },
+            Cement(offset){ return costMultiplier('lhc', offset, 250000, 1.05); },
+            Aluminium(offset){ return costMultiplier('lhc', offset, 350000, 1.05); },
+            Titanium(offset){ return costMultiplier('lhc', offset, 50000, 1.05); },
+            Polymer(offset){ return costMultiplier('lhc', offset, 12000, 1.05); }
         }
     },
     stock_exchange: {
@@ -68,10 +69,10 @@ const arpaProjects = {
             }
         },
         cost: {
-            Money: function(){ return costMultiplier('stock_exchange', 3000000, 1.06); },
-            Plywood: function(){ return costMultiplier('stock_exchange', 25000, 1.06); },
-            Brick: function(){ return costMultiplier('stock_exchange', 20000, 1.06); },
-            Wrought_Iron: function(){ return costMultiplier('stock_exchange', 10000, 1.06); }
+            Money(offset){ return costMultiplier('stock_exchange', offset, 3000000, 1.06); },
+            Plywood(offset){ return costMultiplier('stock_exchange', offset, 25000, 1.06); },
+            Brick(offset){ return costMultiplier('stock_exchange', offset, 20000, 1.06); },
+            Wrought_Iron(offset){ return costMultiplier('stock_exchange', offset, 10000, 1.06); }
         }
     },
     launch_facility: {
@@ -84,12 +85,12 @@ const arpaProjects = {
             return loc('arpa_projects_launch_facility_effect1');
         },
         cost: {
-            Money: function(){ return costMultiplier('launch_facility', 2000000, 1.1); },
-            Knowledge: function(){ return costMultiplier('launch_facility', 500000, 1.1); },
-            Cement: function(){ return costMultiplier('launch_facility', 150000, 1.1); },
-            Oil: function(){ return costMultiplier('launch_facility', 20000, 1.1); },
-            Sheet_Metal: function(){ return costMultiplier('launch_facility', 15000, 1.1); },
-            Alloy: function(){ return costMultiplier('launch_facility', 25000, 1.1); }
+            Money(offset){ return costMultiplier('launch_facility', offset, 2000000, 1.1); },
+            Knowledge(offset){ return costMultiplier('launch_facility', offset, 500000, 1.1); },
+            Cement(offset){ return costMultiplier('launch_facility', offset, 150000, 1.1); },
+            Oil(offset){ return costMultiplier('launch_facility', offset, 20000, 1.1); },
+            Sheet_Metal(offset){ return costMultiplier('launch_facility', offset, 15000, 1.1); },
+            Alloy(offset){ return costMultiplier('launch_facility', offset, 25000, 1.1); }
         }
     },
     monument: {
@@ -112,12 +113,28 @@ const arpaProjects = {
             return loc('arpa_projects_monument_effect1');
         },
         cost: {
-            Stone: function(){ return monument_costs('Stone') },
-            Aluminium: function(){ return monument_costs('Aluminium') },
-            Cement: function(){ return monument_costs('Cement') },
-            Steel: function(){ return monument_costs('Steel') }
+            Stone(offset){ return monument_costs('Stone', offset) },
+            Aluminium(offset){ return monument_costs('Aluminium', offset) },
+            Cement(offset){ return monument_costs('Cement', offset) },
+            Steel(offset){ return monument_costs('Steel', offset) }
         }
-    }
+    },
+    railway: {
+        title: loc('arpa_projects_railway_title'),
+        desc: loc('arpa_projects_railway_desc'),
+        reqs: { high_tech: 6, trade: 3 },
+        grant: 'railway',
+        effect(){
+            let routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
+            return loc('arpa_projects_railway_effect1',[routes,2,6,1]);
+        },
+        cost: {
+            Money(offset){ return costMultiplier('railway', offset, 2500000, 1.08); },
+            Lumber(offset){ return costMultiplier('railway', offset, 750000, 1.08); },
+            Iron(offset){ return costMultiplier('railway', offset, 300000, 1.08); },
+            Steel(offset){ return costMultiplier('railway', offset, 450000, 1.08); }
+        }
+    },
 };
 
 const genePool = {
@@ -326,6 +343,36 @@ const genePool = {
         effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('cytokinesis')){
+                return true;
+            }
+            return false;
+        }
+    },
+    mitosis: {
+        id: 'genes-mitosis',
+        title: loc('arpa_genepool_mitosis_title'),
+        desc: loc('arpa_genepool_mitosis_desc',[3]),
+        reqs: { synthesis: 3, evolve: 2 },
+        grant: ['plasma',1],
+        cost: 90,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('mitosis')){
+                return true;
+            }
+            return false;
+        }
+    },
+    metaphase: {
+        id: 'genes-metaphase',
+        title: loc('arpa_genepool_metaphase_title'),
+        desc: loc('arpa_genepool_mitosis_desc',[5]),
+        reqs: { plasma: 1 },
+        grant: ['plasma',2],
+        cost: 165,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('mitosis')){
                 return true;
             }
             return false;
@@ -648,16 +695,16 @@ function pick_monument(){
     }
 }
 
-function monument_costs(res){
+function monument_costs(res,offset){
     switch(global.arpa.m_type){
         case 'Obelisk':
-            return res === 'Stone' ? costMultiplier('monument', 1000000, 1.1) : 0;
+            return res === 'Stone' ? costMultiplier('monument', offset, 1000000, 1.1) : 0;
         case 'Statue':
-            return res === 'Aluminium' ? costMultiplier('monument', 350000, 1.1) : 0;
+            return res === 'Aluminium' ? costMultiplier('monument', offset, 350000, 1.1) : 0;
         case 'Sculpture':
-            return res === 'Steel' ? costMultiplier('monument', 300000, 1.1) : 0;
+            return res === 'Steel' ? costMultiplier('monument', offset, 300000, 1.1) : 0;
         case 'Monolith':
-            return res === 'Cement' ? costMultiplier('monument', 300000, 1.1) : 0;
+            return res === 'Cement' ? costMultiplier('monument', offset, 300000, 1.1) : 0;
     }
 }
 
@@ -711,10 +758,13 @@ function kindlingAdjust(costs){
     return costs;
 }
 
-function costMultiplier(project,base,mutiplier){
+function costMultiplier(project,offset,base,mutiplier){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
     if (global.race['creative']){
         mutiplier -= 0.01;
+    }
+    if (offset){
+        rank += offset;
     }
     return Math.round((mutiplier ** rank) * base);
 }
@@ -726,6 +776,7 @@ function physics(){
     addProject(parent,'stock_exchange');
     addProject(parent,'launch_facility');
     addProject(parent,'monument');
+    addProject(parent,'railway');
 }
 
 function genetics(){
@@ -736,9 +787,6 @@ function genetics(){
     }
 
     if (global.tech['genetics'] > 1){
-        if (vues[`arpaSequence`]){
-            vues[`arpaSequence`].$destroy();
-        }
         let genome = $(`<div id="arpaSequence" class="genome"></div>`);
         parent.append(genome);
 
@@ -795,8 +843,8 @@ function genetics(){
             $('#arpaSequence button.auto').addClass('has-text-success');
         }
 
-
-        vues[`arpaSequence`] = new Vue({
+        vBind({
+            el: `#arpaSequence`,
             data: global.arpa.sequence,
             methods: {
                 seq(){
@@ -876,13 +924,31 @@ function genetics(){
                 }
             }
         });
-        vues[`arpaSequence`].$mount(`#arpaSequence`);
     }
     if (global.tech['genetics'] > 2){
         let breakdown = $('<div id="geneticBreakdown" class="geneticTraits"></div>');
         $('#arpaGenetics').append(breakdown);
 
         let minor = false;
+        if (global.tech['decay'] && global.tech['decay'] >= 2){
+            let trait = 'fortify';
+            minor = true;
+            let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
+            let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
+            m_trait.append(gene);
+            if (global.race.Phage.count > 0){
+                let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
+                m_trait.append(phage);
+            }
+            if (global.race[trait] > 1){
+                m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
+            }
+            else {
+                m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
+            }
+            breakdown.append(m_trait);
+        }
+
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type === 'minor'){
                 minor = true;
@@ -906,7 +972,7 @@ function genetics(){
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[races[global.race.species].name])}</div>`)
         
         Object.keys(global.race).forEach(function (trait){
-            if (traits[trait] && traits[trait].type !== 'minor' && trait !== 'evil' && trait !== 'soul_eater'){
+            if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater'){
                 if ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2)){
                     let major = $(`<div class="traitRow"></div>`);
                     let purge = $(`<b-tooltip :label="removeCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">Remove</span></b-tooltip>`);
@@ -929,7 +995,7 @@ function genetics(){
             Object.keys(races).forEach(function (race){
                 if (races[race].type === races[global.race.species].type){
                     Object.keys(races[race].traits).forEach(function (trait){
-                        if (!global.race[trait]){
+                        if (!global.race[trait] && trait !== 'soul_eater'){
                             trait_list.push(trait);
                         }
                     });
@@ -952,10 +1018,8 @@ function genetics(){
             breakdown.prepend(`<div class="trait minor has-text-success">${loc('arpa_race_genetic_minor_traits',[races[global.race.species].name])}</div>`)
         }
 
-        if (vues[`arpaGenes`]){
-            vues[`arpaGenes`].$destroy();
-        }
-        vues[`arpaGenes`] = new Vue({
+        vBind({
+            el: `#geneticBreakdown`,
             data: {
                 genes: global.genes,
                 race: global.race
@@ -1034,11 +1098,11 @@ function genetics(){
                     }
                 },
                 geneCost(t){
-                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    let cost = sizeApproximation(fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4));
                     return loc('arpa_gene_buy',[t,cost]);
                 },
                 phageCost(t){
-                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    let cost = sizeApproximation(fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4));
                     return loc('arpa_phage_buy',[t,cost]);
                 },
                 removeCost(t){
@@ -1059,7 +1123,6 @@ function genetics(){
                 }
             }
         });
-        vues[`arpaGenes`].$mount(`#geneticBreakdown`);
     }
 }
 
@@ -1103,45 +1166,43 @@ function addProject(parent,project){
         let buy = $('<div class="buy"></div>');
         current.append(buy);
 
+        buy.append($(`<button aria-label="${loc('queue')} ${project}" class="button" @click="queue('${project}')">${loc('queue')}</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('1','${project}')" class="button x1" @click="build('${project}',1)">1%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('100','${project}')" class="button x100" @click="build('${project}',100)">{{ complete | remain }}%</button>`));
 
-        vues[`arpa${project}`] = new Vue({
+        vBind({
+            el: `#arpa${project}`,
             data: global.arpa[project],
             methods: {
-                build(pro,num){
-                    if (num === 100){
-                        num = 100 - global.arpa[project].complete;
-                    }
-                    for (let i=0; i<num; i++){
-                        if (payCosts(arpaProjects[pro].cost)){
-                            global.arpa[pro].complete++;
-                            if (global.arpa[pro].complete >= 100){
-                                global.arpa[pro].rank++;
-                                global.arpa[pro].complete = 0;
-                                global.tech[arpaProjects[pro].grant] = global.arpa[pro].rank;
-                                if (pro === 'monument'){
-                                    global.arpa['m_type'] = pick_monument();
-                                    $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
-                                }
-                                if (pro === 'launch_facility'){
-                                    global.settings.showSpace = true;
-                                    global.tech['space'] = 1;
-                                    $(`#popArpa${pro}`).hide();
-                                    if (poppers[`popArpa${pro}`]){
-                                        poppers[`popArpa${pro}`].destroy();
-                                    }
-                                    $(`#popArpa${pro}`).remove();
-                                    physics();
-                                    space();
-                                    messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
-                                }
-                                drawTech();
+                queue(pro){
+                    if (global.tech['queue']){
+                        let arpaId = `arpa${pro}`;
+                        let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
+                        if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
+                            max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+                        }
+                        if (global.genes['queue'] && global.genes['queue'] >= 2){
+                            max_queue *= 2;
+                        }
+                        let used = 0;
+                        for (var j=0; j<global.queue.queue.length; j++){
+                            used += global.queue.queue[j].q;
+                        }
+                        if (used < max_queue){
+                            if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
+                                global.queue.queue[global.queue.queue.length-1].q++;
                             }
+                            else {
+                                global.queue.queue.push({ id: arpaId, action: pro, type: 'arpa', label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
+                            }
+                            dragQueue();
                         }
                     }
+                },
+                build(pro,num){
+                    buildArpa(pro,num,true);
                 },
                 srDesc(){
                     return srSpeak(arpaProjects[project].desc);
@@ -1170,7 +1231,6 @@ function addProject(parent,project){
                 }
             }
         });
-        vues[`arpa${project}`].$mount(`#arpa${project}`);
 
         $(`#arpa${project} .head .desc`).on('mouseover',function(){
             var popper = $(`<div id="popArpa${project}" class="popper has-background-light has-text-dark">${arpaProjects[project].desc}</div>`);
@@ -1201,7 +1261,7 @@ function addProject(parent,project){
             $(`#popArpa${project}`).remove();
         });
 
-        let classes = ['1','10','25','100'];
+        let classes = [1,10,25,100];
         for (let i=0; i<classes.length; i++){
             let id = classes[i];
             $(`#arpa${project} .buy .x${id}`).on('mouseover',function(){
@@ -1223,8 +1283,49 @@ function addProject(parent,project){
     }
 }
 
+export function buildArpa(pro,num,update){
+    let oNum = num;
+    let completed = false;
+    if (num === 100){
+        num = 100 - global.arpa[pro].complete;
+    }
+    for (let i=0; i<num; i++){
+        if (payCosts(arpaProjects[pro].cost)){
+            global.arpa[pro].complete++;
+            if (global.arpa[pro].complete >= 100){
+                global.arpa[pro].rank++;
+                global.arpa[pro].complete = 0;
+                global.tech[arpaProjects[pro].grant] = global.arpa[pro].rank;
+                completed = true;
+                if (pro === 'monument'){
+                    global.arpa['m_type'] = pick_monument();
+                    $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
+                }
+                if (pro === 'launch_facility'){
+                    global.settings.showSpace = true;
+                    global.tech['space'] = 1;
+                    $(`#popArpa${pro}`).hide();
+                    if (poppers[`popArpa${pro}`]){
+                        poppers[`popArpa${pro}`].destroy();
+                    }
+                    $(`#popArpa${pro}`).remove();
+                    physics();
+                    space();
+                    messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
+                }
+                drawTech();
+            }
+        }
+    }
+    if (update && $(`#popArpa${pro}`).length > 0){
+        $(`#popArpa${pro}`).empty();
+        $(`#popArpa${pro}`).append(arpaProjectCosts(oNum,pro));
+    }
+    return completed;
+}
+
 function arpaProjectCosts(id,project){
-    let inc = id === '100' ? 100 - global.arpa[project].complete : id;
+    let inc = id === 100 ? 100 - global.arpa[project].complete : id;
     var cost = $('<div></div>');
     var costs = adjustCosts(arpaProjects[project].cost);
     Object.keys(costs).forEach(function (res){

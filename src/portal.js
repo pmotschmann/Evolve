@@ -1,7 +1,8 @@
-import { global, vues, poppers, messageQueue, keyMultiplier, p_on, modRes } from './vars.js';
+import { global, poppers, keyMultiplier, p_on } from './vars.js';
+import { vBind, spaceCostMultiplier, messageQueue } from './functions.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
-import { costMultiplier, checkRequirements, incrementStruct } from './space.js';
+import { checkRequirements, incrementStruct } from './space.js';
 import { loc } from './locale.js';
 
 const fortressModules = {
@@ -22,20 +23,18 @@ const fortressModules = {
             },
             reqs: { portal: 2 },
             cost: {
-                Money(){ return costMultiplier('turret', 350000, 1.28, 'portal'); },
-                Copper(){ return costMultiplier('turret', 50000, 1.28, 'portal'); },
-                Adamantite(){ return costMultiplier('turret', 8000, 1.28, 'portal'); },
-                Elerium(){ return costMultiplier('turret', 15, 1.28, 'portal'); },
-                Nano_Tube(){ return costMultiplier('turret', 28000, 1.28, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('turret', offset, 350000, 1.28, 'portal'); },
+                Copper(offset){ return spaceCostMultiplier('turret', offset, 50000, 1.28, 'portal'); },
+                Adamantite(offset){ return spaceCostMultiplier('turret', offset, 8000, 1.28, 'portal'); },
+                Elerium(offset){ return spaceCostMultiplier('turret', offset, 15, 1.28, 'portal'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('turret', offset, 28000, 1.28, 'portal'); }
             },
             powered(){
                 return global.tech['turret'] ? 4 + global.tech['turret'] : 4;
             },
             postPower(){
-                if (vues['civ_fortress']){
-                    p_on['turret'] = global.portal.turret.on;
-                    vues['civ_fortress'].$forceUpdate();
-                }
+                p_on['turret'] = global.portal.turret.on;
+                vBind({el: `#fort`},'update');
             },
             effect(){
                 let rating = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
@@ -45,13 +44,10 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('turret','portal');
-                    let power = global.tech['turret'] ? $(this)[0].powered() + global.tech['turret'] : $(this)[0].powered();
-                    if (global.city.powered && global.city.power >= power){
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.turret.on++;
-                        if (vues['civ_fortress']){
-                            p_on['turret']++;
-                            vues['civ_fortress'].$forceUpdate();
-                        }
+                        p_on['turret']++;
+                        vBind({el: `#fort`},'update');
                     }
                     return true;
                 }
@@ -66,10 +62,10 @@ const fortressModules = {
             },
             reqs: { portal: 2 },
             cost: {
-                Money(){ return costMultiplier('carport', 250000, 1.3, 'portal'); },
-                Cement(){ return costMultiplier('carport', 18000, 1.3, 'portal'); },
-                Oil(){ return costMultiplier('carport', 6500, 1.3, 'portal'); },
-                Plywood(){ return costMultiplier('carport', 8500, 1.3, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('carport', offset, 250000, 1.3, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('carport', offset, 18000, 1.3, 'portal'); },
+                Oil(offset){ return spaceCostMultiplier('carport', offset, 6500, 1.3, 'portal'); },
+                Plywood(offset){ return spaceCostMultiplier('carport', offset, 8500, 1.3, 'portal'); }
             },
             repair: 180,
             effect(){
@@ -96,11 +92,11 @@ const fortressModules = {
             },
             reqs: { portal: 5 },
             cost: {
-                Money(){ return costMultiplier('war_droid', 495000, 1.26, 'portal'); },
-                Neutronium(){ return costMultiplier('war_droid', 1250, 1.26, 'portal'); },
-                Elerium(){ return costMultiplier('war_droid', 18, 1.26, 'portal'); },
-                Stanene(){ return costMultiplier('war_droid', 37500, 1.26, 'portal'); },
-                Soul_Gem(){ return costMultiplier('war_droid', 1, 1.26, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('war_droid', offset, 495000, 1.26, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('war_droid', offset, 1250, 1.26, 'portal'); },
+                Elerium(offset){ return spaceCostMultiplier('war_droid', offset, 18, 1.26, 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('war_droid', offset, 37500, 1.26, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('war_droid', offset, 1, 1.26, 'portal'); }
             },
             powered(){ return 2; },
             effect(){
@@ -133,11 +129,11 @@ const fortressModules = {
             reqs: { portal: 3 },
             powered(){ return 5; },
             cost: {
-                Money(){ return costMultiplier('war_drone', 650000, 1.28, 'portal'); },
-                Alloy(){ return costMultiplier('war_drone', 60000, 1.28, 'portal'); },
-                Graphene(){ return costMultiplier('war_drone', 100000, 1.28, 'portal'); },
-                Elerium(){ return costMultiplier('war_drone', 25, 1.28, 'portal'); },
-                Soul_Gem(){ return costMultiplier('war_drone', 1, 1.28, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('war_drone', offset, 650000, 1.28, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('war_drone', offset, 60000, 1.28, 'portal'); },
+                Graphene(offset){ return spaceCostMultiplier('war_drone', offset, 100000, 1.28, 'portal'); },
+                Elerium(offset){ return spaceCostMultiplier('war_drone', offset, 25, 1.28, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('war_drone', offset, 1, 1.28, 'portal'); }
             },
             effect(){
                 return `<div>${loc('portal_war_drone_effect')}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -162,10 +158,10 @@ const fortressModules = {
             reqs: { infernite: 2 },
             powered(){ return 3; },
             cost: {
-                Money(){ return costMultiplier('sensor_drone', 500000, 1.25, 'portal'); },
-                Polymer(){ return costMultiplier('sensor_drone', 25000, 1.25, 'portal'); },
-                Adamantite(){ return costMultiplier('sensor_drone', 12500, 1.25, 'portal'); },
-                Infernite(){ return costMultiplier('sensor_drone', 100, 1.25, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('sensor_drone', offset, 500000, 1.25, 'portal'); },
+                Polymer(offset){ return spaceCostMultiplier('sensor_drone', offset, 25000, 1.25, 'portal'); },
+                Adamantite(offset){ return spaceCostMultiplier('sensor_drone', offset, 12500, 1.25, 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('sensor_drone', offset, 100, 1.25, 'portal'); }
             },
             effect(){
                 let bonus = global.tech.infernite >= 4 ? 20 : 10;
@@ -192,9 +188,9 @@ const fortressModules = {
             reqs: { portal: 4 },
             powered(){ return 3; },
             cost: {
-                Money(){ return costMultiplier('attractor', 350000, 1.25, 'portal'); },
-                Aluminium(){ return costMultiplier('attractor', 175000, 1.25, 'portal'); },
-                Stanene(){ return costMultiplier('attractor', 90000, 1.25, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('attractor', offset, 350000, 1.25, 'portal'); },
+                Aluminium(offset){ return spaceCostMultiplier('attractor', offset, 175000, 1.25, 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('attractor', offset, 90000, 1.25, 'portal'); },
             },
             effect(){
                 return `<div>${loc('portal_attractor_effect1')}</div><div>${loc('portal_attractor_effect2',[global.resource.Soul_Gem.name])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -234,10 +230,10 @@ export function renderFortress(){
             if (fortressModules[region].info['support']){
                 let support = fortressModules[region].info['support'];
                 parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
-                vues[`sr${region}`] = new Vue({
+                vBind({
+                    el: `#sr${region}`,
                     data: global.portal[support]
                 });
-                vues[`sr${region}`].$mount(`#sr${region}`);
             }
             else {
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
@@ -260,7 +256,8 @@ export function renderFortress(){
             });
 
             if (region === 'prtl_fortress'){
-                buildFortress(parent);
+                buildFortress(parent,true);
+                buildFortress($('#fortress'),false);
             } 
 
             Object.keys(fortressModules[region]).forEach(function (tech){
@@ -273,16 +270,30 @@ export function renderFortress(){
     });
 }
 
-function buildFortress(parent){
-    let fort = $(`<div id="fort" class="fort"></div>`);
-    parent.append(fort);
+function buildFortress(parent,full){
+    let id = full ? 'fort' : 'gFort';
+    let fort = full ? $(`<div id="${id}" class="fort"></div>`) : $('#gFort');
+    if (full){
+        parent.append(fort);
+    }
+    else {
+        if (fort.length > 0){
+            fort.empty();
+        }
+        else {
+            fort = $(`<div id="${id}" class="fort gFort"></div>`);
+            parent.append(fort);
+        }
+        fort.append(`<div><h3 class="has-text-warning">${loc('portal_fortress_name')}</h3></div>`);
+    }
+    
 
     let status = $('<div></div>');
     fort.append(status);
 
     let defense = $(`<span class="defense has-text-success" :aria-label="defense()">${loc('fortress_defense')} {{ f.garrison | defensive }}</span>`);
     status.append(defense);
-    let activity = $(`<b-tooltip :label="hostiles()" position="is-bottom" multilined animated><span class="has-text-danger" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span></b-tooltip>`);
+    let activity = $(`<b-tooltip :label="hostiles()" position="is-bottom" multilined animated><span class="has-text-danger pad" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span></b-tooltip>`);
     status.append(activity);
     let threatLevel = $(`<b-tooltip :label="threatLevel()" position="is-bottom" multilined animated><span :class="threaten()" :aria-label="threatLevel()">{{ f.threat | threat }}</span></b-tooltip>`);
     status.append(threatLevel);
@@ -318,10 +329,12 @@ function buildFortress(parent){
     reports.append($(`<b-checkbox class="patrol" v-model="f.notify" true-value="Yes" false-value="No"${color}>${loc('fortress_patrol_reports')}</b-checkbox>`));
     reports.append($(`<b-checkbox class="patrol" v-model="f.s_ntfy" true-value="Yes" false-value="No"${color}>${loc('fortress_surv_reports')}</b-checkbox>`));
 
-    fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+    if (full){
+        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+    }
 
-    vues['civ_fortress'] = new Vue({
-        el: '#fort',
+    vBind({
+        el: `#${id}`,
         data: {
             f: global.portal.fortress,
             g: global.civic.garrison
@@ -379,9 +392,7 @@ function buildFortress(parent){
                         global.portal.fortress.garrison = global.civic.garrison.workers;
                     }
                     global.portal.fortress['assigned'] = global.portal.fortress.garrison;
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                 }
             },
             aLast(){
@@ -395,9 +406,7 @@ function buildFortress(parent){
                         global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
                     }
                     global.portal.fortress['assigned'] = global.portal.fortress.garrison;
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                 }
             },
             patInc(){
@@ -478,9 +487,7 @@ function buildFortress(parent){
                     global.civic.garrison.m_use++;
                     global.portal.fortress.garrison++;
                     global.portal.fortress['assigned'] = global.portal.fortress.garrison;
-                    if (vues['civ_garrison']){
-                        vues['civ_garrison'].$forceUpdate();
-                    }
+                    vBind({el: `#garrison`},'update');
                 }
             },
             hireLabel(){
@@ -531,11 +538,18 @@ function buildFortress(parent){
 
 function fortressDefenseRating(v){
     let army = v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+    let wounded = 0;
+    if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
+        wounded = global.civic.garrison.wounded - (global.civic.garrison.workers - global.portal.fortress.garrison);
+        if (wounded > army){
+            wounded = army;
+        }
+    }
     if (p_on['war_droid']){
         army += p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
     }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
-    return Math.round(armyRating(army,'army')) + (p_on['turret'] ? p_on['turret'] * turret : 0);
+    return Math.round(armyRating(army,'army',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
 }
 
 function casualties(demons,pat_armor,ambush){
@@ -551,18 +565,6 @@ function casualties(demons,pat_armor,ambush){
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
-    }
-
-    if (global.civic.garrison.wounded > global.civic.garrison.workers){
-        global.civic.garrison.wounded = global.civic.garrison.workers;
-    }
-
-    if (global.civic.garrison.workers < global.portal.fortress.garrison){
-        global.portal.fortress.garrison = global.civic.garrison.workers;
-    }
-
-    if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
-        global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
     }
     return dead;
 }
@@ -605,19 +607,35 @@ export function bloodwar(){
             gem_chance = Math.round(gem_chance * 0.92);
         }
     }
+    if (global.race['ghostly']){
+        gem_chance = Math.round(gem_chance * 0.85);
+    }
 
     // Patrols
     let dead = 0;
     let terminators = p_on['war_droid'] ? p_on['war_droid'] : 0;
     let failed_drop = false;
+    let wounded = 0;
+    if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
+        wounded = global.civic.garrison.wounded - (global.civic.garrison.workers - global.portal.fortress.garrison);
+        if (wounded > global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size)){
+            wounded -= global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+            wounded /= global.portal.fortress.patrols;
+        }
+        else {
+            wounded = 0;
+        }
+    }
+    let brkpnt = +(wounded % 1).toFixed(10);
     for (let i=0; i<global.portal.fortress.patrols; i++){
+        let hurt = brkpnt > (1 / global.portal.fortress.patrols * i) ? Math.ceil(wounded) : Math.floor(wounded);
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
                 pat_size++;
                 terminators--;
             }
-            let pat_rating = Math.round(armyRating(pat_size,'army'));
+            let pat_rating = Math.round(armyRating(pat_size,'army',hurt));
 
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
@@ -628,7 +646,7 @@ export function bloodwar(){
                 }
             }
 
-            if (Math.rand(0,global.race['chameleon'] ? 50 : 30) === 0){
+            if (Math.rand(0,global.race['chameleon'] || global.race['elusive'] ? 50 : 30) === 0){
                 dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true);
                 let remain = demons - Math.round(pat_rating / 2);
                 if (remain > 0){
@@ -661,9 +679,33 @@ export function bloodwar(){
             }
         }
     }
-    if (dead > 0 && global.portal.fortress.notify === 'Yes'){
-        messageQueue(loc('fortress_patrol_casualties',[dead]));
+
+    let revive = 0;
+    if (global.race['revive']){
+        revive = Math.round(Math.seededRandom(0,(dead / 3) + 0.25));
+        global.civic.garrison.workers += revive;
     }
+
+    // Soldier Rebalancing
+    if (global.civic.garrison.wounded > global.civic.garrison.workers){
+        global.civic.garrison.wounded = global.civic.garrison.workers;
+    }
+    if (global.civic.garrison.workers < global.portal.fortress.garrison){
+        global.portal.fortress.garrison = global.civic.garrison.workers;
+    }
+    if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+        global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+    }
+
+    if (dead > 0 && global.portal.fortress.notify === 'Yes'){
+        if (revive > 0){
+            messageQueue(loc('fortress_patrol_casualties_revive',[dead,revive]));
+        }
+        else {
+            messageQueue(loc('fortress_patrol_casualties',[dead]));
+        }
+    }
+    
     if (failed_drop && global.portal.fortress.pity < 10000){
         global.portal.fortress.pity++;
     }
@@ -672,7 +714,7 @@ export function bloodwar(){
     if (global.portal.fortress.garrison > 0 && global.portal.fortress.siege > 0){
         global.portal.fortress.siege--;
     }
-    if (global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
+    if (global.portal.fortress.siege <= 900 && global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
         let defense = fortressDefenseRating(global.portal.fortress.garrison);
         let defend = defense / 35 > 1 ? defense / 35 : 1;
         let siege = Math.round(global.portal.fortress.threat / 2);
@@ -726,7 +768,7 @@ export function bloodwar(){
 
     // Surveyor threats
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
-        let danger = global.portal.fortress.threat / 1000;
+        let danger = global.portal.fortress.threat / (global.race['blurry'] ? 1250 : 1000);
         let exposure = global.civic.hell_surveyor.workers > 10 ? 10 : global.civic.hell_surveyor.workers;
         let risk = 10 - (Math.rand(0,exposure + 1));
 

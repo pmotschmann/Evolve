@@ -1,15 +1,25 @@
-import { global, vues, save } from './vars.js';
+import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
 
 export function mainVue(){
-    let settings = {
+    vBind({
         el: '#mainColumn div:first-child',
         data: { 
             s: global.settings,
             rq: global.r_queue
         },
         methods: {
+            saveImport(){
+                if ($('#importExport').val().length > 0){
+                    importGame($('#importExport').val());
+                }
+            },
+            saveExport(){
+                $('#importExport').val(exportGame());
+                $('#importExport').select();
+                document.execCommand('copy');
+            },
             lChange(){
                 global.settings.locale = $('#localization select').children("option:selected").val();
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -34,6 +44,15 @@ export function mainVue(){
                 global.settings.theme = 'redgreen';
                 $('html').removeClass();
                 $('html').addClass('redgreen');
+            },
+            si(){
+                global.settings.affix = 'si';
+            },
+            sci(){
+                global.settings.affix = 'sci';
+            },
+            sln(){
+                global.settings.affix = 'sln';
             },
             keys(){
                 return loc('settings1');
@@ -116,51 +135,248 @@ export function mainVue(){
                 }
             }
         }
-    }
-    vues['vue_tabs'] = new Vue(settings);
+    });
 }
 
-export function timeCheck(c_action,track){
+window.exportGame = function exportGame(){
+    return LZString.compressToBase64(JSON.stringify(global));
+}
+
+window.importGame = function importGame(data){
+    let saveState = JSON.parse(LZString.decompressFromBase64(data));
+    if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
+        global = saveState;
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        window.location.reload();
+    }
+}
+
+export function messageQueue(msg,color){
+    color = color || 'warning';
+    var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
+    $('#msgQueue').prepend(new_message);
+    global.lastMsg = { m: msg, c: color };
+    if ($('#msgQueue').children().length > 30){
+        $('#msgQueue').children().last().remove();
+    }
+}
+
+export function modRes(res,val){
+    let count = global.resource[res].amount + val;
+    let success = true;
+    if (count > global.resource[res].max && global.resource[res].max != -1){
+        count = global.resource[res].max;
+    }
+    else if (count < 0){
+        count = 0;
+        success = false;
+    }
+    if (!Number.isNaN(count)){
+        global.resource[res].amount = count;
+        global.resource[res].delta += val;
+    }
+    return success;
+}
+
+export function genCivName(){
+    let genus = races[global.race.species].type;
+    switch (genus){
+        case 'animal':
+            genus = 'animalism';
+            break;
+        case 'small':
+            genus = 'dwarfism';
+            break;
+        case 'giant':
+            genus = 'gigantism';
+            break;
+        case 'avian':
+        case 'reptilian':
+            genus = 'eggshell';
+            break;
+        case 'fungi':
+            genus = 'chitin';
+            break;
+        case 'insectoid':
+            genus = 'athropods';
+            break;
+        case 'angelic':
+            genus = 'celestial';
+            break;
+        case 'organism':
+            genus = 'sentience';
+            break;
+    }
+
+    const filler = [
+        races[global.race.species].name,
+        races[global.race.species].home,
+        loc(`biome_${global.city.biome}_name`),
+        loc(`evo_${genus}_title`),
+        loc(`civics_gov_name0`),
+        loc(`civics_gov_name1`),
+        loc(`civics_gov_name2`),
+        loc(`civics_gov_name3`),
+        loc(`civics_gov_name4`),
+        loc(`civics_gov_name5`),
+    ];
+
+    return {
+        s0: Math.rand(0,6),
+        s1: filler[Math.rand(0,10)]
+    };
+}
+
+export function costMultiplier(structure,offset,base,mutiplier,cat){
+    if (!cat){
+        cat = 'city';
+    }
+    if (global.race.universe === 'micro'){
+        let dark = 0.02 + (Math.log(100 + global.race.Dark.count) - 4.605170185988092) / 20;
+        if (dark > 0.06){
+            dark = 0.06;
+        }
+        mutiplier -= +(dark).toFixed(5);
+    }
+    if (global.race['small']){ mutiplier -= 0.01; }
+    else if (global.race['large']){ mutiplier += 0.01; }
+    if (global.race['compact']){ mutiplier -= 0.02; }
+    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
+    if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
+        mutiplier -= global.tech['housing_reduction'] * 0.02;
+    }
+    if (structure === 'basic_housing'){
+        if (global.race['solitary']){
+            mutiplier -= 0.02;
+        }
+        if (global.race['pack_mentality']){
+            mutiplier += 0.03;
+        }
+    }
+    if (structure === 'cottage'){
+        if (global.race['solitary']){
+            mutiplier += 0.02;
+        }
+        if (global.race['pack_mentality']){
+            mutiplier -= 0.02;
+        }
+    }
+    if (structure === 'apartment'){
+        if (global.race['pack_mentality']){
+            mutiplier -= 0.02;
+        }
+    }
+    if (global.genes['creep'] && !global.race['no_crispr']){
+        mutiplier -= global.genes['creep'] * 0.01;
+    }
+    else if (global.genes['creep'] && global.race['no_crispr']){
+        mutiplier -= global.genes['creep'] * 0.002;
+    }
+    if (mutiplier < 0.01){
+        mutiplier = 0.01;
+    }
+    var count = global[cat][structure] ? global[cat][structure].count : 0;
+    if (offset){
+        count += offset;
+    }
+    return Math.round((mutiplier ** count) * base);
+}
+
+export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
+    if (!sector){
+        sector = 'space';
+    }
+    if (global.race.universe === 'micro'){
+        let dark = 0.01 + (Math.log(100 + global.race.Dark.count) - 4.605170185988092) / 35;
+        if (dark > 0.04){
+            dark = 0.04;
+        }
+        mutiplier -= +(dark).toFixed(5);
+    }
+    if (global.genes['creep'] && !global.race['no_crispr']){
+        mutiplier -= global.genes['creep'] * 0.01;
+    }
+    else if (global.genes['creep'] && global.race['no_crispr']){
+        mutiplier -= global.genes['creep'] * 0.002;
+    }
+    if (global.race['small']){ mutiplier -= 0.005; }
+    if (global.race['compact']){ mutiplier -= 0.01; }
+    if (mutiplier < 0.01){
+        mutiplier = 0.01;
+    }
+    var count = global[sector][action] ? global[sector][action].count : 0;
+    if (offset){
+        count += offset;
+    }
+    return Math.round((mutiplier ** count) * base);
+}
+
+export function timeCheck(c_action,track,detailed){
     if (c_action.cost){
         let time = 0;
+        let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
-            var testCost = Number(costs[res]());
-            if (testCost > 0){
-                let res_have = Number(global.resource[res].amount);
-                if (track){
-                    res_have += global.resource[res].diff * track.t;
-                    if (track.r[res]){
-                        res_have -= Number(track.r[res]);
-                        track.r[res] += testCost;
-                    }
-                    else {
-                        track.r[res] = testCost;
-                    }
-                    if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
-                        res_have = global.resource[res].max;
-                    }
-                }
-                if (testCost > res_have){
-                    if (global.resource[res].diff > 0){
-                        let r_time = (testCost - res_have) / global.resource[res].diff;
-                        if (r_time > time){
-                            time = r_time;
+            if (res !== 'Morale'){
+                var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
+                if (testCost > 0){
+                    let res_have = Number(global.resource[res].amount);
+                    if (track){
+                        res_have += global.resource[res].diff * track.t;
+                        if (track.r[res]){
+                            res_have -= Number(track.r[res]);
+                            track.r[res] += testCost;
+                        }
+                        else {
+                            track.r[res] = testCost;
+                        }
+                        if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
+                            res_have = global.resource[res].max;
                         }
                     }
-                    else {
-                        time = -1;
+                    if (testCost > res_have){
+                        if (global.resource[res].diff > 0){
+                            let r_time = (testCost - res_have) / global.resource[res].diff;
+                            if (r_time > time){
+                                bottleneck = res;
+                                time = r_time;
+                            }
+                        }
+                        else {
+                            time = -1;
+                        }
                     }
                 }
             }
         });
         if (track){
+            if (typeof track.id[c_action.id] === "undefined"){
+                track.id[c_action.id] = 1;
+            }
+            else {
+                track.id[c_action.id]++;
+            }
             track.t += time;
         }
-        return time;
+        return detailed ? { t: time, r: bottleneck } : time;
     }
     else {
         return 0;
+    }
+}
+
+export function vBind(bind,action){
+    action = action || 'create';
+    if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue__ !== "undefined"){
+        if (action === 'update'){
+            $(bind.el)[0].__vue__.$forceUpdate();
+        }
+        else {
+            $(bind.el)[0].__vue__.$destroy();
+        }
+    }
+    if (action === 'create'){
+        new Vue(bind);
     }
 }
 
@@ -208,21 +424,35 @@ export function powerModifier(energy){
 export function challenge_multiplier(value,type,decimals){
     decimals = decimals || 0;
     let challenge_level = 0;
-    if (global.race.universe === 'micro'){ value = value * 0.25; }
-    if (global.race.universe === 'heavy' && type !== 'mad'){ value = value * 1.25; }
     if (global.race['no_plasmid']){ challenge_level++; }
     if (global.race['no_trade']){ challenge_level++; }
     if (global.race['no_craft']){ challenge_level++; }
     if (global.race['no_crispr']){ challenge_level++; }
+    if (global.race['weak_mastery']){ challenge_level++; }
+    if (global.race.universe === 'micro'){ value = value * 0.25; }
+    if (global.race.universe === 'heavy' && type !== 'mad'){
+        switch (challenge_level){
+            case 1:
+                value = value * 1.1;
+            case 2:
+                value = value * 1.15;
+            case 3:
+                value = value * 1.2;
+            case 4:
+                value = value * 1.25;
+            default:
+                value = value * 1.05;
+        }
+    }
     switch (challenge_level){
         case 1:
             return +(value * 1.05).toFixed(decimals);
         case 2:
-            return +(value * 1.10).toFixed(decimals);
+            return +(value * 1.12).toFixed(decimals);
         case 3:
-            return +(value * 1.20).toFixed(decimals);
+            return +(value * 1.25).toFixed(decimals);
         case 4:
-            return +(value * 1.35).toFixed(decimals);
+            return +(value * 1.45).toFixed(decimals);
         default:
             return +(value).toFixed(decimals);
     }
@@ -238,10 +468,30 @@ export function adjustCosts(costs){
         });
         return newCosts;
     }
+    costs = technoAdjust(costs);
     costs = kindlingAdjust(costs);
     costs = scienceAdjust(costs);
     costs = rebarAdjust(costs);
     return craftAdjust(costs);
+}
+
+function technoAdjust(costs){
+    if (global.civic.govern.type === 'technocracy'){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Knowledge'){
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
+            }
+            else if (res === 'Money'){
+                newCosts[res] = function(){ return costs[res](); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res]() * 1.02); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function scienceAdjust(costs){
