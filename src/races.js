@@ -1339,6 +1339,10 @@ export const traits = {
     gambler: { // Alloy bonus
         desc: loc('trait_gambler'),
         type: 'minor',
+    },
+    fortify: { // gene fortification
+        desc: loc('trait_fortify'),
+        type: 'special',
     }
 };
 
@@ -1591,7 +1595,7 @@ export function cleanRemoveTrait(trait){
             delete global.city['shrine'];
             break;
         case 'thalassophobia':
-            if (global.tech['thalassophobia']){
+            if (global.tech['wharf']){
                 global.city['wharf'] = { count: 0 };
             }
             break;

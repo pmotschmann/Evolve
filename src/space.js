@@ -2001,11 +2001,12 @@ const interstellarProjects = {
                 let fuel = 0.28;
                 let helium = spatialReasoning(5000);
                 let oil = spatialReasoning(4000);
+                let uranium = spatialReasoning(2500);
                 let det = '';
                 if (global.resource.Deuterium.display){
                     det = `<div>${loc('plus_max_resource',[spatialReasoning(2000),loc('resource_Deuterium_name')])}</div>`;
                 }
-                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div>${det}<div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[uranium,loc('resource_Uranium_name')])}</div>${det}<div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             support: 1,
             powered(){ return 1; },
@@ -2015,6 +2016,7 @@ const interstellarProjects = {
                     incrementStruct('xfer_station','interstellar');
                     if (global.city.power >= $(this)[0].powered()){
                         global.interstellar['xfer_station'].on++;
+                        global['resource']['Uranium'].max += spatialReasoning(2500);
                         global['resource']['Helium_3'].max += spatialReasoning(5000);
                         global['resource']['Oil'].max += spatialReasoning(4000);
                         global['resource']['Deuterium'].max += spatialReasoning(2000);

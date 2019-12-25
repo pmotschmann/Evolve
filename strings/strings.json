@@ -2401,6 +2401,7 @@
   "race_junker_solar_gas": "Fibrosis",
   "race_junker_solar_gas_moon": "Thalassemia",
   "race_junker_solar_dwarf": "Malform",
+  "trait_fortify": "Your genes have been fortified to resist genetic decay.",
   "trait_adaptable": "Your race is more easily modified by gene therapy.",
   "trait_wasteful": "Your race is wasteful and uses extra materials to craft things.",
   "trait_xenophobic": "Your races dislike of foreigners reduces the number of trade routes they can operate.",

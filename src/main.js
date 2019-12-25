@@ -2296,7 +2296,8 @@ function fastLoop(){
                 if (global.city.geology['Uranium']){
                     ash_base *= global.city.geology['Uranium'] + 1;
                 }
-                uranium_bd[loc('city_coal_ash')] = uranium_bd[loc('city_coal_ash')] + (ash_base / 65 / global_multiplier);
+                let ash = (ash_base / 65 / global_multiplier);
+                uranium_bd[loc('city_coal_ash')] = uranium_bd[loc('city_coal_ash')] ? uranium_bd[loc('city_coal_ash')] + ash : ash;
                 modRes('Uranium', (ash_base * time_multiplier) / 65);
             }
 
@@ -4186,7 +4187,9 @@ function midLoop(){
                     element.addClass('cnam');
                 }
                 if (global.city[action]){
-                    global.city[action]['time'] = timeFormat(timeCheck(c_action));
+                    let tc = timeCheck(c_action,false,true);
+                    global.city[action]['time'] = timeFormat(tc.t);
+                    global.city[action]['bn'] = tc.r;
                 }
             }
         });
@@ -4247,6 +4250,24 @@ function midLoop(){
                 });
             });
         }
+
+        let genePool = arpa('GeneTech');
+        Object.keys(genePool).forEach(function (action){
+            if (genePool[action] && genePool[action].cost){
+                let c_action = genePool[action];
+                let element = $('#'+c_action.id);
+                if (element.length > 0){
+                    if ( (global.race['universe'] !== 'antimatter' && c_action.cost > global.race.Plasmid.count) || (global.race['universe'] === 'antimatter' && c_action.cost > global.race.Plasmid.anti) ){
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
+                    }
+                    else if (element.hasClass('cna')){
+                        element.removeClass('cna');
+                    }
+                }
+            }
+        });
 
         if (global.space['swarm_control']){
             global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10);
@@ -4593,7 +4614,7 @@ function midLoop(){
                     $(this).addClass('has-text-danger');
                 }
             }
-            else if ($(this).hasClass('has-text-danger')){
+            else if ($(this).hasClass('has-text-danger') || $(this).hasClass('has-text-alert')){
                 $(this).removeClass('has-text-danger');
                 $(this).addClass('has-text-dark');
             }
@@ -4911,6 +4932,20 @@ function longLoop(){
             drawTech();
         }
 
+        if (global.tech['decay'] && global.tech['decay'] >= 2){
+            let fortify = 0;
+            if (global.genes.minor['fortify']){
+                fortify += global.genes.minor['fortify'];
+            }
+            if (global.race.minor['fortify']){
+                fortify += global.race.minor['fortify'];
+            }
+            global.race.gene_fortify = fortify;
+        }
+        else {
+            global.race.gene_fortify = 0;
+        }
+
         if (!global.tech['genesis'] && global.race.deterioration >= 1 && global.tech['high_tech'] && global.tech['high_tech'] >= 10){
             global.tech['genesis'] = 1;
             messageQueue(loc('genesis'),'special');
@@ -5106,11 +5141,33 @@ function diffCalc(res,period){
     let sec = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;
-    if (global.resource[res].diff < 0 && !$(`#res${res} .diff`).hasClass('has-text-danger')){
-        $(`#res${res} .diff`).addClass('has-text-danger');
+    if (global.race['decay']){
+        if (global.resource[res].diff < 0){
+            if (breakdown.p.consume[res][loc('evo_challenge_decay')] > global.resource[res].diff){
+                if (!$(`#res${res} .diff`).hasClass('has-text-danger')){
+                    $(`#res${res} .diff`).removeClass('has-text-warning');
+                    $(`#res${res} .diff`).addClass('has-text-danger');
+                }
+            }
+            else {
+                if (!$(`#res${res} .diff`).hasClass('has-text-warning')){
+                    $(`#res${res} .diff`).removeClass('has-text-danger');
+                    $(`#res${res} .diff`).addClass('has-text-warning');
+                }
+            }
+        }
+        else if (global.resource[res].diff >= 0 && ($(`#res${res} .diff`).hasClass('has-text-danger') || $(`#res${res} .diff`).hasClass('has-text-warning'))){
+            $(`#res${res} .diff`).removeClass('has-text-danger');
+            $(`#res${res} .diff`).removeClass('has-text-warning');
+        }
     }
-    else if (global.resource[res].diff >= 0 && $(`#res${res} .diff`).hasClass('has-text-danger')){
-        $(`#res${res} .diff`).removeClass('has-text-danger');
+    else {
+        if (global.resource[res].diff < 0 && !$(`#res${res} .diff`).hasClass('has-text-danger')){
+            $(`#res${res} .diff`).addClass('has-text-danger');
+        }
+        else if (global.resource[res].diff >= 0 && $(`#res${res} .diff`).hasClass('has-text-danger')){
+            $(`#res${res} .diff`).removeClass('has-text-danger');
+        }
     }
 }
 
