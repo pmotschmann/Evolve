@@ -12275,7 +12275,7 @@ function sentience(){
         let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','fraile','atrophy','invertebrate','pathetic'];
         for (let i=0; i<10; i++){
             let trait = bad[Math.rand(0,bad.length)];
-            if (global.race['carnivore'] && trait === 'herbivore'){
+            if ((global.race['carnivore'] && trait === 'herbivore') || (global.race['smart'] && trait === 'dumb')) {
                 continue;
             }
             if (!global.race[trait]){
@@ -12417,7 +12417,13 @@ function fanaticism(god){
             fanaticTrait('merchant');
             break;
         case 'gnome':
-            fanaticTrait('smart');
+            if (global.race['dumb']){
+                randomMinorTrait();
+                arpa('Genetics');
+            }
+            else {
+                fanaticTrait('smart');
+            }
             break;
         case 'orge':
             fanaticTrait('tough');
