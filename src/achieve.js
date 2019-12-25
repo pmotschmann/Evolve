@@ -1071,7 +1071,7 @@ export function drawPerks(){
 
     if (global.stats.achieve['explorer']){
         unlocked++;
-        let bonus = global.stats.achieve['explorer'].l + 1
+        let bonus = global.stats.achieve['explorer'].l;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_explorer",[bonus])}</span></div>`);
     }
 

@@ -3127,6 +3127,9 @@ export const actions = {
                     global.city['storage_yard'].count++;
                     global.settings.showResources = true;
                     global.settings.showStorage = true;
+                    if (!global.settings.showMarket) {
+                        global.settings.marketTabs = 1;
+                    }
                     let cap = global.tech.container >= 3 ? 20 : 10;
                     if (global.tech['world_control']){
                         cap += 10;
