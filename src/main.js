@@ -2401,6 +2401,7 @@ function fastLoop(){
                 consume_oil -= 15;
                 graphene_production--;
             }
+            graphene_production *= 0.6;
             
             breakdown.p.consume.Lumber[loc('interstellar_g_factory_bd')] = -(consume_wood);
             breakdown.p.consume.Coal[loc('interstellar_g_factory_bd')] = -(consume_coal);
@@ -2420,7 +2421,7 @@ function fastLoop(){
                 ai += graph * p_on['citadel'];
             }
 
-            let delta = graphene_production * ai * 0.6 * zigguratBonus() * hunger * global_multiplier;
+            let delta = graphene_production * ai * zigguratBonus() * hunger * global_multiplier;
 
             let graphene_bd = {};
             graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
