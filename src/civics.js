@@ -1329,6 +1329,8 @@ function war_campaign(gov){
         if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= 20){
             global.civic.garrison.workers -= 20;
             global.civic.foreign[`gov${gov}`].occ = true;
+            global.civic.foreign[`gov${gov}`].sab = 0;
+            global.civic.foreign[`gov${gov}`].act = 'none';
         }
     }
     else {
