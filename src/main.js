@@ -8,7 +8,7 @@ import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, setPlanet, resQueue } from './actions.js';
-import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
+import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
@@ -417,8 +417,7 @@ else {
             oldTech(tech);
         }
     });
-    space();
-    deepSpace();
+    renderSpace();
     renderFortress()    
     setWeather();
 }
@@ -632,6 +631,7 @@ function fastLoop(){
         Nano_Tube: {},
         Graphene: {},
         Stanene: {},
+        Bolognium: {},
         Plywood: {},
         Brick: {},
         Wrought_Iron: {},
@@ -1018,10 +1018,10 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','int_blackhole:mass_ejector','city:casino'];
+        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','int_blackhole:mass_ejector','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
-            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : 'interstellar');
+            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
             if (global[region][parts[1]] && global[region][parts[1]]['on']){
@@ -1163,6 +1163,15 @@ function fastLoop(){
             global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support;
             global.interstellar.starport.s_max += p_on['habitat'] * actions.interstellar.int_alpha.habitat.support;
             global.interstellar.starport.s_max += p_on['xfer_station'] * actions.interstellar.int_proxima.xfer_station.support;
+        }
+
+        if (p_on['s_gate']){
+            global.settings.showGalactic = true;
+            global.settings.space.stargate = true;
+        }
+        else {
+            global.settings.showGalactic = false;
+            global.settings.space.stargate = false;
         }
 
         // Droids
@@ -3285,7 +3294,8 @@ function midLoop(){
             Elerium: 1,
             Nano_Tube: 0,
             Graphene: 0,
-            Stanene: 0
+            Stanene: 0,
+            Bolognium: 0
         };
         // labor caps
         var lCaps = {
@@ -3335,6 +3345,7 @@ function midLoop(){
         var bd_Nano_Tube = { Base: caps['Nano_Tube']+'v' };
         var bd_Graphene = { Base: caps['Graphene']+'v' };
         var bd_Stanene = { Base: caps['Stanene']+'v' };
+        var bd_Bolognium = { Base: caps['Bolognium']+'v' };
 
         caps[global.race.species] = 0;
         if (global.city['farm']){
@@ -3987,7 +3998,20 @@ function midLoop(){
             caps['Elerium'] += elerium_gain;
             bd_Elerium[loc('interstellar_nexus_title')] = elerium_gain+'v';
         }
+        if (p_on['s_gate'] && global.galaxy['gateway_station']){
+            let helium_gain = global.galaxy.gateway_station.count * spatialReasoning(2500);
+            caps['Helium_3'] += helium_gain;
+            bd_Helium[loc('galaxy_gateway_station')] = helium_gain+'v';
 
+            let deuterium_gain = global.galaxy.gateway_station.count * spatialReasoning(5000);
+            caps['Deuterium'] += deuterium_gain;
+            bd_Deuterium[loc('galaxy_gateway_station')] = deuterium_gain+'v';
+        }
+        if (p_on['s_gate'] && p_on['telemetry_beacon']){
+            let gain = p_on['telemetry_beacon'] ** 2 * 600;
+            caps['Knowledge'] += gain;
+            bd_Knowledge[loc('galaxy_telemetry_beacon_bd')] = gain+'v';
+        }
         if (global.city['trade']){
             let routes = global.race['nomadic'] || global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
             if (global.tech['trade'] && global.tech['trade'] >= 3){
@@ -4068,6 +4092,7 @@ function midLoop(){
             Nano_Tube: bd_Nano_Tube,
             Graphene: bd_Graphene,
             Stanene: bd_Stanene,
+            Bolognium: bd_Bolognium,
         };
 
         let create_value = crateValue();
@@ -4220,7 +4245,7 @@ function midLoop(){
             }
         });
 
-        let spc_locations = ['space','interstellar','portal'];
+        let spc_locations = ['space','interstellar','galaxy','portal'];
         for (let i=0; i<spc_locations.length; i++){
             let location = spc_locations[i];
             Object.keys(actions[location]).forEach(function (region){
@@ -4377,7 +4402,7 @@ function midLoop(){
                 global.space['oil_extractor'] = { count: 0, on: 0 };
                 global.tech['gas_moon'] = 2;
                 messageQueue(loc('discover_oil',[races[global.race.species].solar.gas_moon]));
-                space();
+                renderSpace();
             }
         }
 
@@ -4407,7 +4432,7 @@ function midLoop(){
             let idx = -1;
             let c_action = false;
             let stop = false;
-            let deepScan = ['space','interstellar','portal'];
+            let deepScan = ['space','interstellar','galaxy','portal'];
             let time = 0;
             let spent = { t: 0, r: {}, id: {}};
             let arpa = false;
@@ -4516,22 +4541,19 @@ function midLoop(){
                         removeAction(c_action.id);
                         drawCity();
                         drawTech();
-                        space();
-                        deepSpace();
+                        renderSpace();
                         renderFortress();
                     }
                     else if (c_action['refresh']){
                         removeAction(c_action.id);
                         drawCity();
                         drawTech();
-                        space();
-                        deepSpace();
+                        renderSpace();
                         renderFortress();
                     }
                     else {
                         drawCity();
-                        space();
-                        deepSpace();
+                        renderSpace();
                         renderFortress();
                     }
                 }

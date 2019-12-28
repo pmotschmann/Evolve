@@ -29,6 +29,7 @@ export const resource_values = {
     Nano_Tube: 750,
     Graphene: 3000,
     Stanene: 3600,
+    Bolognium: 9000,
     Genes: 0,
     Soul_Gem: 0,
 };
@@ -59,6 +60,7 @@ export const tradeRatio = {
     Nano_Tube: 0.1,
     Graphene: 0.1,
     Stanene: 0.1,
+    Bolognium: 0.1,
 }
 
 export const atomic_mass = {
@@ -87,6 +89,7 @@ export const atomic_mass = {
     Nano_Tube: 15.083,
     Graphene: 26.9615,
     Stanene: 33.9615,
+    Bolognium: 75.898,
     Plywood: 7.666,
     Brick: 20.009,
     Wrought_Iron: 55.845,
@@ -215,6 +218,7 @@ export function defineResources(){
         loadResource('Nano_Tube',0,1,false,false,'advanced');
         loadResource('Graphene',0,1,false,true,'advanced');
         loadResource('Stanene',0,1,false,true,'advanced');
+        loadResource('Bolognium',0,1,false,true,'advanced');
         loadResource('Genes',-2,0,false,false,'advanced');
         loadResource('Soul_Gem',-2,0,false,false,'advanced');
         loadResource('Plywood',-1,0,false,false,'danger');
@@ -1270,7 +1274,7 @@ function initEjector(){
 
 function loadEjector(name,color){
     if (atomic_mass[name] && global.interstellar['mass_ejector']){
-        let ejector = $(`<div id="eject${name}" class="market-item"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
+        let ejector = $(`<div id="eject${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
         $('#resEjector').append(ejector);
 
         let res = $(`<span class="trade"></span>`);

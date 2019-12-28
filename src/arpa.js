@@ -3,7 +3,7 @@ import { timeFormat, vBind, messageQueue } from './functions.js';
 import { dragQueue } from './civics.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
-import { space } from './space.js';
+import { renderSpace } from './space.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js'
 
@@ -993,7 +993,7 @@ function genetics(){
 
             let trait_list = [];
             Object.keys(races).forEach(function (race){
-                if (races[race].type === races[global.race.species].type){
+                if (race !== 'junker' && races[race].type === races[global.race.species].type){
                     Object.keys(races[race].traits).forEach(function (trait){
                         if (!global.race[trait] && trait !== 'soul_eater'){
                             trait_list.push(trait);
@@ -1310,7 +1310,7 @@ export function buildArpa(pro,num,update){
                     }
                     $(`#popArpa${pro}`).remove();
                     physics();
-                    space();
+                    renderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
                 }
                 drawTech();

@@ -32,7 +32,7 @@ const fortressModules = {
             powered(){
                 return global.tech['turret'] ? 4 + global.tech['turret'] : 4;
             },
-            postPower(){
+            postPower(o){
                 p_on['turret'] = global.portal.turret.on;
                 vBind({el: `#fort`},'update');
             },

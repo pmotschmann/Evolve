@@ -429,6 +429,9 @@ export function challenge_multiplier(value,type,decimals){
     if (global.race['no_craft']){ challenge_level++; }
     if (global.race['no_crispr']){ challenge_level++; }
     if (global.race['weak_mastery']){ challenge_level++; }
+    if (challenge_level > 4){
+        challenge_level = 4;
+    }
     if (global.race.universe === 'micro'){ value = value * 0.25; }
     if (global.race.universe === 'heavy' && type !== 'mad'){
         switch (challenge_level){

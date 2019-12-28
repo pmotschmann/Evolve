@@ -7,7 +7,7 @@ import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
 import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating, dragQueue } from './civics.js';
-import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, renderSpace } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
 
@@ -10688,10 +10688,10 @@ export const actions = {
                         Neutronium: 0, Adamantite: 0,
                         Infernite: 0, Elerium: 0,
                         Nano_Tube: 0, Graphene: 0,
-                        Stanene: 0, Plywood: 0,
-                        Brick: 0, Wrought_Iron: 0,
-                        Sheet_Metal: 0, Mythril: 0,
-                        Aerogel: 0
+                        Bolognium: 0, Stanene: 0, 
+                        Plywood: 0, Brick: 0, 
+                        Wrought_Iron: 0, Sheet_Metal: 0, 
+                        Mythril: 0, Aerogel: 0
                     };
                     return true;
                 }
@@ -10833,10 +10833,10 @@ export const actions = {
             id: 'tech-wormholes',
             title: loc('tech_wormholes'),
             desc: loc('tech_wormholes'),
-            reqs: { gravity: 1, locked: 1 },
+            reqs: { gravity: 1, science: 15 },
             grant: ['stargate',1],
             cost: {
-                Knowledge(){ return 1500000; }
+                Knowledge(){ return 2250000; }
             },
             effect: loc('tech_wormholes_effect'),
             action(){
@@ -11020,6 +11020,7 @@ export const actions = {
     genes: arpa('GeneTech'),
     space: spaceTech(),
     interstellar: interstellarTech(),
+    galaxy: galaxyTech(),
     starDock: {
         probes: {
             id: 'spcdock-probes',
@@ -11248,8 +11249,7 @@ export function gainTech(action){
     global.tech[tech] = actions.tech[action].grant[1];
     drawCity();
     drawTech();
-    space();
-    deepSpace();
+    renderSpace();
     renderFortress();
 }
 
@@ -11540,7 +11540,7 @@ export function setAction(c_action,action,type,old){
                                     }
                                     if (global[action][type]['count'] === 0){
                                         drawCity();
-                                        space();
+                                        renderSpace();
                                         var id = c_action.id;
                                         $(`#pop${id}`).hide();
                                         if (poppers[id]){
@@ -11600,16 +11600,14 @@ export function setAction(c_action,action,type,old){
                                     removeAction(c_action.id);
                                     drawCity();
                                     drawTech();
-                                    space();
-                                    deepSpace();
+                                    renderSpace();
                                     renderFortress();
                                 }
                                 else if (c_action['refresh']){
                                     removeAction(c_action.id);
                                     drawCity();
                                     drawTech();
-                                    space();
-                                    deepSpace();
+                                    renderSpace();
                                     renderFortress();
                                 }
                                 updateDesc(c_action,action,type);
@@ -11651,7 +11649,7 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 if (c_action['postPower']){
-                    c_action.postPower();
+                    c_action.postPower(true);
                 }
             },
             power_off(){
@@ -11665,7 +11663,7 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 if (c_action['postPower']){
-                    c_action.postPower();
+                    c_action.postPower(false);
                 }
             },
             repair(){

@@ -1,11 +1,11 @@
-import { global, poppers, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
+import { global, poppers, keyMultiplier, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
 import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry } from './civics.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault } from './actions.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc } from './actions.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -2545,6 +2545,246 @@ const interstellarProjects = {
                 return loc('interstellar_mass_ejector_flair');
             }
         },
+        jump_ship: {
+            id: 'interstellar-jump_ship',
+            title: loc('interstellar_jump_ship'),
+            desc: loc('interstellar_jump_ship_desc'),
+            reqs: { stargate: 1 },
+            grant: ['stargate',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Money(){ return +int_fuel_adjust(20000000).toFixed(0); },
+                Copper(){ return +int_fuel_adjust(2400000).toFixed(0); },
+                Aluminium(){ return +int_fuel_adjust(4000000).toFixed(0); },
+                Titanium(){ return +int_fuel_adjust(1250000).toFixed(0); },
+                Adamantite(){ return +int_fuel_adjust(750000).toFixed(0); },
+                Stanene(){ return +int_fuel_adjust(900000).toFixed(0); },
+                Aerogel(){ return +int_fuel_adjust(100000).toFixed(0); }
+            },
+            effect: loc('interstellar_jump_ship_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        wormhole_mission: {
+            id: 'interstellar-wormhole_mission',
+            title: loc('space_mission_title', [loc('interstellar_wormhole_name')]),
+            desc: loc('space_mission_desc', [loc('interstellar_wormhole_name')]),
+            reqs: { stargate: 2 },
+            grant: ['stargate',3],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Helium_3(){ return +int_fuel_adjust(150000).toFixed(0); },
+                Deuterium(){ return +int_fuel_adjust(75000).toFixed(0); }
+            },
+            effect: loc('interstellar_wormhole_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){ 
+                    global.interstellar['stargate'] = { count: 0 };
+                    global.galaxy['gateway_station'] = { count: 0, on: 0 };
+                    messageQueue(loc('interstellar_wormhole_mission_result'),'success');
+                    return true;
+                }
+                return false;
+            }
+        },
+        stargate: {
+            id: 'interstellar-stargate',
+            title: loc('interstellar_stargate'),
+            desc(){
+                if (global.interstellar.stargate.count < 100){
+                    return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_stargate')}</div>`;
+                }
+            },
+            reqs: { stargate: 3 },
+            condition(){
+                return global.interstellar.stargate.count >= 100 ? false : true;
+            },
+            no_queue(){ return global.interstellar.stargate.count < 100 ? false : true },
+            queue_size: 10,
+            queue_complete(){ return global.interstellar.stargate.count >= 100 ? true : false; },
+            cost: {
+                Money(){ return global.interstellar.stargate.count < 100 ? 1000000 : 0; },
+                Neutronium(){ return global.interstellar.stargate.count < 100 ? 4800 : 0; },
+                Infernite(){ return global.interstellar.stargate.count < 100 ? 666 : 0; },
+                Elerium(){ return global.interstellar.stargate.count < 100 ? 75 : 0; },
+                Nano_Tube(){ return global.interstellar.stargate.count < 100 ? 12000 : 0; },
+                Stanene(){ return global.interstellar.stargate.count < 100 ? 60000 : 0; },
+                Mythril(){ return global.interstellar.stargate.count < 100 ? 3200 : 0; }
+            },
+            effect(){
+                if (global.interstellar.stargate.count < 100){
+                    let remain = 100 - global.interstellar.stargate.count;
+                    return `<div>${loc('interstellar_stargate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.stargate.count < 100){
+                        incrementStruct('stargate','interstellar');
+                        if (global.interstellar.stargate.count >= 100){
+                            global.tech['stargate'] = 4;
+                            global.interstellar['s_gate'] = { count: 1, on: 0 };
+                            if (global.city.power >= spaceProjects.int_blackhole.s_gate.powered()){
+                                global.interstellar['s_gate'].on++;
+                            }
+                            deepSpace();
+                            var id = $(this)[0].id;
+                            $(`#pop${id}`).hide();
+                            if (poppers[id]){
+                                poppers[id].destroy();
+                            }
+                            $(`#pop${id}`).remove();
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        s_gate: {
+            id: 'interstellar-s_gate',
+            title: loc('interstellar_stargate'),
+            desc(){
+                return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { stargate: 4 },
+            condition(){
+                return global.interstellar.stargate.count >= 100 ? true : false;
+            },
+            no_queue(){ return true },
+            cost: {},
+            powered(){
+                return 250;
+            },
+            effect(){
+                return `<div>${loc('interstellar_s_gate_effect',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                return false;
+            }
+        },
+    }
+};
+
+const galaxyProjects = {
+    gxy_stargate: {
+        info: {
+            name: loc('galaxy_stargate'),
+            desc(){ return loc('galaxy_stargate_desc'); },
+        },
+        gateway_station: {
+            id: 'galaxy-gateway_station',
+            title: loc('galaxy_gateway_station'),
+            desc(){ return `<div>${loc('galaxy_gateway_station_desc')}</div>`; },
+            reqs: { stargate: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('gateway_station', offset, 5000000, 1.25, 'galaxy'); },
+                Steel(offset){ return spaceCostMultiplier('gateway_station', offset, 990000, 1.25, 'galaxy'); },
+                Polymer(offset){ return spaceCostMultiplier('gateway_station', offset, 350000, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let helium = spatialReasoning(2500);
+                let deuterium = spatialReasoning(5000);
+                let gateway = '';
+                if (global.tech['gateway']){
+                    gateway = `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div>`;
+                }
+            return `${gateway}<div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div>`;
+            },
+            support: 1,
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('gateway_station','galaxy');
+                    global['resource']['Helium_3'].max += spatialReasoning(2500);
+                    global['resource']['Deuterium'].max += spatialReasoning(5000);
+                    if (global.tech['stargate'] === 4){
+                        global.galaxy['telemetry_beacon'] = { count: 0, on: 0 };
+                        global.tech['stargate'] = 5;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        telemetry_beacon: {
+            id: 'galaxy-telemetry_beacon',
+            title: loc('galaxy_telemetry_beacon'),
+            desc(){ return `<div>${loc('galaxy_telemetry_beacon')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { stargate: 5 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 2250000, 1.25, 'galaxy'); },
+                Copper(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 685000, 1.25, 'galaxy'); },
+                Alloy(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 425000, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let know = p_on['telemetry_beacon'] ? 600 * p_on['telemetry_beacon'] : 0;
+                return `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div><div>${loc('galaxy_telemetry_beacon_effect1',[600])}</div><div>${loc('galaxy_telemetry_beacon_effect2',[know])}</div>`;
+            },
+            support: 1,
+            powered(){ return p_on['s_gate'] ? 3 : 0; },
+            postPower(o){
+                let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
+                if (powered > global.galaxy.telemetry_beacon.count){
+                    powered = global.galaxy.telemetry_beacon.count;
+                }
+                else if (powered < 0){
+                    powered = 0;
+                }
+                p_on['telemetry_beacon'] = powered;
+                updateDesc($(this)[0],'galaxy','telemetry_beacon');
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('telemetry_beacon','galaxy');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.galaxy['telemetry_beacon'].on++;
+                        global['resource']['Knowledge'].max += 1750;
+                    }
+                    if (!global.tech['gateway']){
+                        global.galaxy['starbase'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        global.settings.space.gateway = true;
+                        global.tech['gateway'] = 1;
+                        galaxySpace();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    gxy_gateway: {
+        info: {
+            name: loc('galaxy_gateway'),
+            desc(){ return loc('galaxy_gateway_desc'); },
+            support: 'starbase'
+        },
+        gateway_mission: {
+            id: 'galaxy-gateway_mission',
+            title: loc('galaxy_gateway_mission'),
+            desc: loc('galaxy_gateway_mission'),
+            reqs: { gateway: 1, locked: 1 },
+            grant: ['gateway',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Helium_3(){ return +int_fuel_adjust(250000).toFixed(0); },
+                Deuterium(){ return +int_fuel_adjust(175000).toFixed(0); }
+            },
+            effect: loc('galaxy_gateway_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     }
 };
 
@@ -2620,11 +2860,14 @@ const structDefinitions = {
         Neutronium: 0, Adamantite: 0,
         Infernite: 0, Elerium: 0,
         Nano_Tube: 0, Graphene: 0,
-        Stanene: 0, Plywood: 0,
-        Brick: 0, Wrought_Iron: 0,
-        Sheet_Metal: 0, Mythril: 0,
-        Aerogel: 0
+        Stanene: 0, Bolognium: 0,
+        Plywood: 0, Brick: 0, 
+        Wrought_Iron: 0, Sheet_Metal: 0, 
+        Mythril: 0, Aerogel: 0
     },
+    stargate: { count: 0 },
+    s_gate: { count: 0, on: 0 },
+    starbase: { count: 0, on: 0, support: 0, s_max: 0 },
     turret: { count: 0, on: 0 },
     carport: { count: 0, damaged: 0, repair: 0 },
     war_droid: { count: 0, on: 0 },
@@ -2651,6 +2894,10 @@ export function interstellarTech(){
     return interstellarProjects;
 }
 
+export function galaxyTech(){
+    return galaxyProjects;
+}
+
 export function checkRequirements(action_set,region,action){
     var isMet = true;
     Object.keys(action_set[region][action].reqs).forEach(function (req){
@@ -2664,7 +2911,13 @@ export function checkRequirements(action_set,region,action){
     return isMet;
 }
 
-export function space(){
+export function renderSpace(){
+    space();
+    deepSpace();
+    galaxySpace();
+}
+
+function space(){
     let parent = $('#space');
     parent.empty();
     parent.append($(`<h2 class="is-sr-only">${loc('tab_space')}</h2>`));
@@ -2716,7 +2969,7 @@ export function space(){
     });
 }
 
-export function deepSpace(){
+function deepSpace(){
     let parent = $('#interstellar');
     parent.empty();
     parent.append($(`<h2 class="is-sr-only">${loc('tab_interstellar')}</h2>`));
@@ -2762,6 +3015,58 @@ export function deepSpace(){
                 if (tech !== 'info' && checkRequirements(interstellarProjects,region,tech)){
                     let c_action = interstellarProjects[region][tech];
                     setAction(c_action,'interstellar',tech);
+                }
+            });
+        }
+    });
+}
+
+function galaxySpace(){
+    let parent = $('#galaxy');
+    parent.empty();
+    parent.append($(`<h2 class="is-sr-only">${loc('tab_galactic')}</h2>`));
+    if (!global.settings.showGalactic){
+        return false;
+    }
+
+    Object.keys(galaxyProjects).forEach(function (region){
+        let show = region.replace("gxy_","");
+        if (global.settings.space[`${show}`]){
+            let name = typeof galaxyProjects[region].info.name === 'string' ? galaxyProjects[region].info.name : galaxyProjects[region].info.name();
+            
+            if (galaxyProjects[region].info['support']){
+                let support = galaxyProjects[region].info['support'];
+                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
+                vBind({
+                    el: `#sr${region}`,
+                    data: global.galaxy[support]
+                });
+            }
+            else {
+                parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
+            }
+            
+            $(`#${region} h3.name`).on('mouseover',function(){
+                var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);
+                $('#main').append(popper);
+                
+                let desc = typeof galaxyProjects[region].info.desc === 'string' ? galaxyProjects[region].info.desc : galaxyProjects[region].info.desc();
+                popper.append($(`<div>${desc}</div>`));
+                popper.show();
+                poppers[region] = new Popper($(`#${region} h3.name`),popper);
+            });
+            $(`#${region} h3.name`).on('mouseout',function(){
+                $(`#pop${region}`).hide();
+                if (poppers[region]){
+                    poppers[region].destroy();
+                }
+                $(`#pop${region}`).remove();
+            });
+
+            Object.keys(galaxyProjects[region]).forEach(function (tech){
+                if (tech !== 'info' && checkRequirements(galaxyProjects,region,tech)){
+                    let c_action = galaxyProjects[region][tech];
+                    setAction(c_action,'galaxy',tech);
                 }
             });
         }

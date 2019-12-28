@@ -427,7 +427,9 @@ if (!global.settings['space']){
         gas_moon: false,
         belt: false,
         dwarf: false,
-        blackhole: false
+        blackhole: false,
+        stargate: false,
+        gateway: false
     }
 }
 
@@ -439,8 +441,17 @@ if (!global.settings.space['alpha']){
     global.settings.space['blackhole'] = false;
 }
 
+if (typeof global.settings.space['stargate'] === 'undefined'){
+    global.settings.space['stargate'] = false;
+    global.settings.space['gateway'] = false;
+}
+
 if (!global.settings['showDeep']){
     global.settings['showDeep'] = false;
+}
+
+if (!global.settings['showGalactic']){
+    global.settings['showGalactic'] = false;
 }
 
 if (!global.settings['showPortal']){
@@ -479,6 +490,14 @@ if (!global['starDock']){
 
 if (!global['interstellar']){
     global['interstellar'] = {};
+}
+
+if (!global['galaxy']){
+    global['galaxy'] = {};
+}
+
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Bolognium']){
+    global.interstellar.mass_ejector['Bolognium'] = 0;
 }
 
 if (!global.settings.space['alpha']){
@@ -1178,6 +1197,7 @@ export function clearStates(){
     global['r_queue'] = { display: false, queue: [] };
     global.space = {};
     global.interstellar = {};
+    global.galaxy = {};
     global.portal = {};
     global.starDock = {};
     global.civic = { free: 0, new: 0 };
@@ -1240,6 +1260,7 @@ export function clearStates(){
     global.settings.showGenetics = false;
     global.settings.showSpace = false;
     global.settings.showDeep = false;
+    global.settings.showGalactic = false;
     global.settings.showPortal = false;
     global.settings.showEjector = false;
     global.settings.space.home = true;
@@ -1256,6 +1277,8 @@ export function clearStates(){
     global.settings.space.nebula = false;
     global.settings.space.neutron = false;
     global.settings.space.blackhole = false;
+    global.settings.space.stargate = false;
+    global.settings.space.gateway = false;
     global.settings.portal.fortress = false;
     global.settings.portal.badlands = false;
     global.settings.portal.pit = false;

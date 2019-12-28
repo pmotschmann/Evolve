@@ -83,6 +83,12 @@ export function index(){
                     <span aria-hidden="true">{{ 'tab_interstellar' | label }}</span>
                 </template>
             </b-tab-item>
+            <b-tab-item id="galaxy" :visible="s.showGalactic">
+                <template slot="header">
+                    <h2 class="is-sr-only">{{ 'tab_galactic' | label }}</h2>
+                    <span aria-hidden="true">{{ 'tab_galactic' | label }}</span>
+                </template>
+            </b-tab-item>
             <b-tab-item id="portal" :visible="s.showPortal">
                 <template slot="header">
                     <h2 class="is-sr-only">{{ 'tab_portal' | label }}</h2>

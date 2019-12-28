@@ -780,6 +780,9 @@ export function unlockFeat(feat,small,rank){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
+    if (a_level > 5){
+        a_level = 5;
+    }
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
     }
@@ -818,9 +821,9 @@ export function drawAchieve(){
         total++;
         if (global.stats.achieve[achievement]){
             earned++;
-            level += global.stats.achieve[achievement].l;
+            level += global.stats.achieve[achievement].l > 5 ? 5 : global.stats.achieve[achievement].l;
             if (achievement === 'joyless'){
-                level += global.stats.achieve[achievement].l;
+                level += global.stats.achieve[achievement].l > 5 ? 5 : global.stats.achieve[achievement].l;
             }
             let emblem = format_emblem(achievement,16);            
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${emblem}</div></b-tooltip>`));
@@ -855,6 +858,9 @@ export function drawAchieve(){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
+    if (a_level > 5){
+        a_level = 5;
+    }
 
     if ($('#topBar span.flair')){
         $('#topBar span.flair').remove();
@@ -892,6 +898,9 @@ export function checkAchievements(){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
+    if (a_level > 5){
+        a_level = 5;
+    }
 
     for (let t_level=a_level; t_level >= 0; t_level--){
         if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'].l < t_level){
