@@ -1351,15 +1351,19 @@ export function plasmidBonus(type){
             plasmids *= 0.025
         }
         if (global.race['decayed']){
-            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 5));
+            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 6));
         }
         let p_cap = 250 + global.race.Phage.count;
         if (plasmids > p_cap){
             standard = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
         }
+        else if (plasmids < 0){
+            standard = 0;
+        }
         else {
             standard = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
         }
+
         if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
             let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
@@ -1384,11 +1388,14 @@ export function plasmidBonus(type){
             plasmids *= 0.25
         }
         if (global.race['decayed']){
-            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 5));
+            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 6));
         }
         let p_cap = 250 + global.race.Phage.count;
         if (plasmids > p_cap){
             anti = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
+        }
+        else if (plasmids < 0){
+            anti = 0;
         }
         else {
             anti = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
