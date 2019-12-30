@@ -1233,7 +1233,6 @@ function fastLoop(){
                 }
             }
             global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support;
-            global.galaxy.starbase.s_max += global.galaxy.gateway_station.count * actions.galaxy.gxy_stargate.gateway_station.support;
             global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support;
         }
 
@@ -4060,11 +4059,11 @@ function midLoop(){
             bd_Elerium[loc('interstellar_nexus_title')] = elerium_gain+'v';
         }
         if (p_on['s_gate'] && global.galaxy['gateway_station']){
-            let helium_gain = global.galaxy.gateway_station.count * spatialReasoning(2500);
+            let helium_gain = global.galaxy.gateway_station.count * spatialReasoning(2000);
             caps['Helium_3'] += helium_gain;
             bd_Helium[loc('galaxy_gateway_station')] = helium_gain+'v';
 
-            let deuterium_gain = global.galaxy.gateway_station.count * spatialReasoning(5000);
+            let deuterium_gain = global.galaxy.gateway_station.count * spatialReasoning(4500);
             caps['Deuterium'] += deuterium_gain;
             bd_Deuterium[loc('galaxy_gateway_station')] = deuterium_gain+'v';
         }

@@ -11017,6 +11017,23 @@ export const actions = {
                 return false;
             }
         },
+        scout_ship: {
+            id: 'tech-scout_ship',
+            title: loc('galaxy_scout_ship'),
+            desc: loc('galaxy_scout_ship'),
+            reqs: { gateway: 3 },
+            grant: ['andromeda',1],
+            cost: {
+                Knowledge(){ return 2600000; }
+            },
+            effect(){ return loc('tech_scout_ship_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
