@@ -499,6 +499,9 @@ if (!global['galaxy']){
 if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Bolognium']){
     global.interstellar.mass_ejector['Bolognium'] = 0;
 }
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Vitreloy']){
+    global.interstellar.mass_ejector['Vitreloy'] = 0;
+}
 
 if (!global.settings.space['alpha']){
     global.settings.space['alpha'] = false;

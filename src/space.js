@@ -1009,7 +1009,7 @@ const spaceProjects = {
             },
             effect(){
                 let helium = +((global.tech['helium'] ? 0.65 : 0.5) * zigguratBonus()).toFixed(2);
-                return `<div>${loc('space_gas_mining_effect1',[helium])}</div><div>${loc('space_gas_mining_effect2',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('space_gas_mining_effect1',[helium])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return 2; },
             action(){
@@ -1441,7 +1441,7 @@ const spaceProjects = {
             },
             effect(){
                 let elerium = spatialReasoning(100);
-                return `<div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('space_dwarf_elerium_contain_effect2',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return 6; },
             action(){
@@ -1495,6 +1495,9 @@ const spaceProjects = {
                 }
             },
             reqs: { science: 10 },
+            condition(){
+                return global.space.world_collider.count < 1859 ? true : false;
+            },
             no_queue(){ return global.space.world_collider.count < 1859 ? false : true },
             queue_size: 100,
             queue_complete(){ return global.space.world_collider.count >= 1859 ? true : false; },
@@ -1531,11 +1534,14 @@ const spaceProjects = {
         },
         world_controller: {
             id: 'space-world_controller',
-            title: loc('space_dwarf_controller_title'),
+            title: loc('space_dwarf_collider_title'),
             desc(){
-                return `<div>${loc('space_dwarf_controller_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('space_dwarf_collider_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { science: 11 },
+            condition(){
+                return global.space.world_collider.count < 1859 ? false : true;
+            },
             cost: {},
             no_queue(){ return true },
             effect(){
@@ -1543,7 +1549,7 @@ const spaceProjects = {
                 if (global.interstellar['far_reach'] && p_on['far_reach'] > 0){
                     boost += p_on['far_reach'] * 1;
                 }
-                return `<div>${loc('space_dwarf_controller_effect1')}</div><div>${loc('plus_max_resource',[boost+'%',loc('resource_Knowledge_name')])}</div><div>${loc('space_dwarf_controller_effect3')}</div><div>${loc('space_dwarf_controller_effect4',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[boost+'%',loc('resource_Knowledge_name')])}</div><div>${loc('space_dwarf_controller_effect3')}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return 20; },
             action(){
@@ -2687,16 +2693,17 @@ const galaxyProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('gateway_station', offset, 5000000, 1.25, 'galaxy'); },
                 Steel(offset){ return spaceCostMultiplier('gateway_station', offset, 990000, 1.25, 'galaxy'); },
+                Aluminium(offset){ return spaceCostMultiplier('gateway_station', offset, 520000, 1.25, 'galaxy'); },
                 Polymer(offset){ return spaceCostMultiplier('gateway_station', offset, 350000, 1.25, 'galaxy'); },
             },
             effect(){
                 let helium = spatialReasoning(2500);
                 let deuterium = spatialReasoning(5000);
                 let gateway = '';
-                if (global.tech['gateway']){
+                if (global.tech['gateway'] && global.tech['gateway'] >= 2){
                     gateway = `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div>`;
                 }
-            return `${gateway}<div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div>`;
+                return `${gateway}<div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div>`;
             },
             support: 1,
             refresh: true,
@@ -2723,10 +2730,15 @@ const galaxyProjects = {
                 Money(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 2250000, 1.25, 'galaxy'); },
                 Copper(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 685000, 1.25, 'galaxy'); },
                 Alloy(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 425000, 1.25, 'galaxy'); },
+                Iridium(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 177000, 1.25, 'galaxy'); },
             },
             effect(){
                 let know = p_on['telemetry_beacon'] ? 600 * p_on['telemetry_beacon'] : 0;
-                return `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div><div>${loc('galaxy_telemetry_beacon_effect1',[600])}</div><div>${loc('galaxy_telemetry_beacon_effect2',[know])}</div>`;
+                let gateway = '';
+                if (global.tech['gateway'] && global.tech['gateway'] >= 2){
+                    gateway = `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div>`;
+                }
+                return `${gateway}<div>${loc('galaxy_telemetry_beacon_effect1',[600])}</div><div>${loc('galaxy_telemetry_beacon_effect2',[know])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             support: 1,
             powered(){ return p_on['s_gate'] ? 3 : 0; },
@@ -2770,7 +2782,7 @@ const galaxyProjects = {
             id: 'galaxy-gateway_mission',
             title: loc('galaxy_gateway_mission'),
             desc: loc('galaxy_gateway_mission'),
-            reqs: { gateway: 1, locked: 1 },
+            reqs: { gateway: 1 },
             grant: ['gateway',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
@@ -2780,6 +2792,71 @@ const galaxyProjects = {
             effect: loc('galaxy_gateway_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        starbase: {
+            id: 'galaxy-starbase',
+            title: loc('galaxy_starbase'),
+            desc: `<div>${loc('galaxy_starbase')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { gateway: 2 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('starbase', offset, 4200000, 1.25, 'galaxy'); },
+                Elerium(offset){ return spaceCostMultiplier('starbase', offset, 1000, 1.25, 'galaxy'); },
+                Mythril(offset){ return spaceCostMultiplier('starbase', offset, 90000, 1.25, 'galaxy'); },
+                Graphene(offset){ return spaceCostMultiplier('starbase', offset, 320000, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let helium = +(int_fuel_adjust(25)).toFixed(2);
+                let food = 200;
+                return `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div><div>${loc('plus_max_soldiers',[4])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
+            },
+            support: 2,
+            powered(){ return 10; },
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('starbase','galaxy');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.galaxy['starbase'].on++;
+                    }
+                    if (global.tech['gateway'] === 2){
+                        global.galaxy['bolognium_ship'] = { count: 0, on: 0 };
+                        global.tech['gateway'] = 3;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        bolognium_ship: {
+            id: 'galaxy-bolognium_ship',
+            title: loc('galaxy_bolognium_ship'),
+            desc(){
+                return `<div>${loc('galaxy_bolognium_ship_desc')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[loc('resource_Helium_3_name')])}</div>`;
+            },
+            reqs: { gateway: 3, locked: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('bolognium_ship', offset, 1400000, 1.22, 'galaxy'); },
+                Iron(offset){ return spaceCostMultiplier('bolognium_ship', offset, 560000, 1.22, 'galaxy'); },
+                Infernite(offset){ return spaceCostMultiplier('bolognium_ship', offset, 1800, 1.22, 'galaxy'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('bolognium_ship', offset, 475000, 1.22, 'galaxy'); },
+            },
+            effect(){
+                let bolognium = +(0.022 * zigguratBonus()).toFixed(3);
+                return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('galaxy_starbase_civ_crew',[1])}</div><div>${loc('galaxy_gateway_used_support',[1])}</div>`;
+            },
+            support: -1,
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('bolognium_ship','galaxy');
+                    global.resource.Bolognium.display = true;
+                    if (global.galaxy.starbase.support < global.galaxy.starbase.s_max){
+                        global.galaxy['bolognium_ship'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -2830,6 +2907,7 @@ const structDefinitions = {
     world_collider: { count: 0 },
     world_controller: { count: 0, on: 0 },
     starport: { count: 0, on: 0, support: 0, s_max: 0 },
+    bolognium_ship: { count: 0, on: 0 },
     mining_droid: { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 },
     processing: { count: 0, on: 0 },
     habitat: { count: 0, on: 0 },
@@ -2861,9 +2939,10 @@ const structDefinitions = {
         Infernite: 0, Elerium: 0,
         Nano_Tube: 0, Graphene: 0,
         Stanene: 0, Bolognium: 0,
-        Plywood: 0, Brick: 0, 
-        Wrought_Iron: 0, Sheet_Metal: 0, 
-        Mythril: 0, Aerogel: 0
+        Vitreloy: 0, Plywood: 0,
+        Brick: 0, Wrought_Iron: 0,
+        Sheet_Metal: 0, Mythril: 0,
+        Aerogel: 0
     },
     stargate: { count: 0 },
     s_gate: { count: 0, on: 0 },

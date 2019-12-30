@@ -206,6 +206,12 @@ const fortressModules = {
                 return false;
             }
         },
+    },
+    prtl_pit: {
+        info: {
+            name: loc('portal_pit_name'),
+            desc: loc('portal_pit_desc'),
+        },
     }
 };
 

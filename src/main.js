@@ -632,6 +632,7 @@ function fastLoop(){
         Graphene: {},
         Stanene: {},
         Bolognium: {},
+        Vitreloy: {},
         Plywood: {},
         Brick: {},
         Wrought_Iron: {},
@@ -1018,7 +1019,14 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = ['city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','int_blackhole:mass_ejector','city:casino'];
+        let p_structs = [
+            'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase',
+            'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station',
+            'gxy_stargate:telemetry_beacon','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
+            'spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller',
+            'prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant',
+            'city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','int_blackhole:far_reach',
+            'prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','int_blackhole:mass_ejector','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
@@ -1148,7 +1156,7 @@ function fastLoop(){
             global.space.spaceport.support = used_support;
         }
 
-        // starports
+        // Starports
         if (global.interstellar['starport'] && global.interstellar['starport'].count > 0){
             let fuel_cost = +int_fuel_adjust(5);
             let mb_consume = p_on['starport'] * fuel_cost;
@@ -1163,15 +1171,6 @@ function fastLoop(){
             global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support;
             global.interstellar.starport.s_max += p_on['habitat'] * actions.interstellar.int_alpha.habitat.support;
             global.interstellar.starport.s_max += p_on['xfer_station'] * actions.interstellar.int_proxima.xfer_station.support;
-        }
-
-        if (p_on['s_gate']){
-            global.settings.showGalactic = true;
-            global.settings.space.stargate = true;
-        }
-        else {
-            global.settings.showGalactic = false;
-            global.settings.space.stargate = false;
         }
 
         // Droids
@@ -1219,6 +1218,47 @@ function fastLoop(){
                     }
                 }
             }
+        }
+
+        // Starbase
+        if (global.galaxy['starbase'] && global.galaxy['starbase'].count > 0){
+            let fuel_cost = +int_fuel_adjust(25);
+            let mb_consume = p_on['starbase'] * fuel_cost;
+            breakdown.p.consume.Helium_3[loc('galaxy_starbase')] = -(mb_consume);
+            for (let i=0; i<p_on['starbase']; i++){
+                if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
+                    mb_consume -= (p_on['starbase'] * fuel_cost) - (i * fuel_cost);
+                    p_on['starbase'] -= i;
+                    break;
+                }
+            }
+            global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support;
+            global.galaxy.starbase.s_max += global.galaxy.gateway_station.count * actions.galaxy.gxy_stargate.gateway_station.support;
+            global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support;
+        }
+
+        if (global.galaxy['starbase']){
+            let used_support = 0;
+            let gateway_structs = ['bolognium_ship'];
+            for (var i = 0; i < gateway_structs.length; i++){
+                if (global.galaxy[gateway_structs[i]]){
+                    let operating = global.galaxy[gateway_structs[i]].on;
+                    let id = actions.galaxy.gxy_gateway[gateway_structs[i]].id;
+                    if (used_support + operating > global.galaxy.starbase.s_max){
+                        operating -=  (used_support + operating) - global.galaxy.starbase.s_max;
+                        $(`#${id} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${id} .on`).removeClass('warn');
+                    }
+                    used_support += operating;
+                    red_on[gateway_structs[i]] = operating;
+                }
+                else {
+                    red_on[gateway_structs[i]] = 0;
+                }
+            }
+            global.galaxy.starbase.support = used_support;
         }
 
         // Space Station
@@ -1353,6 +1393,16 @@ function fastLoop(){
                 }
             }
             int_on['cruiser'] = active;
+        }
+
+        // Stargate
+        if (p_on['s_gate']){
+            global.settings.showGalactic = true;
+            global.settings.space.stargate = true;
+        }
+        else {
+            global.settings.showGalactic = false;
+            global.settings.space.stargate = false;
         }
 
         // Detect labor anomalies
@@ -1671,6 +1721,12 @@ function fastLoop(){
                 breakdown.p.consume.Food[loc('interstellar_alpha_starport_title')] = -(starport);
             }
 
+            let starbase = 0;
+            if (global.galaxy['starbase']){
+                starbase = p_on['starbase'] * 200;
+                breakdown.p.consume.Food[loc('galaxy_starbase')] = -(starbase);
+            }
+
             let space_station = 0;
             if (global.space['space_station']){
                 space_station = p_on['space_station'] * 10;
@@ -1683,7 +1739,7 @@ function fastLoop(){
                 breakdown.p.consume.Food[loc('tech_space_marines_bd')] = -(space_marines);
             }
 
-            let delta = generated - consume - tourism - spaceport - starport - space_station - space_marines;
+            let delta = generated - consume - tourism - spaceport - starport - starbase -  space_station - space_marines;
 
             food_bd[loc('space_red_biodome_title')] = biodome + 'v';
             food_bd[loc('soldiers')] = hunting + 'v';
@@ -3295,7 +3351,8 @@ function midLoop(){
             Nano_Tube: 0,
             Graphene: 0,
             Stanene: 0,
-            Bolognium: 0
+            Bolognium: 0,
+            Vitreloy: 0
         };
         // labor caps
         var lCaps = {
@@ -3346,6 +3403,7 @@ function midLoop(){
         var bd_Graphene = { Base: caps['Graphene']+'v' };
         var bd_Stanene = { Base: caps['Stanene']+'v' };
         var bd_Bolognium = { Base: caps['Bolognium']+'v' };
+        var bd_Vitreloy = { Base: caps['Vitreloy']+'v' };
 
         caps[global.race.species] = 0;
         if (global.city['farm']){
@@ -3470,6 +3528,9 @@ function midLoop(){
         }
         if (global.interstellar['cruiser']){
             lCaps['garrison'] += int_on['cruiser'] * 3;
+        }
+        if (p_on['s_gate'] && global.galaxy['starbase']){
+            lCaps['garrison'] += p_on['starbase'] * 4;
         }
         if (!global.tech['world_control']){
             if (global.civic.foreign.gov0.occ){
@@ -4093,6 +4154,7 @@ function midLoop(){
             Graphene: bd_Graphene,
             Stanene: bd_Stanene,
             Bolognium: bd_Bolognium,
+            Vitreloy: bd_Vitreloy,
         };
 
         let create_value = crateValue();

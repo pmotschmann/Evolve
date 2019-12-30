@@ -10688,10 +10688,11 @@ export const actions = {
                         Neutronium: 0, Adamantite: 0,
                         Infernite: 0, Elerium: 0,
                         Nano_Tube: 0, Graphene: 0,
-                        Bolognium: 0, Stanene: 0, 
-                        Plywood: 0, Brick: 0, 
-                        Wrought_Iron: 0, Sheet_Metal: 0, 
-                        Mythril: 0, Aerogel: 0
+                        Stanene: 0, Bolognium: 0,
+                        Vitreloy: 0, Plywood: 0,
+                        Brick: 0, Wrought_Iron: 0,
+                        Sheet_Metal: 0, Mythril: 0,
+                        Aerogel: 0
                     };
                     return true;
                 }
@@ -11167,7 +11168,7 @@ export const actions = {
 };
 
 export function storageMultipler(){
-    var multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
+    let multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
     }
@@ -11204,7 +11205,7 @@ export function checkCityRequirements(action){
 }
 
 export function checkTechRequirements(tech){
-    var isMet = true;
+    let isMet = true;
     Object.keys(actions.tech[tech].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
             isMet = false;
@@ -11225,7 +11226,7 @@ export function checkOldTech(tech){
 }
 
 function checkPowerRequirements(c_action){
-    var isMet = true;
+    let isMet = true;
     if (c_action['power_reqs']){
         Object.keys(c_action.power_reqs).forEach(function (req){
             if (!global.tech[req] || global.tech[req] < c_action.power_reqs[req]){
@@ -11237,7 +11238,7 @@ function checkPowerRequirements(c_action){
 }
 
 function registerTech(action){
-    var tech = actions.tech[action].grant[0];
+    let tech = actions.tech[action].grant[0];
     if (!global.tech[tech]){
         global.tech[tech] = 0;
     }
@@ -11245,7 +11246,7 @@ function registerTech(action){
 }
 
 export function gainTech(action){
-    var tech = actions.tech[action].grant[0];
+    let tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
     drawCity();
     drawTech();

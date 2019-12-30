@@ -152,6 +152,9 @@ export const job_desc = {
     },
     hell_surveyor(){
         return loc('job_hell_surveyor_desc');
+    },
+    crew(){
+        return loc('job_crew_desc');
     }
 }
 
@@ -174,6 +177,7 @@ export function defineJobs(){
     loadJob('colonist',1,5,'advanced');
     loadJob('space_miner',1,5,'advanced');
     loadJob('hell_surveyor',1,1,'advanced');
+    loadJob('crew',1,4,'alert');
     loadFoundry();
 }
 
@@ -295,7 +299,12 @@ function loadJob(job, impact, stress, color){
                 for (let i=0; i<keyMult; i++){
                     if (global.civic[job].workers > 0){
                         global.civic[job].workers--;
-                        global.civic.free++;
+                        if (global.civic.d_job === 'unemployed'){
+                            global.civic.free++;
+                        }
+                        else {
+                            global.civic[global.civic.d_job].workers++;
+                        }
                         global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
@@ -412,7 +421,12 @@ export function loadFoundry(){
                             global.city.foundry[res]--;
                             global.civic.craftsman.workers--;
                             global.city.foundry.crafting--;
-                            global.civic.free++;
+                            if (global.civic.d_job === 'unemployed'){
+                                global.civic.free++;
+                            }
+                            else {
+                                global.civic[global.civic.d_job].workers++;
+                            }
                         }
                         else {
                             break;
