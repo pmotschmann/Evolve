@@ -5333,7 +5333,7 @@ export const actions = {
             id: 'tech-bayer_process',
             title: loc('tech_bayer_process'),
             desc: loc('tech_bayer_process_desc'),
-            category: 'upgrade',
+            category: 'research',
             reqs: { smelting: 2 },
             grant: ['alumina',1],
             cost: { 
