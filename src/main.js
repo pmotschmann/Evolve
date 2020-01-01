@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, setPlanet, resQueue } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
@@ -409,14 +409,7 @@ if (global.race.species === 'protoplasm'){
 else {
     drawCity();
 
-    Object.keys(actions.tech).forEach(function (tech){
-        if (checkTechRequirements(tech)){
-            addAction('tech',tech);
-        }
-        if (checkOldTech(tech)){
-            oldTech(tech);
-        }
-    });
+    drawTech();
     space();
     deepSpace();
     renderFortress()    
@@ -4958,6 +4951,16 @@ function longLoop(){
         }
         if (!global.settings['cLabels'] && $('#city-dist-outskirts').length > 0){
             drawCity();
+        }
+        if (global.settings['tLabels'] &&
+            $('#tech-dist-reserach').length === 0 &&
+            $('#tech-dist-upgrade').length === 0){
+            drawTech();
+        }
+        if (!global.settings['tLabels'] &&
+            ($('#tech-dist-research').length > 0 ||
+             $('#tech-dist-upgrade').length > 0)){
+            drawTech();
         }
     }
 

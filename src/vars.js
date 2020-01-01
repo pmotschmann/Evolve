@@ -373,7 +373,13 @@ if (convertVersion(global['version']) < 7007 && global['queue'] && global['queue
     }
 }
 
-global['version'] = '0.7.12';
+if (convertVersion(global['version']) < 7014){
+    if (global['settings']){
+        global.settings['tLabels'] = false;
+    }
+}
+
+global['version'] = '0.7.14';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -398,6 +404,7 @@ if (!global['settings']){
         animated: true,
         disableReset: false,
         cLabels: true,
+        tLabels: true,
         theme: 'dark',
         locale: 'en-US',
     };
