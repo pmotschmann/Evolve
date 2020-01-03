@@ -1,3 +1,10 @@
+#### 0.7.14 - 12/31/2019 ####
+Research Categorization option by Naryl<br>
+
+#### 0.7.13 - 12/30/2019 ####
+Gene decay will no longer result in a negative plasmid count<br>
+Gene fortification is slightly more effective<br>
+
 #### 0.7.12 - 12/19/2019 ####
 Gene Fortification<br>
 Fixed Cultural Supremacy popover<br>

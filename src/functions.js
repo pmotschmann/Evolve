@@ -69,6 +69,9 @@ export function mainVue(){
             city(){
                 return loc('settings5');
             },
+            tech(){
+                return loc('settings9');
+            },
             qKey(){
                 return loc('settings6');
             },
