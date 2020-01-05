@@ -2864,6 +2864,7 @@
   "space_red_mine_title": "Mina",
   "space_red_mine_desc": "Instalação de Mineração",
   "space_red_mine_effect": "+%0 %1 por colono",
+  "space_red_mine_desc_bd": "Mineração em %0",
   "space_red_fabrication_title": "Fabricação",
   "space_red_fabrication_desc": "Planta de Fabricação",
   "space_red_fabrication_effect1": "+1 Artesão",
