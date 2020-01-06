@@ -29,6 +29,7 @@ export var red_on = {};
 export var moon_on = {};
 export var belt_on = {};
 export var int_on = {};
+export var gal_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
 export function set_qlevel(q_level){

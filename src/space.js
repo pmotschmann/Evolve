@@ -1518,13 +1518,14 @@ const spaceProjects = {
                     return loc('space_dwarf_collider_effect3');
                 }
             },
-            refresh: true,
             action(){
                 if (global.space.world_collider.count < 1859 && payCosts($(this)[0].cost)){
                     incrementStruct('world_collider');
                     if (global.space.world_collider.count >= 1859){
                         global.tech['science'] = 11;
                         global.space['world_controller'] = { count: 1, on: 0 };
+                        drawTech();
+                        renderSpace();
                     }
                     return true;
                 }
@@ -2841,7 +2842,7 @@ const galaxyProjects = {
             },
             effect(){
                 let bolognium = +(0.022 * zigguratBonus()).toFixed(3);
-                let helium = +int_fuel_adjust(3).toFixed(2);
+                let helium = +int_fuel_adjust(5).toFixed(2);
                 return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].crew.civ])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
             support: -1,
@@ -2867,17 +2868,17 @@ const galaxyProjects = {
             id: 'galaxy-scout_ship',
             title: loc('galaxy_scout_ship'),
             desc(){
-                return `<div>${loc('galaxy_scout_ship_desc')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[loc('resource_Helium_3_name')])}</div>`;
+                return `<div>${loc('galaxy_scout_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[loc('resource_Helium_3_name')])}</div>`;
             },
             reqs: { andromeda: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('scout_ship', offset, 1400000, 1.25, 'galaxy'); },
-                Iron(offset){ return spaceCostMultiplier('scout_ship', offset, 560000, 1.25, 'galaxy'); },
-                Infernite(offset){ return spaceCostMultiplier('scout_ship', offset, 1800, 1.25, 'galaxy'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('scout_ship', offset, 475000, 1.25, 'galaxy'); },
+                Money(offset){ return spaceCostMultiplier('scout_ship', offset, 1600000, 1.25, 'galaxy'); },
+                Titanium(offset){ return spaceCostMultiplier('scout_ship', offset, 325000, 1.25, 'galaxy'); },
+                Graphene(offset){ return spaceCostMultiplier('scout_ship', offset, 118000, 1.25, 'galaxy'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('scout_ship', offset, 1, 1.02, 'galaxy'); },
             },
             effect(){
-                let helium = +int_fuel_adjust(3).toFixed(2);
+                let helium = +int_fuel_adjust(6).toFixed(2);
                 return `<div>${loc('galaxy_starbase_civ_crew',[$(this)[0].crew.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].crew.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
             support: -1,
@@ -2942,7 +2943,6 @@ const structDefinitions = {
     world_collider: { count: 0 },
     world_controller: { count: 0, on: 0 },
     starport: { count: 0, on: 0, support: 0, s_max: 0 },
-    bolognium_ship: { count: 0, on: 0 },
     mining_droid: { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 },
     processing: { count: 0, on: 0 },
     habitat: { count: 0, on: 0 },
@@ -2983,10 +2983,10 @@ const structDefinitions = {
     s_gate: { count: 0, on: 0 },
     starbase: { count: 0, on: 0, support: 0, s_max: 0 },
     bolognium_ship: { count: 0, on: 0, crew: 0 },
-    scout_ship: { count: 0, on: 0, crew: 0 },
-    corvette_ship: { count: 0, on: 0, crew: 0 },
-    frigate_ship: { count: 0, on: 0, crew: 0 },
-    cruiser_ship: { count: 0, on: 0, crew: 0 },
+    scout_ship: { count: 0, on: 0, crew: 0, mil: 0 },
+    corvette_ship: { count: 0, on: 0, crew: 0, mil: 0 },
+    frigate_ship: { count: 0, on: 0, crew: 0, mil: 0 },
+    cruiser_ship: { count: 0, on: 0, crew: 0, mil: 0 },
     turret: { count: 0, on: 0 },
     carport: { count: 0, damaged: 0, repair: 0 },
     war_droid: { count: 0, on: 0 },

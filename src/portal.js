@@ -212,6 +212,34 @@ const fortressModules = {
             name: loc('portal_pit_name'),
             desc: loc('portal_pit_desc'),
         },
+        soul_forge: {
+            id: 'portal-soul_forge',
+            title: loc('portal_soul_forge_title'),
+            desc(){
+                return `<div>${loc('portal_soul_forge_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { hell_pit: 1 },
+            powered(){ return 3; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('soul_forge', offset, 25000000, 1.25, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('soul_forge', offset, 5000000, 1.25, 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('soul_forge', offset, 25000, 1.25, 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('soul_forge', offset, 100000, 1.25, 'portal'); },
+            },
+            effect(){
+                return `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div><div>${loc('portal_soul_forge_effect2',[0,1000000])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('soul_forge','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.soul_forge.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     }
 };
 

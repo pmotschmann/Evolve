@@ -11363,6 +11363,7 @@ export const actions = {
             id: 'tech-scout_ship',
             title: loc('galaxy_scout_ship'),
             desc: loc('galaxy_scout_ship'),
+            category: 'research',
             reqs: { gateway: 3 },
             grant: ['andromeda',1],
             cost: {
@@ -11371,6 +11372,7 @@ export const actions = {
             effect(){ return loc('tech_scout_ship_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.galaxy['scout_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
                     return true;
                 }
                 return false;

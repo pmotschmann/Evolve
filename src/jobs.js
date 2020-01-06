@@ -266,11 +266,12 @@ function loadJob(job, impact, stress, color){
     civ_container.append(controls);
     $('#jobs').append(civ_container);
     
-    var sub = $(`<span role="button" aria-label="remove ${job}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
-    var add = $(`<span role="button" aria-label="add ${job}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
-    
-    controls.append(sub);
-    controls.append(add);
+    if (job !== 'crew'){
+        var sub = $(`<span role="button" aria-label="remove ${job}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
+        var add = $(`<span role="button" aria-label="add ${job}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
+        controls.append(sub);
+        controls.append(add);
+    }
     
     new Vue({
         el: `#${id}`,

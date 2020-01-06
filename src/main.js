@@ -1,4 +1,4 @@
-import { global, save, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
+import { global, save, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue } from './functions.js';
 import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
@@ -1230,7 +1230,7 @@ function fastLoop(){
 
         if (global.galaxy['starbase']){
             let used_support = 0;
-            let gateway_structs = ['bolognium_ship'];
+            let gateway_structs = ['bolognium_ship','scout_ship'];
             for (var i = 0; i < gateway_structs.length; i++){
                 if (global.galaxy[gateway_structs[i]]){
                     let operating = global.galaxy[gateway_structs[i]].on;
@@ -1243,10 +1243,10 @@ function fastLoop(){
                         $(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating;
-                    red_on[gateway_structs[i]] = operating;
+                    gal_on[gateway_structs[i]] = operating;
                 }
                 else {
-                    red_on[gateway_structs[i]] = 0;
+                    gal_on[gateway_structs[i]] = 0;
                 }
             }
             global.galaxy.starbase.support = used_support;
@@ -1394,6 +1394,55 @@ function fastLoop(){
         else {
             global.settings.showGalactic = false;
             global.settings.space.stargate = false;
+        }
+
+        let crewed = ['bolognium_ship','scout_ship'];
+        for (let i=0; i<crewed.length; i++){
+            if (global.galaxy[crewed[i]] && typeof global.galaxy[crewed[i]]['on'] !== "undefined" && typeof global.galaxy[crewed[i]]['crew'] !== "undefined"){
+
+                if (actions.galaxy.gxy_gateway[crewed[i]].crew['civ']){
+                    if (global.galaxy[crewed[i]]['crew'] < global.galaxy[crewed[i]].on){
+                        if (global.civic.d_job === 'unemployed'){
+                            if (global.civic.free > actions.galaxy.gxy_gateway[crewed[i]].crew.civ){
+                                global.civic.free -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                                global.civic.crew.workers += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                                global.galaxy[crewed[i]]['crew'] += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            }
+                        }
+                        else {
+                            if (global.civic[global.civic.d_job].workers > actions.galaxy.gxy_gateway[crewed[i]].crew.civ){
+                                global.civic[global.civic.d_job].workers -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                                global.civic.crew.workers += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                                global.galaxy[crewed[i]]['crew'] += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            }
+                        }
+                    }
+                    if (global.galaxy[crewed[i]]['crew'] > global.galaxy[crewed[i]].on){
+                        if (global.civic.d_job === 'unemployed'){
+                            global.civic.free += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            global.civic.crew.workers -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            global.galaxy[crewed[i]]['crew'] -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                        }
+                        else {
+                            global.civic[global.civic.d_job].workers += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            global.civic.crew.workers -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            global.galaxy[crewed[i]]['crew'] -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                        }
+                    }
+                    global.civic.crew.assigned = global.civic.crew.workers;
+                }
+
+                /*if (actions.galaxy.gxy_gateway[crewed[i]].crew['mil']){
+                    global.galaxy[crewed[i]]['mil'] = 0;
+                }*/
+
+                if (global.galaxy[crewed[i]]['crew'] < global.galaxy[crewed[i]].on || gal_on[crewed[i]] < global.galaxy[crewed[i]].on){
+                    $(`#galaxy-${crewed[i]} .on`).addClass('warn');
+                }
+                else {
+                    $(`#galaxy-${crewed[i]} .on`).removeClass('warn');
+                }
+            }
         }
 
         // Detect labor anomalies
@@ -3004,6 +3053,32 @@ function fastLoop(){
         }
         breakdown.p['Infernite'] = infernite_bd;
 
+        let andromeda_helium = 0;
+
+        // Bolognium
+        let bolognium_bd = {};
+        if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['bolognium_ship'] && global.galaxy.bolognium_ship.crew > 0){
+            let operating = global.galaxy.bolognium_ship.crew;
+            let increment = 5;
+
+            let consume = (operating * increment);
+            while (consume * time_multiplier > global.resource['Helium_3'].amount && consume > 0){
+                consume -= increment;
+                operating --;
+            }
+            modRes('Helium_3', -(consume * time_multiplier));
+            andromeda_helium += consume;
+
+            let base = operating * 0.022 * zigguratBonus();
+            let delta = base * global_multiplier;
+            
+            bolognium_bd[loc('galaxy_bolognium_ship')] = base + 'v';
+            modRes('Bolognium', delta * time_multiplier);
+        }
+        breakdown.p['Bolognium'] = bolognium_bd;
+
+        breakdown.p.consume.Helium_3[loc('galaxy_helium_consume')] = -(andromeda_helium);
+
         // Income
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - (global.race['carnivore'] || global.race['evil'] ? 0 : global.civic.free);
@@ -3362,7 +3437,8 @@ function midLoop(){
             garrison: 0,
             colonist: 0,
             space_miner: 0,
-            hell_surveyor: 0
+            hell_surveyor: 0,
+            crew: 0
         };
 
         var bd_Money = { Base: caps['Money']+'v' };
@@ -4086,6 +4162,12 @@ function midLoop(){
         if (global.tech['railway']){
             let routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
             global.city.market.mtrade += global.tech['railway'] * routes;
+        }
+        if (global.galaxy['bolognium_ship']){
+            lCaps['crew'] += global.galaxy.bolognium_ship.on * actions.galaxy.gxy_gateway.bolognium_ship.crew.civ;
+        }
+        if (global.galaxy['scout_ship']){
+            lCaps['crew'] += global.galaxy.scout_ship.on * actions.galaxy.gxy_gateway.scout_ship.crew.civ;
         }
 
         if (global.race['inspired']){
