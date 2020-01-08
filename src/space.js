@@ -1515,13 +1515,14 @@ const spaceProjects = {
                     return loc('space_dwarf_collider_effect3');
                 }
             },
-            refresh: true,
             action(){
                 if (global.space.world_collider.count < 1859 && payCosts($(this)[0].cost)){
                     incrementStruct('world_collider');
                     if (global.space.world_collider.count >= 1859){
                         global.tech['science'] = 11;
                         global.space['world_controller'] = { count: 1, on: 0 };
+                        drawTech();
+                        space()
                     }
                     return true;
                 }

@@ -4427,6 +4427,11 @@ function midLoop(){
                     }
                 }
 
+                if (t_action && t_action['no_queue'] && t_action.no_queue()){
+                    global.queue.queue.splice(i,1);
+                    break;
+                }
+
                 if (struct.type === 'arpa'){
                     if (!stop){
                         c_action = t_action;
