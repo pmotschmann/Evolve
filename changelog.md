@@ -1,6 +1,7 @@
 #### 0.7.145 - 1/1/2020 ####
 Queueing the World Collider will no longer lag the game<br>
 Multi-segement projects will now have extra segments cleared from the queue on completion<br>
+Spy and Government related popovers that would sometimes get stuck open will now clear<br>
 
 #### 0.7.14 - 12/31/2019 ####
 Research Categorization option by Naryl<br>
