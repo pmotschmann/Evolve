@@ -2,6 +2,7 @@
 Queueing the World Collider will no longer lag the game<br>
 Multi-segement projects will now have extra segments cleared from the queue on completion<br>
 Spy and Government related popovers that would sometimes get stuck open will now clear<br>
+Queued projects that will not complete due to lack of production will now display a green [Never] instead of -1 second timer.
 
 #### 0.7.14 - 12/31/2019 ####
 Research Categorization option by Naryl<br>

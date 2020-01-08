@@ -346,7 +346,7 @@ export function timeCheck(c_action,track,detailed){
                             }
                         }
                         else {
-                            time = -1;
+                            time = -9999999;
                         }
                     }
                 }
