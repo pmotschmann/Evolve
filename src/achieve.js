@@ -1079,6 +1079,11 @@ export function drawPerks(){
         let bonus = global.stats.achieve['explorer'].l + 1
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_explorer",[bonus])}</span></div>`);
     }
+    
+    if (global.stats.achieve['miners_dream']){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_miners_dream")}</span></div>`);
+    }
 
     if (global.stats.achieve['extinct_junker']){
         unlocked++;

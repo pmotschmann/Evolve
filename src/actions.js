@@ -11857,9 +11857,7 @@ export function setPlanet(hell){
             if (badCnt > 0){
                 good.append(bad);
             }
-            if (goodCnt > 0){
-                popper.append(good);
-            }
+            popper.append(good);
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
