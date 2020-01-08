@@ -201,6 +201,11 @@ var achievements = {
         desc: loc("achieve_heavyweight_desc"),
         flair: loc("achieve_heavyweight_flair")
     },
+    miners_dream: {
+        name: loc("achieve_miners_dream_name"),
+        desc: loc("achieve_miners_dream_desc"),
+        flair: loc("achieve_miners_dream_flair")
+    },
     whitehole: {
         name: loc("achieve_whitehole_name"),
         desc: loc("achieve_whitehole_desc"),

@@ -11833,14 +11833,24 @@ export function setPlanet(hell){
                         if (goodCnt === 1) {
                             good.append($(`<div>${loc('set_planet_extra_rich')}</div>`));
                         }
-                        good.append($(`<div class="has-text-success">${loc(`resource_${key}_name`)}: ${Math.round((geology[key] + 1) * 100)}%</div>`));
+                        let res_val = `<div class="has-text-success">${loc(`resource_${key}_name`)}`;
+                        if (global.stats.achieve['miners_dream']) {
+                            res_val += `: ${Math.round((geology[key] + 1) * 100)}%`;
+                        }
+                        res_val += `</div>`;
+                        good.append(res_val);
                     }
                     else {
                         badCnt++;
                         if (badCnt === 1) {
                             bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
                         }
-                        bad.append($(`<div class="has-text-warning">${loc(`resource_${key}_name`)}: ${Math.round((geology[key] + 1) * 100)}%</div>`));
+                        let res_val = `<div class="has-text-warning">${loc(`resource_${key}_name`)}`;
+                        if (global.stats.achieve['miners_dream']) {
+                            res_val += `: ${Math.round((geology[key] + 1) * 100)}%`;
+                        }
+                        res_val += `</div>`;
+                        bad.append(res_val);
                     }
                 }
             }
@@ -12645,12 +12655,19 @@ function bioseed(){
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         if (unlockFeat('ill_advised')){ new_achieve = true; };
     }
+    let good_rocks = 0;
     let bad_rocks = 0;
     Object.keys(global.city.geology).forEach(function (g){
-        if (global.city.geology[g] < 0){
+        if (global.city.geology[g] > 0) {
+            good_rocks++;
+        }
+        else if (global.city.geology[g] < 0){
             bad_rocks++;
         }
     });
+    if (good_rocks >= 4) {
+        if (unlockAchieve('miners_dream')){ new_achieve = true; };
+    }
     if (bad_rocks >= 3){
         if (unlockFeat('rocky_road')){ new_achieve = true; };
     }
