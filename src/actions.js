@@ -12250,13 +12250,13 @@ export function setPlanet(hell){
                     cnt++;
                     let label = geology[key] > 0 ? loc('set_planet_rich') : loc('set_planet_poor');
                     if (cnt === 1){
-                        geo = loc('set_planet_extra',[label,key]);
+                        geo = loc('set_planet_extra',[label,loc(`resource_${key}_name`)]);
                     }
                     else if (cnt === end){
-                        geo = geo + loc('set_planet_extra_frag2',[label,key]);
+                        geo = geo + loc('set_planet_extra_frag2',[label,loc(`resource_${key}_name`)]);
                     }
                     else {
-                        geo = geo + loc('set_planet_extra_frag1',[label,key])
+                        geo = geo + loc('set_planet_extra_frag1',[label,loc(`resource_${key}_name`)])
                     }
                 }
             }

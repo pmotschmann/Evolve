@@ -2876,6 +2876,7 @@
   "space_red_mine_title": "Mine",
   "space_red_mine_desc": "Mining Facility",
   "space_red_mine_effect": "+%0 %1 per colonist",
+  "space_red_mine_desc_bd": "%0 Mining",
   "space_red_fabrication_title": "Fabrication",
   "space_red_fabrication_desc": "Fabrication Plant",
   "space_red_fabrication_effect1": "+1 Craftsman",

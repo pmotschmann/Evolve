@@ -1188,7 +1188,7 @@ function addProject(parent,project){
                         }
                         let used = 0;
                         for (var j=0; j<global.queue.queue.length; j++){
-                            used += global.queue.queue[j].q;
+                            used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
                         }
                         if (used < max_queue){
                             if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
