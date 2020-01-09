@@ -12242,7 +12242,7 @@ export function setPlanet(hell){
                         res_val += `</div>`;
                         good.append(res_val);
                     }
-                    else {
+                    else if (geology[key] < 0){
                         badCnt++;
                         if (badCnt === 1) {
                             bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
