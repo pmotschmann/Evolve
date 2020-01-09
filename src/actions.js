@@ -12235,9 +12235,9 @@ export function setPlanet(hell){
                         if (goodCnt === 1) {
                             good.append($(`<div>${loc('set_planet_extra_rich')}</div>`));
                         }
-                        let res_val = `<div class="has-text-success">${loc(`resource_${key}_name`)}`;
+                        let res_val = `<div class="has-text-advanced">${loc(`resource_${key}_name`)}`;
                         if (global.stats.achieve['miners_dream']) {
-                            res_val += `: ${Math.round((geology[key] + 1) * 100)}%`;
+                            res_val += `: <span class="has-text-success">+${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
                         }
                         res_val += `</div>`;
                         good.append(res_val);
@@ -12249,7 +12249,7 @@ export function setPlanet(hell){
                         }
                         let res_val = `<div class="has-text-warning">${loc(`resource_${key}_name`)}`;
                         if (global.stats.achieve['miners_dream']) {
-                            res_val += `: ${Math.round((geology[key] + 1) * 100)}%`;
+                            res_val += `: <span class="has-text-danger">${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
                         }
                         res_val += `</div>`;
                         bad.append(res_val);
