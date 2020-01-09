@@ -1,3 +1,11 @@
+#### 0.7.16 - 1/8/2020 ####
+Exploration Missions can be queued again<br>
+The game will now notify the user if the current version is out of date<br>
+
+Changes by Beorseder<br>
+Geology deposit aesthetic changes on planet selection<br>
+Miner's Dream Achievement & Perk<br>
+
 #### 0.7.15 - 1/7/2020 ####
 Queueing the World Collider will no longer lag the game<br>
 Multi-segement projects will now have extra segments cleared from the queue on completion<br>

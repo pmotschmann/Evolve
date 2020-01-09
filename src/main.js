@@ -4594,7 +4594,7 @@ function midLoop(){
                     }
                 }
 
-                if (t_action && t_action['no_queue'] && t_action.no_queue()){
+                if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant']){
                     global.queue.queue.splice(i,1);
                     break;
                 }
@@ -5571,3 +5571,16 @@ function enableScript(){
         breakdown: {},
     };
 }
+
+intervals['version_check'] = setInterval(function(){
+    $.ajax({
+        url: 'https://pmotschmann.github.io/Evolve/package.json',
+        type: 'GET',
+        dataType: 'json',
+        success: function(res){
+            if (res['version'] && res['version'] != global['version'] && !global['beta']){
+                $('#topBar .version > a').html('<span class="has-text-warning">Update Available</span> v'+global.version);
+            }
+        }
+    });
+}, 900000);
