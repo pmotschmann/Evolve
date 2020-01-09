@@ -12224,29 +12224,44 @@ export function setPlanet(hell){
                 popper.append($(`<div>${planetTraits[trait].desc}</div>`));
             }
 
-            let geo = '';
-            let cnt = 0;
-            let end = Object.keys(geology).length;
+            let good = $('<div></div>');
+            let bad = $('<div></div>');
+            let goodCnt = 0;
+            let badCnt = 0;
             for (let key in geology){
                 if (key !== 0){
-                    cnt++;
-                    let label = geology[key] > 0 ? loc('set_planet_rich') : loc('set_planet_poor');
-                    if (cnt === 1){
-                        geo = loc('set_planet_extra',[label,loc(`resource_${key}_name`)]);
-                    }
-                    else if (cnt === end){
-                        geo = geo + loc('set_planet_extra_frag2',[label,loc(`resource_${key}_name`)]);
+                    if (geology[key] > 0) {
+                        goodCnt++;
+                        if (goodCnt === 1) {
+                            good.append($(`<div>${loc('set_planet_extra_rich')}</div>`));
+                        }
+                        let res_val = `<div class="has-text-success">${loc(`resource_${key}_name`)}`;
+                        if (global.stats.achieve['miners_dream']) {
+                            res_val += `: ${Math.round((geology[key] + 1) * 100)}%`;
+                        }
+                        res_val += `</div>`;
+                        good.append(res_val);
                     }
                     else {
-                        geo = geo + loc('set_planet_extra_frag1',[label,loc(`resource_${key}_name`)])
+                        badCnt++;
+                        if (badCnt === 1) {
+                            bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
+                        }
+                        let res_val = `<div class="has-text-warning">${loc(`resource_${key}_name`)}`;
+                        if (global.stats.achieve['miners_dream']) {
+                            res_val += `: ${Math.round((geology[key] + 1) * 100)}%`;
+                        }
+                        res_val += `</div>`;
+                        bad.append(res_val);
                     }
                 }
             }
-
-            if (geo.length > 0){
-                popper.append($(`<div>${geo}.</div>`));
+            if (badCnt > 0){
+                good.append(bad);
             }
-
+            if (goodCnt > 0 || badCnt > 0) {
+                popper.append(good);
+            }
             popper.show();
             poppers[id] = new Popper($('#'+id),popper);
         });
@@ -13053,12 +13068,19 @@ function bioseed(){
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         if (unlockFeat('ill_advised')){ new_achieve = true; };
     }
+    let good_rocks = 0;
     let bad_rocks = 0;
     Object.keys(global.city.geology).forEach(function (g){
-        if (global.city.geology[g] < 0){
+        if (global.city.geology[g] > 0) {
+            good_rocks++;
+        }
+        else if (global.city.geology[g] < 0){
             bad_rocks++;
         }
     });
+    if (good_rocks >= 4) {
+        if (unlockAchieve('miners_dream')){ new_achieve = true; };
+    }
     if (bad_rocks >= 3){
         if (unlockFeat('rocky_road')){ new_achieve = true; };
     }

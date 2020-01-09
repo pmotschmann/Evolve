@@ -201,6 +201,11 @@ var achievements = {
         desc: loc("achieve_heavyweight_desc"),
         flair: loc("achieve_heavyweight_flair")
     },
+    miners_dream: {
+        name: loc("achieve_miners_dream_name"),
+        desc: loc("achieve_miners_dream_desc"),
+        flair: loc("achieve_miners_dream_flair")
+    },
     whitehole: {
         name: loc("achieve_whitehole_name"),
         desc: loc("achieve_whitehole_desc"),
@@ -1073,6 +1078,11 @@ export function drawPerks(){
         unlocked++;
         let bonus = global.stats.achieve['explorer'].l;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_explorer",[bonus])}</span></div>`);
+    }
+    
+    if (global.stats.achieve['miners_dream']){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_miners_dream")}</span></div>`);
     }
 
     if (global.stats.achieve['extinct_junker']){
