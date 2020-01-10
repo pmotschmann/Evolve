@@ -2917,6 +2917,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.civic['garrison'].display = true;
                     let gain = global.tech['military'] >= 5 ? 3 : 2;
                     if (global.race['chameleon']){
                         gain -= global.city.garrison.count;
@@ -2925,6 +2926,8 @@ export const actions = {
                     global.city['garrison'].count++;
                     global.resource.Furs.display = true;
                     global.settings['showMil'] = true;
+                    vBind({el: `#garrison`},'update');
+                    vBind({el: `#c_garrison`},'update');
                     return true;
                 }
                 return false;
@@ -8902,7 +8905,6 @@ export const actions = {
             effect: loc('tech_garrison_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.civic['garrison'].display = true;
                     global.city['garrison'] = { count: 0 };
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
@@ -8910,7 +8912,6 @@ export const actions = {
                     $('#c_garrison').empty();
                     buildGarrison($('#garrison'),true);
                     buildGarrison($('#c_garrison'),false);
-                    foreignGov();
                     return true;
                 }
                 return false;

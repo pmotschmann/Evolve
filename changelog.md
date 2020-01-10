@@ -1,3 +1,6 @@
+#### 0.7.17 - 1/9/2020 ####
+Fixed an issue with displaying foreign powers in civics tab on unlock<br>
+
 #### 0.7.16 - 1/8/2020 ####
 Exploration Missions can be queued again<br>
 The game will now notify the user if the current version is out of date<br>
