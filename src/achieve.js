@@ -1082,7 +1082,8 @@ export function drawPerks(){
     
     if (global.stats.achieve['miners_dream']){
         unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_miners_dream")}</span></div>`);
+        let numGeo = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_miners_dream",[numGeo])}</span></div>`);
     }
 
     if (global.stats.achieve['extinct_junker']){

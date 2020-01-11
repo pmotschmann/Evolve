@@ -12229,6 +12229,7 @@ export function setPlanet(hell){
             let bad = $('<div></div>');
             let goodCnt = 0;
             let badCnt = 0;
+            let numShow = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
             for (let key in geology){
                 if (key !== 0){
                     if (geology[key] > 0) {
@@ -12237,8 +12238,9 @@ export function setPlanet(hell){
                             good.append($(`<div>${loc('set_planet_extra_rich')}</div>`));
                         }
                         let res_val = `<div class="has-text-advanced">${loc(`resource_${key}_name`)}`;
-                        if (global.stats.achieve['miners_dream']) {
+                        if (numShow > 0) {
                             res_val += `: <span class="has-text-success">+${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
+                            numShow--;
                         }
                         res_val += `</div>`;
                         good.append(res_val);
@@ -12249,8 +12251,9 @@ export function setPlanet(hell){
                             bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
                         }
                         let res_val = `<div class="has-text-warning">${loc(`resource_${key}_name`)}`;
-                        if (global.stats.achieve['miners_dream']) {
+                        if (numShow > 0) {
                             res_val += `: <span class="has-text-danger">${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
+                            numShow--;
                         }
                         res_val += `</div>`;
                         bad.append(res_val);
