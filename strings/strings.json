@@ -2729,6 +2729,7 @@
   "resource_RNA_name": "RNA",
   "resource_DNA_name": "DNA",
   "resource_Money_name": "Money",
+  "resource_Slave_name": "Slave",
   "resource_Knowledge_name": "Knowledge",
   "resource_Crates_name": "Crate",
   "resource_Containers_name": "Container",

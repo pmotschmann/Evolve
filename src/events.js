@@ -233,6 +233,7 @@ export const events = {
         effect: function(){
             if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){
                 global.city.slave_pen.slaves--;
+                global.resource.Slave.amount = global.city.slave_pen.slaves;
                 return loc('event_slave_death1');
             }
             else {
@@ -248,6 +249,7 @@ export const events = {
         effect: function(){
             if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){
                 global.city.slave_pen.slaves--;
+                global.resource.Slave.amount = global.city.slave_pen.slaves;
                 return loc('event_slave_death2');
             }
             else {
@@ -263,6 +265,7 @@ export const events = {
         effect: function(){
             if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){
                 global.city.slave_pen.slaves--;
+                global.resource.Slave.amount = global.city.slave_pen.slaves;
                 return loc('event_slave_death3');
             }
             else {

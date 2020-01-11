@@ -3302,6 +3302,7 @@ function midLoop(){
 
         var bd_Money = { Base: caps['Money']+'v' };
         var bd_Citizen = {};
+        var bd_Slave = {};
         var bd_Knowledge = { Base: caps['Knowledge']+'v' };
         var bd_Food = { Base: caps['Food']+'v' };
         var bd_Lumber = { Base: caps['Lumber']+'v' };
@@ -3330,6 +3331,7 @@ function midLoop(){
         var bd_Stanene = { Base: caps['Stanene']+'v' };
 
         caps[global.race.species] = 0;
+        caps['Slave'] = 0;
         if (global.city['farm']){
             if (global.tech['farm']){
                 caps[global.race.species] += global.city['farm'].count;
@@ -3465,6 +3467,10 @@ function midLoop(){
             }
         }
         
+        if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
+            caps['Slave'] = global.city.slave_pen.count * 5;
+            bd_Slave[loc('city_slave_pen')] = global.city.slave_pen.count * 5 + 'v';
+        }
         if (global.city['basic_housing']){
             caps[global.race.species] += global.city['basic_housing'].count;
             bd_Citizen[housingLabel('small')] = global.city['basic_housing'].count + 'v';
@@ -4035,6 +4041,7 @@ function midLoop(){
         breakdown.c = {
             Money: bd_Money,
             [global.race.species]: bd_Citizen,
+            Slave: bd_Slave,
             Knowledge: bd_Knowledge,
             Food: bd_Food,
             Lumber: bd_Lumber,

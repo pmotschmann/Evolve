@@ -1314,6 +1314,7 @@ function war_campaign(gov){
                 }
                 if (slaves > 0){
                     global.city.slave_pen.slaves += slaves;
+                    global.resource.Slave.amount = global.city.slave_pen.slaves;
                     messageQueue(loc('civics_garrison_capture',[slaves]),'success');
                 }
             }

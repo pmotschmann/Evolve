@@ -2479,6 +2479,7 @@ export const actions = {
                         if (max > global.city.slave_pen.slaves){
                             if (payCosts($(this)[0].cost)){
                                 global.city.slave_pen.slaves++;
+                                global.resource.Slave.amount = global.city.slave_pen.slaves;
                             }
                             else {
                                 break;
@@ -2768,6 +2769,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['slave_pen'].count++;
+                    global.resource.Slave.display = true;
+                    global.resource.Slave.amount = global.city.slave_pen.slaves;
+                    global.resource.Slave.max = globa.city.slave_pen.count * 5;
                     return true;
                 }
                 return false;
