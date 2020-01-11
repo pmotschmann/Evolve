@@ -1339,6 +1339,10 @@ export const traits = {
     gambler: { // Alloy bonus
         desc: loc('trait_gambler'),
         type: 'minor',
+    },
+    fortify: { // gene fortification
+        desc: loc('trait_fortify'),
+        type: 'special',
     }
 };
 
@@ -1527,6 +1531,23 @@ export function cleanAddTrait(trait){
                 tax: 0
             };
             break;
+        case 'unified':
+            global.tech['world_control'] = 1;
+            global.tech['unify'] = 2;
+            $('#garrison').empty();
+            $('#c_garrison').empty();
+            buildGarrison($('#garrison'),true);
+            buildGarrison($('#c_garrison'),false);
+            for (let i=0; i<3; i++){
+                if (global.civic.foreign[`gov${i}`].occ){
+                    global.civic['garrison'].max += 20;
+                    global.civic['garrison'].workers += 20;
+                    global.civic.foreign[`gov${i}`].occ = false;
+                }
+                global.civic.foreign[`gov${i}`].sab = 0;
+                global.civic.foreign[`gov${i}`].act = 'none';
+            }
+            break;
         case 'noble':
             if (global.civic.taxes.tax_rate < 10) {
                 global.civic.taxes.tax_rate = 10;
@@ -1591,7 +1612,7 @@ export function cleanRemoveTrait(trait){
             delete global.city['shrine'];
             break;
         case 'thalassophobia':
-            if (global.tech['thalassophobia']){
+            if (global.tech['wharf']){
                 global.city['wharf'] = { count: 0 };
             }
             break;

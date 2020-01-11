@@ -275,6 +275,12 @@ function drawGovModal(){
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
                     $('#popGov').remove();
+
+                    setTimeout(function(){
+                        $('#popGov').hide();
+                        poppers['govPop'].destroy();
+                        $('#popGov').remove();
+                    },250);
                 }
             }
         }
@@ -518,6 +524,12 @@ function drawEspModal(gov){
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
                     $('#popGov').remove();
+
+                    setTimeout(function(){
+                        $('#popGov').hide();
+                        poppers['govPop'].destroy();
+                        $('#popGov').remove();
+                    },250);
                 }
             },
             sabotage(g){
@@ -530,6 +542,12 @@ function drawEspModal(gov){
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
                     $('#popGov').remove();
+
+                    setTimeout(function(){
+                        $('#popGov').hide();
+                        poppers['govPop'].destroy();
+                        $('#popGov').remove();
+                    },250);
                 }
             },
             incite(g){
@@ -542,6 +560,12 @@ function drawEspModal(gov){
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
                     $('#popGov').remove();
+
+                    setTimeout(function(){
+                        $('#popGov').hide();
+                        poppers['govPop'].destroy();
+                        $('#popGov').remove();
+                    },250);
                 }
             }
         }
@@ -1329,6 +1353,8 @@ function war_campaign(gov){
         if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= 20){
             global.civic.garrison.workers -= 20;
             global.civic.foreign[`gov${gov}`].occ = true;
+            global.civic.foreign[`gov${gov}`].sab = 0;
+            global.civic.foreign[`gov${gov}`].act = 'none';
         }
     }
     else {

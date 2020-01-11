@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, checkOldTech, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, oldTech, setPlanet, resQueue } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue } from './actions.js';
 import { space, deepSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
@@ -409,14 +409,7 @@ if (global.race.species === 'protoplasm'){
 else {
     drawCity();
 
-    Object.keys(actions.tech).forEach(function (tech){
-        if (checkTechRequirements(tech)){
-            addAction('tech',tech);
-        }
-        if (checkOldTech(tech)){
-            oldTech(tech);
-        }
-    });
+    drawTech();
     space();
     deepSpace();
     renderFortress()    
@@ -2296,7 +2289,8 @@ function fastLoop(){
                 if (global.city.geology['Uranium']){
                     ash_base *= global.city.geology['Uranium'] + 1;
                 }
-                uranium_bd[loc('city_coal_ash')] = uranium_bd[loc('city_coal_ash')] + (ash_base / 65 / global_multiplier);
+                let ash = (ash_base / 65 / global_multiplier);
+                uranium_bd[loc('city_coal_ash')] = uranium_bd[loc('city_coal_ash')] ? uranium_bd[loc('city_coal_ash')] + ash : ash;
                 modRes('Uranium', (ash_base * time_multiplier) / 65);
             }
 
@@ -2400,6 +2394,7 @@ function fastLoop(){
                 consume_oil -= 15;
                 graphene_production--;
             }
+            graphene_production *= 0.6;
             
             breakdown.p.consume.Lumber[loc('interstellar_g_factory_bd')] = -(consume_wood);
             breakdown.p.consume.Coal[loc('interstellar_g_factory_bd')] = -(consume_coal);
@@ -2419,7 +2414,7 @@ function fastLoop(){
                 ai += graph * p_on['citadel'];
             }
 
-            let delta = graphene_production * ai * 0.6 * zigguratBonus() * hunger * global_multiplier;
+            let delta = graphene_production * ai * zigguratBonus() * hunger * global_multiplier;
 
             let graphene_bd = {};
             graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
@@ -2674,19 +2669,19 @@ function fastLoop(){
         }
 
         // Mars Mining
-        if (red_on['red_mine'] && red_on['red_mine'] > 0){
+        if (red_on['red_mine'] && red_on['red_mine'] > 0) {
             let copper_base = red_on['red_mine'] * 0.25 * global.civic.colonist.workers * zigguratBonus();
             if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                 copper_base *= 1 + (global.city.shrine.metal / 100);
             }
-            copper_bd[`${races[global.race.species].solar.red}_Mining`] = (copper_base) + 'v';
+            copper_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (copper_base) + 'v';
             modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger);
 
             let titanium_base = red_on['red_mine'] * 0.02 * global.civic.colonist.workers * hunger * zigguratBonus();
             if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                 titanium_base *= 1 + (global.city.shrine.metal / 100);
             }
-            titanium_bd[`${races[global.race.species].solar.red}_Mining`] = (titanium_base) + 'v';
+            titanium_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (titanium_base) + 'v';
             modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
         }
         if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
@@ -4186,7 +4181,9 @@ function midLoop(){
                     element.addClass('cnam');
                 }
                 if (global.city[action]){
-                    global.city[action]['time'] = timeFormat(timeCheck(c_action));
+                    let tc = timeCheck(c_action,false,true);
+                    global.city[action]['time'] = timeFormat(tc.t);
+                    global.city[action]['bn'] = tc.r;
                 }
             }
         });
@@ -4247,6 +4244,24 @@ function midLoop(){
                 });
             });
         }
+
+        let genePool = arpa('GeneTech');
+        Object.keys(genePool).forEach(function (action){
+            if (genePool[action] && genePool[action].cost){
+                let c_action = genePool[action];
+                let element = $('#'+c_action.id);
+                if (element.length > 0){
+                    if ( (global.race['universe'] !== 'antimatter' && c_action.cost > global.race.Plasmid.count) || (global.race['universe'] === 'antimatter' && c_action.cost > global.race.Plasmid.anti) ){
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
+                    }
+                    else if (element.hasClass('cna')){
+                        element.removeClass('cna');
+                    }
+                }
+            }
+        });
 
         if (global.space['swarm_control']){
             global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10);
@@ -4410,6 +4425,11 @@ function midLoop(){
                     else {
                         t_action = actions[struct.action][struct.type];
                     }
+                }
+
+                if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant']){
+                    global.queue.queue.splice(i,1);
+                    break;
                 }
 
                 if (struct.type === 'arpa'){
@@ -4593,7 +4613,7 @@ function midLoop(){
                     $(this).addClass('has-text-danger');
                 }
             }
-            else if ($(this).hasClass('has-text-danger')){
+            else if ($(this).hasClass('has-text-danger') || $(this).hasClass('has-text-alert')){
                 $(this).removeClass('has-text-danger');
                 $(this).addClass('has-text-dark');
             }
@@ -4911,6 +4931,20 @@ function longLoop(){
             drawTech();
         }
 
+        if (global.tech['decay'] && global.tech['decay'] >= 2){
+            let fortify = 0;
+            if (global.genes.minor['fortify']){
+                fortify += global.genes.minor['fortify'];
+            }
+            if (global.race.minor['fortify']){
+                fortify += global.race.minor['fortify'];
+            }
+            global.race.gene_fortify = fortify;
+        }
+        else {
+            global.race.gene_fortify = 0;
+        }
+
         if (!global.tech['genesis'] && global.race.deterioration >= 1 && global.tech['high_tech'] && global.tech['high_tech'] >= 10){
             global.tech['genesis'] = 1;
             messageQueue(loc('genesis'),'special');
@@ -4922,6 +4956,16 @@ function longLoop(){
         }
         if (!global.settings['cLabels'] && $('#city-dist-outskirts').length > 0){
             drawCity();
+        }
+        if (global.settings['tLabels'] &&
+            $('#tech-dist-reserach').length === 0 &&
+            $('#tech-dist-upgrade').length === 0){
+            drawTech();
+        }
+        if (!global.settings['tLabels'] &&
+            ($('#tech-dist-research').length > 0 ||
+             $('#tech-dist-upgrade').length > 0)){
+            drawTech();
         }
     }
 
@@ -5106,11 +5150,33 @@ function diffCalc(res,period){
     let sec = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;
-    if (global.resource[res].diff < 0 && !$(`#res${res} .diff`).hasClass('has-text-danger')){
-        $(`#res${res} .diff`).addClass('has-text-danger');
+    if (global.race['decay']){
+        if (global.resource[res].diff < 0){
+            if (breakdown.p.consume[res][loc('evo_challenge_decay')] > global.resource[res].diff){
+                if (!$(`#res${res} .diff`).hasClass('has-text-danger')){
+                    $(`#res${res} .diff`).removeClass('has-text-warning');
+                    $(`#res${res} .diff`).addClass('has-text-danger');
+                }
+            }
+            else {
+                if (!$(`#res${res} .diff`).hasClass('has-text-warning')){
+                    $(`#res${res} .diff`).removeClass('has-text-danger');
+                    $(`#res${res} .diff`).addClass('has-text-warning');
+                }
+            }
+        }
+        else if (global.resource[res].diff >= 0 && ($(`#res${res} .diff`).hasClass('has-text-danger') || $(`#res${res} .diff`).hasClass('has-text-warning'))){
+            $(`#res${res} .diff`).removeClass('has-text-danger');
+            $(`#res${res} .diff`).removeClass('has-text-warning');
+        }
     }
-    else if (global.resource[res].diff >= 0 && $(`#res${res} .diff`).hasClass('has-text-danger')){
-        $(`#res${res} .diff`).removeClass('has-text-danger');
+    else {
+        if (global.resource[res].diff < 0 && !$(`#res${res} .diff`).hasClass('has-text-danger')){
+            $(`#res${res} .diff`).addClass('has-text-danger');
+        }
+        else if (global.resource[res].diff >= 0 && $(`#res${res} .diff`).hasClass('has-text-danger')){
+            $(`#res${res} .diff`).removeClass('has-text-danger');
+        }
     }
 }
 
@@ -5341,3 +5407,16 @@ function enableScript(){
         breakdown: {},
     };
 }
+
+intervals['version_check'] = setInterval(function(){
+    $.ajax({
+        url: 'https://pmotschmann.github.io/Evolve/package.json',
+        type: 'GET',
+        dataType: 'json',
+        success: function(res){
+            if (res['version'] && res['version'] != global['version'] && !global['beta']){
+                $('#topBar .version > a').html('<span class="has-text-warning">Update Available</span> v'+global.version);
+            }
+        }
+    });
+}, 900000);

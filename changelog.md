@@ -1,3 +1,39 @@
+#### 0.7.17 - 1/9/2020 ####
+Fixed an issue with displaying foreign powers in civics tab on unlock<br>
+
+#### 0.7.16 - 1/8/2020 ####
+Exploration Missions can be queued again<br>
+The game will now notify the user if the current version is out of date<br>
+
+Changes by Beorseder<br>
+Geology deposit aesthetic changes on planet selection<br>
+Miner's Dream Achievement & Perk<br>
+
+#### 0.7.15 - 1/7/2020 ####
+Queueing the World Collider will no longer lag the game<br>
+Multi-segement projects will now have extra segments cleared from the queue on completion<br>
+Spy and Government related popovers that would sometimes get stuck open will now clear<br>
+Queued projects that will not complete due to lack of production will now display a green [Never] instead of -1 second timer.<br>
+Multi-segment projects no longer block queueing ARPA projects unless they consumed the entire queue space<br>
+
+#### 0.7.14 - 12/31/2019 ####
+Research Categorization option by Naryl<br>
+
+#### 0.7.13 - 12/30/2019 ####
+Gene decay will no longer result in a negative plasmid count<br>
+Gene fortification is slightly more effective<br>
+
+#### 0.7.12 - 12/19/2019 ####
+Gene Fortification<br>
+Fixed Cultural Supremacy popover<br>
+
+#### 0.7.11 - 12/15/2019 ####
+Decaying resources will now use a warning color if you are losing that resource but at a slower rate then the decay rate<br>
+The most bottlenecked resource will now display in red while other trouble resources will be marked with an alert color<br>
+CRISPR upgrades are now darkened when unaffordable<br>
+Transfer Station now lists its uranium storage<br>
+Wendigo bug fixes<br>
+
 #### 0.7.10 - 12/12/2019 ####
 Craftsman now continuously output product instead of once/twice a month<br>
 Cumulative achievements now check for lower tier unlocks<br>
