@@ -5769,7 +5769,9 @@ export const actions = {
                 Knowledge(){ return 6750; },
                 Sheet_Metal(){ return 100; }
             },
-            effect: loc('tech_reinforced_crates_effect'),
+            effect() {
+                return global.race['kindling_kindred'] ? loc('tech_reinforced_crates_stone_effect') : global.race['evil'] ? loc('tech_reinforced_crates_bone_effect') : loc('tech_reinforced_crates_effect');
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5884,7 +5886,9 @@ export const actions = {
                 Knowledge(){ return 9000; },
                 Steel(){ return 250; }
             },
-            effect: loc('tech_steel_containers_effect'),
+            effect() {
+                return global.race['kindling_kindred'] ? loc('tech_steel_containers_stone_effect') : global.race['evil'] ? loc('tech_steel_containers_bone_effect') : loc('tech_steel_containers_effect');
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['warehouse'] = { count: 0 };
@@ -7303,6 +7307,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
+                    global.resource.Genes.display = true;
                     arpa('Genetics');
                     return true;
                 }
