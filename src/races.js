@@ -1604,6 +1604,9 @@ export function cleanRemoveTrait(trait){
         case 'slaver':
             delete global.city['slave_pen'];
             delete global.tech['slaves'];
+            global.resource.Slave.amount = 0;
+            global.resource.Slave.max = 0;
+            global.resource.Slave.display = false;
             break;
         case 'cannibalize':
             delete global.city['s_alter'];

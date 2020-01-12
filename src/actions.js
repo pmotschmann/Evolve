@@ -2479,6 +2479,7 @@ export const actions = {
                         if (max > global.city.slave_pen.slaves){
                             if (payCosts($(this)[0].cost)){
                                 global.city.slave_pen.slaves++;
+                                global.resource.Slave.amount = global.city.slave_pen.slaves;
                             }
                             else {
                                 break;
@@ -2768,6 +2769,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['slave_pen'].count++;
+                    global.resource.Slave.display = true;
+                    global.resource.Slave.amount = global.city.slave_pen.slaves;
+                    global.resource.Slave.max = globa.city.slave_pen.count * 5;
                     return true;
                 }
                 return false;
@@ -2917,6 +2921,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.civic['garrison'].display = true;
                     let gain = global.tech['military'] >= 5 ? 3 : 2;
                     if (global.race['chameleon']){
                         gain -= global.city.garrison.count;
@@ -2925,6 +2930,8 @@ export const actions = {
                     global.city['garrison'].count++;
                     global.resource.Furs.display = true;
                     global.settings['showMil'] = true;
+                    vBind({el: `#garrison`},'update');
+                    vBind({el: `#c_garrison`},'update');
                     return true;
                 }
                 return false;
@@ -3776,7 +3783,10 @@ export const actions = {
                 Plywood(offset){ return costMultiplier('tourist_center', offset, 5000, 1.36); },
             },
             effect(){
-                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2')}</div><div>${loc('city_tourist_center_effect3')}</div><div>${loc('city_tourist_center_effect4')}</div>`; 
+                let amp = global.civic.govern.type === 'corpocracy' ? 2 : 1;
+                let cas = global.civic.govern.type === 'corpocracy' ? 10 : 5;
+                let mon = global.civic.govern.type === 'corpocracy' ? 4 : 2;
+                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`; 
             },
             powered(){ return 1; },
             action(){
@@ -3829,9 +3839,6 @@ export const actions = {
                 if (global.race['gambler']){
                     money *= 1 + (global.race['gambler'] * 0.04);
                 }
-                if (global.civic.govern.type === 'corpocracy'){
-                    money *= 2;
-                }
                 if (global.tech['world_control']){
                     money = money * 1.25;
                 }
@@ -3841,6 +3848,9 @@ export const actions = {
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
                 if (global.tech['gambling'] >= 2){
                     let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+                    if (global.civic.govern.type === 'corpocracy'){
+                        cash = (cash * 3).toFixed(2);
+                    }
                     desc = desc + `<div>${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`
                 }
                 return desc;
@@ -5766,7 +5776,9 @@ export const actions = {
                 Knowledge(){ return 6750; },
                 Sheet_Metal(){ return 100; }
             },
-            effect: loc('tech_reinforced_crates_effect'),
+            effect() {
+                return global.race['kindling_kindred'] ? loc('tech_reinforced_crates_stone_effect') : global.race['evil'] ? loc('tech_reinforced_crates_bone_effect') : loc('tech_reinforced_crates_effect');
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5881,7 +5893,9 @@ export const actions = {
                 Knowledge(){ return 9000; },
                 Steel(){ return 250; }
             },
-            effect: loc('tech_steel_containers_effect'),
+            effect() {
+                return global.race['kindling_kindred'] ? loc('tech_steel_containers_stone_effect') : global.race['evil'] ? loc('tech_steel_containers_bone_effect') : loc('tech_steel_containers_effect');
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['warehouse'] = { count: 0 };
@@ -7300,6 +7314,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
+                    global.resource.Genes.display = true;
                     arpa('Genetics');
                     return true;
                 }
@@ -8902,7 +8917,6 @@ export const actions = {
             effect: loc('tech_garrison_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.civic['garrison'].display = true;
                     global.city['garrison'] = { count: 0 };
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
@@ -8910,7 +8924,6 @@ export const actions = {
                     $('#c_garrison').empty();
                     buildGarrison($('#garrison'),true);
                     buildGarrison($('#c_garrison'),false);
-                    foreignGov();
                     return true;
                 }
                 return false;
@@ -12246,6 +12259,7 @@ export function setPlanet(hell){
             let bad = $('<div></div>');
             let goodCnt = 0;
             let badCnt = 0;
+            let numShow = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
             for (let key in geology){
                 if (key !== 0){
                     if (geology[key] > 0) {
@@ -12254,8 +12268,9 @@ export function setPlanet(hell){
                             good.append($(`<div>${loc('set_planet_extra_rich')}</div>`));
                         }
                         let res_val = `<div class="has-text-advanced">${loc(`resource_${key}_name`)}`;
-                        if (global.stats.achieve['miners_dream']) {
+                        if (numShow > 0) {
                             res_val += `: <span class="has-text-success">+${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
+                            numShow--;
                         }
                         res_val += `</div>`;
                         good.append(res_val);
@@ -12266,8 +12281,9 @@ export function setPlanet(hell){
                             bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
                         }
                         let res_val = `<div class="has-text-warning">${loc(`resource_${key}_name`)}`;
-                        if (global.stats.achieve['miners_dream']) {
+                        if (numShow > 0) {
                             res_val += `: <span class="has-text-danger">${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
+                            numShow--;
                         }
                         res_val += `</div>`;
                         bad.append(res_val);

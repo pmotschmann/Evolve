@@ -128,11 +128,11 @@ const government_desc = {
     autocracy: loc('govern_autocracy_effect',[25,35]),
     democracy: loc('govern_democracy_effect',[20,5]),
     oligarchy: loc('govern_oligarchy_effect',[10,10]),
-    theocracy: loc('govern_theocracy_effect',[5,25,50]),
+    theocracy: loc('govern_theocracy_effect',[12,25,50]),
     republic: loc('govern_republic_effect',[25]),
     socialist: loc('govern_socialist_effect',[25,5,10,20]),
-    corpocracy: loc('govern_corpocracy_effect',[100,50,50,15,15]),
-    technocracy: loc('govern_technocracy_effect',[5,2]),
+    corpocracy: loc('govern_corpocracy_effect',[200,150,100,10,20]),
+    technocracy: loc('govern_technocracy_effect',[8,2]),
     federation: loc('govern_federation_effect'),
 };
 
@@ -1314,6 +1314,7 @@ function war_campaign(gov){
                 }
                 if (slaves > 0){
                     global.city.slave_pen.slaves += slaves;
+                    global.resource.Slave.amount = global.city.slave_pen.slaves;
                     messageQueue(loc('civics_garrison_capture',[slaves]),'success');
                 }
             }

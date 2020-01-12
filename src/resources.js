@@ -193,6 +193,7 @@ export function defineResources(){
         initEjector();
         loadResource('Money',1000,1,false,false,'success');
         loadResource(global.race.species,0,0,false,false,'warning');
+        loadResource('Slave',0,0,false,false,'warning');
         loadResource('Knowledge',100,1,false,false,'warning');
         loadResource('Crates',0,0,false,false,'warning');
         loadResource('Containers',0,0,false,false,'warning');
@@ -1381,7 +1382,7 @@ export function plasmidBonus(type){
                 temple_bonus *= 1.13;
             }
             if (global.civic.govern.type === 'theocracy'){
-                temple_bonus *= 1.05;
+                temple_bonus *= 1.12;
             }
             standard *= 1 + (global.city.temple.count * temple_bonus);
         }
