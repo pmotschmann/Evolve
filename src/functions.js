@@ -483,7 +483,7 @@ function technoAdjust(costs){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
+                newCosts[res] = function(){ return Math.round(costs[res]() * 0.92); }
             }
             else if (res === 'Money'){
                 newCosts[res] = function(){ return costs[res](); }

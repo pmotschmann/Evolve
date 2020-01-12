@@ -1,6 +1,14 @@
 #### 0.7.18 - 1/12/2020 ####
+Theocracy temple bonus raised from 5% to 12%<br>
+Technocracy knowledge discount raised from 5% to 8%<br>
+Corpocracy Casino Bonus raised from +100% to +200%<br>
+Corpocracy Luxury Good Bonus raised from +50% raised to +150%<br>
+Corpocracy Tourism Bonus raised from +50% to +100%<br>
+Corpocracy morale penalty lowered from -15% to -10%<br>
+Corpocracy Manufacturing Bonus raised from +15% to +20%<br>
 Miner's Dream now scales the information that is revealed depending on the star level of the achievment<br>
 Slaves now appear as a resource<br>
+Alternate universes now award icons for complex achievements<br>
 
 #### 0.7.17 - 1/9/2020 ####
 Fixed an issue with displaying foreign powers in civics tab on unlock<br>

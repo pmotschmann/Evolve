@@ -3783,7 +3783,10 @@ export const actions = {
                 Plywood(offset){ return costMultiplier('tourist_center', offset, 5000, 1.36); },
             },
             effect(){
-                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2')}</div><div>${loc('city_tourist_center_effect3')}</div><div>${loc('city_tourist_center_effect4')}</div>`; 
+                let amp = global.civic.govern.type === 'corpocracy' ? 2 : 1;
+                let cas = global.civic.govern.type === 'corpocracy' ? 10 : 5;
+                let mon = global.civic.govern.type === 'corpocracy' ? 4 : 2;
+                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`; 
             },
             powered(){ return 1; },
             action(){
@@ -3836,9 +3839,6 @@ export const actions = {
                 if (global.race['gambler']){
                     money *= 1 + (global.race['gambler'] * 0.04);
                 }
-                if (global.civic.govern.type === 'corpocracy'){
-                    money *= 2;
-                }
                 if (global.tech['world_control']){
                     money = money * 1.25;
                 }
@@ -3848,6 +3848,9 @@ export const actions = {
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
                 if (global.tech['gambling'] >= 2){
                     let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+                    if (global.civic.govern.type === 'corpocracy'){
+                        cash = (cash * 3).toFixed(2);
+                    }
                     desc = desc + `<div>${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`
                 }
                 return desc;
