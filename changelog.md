@@ -1,4 +1,4 @@
-#### 0.7.18 - 1/11/2020 ####
+#### 0.7.18 - 1/12/2020 ####
 Miner's Dream now scales the information that is revealed depending on the star level of the achievment<br>
 Slaves now appear as a resource<br>
 

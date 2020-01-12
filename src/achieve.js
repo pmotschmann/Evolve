@@ -899,75 +899,14 @@ export function checkAchievements(){
     if (global.race['weak_mastery']){ a_level++; }
 
     for (let t_level=a_level; t_level >= 0; t_level--){
-        if (!global.stats.achieve['mass_extinction'] || global.stats.achieve['mass_extinction'].l < t_level){
-            let total = 0;
-            const keys = Object.keys(achievements)
-            for (const key of keys) {
-                if (key.includes('extinct_')){
-                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
-                        total++;
-                    }
-                }
-            }
-            if (total >= 25){
-                unlockAchieve('mass_extinction',false,t_level);
-            }
+        checkBigAchievement('extinct_', 'mass_extinction', 25, t_level);
+        if (global.race.universe === 'evil') {
+            checkBigAchievementUniverse('extinct_', 'vigilante', 12, t_level);
         }
-        if (!global.stats.achieve['vigilante'] || global.stats.achieve['vigilante'].l < t_level){
-            let total = 0;
-            const keys = Object.keys(achievements)
-            for (const key of keys) {
-                if (key.includes('extinct_')){
-                    if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= t_level){
-                        total++;
-                    }
-                }
-            }
-            if (total >= 12){
-                unlockAchieve('vigilante',false,t_level);
-            }
-        }
-        if (!global.stats.achieve['creator'] || global.stats.achieve['creator'].l < t_level){
-            let total = 0;
-            const keys = Object.keys(achievements);
-            for (const key of keys){
-                if (key.includes('genus_')){
-                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
-                        total++;
-                    }
-                }
-            }
-            if (total >= 9){
-                unlockAchieve('creator',false,t_level);
-            }
-        }
-        if (!global.stats.achieve['explorer'] || global.stats.achieve['explorer'].l < t_level){
-            let total = 0;
-            const keys = Object.keys(achievements);
-            for (const key of keys){
-                if (key.includes('biome_')){
-                    if (global.stats.achieve[key] && global.stats.achieve[key].l >= t_level){
-                        total++;
-                    }
-                }
-            }
-            if (total >= 6){
-                unlockAchieve('explorer',false,t_level);
-            }
-        }
-        if (!global.stats.achieve['heavyweight'] || global.stats.achieve['heavyweight'].l < t_level){
-            let total = 0;
-            const keys = Object.keys(feats)
-            for (const key of keys) {
-                if (key.includes('heavy_genus_')){
-                    if (global.stats.feat[key] && global.stats.feat[key] >= t_level){
-                        total++;
-                    }
-                }
-            }
-            if (total >= 8){
-                unlockAchieve('heavyweight',false,t_level);
-            }
+        checkBigAchievement('genus_', 'creator', 9, t_level);
+        checkBigAchievement('biome_', 'explorer', 6, t_level);
+        if (global.race.universe === 'heavy') {
+            checkBigAchievementUniverse('genus_', 'heavyweight', 8, t_level);
         }
     }
 
@@ -1044,6 +983,107 @@ export function checkAchievements(){
                     }
                 }
             }
+        }
+    }
+}
+
+function checkBigAchievement(frag, name, num, level){
+    if (!global.stats.achieve[name] || global.stats.achieve[name].l < level){
+        let total = 0;
+        const keys = Object.keys(achievements)
+        for (const key of keys) {
+            if (key.includes(frag)){
+                if (global.stats.achieve[key] && global.stats.achieve[key].l >= level) {
+                    total++;
+                }
+            }
+        }
+        if (total >= num){
+            unlockAchieve(name,false,level);
+            if (global.race.universe !== 'standard'){
+                switch (global.race.universe) {
+                    case 'evil':
+                        global.stats.achieve[name].e = undefined;
+                        break;
+                    case 'antimatter':
+                        global.stats.achieve[name].a = undefined;
+                        break;
+                    case 'heavy':
+                        global.stats.achieve[name].h = undefined;
+                        break;
+                    case 'micro':
+                        global.stats.achieve[name].m = undefined;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    if (global.race.universe !== 'standard') {
+        checkBigAchievementUniverse(frag, name, num, level);
+    }
+}
+                
+function checkBigAchievementUniverse(frag, name, num, level){
+    let proceed = false;
+    switch (global.race.universe) {
+        case 'evil':
+            if (typeof global.stats.achieve[name] === "undefined" || typeof global.stats.achieve[name].e === "undefined" || global.stats.achieve[name].e < level){
+                proceed = true;
+            }
+            break;
+        case 'antimatter':
+            if (typeof global.stats.achieve[name] === "undefined" || typeof global.stats.achieve[name].a === "undefined" || global.stats.achieve[name].a < level){
+                proceed = true;
+            }
+            break;
+        case 'heavy':
+            if (typeof global.stats.achieve[name] === "undefined" || typeof global.stats.achieve[name].h === "undefined" || global.stats.achieve[name].h < level){
+                proceed = true;
+            }
+            break;
+        case 'micro':
+            if (typeof global.stats.achieve[name] === "undefined" || typeof global.stats.achieve[name].m === "undefined" || global.stats.achieve[name].m < level){
+                proceed = true;
+            }
+            break;
+        default:
+            break;
+    }
+    if (proceed) {
+        let total = 0;
+        const keys = Object.keys(achievements)
+        for (const key of keys) {
+            if (key.includes(frag)){
+                switch (global.race.universe){
+                    case 'evil':
+                        if (global.stats.achieve[key] && global.stats.achieve[key]['e'] && global.stats.achieve[key].e >= level){
+                            total++;
+                        }
+                        break;
+                    case 'antimatter':
+                        if (global.stats.achieve[key] && global.stats.achieve[key]['a'] && global.stats.achieve[key].a >= level){
+                            total++;
+                        }
+                        break;
+                    case 'heavy':
+                        if (global.stats.achieve[key] && global.stats.achieve[key]['h'] && global.stats.achieve[key].h >= level){
+                            total++;
+                        }
+                        break;
+                    case 'micro':
+                        if (global.stats.achieve[key] && global.stats.achieve[key]['m'] && global.stats.achieve[key].m >= level){
+                            total++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        if (total >= num){
+            unlockAchieve(name,false,level);
         }
     }
 }
