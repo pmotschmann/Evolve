@@ -2689,19 +2689,21 @@ const galaxyProjects = {
         gateway_station: {
             id: 'galaxy-gateway_station',
             title: loc('galaxy_gateway_station'),
-            desc(){ return `<div>${loc('galaxy_gateway_station_desc')}</div>`; },
+            desc(){ return `<div>${loc('galaxy_gateway_station_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             reqs: { stargate: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('gateway_station', offset, 5000000, 1.25, 'galaxy'); },
-                Steel(offset){ return spaceCostMultiplier('gateway_station', offset, 990000, 1.25, 'galaxy'); },
                 Aluminium(offset){ return spaceCostMultiplier('gateway_station', offset, 520000, 1.25, 'galaxy'); },
                 Polymer(offset){ return spaceCostMultiplier('gateway_station', offset, 350000, 1.25, 'galaxy'); },
+                Neutronium(offset){ return spaceCostMultiplier('gateway_station', offset, 17500, 1.25, 'galaxy'); },
             },
             effect(){
                 let helium = spatialReasoning(2000);
                 let deuterium = spatialReasoning(4500);
-                return `<div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div>`;
+                let elerium = spatialReasoning(50);
+                return `<div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
+            powered(){ return 4; },
             refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2980,6 +2982,7 @@ const structDefinitions = {
         Aerogel: 0
     },
     stargate: { count: 0 },
+    gateway_station: { count: 0, on: 0 },
     s_gate: { count: 0, on: 0 },
     starbase: { count: 0, on: 0, support: 0, s_max: 0 },
     bolognium_ship: { count: 0, on: 0, crew: 0 },

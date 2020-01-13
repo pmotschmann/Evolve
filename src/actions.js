@@ -11391,6 +11391,25 @@ export const actions = {
                 return false;
             }
         },
+        soul_forge: {
+            id: 'tech-soul_forge',
+            title: loc('portal_soul_forge_title'),
+            desc: loc('portal_soul_forge_title'),
+            category: 'research',
+            reqs: { hell_pit: 3 },
+            grant: ['hell_pit',4],
+            cost: {
+                Knowledge(){ return 2600000; }
+            },
+            effect(){ return loc('tech_soul_forge_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['soul_forge'] = { count: 0, on: 0, kills: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
@@ -12365,14 +12384,23 @@ function actionDesc(parent,c_action,obj,old){
             if (res !== 'Morale' && res !== 'Army'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
-                    let label = res === 'Money' ? '$' : global.resource[res].name+': ';
-                    label = label.replace("_", " ");
-                    let color = 'has-text-dark';
-                    if (global.resource[res].amount < res_cost){
-                        color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                    if (res === 'HellArmy'){
+                        let color = 'has-text-dark';
+                        if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
+                            color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                        }
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
                     }
-                    let display_cost = sizeApproximation(res_cost,1);
-                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
+                    else {
+                        let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                        label = label.replace("_", " ");
+                        let color = 'has-text-dark';
+                        if (global.resource[res].amount < res_cost){
+                            color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                        }
+                        let display_cost = sizeApproximation(res_cost,1);
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
+                    }
                 }
             }
         });
@@ -12432,7 +12460,7 @@ export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'Army'){
+            if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy'){
                 let cost = costs[res]();
                 global['resource'][res].amount -= cost;
                 if (res === 'Knowledge'){
@@ -12460,7 +12488,7 @@ export function checkAffordable(c_action,max){
 function checkMaxCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res !== 'Morale' && res !== 'Army'){
+        if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy'){
             var testCost = Number(costs[res]()) || 0;
             if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1) {
                 test = false;
@@ -12475,6 +12503,12 @@ function checkMaxCosts(costs){
             test = false;
             return false;
         }
+        else if (res === 'HellArmy' && global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
+            test = false;
+            return false;
+        }
+
+        
     });
     return test;
 }
@@ -12482,7 +12516,7 @@ function checkMaxCosts(costs){
 function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res !== 'Morale' && res !== 'Army'){
+        if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy'){
             var testCost = Number(costs[res]()) || 0;
             let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
             if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
@@ -12495,6 +12529,10 @@ function checkCosts(costs){
             return false;
         }
         else if (res === 'Army' && costs[res]() === false){
+            test = false;
+            return false;
+        }
+        else if (res === 'HellArmy' && costs[res]() === false){
             test = false;
             return false;
         }

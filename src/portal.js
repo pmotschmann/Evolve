@@ -212,28 +212,79 @@ const fortressModules = {
             name: loc('portal_pit_name'),
             desc: loc('portal_pit_desc'),
         },
+        pit_mission: {
+            id: 'portal-pit_mission',
+            title: loc('portal_pit_mission_title'),
+            desc: loc('portal_pit_mission_title'),
+            reqs: { hell_pit: 1 },
+            grant: ['hell_pit',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Money(){ return 5000000; },
+                Helium_3(){ return 300000; },
+                Deuterium(){ return 200000; }
+            },
+            effect: loc('portal_pit_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('portal_pit_mission_result'),'success');
+                    return true;
+                }
+                return false;
+            }
+        },
+        assault_forge: {
+            id: 'portal-assault_forge',
+            title: loc('portal_assault_forge_title'),
+            desc: loc('portal_assault_forge_title'),
+            reqs: { hell_pit: 2 },
+            grant: ['hell_pit',3],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Money(){ return 10000000; },
+                HellArmy(){
+                    return Math.round(650 / armyRating(1,'army'));
+                },
+                Cement(){ return 10000000; },
+                Adamantite(){ return 1250000; },
+                Elerium(){ return 2400; },
+                Stanene(){ return 900000; }
+            },
+            effect: loc('portal_assault_forge_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('portal_pit_mission_result'),'success');
+                    return true;
+                }
+                return false;
+            }
+        },
         soul_forge: {
             id: 'portal-soul_forge',
             title: loc('portal_soul_forge_title'),
             desc(){
                 return `<div>${loc('portal_soul_forge_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
-            reqs: { hell_pit: 1 },
-            powered(){ return 3; },
+            reqs: { hell_pit: 4 },
+            no_queue(){ return global.portal.soul_forge.count < 1 ? false : true },
+            queue_complete(){ return global.portal.soul_forge.count >= 1 ? true : false; },
+            powered(){ return 50; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('soul_forge', offset, 25000000, 1.25, 'portal'); },
-                Cement(offset){ return spaceCostMultiplier('soul_forge', offset, 5000000, 1.25, 'portal'); },
-                Infernite(offset){ return spaceCostMultiplier('soul_forge', offset, 25000, 1.25, 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('soul_forge', offset, 100000, 1.25, 'portal'); },
+                Money(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000000, 1.25, 'portal'); },
+                Graphene(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 1500000, 1.25, 'portal'); },
+                Infernite(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000, 1.25, 'portal'); },
+                Bolognium(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 100000, 1.25, 'portal'); },
             },
             effect(){
-                return `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div><div>${loc('portal_soul_forge_effect2',[0,1000000])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div><div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,1000000])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    incrementStruct('soul_forge','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.soul_forge.on++;
+                    if (global.portal.soul_forge.count < 1){
+                        incrementStruct('soul_forge','portal');
+                        if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                            global.portal.soul_forge.on++;
+                        }
                     }
                     return true;
                 }
@@ -620,9 +671,17 @@ export function bloodwar(){
                 let remain = demons - Math.rand(25,75);
                 if (remain > 0){
                     global.portal.fortress.threat -= demons - remain;
+                    global.stats.dkills += demons - remain;
+                    if (p_on['soul_forge']){
+                        global.portal.soul_forge.kills += demons - remain;
+                    }
                 }
                 else {
                     global.portal.fortress.threat -= demons;
+                    global.stats.dkills += demons;
+                    if (p_on['soul_forge']){
+                        global.portal.soul_forge.kills += demons;
+                    }
                 }
             }
         }
@@ -685,19 +744,35 @@ export function bloodwar(){
                 let remain = demons - Math.round(pat_rating / 2);
                 if (remain > 0){
                     global.portal.fortress.threat -= demons - remain;
+                    global.stats.dkills += demons - remain;
+                    if (p_on['soul_forge']){
+                        global.portal.soul_forge.kills += demons - remain;
+                    }
                 }
                 else {
                     global.portal.fortress.threat -= demons;
+                    global.stats.dkills += demons;
+                    if (p_on['soul_forge']){
+                        global.portal.soul_forge.kills += demons;
+                    }
                 }
             }
             else {
                 let remain = demons - pat_rating;
                 if (remain > 0){
                     global.portal.fortress.threat -= demons - remain;
+                    global.stats.dkills += demons - remain;
+                    if (p_on['soul_forge']){
+                        global.portal.soul_forge.kills += demons - remain;
+                    }
                     dead += casualties(remain,pat_armor,false);
                 }
                 else {
                     global.portal.fortress.threat -= demons;
+                    global.stats.dkills += demons;
+                    if (p_on['soul_forge']){
+                        global.portal.soul_forge.kills += demons;
+                    }
                 }
                 if (Math.rand(0,gem_chance) === 0){
                     global.resource.Soul_Gem.amount++;
@@ -763,6 +838,10 @@ export function bloodwar(){
             }
             siege -= terminated;
             global.portal.fortress.threat -= terminated;
+            global.stats.dkills += terminated;
+            if (p_on['soul_forge']){
+                global.portal.soul_forge.kills += terminated;
+            }
             killed += terminated;
             if (siege > 0){
                 damage++;
@@ -824,5 +903,17 @@ export function bloodwar(){
                 global.portal.carport.damaged += dead;
             }
         }
+    }
+
+    if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
+        global.tech['hell_pit'] = 1;
+        global.settings.portal.pit = true;
+        messageQueue(loc('portal_hell_pit_found'),'success');
+        renderFortress();
+    }
+
+    if (p_on['soul_forge'] && global.portal.soul_forge.kills >= 1000000){
+        global.portal.soul_forge.kills = 0;
+        global.resource.Soul_Gem.amount++;
     }
 }

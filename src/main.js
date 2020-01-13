@@ -182,8 +182,10 @@ $('#powerStatus').on('mouseover',function(){
     $('#main').append(powerPopper);
     let drain = global.city.power_total - global.city.power;
     Object.keys(power_generated).forEach(function (k){
-        let gen = +(power_generated[k]).toFixed(2);
-        powerPopper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${gen}</span></p>`);
+        if (power_generated[k]){
+            let gen = +(power_generated[k]).toFixed(2);
+            powerPopper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${gen}</span></p>`);
+        }
     });
     powerPopper.append(`<p class="modal_bd"><span>${loc('power_consumed')}</span> <span class="has-text-danger"> -${drain}</span></p>`);
     let avail = +(global.city.power).toFixed(2);
@@ -1018,8 +1020,8 @@ function fastLoop(){
             'gxy_stargate:telemetry_beacon','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
             'spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller',
             'prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant',
-            'city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','int_blackhole:far_reach',
-            'prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','int_blackhole:mass_ejector','city:casino'];
+            'city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','int_blackhole:far_reach',
+            'prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','int_blackhole:mass_ejector','city:casino'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
@@ -4134,13 +4136,17 @@ function midLoop(){
             bd_Elerium[loc('interstellar_nexus_title')] = elerium_gain+'v';
         }
         if (p_on['s_gate'] && global.galaxy['gateway_station']){
-            let helium_gain = global.galaxy.gateway_station.count * spatialReasoning(2000);
+            let helium_gain = p_on['gateway_station'] * spatialReasoning(2000);
             caps['Helium_3'] += helium_gain;
             bd_Helium[loc('galaxy_gateway_station')] = helium_gain+'v';
 
-            let deuterium_gain = global.galaxy.gateway_station.count * spatialReasoning(4500);
+            let deuterium_gain = p_on['gateway_station'] * spatialReasoning(4500);
             caps['Deuterium'] += deuterium_gain;
             bd_Deuterium[loc('galaxy_gateway_station')] = deuterium_gain+'v';
+
+            let gain = p_on['gateway_station'] * spatialReasoning(50);
+            caps['Elerium'] += gain;
+            bd_Elerium[loc('galaxy_gateway_station')] = gain+'v';
         }
         if (p_on['s_gate'] && p_on['telemetry_beacon']){
             let gain = p_on['telemetry_beacon'] ** 2 * 600;

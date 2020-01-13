@@ -300,7 +300,7 @@ function loadJob(job, impact, stress, color){
                 for (let i=0; i<keyMult; i++){
                     if (global.civic[job].workers > 0){
                         global.civic[job].workers--;
-                        if (global.civic.d_job === 'unemployed'){
+                        if (global.civic.d_job === 'unemployed' || job === global.civic.d_job){
                             global.civic.free++;
                         }
                         else {

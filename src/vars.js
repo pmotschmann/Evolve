@@ -597,6 +597,9 @@ if (!global.stats['tknow']){
 if (!global.stats['portals']){
     global.stats['portals'] = global.stats['achieve'] && global.stats.achieve['doomed'] ? 1 : 0;
 }
+if (!global.stats['dkills']){
+    global.stats['dkills'] = 0;
+}
 if (!global.stats['attacks']){
     global.stats['attacks'] = 0;
 }
@@ -1258,6 +1261,7 @@ export function clearStates(){
     global.stats.starved = 0;
     global.stats.died = 0;
     global.stats.attacks = 0;
+    global.stats.dkills = 0;
     
     global.settings.showEvolve = true;
     global.settings.showCity = false;
