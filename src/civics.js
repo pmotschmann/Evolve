@@ -58,7 +58,7 @@ export function defineIndustry(){
 
 // Sets up garrison in civics tab
 export function defineGarrison(){
-    var garrison = $('<div id="garrison" v-show="g.display" class="garrison tile is-child"></div>');
+    var garrison = $('<div id="garrison" v-show="vis()" class="garrison tile is-child"></div>');
     $('#military').append(garrison);
     $('#military').append($(`<div id="fortress"></div>`));
     
@@ -484,7 +484,7 @@ export function foreignGov(){
                 return loc('civics_gov_esp_desc');
             },
             vis(){
-                return global.tech['govern'] && !global.tech['world_control'] ? true : false;
+                return global.civic.garrison.display && !global.tech['world_control'] ? true : false;
             }
         }
     });
@@ -754,7 +754,7 @@ export function buildGarrison(garrison,full){
     vBind({
         el: full ? '#garrison' : '#c_garrison',
         data: { 
-            g: global.civic['garrison'],
+            g: global.civic.garrison,
             g0: global.civic.foreign.gov0,
             g1: global.civic.foreign.gov1,
             g2: global.civic.foreign.gov2,
@@ -873,6 +873,9 @@ export function buildGarrison(garrison,full){
                         global.civic.garrison.raid = 0;
                     }
                 }
+            },
+            vis(){
+                return global.civic.garrison.display;
             }
         },
         filters: {

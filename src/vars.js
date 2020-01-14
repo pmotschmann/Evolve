@@ -653,7 +653,7 @@ if (!global.race['minor']){
     global.race['minor'] = {};
 }
 
-if (typeof global.settings['showMil'] === "undefined"){
+if (!global.settings.hasOwnProperty('showMil')){
     global.settings['showMil'] = true;
 }
 if (!global.settings['affix']){
