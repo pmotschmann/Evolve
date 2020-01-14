@@ -744,7 +744,7 @@ export const races = {
             pyrophobia: 1,
             skittish: 1,
             nyctophilia: 1,
-            fraile: 1,
+            frail: 1,
             atrophy: 1,
             invertebrate: 1,
             pathetic: 1,
@@ -1140,7 +1140,7 @@ export const traits = {
         desc: loc('trait_cannibalize'),
         type: 'major',
     },
-    fraile: { // More soldiers die in combat
+    frail: { // More soldiers die in combat
         desc: loc('trait_frail'),
         type: 'major',
     },
