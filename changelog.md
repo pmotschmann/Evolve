@@ -1,3 +1,6 @@
+#### 0.7.19 - 1/14/2020 ####
+Bug Fixes<br>
+
 #### 0.7.18 - 1/12/2020 ####
 Theocracy temple bonus raised from 5% to 12%<br>
 Technocracy knowledge discount raised from 5% to 8%<br>
