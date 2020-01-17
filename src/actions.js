@@ -9809,10 +9809,10 @@ export const actions = {
             title: loc('tech_encoding'),
             desc: loc('tech_encoding_desc'),
             category: 'upgrade',
-            reqs: { ancient_study: 1 },
+            reqs: { ancient_study: 1, mars: 5 },
             grant: ['ancient_study',2],
             cost: {
-                Knowledge(){ return 250000; }
+                Knowledge(){ return 268000; }
             },
             effect(){ return `<div>${loc('tech_encoding_effect')}</div>`; },
             action(){
@@ -9847,10 +9847,10 @@ export const actions = {
             title: loc('tech_infusion'),
             desc: loc('tech_infusion_desc'),
             category: 'upgrade',
-            reqs: { ancient_deify: 1 },
+            reqs: { ancient_deify: 1, mars: 5 },
             grant: ['ancient_deify',2],
             cost: {
-                Knowledge(){ return 250000; }
+                Knowledge(){ return 268000; }
             },
             effect(){ return `<div>${loc('tech_infusion_effect')}</div>`; },
             action(){

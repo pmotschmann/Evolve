@@ -570,6 +570,9 @@ function fastLoop(){
     }
     if (global.race['smoldering'] && global.city['hot']){
         let heat = global.city['hot'] * 0.35;
+        if (global.city['hot'] > 100){
+            heat -= (global.city['hot'] - 100) * 0.15;
+        }
         breakdown.p['Global'][loc('hot')] = `${heat}%`;
         global_multiplier *= 1 + (heat / 100);
     }
@@ -580,6 +583,9 @@ function fastLoop(){
     }
     if (global.race['chilled'] && global.city['cold']){
         let cold = global.city['cold'] * 0.35;
+        if (global.city['hot'] > 100){
+            cold -= (global.city['cold'] - 100) * 0.15;
+        }
         breakdown.p['Global'][loc('cold')] = `${cold}%`;
         global_multiplier *= 1 + (cold / 100);
     }

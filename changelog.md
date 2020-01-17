@@ -1,3 +1,9 @@
+#### 0.8.0 - ?/??/2020
+Intergalactic Content<br>
+Extended the Deify and Study Ancients tech trees<br>
+Enhanced Droids upgrade for War Droids<br>
+Smoldering and Chilled now have reduced effectiveness after 100 stacks<br>
+
 #### 0.7.19 - 1/14/2020 ####
 Bug Fixes<br>
 
