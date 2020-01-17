@@ -700,6 +700,9 @@ const spaceProjects = {
                 if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
                     sci += int_on['laboratory'] * 25;
                 }
+                if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
+                    sci += global.space.ziggurat.count * 15;
+                }
                 let elerium = spatialReasoning(10);
                 return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
@@ -735,7 +738,14 @@ const spaceProjects = {
             },
             effect(){
                 let bonus = global.tech['ancient_study'] ? 0.6 : 0.4;
-                return `<div>${loc('space_red_ziggurat_effect',[bonus])}</div></div>`;
+                if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
+                    bonus += 0.01 * red_on['exotic_lab'];
+                }
+                let desc = `<div>${loc('space_red_ziggurat_effect',[bonus])}</div>`;
+                if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
+                    desc = desc + `<div>${loc('interstellar_laboratory_effect',[3])}</div>`;
+                }
+                return desc;
             },
             refresh: true,
             action(){
@@ -3246,8 +3256,11 @@ export function int_fuel_adjust(fuel){
 export function zigguratBonus(){
     let bonus = 1;
     if (global.space['ziggurat'] && global.space['ziggurat'].count > 0){
-        let study = global.tech['ancient_study'] ? 0.006 : 0.004;
-        bonus += (global.space.ziggurat.count * global.civic.colonist.workers * study);
+        let zig = global.tech['ancient_study'] ? 0.006 : 0.004;
+        if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
+            zig += 0.0001 * red_on['exotic_lab'];
+        }
+        bonus += (global.space.ziggurat.count * global.civic.colonist.workers * zig);
     }
     return bonus;
 }

@@ -1399,10 +1399,10 @@ function fastLoop(){
             global.settings.space.stargate = false;
         }
 
+        let crew_total = 0;
         let crewed = ['bolognium_ship','scout_ship'];
         for (let i=0; i<crewed.length; i++){
-            if (global.galaxy[crewed[i]] && typeof global.galaxy[crewed[i]]['on'] !== "undefined" && typeof global.galaxy[crewed[i]]['crew'] !== "undefined"){
-
+            if (global.galaxy[crewed[i]] && global.galaxy[crewed[i]].hasOwnProperty('on') && global.galaxy[crewed[i]].hasOwnProperty('crew')){
                 if (actions.galaxy.gxy_gateway[crewed[i]].crew['civ']){
                     if (global.galaxy[crewed[i]]['crew'] < global.galaxy[crewed[i]].on){
                         if (global.civic.d_job === 'unemployed'){
@@ -1433,6 +1433,7 @@ function fastLoop(){
                         }
                     }
                     global.civic.crew.assigned = global.civic.crew.workers;
+                    crew_total += global.galaxy[crewed[i]]['crew'];
                 }
 
                 /*if (actions.galaxy.gxy_gateway[crewed[i]].crew['mil']){
@@ -1447,6 +1448,7 @@ function fastLoop(){
                 }
             }
         }
+        global.civic.crew.workers = crew_total;
 
         // Detect labor anomalies
         let total = 0;
@@ -4099,6 +4101,9 @@ function midLoop(){
             let sci = 500;
             if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
                 sci += int_on['laboratory'] * 25;
+            }
+            if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
+                sci += global.space.ziggurat.count * 15;
             }
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;

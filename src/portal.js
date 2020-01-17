@@ -631,7 +631,8 @@ function fortressDefenseRating(v){
         }
     }
     if (p_on['war_droid']){
-        army += p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
+        let droids = p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
+        army += global.tech['hdroid'] ? droids * 2 : droids;
     }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
     return Math.round(armyRating(army,'army',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
@@ -725,7 +726,7 @@ export function bloodwar(){
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
-                pat_size++;
+                pat_size += global.tech['hdroid'] ? 2 : 1;
                 terminators--;
             }
             let pat_rating = Math.round(armyRating(pat_size,'army',hurt));
@@ -881,7 +882,11 @@ export function bloodwar(){
 
     // Surveyor threats
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
-        let danger = global.portal.fortress.threat / (global.race['blurry'] ? 1250 : 1000);
+        let divisor = global.race['blurry'] ? 1250 : 1000;
+        if (global.tech['infernite'] && global.tech.infernite >= 5){
+            divisor += 250;
+        }
+        let danger = global.portal.fortress.threat / divisor;
         let exposure = global.civic.hell_surveyor.workers > 10 ? 10 : global.civic.hell_surveyor.workers;
         let risk = 10 - (Math.rand(0,exposure + 1));
 

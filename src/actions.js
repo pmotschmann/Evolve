@@ -9804,6 +9804,24 @@ export const actions = {
                 return false;
             }
         },
+        encoding: {
+            id: 'tech-encoding',
+            title: loc('tech_encoding'),
+            desc: loc('tech_encoding_desc'),
+            category: 'upgrade',
+            reqs: { ancient_study: 1 },
+            grant: ['ancient_study',2],
+            cost: {
+                Knowledge(){ return 250000; }
+            },
+            effect(){ return `<div>${loc('tech_encoding_effect')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         deify: {
             id: 'tech-deify',
             title: loc('tech_deify'),
@@ -9819,6 +9837,24 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.tech['ancient_deify'] = 1;
                     fanaticism(global.race.old_gods);
+                    return true;
+                }
+                return false;
+            }
+        },
+        infusion: {
+            id: 'tech-infusion',
+            title: loc('tech_infusion'),
+            desc: loc('tech_infusion_desc'),
+            category: 'upgrade',
+            reqs: { ancient_deify: 1 },
+            grant: ['ancient_deify',2],
+            cost: {
+                Knowledge(){ return 250000; }
+            },
+            effect(){ return `<div>${loc('tech_infusion_effect')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
@@ -11319,6 +11355,24 @@ export const actions = {
                 return loc('tech_combat_droids_flair');
             }
         },
+        enhanced_droids: {
+            id: 'tech-enhanced_droids',
+            title: loc('tech_enhanced_droids'),
+            desc: loc('tech_enhanced_droids'),
+            category: 'upgrade',
+            reqs: { portal: 5, military: 9 },
+            grant: ['hdroid',1],
+            cost: {
+                Knowledge(){ return 1050000; },
+            },
+            effect: loc('tech_enhanced_droids_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         sensor_drone: {
             id: 'tech-sensor_drone',
             title: loc('tech_sensor_drone'),
@@ -11375,6 +11429,25 @@ export const actions = {
                 return false;
             }
         },
+        shield_generator: {
+            id: 'tech-shield_generator',
+            title: loc('tech_shield_generator'),
+            desc: loc('tech_shield_generator'),
+            category: 'upgrade',
+            reqs: { high_tech: 14, gateway: 3, infernite: 4 },
+            grant: ['infernite',5],
+            cost: {
+                Knowledge(){ return 2680000; },
+                Bolognium(){ return 75000; }
+            },
+            effect(){ return loc('tech_shield_generator_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         scout_ship: {
             id: 'tech-scout_ship',
             title: loc('galaxy_scout_ship'),
@@ -11402,7 +11475,7 @@ export const actions = {
             reqs: { hell_pit: 3 },
             grant: ['hell_pit',4],
             cost: {
-                Knowledge(){ return 2600000; }
+                Knowledge(){ return 2750000; }
             },
             effect(){ return loc('tech_soul_forge_effect'); },
             action(){
