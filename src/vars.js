@@ -32,12 +32,16 @@ export var int_on = {};
 export var gal_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
+export var universe_level = 0;
 export function set_qlevel(q_level){
     quantum_level = q_level;
 }
 export function set_alevel(a_level){
     achieve_level = a_level;
-} 
+}
+export function set_ulevel(u_level){
+    universe_level = u_level;
+}
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;

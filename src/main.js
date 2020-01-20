@@ -1,4 +1,4 @@
-import { global, save, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, achieve_level, quantum_level } from './vars.js';
+import { global, save, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, achieve_level, universe_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue } from './functions.js';
 import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
@@ -528,14 +528,18 @@ function fastLoop(){
         }
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        let m_rate = global.race.universe === 'standard' ? 0.25 : 0.15;
+        let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
         if (global.race['weak_mastery']){
-            breakdown.p['Global'][loc('mastery')] = (achieve_level * 0.025) + '%';
-            global_multiplier *= 1 + (achieve_level * 0.00025);
+            m_rate /= 10;
+            u_rate /= 10;
         }
-        else {
-            breakdown.p['Global'][loc('mastery')] = (achieve_level * 0.25) + '%';
-            global_multiplier *= 1 + (achieve_level * 0.0025);
+        let mastery = achieve_level * m_rate;
+        if (global.race.universe !== 'standard'){
+            mastery += universe_level * u_rate;
         }
+        breakdown.p['Global'][loc('mastery')] = mastery + '%';
+        global_multiplier *= 1 + (mastery / 100);
     }
     if (global.race['suction_grip']){
         breakdown.p['Global'][loc('trait_suction_grip_bd')] = '8%';
@@ -5340,6 +5344,17 @@ function longLoop(){
                 delete global.tech['stablized'];
             }
             messageQueue(loc('interstellar_blackhole_unstable'),'danger');
+            drawTech();
+        }
+
+        if (!global.tech['xeno'] && global.galaxy['scout_ship'] && global.galaxy.scout_ship.on > 0 && Math.rand(0, 10) === 0){
+            global.tech['xeno'] = 1;
+            global.galaxy.scout_ship.count--;
+            global.galaxy.scout_ship.on--;
+            global.galaxy.scout_ship.crew--;
+            global.galaxy.scout_ship.mil--;
+            global.resource[global.race.species].amount--;
+            messageQueue(loc('galaxy_encounter'),'danger');
             drawTech();
         }
 

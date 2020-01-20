@@ -1,4 +1,4 @@
-import { global, set_alevel, poppers } from './vars.js';
+import { global, set_alevel, set_ulevel, poppers } from './vars.js';
 import { svgIcons, svgViewBox, format_emblem, vBind, messageQueue } from './functions.js'; 
 import { loc } from './locale.js'
 
@@ -722,11 +722,12 @@ const feats = {
 }
 
 export function unlockAchieve(achievement,small,rank){
-    if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
+    if (global.race.universe !== 'micro' && small === true){
         return false;
     }
     let a_level = 1;
     let unlock = false;
+    let redraw = false;
     if (global.race['no_plasmid']){ a_level++; }
     if (global.race['no_trade']){ a_level++; }
     if (global.race['no_craft']){ a_level++; }
@@ -735,42 +736,49 @@ export function unlockAchieve(achievement,small,rank){
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
     }
-    if (!global.stats.achieve[achievement] || (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < rank)){
-        global.settings.showAchieve = true;
-        if (global.stats.achieve[achievement]){
+    if (typeof global.stats.achieve[achievement] === "undefined"){
+        global.stats.achieve[achievement] = { l: 0 };
+    }
+    if ((global.race.universe === 'micro' && small === true) || (global.race.universe !== 'micro' && small !== true)){
+        if (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < rank){
+            global.settings.showAchieve = true;
             global.stats.achieve[achievement].l = rank;
+            messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
+            redraw = true;
+            unlock = true;
         }
-        else {
-            global.stats.achieve[achievement] = { l: rank };
-        }
-        messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
-        drawPerks();
-        drawAchieve();
-        unlock = true;
     }
     if (global.stats.achieve[achievement]){
         switch (global.race.universe){
             case 'antimatter':
                 if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < rank)){
                     global.stats.achieve[achievement]['a'] = rank;
+                    redraw = true;
                 }
                 break;
             case 'heavy':
                 if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < rank)){
                     global.stats.achieve[achievement]['h'] = rank;
+                    redraw = true;
                 }
                 break;
             case 'evil':
                 if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < rank)){
                     global.stats.achieve[achievement]['e'] = rank;
+                    redraw = true;
                 }
                 break;
             case 'micro':
                 if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < rank)){
                     global.stats.achieve[achievement]['m'] = rank;
+                    redraw = true;
                 }
                 break;
         }
+    }
+    if (redraw){
+        drawPerks();
+        drawAchieve();
     }
     return unlock;
 }
@@ -822,19 +830,48 @@ export function drawAchieve(){
     let earned = 0;
     let total = 0;
     let level = 0;
+    let ulevel = 0;
+
+    let affix = 'l';
+    if (global.race.universe !== 'standard'){
+        switch (global.race.universe) {
+            case 'evil':
+                affix = 'e';
+                break;
+            case 'antimatter':
+                affix = 'a';
+                break;
+            case 'heavy':
+                affix = 'h';
+                break;
+            case 'micro':
+                affix = 'm';
+                break;
+            default:
+                break;
+        }
+    }
+
     Object.keys(achievements).forEach(function (achievement){
         total++;
         if (global.stats.achieve[achievement]){
             earned++;
             level += global.stats.achieve[achievement].l > 5 ? 5 : global.stats.achieve[achievement].l;
+            if (global.stats.achieve[achievement][affix]){
+                ulevel += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
+            }
             if (achievement === 'joyless'){
                 level += global.stats.achieve[achievement].l > 5 ? 5 : global.stats.achieve[achievement].l;
+                if (global.stats.achieve[achievement][affix]){
+                    ulevel += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
+                }
             }
             let emblem = format_emblem(achievement,16);            
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${emblem}</div></b-tooltip>`));
         }
     });
     set_alevel(level);
+    set_ulevel(ulevel);
 
     Object.keys(feats).forEach(function (feat){
         if (global.stats.feat[feat]){

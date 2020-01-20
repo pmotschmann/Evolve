@@ -549,6 +549,24 @@ const genePool = {
             return false;
         }
     },
+    universal: {
+        id: 'genes-universal',
+        title: loc('arpa_genepool_universal_title'),
+        desc: loc('arpa_genepool_universal_desc'),
+        reqs: {challenge:2},
+        grant: ['challenge',3],
+        condition(){
+            return global.race.universe !== 'standard' ? true : false;
+        },
+        cost: 250,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('universal')){
+                return true;
+            }
+            return false;
+        }
+    },
     ancients: {
         id: 'genes-ancients',
         title: loc('arpa_genepool_ancients_title'),
