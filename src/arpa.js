@@ -992,11 +992,33 @@ function genetics(){
             breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`)
 
             let trait_list = [];
+            let conflict_traits = ['dumb','smart','carnivore','herbivore']; //Conflicting traits are paired together
             Object.keys(races).forEach(function (race){
                 if (races[race].type === races[global.race.species].type){
                     Object.keys(races[race].traits).forEach(function (trait){
                         if (!global.race[trait] && trait !== 'soul_eater'){
-                            trait_list.push(trait);
+                            let conflict_pos = conflict_traits.indexOf(trait);
+                            if (conflict_pos === -1){
+                                trait_list.push(trait);
+                            }
+                            else{
+                                let is_conflict = false;
+                                switch (conflict_pos % 2){
+                                    case 0:
+                                        if (global.race[conflict_traits[conflict_pos + 1]]){
+                                            is_conflict = true;
+                                        }
+                                        break;
+                                    case 1:
+                                        if (global.race[conflict_traits[conflict_pos - 1]]){
+                                            is_conflict = true;
+                                        }
+                                        break;
+                                }
+                                if (!is_conflict) {
+                                    trait_list.push(trait);
+                                }
+                            }
                         }
                     });
                 }

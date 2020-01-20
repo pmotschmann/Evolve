@@ -1343,9 +1343,12 @@ function war_campaign(gov){
             }
             let zombies = global.resource[global.race.species].amount + infected;
             if (zombies > global.resource[global.race.species].max){
-                zombies = global.resource[global.race.species].max;
+                infected = global.resource[global.race.species].max - global.resource[global.race.species].amount;
             }
-            global.resource[global.race.species].amount = zombies;
+            global.resource[global.race.species].amount += infected;
+            if (global.civic.d_job !== 'unemployed'){
+                global.civic[global.civic.d_job].workers += infected;
+            }
             if (infected === 1){
                 messageQueue(loc('civics_garrison_soldier_infected'),'special');
             }
