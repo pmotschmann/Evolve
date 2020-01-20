@@ -2724,6 +2724,9 @@ const galaxyProjects = {
                         global.galaxy['telemetry_beacon'] = { count: 0, on: 0 };
                         global.tech['stargate'] = 5;
                     }
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.galaxy['gateway_station'].on++;
+                    }
                     return true;
                 }
                 return false;
@@ -2794,8 +2797,8 @@ const galaxyProjects = {
             grant: ['gateway',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(){ return +int_fuel_adjust(225000).toFixed(0); },
-                Deuterium(){ return +int_fuel_adjust(140000).toFixed(0); }
+                Helium_3(){ return +int_fuel_adjust(212000).toFixed(0); },
+                Deuterium(){ return +int_fuel_adjust(110000).toFixed(0); }
             },
             effect: loc('galaxy_gateway_mission_effect'),
             action(){
@@ -2854,13 +2857,14 @@ const galaxyProjects = {
             },
             effect(){
                 let bolognium = +(0.022 * zigguratBonus()).toFixed(3);
-                let helium = +int_fuel_adjust(5).toFixed(2);
-                return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].crew.civ])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
             support: -1,
-            crew: {
+            ship: {
                 civ: 1,
                 mil: 0,
+                helium: 5
             },
             powered(){ return 1; },
             action(){
@@ -2890,13 +2894,14 @@ const galaxyProjects = {
                 Soul_Gem(offset){ return spaceCostMultiplier('scout_ship', offset, 1, 1.02, 'galaxy'); },
             },
             effect(){
-                let helium = +int_fuel_adjust(6).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[10])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].crew.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].crew.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[10])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
             support: -1,
-            crew: {
+            ship: {
                 civ: 1,
                 mil: 1,
+                helium: 6
             },
             powered(){ return 1; },
             action(){
@@ -2910,7 +2915,75 @@ const galaxyProjects = {
                 return false;
             }
         },
-    }
+        corvette_ship: {
+            id: 'galaxy-corvette_ship',
+            title: loc('galaxy_corvette_ship'),
+            desc(){
+                return `<div>${loc('galaxy_corvette_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[loc('resource_Helium_3_name')])}</div>`;
+            },
+            reqs: { andromeda: 2 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('corvette_ship', offset, 4500000, 1.25, 'galaxy'); },
+                Steel(offset){ return spaceCostMultiplier('corvette_ship', offset, 1750000, 1.25, 'galaxy'); },
+                Infernite(offset){ return spaceCostMultiplier('corvette_ship', offset, 16000, 1.25, 'galaxy'); },
+                Bolognium(offset){ return spaceCostMultiplier('corvette_ship', offset, 80000, 1.25, 'galaxy'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('corvette_ship', offset, 1, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[25])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+            },
+            support: -1,
+            ship: {
+                civ: 1,
+                mil: 3,
+                helium: 10
+            },
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('corvette_ship','galaxy');
+                    if (global.galaxy.starbase.support < global.galaxy.starbase.s_max){
+                        global.galaxy['corvette_ship'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    gxy_gorddon: {
+        info: {
+            name: loc('galaxy_gorddon'),
+            desc(){ return loc('galaxy_gorddon_desc'); },
+        },
+        gorddon_mission: {
+            id: 'galaxy-demaus_mission',
+            title: loc('galaxy_gorddon_mission'),
+            desc: loc('galaxy_gorddon_mission_desc'),
+            reqs: { xeno: 2 },
+            grant: ['xeno',3],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                /*Structs(){
+                    return {
+                        scout_ship: { on: 2 },
+                        corvette_ship: { on: 1 },
+                    };
+                },*/
+                Helium_3(){ return +int_fuel_adjust(230000).toFixed(0); },
+                Deuterium(){ return +int_fuel_adjust(125000).toFixed(0); }
+            },
+            effect: loc('galaxy_gorddon_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('galaxy_gorddon_mission_result',['placeholder']),'success');
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
 };
 
 const structDefinitions = {

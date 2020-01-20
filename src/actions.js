@@ -11448,6 +11448,25 @@ export const actions = {
                 return false;
             }
         },
+        xeno_linguistics: {
+            id: 'tech-xeno_linguistics',
+            title: loc('tech_xeno_linguistics'),
+            desc: loc('tech_xeno_linguistics'),
+            category: 'research',
+            reqs: { xeno: 1 },
+            grant: ['xeno',2],
+            cost: {
+                Knowledge(){ return 3000000; }
+            },
+            effect(){ return loc('tech_xeno_linguistics_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.settings.space['gorddon'] = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         scout_ship: {
             id: 'tech-scout_ship',
             title: loc('galaxy_scout_ship'),
@@ -11462,6 +11481,25 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['scout_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        corvette_ship: {
+            id: 'tech-corvette_ship',
+            title: loc('galaxy_corvette_ship'),
+            desc: loc('galaxy_corvette_ship'),
+            category: 'research',
+            reqs: { andromeda: 1, xeno: 1 },
+            grant: ['andromeda',2],
+            cost: {
+                Knowledge(){ return 3200000; }
+            },
+            effect(){ return loc('tech_corvette_ship_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['corvette_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
                     return true;
                 }
                 return false;

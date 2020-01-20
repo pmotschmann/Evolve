@@ -1243,7 +1243,7 @@ function fastLoop(){
 
         if (global.galaxy['starbase']){
             let used_support = 0;
-            let gateway_structs = ['bolognium_ship','scout_ship','corvette_ship','frigate_ship','cruiser_ship'];
+            let gateway_structs = ['bolognium_ship','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
             for (var i = 0; i < gateway_structs.length; i++){
                 if (global.galaxy[gateway_structs[i]]){
                     let operating = global.galaxy[gateway_structs[i]].on;
@@ -1411,56 +1411,56 @@ function fastLoop(){
 
         let crew_civ = 0;
         let crew_mil = 0;
-        let crewed = ['bolognium_ship','scout_ship','corvette_ship','frigate_ship','cruiser_ship'];
+        let crewed = ['bolognium_ship','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
         for (let i=0; i<crewed.length; i++){
-            if (global.galaxy[crewed[i]] && global.galaxy[crewed[i]].hasOwnProperty('on') && global.galaxy[crewed[i]].hasOwnProperty('crew')){
-                if (actions.galaxy.gxy_gateway[crewed[i]].crew['civ']){
-                    if (global.galaxy[crewed[i]]['crew'] < global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].crew.civ){
+            if (global.galaxy[crewed[i]] && global.galaxy[crewed[i]].hasOwnProperty('on')){
+                if (actions.galaxy.gxy_gateway[crewed[i]].ship['civ'] && global.galaxy[crewed[i]].hasOwnProperty('crew')){
+                    if (global.galaxy[crewed[i]]['crew'] < global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].ship.civ){
                         if (global.civic.d_job === 'unemployed'){
-                            if (global.civic.free > actions.galaxy.gxy_gateway[crewed[i]].crew.civ){
-                                global.civic.free -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
-                                global.civic.crew.workers += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
-                                global.galaxy[crewed[i]]['crew'] += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            if (global.civic.free > actions.galaxy.gxy_gateway[crewed[i]].ship.civ){
+                                global.civic.free -= actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
+                                global.civic.crew.workers += actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
+                                global.galaxy[crewed[i]]['crew'] += actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
                             }
                         }
                         else {
-                            if (global.civic[global.civic.d_job].workers > actions.galaxy.gxy_gateway[crewed[i]].crew.civ){
-                                global.civic[global.civic.d_job].workers -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
-                                global.civic.crew.workers += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
-                                global.galaxy[crewed[i]]['crew'] += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            if (global.civic[global.civic.d_job].workers > actions.galaxy.gxy_gateway[crewed[i]].ship.civ){
+                                global.civic[global.civic.d_job].workers -= actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
+                                global.civic.crew.workers += actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
+                                global.galaxy[crewed[i]]['crew'] += actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
                             }
                         }
                     }
-                    if (global.galaxy[crewed[i]]['crew'] > global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].crew.civ){
+                    if (global.galaxy[crewed[i]]['crew'] > global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].ship.civ){
                         if (global.civic.d_job === 'unemployed'){
-                            global.civic.free += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
-                            global.civic.crew.workers -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
-                            global.galaxy[crewed[i]]['crew'] -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            global.civic.free += actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
+                            global.civic.crew.workers -= actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
+                            global.galaxy[crewed[i]]['crew'] -= actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
                         }
                         else {
-                            global.civic[global.civic.d_job].workers += actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
-                            global.civic.crew.workers -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
-                            global.galaxy[crewed[i]]['crew'] -= actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                            global.civic[global.civic.d_job].workers += actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
+                            global.civic.crew.workers -= actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
+                            global.galaxy[crewed[i]]['crew'] -= actions.galaxy.gxy_gateway[crewed[i]].ship.civ;
                         }
                     }
                     global.civic.crew.assigned = global.civic.crew.workers;
                     crew_civ += global.galaxy[crewed[i]]['crew'];
                 }
 
-                if (actions.galaxy.gxy_gateway[crewed[i]].crew['mil']){
-                    if (global.galaxy[crewed[i]]['mil'] < global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].crew.mil){
-                        if (actions.galaxy.gxy_gateway[crewed[i]].crew.mil <= global.civic.garrison.workers - global.portal.fortress.garrison - crew_mil){
-                            global.galaxy[crewed[i]]['mil'] += actions.galaxy.gxy_gateway[crewed[i]].crew.mil;
+                if (actions.galaxy.gxy_gateway[crewed[i]].ship['mil'] && global.galaxy[crewed[i]].hasOwnProperty('mil')){
+                    if (global.galaxy[crewed[i]]['mil'] < global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].ship.mil){
+                        if (actions.galaxy.gxy_gateway[crewed[i]].ship.mil <= global.civic.garrison.workers - global.portal.fortress.garrison - crew_mil){
+                            global.galaxy[crewed[i]]['mil'] += actions.galaxy.gxy_gateway[crewed[i]].ship.mil;
                         }
                     }
-                    if (global.galaxy[crewed[i]]['mil'] > global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].crew.mil){
-                        global.galaxy[crewed[i]]['mil'] -= actions.galaxy.gxy_gateway[crewed[i]].crew.mil;
-                        global.civic.garrison.workers += actions.galaxy.gxy_gateway[crewed[i]].crew.mil;
+                    if (global.galaxy[crewed[i]]['mil'] > global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].ship.mil){
+                        global.galaxy[crewed[i]]['mil'] -= actions.galaxy.gxy_gateway[crewed[i]].ship.mil;
+                        global.civic.garrison.workers += actions.galaxy.gxy_gateway[crewed[i]].ship.mil;
                     }
                     crew_mil += global.galaxy[crewed[i]]['mil'];
                 }
 
-                if (global.galaxy[crewed[i]]['crew'] < global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].crew.civ || global.galaxy[crewed[i]]['mil'] < global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].crew.mil || gal_on[crewed[i]] < global.galaxy[crewed[i]].on){
+                if (global.galaxy[crewed[i]]['crew'] < global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].ship.civ || global.galaxy[crewed[i]]['mil'] < global.galaxy[crewed[i]].on * actions.galaxy.gxy_gateway[crewed[i]].ship.mil || gal_on[crewed[i]] < global.galaxy[crewed[i]].on){
                     $(`#galaxy-${crewed[i]} .on`).addClass('warn');
                 }
                 else {
@@ -3082,18 +3082,20 @@ function fastLoop(){
         breakdown.p['Infernite'] = infernite_bd;
 
         let andromeda_helium = 0;
+        let andromeda_deuterium = 0;
 
         // Bolognium
         let bolognium_bd = {};
         if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['bolognium_ship'] && global.galaxy.bolognium_ship.crew > 0){
             let operating = global.galaxy.bolognium_ship.crew;
-            let increment = 5;
-
+            let increment = +int_fuel_adjust(actions.galaxy.gxy_gateway.bolognium_ship.ship.helium).toFixed(2);
+            
             let consume = (operating * increment);
             while (consume * time_multiplier > global.resource.Helium_3.amount && consume > 0){
                 consume -= increment;
                 operating--;
             }
+
             modRes('Helium_3', -(consume * time_multiplier));
             andromeda_helium += consume;
 
@@ -3105,34 +3107,48 @@ function fastLoop(){
         }
         breakdown.p['Bolognium'] = bolognium_bd;
 
-        let ship_types = ['scout_ship','corvette_ship','frigate_ship','cruiser_ship'];
+        let ship_types = ['cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
         for (let i=0; i<ship_types.length; i++){
             if (p_on['s_gate'] && global.galaxy[ship_types[i]] && global.galaxy[ship_types[i]].crew > 0){
                 let operating = 0;
-                if (actions.galaxy.gxy_gateway[crewed[i]].crew.civ > 0){
-                    operating = global.galaxy[ship_types[i]].crew / actions.galaxy.gxy_gateway[crewed[i]].crew.civ;
+                if (actions.galaxy.gxy_gateway[ship_types[i]].ship.civ > 0){
+                    operating = global.galaxy[ship_types[i]].crew / actions.galaxy.gxy_gateway[ship_types[i]].ship.civ;
                 }
-                if (actions.galaxy.gxy_gateway[crewed[i]].crew.mil > 0){
-                    let mil_operating = global.galaxy[ship_types[i]].mil / actions.galaxy.gxy_gateway[crewed[i]].crew.mil;
+                if (actions.galaxy.gxy_gateway[ship_types[i]].ship.mil > 0){
+                    let mil_operating = global.galaxy[ship_types[i]].mil / actions.galaxy.gxy_gateway[ship_types[i]].ship.mil;
                     if (mil_operating < operating){
                         operating = mil_operating;
                     }
                 }
-                let increment = 6;
-
-                let consume = (operating * increment);
-                while (consume * time_multiplier > global.resource.Helium_3.amount && consume > 0){
-                    consume -= increment;
-                    operating--;
+                
+                if (actions.galaxy.gxy_gateway[ship_types[i]].ship.hasOwnProperty('helium')){
+                    let increment = +int_fuel_adjust(actions.galaxy.gxy_gateway[ship_types[i]].ship.helium).toFixed(2);
+                    let consume = (operating * increment);
+                    while (consume * time_multiplier > global.resource.Helium_3.amount && consume > 0){
+                        consume -= increment;
+                        operating--;
+                    }
+                    modRes('Helium_3', -(consume * time_multiplier));
+                    andromeda_helium += consume;
                 }
-                modRes('Helium_3', -(consume * time_multiplier));
-                andromeda_helium += consume;
+
+                if (actions.galaxy.gxy_gateway[ship_types[i]].ship.hasOwnProperty('deuterium')){
+                    let increment = +int_fuel_adjust(actions.galaxy.gxy_gateway[ship_types[i]].ship.deuterium).toFixed(2);
+                    let consume = (operating * increment);
+                    while (consume * time_multiplier > global.resource.Deuterium.amount && consume > 0){
+                        consume -= increment;
+                        operating--;
+                    }
+                    modRes('Deuterium', -(consume * time_multiplier));
+                    andromeda_helium += consume;
+                }
 
                 gal_on[ship_types[i]] = operating;
             }
         }
 
-        breakdown.p.consume.Helium_3[loc('galaxy_helium_consume')] = -(andromeda_helium);
+        breakdown.p.consume.Helium_3[loc('galaxy_fuel_consume')] = -(andromeda_helium);
+        breakdown.p.consume.Deuterium[loc('galaxy_fuel_consume')] = -(andromeda_deuterium);
 
         // Income
         if (global.tech['currency'] >= 1){
@@ -4234,19 +4250,19 @@ function midLoop(){
             global.city.market.mtrade += global.tech['railway'] * routes;
         }
         if (global.galaxy['bolognium_ship']){
-            lCaps['crew'] += global.galaxy.bolognium_ship.on * actions.galaxy.gxy_gateway.bolognium_ship.crew.civ;
+            lCaps['crew'] += global.galaxy.bolognium_ship.on * actions.galaxy.gxy_gateway.bolognium_ship.ship.civ;
         }
         if (global.galaxy['scout_ship']){
-            lCaps['crew'] += global.galaxy.scout_ship.on * actions.galaxy.gxy_gateway.scout_ship.crew.civ;
+            lCaps['crew'] += global.galaxy.scout_ship.on * actions.galaxy.gxy_gateway.scout_ship.ship.civ;
         }
         if (global.galaxy['corvette_ship']){
-            lCaps['crew'] += global.galaxy.corvette_ship.on * actions.galaxy.gxy_gateway.corvette_ship.crew.civ;
+            lCaps['crew'] += global.galaxy.corvette_ship.on * actions.galaxy.gxy_gateway.corvette_ship.ship.civ;
         }
         if (global.galaxy['frigate_ship']){
-            lCaps['crew'] += global.galaxy.frigate_ship.on * actions.galaxy.gxy_gateway.frigate_ship.crew.civ;
+            lCaps['crew'] += global.galaxy.frigate_ship.on * actions.galaxy.gxy_gateway.frigate_ship.ship.civ;
         }
         if (global.galaxy['cruiser_ship']){
-            lCaps['crew'] += global.galaxy.cruiser_ship.on * actions.galaxy.gxy_gateway.cruiser_ship.crew.civ;
+            lCaps['crew'] += global.galaxy.cruiser_ship.on * actions.galaxy.gxy_gateway.cruiser_ship.ship.civ;
         }
 
         if (global.race['inspired']){

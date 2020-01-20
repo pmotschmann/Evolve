@@ -389,7 +389,6 @@ if (convertVersion(global['version']) < 7019 && global.race['fraile']){
     global.race['frail'] = 1;
 }
 
-
 global['version'] = '0.7.20';
 delete global['beta'];
 
@@ -447,7 +446,8 @@ if (!global.settings['space']){
         dwarf: false,
         blackhole: false,
         stargate: false,
-        gateway: false
+        gateway: false,
+        gorddon: false
     }
 }
 
@@ -462,6 +462,10 @@ if (!global.settings.space['alpha']){
 if (typeof global.settings.space['stargate'] === 'undefined'){
     global.settings.space['stargate'] = false;
     global.settings.space['gateway'] = false;
+}
+
+if (typeof global.settings.space['gorddon'] === 'undefined'){
+    global.settings.space['gorddon'] = false;
 }
 
 if (!global.settings['showDeep']){
