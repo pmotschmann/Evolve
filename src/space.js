@@ -2891,7 +2891,7 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust(6).toFixed(2);
-                return `<div>${loc('galaxy_starbase_civ_crew',[$(this)[0].crew.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].crew.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[10])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].crew.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].crew.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
             support: -1,
             crew: {

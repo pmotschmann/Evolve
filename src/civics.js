@@ -683,6 +683,7 @@ export function buildGarrison(garrison,full){
     let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
     
     bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></div>`));
+    bunks.append($(`<div class="barracks" v-show="g.crew > 0"><b-tooltip :label="crewDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_crew')}</span></b-tooltip> <span>{{ g.crew }}</span></div>`));
     bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span>{{ g.wounded }}</span></div>`));
 
     barracks.append($(`<div class="hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="g.mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
@@ -749,6 +750,9 @@ export function buildGarrison(garrison,full){
     }
     if (!global.civic.garrison['m_use']){
         global.civic.garrison['m_use'] = 0;
+    }
+    if (!global.civic.garrison['crew']){
+        global.civic.garrison['crew'] = 0;
     }
 
     vBind({
@@ -836,6 +840,9 @@ export function buildGarrison(garrison,full){
                         ? loc('civics_garrison_soldier_desc_herb',[fur,global.resource.Furs.name])
                         : loc('civics_garrison_soldier_desc',[food,fur,global.resource.Food.name,global.resource.Furs.name]);
                 }
+            },
+            crewDesc(){
+                return loc('civics_garrison_crew_desc');
             },
             woundedDesc(){
                 return loc('civics_garrison_wounded_desc');
