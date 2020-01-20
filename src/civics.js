@@ -1345,15 +1345,17 @@ function war_campaign(gov){
             if (zombies > global.resource[global.race.species].max){
                 infected = global.resource[global.race.species].max - global.resource[global.race.species].amount;
             }
-            global.resource[global.race.species].amount += infected;
-            if (global.civic.d_job !== 'unemployed'){
-                global.civic[global.civic.d_job].workers += infected;
-            }
-            if (infected === 1){
-                messageQueue(loc('civics_garrison_soldier_infected'),'special');
-            }
-            else {
-                messageQueue(loc('civics_garrison_soldiers_infected',[infected]),'special');
+            if (infected > 0){
+                global.resource[global.race.species].amount += infected;
+                if (global.civic.d_job !== 'unemployed'){
+                    global.civic[global.civic.d_job].workers += infected;
+                }
+                if (infected === 1){
+                    messageQueue(loc('civics_garrison_soldier_infected'),'special');
+                }
+                else {
+                    messageQueue(loc('civics_garrison_soldiers_infected',[infected]),'special');
+                }
             }
         }
 
