@@ -659,7 +659,7 @@ function fastLoop(){
                 if (increment <= 0){ break; }
             }
             let rna = increment;
-            if (global.evolution['bilateral_symmetry'] || global.evolution['poikilohydric'] || global.evolution['spores']){
+            if ((global.evolution['bilateral_symmetry'] && global.evolution['bilateral_symmetry'].count > 0) || (global.evolution['poikilohydric'] && global.evolution['poikilohydric'].count > 0) || (global.evolution['spores'] && global.evolution['spores'].count > 0)){
                 increment *= 2;
             }
             modRes('DNA', increment * global_multiplier * time_multiplier);

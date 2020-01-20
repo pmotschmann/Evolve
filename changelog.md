@@ -9,6 +9,12 @@ Extended the Deify and Study Ancients tech trees<br>
 Enhanced Droids upgrade for War Droids<br>
 Smoldering and Chilled now have reduced effectiveness after 100 stacks<br>
 
+#### 0.7.20 - 1/20/2020 ####
+Bug Fixes by Beorseder<br>
+Fixed bug where purchasing Multicellular would double DNA generation from Nuclei instead of Bilateral Symmetry/Poikilohydric/Spores<br>
+New population from the Infectious trait now go into the set Default job, instead of always Unemployed<br>
+Controlled Mutation will no longer offer conflicting traits<br>
+
 #### 0.7.19 - 1/14/2020 ####
 Bug Fixes<br>
 
