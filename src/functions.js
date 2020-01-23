@@ -320,7 +320,7 @@ export function timeCheck(c_action,track,detailed){
         let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'HellArmy'){
+            if (res !== 'Morale' && res !== 'HellArmy' && res !== 'Structs'){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
                     let res_have = Number(global.resource[res].amount);
@@ -488,7 +488,7 @@ function technoAdjust(costs){
             if (res === 'Knowledge'){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 0.92); }
             }
-            else if (res === 'Money'){
+            else if (res === 'Money' || res === 'Structs'){
                 newCosts[res] = function(){ return costs[res](); }
             }
             else {
@@ -520,8 +520,11 @@ function kindlingAdjust(costs){
     if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Lumber' && res !== 'Plywood'){
+            if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 1.05) || 0; }
+            }
+            else if (res === 'Structs'){
+                newCosts[res] = function(){ return costs[res](); }
             }
         });
         return newCosts;
@@ -530,10 +533,10 @@ function kindlingAdjust(costs){
 }
 
 function craftAdjust(costs){
-    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'])){
+    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril'){
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel'){
                 newCosts[res] = function(){ return Math.round(costs[res]() * 0.95); }
             }
             else {

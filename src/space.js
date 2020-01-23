@@ -2965,12 +2965,14 @@ const galaxyProjects = {
             grant: ['xeno',3],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                /*Structs(){
+                Structs(){
                     return {
-                        scout_ship: { on: 2 },
-                        corvette_ship: { on: 1 },
+                        galaxy: {
+                            scout_ship: { s: 'gxy_gateway', count: 2, on: 2 },
+                            corvette_ship: { s: 'gxy_gateway', count: 1, on: 1 },
+                        }
                     };
-                },*/
+                },
                 Helium_3(){ return +int_fuel_adjust(230000).toFixed(0); },
                 Deuterium(){ return +int_fuel_adjust(125000).toFixed(0); }
             },

@@ -12495,7 +12495,35 @@ function actionDesc(parent,c_action,obj,old){
         var cost = $('<div></div>');
         var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'Army'){
+            if (res === 'Structs'){
+                let structs = costs[res]();
+                Object.keys(structs).forEach(function (region){
+                    Object.keys(structs[region]).forEach(function (struct){
+                        let res_cost = structs[region][struct].hasOwnProperty('on') ? structs[region][struct].on : structs[region][struct].count;
+                        let color = 'has-text-dark';
+                        if (!global[region][struct]){
+                            color = 'has-text-danger';
+                        }
+                        else if (structs[region][struct].count > global[region][struct].count){
+                            color = 'has-text-danger';
+                        }
+                        else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
+                            color = 'has-text-alert';
+                        }
+                        
+                        let label = '';
+                        if (structs[region][struct].hasOwnProperty('s')){
+                            let sector = structs[region][struct].s;
+                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                        }
+                        else {
+                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                        }
+                        cost.append($(`<div class="${color}">${label}: ${res_cost}</div>`));
+                    });
+                });
+            }
+            else if (res !== 'Morale' && res !== 'Army'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'HellArmy'){
@@ -12602,27 +12630,37 @@ export function checkAffordable(c_action,max){
 function checkMaxCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy'){
-            var testCost = Number(costs[res]()) || 0;
-            if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1) {
+        if (res === 'Structs'){
+            if (!checkStructs(costs[res]())){
                 test = false;
-                return false;
+                return;
             }
         }
-        else if (res === 'Morale' && global.city.morale.current < Number(costs[res]())){
-            test = false;
-            return false;
+        else if (res === 'Morale'){
+            if (global.city.morale.current < Number(costs[res]())){
+                test = false;
+                return;
+            }
         }
-        else if (res === 'Army' && armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
-            test = false;
-            return false;
+        else if (res === 'Army'){
+            if (armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
+                test = false;
+                return;
+            }
         }
-        else if (res === 'HellArmy' && global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
-            test = false;
-            return false;
+        else if (res === 'HellArmy'){
+            if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
+                test = false;
+                return;
+            }
         }
-
-        
+        else {
+            var testCost = Number(costs[res]()) || 0;
+            if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1){
+                test = false;
+                return;
+            }
+        }
     });
     return test;
 }
@@ -12630,25 +12668,66 @@ function checkMaxCosts(costs){
 function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy'){
+        if (res === 'Structs'){
+            if (!checkStructs(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Morale'){
+            if (global.city.morale.current < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Army'){
+            if (costs[res]() === false){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'HellArmy'){
+            if (costs[res]() === false){
+                test = false;
+                return;
+            }
+        }
+        else {
             var testCost = Number(costs[res]()) || 0;
             let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
             if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
                 test = false;
-                return false;
+                return;
             }
         }
-        else if (res === 'Morale' && global.city.morale.current < Number(costs[res]())){
-            test = false;
-            return false;
+    });
+    return test;
+}
+
+function checkStructs(structs){
+    let test = true;
+    Object.keys(structs).forEach(function (region){
+        if (global.hasOwnProperty(region)){
+            Object.keys(structs[region]).forEach(function (struct){
+                if (global[region].hasOwnProperty(struct)){
+                    if (global[region][struct].count < structs[region][struct].count){
+                        test = false;
+                        return;
+                    }
+                    if (global[region][struct].hasOwnProperty('on') && global[region][struct].on < structs[region][struct].on){
+                        test = false;
+                        return;
+                    }
+                }
+                else {
+                    test = false;
+                    return;
+                }
+            });
         }
-        else if (res === 'Army' && costs[res]() === false){
+        else {
             test = false;
-            return false;
-        }
-        else if (res === 'HellArmy' && costs[res]() === false){
-            test = false;
-            return false;
+            return;
         }
     });
     return test;
