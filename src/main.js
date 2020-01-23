@@ -301,6 +301,9 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         if (global.race['joyless']){
             challenges = challenges + `<div>${loc('evo_challenge_joyless_desc')}</div>`;
         }
+        if (global.race['steelen']){
+            challenges = challenges + `<div>${loc('evo_challenge_steelen_desc')}</div>`;
+        }
         if (global.race['decay']){
             challenges = challenges + `<div>${loc('evo_challenge_decay_desc')}</div>`;
         }
@@ -399,7 +402,7 @@ if (global.race.species === 'protoplasm'){
         }
 
         challengeActionHeader()
-        var challenge_actions = ['junker','joyless','decay'];
+        var challenge_actions = ['junker','joyless','steelen','decay'];
         for (var i = 0; i < challenge_actions.length; i++){
             if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
                 addAction('evolution',challenge_actions[i]);
@@ -2311,6 +2314,10 @@ function fastLoop(){
                 modRes('Coal', -(coal_consume * time_multiplier));
 
                 let steel_base = 1;
+                if (global.stats.achieve['steelen']) {
+                    let steelen_bonus = (global.stats.achieve['steelen'].l <= 2 ? global.stats.achieve['steelen'].l : global.stats.achieve['steelen'].l <= 4 ? global.stats.achieve['steelen'].l + ((global.stats.achieve['steelen'].l - 2) / 2) : 7.5) / 100;
+                    steel_base *= (1 + steelen_bonus);
+                }
                 for (i = 4; i <= 6; i++) {
                     if (global.tech['smelting'] >= i) {
                         steel_base *= 1.2;
