@@ -2951,6 +2951,78 @@ const galaxyProjects = {
                 return false;
             }
         },
+        frigate_ship: {
+            id: 'galaxy-frigate_ship',
+            title: loc('galaxy_frigate_ship'),
+            desc(){
+                return `<div>${loc('galaxy_frigate_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[loc('resource_Helium_3_name')])}</div>`;
+            },
+            reqs: { andromeda: 3 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('frigate_ship', offset, 18000000, 1.25, 'galaxy'); },
+                //Steel(offset){ return spaceCostMultiplier('frigate_ship', offset, 1750000, 1.25, 'galaxy'); },
+                //Infernite(offset){ return spaceCostMultiplier('frigate_ship', offset, 16000, 1.25, 'galaxy'); },
+                //Bolognium(offset){ return spaceCostMultiplier('frigate_ship', offset, 80000, 1.25, 'galaxy'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('frigate_ship', offset, 2, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[80])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+            },
+            support: -2,
+            ship: {
+                civ: 2,
+                mil: 5,
+                helium: 25
+            },
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('frigate_ship','galaxy');
+                    if (global.galaxy.starbase.support + 1 < global.galaxy.starbase.s_max){
+                        global.galaxy['frigate_ship'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        cruiser_ship: {
+            id: 'galaxy-cruiser_ship',
+            title: loc('galaxy_cruiser_ship'),
+            desc(){
+                return `<div>${loc('galaxy_cruiser_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[loc('resource_Helium_3_name')])}</div>`;
+            },
+            reqs: { andromeda: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('cruiser_ship', offset, 75000000, 1.25, 'galaxy'); },
+                //Steel(offset){ return spaceCostMultiplier('cruiser_ship', offset, 1750000, 1.25, 'galaxy'); },
+                //Infernite(offset){ return spaceCostMultiplier('cruiser_ship', offset, 16000, 1.25, 'galaxy'); },
+                //Bolognium(offset){ return spaceCostMultiplier('cruiser_ship', offset, 80000, 1.25, 'galaxy'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('cruiser_ship', offset, 5, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[250])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+            },
+            support: -3,
+            ship: {
+                civ: 4,
+                mil: 10,
+                helium: 80
+            },
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('cruiser_ship','galaxy');
+                    if (global.galaxy.starbase.support + 2 < global.galaxy.starbase.s_max){
+                        global.galaxy['cruiser_ship'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     gxy_gorddon: {
         info: {
