@@ -1136,9 +1136,9 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
     }
 
-    if (global.stats.achieve['steelen']){
+    if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1){
         unlocked++;
-        let bonus = global.stats.achieve['steelen'].l <= 2 ? global.stats.achieve['steelen'].l : global.stats.achieve['steelen'].l <= 4 ? global.stats.achieve['steelen'].l + ((global.stats.achieve['steelen'].l - 2) / 2) : 7.5;
+        let bonus = global.stats.achieve['steelen'].l * 2;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_steelen",[bonus])}</span></div>`);
     }
 

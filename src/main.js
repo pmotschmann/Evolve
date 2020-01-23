@@ -2314,8 +2314,8 @@ function fastLoop(){
                 modRes('Coal', -(coal_consume * time_multiplier));
 
                 let steel_base = 1;
-                if (global.stats.achieve['steelen']) {
-                    let steelen_bonus = (global.stats.achieve['steelen'].l <= 2 ? global.stats.achieve['steelen'].l : global.stats.achieve['steelen'].l <= 4 ? global.stats.achieve['steelen'].l + ((global.stats.achieve['steelen'].l - 2) / 2) : 7.5) / 100;
+                if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1) {
+                    let steelen_bonus = (global.stats.achieve['steelen'].l * 2) / 100;
                     steel_base *= (1 + steelen_bonus);
                 }
                 for (i = 4; i <= 6; i++) {
