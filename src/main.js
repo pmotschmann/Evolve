@@ -376,7 +376,7 @@ if (global.race.species === 'protoplasm'){
             }
         }
 
-        if (global.race.seeded || global.stats.achieve['creator']){
+        if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
             let race_options = ['human','orc','elven','troll','orge','cyclops','kobold','goblin','gnome','cath','wolven','centaur','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','mantis','scorpid','antid','entish','cacti','sharkin','octigoran','imp','balorg','seraph','unicorn','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel'];
             for (var i = 0; i < race_options.length; i++){
                 if (global.evolution[race_options[i]] && global.evolution[race_options[i]].count == 0){
@@ -1791,7 +1791,7 @@ function fastLoop(){
             if (global.race['ancient_ruins']){
                 sundial_base++;
             }
-            if (global.stats.achieve['extinct_junker']){
+            if (global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1){
                 sundial_base++;
             }
             if (global.city.ptrait === 'magnetic'){
@@ -3252,7 +3252,7 @@ function midLoop(){
         // Resource caps
         var caps = {
             Money: 1000,
-            Knowledge: global.stats.achieve['extinct_junker'] ? 1000 : 100,
+            Knowledge: global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1 ? 1000 : 100,
             Food: 1000,
             Crates: 0,
             Containers: 0,

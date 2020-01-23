@@ -1093,19 +1093,19 @@ export function drawPerks(){
     let perks = $('#perksPanel');
     
     let unlocked = 0;
-    if (global.stats.achieve['blackhole']){
+    if (global.stats.achieve['blackhole'] && global.stats.achieve['blackhole'].l >= 1){
         unlocked++;
         let bonus = global.stats.achieve.blackhole.l * 5;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_blackhole",[bonus])}</span></div>`);
     }
 
-    if (global.stats.achieve['mass_extinction']){
+    if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1){
         unlocked++;
         let bonus = global.stats.achieve['mass_extinction'].l + 1
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction",[bonus])}</span></div>`);
     }
 
-    if (global.stats.achieve['creator']){
+    if (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator")}</span></div>`);
         if (global.stats.achieve['creator'].l > 1){
@@ -1114,19 +1114,19 @@ export function drawPerks(){
         }
     }
 
-    if (global.stats.achieve['explorer']){
+    if (global.stats.achieve['explorer'] && global.stats.achieve['explorer'].l >= 1){
         unlocked++;
         let bonus = global.stats.achieve['explorer'].l;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_explorer",[bonus])}</span></div>`);
     }
     
-    if (global.stats.achieve['miners_dream']){
+    if (global.stats.achieve['miners_dream'] && global.stats.achieve['miners_dream'].l >= 1){
         unlocked++;
         let numGeo = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_miners_dream",[numGeo])}</span></div>`);
     }
 
-    if (global.stats.achieve['extinct_junker']){
+    if (global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
     }
@@ -1144,7 +1144,7 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_heavyweight",[bonus])}</span></div>`);
     }
 
-    if (global.stats.achieve['dissipated']){
+    if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated1",[1])}</span></div>`);
         if (global.stats.achieve['dissipated'].l >= 3){
@@ -1159,7 +1159,7 @@ export function drawPerks(){
         }
     }
 
-    if (global.stats.achieve['anarchist']){
+    if (global.stats.achieve['anarchist'] && global.stats.achieve['anarchist'].l >= 1){
         unlocked++;
         let bonus = global.stats.achieve['anarchist'].l * 10;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_anarchist",[bonus])}</span></div>`);
