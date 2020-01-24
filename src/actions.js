@@ -5433,12 +5433,15 @@ export const actions = {
                         Iron: 0,
                         Steel: 0
                     };
-                    if (global.race['steelen']){
-                        global.tech['smelting'] = 2;
-                    }
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.race['steelen']){
+                    global.tech['smelting'] = 2;
+                    drawTech();
+                }
             }
         },
         steel: {
@@ -5481,12 +5484,15 @@ export const actions = {
             effect: loc('tech_blast_furnace_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    if (global.race['steelen']){
-                        global.tech['smelting'] = 6;
-                    }
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.race['steelen']){
+                    global.tech['smelting'] = 6;
+                    drawTech();
+                }
             }
         },
         bessemer_process: {
