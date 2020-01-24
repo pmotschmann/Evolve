@@ -4593,6 +4593,9 @@ function midLoop(){
                 if (c_action.action()){
                     messageQueue(loc('research_success',[global.r_queue.queue[idx].label]),'success');
                     gainTech(global.r_queue.queue[idx].type);
+                    if (c_action['post']) {
+                        c_action.post();
+                    }
                     global.r_queue.queue.splice(idx,1);
                 }
             }
