@@ -6216,6 +6216,27 @@ export const actions = {
                 return false;
             }
         },
+        federation: {
+            id: 'tech-federation',
+            title: loc('govern_federation'),
+            desc: loc('govern_federation'),
+            category: 'research',
+            reqs: { govern: 2 },
+            condition(){
+                return (global.tech['unify'] && global.tech['unify'] >= 2) || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy ? true : false;
+            },
+            grant: ['gov_fed',1],
+            cost: {
+                Knowledge(){ return 30000; }
+            },
+            effect: loc('tech_federation_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         spy: {
             id: 'tech-spy',
             title: loc('tech_spy'),
@@ -10659,160 +10680,47 @@ export const actions = {
                 return false;
             }
         },
-        wc_conquest: {
-            id: 'tech-wc_conquest',
-            title: loc('tech_wc_conquest'),
-            desc(){
-                return `<div>${loc('tech_wc_conquest_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_conquest_desc_req')}</div>`;
-            },
+        unification2: {
+            id: 'tech-unification2',
+            title: loc('tech_unification'),
+            desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
             category: 'research',
             reqs: { unify: 1 },
             grant: ['unify',2],
-            not_tech: ['m_boost'],
             cost: {
-                Army(){
-                    return global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ ? true : false;
-                }
+                Bool(){ return true; }
             },
-            effect(){ return `<div>${loc('tech_wc_conquest_effect')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
-            action(){
-                if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
-                    global.tech['world_control'] = 1;
-                    $('#garrison').empty();
-                    $('#c_garrison').empty();
-                    buildGarrison($('#garrison'),true);
-                    buildGarrison($('#c_garrison'),false);
-                    unlockAchieve(`world_domination`);
-                    if (global.stats.attacks === 0){
-                        unlockAchieve(`pacifist`);
-                    }
-                    for (let i=0; i<3; i++){
-                        if (global.civic.foreign[`gov${i}`].occ){
-                            global.civic['garrison'].max += 20;
-                            global.civic['garrison'].workers += 20;
-                            global.civic.foreign[`gov${i}`].occ = false;
-                        }
-                        global.civic.foreign[`gov${i}`].sab = 0;
-                        global.civic.foreign[`gov${i}`].act = 'none';
-                    }
-                    return true;
-                }
-                return false;
-            }
-        },
-        wc_morale: {
-            id: 'tech-wc_morale',
-            title: loc('tech_wc_morale'),
-            desc(){
-                let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
-                morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
-                morale = +(200 - morale).toFixed(1);
-                return `<div>${loc('tech_wc_morale_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_morale_desc_req',[morale])}</div>`;
-            },
-            category: 'research',
-            reqs: { unify: 1 },
-            grant: ['unify',2],
-            not_tech: ['m_boost'],
-            cost: {
-                Morale(){
-                    let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
-                    morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
-                    return +(200 - morale).toFixed(1);
-                }
-            },
-            effect(){
-                return `<div>${loc('tech_wc_morale_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`;
-            }, 
-            action(){
-                let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
-                morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
-                morale = +(200 - morale).toFixed(1);
-                if (global.city.morale.current >= morale){
-                    global.tech['world_control'] = 1;
-                    $('#garrison').empty();
-                    $('#c_garrison').empty();
-                    buildGarrison($('#garrison'),true);
-                    buildGarrison($('#c_garrison'),false);
-                    unlockAchieve(`illuminati`);
-                    if (global.stats.attacks === 0){
-                        unlockAchieve(`pacifist`);
-                    }
-                    for (let i=0; i<3; i++){
-                        if (global.civic.foreign[`gov${i}`].occ){
-                            global.civic['garrison'].max += 20;
-                            global.civic['garrison'].workers += 20;
-                            global.civic.foreign[`gov${i}`].occ = false;
-                        }
-                        global.civic.foreign[`gov${i}`].sab = 0;
-                        global.civic.foreign[`gov${i}`].act = 'none';
-                    }
-                    return true;
-                }
-                return false;
-            }
-        },
-        wc_money: {
-            id: 'tech-wc_money',
-            title: loc('tech_wc_money'),
-            desc(){
-                let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
-                price = sizeApproximation(price * 15384);
-                return `<div>${loc('tech_wc_money_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_money_desc_req',[price])}</div>`;
-            },
-            category: 'research',
-            reqs: { unify: 1 },
-            grant: ['unify',2],
-            not_tech: ['m_boost'],
-            cost: {
-                Money(){
-                    let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
-                    price *= 15384;
-                    return price;
-                }
-            },
-            effect(){ return `<div>${loc('tech_wc_money_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
-            action(){
-                let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
-                price *= 15384;
-                if (global.resource.Money.amount >= price){
-                    global.resource.Money.amount -= price;
-                    global.tech['world_control'] = 1;
-                    $('#garrison').empty();
-                    $('#c_garrison').empty();
-                    buildGarrison($('#garrison'),true);
-                    buildGarrison($('#c_garrison'),false);
-                    unlockAchieve(`syndicate`);
-                    if (global.stats.attacks === 0){
-                        unlockAchieve(`pacifist`);
-                    }
-                    for (let i=0; i<3; i++){
-                        if (global.civic.foreign[`gov${i}`].occ){
-                            global.civic['garrison'].max += 20;
-                            global.civic['garrison'].workers += 20;
-                            global.civic.foreign[`gov${i}`].occ = false;
-                        }
-                        global.civic.foreign[`gov${i}`].sab = 0;
-                        global.civic.foreign[`gov${i}`].act = 'none';
-                    }
-                    return true;
-                }
-                return false;
-            }
-        },
-        wc_reject: {
-            id: 'tech-wc_reject',
-            title: loc('tech_wc_reject'),
-            desc: loc('tech_wc_reject'),
-            category: 'research',
-            reqs: { unify: 1 },
-            grant: ['unify',2],
-            not_tech: ['world_control'],
-            cost: {},
-            effect(){ return `<div>${loc('tech_wc_reject_effect')}</div><div class="has-text-special">${loc('tech_wc_reject_warning')}</div>`; },
+            effect(){ return `<div>${loc('tech_unification_effect2')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.tech['m_boost'] = 1;
-                    unlockAchieve(`cult_of_personality`);
+                    global.tech['world_control'] = 1;
+                    $('#garrison').empty();
+                    $('#c_garrison').empty();
+                    buildGarrison($('#garrison'),true);
+                    buildGarrison($('#c_garrison'),false);
+                    if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
+                        unlockAchieve(`world_domination`);
+                    }
+                    if (global.civic.foreign.gov0.anx && global.civic.foreign.gov1.anx && global.civic.foreign.gov2.anx){
+                        unlockAchieve(`illuminati`);
+                    }
+                    if (global.civic.foreign.gov0.buy && global.civic.foreign.gov1.buy && global.civic.foreign.gov2.buy){
+                        unlockAchieve(`syndicate`);
+                    }
+                    if (global.stats.attacks === 0){
+                        unlockAchieve(`pacifist`);
+                    }
+                    for (let i=0; i<3; i++){
+                        if (global.civic.foreign[`gov${i}`].occ){
+                            global.civic['garrison'].max += 20;
+                            global.civic['garrison'].workers += 20;
+                            global.civic.foreign[`gov${i}`].occ = false;
+                        }
+                        global.civic.foreign[`gov${i}`].buy = false;
+                        global.civic.foreign[`gov${i}`].anx = false;
+                        global.civic.foreign[`gov${i}`].sab = 0;
+                        global.civic.foreign[`gov${i}`].act = 'none';
+                    }
                     return true;
                 }
                 return false;
@@ -12476,16 +12384,44 @@ function srDesc(c_action,old){
         }
         desc = desc + 'Costs: ';
         var costs = adjustCosts(c_action.cost);
-        Object.keys(costs).forEach(function (res) {
-            var res_cost = costs[res]();
-            if (res_cost > 0){
-                let label = res === 'Money' ? '$' : global.resource[res].name+': ';
-                label = label.replace("_", " ");
-                
-                let display_cost = sizeApproximation(res_cost,1);
-                desc = desc + `${label}${display_cost}. `;
-                if (global.resource[res].amount < res_cost){
-                    desc = desc + `${loc('insufficient')} ${global.resource[res].name}. `;
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Structs'){
+                let structs = costs[res]();
+                Object.keys(structs).forEach(function (region){
+                    Object.keys(structs[region]).forEach(function (struct){
+                        let label = '';
+                        if (structs[region][struct].hasOwnProperty('s')){
+                            let sector = structs[region][struct].s;
+                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                        }
+                        else {
+                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                        }                        
+                        desc = desc + `${label}. `;
+
+                        if (!global[region][struct]){
+                            desc = desc + `${loc('insufficient')} ${label}. `;
+                        }
+                        else if (structs[region][struct].count > global[region][struct].count){
+                            desc = desc + `${loc('insufficient')} ${label}. `;
+                        }
+                        else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
+                            desc = desc + `${loc('insufficient')} ${label} enabled. `;
+                        }
+                    });
+                });
+            }
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                    label = label.replace("_", " ");
+                    
+                    let display_cost = sizeApproximation(res_cost,1);
+                    desc = desc + `${label}${display_cost}. `;
+                    if (global.resource[res].amount < res_cost){
+                        desc = desc + `${loc('insufficient')} ${global.resource[res].name}. `;
+                    }
                 }
             }
         });
@@ -12545,7 +12481,7 @@ function actionDesc(parent,c_action,obj,old){
                     });
                 });
             }
-            else if (res !== 'Morale' && res !== 'Army'){
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'HellArmy'){
@@ -12624,7 +12560,7 @@ export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs'){
+            if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool'){
                 let cost = costs[res]();
                 global['resource'][res].amount -= cost;
                 if (res === 'Knowledge'){
@@ -12658,6 +12594,12 @@ function checkMaxCosts(costs){
                 return;
             }
         }
+        else if (res === 'Bool'){
+            if (!costs[res]()){
+                test = false;
+                return;
+            }
+        }
         else if (res === 'Morale'){
             if (global.city.morale.current < Number(costs[res]())){
                 test = false;
@@ -12671,7 +12613,7 @@ function checkMaxCosts(costs){
             }
         }
         else if (res === 'HellArmy'){
-            if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
+            if (typeof global.portal['fortress'] === 'undefined' || global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
                 test = false;
                 return;
             }
@@ -12692,6 +12634,12 @@ function checkCosts(costs){
     Object.keys(costs).forEach(function (res){
         if (res === 'Structs'){
             if (!checkStructs(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Bool'){
+            if (!costs[res]()){
                 test = false;
                 return;
             }
@@ -13357,6 +13305,10 @@ function bioseed(){
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         if (unlockFeat('ill_advised')){ new_achieve = true; };
     }
+    if (typeof global.tech['world_control'] === 'undefined'){
+        if (unlockAchieve(`cult_of_personality`)){ new_achieve = true; };
+    }
+
     let good_rocks = 0;
     let bad_rocks = 0;
     Object.keys(global.city.geology).forEach(function (g){

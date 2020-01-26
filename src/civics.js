@@ -133,7 +133,8 @@ const government_desc = {
     socialist: loc('govern_socialist_effect',[25,5,10,20]),
     corpocracy: loc('govern_corpocracy_effect',[200,150,100,10,20]),
     technocracy: loc('govern_technocracy_effect',[8,2]),
-    federation: loc('govern_federation_effect'),
+    federation: loc('govern_federation_effect',[3]),
+    federation_alt: loc('govern_federation_effect_alt',[5]),
 };
 
 function government(govern){
@@ -195,7 +196,8 @@ function government(govern){
     });
 
     $('#govLabel').on('mouseover',function(){
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc[global.civic.govern.type]}</div></div>`);
+        let effect_type = global.tech['unify'] && global.tech['unify'] >= 2 && global.civic.govern.type === 'federation' ? 'federation_alt' : global.civic.govern.type;
+        let popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc[effect_type]}</div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper($('#govLabel'),popper);
@@ -237,6 +239,9 @@ function drawGovModal(){
         }
         if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy'){
             body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc(`govern_technocracy`)}</button>`));
+        }
+        if (global.tech['gov_fed'] && global.civic.govern.type !== 'federation'){
+            body.append($(`<button class="button gap" data-gov="federation" @click="setGov('federation')">${loc(`govern_federation`)}</button>`));
         }
     }
 
@@ -288,7 +293,8 @@ function drawGovModal(){
 
     $('#govModal button').on('mouseover',function(){
         let govType = $(this).data('gov');
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc[govType]}</div></div>`);
+        let effectType = global.tech['unify'] && global.tech['unify'] >= 2 && govType === 'federation' ? 'federation_alt' : govType;
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc[effectType]}</div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);
@@ -315,15 +321,15 @@ export function foreignGov(){
         foreign.append(gov);
 
         let actions = $(`<div></div>`);
-        actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
-        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
-        actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
+        actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ || f${i}.anx || f${i}.buy">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
+        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
+        actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
         gov.append(actions);
 
-        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
-        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f${i}.hstl | relation }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ f${i}.hstl | hate }})</span></span></div>`));
-        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f${i}.eco | eco(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
-        gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f${i}.unrest | discontent(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ f${i}.unrest | turmoil }})</span></span></div>`));
+        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
+        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f${i}.hstl | relation }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ f${i}.hstl | hate }})</span></span></div>`));
+        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f${i}.eco | eco(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
+        gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f${i}.unrest | discontent(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ f${i}.unrest | turmoil }})</span></span></div>`));
     }
 
     vBind({
@@ -498,6 +504,13 @@ function spyCost(i){
     return Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
 }
 
+function govPrice(gov){
+    let price = global.civic.foreign[`gov${gov}`].eco * 15384;
+    price *= 1 + global.civic.foreign[`gov${gov}`].hstl * 1.5 / 100;
+    price *= 1 + global.civic.foreign[`gov${gov}`].unrest * 0.75 / 100;
+    return +price.toFixed(0);
+}
+
 function drawEspModal(gov){
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_espionage_actions')}</p>`));
     
@@ -508,6 +521,12 @@ function drawEspModal(gov){
         body.append($(`<button class="button gap" data-esp="influence" @click="influence('${gov}')">${loc(`civics_spy_influence`)}</button>`));
         body.append($(`<button class="button gap" data-esp="sabotage" @click="sabotage('${gov}')">${loc(`civics_spy_sabotage`)}</button>`));
         body.append($(`<button class="button gap" data-esp="incite" @click="incite('${gov}')">${loc(`civics_spy_incite`)}</button>`));
+        if (global.civic.foreign[`gov${gov}`].hstl <= 0 && lobal.civic.foreign[`gov${gov}`].unrest >= 100 && global.city.morale.current >= 100){
+            body.append($(`<button class="button gap" data-esp="annex" @click="annex('${gov}')">${loc(`civics_spy_annex`)}</button>`));
+        }
+        if (global.civic.foreign[`gov${gov}`].spy >= 3){
+            body.append($(`<button class="button gap" data-esp="purchase" @click="purchase('${gov}')">${loc(`civics_spy_purchase`)}</button>`));
+        }
     }
 
     vBind({
@@ -567,13 +586,63 @@ function drawEspModal(gov){
                         $('#popGov').remove();
                     },250);
                 }
+            },
+            annex(g){
+                if (global.civic.foreign[`gov${gov}`].hstl <= 0 && lobal.civic.foreign[`gov${gov}`].unrest >= 100 && global.city.morale.current >= 100){
+                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                        let timer = global.tech['spy'] >= 4 ? 150 : 300;
+                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                        global.civic.foreign[`gov${g}`].act = 'annex';
+                        vBind({el: '#espModal'},'destroy');
+                        $('.modal-background').click();
+                        $('#popGov').hide();
+                        poppers['govPop'].destroy();
+                        $('#popGov').remove();
+
+                        setTimeout(function(){
+                            $('#popGov').hide();
+                            poppers['govPop'].destroy();
+                            $('#popGov').remove();
+                        },250);
+                    }
+                }
+            },
+            purchase(g){
+                let price = govPrice(g);
+                if (price <= global.resource.Money.amount){
+                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3){
+                        global.resource.Money.amount -= price;
+                        let timer = global.tech['spy'] >= 4 ? 150 : 300;
+                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                        global.civic.foreign[`gov${g}`].act = 'purchase';
+                        vBind({el: '#espModal'},'destroy');
+                        $('.modal-background').click();
+                        $('#popGov').hide();
+                        poppers['govPop'].destroy();
+                        $('#popGov').remove();
+
+                        setTimeout(function(){
+                            $('#popGov').hide();
+                            poppers['govPop'].destroy();
+                            $('#popGov').remove();
+                        },250);
+                    }
+                }
             }
         }
     });
 
     $('#espModal button').on('mouseover',function(){
         let esp = $(this).data('esp');
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
+        let desc = '';
+        if (esp === 'purchase'){
+            let price = govPrice(gov);
+            desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov),price])
+        }
+        else {
+            desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov)]);
+        }
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${desc}</div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);
@@ -920,6 +989,9 @@ function battleAssessment(gov){
     if (global.civic.foreign[`gov${gov}`].occ){
         return loc('civics_garrison_deoccupy_desc');
     }
+    else if (global.civic.foreign[`gov${gov}`].buy || global.civic.foreign[`gov${gov}`].anx){
+        return loc('civics_garrison_secede_desc');
+    }
     else if (
         (global.civic.garrison.tactic <= 1 && global.civic.foreign[`gov${gov}`].spy < 1) || 
         (global.civic.garrison.tactic >= 2 && global.civic.garrison.tactic <= 3 && global.civic.foreign[`gov${gov}`].spy < 2) || 
@@ -961,6 +1033,11 @@ function war_campaign(gov){
         global.civic.foreign[`gov${gov}`].occ = false;
         global.civic.garrison.max += 20;
         global.civic.garrison.workers += 20;
+        return;
+    }
+    if (global.civic.foreign[`gov${gov}`].buy || global.civic.foreign[`gov${gov}`].anx){
+        global.civic.foreign[`gov${gov}`].buy = false;
+        global.civic.foreign[`gov${gov}`].anx = false;
         return;
     }
     if (global.civic.garrison.raid === 0){

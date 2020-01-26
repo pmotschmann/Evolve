@@ -5,9 +5,12 @@ Universe Mastery Rework<br>
 -Universal CRISPR Upgrade boosts universe specific mastery<br>
 -Standard Universe mastery rules remains unchanged<br>
 Micro icons can now be earned for none Micro achievements. These will not count for standard mastery, only Micro mastery<br>
+Unification 3.0, the unification system has been reworked<br>
+Federation Government type<br>
 Extended the Deify and Study Ancients tech trees<br>
 Enhanced Droids upgrade for War Droids<br>
 Smoldering and Chilled now have reduced effectiveness after 100 stacks<br>
+Removed Heavy Genus Feats, these were redundant with Universe Icons<br>
 
 #### 0.7.20 - 1/20/2020 ####
 Bug Fixes by Beorseder<br>

@@ -512,14 +512,14 @@ function fastLoop(){
         global_multiplier *= 1.5;
     }
     if (global.tech['world_control']){
-        breakdown.p['Global'][loc('tech_unification')] = '25%';
-        global_multiplier *= 1.25;
+        breakdown.p['Global'][loc('tech_unification')] = global.civic.govern.type === 'federation' ? '30%' : '25%';
+        global_multiplier *= global.civic.govern.type === 'federation' ? 1.3 : 1.25;
     }
     else {
         let occupy = 0;
         for (let i=0; i<3; i++){
-            if (global.civic.foreign[`gov${i}`].occ){
-                occupy += 5;
+            if (global.civic.foreign[`gov${i}`].occ || global.civic.foreign[`gov${i}`].anx || global.civic.foreign[`gov${i}`].buy){
+                occupy += global.civic.govern.type === 'federation' ? 8 : 5;
             }
         }
         if (occupy > 0){
@@ -1539,6 +1539,11 @@ function fastLoop(){
         }
         if (global.civic.govern.type === 'socialist'){
             stress *= 1.1;
+        }
+        for (let i=0; i<3; i++){
+            if (global.civic.govern.type !== 'federation' && global.civic.foreign[`gov${i}`].anx){
+                stress *= 1.1;
+            }
         }
         stress = +(stress).toFixed(1);
         global.city.morale.stress = stress;
@@ -3196,14 +3201,26 @@ function fastLoop(){
                 shrine_mult += +(global.city.shrine.tax / 100);
             }
 
-            let delta = income_base * temple_mult * shrine_mult;
+            let upkeep = 0;
+            if (!global.tech['world_control'] && global.civic.govern.type !== 'federation'){
+                for (let i=0; i<3; i++){
+                    if (global.civic.foreign[`gov${i}`].buy){
+                        upkeep += income_base * 0.2;
+                    }
+                }
+            }
+
+            let delta = (income_base - upkeep) * temple_mult * shrine_mult;
             delta *= global_multiplier;
             
             money_bd[loc('morale_taxes')] = (income_base) + 'v';
+            money_bd[loc('civics_spy_purchase_bd')] = -(upkeep) + 'v';
             money_bd[loc('city_temple')] = ((temple_mult - 1) * 100) + '%';
             money_bd[loc('city_shrine')] = ((shrine_mult - 1) * 100) + '%';
             money_bd[loc('city_factory')] = FactoryMoney + 'v';
             modRes('Money', +(delta * time_multiplier).toFixed(2));
+
+            
         }
 
         if (p_on['casino']){
@@ -4417,6 +4434,14 @@ function midLoop(){
                                 }
                                 messageQueue(loc('civics_spy_incite_success',[govTitle(i),covert]),'success');
                             }
+                            break;
+                        case 'annex':
+                            global.civic.foreign[`gov${i}`].anx = true;
+                            messageQueue(loc('civics_spy_annex_success',[govTitle(i)]),'success');
+                            break;
+                        case 'purchase':
+                            global.civic.foreign[`gov${i}`].buy = true;
+                            messageQueue(loc('civics_spy_purchase_success',[govTitle(i)]),'success');
                             break;
                     }
                 }

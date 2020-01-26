@@ -389,6 +389,27 @@ if (convertVersion(global['version']) < 7019 && global.race['fraile']){
     global.race['frail'] = 1;
 }
 
+if (convertVersion(global['version']) < 8000 && global.civic['foreign']){
+    if (typeof global.civic.foreign.gov0['anx'] === 'undefined'){
+        global.civic.foreign.gov0['anx'] = false;
+    }
+    if (typeof global.civic.foreign.gov1['anx'] === 'undefined'){
+        global.civic.foreign.gov1['anx'] = false;
+    }
+    if (typeof global.civic.foreign.gov2['anx'] === 'undefined'){
+        global.civic.foreign.gov2['anx'] = false;
+    }
+    if (typeof global.civic.foreign.gov0['buy'] === 'undefined'){
+        global.civic.foreign.gov0['buy'] = false;
+    }
+    if (typeof global.civic.foreign.gov1['buy'] === 'undefined'){
+        global.civic.foreign.gov1['buy'] = false;
+    }
+    if (typeof global.civic.foreign.gov2['buy'] === 'undefined'){
+        global.civic.foreign.gov2['buy'] = false;
+    }
+}
+
 global['version'] = '0.7.20';
 delete global['beta'];
 
@@ -695,7 +716,9 @@ if (!global.civic['foreign']){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         },
         gov1: {
             unrest: 0,
@@ -707,7 +730,9 @@ if (!global.civic['foreign']){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         },
         gov2: {
             unrest: 0,
@@ -719,7 +744,9 @@ if (!global.civic['foreign']){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         }
     };
 }
@@ -1240,7 +1267,9 @@ export function clearStates(){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         },
         gov1: {
             unrest: 0,
@@ -1252,7 +1281,9 @@ export function clearStates(){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         },
         gov2: {
             unrest: 0,
@@ -1264,7 +1295,9 @@ export function clearStates(){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         }
     };
     global.resource = {};

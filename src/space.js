@@ -3084,8 +3084,8 @@ const galaxyProjects = {
     },
     gxy_alien1: {
         info: {
-            name: loc('galaxy_alien1'),
-            desc(){ return loc('galaxy_alien1_desc'); },
+            name(){ return loc('galaxy_alien',[races[global.galaxy.alien1.id].name]); },
+            desc(){ return loc('galaxy_alien1_desc',[races[global.galaxy.alien1.id].name]); },
             control(){
                 return {
                     name: races[global.galaxy.alien1.id].name,
@@ -3096,12 +3096,12 @@ const galaxyProjects = {
     },
     gxy_alien2: {
         info: {
-            name: loc('galaxy_alien2'),
-            desc(){ return loc('galaxy_alien2_desc'); },
+            name(){ return loc('galaxy_alien',[races[global.galaxy.alien2.id].name]); },
+            desc(){ return loc('galaxy_alien2_desc',[races[global.galaxy.alien2.id].name]); },
             control(){
                 return {
-                    name: races[global.galaxy.alien1.id].name,
-                    color: 'advanced',
+                    name: races[global.galaxy.alien2.id].name,
+                    color: 'danger',
                 }; 
             },
         },
