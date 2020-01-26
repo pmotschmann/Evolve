@@ -607,6 +607,11 @@ export function format_emblem(achieve,size){
     return emblem;
 }
 
+export function randomKey(obj){
+    var keys = Object.keys(obj);
+    return keys[ keys.length * Math.random() << 0];
+}
+
 function sLevel(level){
     switch (level){
         case 2:

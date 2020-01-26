@@ -3099,7 +3099,7 @@ function fastLoop(){
             modRes('Helium_3', -(consume * time_multiplier));
             andromeda_helium += consume;
 
-            let base = operating * 0.022 * zigguratBonus();
+            let base = operating * 0.008 * zigguratBonus();
             let delta = base * global_multiplier;
             
             bolognium_bd[loc('galaxy_bolognium_ship')] = base + 'v';

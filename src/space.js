@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
-import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue } from './functions.js';
+import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue, randomKey } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -2695,6 +2695,12 @@ const galaxyProjects = {
         info: {
             name: loc('galaxy_stargate'),
             desc(){ return loc('galaxy_stargate_desc'); },
+            control(){
+                return {
+                    name: races[global.race.species].name,
+                    color: 'success',
+                }; 
+            }
         },
         gateway_station: {
             id: 'galaxy-gateway_station',
@@ -2787,6 +2793,12 @@ const galaxyProjects = {
         info: {
             name: loc('galaxy_gateway'),
             desc(){ return loc('galaxy_gateway_desc'); },
+            control(){
+                return {
+                    name: races[global.race.species].name,
+                    color: 'success',
+                }; 
+            },
             support: 'starbase'
         },
         gateway_mission: {
@@ -2803,6 +2815,7 @@ const galaxyProjects = {
             effect: loc('galaxy_gateway_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    xeno_race();
                     return true;
                 }
                 return false;
@@ -2856,7 +2869,7 @@ const galaxyProjects = {
                 Nano_Tube(offset){ return spaceCostMultiplier('bolognium_ship', offset, 475000, 1.22, 'galaxy'); },
             },
             effect(){
-                let bolognium = +(0.022 * zigguratBonus()).toFixed(3);
+                let bolognium = +(0.008 * zigguratBonus()).toFixed(3);
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
                 return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
@@ -3028,6 +3041,12 @@ const galaxyProjects = {
         info: {
             name: loc('galaxy_gorddon'),
             desc(){ return loc('galaxy_gorddon_desc'); },
+            control(){
+                return {
+                    name: races[global.galaxy.alien1.id].name,
+                    color: 'advanced',
+                }; 
+            },
         },
         gorddon_mission: {
             id: 'galaxy-demaus_mission',
@@ -3051,14 +3070,62 @@ const galaxyProjects = {
             effect: loc('galaxy_gorddon_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('galaxy_gorddon_mission_result',['placeholder']),'success');
+                    xeno_race();
+                    let s1name = races[global.galaxy.alien1.id].name;
+                    let s1desc = races[global.galaxy.alien1.id].entity;
+                    let s2name = races[global.galaxy.alien2.id].name;
+                    let s2desc = races[global.galaxy.alien2.id].entity;
+                    messageQueue(loc('galaxy_gorddon_mission_result',[s1desc,s1name,s2desc,s2name]),'success');
                     return true;
                 }
                 return false;
             }
         },
     },
+    gxy_alien1: {
+        info: {
+            name: loc('galaxy_alien1'),
+            desc(){ return loc('galaxy_alien1_desc'); },
+            control(){
+                return {
+                    name: races[global.galaxy.alien1.id].name,
+                    color: 'advanced',
+                }; 
+            },
+        },
+    },
+    gxy_alien2: {
+        info: {
+            name: loc('galaxy_alien2'),
+            desc(){ return loc('galaxy_alien2_desc'); },
+            control(){
+                return {
+                    name: races[global.galaxy.alien1.id].name,
+                    color: 'advanced',
+                }; 
+            },
+        },
+    },
 };
+
+function xeno_race(){
+    while (typeof global.galaxy['alien1'] === 'undefined'){
+        let key = randomKey(races);
+        if (key !== 'protoplasm' && key !== global.race.species && races[key].type !== 'demonic'){
+            global.galaxy['alien1'] = {
+                id: key
+            };
+        }
+    }
+    while (typeof global.galaxy['alien2'] === 'undefined'){
+        let key = randomKey(races);
+        if (key !== 'protoplasm' && key !== global.race.species && key !== global.galaxy.alien1.id && races[key].type !== 'angelic'){
+            global.galaxy['alien2'] = {
+                id: key
+            };
+        }
+    }
+}
 
 const structDefinitions = {
     satellite: { count: 0 },
@@ -3313,17 +3380,34 @@ function galaxySpace(){
         if (global.settings.space[`${show}`]){
             let name = typeof galaxyProjects[region].info.name === 'string' ? galaxyProjects[region].info.name : galaxyProjects[region].info.name();
             
+            let regionContent = $(`<div id="${region}" class="space"></div>`);
+            parent.append(regionContent);
+            let regionHeader = $(`<div id="sr${region}"><h3 class="name has-text-warning">${name}</h3></div>`);
+            parent.append(regionHeader);
+
+            if (global.tech['xeno'] && global.tech['xeno'] >= 3){
+                regionHeader.append(`<b-tooltip class="has-text-warning" :label="owner()" position="is-bottom" size="is-small" multilined animated><span class="regionControl has-text-${galaxyProjects[region].info.control().color}">{{ r.control().name }}</span></b-tooltip>`);
+            }
+
+            let vData = {
+                el: `#sr${region}`,
+                data: {
+                    r: galaxyProjects[region].info
+                },
+                methods: {
+                    owner(){
+                        return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
+                    }
+                }
+            };
+
             if (galaxyProjects[region].info['support']){
                 let support = galaxyProjects[region].info['support'];
-                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
-                vBind({
-                    el: `#sr${region}`,
-                    data: global.galaxy[support]
-                });
+                regionHeader.append(`<span class="regionSupport" v-show="s.s_max">{{ s.support }}/{{ s.s_max }}</span>`);
+                vData.data['s'] = global.galaxy[support];
             }
-            else {
-                parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
-            }
+
+            vBind(vData);
             
             $(`#${region} h3.name`).on('mouseover',function(){
                 var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);

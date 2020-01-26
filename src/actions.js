@@ -11467,6 +11467,28 @@ export const actions = {
                 return false;
             }
         },
+        xeno_culture: {
+            id: 'tech-xeno_culture',
+            title: loc('tech_xeno_culture'),
+            desc: loc('tech_xeno_culture'),
+            category: 'research',
+            reqs: { xeno: 3 },
+            grant: ['xeno',4],
+            cost: {
+                Knowledge(){ return 3400000; }
+            },
+            effect(){
+                let s1name = races[global.galaxy.alien1.id].name;
+                let s1desc = races[global.galaxy.alien1.id].entity;
+                return loc('tech_xeno_culture_effect',[s1name,s1desc]);
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         scout_ship: {
             id: 'tech-scout_ship',
             title: loc('galaxy_scout_ship'),
@@ -12602,7 +12624,7 @@ export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy'){
+            if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs'){
                 let cost = costs[res]();
                 global['resource'][res].amount -= cost;
                 if (res === 'Knowledge'){
