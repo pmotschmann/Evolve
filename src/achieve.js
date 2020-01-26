@@ -643,81 +643,6 @@ const feats = {
         name: loc("feat_xmas_name"),
         desc: loc("feat_xmas_desc"),
         flair: loc("feat_xmas_flair")
-    },
-    heavy_genus_humanoid: {
-        name: loc("feat_heavy_genus_humanoid_name"),
-        desc: loc("feat_heavy_genus_humanoid_desc"),
-        flair: loc("feat_heavy_genus_humanoid_flair")
-    },
-    heavy_genus_animal: {
-        name: loc("feat_heavy_genus_animal_name"),
-        desc: loc("feat_heavy_genus_animal_desc"),
-        flair: loc("feat_heavy_genus_animal_flair")
-    },
-    heavy_genus_small: {
-        name: loc("feat_heavy_genus_small_name"),
-        desc: loc("feat_heavy_genus_small_desc"),
-        flair: loc("feat_heavy_genus_small_flair")
-    },
-    heavy_genus_giant: {
-        name: loc("feat_heavy_genus_giant_name"),
-        desc: loc("feat_heavy_genus_giant_desc"),
-        flair: loc("feat_heavy_genus_giant_flair")
-    },
-    heavy_genus_reptilian: {
-        name: loc("feat_heavy_genus_reptilian_name"),
-        desc: loc("feat_heavy_genus_reptilian_desc"),
-        flair: loc("feat_heavy_genus_reptilian_flair")
-    },
-    heavy_genus_avian: {
-        name: loc("feat_heavy_genus_avian_name"),
-        desc: loc("feat_heavy_genus_avian_desc"),
-        flair: loc("feat_heavy_genus_avian_flair")
-    },
-    heavy_genus_insectoid: {
-        name: loc("feat_heavy_genus_insectoid_name"),
-        desc: loc("feat_heavy_genus_insectoid_desc"),
-        flair: loc("feat_heavy_genus_insectoid_flair")
-    },
-    heavy_genus_plant: {
-        name: loc("feat_heavy_genus_plant_name"),
-        desc: loc("feat_heavy_genus_plant_desc"),
-        flair: loc("feat_heavy_genus_plant_flair")
-    },
-    heavy_genus_fungi: {
-        name: loc("feat_heavy_genus_fungi_name"),
-        desc: loc("feat_heavy_genus_fungi_desc"),
-        flair: loc("feat_heavy_genus_fungi_flair")
-    },
-    heavy_genus_fey: {
-        name: loc("feat_heavy_genus_fey_name"),
-        desc: loc("feat_heavy_genus_fey_desc"),
-        flair: loc("feat_heavy_genus_fey_flair")
-    },
-    heavy_genus_heat: {
-        name: loc("feat_heavy_genus_heat_name"),
-        desc: loc("feat_heavy_genus_heat_desc"),
-        flair: loc("feat_heavy_genus_heat_flair")
-    },
-    heavy_genus_polar: {
-        name: loc("feat_heavy_genus_polar_name"),
-        desc: loc("feat_heavy_genus_polar_desc"),
-        flair: loc("feat_heavy_genus_polar_flair")
-    },
-    heavy_genus_sand: {
-        name: loc("feat_heavy_genus_sand_name"),
-        desc: loc("feat_heavy_genus_sand_desc"),
-        flair: loc("feat_heavy_genus_sand_flair")
-    },
-    heavy_genus_aquatic: {
-        name: loc("feat_heavy_genus_aquatic_name"),
-        desc: loc("feat_heavy_genus_aquatic_desc"),
-        flair: loc("feat_heavy_genus_aquatic_flair")
-    },
-    heavy_genus_demonic: {
-        name: loc("feat_heavy_genus_demonic_name"),
-        desc: loc("feat_heavy_genus_demonic_desc"),
-        flair: loc("feat_heavy_genus_demonic_flair")
     }
 }
 
@@ -834,7 +759,7 @@ export function drawAchieve(){
 
     let affix = 'l';
     if (global.race.universe !== 'standard'){
-        switch (global.race.universe) {
+        switch (global.race.universe){
             case 'evil':
                 affix = 'e';
                 break;

@@ -13375,18 +13375,16 @@ function bioseed(){
     }
 
     switch (global.race.universe){
-        case 'heavy':
-            if (unlockFeat(`heavy_genus_${genus}`)){ new_achieve = true; };
+        case 'micro':
+            if (global.race['small'] || global.race['compact']){
+                if (unlockAchieve(`macro`,true)){ new_achieve = true; }
+            }
+            else {
+                if (unlockAchieve(`marble`,true)){ new_achieve = true; }
+            }
             break;
         default:
             break;
-    }
-
-    if (global.race['small'] || global.race['compact']){
-        if (unlockAchieve(`macro`,true)){ new_achieve = true; }
-    }
-    else {
-        if (unlockAchieve(`marble`,true)){ new_achieve = true; }
     }
 
     checkAchievements();
