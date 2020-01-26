@@ -10688,7 +10688,15 @@ export const actions = {
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {
-                Bool(){ return true; }
+                Bool(){
+                    let owned = 0;
+                    for (let i=0; i<3; i++){
+                        if (global.civic.foreign[`gov${i}`].occ || global.civic.foreign[`gov${i}`].buy || global.civic.foreign[`gov${i}`].anx){
+                            owned++;
+                        }
+                    }
+                    return owned === 3 ? true : false;
+                }
             },
             effect(){ return `<div>${loc('tech_unification_effect2')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
