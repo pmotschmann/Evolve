@@ -1,4 +1,4 @@
-import { global, poppers, keyMultiplier, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
+import { global, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, quantum_level } from './vars.js';
 import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue, randomKey } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
@@ -741,6 +741,7 @@ const spaceProjects = {
                 if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
                     bonus += 0.01 * red_on['exotic_lab'];
                 }
+                bonus = +(bonus).toFixed(2);
                 let desc = `<div>${loc('space_red_ziggurat_effect',[bonus])}</div>`;
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
                     desc = desc + `<div>${loc('interstellar_laboratory_effect',[3])}</div>`;
