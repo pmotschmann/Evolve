@@ -11136,7 +11136,7 @@ export const actions = {
             title: loc('tech_wormholes'),
             desc: loc('tech_wormholes'),
             category: 'research',
-            reqs: { gravity: 1, science: 15 },
+            reqs: { gravity: 1, science: 15, locked: 1 },
             grant: ['stargate',1],
             cost: {
                 Knowledge(){ return 2250000; }
