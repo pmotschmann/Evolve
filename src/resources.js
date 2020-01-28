@@ -1378,6 +1378,10 @@ export function plasmidBonus(type){
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                 temple_bonus += global.civic.professor.workers * 0.002;
             }
+            if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                let priest_bonus = global.genes['ancients'] >= 4 ? 0.0015 : 0.001;
+                temple_bonus += priest_bonus * global.civic.priest.workers;
+            }
             if (global.race['spiritual']){
                 temple_bonus *= 1.13;
             }

@@ -584,6 +584,52 @@ const genePool = {
             return false;
         }
     },
+    faith: {
+        id: 'genes-faith',
+        title: loc('arpa_genepool_faith_title'),
+        desc: loc('arpa_genepool_faith_desc'),
+        reqs: { ancients: 1 },
+        grant: ['ancients',2],
+        cost: 300,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('faith')){
+                global.civic.priest.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    acolyte: {
+        id: 'genes-acolyte',
+        title: loc('arpa_genepool_acolyte_title'),
+        desc: loc('arpa_genepool_acolyte_desc'),
+        reqs: { ancients: 2 },
+        grant: ['ancients',3],
+        cost: 900,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('acolyte')){
+                return true;
+            }
+            return false;
+        }
+    },
+    conviction: {
+        id: 'genes-conviction',
+        title: loc('arpa_genepool_conviction_title'),
+        desc: loc('arpa_genepool_conviction_desc'),
+        reqs: { ancients: 3 },
+        grant: ['ancients',4],
+        cost: 2200,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('conviction')){
+                return true;
+            }
+            return false;
+        }
+    },
     transcendence: {
         id: 'genes-transcendence',
         title: loc('arpa_genepool_transcendence_title'),
@@ -601,6 +647,21 @@ const genePool = {
             return false;
         }
     },
+    /*preeminence: {
+        id: 'genes-preeminence',
+        title: loc('arpa_genepool_preeminence_title'),
+        desc: loc('arpa_genepool_preeminence_desc'),
+        reqs: {transcendence: 1, challenge:3},
+        grant: ['transcendence',2],
+        cost: 4200,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('preeminence')){
+                return true;
+            }
+            return false;
+        }
+    },*/
     bleeding_effect: {
         id: 'genes-bleeding_effect',
         title: loc('arpa_genepool_bleeding_effect_title'),
@@ -648,7 +709,7 @@ const genePool = {
             }
             return false;
         }
-    }
+    },
 }
 
 function crispr_effect(cost){

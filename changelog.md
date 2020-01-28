@@ -1,4 +1,5 @@
 #### 0.8.0 - ?/??/2020
+Intergalactic Content<br>
 Universe Mastery Rework<br>
 -Each Universe now tracks its own mastery level responsible for 40% of the mastery bonus, the remaining 60% comes from the general mastery level<br>
 -Universal CRISPR Upgrade boosts universe specific mastery<br>
@@ -6,6 +7,7 @@ Universe Mastery Rework<br>
 Micro icons can now be earned for none Micro achievements. These will not count for standard mastery, only Micro mastery<br>
 Unification 3.0, the unification system has been reworked<br>
 Federation Government type<br>
+New Faith CRISPR upgrade, unlocks priest job<br>
 Extended the Deify and Study Ancients tech trees<br>
 Enhanced Droids upgrade for War Droids<br>
 Smoldering and Chilled now have reduced effectiveness after 100 stacks<br>

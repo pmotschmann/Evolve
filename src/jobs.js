@@ -113,6 +113,9 @@ export const job_desc = {
         let morale = global.race['musical'] ? global.tech['theatre'] + 1: global.tech['theatre'];
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
     },
+    priest: function(){
+        return loc('job_priest_desc');
+    },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
         if (global.tech['science'] && global.tech['science'] >= 3){
@@ -171,6 +174,7 @@ export function defineJobs(){
     loadJob('craftsman',1,5,'advanced');
     loadJob('cement_worker',0.4,5,'advanced');
     loadJob('entertainer',1,10,'advanced');
+    loadJob('priest',1,3,'advanced');
     loadJob('professor',0.5,6,'advanced');
     loadJob('scientist',1,5,'advanced');
     loadJob('banker',0.1,6,'advanced');

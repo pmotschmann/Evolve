@@ -746,6 +746,9 @@ const spaceProjects = {
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
                     desc = desc + `<div>${loc('interstellar_laboratory_effect',[3])}</div>`;
                 }
+                if (global.genes['ancients'] && global.genes['ancients'] >= 3){
+                    desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
+                }
                 return desc;
             },
             refresh: true,

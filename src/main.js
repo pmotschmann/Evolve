@@ -490,11 +490,15 @@ function fastLoop(){
     if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
         if (global.city['temple'] && global.city['temple'].count){
             let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
-            if (global.race.universe === 'antimatter'){
-                temple_bonus /= 2;
-            }
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                 temple_bonus += global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
+            }
+            if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                let priest_bonus = global.genes['ancients'] >= 4 ? 0.00015 : 0.0001;
+                temple_bonus += priest_bonus * global.civic.priest.workers;
+            }
+            if (global.race.universe === 'antimatter'){
+                temple_bonus /= 2;
             }
             if (global.race['spiritual']){
                 temple_bonus *= 1.13;
@@ -502,7 +506,8 @@ function fastLoop(){
             if (global.civic.govern.type === 'theocracy'){
                 temple_bonus *= 1.12;
             }
-            let faith = global.city.temple.count * temple_bonus;
+            
+            let faith = global.city.temple.count * temple_bonus ;
             breakdown.p['Global'][loc('faith')] = (faith * 100) + '%';
             global_multiplier *= (1 + faith);
         }
@@ -3520,6 +3525,7 @@ function midLoop(){
             cement_worker: 0,
             banker: 0,
             entertainer: 0,
+            priest: 0,
             professor: 0,
             scientist: 0,
             garrison: 0,
@@ -4015,6 +4021,12 @@ function midLoop(){
             let gain = +(global.city.shrine.know * 500);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_shrine')] = gain+'v';
+        }
+        if (global.city['temple'] && global.genes['ancients'] && global.genes['ancients'] >= 2){
+            lCaps['priest'] += global.city.temple.count;
+        }
+        if (global.space['ziggurat'] && global.genes['ancients'] && global.genes['ancients'] >= 3){
+            lCaps['priest'] += global.space.ziggurat.count;
         }
         if (global.city['university']){
             let multiplier = 1;

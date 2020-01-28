@@ -3894,13 +3894,17 @@ export const actions = {
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         faith += global.civic.professor.workers * 0.02;
                     }
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+                        faith += priest_bonus * global.civic.priest.workers;
+                    }
                     if (global.race['spiritual']){
                         faith *= 1.13;
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         faith *= 1.05;
                     }
-                    faith = +(faith).toFixed(2);
+                    faith = +(faith).toFixed(3);
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[6])}</div>`;
                 }
                 else if (global.race['no_plasmid']){
@@ -3908,13 +3912,17 @@ export const actions = {
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         faith += +(global.civic.professor.workers * 0.04).toFixed(2);
                     }
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+                        faith += priest_bonus * global.civic.priest.workers;
+                    }
                     if (global.race['spiritual']){
                         faith *= 1.13;
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         faith *= 1.05;
                     }
-                    faith = +(faith).toFixed(2);
+                    faith = +(faith).toFixed(3);
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
                 }
                 else {
@@ -3922,13 +3930,17 @@ export const actions = {
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
                     }
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+                        faith += priest_bonus * global.civic.priest.workers;
+                    }
                     if (global.race['spiritual']){
                         plasmid *= 1.13;
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         plasmid *= 1.05;
                     }
-                    plasmid = +(plasmid).toFixed(2);
+                    plasmid = +(plasmid).toFixed(3);
                     desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
                 }
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
@@ -3936,6 +3948,10 @@ export const actions = {
                 }
                 if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
                     desc = desc + `<div>${loc('city_temple_effect4')}</div>`;
+                }
+                if (global.genes['ancients'] && global.genes['ancients'] >= 2){
+                    global.civic.priest.display = true;
+                    desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
                 }
                 return desc;
             },
