@@ -521,7 +521,7 @@ function drawEspModal(gov){
         body.append($(`<button class="button gap" data-esp="influence" @click="influence('${gov}')">${loc(`civics_spy_influence`)}</button>`));
         body.append($(`<button class="button gap" data-esp="sabotage" @click="sabotage('${gov}')">${loc(`civics_spy_sabotage`)}</button>`));
         body.append($(`<button class="button gap" data-esp="incite" @click="incite('${gov}')">${loc(`civics_spy_incite`)}</button>`));
-        if (global.civic.foreign[`gov${gov}`].hstl <= 0 && global.civic.foreign[`gov${gov}`].unrest >= 100 && global.city.morale.current >= 100){
+        if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
             body.append($(`<button class="button gap" data-esp="annex" @click="annex('${gov}')">${loc(`civics_spy_annex`)}</button>`));
         }
         if (global.civic.foreign[`gov${gov}`].spy >= 3){
@@ -588,7 +588,7 @@ function drawEspModal(gov){
                 }
             },
             annex(g){
-                if (global.civic.foreign[`gov${gov}`].hstl <= 0 && global.civic.foreign[`gov${gov}`].unrest >= 100 && global.city.morale.current >= 100){
+                if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
                     if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
                         global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
