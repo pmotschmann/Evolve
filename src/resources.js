@@ -1343,7 +1343,12 @@ export function spatialReasoning(value){
         value *= 1 + (global.race.Dark.count / 200);
     }
     if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
-        value *= 1 + (global.city.temple.count * 0.06);
+        let value = 0.06;
+        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            priest = global.genes['ancients'] >= 4 ? 0.0012 : 0.0008;
+            value += priest * global.civic.priest.workers;
+        }
+        value *= 1 + (global.city.temple.count * value);
     }
     return Math.round(value);
 }
