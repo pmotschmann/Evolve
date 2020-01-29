@@ -437,14 +437,19 @@ export function challenge_multiplier(value,type,decimals){
         switch (challenge_level){
             case 1:
                 value = value * 1.1;
+                break;
             case 2:
                 value = value * 1.15;
+                break;
             case 3:
                 value = value * 1.2;
+                break;
             case 4:
                 value = value * 1.25;
+                break;
             default:
                 value = value * 1.05;
+                break;
         }
     }
     switch (challenge_level){
