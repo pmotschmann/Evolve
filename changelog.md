@@ -13,6 +13,9 @@ Enhanced Droids upgrade for War Droids<br>
 Smoldering and Chilled now have reduced effectiveness after 100 stacks<br>
 Removed Heavy Genus Feats, these were redundant with Universe Icons<br>
 
+#### 0.7.21 - 1/28/2020 ####
+More bug fixes<br>
+
 #### 0.7.20 - 1/20/2020 ####
 Bug Fixes by Beorseder<br>
 Fixed bug where purchasing Multicellular would double DNA generation from Nuclei instead of Bilateral Symmetry/Poikilohydric/Spores<br>

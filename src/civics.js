@@ -642,7 +642,18 @@ function drawEspModal(gov){
         else {
             desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov)]);
         }
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${desc}</div></div>`);
+        
+        let warn = '';
+        if (
+            (esp === 'influence' && global.civic.foreign[`gov${gov}`].hstl === 0) || 
+            (esp === 'sabotage' && global.civic.foreign[`gov${gov}`].spy >= 2 && global.civic.foreign[`gov${gov}`].mil === 50) || 
+            (esp === 'incite' && global.civic.foreign[`gov${gov}`].spy >= 4 && global.civic.foreign[`gov${gov}`].unrest === 100)
+        ){
+            warn = `<div class="has-text-danger">${loc(`civics_spy_warning`)}</div>`;
+        }
+
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark">${warn}<div>${desc}</div></div>`);
+
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);

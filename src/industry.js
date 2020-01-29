@@ -448,7 +448,7 @@ function loadFactory(parent,bind){
                         }
                         demand = demand.toFixed(2);
                         let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
-                        return loc('modal_factory_lux_label',[fur,loc('resource_Furs_name'),demand]);
+                        return loc('modal_factory_lux_label',[fur,global.resource.Furs.name,demand]);
                     }
                     case 'Alloy':{
                         let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
@@ -463,7 +463,7 @@ function loadFactory(parent,bind){
                         else {
                             let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
                             let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
-                            return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,loc('resource_Lumber_name'),loc('resource_Polymer_name')]);
+                            return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,global.resource.Lumber.name,loc('resource_Polymer_name')]);
                         }
                     }
                     case 'Nano':{
