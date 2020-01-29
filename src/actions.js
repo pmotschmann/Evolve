@@ -3905,7 +3905,12 @@ export const actions = {
                         faith *= 1.05;
                     }
                     faith = +(faith).toFixed(3);
-                    desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[6])}</div>`;
+                    let temple = 6;
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest = global.genes['ancients'] >= 4 ? 0.12 : 0.08;
+                        temple += priest * global.civic.priest.workers;
+                    }
+                    desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[temple])}</div>`;
                 }
                 else if (global.race['no_plasmid']){
                     let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
