@@ -3932,7 +3932,7 @@ export const actions = {
                     }
                     if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                         let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
-                        faith += priest_bonus * global.civic.priest.workers;
+                        plasmid += priest_bonus * global.civic.priest.workers;
                     }
                     if (global.race['spiritual']){
                         plasmid *= 1.13;
