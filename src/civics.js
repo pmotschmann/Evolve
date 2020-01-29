@@ -573,7 +573,33 @@ function drawEspModal(gov){
 
     $('#espModal button').on('mouseover',function(){
         let esp = $(this).data('esp');
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
+        var popper;
+        switch (esp) {
+            case 'influence':
+                if (global.civic.foreign[`gov${gov}`].hstl === 0){
+                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div class="has-text-danger">${loc(`civics_spy_warning`)}</div><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
+                }
+                else {
+                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
+                }
+                break;
+            case 'sabotage':
+                if (global.civic.foreign[`gov${gov}`].spy >= 2 && global.civic.foreign[`gov${gov}`].mil === 50){
+                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div class="has-text-danger">${loc(`civics_spy_warning`)}</div><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
+                }
+                else {
+                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
+                }
+                break;
+            case 'incite':
+                if (global.civic.foreign[`gov${gov}`].spy >= 4 && global.civic.foreign[`gov${gov}`].unrest === 100){
+                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div class="has-text-danger">${loc(`civics_spy_warning`)}</div><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
+                }
+                else {
+                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
+                }
+                break;
+        }
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);

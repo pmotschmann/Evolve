@@ -2752,6 +2752,7 @@
   "civics_espionage_actions": "Espionage Actions",
   "civics_train": "Training",
   "civics_progress": "Training in progress",
+  "civics_spy_warning": "This Foreign Power cannot be affected more by this mission.",
   "civics_spy_influence": "Influence",
   "civics_spy_influence_desc": "Attempt to improve your relations with the %0. Low risk operation.",
   "civics_spy_influence_success": "You have improved your relations with %0 by %1% using covert means.",

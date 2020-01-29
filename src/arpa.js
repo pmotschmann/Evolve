@@ -76,11 +76,13 @@ export const arpaProjects = {
         }
     },
     launch_facility: {
+        id: 'arpalaunch_facility',
         title: loc('arpa_projects_launch_facility_title'),
         desc: loc('arpa_projects_launch_facility_desc'),
         reqs: { high_tech: 7 },
         grant: 'launch_facility',
         rank: 1,
+        no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
         effect(){
             return loc('arpa_projects_launch_facility_effect1');
         },
@@ -1200,26 +1202,28 @@ function addProject(parent,project){
             methods: {
                 queue(pro){
                     if (global.tech['queue']){
-                        let arpaId = `arpa${pro}`;
-                        let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
-                        if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
-                            max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
-                        }
-                        if (global.genes['queue'] && global.genes['queue'] >= 2){
-                            max_queue *= 2;
-                        }
-                        let used = 0;
-                        for (var j=0; j<global.queue.queue.length; j++){
-                            used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
-                        }
-                        if (used < max_queue){
-                            if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
-                                global.queue.queue[global.queue.queue.length-1].q++;
+                        if (!(arpaProjects[pro]['no_queue'] && arpaProjects[pro].no_queue())) {
+                            let arpaId = `arpa${pro}`;
+                            let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
+                            if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
+                                max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
                             }
-                            else {
-                                global.queue.queue.push({ id: arpaId, action: pro, type: 'arpa', label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
+                            if (global.genes['queue'] && global.genes['queue'] >= 2){
+                                max_queue *= 2;
                             }
-                            dragQueue();
+                            let used = 0;
+                            for (var j=0; j<global.queue.queue.length; j++){
+                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                            }
+                            if (used < max_queue){
+                                if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
+                                    global.queue.queue[global.queue.queue.length-1].q++;
+                                }
+                                else {
+                                    global.queue.queue.push({ id: arpaId, action: pro, type: 'arpa', label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
+                                }
+                                dragQueue();
+                            }
                         }
                     }
                 },
@@ -1324,6 +1328,11 @@ export function buildArpa(pro,num,update){
                     $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
                 }
                 if (pro === 'launch_facility'){
+                    for (let i=0; i<global.queue.queue.length; i++){
+                        if (global.queue.queue[i].id === 'arpalaunch_facility'){
+                            global.queue.queue.splice(i, 1);
+                        }
+                    }
                     global.settings.showSpace = true;
                     global.tech['space'] = 1;
                     $(`#popArpa${pro}`).hide();
