@@ -599,6 +599,11 @@ const feats = {
         desc: loc("feat_rocky_road_desc"),
         flair: loc("feat_rocky_road_flair")
     },
+    demon_slayer: {
+        name: loc("feat_demon_slayer_name"),
+        desc: loc("feat_demon_slayer_desc"),
+        flair: loc("feat_demon_slayer_flair")
+    },
     novice: {
         name: loc("feat_novice_name"),
         desc: loc("feat_achievement_hunter_desc",[10]),
@@ -923,6 +928,10 @@ export function checkAchievements(){
         else {
             unlockFeat('xmas');
         }
+    }
+
+    if (global.stats.dkills >= 1000000000){
+        unlockFeat('demon_slayer');
     }
 
     // total achievements feat
