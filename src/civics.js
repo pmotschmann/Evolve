@@ -1761,6 +1761,8 @@ export function dragQueue(){
 }
 
 function warhead(){
+    global.lastMsg = false;
+
     let god = global.race.species;
     let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;
@@ -1803,11 +1805,11 @@ function warhead(){
         plasmid += new_plasmid;
         global.stats.plasmid += new_plasmid;
     }
-    let new_achieve = unlockAchieve(`apocalypse`);
-    if (unlockAchieve(`squished`,true)){ new_achieve = true; }
-    if (unlockAchieve(`extinct_${god}`)){ new_achieve = true; }
+    unlockAchieve(`apocalypse`);
+    unlockAchieve(`squished`,true);
+    unlockAchieve(`extinct_${god}`);
     if (global.civic.govern.type === 'anarchy'){
-        if (unlockAchieve(`anarchist`)){ new_achieve = true; }
+        unlockAchieve(`anarchist`);
     }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         unlockFeat('take_no_advice');
@@ -1842,9 +1844,6 @@ function warhead(){
     global.tech = { theology: 1 };
     clearStates();
     global.arpa = {};
-    if (!new_achieve){
-        global.lastMsg = false;
-    }
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;

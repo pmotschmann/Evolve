@@ -26,3 +26,7 @@ If you are unfamilar with json the first part is a **key** and can not be altere
 To enable your language translation in the game you must add it to the locales constant in locale.js (bottom of the file).
 
 Once you feel your translation file is ready send a pull request with it to the Evolve main branch.
+
+
+## Contributing to the game
+Bug fixes, additional translations, themes, or UI improvements can simply be submitted as pull requests; once reviewed and accepted they will be merged into the main game branch. If you want to contribute a new feature it can not arbitrarily make something easier without making something else harder. If your new feature idea simply makes the game easier it will not be accepted. 

@@ -10,8 +10,10 @@ Federation Government type<br>
 New Faith CRISPR upgrade, unlocks priest job<br>
 Extended the Deify and Study Ancients tech trees<br>
 Enhanced Droids upgrade for War Droids<br>
+Repair Droids for Fortress<br>
 Smoldering and Chilled now have reduced effectiveness after 100 stacks<br>
 Removed Heavy Genus Feats, these were redundant with Universe Icons<br>
+Blackhole reset now also grants species level extinction achievement<br>
 
 #### 0.7.21 - 1/28/2020 ####
 More bug fixes<br>

@@ -1343,6 +1343,10 @@ export const traits = {
     fortify: { // gene fortification
         desc: loc('trait_fortify'),
         type: 'special',
+    },
+    spirit: { // gene fortification
+        desc: loc('trait_fortify'),
+        type: 'special',
     }
 };
 

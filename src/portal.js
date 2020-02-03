@@ -10,6 +10,13 @@ const fortressModules = {
         info: {
             name: loc('portal_fortress_name'),
             desc: loc('portal_fortress_desc'),
+            repair(){
+                let repair = 200;
+                if (p_on['repair_droid']){
+                    repair *= 0.95 ** p_on['repair_droid'];
+                }
+                return Math.round(repair);
+            }
         },
         turret: {
             id: 'portal-turret',
@@ -67,7 +74,13 @@ const fortressModules = {
                 Oil(offset){ return spaceCostMultiplier('carport', offset, 6500, 1.3, 'portal'); },
                 Plywood(offset){ return spaceCostMultiplier('carport', offset, 8500, 1.3, 'portal'); }
             },
-            repair: 180,
+            repair(){
+                let repair = 180;
+                if (p_on['repair_droid']){
+                    repair *= 0.95 ** p_on['repair_droid'];
+                }
+                return Math.round(repair);
+            },
             effect(){
                 return `${loc('portal_carport_effect')}`;
             },
@@ -113,6 +126,36 @@ const fortressModules = {
                 return false;
             },
             flair: loc('portal_war_droid_flair')
+        },
+        repair_droid: {
+            id: 'portal-repair_droid',
+            title: loc('portal_repair_droid_title'),
+            desc(){
+                return `<div>${loc('portal_repair_droid_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { portal: 6 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('repair_droid', offset, 495000, 1.26, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('repair_droid', offset, 1250, 1.26, 'portal'); },
+                Elerium(offset){ return spaceCostMultiplier('repair_droid', offset, 18, 1.26, 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('repair_droid', offset, 37500, 1.26, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('repair_droid', offset, 1, 1.26, 'portal'); }
+            },
+            powered(){ return 3; },
+            effect(){
+                return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[5])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('repair_droid','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.repair_droid.on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('portal_repair_droid_flair')
         },
     },
     prtl_badlands: {
@@ -268,7 +311,7 @@ const fortressModules = {
             reqs: { hell_pit: 4 },
             no_queue(){ return global.portal.soul_forge.count < 1 ? false : true },
             queue_complete(){ return global.portal.soul_forge.count >= 1 ? true : false; },
-            powered(){ return 50; },
+            powered(){ return 60; },
             cost: {
                 Money(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000000, 1.25, 'portal'); },
                 Graphene(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 1500000, 1.25, 'portal'); },
@@ -276,7 +319,11 @@ const fortressModules = {
                 Bolognium(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 100000, 1.25, 'portal'); },
             },
             effect(){
-                return `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div><div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,1000000])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
+                if (global.portal.soul_forge.count >= 1){
+                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,1000000])}</div>`;
+                }
+                return `${desc}<div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

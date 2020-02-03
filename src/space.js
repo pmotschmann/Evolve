@@ -2723,7 +2723,7 @@ const galaxyProjects = {
                 let elerium = spatialReasoning(50);
                 return `<div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
-            powered(){ return 4; },
+            powered(){ return p_on['s_gate'] ? 4 : 0; },
             refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2761,8 +2761,8 @@ const galaxyProjects = {
                 }
                 return `${gateway}<div>${loc('galaxy_telemetry_beacon_effect1',[600])}</div><div>${loc('galaxy_telemetry_beacon_effect2',[know])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
-            support: 1,
-            powered(){ return p_on['s_gate'] ? 3 : 0; },
+            support: 0.5,
+            powered(){ return p_on['s_gate'] ? 4 : 0; },
             postPower(o){
                 let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
                 if (powered > global.galaxy.telemetry_beacon.count){
@@ -2842,7 +2842,7 @@ const galaxyProjects = {
                 return `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div><div>${loc('plus_max_soldiers',[4])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
             support: 2,
-            powered(){ return 10; },
+            powered(){ return p_on['s_gate'] ? 12 : 0; },
             refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3221,6 +3221,7 @@ const structDefinitions = {
     turret: { count: 0, on: 0 },
     carport: { count: 0, damaged: 0, repair: 0 },
     war_droid: { count: 0, on: 0 },
+    repair_droid: { count: 0, on: 0 },
     war_drones: { count: 0, on: 0 },
     sensor_drone: { count: 0, on: 0 },
     attractor: { count: 0, on: 0 },
@@ -3386,15 +3387,15 @@ function galaxySpace(){
             
             let regionContent = $(`<div id="${region}" class="space"></div>`);
             parent.append(regionContent);
-            let regionHeader = $(`<div id="sr${region}"><h3 class="name has-text-warning">${name}</h3></div>`);
-            parent.append(regionHeader);
+            let regionHeader = $(`<h3 class="name has-text-warning">${name}</h3>`);
+            regionContent.append(regionHeader);
 
             if (global.tech['xeno'] && global.tech['xeno'] >= 3){
-                regionHeader.append(`<b-tooltip class="has-text-warning" :label="owner()" position="is-bottom" size="is-small" multilined animated><span class="regionControl has-text-${galaxyProjects[region].info.control().color}">{{ r.control().name }}</span></b-tooltip>`);
+                regionContent.append(`<b-tooltip class="has-text-warning" :label="owner()" position="is-bottom" size="is-small" multilined animated><span class="regionControl has-text-${galaxyProjects[region].info.control().color}">{{ r.control().name }}</span></b-tooltip>`);
             }
 
             let vData = {
-                el: `#sr${region}`,
+                el: `#${region}`,
                 data: {
                     r: galaxyProjects[region].info
                 },
@@ -3407,7 +3408,7 @@ function galaxySpace(){
 
             if (galaxyProjects[region].info['support']){
                 let support = galaxyProjects[region].info['support'];
-                regionHeader.append(`<span class="regionSupport" v-show="s.s_max">{{ s.support }}/{{ s.s_max }}</span>`);
+                regionContent.append(`<span class="regionSupport" v-show="s.s_max">{{ s.support }}/{{ s.s_max }}</span>`);
                 vData.data['s'] = global.galaxy[support];
             }
 

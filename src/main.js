@@ -1036,7 +1036,8 @@ function fastLoop(){
             'spc_gas_moon:outpost','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller',
             'prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant',
             'city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','int_blackhole:far_reach',
-            'prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','int_blackhole:mass_ejector','city:casino'];
+            'prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','int_blackhole:mass_ejector',
+            'city:casino','prtl_fortress:repair_droid'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
@@ -1850,7 +1851,7 @@ function fastLoop(){
                 global.portal.fortress.repair++;
                 breakdown.p.consume.Stone[loc('portal_fortress_name')] = -200;
             }
-            if (global.portal.fortress.repair >= 200){
+            if (global.portal.fortress.repair >= actions.portal.prtl_fortress.info.repair()){
                 global.portal.fortress.repair = 0;
                 global.portal.fortress.walls++;
             }
@@ -3402,7 +3403,7 @@ function fastLoop(){
                 $('#portal-carport .count').addClass('has-text-alert');
             }
             global.portal.carport.repair++;
-            if (global.portal.carport.repair >= actions.portal.prtl_fortress.carport.repair){
+            if (global.portal.carport.repair >= actions.portal.prtl_fortress.carport.repair()){
                 global.portal.carport.repair = 0;
                 global.portal.carport.damaged--;
             }

@@ -11292,6 +11292,26 @@ export const actions = {
                 return loc('tech_combat_droids_flair');
             }
         },
+        repair_droids: {
+            id: 'tech-repair_droids',
+            title: loc('tech_repair_droids'),
+            desc: loc('tech_repair_droids'),
+            category: 'research',
+            reqs: { portal: 5 },
+            grant: ['portal',6],
+            cost: {
+                Knowledge(){ return 794000; },
+                Soul_Gem(){ return 1; }
+            },
+            effect: loc('tech_repair_droids_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['repair_droid'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         enhanced_droids: {
             id: 'tech-enhanced_droids',
             title: loc('tech_enhanced_droids'),
@@ -11958,7 +11978,7 @@ export function setAction(c_action,action,type,old){
         element.append($('<span class="count">{{ act.count }}</span>'));
     }
     if (action !== 'tech' && global[action] && global[action][type] && typeof(global[action][type]['repair']) !== 'undefined'){
-        element.append($(`<div class="repair"><progress class="progress" :value="repair()" max="${c_action.repair}"></progress></div>`));
+        element.append($(`<div class="repair"><progress class="progress" :value="repair()" :max="${c_action.repair()}"></progress></div>`));
     }
     if (old){
         $('#oldTech').append(parent);
@@ -13274,6 +13294,8 @@ export function bank_vault(){
 }
 
 function bioseed(){
+    global.lastMsg = false;
+
     let god = global.race.species;
     let old_god = global.race.gods;
     let genus = races[god].type;
@@ -13321,21 +13343,20 @@ function bioseed(){
     }
     global.stats.phage += new_phage;
     unlockAchieve(`seeder`);
-    let new_biome = unlockAchieve(`biome_${biome}`);
+    unlockAchieve(`biome_${biome}`);
     if (atmo !== 'none'){
         unlockAchieve(`atmo_${atmo}`);
     }
-    let new_genus = unlockAchieve(`genus_${genus}`);
-    let new_achieve = false;
+    unlockAchieve(`genus_${genus}`);
 
     if (global.race.species === 'junker'){
-        new_achieve = unlockFeat('organ_harvester');
+        unlockFeat('organ_harvester');
     }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
-        if (unlockFeat('ill_advised')){ new_achieve = true; };
+        unlockFeat('ill_advised');
     }
     if (typeof global.tech['world_control'] === 'undefined'){
-        if (unlockAchieve(`cult_of_personality`)){ new_achieve = true; };
+        unlockAchieve(`cult_of_personality`);
     }
 
     let good_rocks = 0;
@@ -13349,19 +13370,19 @@ function bioseed(){
         }
     });
     if (good_rocks >= 4) {
-        if (unlockAchieve('miners_dream')){ new_achieve = true; };
+        unlockAchieve('miners_dream');
     }
     if (bad_rocks >= 3){
-        if (unlockFeat('rocky_road')){ new_achieve = true; };
+        unlockFeat('rocky_road');
     }
 
     switch (global.race.universe){
         case 'micro':
             if (global.race['small'] || global.race['compact']){
-                if (unlockAchieve(`macro`,true)){ new_achieve = true; }
+                unlockAchieve(`macro`,true);
             }
             else {
-                if (unlockAchieve(`marble`,true)){ new_achieve = true; }
+                unlockAchieve(`marble`,true);
             }
             break;
         default:
@@ -13401,9 +13422,6 @@ function bioseed(){
     };
     global.tech = { theology: 1 };
     clearStates();
-    if (!new_biome && !new_genus && !new_achieve){
-        global.lastMsg = false;
-    }
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
@@ -13413,6 +13431,9 @@ function bioseed(){
 }
 
 function big_bang(){
+    global.lastMsg = false;
+
+    unlockAchieve(`extinct_${global.race.species}`);
     switch (global.race.universe){
         case 'heavy':
             unlockAchieve(`heavy`);
