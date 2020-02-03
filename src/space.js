@@ -2838,7 +2838,7 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +(int_fuel_adjust(25)).toFixed(2);
-                let food = 200;
+                let food = 250;
                 return `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div><div>${loc('plus_max_soldiers',[4])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
             support: 2,
@@ -3080,6 +3080,103 @@ const galaxyProjects = {
                     let s2name = races[global.galaxy.alien2.id].name;
                     let s2desc = races[global.galaxy.alien2.id].entity;
                     messageQueue(loc('galaxy_gorddon_mission_result',[s1desc,s1name,s2desc,s2name]),'success');
+                    return true;
+                }
+                return false;
+            }
+        },
+        embassy: {
+            id: 'galaxy-embassy',
+            title: loc('galaxy_embassy'),
+            desc: `<div>${loc('galaxy_embassy')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { xeno: 4 },
+            cost: {
+                Money(){ return global.galaxy.embassy.count < 1 ? 25000000 : 0; },
+                Lumber(){ return global.galaxy.embassy.count < 1 ? 30000000 : 0; },
+                Stone(){ return global.galaxy.embassy.count < 1 ? 30000000 : 0; },
+                Furs(){ return global.galaxy.embassy.count < 1 ? 12000000 : 0; },
+                Wrought_Iron(){ return global.galaxy.embassy.count < 1 ? 6000000 : 0; }
+            },
+            effect(){
+                let food = 2000;
+                return `<div>${loc('galaxy_embassy_effect',[races[global.galaxy.alien1.id].name])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return p_on['s_gate'] ? 25 : 0; },
+            refresh: true,
+            action(){
+                if (global.galaxy.embassy.count < 1 && payCosts($(this)[0].cost)){
+                    incrementStruct('embassy','galaxy');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.galaxy['embassy'].on++;
+                    }
+                    if (global.tech['xeno'] === 4){
+                        global.tech['xeno'] = 5;
+                        global.galaxy['freighter'] = { count: 0, on: 0, crew: 0 };
+                        messageQueue(loc('galaxy_embassy_complete',[races[global.galaxy.alien1.id].name,races[global.galaxy.alien2.id].name]),'success');
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        freighter: {
+            id: 'galaxy-freighter',
+            title: loc('galaxy_freighter'),
+            desc(){
+                return `<div>${loc('galaxy_freighter')}</div>`;
+            },
+            reqs: { xeno: 5 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('freighter', offset, 6000000, 1.2, 'galaxy'); },
+                Uranium(offset){ return spaceCostMultiplier('freighter', offset, 10000, 1.2, 'galaxy'); },
+                Adamantite(offset){ return spaceCostMultiplier('freighter', offset, 460000, 1.2, 'galaxy'); },
+                Stanene(offset){ return spaceCostMultiplier('freighter', offset, 261600, 1.2, 'galaxy'); },
+                Bolognium(offset){ return spaceCostMultiplier('freighter', offset, 188000, 1.2, 'galaxy'); },
+            },
+            effect(){
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div>${loc('galaxy_freighter_effect',[2,races[global.galaxy.alien1.id].name])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+            },
+            ship: {
+                civ: 2,
+                mil: 0,
+                helium: 12
+            },
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('freighter','galaxy');
+                    global.galaxy['freighter'].on++;
+                    global.resource.Vitreloy.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        super_freighter: {
+            id: 'galaxy-super_freighter',
+            title: loc('galaxy_super_freighter'),
+            desc(){
+                return `<div>${loc('galaxy_super_freighter')}</div>`;
+            },
+            reqs: { xeno: 6 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('super_freighter', offset, 28000000, 1.2, 'galaxy'); },
+            },
+            effect(){
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div>${loc('galaxy_freighter_effect',[5,races[global.galaxy.alien1.id].name])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+            },
+            ship: {
+                civ: 5,
+                mil: 0,
+                helium: 25
+            },
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('super_freighter','galaxy');
+                    global.galaxy['super_freighter'].on++;
                     return true;
                 }
                 return false;

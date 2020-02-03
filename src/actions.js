@@ -2661,7 +2661,7 @@ export const actions = {
                     return `<div>${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
-                    return `${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}`;
+                    return `${loc('plus_max_citizens',[5])}. ${loc('minus_power',[$(this)[0].powered()])}`;
                 }
             },
             powered(){ return 1; },
@@ -11441,6 +11441,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.galaxy['embassy'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
