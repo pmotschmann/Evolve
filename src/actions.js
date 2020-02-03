@@ -11978,7 +11978,7 @@ export function setAction(c_action,action,type,old){
         element.append($('<span class="count">{{ act.count }}</span>'));
     }
     if (action !== 'tech' && global[action] && global[action][type] && typeof(global[action][type]['repair']) !== 'undefined'){
-        element.append($(`<div class="repair"><progress class="progress" :value="repair()" :max="${c_action.repair()}"></progress></div>`));
+        element.append($(`<div class="repair"><progress class="progress" :value="repair()" :max="repairMax()"></progress></div>`));
     }
     if (old){
         $('#oldTech').append(parent);
@@ -12192,6 +12192,9 @@ export function setAction(c_action,action,type,old){
             },
             repair(){
                 return global[action][type].repair;
+            },
+            repairMax(){
+                return c_action.repair();
             }
         },
         filters: {

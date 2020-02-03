@@ -135,11 +135,11 @@ const fortressModules = {
             },
             reqs: { portal: 6 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('repair_droid', offset, 495000, 1.26, 'portal'); },
-                Neutronium(offset){ return spaceCostMultiplier('repair_droid', offset, 1250, 1.26, 'portal'); },
-                Elerium(offset){ return spaceCostMultiplier('repair_droid', offset, 18, 1.26, 'portal'); },
-                Stanene(offset){ return spaceCostMultiplier('repair_droid', offset, 37500, 1.26, 'portal'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('repair_droid', offset, 1, 1.26, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('repair_droid', offset, 444000, 1.26, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('repair_droid', offset, 88000, 1.26, 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('repair_droid', offset, 17616, 1.26, 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('repair_droid', offset, 666, 1.26, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('repair_droid', offset, 1, 1.15, 'portal'); }
             },
             powered(){ return 3; },
             effect(){
@@ -190,7 +190,8 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            flair: loc('portal_war_drone_flair')
         },
         sensor_drone: {
             id: 'portal-sensor_drone',
