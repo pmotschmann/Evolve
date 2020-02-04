@@ -8,7 +8,7 @@ import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue } from './actions.js';
-import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types } from './space.js';
+import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
@@ -3172,9 +3172,11 @@ function fastLoop(){
         let bolognium_bd = {};
         if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['bolognium_ship'] && gal_on['bolognium_ship'] > 0){
             let base = gal_on['bolognium_ship'] * 0.008 * zigguratBonus();
-            let delta = base * global_multiplier;
+            let pirate = piracy('gxy_gateway');
+            let delta = base * global_multiplier * pirate;
             
             bolognium_bd[loc('galaxy_bolognium_ship')] = base + 'v';
+            bolognium_bd[loc('galaxy_piracy')] = -((1 - pirate) * 100) + '%';
             modRes('Bolognium', delta * time_multiplier);
         }
         breakdown.p['Bolognium'] = bolognium_bd;
@@ -4478,6 +4480,27 @@ function midLoop(){
                             messageQueue(loc('civics_spy_purchase_success',[govTitle(i)]),'success');
                             break;
                     }
+                }
+            }
+        }
+
+        if (global.galaxy['defense']){
+            let armada_ships = ['cruiser_ship','frigate_ship','corvette_ship','scout_ship']
+            for (let i=0; i<armada_ships.length; i++){
+                let count = 0;
+                Object.keys(global.galaxy.defense).forEach(function (region){
+                    count += global.galaxy.defense[region][armada_ships[i]];
+                    if (count > gal_on[armada_ships[i]]){
+                        let overflow = count - gal_on[armada_ships[i]];
+                        global.galaxy.defense[region][armada_ships[i]] -= overflow;
+                    }
+                    if (global.galaxy.defense[region][armada_ships[i]] < 0){
+                        global.galaxy.defense[region][armada_ships[i]] = 0;
+                    }
+                });
+                if (count < gal_on[armada_ships[i]]){
+                    let underflow = gal_on[armada_ships[i]] - count;
+                    global.galaxy.defense.gxy_gateway[armada_ships[i]] += underflow;
                 }
             }
         }

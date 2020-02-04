@@ -5905,6 +5905,25 @@ export const actions = {
                 return false;
             }
         },
+        bolognium_crates: {
+            id: 'tech-bolognium_crates',
+            title: loc('tech_bolognium_crates'),
+            desc: loc('tech_bolognium_crates'),
+            category: 'upgrade',
+            reqs: { container: 7, gateway: 3 },
+            grant: ['container',8],
+            cost: {
+                Knowledge(){ return 3420000; },
+                Bolognium(){ return 90000; }
+            },
+            effect: loc('tech_bolognium_crates_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         steel_containers: {
             id: 'tech-steel_containers',
             title: loc('tech_steel_containers'),
@@ -6015,6 +6034,25 @@ export const actions = {
                 Aerogel(){ return 500; }
             },
             effect: loc('tech_aerogel_containers_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        bolognium_containers: {
+            id: 'tech-bolognium_containers',
+            title: loc('tech_bolognium_containers'),
+            desc: loc('tech_bolognium_containers'),
+            category: 'upgrade',
+            reqs: { steel_container: 6, gateway: 3 },
+            grant: ['steel_container',7],
+            cost: {
+                Knowledge(){ return 3500000; },
+                Bolognium(){ return 125000; }
+            },
+            effect: loc('tech_bolognium_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;

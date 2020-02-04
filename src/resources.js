@@ -1146,6 +1146,9 @@ export function crateValue(){
     if (global.tech['container'] && global.tech['container'] >= 6){
         create_value += global.tech['container'] >= 7 ? 1200 : 500;
     }
+    if (global.tech['container'] && global.tech['container'] >= 8){
+        create_value += 4000;
+    }
     create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(create_value));
 }
@@ -1159,7 +1162,7 @@ export function containerValue(){
         container_value += global.tech['steel_container'] >= 5 ? 1000 : 400;
     }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 6){
-        container_value += 1000;
+        container_value += global.tech['steel_container'] >= 7 ? 7500 : 1000;
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(container_value));
@@ -1178,8 +1181,8 @@ function initStorage(){
     $('#resStorage').append(store);
     
     if (global.resource['Crates'] && global.resource['Containers']){
-        store.append($(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" class="crate" animated multilined><button :aria-label="buildCrateLabel()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
-        store.append($(`<b-tooltip :label="buildContainerLabel()" position="is-bottom" class="container" animated multilined><button :aria-label="buildContainerLabel()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
+        store.append($(`<b-tooltip :label="buildCrateDesc()" position="is-bottom" class="crate" animated multilined><button :aria-label="buildCrateDesc()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));
+        store.append($(`<b-tooltip :label="buildContainerDesc()" position="is-bottom" class="container" animated multilined><button :aria-label="buildContainerDesc()" v-show="cn.display" class="button" @click="container">${loc('resource_modal_container_construct')}</button></b-tooltip>`));
 
         vBind({
             el: '#createHead',
@@ -1194,10 +1197,10 @@ function initStorage(){
                 container(){
                     buildContainer();
                 },
-                buildCrateLabel(){
+                buildCrateDesc(){
                     return buildCrateLabel();
                 },
-                buildContainerLabel(){
+                buildContainerDesc(){
                     return buildContainerLabel();
                 },
             }
