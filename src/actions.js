@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
-import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
+import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
 import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating, dragQueue } from './civics.js';
@@ -12838,7 +12838,14 @@ function drawModal(c_action,type){
         case 'g_factory':
             grapheneModal(body);
             break;
+        case 'freighter':
+            freighterModal(body);
+            break;
     }
+}
+
+function freighterModal(modal){
+    galacticTrade(modal);
 }
 
 function starDockModal(modal){

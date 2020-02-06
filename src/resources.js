@@ -234,6 +234,7 @@ export function defineResources(){
         loadResource('Aerogel',-1,0,false,false,'danger');
         loadRouteCounter();
         loadContainerCounter();
+        initGalaxyTrade();
     }
     loadSpecialResource('Plasmid');
     loadSpecialResource('AntiPlasmid');
@@ -548,9 +549,9 @@ function marketItem(mount,market_item,name,color,full){
     if (full){
         let trade = $(`<span class="trade" v-show="m.active"><span class="has-text-warning">${loc('resource_market_routes')}</span></span>`);
         market_item.append(trade);
-        trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="import ${name}" class="sub has-text-success" @click="autoBuy('${name}')"><span>+</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="export ${name}" class="sub has-text-danger" @click="autoSell('${name}')"><span>-</span></span></b-tooltip>`));
         trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
-        trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="export ${name}" class="add has-text-danger" @click="autoSell('${name}')"><span>-</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="import ${name}" class="add has-text-success" @click="autoBuy('${name}')"><span>+</span></span></b-tooltip>`));
         trade.append($(`<span role="button" class="zero has-text-advanced" @click="zero('${name}')">${loc('cancel_routes')}</span>`));
         tradeRouteColor(name);
     }
@@ -676,6 +677,109 @@ function marketItem(mount,market_item,name,color,full){
             },
             namespace(val){
                 return val.replace("_", " ");
+            }
+        }
+    });
+}
+
+function initGalaxyTrade(){
+    $('#market').append($(`<div id="galaxyTrade" class="market-header galaxyTrade"><h2 class="is-sr-only">${loc('galaxy_trade')}</h2></div>`));
+    galacticTrade();
+}
+
+export const galaxyOffers = [
+    {
+        buy: { res: 'Deuterium', vol: 5 },
+        sell: { res: 'Helium_3', vol: 25 }
+    },
+    {
+        buy: { res: 'Neutronium', vol: 2.5 },
+        sell: { res: 'Copper', vol: 200 }
+    },
+    {
+        buy: { res: 'Adamantite', vol: 3 },
+        sell: { res: 'Iron', vol: 300 }
+    },
+    {
+        buy: { res: 'Elerium', vol: 1 },
+        sell: { res: 'Oil', vol: 125 }
+    },
+    {
+        buy: { res: 'Nano_Tube', vol: 10 },
+        sell: { res: 'Titanium', vol: 20 }
+    },
+    {
+        buy: { res: 'Graphene', vol: 25 },
+        sell: { res: 'Lumber', vol: 1000 }
+    },
+    {
+        buy: { res: 'Stanene', vol: 40 },
+        sell: { res: 'Aluminium', vol: 800 }
+    },
+    {
+        buy: { res: 'Bolognium', vol: 0.75 },
+        sell: { res: 'Uranium', vol: 4 }
+    },
+    {
+        buy: { res: 'Vitreloy', vol: 1 },
+        sell: { res: 'Infernite', vol: 1 }
+    }
+];
+
+export function galacticTrade(modal){
+    let galaxyTrade = modal ? modal : $(`#galaxyTrade`);
+    if (!modal){
+        $(`#galaxyTrade`).empty();
+    }
+
+    if (global.galaxy['trade']){
+        galaxyTrade.append($(`<div class="market-item trade-header"><span class="has-text-special">${loc('galaxy_trade')}</span></div>`));
+
+        for (let i=0; i<galaxyOffers.length; i++){
+            let offer = $(`<div class="market-item trade-offer"></div>`);
+            galaxyTrade.append(offer);
+
+            offer.append($(`<span class="offer-item has-text-success">${global.resource[galaxyOffers[i].buy.res].name}</span>`));
+            offer.append($(`<span class="offer-vol has-text-advanced">+${galaxyOffers[i].buy.vol}/s</span>`));
+            
+            offer.append($(`<span class="offer-item has-text-danger">${global.resource[galaxyOffers[i].sell.res].name}</span>`));
+            offer.append($(`<span class="offer-vol has-text-caution">-${galaxyOffers[i].sell.vol}/s</span>`));
+
+            let trade = $(`<span class="trade"><span class="has-text-warning">${loc('resource_market_routes')}</span></span>`);
+            offer.append(trade);
+            
+            let assign = loc('galaxy_freighter_assign',[global.resource[galaxyOffers[i].buy.res].name,global.resource[galaxyOffers[i].sell.res].name]);
+            let unassign = loc('galaxy_freighter_unassign',[global.resource[galaxyOffers[i].buy.res].name,global.resource[galaxyOffers[i].sell.res].name]);
+            trade.append($(`<b-tooltip :label="desc('${unassign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${unassign}" class="sub has-text-danger" @click="less('${i}')"><span>-</span></span></b-tooltip>`));
+            trade.append($(`<span class="current">{{ f${i} }}</span>`));
+            trade.append($(`<b-tooltip :label="desc('${assign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${assign}" class="add has-text-success" @click="more('${i}')"><span>+</span></span></b-tooltip>`));
+        }
+    }
+
+    vBind({
+        el: modal ? '#specialModal' : '#galaxyTrade',
+        data: global.galaxy.trade,
+        methods: {
+            less(idx){
+                let keyMutipler = keyMultiplier();
+                if (global.galaxy.trade[`f${idx}`] >= keyMutipler){
+                    global.galaxy.trade[`f${idx}`] -= keyMutipler;
+                }
+                else {
+                    global.galaxy.trade[`f${idx}`] = 0;
+                }
+            },
+            more(idx){
+                let keyMutipler = keyMultiplier();
+                if (global.galaxy.trade.cur < global.galaxy.trade.max){
+                    if (keyMutipler > global.galaxy.trade.max - global.galaxy.trade.cur){
+                        keyMutipler = global.galaxy.trade.max - global.galaxy.trade.cur;
+                    }
+                    global.galaxy.trade[`f${idx}`] += keyMutipler;
+                }
+            },
+            desc(s){
+                return s; 
             }
         }
     });
@@ -1168,8 +1272,8 @@ export function containerValue(){
     return Math.round(spatialReasoning(container_value));
 }
 
-export function initMarket(){
-    let market = $(`<div id="market-qty" class="market-header"><h2 class="is-sr-only">${loc('resource_market')}</h2</div>`);
+function initMarket(){
+    let market = $(`<div id="market-qty" class="market-header"><h2 class="is-sr-only">${loc('resource_market')}</h2></div>`);
     $('#market').empty();
     $('#market').append(market);
     loadMarket();

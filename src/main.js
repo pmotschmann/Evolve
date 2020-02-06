@@ -3,7 +3,7 @@ import { loc, locales } from './locale.js';
 import { mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue } from './functions.js';
 import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
@@ -535,6 +535,10 @@ function fastLoop(){
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
         let m_rate = global.race.universe === 'standard' ? 0.25 : 0.15;
         let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
+        if (global.genes['challenge'] >= 4 && global.race.universe !== 'standard'){
+            m_rate += 0.05;
+            u_rate -= 0.05;
+        }
         if (global.race['weak_mastery']){
             m_rate /= 10;
             u_rate /= 10;
@@ -876,6 +880,69 @@ function fastLoop(){
         }
         if (breakdown.p.consume.Money[loc('trade')] === 0){
             delete breakdown.p.consume.Money[loc('trade')];
+        }
+
+        if (global.galaxy['trade'] && (gal_on.hasOwnProperty('freighter') || gal_on.hasOwnProperty('super_freighter'))){
+            let cap = 0;
+            if (global.galaxy['freighter']){
+                cap += gal_on['freighter'] * 2;
+            }
+            if (global.galaxy['super_freighter']){
+                cap += gal_on['super_freighter'] * 5;
+            }
+            global.galaxy.trade.max = cap;
+
+            let used = 0;
+            for (let i=0; i<galaxyOffers.length; i++){
+                let exprt_res = galaxyOffers[i].sell.res;
+                let exprt_vol = galaxyOffers[i].sell.vol;
+                let imprt_res = galaxyOffers[i].buy.res;
+                let imprt_vol = galaxyOffers[i].buy.vol;
+                let exp_total = 0;
+                let imp_total = 0;
+
+                used += global.galaxy.trade[`f${i}`];
+                if (used > cap){
+                    global.galaxy.trade[`f${i}`] -= used - cap;
+                    if (global.galaxy.trade[`f${i}`] < 0){
+                        global.galaxy.trade[`f${i}`] = 0;
+                    }
+                }
+
+                for (let j=0; j<global.galaxy.trade[`f${i}`]; j++){
+                    exp_total += exprt_vol;
+                    if (modRes(exprt_res,-(exprt_vol * time_multiplier))){
+                        modRes(imprt_res,imprt_vol * time_multiplier);
+                        imp_total += imprt_vol;
+                    }
+                }
+                
+                if (exp_total > 0){
+                    if (breakdown.p.consume[exprt_res][loc('trade')]){
+                        breakdown.p.consume[exprt_res][loc('trade')] -= exp_total;
+                    }
+                    else {
+                        breakdown.p.consume[exprt_res][loc('trade')] = -(exp_total);
+                    }
+                }
+
+                if (imp_total > 0){
+                    if (breakdown.p.consume[imprt_res][loc('trade')]){
+                        breakdown.p.consume[imprt_res][loc('trade')] += imp_total;
+                    }
+                    else {
+                        breakdown.p.consume[imprt_res][loc('trade')] = imp_total;
+                    }
+                }
+
+                if (breakdown.p.consume[exprt_res][loc('trade')] === 0){
+                    delete breakdown.p.consume[exprt_res][loc('trade')]
+                }
+                if (breakdown.p.consume[imprt_res][loc('trade')] === 0){
+                    delete breakdown.p.consume[imprt_res][loc('trade')]
+                }
+            }
+            global.galaxy.trade.cur = used;
         }
 
         let power_grid = 0;

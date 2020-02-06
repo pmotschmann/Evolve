@@ -30,3 +30,14 @@ Once you feel your translation file is ready send a pull request with it to the 
 
 ## Contributing to the game
 Bug fixes, additional translations, themes, or UI improvements can simply be submitted as pull requests; once reviewed and accepted they will be merged into the main game branch. If you want to contribute a new feature it can not arbitrarily make something easier without making something else harder. If your new feature idea simply makes the game easier it will not be accepted. 
+
+## CSS Changes
+Evolve uses LESS to build its CSS, you can not just edit the minified CSS file. You must instead edit src/evolve.less then use the less compiler to rebuild the CSS file. 
+
+## Build Commands
+Assuming you configured your build enviroment correctly the game can be built using the following scripts
+```
+npm run build // Builds the game bundle
+npm run dev // Builds the game bundle in debug mode
+npm run less // Builds the CSS file
+```

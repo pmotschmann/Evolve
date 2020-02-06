@@ -560,10 +560,43 @@ const genePool = {
         condition(){
             return global.race.universe !== 'standard' ? true : false;
         },
-        cost: 250,
+        cost: 400,
         effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('universal')){
+                return true;
+            }
+            return false;
+        }
+    },
+    standard: {
+        id: 'genes-standard',
+        title: loc('arpa_genepool_standard_title'),
+        desc: loc('arpa_genepool_standard_desc'),
+        reqs: {challenge:3},
+        grant: ['challenge',4],
+        condition(){
+            return global.race.universe !== 'standard' ? true : false;
+        },
+        cost: 2500,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('standard')){
+                return true;
+            }
+            return false;
+        }
+    },
+    mastered: {
+        id: 'genes-mastered',
+        title: loc('arpa_genepool_mastered_title'),
+        desc: loc('arpa_genepool_mastered_desc'),
+        reqs: {challenge:4, locked: 1},
+        grant: ['challenge',5],
+        cost: 4000,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('mastered')){
                 return true;
             }
             return false;
