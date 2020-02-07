@@ -2911,7 +2911,7 @@ const galaxyProjects = {
             },
             support: -1,
             ship: {
-                civ: 1,
+                civ: 2,
                 mil: 0,
                 helium: 5
             },
@@ -2986,7 +2986,7 @@ const galaxyProjects = {
             },
             support: -1,
             ship: {
-                civ: 1,
+                civ: 2,
                 mil: 3,
                 helium: 10,
                 rating: 25
@@ -3024,7 +3024,7 @@ const galaxyProjects = {
             },
             support: -2,
             ship: {
-                civ: 2,
+                civ: 3,
                 mil: 5,
                 helium: 25,
                 rating: 80
@@ -3062,7 +3062,7 @@ const galaxyProjects = {
             },
             support: -3,
             ship: {
-                civ: 4,
+                civ: 6,
                 mil: 10,
                 helium: 80,
                 rating: 250
@@ -3166,6 +3166,62 @@ const galaxyProjects = {
                 return false;
             }
         },
+        dormitory: {
+            id: 'galaxy-dormitory',
+            title: loc('galaxy_dormitory'),
+            desc(){
+                return `<div>${loc('galaxy_dormitory')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { xeno: 6 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('dormitory', offset, 10000000, 1.25, 'galaxy'); },
+                Furs(offset){ return spaceCostMultiplier('dormitory', offset, 700000, 1.25, 'galaxy'); },
+                Cement(offset){ return spaceCostMultiplier('dormitory', offset, 1200000, 1.25, 'galaxy'); },
+                Plywood(offset){ return spaceCostMultiplier('dormitory', offset, 65000, 1.25, 'galaxy'); },
+            },
+            effect(){
+                return `<div>${loc('plus_max_citizens',[3])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return 3; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('dormitory','galaxy');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.galaxy['dormitory'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        symposium: {
+            id: 'galaxy-symposium',
+            title: loc('galaxy_symposium'),
+            desc(){
+                return `<div>${loc('galaxy_symposium')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { xeno: 6 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('symposium', offset, 8000000, 1.25, 'galaxy'); },
+                Food(offset){ return spaceCostMultiplier('symposium', offset, 125000, 1.25, 'galaxy'); },
+                Lumber(offset){ return spaceCostMultiplier('symposium', offset, 460000, 1.25, 'galaxy'); },
+                Brick(offset){ return spaceCostMultiplier('symposium', offset, 261600, 1.25, 'galaxy'); },
+            },
+            effect(){
+                return `<div>${loc('galaxy_symposium_effect',[1750])}</div><div>${loc('galaxy_symposium_effect2',[650])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return 4; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('symposium','galaxy');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.galaxy['symposium'].on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         freighter: {
             id: 'galaxy-freighter',
             title: loc('galaxy_freighter'),
@@ -3185,7 +3241,7 @@ const galaxyProjects = {
                 return `<div>${loc('galaxy_freighter_effect',[2,races[global.galaxy.alien1.id].name])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ: 2,
+                civ: 3,
                 mil: 0,
                 helium: 12
             },
@@ -3207,7 +3263,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_super_freighter')}</div><div class="has-text-special">${loc('galaxy_crew_fuel',[loc('resource_Helium_3_name')])}</div>`;
             },
-            reqs: { xeno: 6 },
+            reqs: { xeno: 7 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('super_freighter', offset, 28000000, 1.2, 'galaxy'); },
             },

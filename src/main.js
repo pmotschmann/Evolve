@@ -1103,11 +1103,11 @@ function fastLoop(){
             'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase',
             'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station',
             'gxy_stargate:telemetry_beacon','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
-            'spc_gas_moon:outpost','gxy_gorddon:embassy','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory','spc_dwarf:world_controller',
-            'prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant',
-            'city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','int_blackhole:far_reach',
-            'prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','int_blackhole:mass_ejector',
-            'city:casino','prtl_fortress:repair_droid'];
+            'spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory',
+            'spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry',
+            'city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge',
+            'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station',
+            'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','prtl_fortress:repair_droid'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
@@ -1506,6 +1506,9 @@ function fastLoop(){
 
                 if (global.galaxy[ship] && global.galaxy[ship].hasOwnProperty('on')){
                     if (actions.galaxy[region][ship].ship['civ'] && global.galaxy[ship].hasOwnProperty('crew')){
+                        if (global.galaxy[ship].crew < 0){
+                            global.galaxy[ship].crew = 0;
+                        }
                         if (global.galaxy[ship]['crew'] < global.galaxy[ship].on * actions.galaxy[region][ship].ship.civ){
                             if (global.civic.d_job === 'unemployed'){
                                 if (global.civic.free > actions.galaxy[region][ship].ship.civ){
@@ -3818,13 +3821,17 @@ function midLoop(){
             }
         }
         if (global.city['apartment']){
-            caps[global.race.species] += global.city['apartment'].on * 5;
-            bd_Citizen[housingLabel('large')] = (global.city['apartment'].on * 5)+'v';
+            caps[global.race.species] += p_on['apartment'] * 5;
+            bd_Citizen[housingLabel('large')] = (p_on['apartment']  * 5)+'v';
             if (global.tech['home_safe']){
-                let gain = (global.city['apartment'].on * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000));
+                let gain = (p_on['apartment']  * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000));
                 caps['Money'] += gain;
                 bd_Money[housingLabel('large')] = gain+'v';
             }
+        }
+        if (p_on['embassy'] && global.galaxy['dormitory']){
+            caps[global.race.species] += p_on['dormitory'] * 3;
+            bd_Citizen[loc('galaxy_dormitory')] = (p_on['dormitory'] * 3)+'v';
         }
         if (global.space['living_quarters']){
             caps[global.race.species] += red_on['living_quarters'];
@@ -4206,6 +4213,13 @@ function midLoop(){
             }
             caps['Knowledge'] += (p_on['biolab'] * gain);
             bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
+        }
+        if (p_on['embassy'] && global.galaxy['symposium']){
+            let dorm = 1750 * p_on['dormitory'];
+            let gtrade = 650 * global.galaxy.trade.cur;
+            let know = (dorm + gtrade) * p_on['symposium'];
+            caps['Knowledge'] += know;
+            bd_Knowledge[loc('galaxy_symposium')] = know +'v';
         }
         if (global.city['bank']){
             let vault = 1800;

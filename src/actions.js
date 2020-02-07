@@ -11485,6 +11485,29 @@ export const actions = {
                 return false;
             }
         },
+        cultural_exchange: {
+            id: 'tech-cultural_exchange',
+            title: loc('tech_cultural_exchange'),
+            desc: loc('tech_cultural_exchange'),
+            category: 'research',
+            reqs: { xeno: 5 },
+            grant: ['xeno',6],
+            cost: {
+                Knowledge(){ return 3550000; }
+            },
+            effect(){
+                let s1name = races[global.galaxy.alien1.id].name;
+                return loc('tech_cultural_exchange_effect',[s1name]);
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['symposium'] = { count: 0, on: 0 };
+                    global.galaxy['dormitory'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         scout_ship: {
             id: 'tech-scout_ship',
             title: loc('galaxy_scout_ship'),
