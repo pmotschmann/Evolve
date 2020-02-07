@@ -11546,6 +11546,25 @@ export const actions = {
                 return false;
             }
         },
+        frigate_ship: {
+            id: 'tech-frigate_ship',
+            title: loc('galaxy_frigate_ship'),
+            desc: loc('galaxy_frigate_ship'),
+            category: 'research',
+            reqs: { andromeda: 2, xeno: 6 },
+            grant: ['andromeda',3],
+            cost: {
+                Knowledge(){ return 4000000; }
+            },
+            effect(){ return loc('tech_frigate_ship_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['frigate_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         soul_forge: {
             id: 'tech-soul_forge',
             title: loc('portal_soul_forge_title'),
