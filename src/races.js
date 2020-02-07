@@ -1344,8 +1344,8 @@ export const traits = {
         desc: loc('trait_fortify'),
         type: 'special',
     },
-    spirit: { // gene fortification
-        desc: loc('trait_fortify'),
+    mastery: { // mastery booster
+        desc: loc('trait_mastery'),
         type: 'special',
     }
 };

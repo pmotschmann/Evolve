@@ -591,7 +591,7 @@ const genePool = {
         id: 'genes-mastered',
         title: loc('arpa_genepool_mastered_title'),
         desc: loc('arpa_genepool_mastered_desc'),
-        reqs: {challenge:4, locked: 1},
+        reqs: {challenge:4},
         grant: ['challenge',5],
         cost: 4000,
         effect(){ return crispr_effect($(this)[0].cost); },
@@ -1045,43 +1045,21 @@ function genetics(){
 
         let minor = false;
         if (global.tech['decay'] && global.tech['decay'] >= 2){
-            let trait = 'fortify';
             minor = true;
-            let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
-            let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
-            m_trait.append(gene);
-            if (global.race.Phage.count > 0){
-                let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
-                m_trait.append(phage);
-            }
-            if (global.race[trait] > 1){
-                m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
-            }
-            else {
-                m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
-            }
-            breakdown.append(m_trait);
+            bindTrait(breakdown,'fortify');
         }
 
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type === 'minor'){
                 minor = true;
-                let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
-                let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
-                m_trait.append(gene);
-                if (global.race.Phage.count > 0){
-                    let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
-                    m_trait.append(phage);
-                }
-                if (global.race[trait] > 1){
-                    m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
-                }
-                else {
-                    m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
-                }
-                breakdown.append(m_trait);
+                bindTrait(breakdown,trait);
             }
         });
+
+        if (global.genes['challenge'] && global.genes['challenge'] >= 5){
+            minor = true;
+            bindTrait(breakdown,'mastery');
+        }
 
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[races[global.race.species].name])}</div>`)
         
@@ -1163,6 +1141,7 @@ function genetics(){
             methods: {
                 gene(t){
                     let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 5; }
                     if (global.resource.Genes.amount >= cost){
                         global.resource.Genes.amount -= cost;
                         global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
@@ -1172,6 +1151,7 @@ function genetics(){
                 },
                 phage(t){
                     let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 2; }
                     if (global.race.Phage.count >= cost){
                         global.race.Phage.count -= cost;
                         global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
@@ -1234,12 +1214,14 @@ function genetics(){
                     }
                 },
                 geneCost(t){
-                    let cost = sizeApproximation(fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4));
-                    return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),cost]);
+                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 5; }
+                    return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
                 },
                 phageCost(t){
-                    let cost = sizeApproximation(fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4));
-                    return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),cost]);
+                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 2; }
+                    return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
                 },
                 removeCost(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
@@ -1251,15 +1233,34 @@ function genetics(){
                 },
                 genePurchasable(t){
                     let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 5; }
                     return global.resource.Genes.amount >= cost;
                 },
                 phagePurchasable(t){
                     let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 2; }
                     return global.race.Phage.count >= cost;
                 }
             }
         });
     }
+}
+
+function bindTrait(breakdown,trait){
+    let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
+    let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
+    m_trait.append(gene);
+    if (global.race.Phage.count > 0){
+        let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
+        m_trait.append(phage);
+    }
+    if (global.race[trait] > 1){
+        m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
+    }
+    else {
+        m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
+    }
+    breakdown.append(m_trait);
 }
 
 function fibonacci(num, memo){

@@ -2,12 +2,12 @@
 Intergalactic Content<br>
 Universe Mastery Rework<br>
 -Each Universe now tracks its own mastery level responsible for 40% of the mastery bonus, the remaining 60% comes from the general mastery level<br>
--Universal CRISPR Upgrade boosts universe specific mastery<br>
 -Standard Universe mastery rules remains unchanged<br>
 Micro icons can now be earned for none Micro achievements. These will not count for standard mastery, only Micro mastery<br>
 Unification 3.0, the unification system has been reworked<br>
 Federation Government type<br>
-New Faith CRISPR upgrade, unlocks priest job<br>
+New Faith CRISPR line of upgrades, unlocks priest job<br>
+Universal, Standard and Mastered CRISPR Upgrades, for masters of the universes<br>
 Extended the Deify and Study Ancients tech trees<br>
 Enhanced Droids upgrade for War Droids<br>
 Repair Droids for Fortress<br>

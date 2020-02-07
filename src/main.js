@@ -547,6 +547,9 @@ function fastLoop(){
         if (global.race.universe !== 'standard'){
             mastery += universe_level * u_rate;
         }
+        if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
+            mastery *= 1 + (0.01 * global.race.mastery);
+        }
         breakdown.p['Global'][loc('mastery')] = mastery + '%';
         global_multiplier *= 1 + (mastery / 100);
     }
