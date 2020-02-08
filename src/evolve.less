@@ -694,6 +694,30 @@ a {
         }
     }
 
+    .fleet {
+        width: 100%;
+        min-height: 1rem;
+        margin: .25rem 0;
+        padding: .25rem 0;
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+
+        .area {
+            display: flex;
+            > span {
+                display: inline-block;
+                min-width: 8rem;
+            }
+            .ship {
+                text-align: center;
+                .current {
+                    width: 2.5rem;
+                    font-size: 1rem;
+                }
+            }
+        } 
+    }
+
     .militaryTab {
         .garrison {
             .battle {

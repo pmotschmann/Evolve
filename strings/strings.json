@@ -3252,6 +3252,7 @@
   "galaxy_control": "%0 are in control of the %1.",
   "galaxy_ship_rating": "Ship Rating %0",
   "galaxy_crew_fuel": "Requires Crew and %0",
+  "galaxy_armada": "Armada",
   "galaxy_piracy": "Piracy",
   "galaxy_trade": "Galactic Trade",
   "galaxy_stargate": "Stargate Region",

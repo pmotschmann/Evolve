@@ -468,7 +468,9 @@ if (!global.settings['space']){
         blackhole: false,
         stargate: false,
         gateway: false,
-        gorddon: false
+        gorddon: false,
+        alien1: false,
+        alien2: false
     }
 }
 
@@ -487,6 +489,10 @@ if (typeof global.settings.space['stargate'] === 'undefined'){
 
 if (typeof global.settings.space['gorddon'] === 'undefined'){
     global.settings.space['gorddon'] = false;
+}
+if (typeof global.settings.space['alien1'] === 'undefined'){
+    global.settings.space['alien1'] = false;
+    global.settings.space['alien2'] = false;
 }
 
 if (!global.settings['showDeep']){
