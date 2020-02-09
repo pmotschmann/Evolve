@@ -151,6 +151,11 @@ var achievements = {
         desc: loc("achieve_joyless_desc"),
         flair: loc("achieve_joyless_flair")
     },
+    steelen: {
+        name: loc("achieve_steelen_name"),
+        desc: loc("achieve_steelen_desc"),
+        flair: loc("achieve_steelen_flair")
+    },
     biome_grassland: {
         name: loc("achieve_biome_grassland_name"),
         desc: loc("achieve_biome_grassland_desc"),
@@ -1129,6 +1134,12 @@ export function drawPerks(){
     if (global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
+    }
+
+    if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1){
+        unlocked++;
+        let bonus = global.stats.achieve['steelen'].l * 2;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_steelen",[bonus])}</span></div>`);
     }
 
     if (global.stats.achieve['whitehole']){

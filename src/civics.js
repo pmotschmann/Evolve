@@ -1740,6 +1740,9 @@ function warhead(){
     if (global.civic.govern.type === 'anarchy'){
         if (unlockAchieve(`anarchist`)){ new_achieve = true; }
     }
+    if (global.race['steelen'] && global.race['steelen'] >= 1){
+        if (unlockAchieve(`steelen`)){ new_achieve = true;}
+    }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         unlockFeat('take_no_advice');
     }

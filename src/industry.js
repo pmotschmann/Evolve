@@ -109,7 +109,7 @@ function loadSmelter(parent,bind){
         }
     }
 
-    if (global.resource.Steel.display && global.tech.smelting >= 2){
+    if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
         let smelt = $('<div class="smelting"></div>');
         let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button></b-tooltip>`);
         let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ s.Steel }}</button></b-tooltip>`);
