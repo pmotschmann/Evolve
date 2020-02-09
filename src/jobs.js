@@ -442,16 +442,7 @@ export function loadFoundry(){
                     var popper = $(`<div id="popCraft${res}" class="popper has-background-light has-text-dark"></div>`);
                     $('#main').append(popper);
                     let name = global.resource[res].name;
-                    let multiplier = craftingRatio(res);
-                    if (global.tech['v_train']){
-                        multiplier *= 2;
-                    }
-                    if (global.genes['crafty']){
-                        multiplier *= 1 + ((global.genes.crafty - 1) * 0.5);
-                    }
-                    if (global.race['ambidextrous']){
-                        multiplier *= 1 + (global.race['ambidextrous'] * 0.02);
-                    }
+                    let multiplier = craftingRatio(res,true);
                     let speed = global.genes['crafty'] ? 2 : 1;
                     let final = +(global.city.foundry[res] * multiplier * speed / 140).toFixed(2);
                     let bonus = (multiplier * speed * 100).toFixed(0);

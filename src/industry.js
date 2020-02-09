@@ -48,7 +48,7 @@ export const f_rate = {
 };
 
 function loadSmelter(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{s.count | on}}/{{ s.count }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{s.count | on}}/{{ s.cap }}</span></div>`);
     parent.append(fuel);
 
     if (!global.race['forge']){
@@ -151,7 +151,7 @@ function loadSmelter(parent,bind){
             addWood(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.cap){
                         global.city.smelter.Wood++;
                         global.city.smelter.Iron++;
                     }
@@ -191,7 +191,7 @@ function loadSmelter(parent,bind){
             addCoal(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.cap){
                         global.city.smelter.Coal++;
                         global.city.smelter.Iron++;
                     }
@@ -231,7 +231,7 @@ function loadSmelter(parent,bind){
             addOil(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.count){
+                    if (global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil < global.city.smelter.cap){
                         global.city.smelter.Oil++;
                         global.city.smelter.Iron++;
                     }
@@ -335,12 +335,12 @@ function loadSmelter(parent,bind){
             }
         },
         filters: {
-            on: function(c){
+            on(c){
                 return global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
             },
-            diffSize: function (value){
+            diffSize(value){
                 return value > 0 ? `+${sizeApproximation(value,2)}` : sizeApproximation(value,2);
-            },
+            }
         }
     });
 }

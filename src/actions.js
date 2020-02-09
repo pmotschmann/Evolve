@@ -5089,6 +5089,44 @@ export const actions = {
                 return false;
             }
         },
+        stellar_forge: {
+            id: 'tech-stellar_forge',
+            title: loc('tech_stellar_forge'),
+            desc: loc('tech_stellar_forge'),
+            category: 'research',
+            reqs: { foundry: 8, high_tech: 15, gateway: 3, neutron: 1 },
+            grant: ['star_forge',1],
+            cost: {
+                Knowledge(){ return 4500000; }
+            },
+            effect: loc('tech_stellar_forge_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['stellar_forge'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        stellar_smelting: {
+            id: 'tech-stellar_smelting',
+            title: loc('tech_stellar_smelting'),
+            desc: loc('tech_stellar_smelting'),
+            category: 'upgrade',
+            reqs: { star_forge: 1, xeno: 4 },
+            grant: ['star_forge',2],
+            cost: {
+                Knowledge(){ return 5000000; },
+                Vitreloy(){ return 10000; }
+            },
+            effect: loc('tech_stellar_smelting_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         assembly_line: {
             id: 'tech-assembly_line',
             title: loc('tech_assembly_line'),
@@ -5418,6 +5456,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.city['smelter'] = { 
                         count: 0,
+                        cap: 0,
                         Wood: 0,
                         Coal: 0,
                         Oil: 0,
@@ -12946,6 +12985,9 @@ function drawModal(c_action,type){
         case 'smelter':
             smelterModal(body);
             break;
+        case 'stellar_forge':
+            smelterModal(body);
+            break;
         case 'factory':
             factoryModal(body);
             break;
@@ -13122,7 +13164,7 @@ function sentience(){
     }
 
     if (global.race['no_crispr']){
-        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful',''];
+        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful'];
         for (let i=0; i<10; i++){
             let trait = bad[Math.rand(0,bad.length)];
             if ((global.race['carnivore'] && trait === 'herbivore') || (global.race['smart'] && trait === 'dumb')) {

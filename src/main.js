@@ -1110,7 +1110,7 @@ function fastLoop(){
 
         // Power usage
         let p_structs = [
-            'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase',
+            'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','int_neutron:stellar_forge',
             'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station',
             'gxy_stargate:telemetry_beacon','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
             'spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory',
@@ -2449,33 +2449,50 @@ function fastLoop(){
         // Smelters
         let iron_smelter = 0;
         let titanium_bd = {};
-        if (global.city['smelter'] && global.city['smelter'].count > 0){
+        if (global.city['smelter'] && global.city.smelter.count > 0){
+            let capacity = global.city.smelter.count;
+            if (p_on['stellar_forge'] && global.tech['star_forge'] && global.tech['star_forge'] >= 2){
+                capacity += p_on['stellar_forge'] * 2;
+            }
+            global.city.smelter.cap = capacity;
+
+            if (global.race['forge']){
+                global.city.smelter.Wood = 0;
+                global.city.smelter.Coal = 0;
+                global.city.smelter.Oil = global.city.smelter.cap;
+            }
+
             if (global.race['kindling_kindred'] && !global.race['evil']){
-                global.city['smelter'].Wood = 0;
+                global.city.smelter.Wood = 0;
             }
             let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
 
-            if (global.city['smelter'].Iron + global.city['smelter'].Steel > global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil){
-                let fueled = global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil;
-                let overflow = global.city['smelter'].Iron + global.city['smelter'].Steel - fueled;
-                global.city['smelter'].Iron -= overflow;
-                if (global.city['smelter'].Iron < 0){
-                    overflow = global.city['smelter'].Iron;
-                    global.city['smelter'].Iron = 0;
-                    global.city['smelter'].Steel += overflow;
-                    if (global.city['smelter'].Steel < 0){
-                        global.city['smelter'].Steel = 0;
+
+
+            if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                let fueled = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil;
+                let overflow = global.city.smelter.Iron + global.city.smelter.Steel - fueled;
+                global.city.smelter.Iron -= overflow;
+                if (global.city.smelter.Iron < 0){
+                    overflow = global.city.smelter.Iron;
+                    global.city.smelter.Iron = 0;
+                    global.city.smelter.Steel += overflow;
+                    if (global.city.smelter.Steel < 0){
+                        global.city.smelter.Steel = 0;
                     }
                 }
             }
+            else if (global.city.smelter.Iron + global.city.smelter.Steel < global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
+                global.city.smelter.Iron++;
+            }
 
-            let consume_wood = global.race['forge'] ? 0 : global.city['smelter'].Wood * (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
-            let consume_coal = global.race['forge'] ? 0 : global.city['smelter'].Coal * coal_fuel;
-            let consume_oil = global.race['forge'] ? 0 : global.city['smelter'].Oil * 0.35;
-            iron_smelter = global.city['smelter'].Iron;
-            let steel_smelter = global.city['smelter'].Steel;
-            let oil_bonus = global.race['forge'] ? global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil : global.city['smelter'].Oil;
-            while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil ){
+            let consume_wood = global.race['forge'] ? 0 : global.city.smelter.Wood * (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
+            let consume_coal = global.race['forge'] ? 0 : global.city.smelter.Coal * coal_fuel;
+            let consume_oil = global.race['forge'] ? 0 : global.city.smelter.Oil * 0.35;
+            iron_smelter = global.city.smelter.Iron;
+            let steel_smelter = global.city.smelter.Steel;
+            let oil_bonus = global.race['forge'] ? global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil : global.city.smelter.Oil;
+            while (iron_smelter + steel_smelter > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil ){
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
@@ -3379,16 +3396,7 @@ function fastLoop(){
 
             Object.keys(crafting_costs).forEach(function (craft){
                 let num = global.city.foundry[craft];
-                let craft_ratio = craftingRatio(craft);
-                if (global.tech['v_train']){
-                    craft_ratio *= 2;
-                }
-                if (global.genes['crafty']){
-                    craft_ratio *= 1 + ((global.genes.crafty - 1) * 0.5);
-                }
-                if (global.race['ambidextrous']){
-                    craft_ratio *= 1 + (global.race['ambidextrous'] * 0.02);
-                }
+                let craft_ratio = craftingRatio(craft,true);
 
                 let speed = global.genes['crafty'] ? 2 : 1;
                 let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (crafting_costs[craft][0].a * speed * craft_costs / 140));
@@ -4332,6 +4340,9 @@ function midLoop(){
         }
         if (red_on['fabrication']){
             lCaps['craftsman'] += red_on['fabrication'];
+        }
+        if (p_on['stellar_forge']){
+            lCaps['craftsman'] += p_on['stellar_forge'] * 2;
         }
         if (global.portal['carport']){
             lCaps['hell_surveyor'] += global.portal.carport.count - global.portal.carport.damaged;

@@ -2377,6 +2377,44 @@ const interstellarProjects = {
                 return loc('interstellar_citadel_flair');
             }
         },
+        stellar_forge: {
+            id: 'interstellar-stellar_forge',
+            title: loc('interstellar_stellar_forge_title'),
+            desc: `<div>${loc('interstellar_stellar_forge_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { star_forge: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('stellar_forge', offset, 1200000, 1.25, 'interstellar'); },
+                Iridium(offset){ return spaceCostMultiplier('stellar_forge', offset, 250000, 1.25, 'interstellar'); },
+                Bolognium(offset){ return spaceCostMultiplier('stellar_forge', offset, 35000, 1.25, 'interstellar'); },
+                Aerogel(offset){ return spaceCostMultiplier('stellar_forge', offset, 75000, 1.25, 'interstellar'); },
+            },
+            effect(){
+                let desc = `<div>${loc('city_foundry_effect1',[2])}</div><div>${loc('interstellar_stellar_forge_effect',[10])}</div><div>${loc('interstellar_stellar_forge_effect2',[5])}</div>`;
+                if (global.tech['star_forge'] && global.tech['star_forge'] >= 2){
+                    desc += `<div>${loc('interstellar_stellar_forge_effect3',[2])}</div>`;
+                }
+                return `${desc}<div class="has-text-advanced">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return 3; },
+            special: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('stellar_forge','interstellar');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.interstellar['stellar_forge'].on++;
+                        if (global.tech['star_forge'] >= 2){
+                            global.city.smelter.cap += 2;
+                            global.city.smelter.Oil += 2;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return loc('interstellar_stellar_forge_flair');
+            }
+        },
     },
     int_blackhole: {
         info: {

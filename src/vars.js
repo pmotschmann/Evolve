@@ -710,6 +710,10 @@ if (!global.civic['govern']){
 }
 global.civic.govern.fr = 0;
 
+if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('cap')){
+    global.city.smelter['cap'] = 0;
+}
+
 if (!global.civic['foreign']){
     global.civic['foreign'] = {
         gov0: {

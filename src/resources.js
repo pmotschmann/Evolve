@@ -121,7 +121,7 @@ export function craftCost(){
         };
 }
 
-export function craftingRatio(res){
+export function craftingRatio(res,auto){
     let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
     let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * skill) : 1;
     if (global.tech['foundry'] >= 3 && global.city.foundry[res] > 1){
@@ -142,6 +142,12 @@ export function craftingRatio(res){
     if (global.space['fabrication']){
         multiplier += red_on['fabrication'] * global.civic.colonist.workers * 0.02;
     }
+    if (res === 'Mythril' && p_on['stellar_forge']){
+        multiplier += p_on['stellar_forge'] * 0.05;
+    }
+    if (auto && p_on['stellar_forge']){
+        multiplier += p_on['stellar_forge'] * 0.1;
+    }
     if (global.race['crafty']){
         multiplier += 0.03;
     }
@@ -153,6 +159,17 @@ export function craftingRatio(res){
     }
     if (global.civic.govern.type === 'socialist'){
         multiplier *= 1.25;
+    }
+    if (auto){
+        if (global.tech['v_train']){
+            multiplier *= 2;
+        }
+        if (global.genes['crafty']){
+            multiplier *= 1 + ((global.genes.crafty - 1) * 0.5);
+        }
+        if (global.race['ambidextrous']){
+            multiplier *= 1 + (global.race['ambidextrous'] * 0.02);
+        }
     }
     if (global.race.Plasmid.count > 0){
         multiplier *= plasmidBonus() / 8 + 1;
