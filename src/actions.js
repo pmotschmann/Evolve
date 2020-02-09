@@ -11566,6 +11566,25 @@ export const actions = {
                 return false;
             }
         },
+        defense_platform: {
+            id: 'tech-defense_platform',
+            title: loc('galaxy_defense_platform'),
+            desc: loc('galaxy_defense_platform'),
+            category: 'research',
+            reqs: { stargate: 5, piracy: 1 },
+            grant: ['stargate',6],
+            cost: {
+                Knowledge(){ return 4850000; }
+            },
+            effect: loc('tech_defense_platform_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['defense_platform'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         scout_ship: {
             id: 'tech-scout_ship',
             title: loc('galaxy_scout_ship'),
@@ -13103,7 +13122,7 @@ function sentience(){
     }
 
     if (global.race['no_crispr']){
-        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic'];
+        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful',''];
         for (let i=0; i<10; i++){
             let trait = bad[Math.rand(0,bad.length)];
             if ((global.race['carnivore'] && trait === 'herbivore') || (global.race['smart'] && trait === 'dumb')) {

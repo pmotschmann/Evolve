@@ -2721,8 +2721,13 @@ const galaxyProjects = {
                 let helium = spatialReasoning(2000);
                 let deuterium = spatialReasoning(4500);
                 let elerium = spatialReasoning(50);
-                return `<div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let gateway = '';
+                if (global.tech['gateway'] && global.tech['gateway'] >= 2){
+                    gateway = `<div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div>`;
+                }
+                return `${gateway}<div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
+            support(){ return 0.5; },
             powered(){ return p_on['s_gate'] ? 4 : 0; },
             refresh: true,
             action(){
@@ -2789,6 +2794,33 @@ const galaxyProjects = {
                         global.settings.space.gateway = true;
                         global.tech['gateway'] = 1;
                         galaxySpace();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        defense_platform: {
+            id: 'galaxy-defense_platform',
+            title: loc('galaxy_defense_platform'),
+            desc(){ return `<div>${loc('galaxy_defense_platform')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { stargate: 6 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('defense_platform', offset, 750000, 1.25, 'galaxy'); },
+                Adamantite(offset){ return spaceCostMultiplier('defense_platform', offset, 425000, 1.25, 'galaxy'); },
+                Elerium(offset){ return spaceCostMultiplier('defense_platform', offset, 800, 1.25, 'galaxy'); },
+                Vitreloy(offset){ return spaceCostMultiplier('defense_platform', offset, 1250, 1.25, 'galaxy'); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('defense_platform', offset, 75000, 1.25, 'galaxy'); },
+            },
+            effect(){
+                return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[20])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return p_on['s_gate'] ? 3 : 0; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('defense_platform','galaxy');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.galaxy['defense_platform'].on++;
                     }
                     return true;
                 }
@@ -3146,7 +3178,7 @@ const galaxyProjects = {
                 Wrought_Iron(){ return global.galaxy.embassy.count < 1 ? 6000000 : 0; }
             },
             effect(){
-                let food = 2000;
+                let food = 7500;
                 return `<div>${loc('galaxy_embassy_effect',[races[global.galaxy.alien1.id].name])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return p_on['s_gate'] ? 25 : 0; },
@@ -3343,6 +3375,10 @@ export function piracy(region){
             case 'gxy_alien2':
                 pirate = 2500;
                 break;
+        }
+
+        if (region === 'gxy_stargate' && p_on['defense_platform']){
+            armada += p_on['defense_platform'] * 20;
         }
 
         if (region !== 'gxy_stargate'){
