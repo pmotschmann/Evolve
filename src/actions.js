@@ -2084,6 +2084,7 @@ export const actions = {
                     global.evolution['crispr'] = { count: 0 };
                     global.evolution['junker'] = { count: 0 };
                     global.evolution['joyless'] = { count: 0 };
+                    global.evolution['steelen'] = { count: 0 };
                     if (global.stats.achieve['whitehole']){
                         global.evolution['decay'] = { count: 0 };
                     }
@@ -2100,6 +2101,7 @@ export const actions = {
                     challengeActionHeader();
                     addAction('evolution','junker');
                     addAction('evolution','joyless');
+                    addAction('evolution','steelen');
                     if (global.stats.achieve['whitehole']){
                         addAction('evolution','decay');
                     }
@@ -2288,6 +2290,34 @@ export const actions = {
             emblem(){ return format_emblem('joyless'); },
             flair: loc('evo_challenge_joyless_flair'),
             highlight(){ return global.race['joyless'] ? true : false; }
+        },
+        steelen: {
+            id: 'evo-steelen',
+            title: loc('evo_challenge_steelen'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_steelen_desc')}</div>` : loc('evo_challenge_steelen_desc'); },
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect: loc('evo_challenge_steelen_effect'),
+            action(){
+                if (payCosts(actions.evolution.steelen.cost)){
+                    if (payCosts($(this)[0].cost)){
+                        if (global.race['steelen']){
+                            delete global.race['steelen'];
+                            $(`#${$(this)[0].id}`).removeClass('hl');
+                        }
+                        else {
+                            global.race['steelen'] = 1;
+                            $(`#${$(this)[0].id}`).addClass('hl');
+                        }
+                        drawAchieve();
+                    }
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('steelen'); },
+            flair: loc('evo_challenge_steelen_flair'),
+            highlight(){ return global.race['steelen'] ? true : false; }
         },
         decay: {
             id: 'evo-decay',
@@ -3496,7 +3526,7 @@ export const actions = {
                 if (global.race['pyrophobia']){
                     iron_yield *= 0.9;
                 }
-                if (global.tech['smelting'] >= 2){
+                if (global.tech['smelting'] >= 2 && !global.race['steelen']){
                     return loc('city_smelter_effect2',[iron_yield]);
                 }
                 else {
@@ -5466,6 +5496,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.race['steelen']){
+                    global.tech['smelting'] = 2;
+                    drawTech();
+                }
             }
         },
         steel: {
@@ -5475,7 +5511,10 @@ export const actions = {
             category: 'research',
             reqs: { smelting: 1, mining: 4 },
             grant: ['smelting',2],
-            cost: { 
+            condition() {
+                return global.race['steelen'] ? false : true;
+            },
+            cost: {
                 Knowledge(){ return 4950; },
                 Steel(){ return 25; }
             },
@@ -5508,6 +5547,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.race['steelen']){
+                    global.tech['smelting'] = 6;
+                    drawTech();
+                }
             }
         },
         bessemer_process: {
@@ -5517,6 +5562,9 @@ export const actions = {
             category: 'upgrade',
             reqs: { smelting: 3 },
             grant: ['smelting',4],
+            condition() {
+                return global.race['steelen'] ? false : true;
+            },
             cost: { 
                 Knowledge(){ return 19800; },
                 Coal(){ return 5000; }
@@ -5536,6 +5584,9 @@ export const actions = {
             category: 'upgrade',
             reqs: { smelting: 4, high_tech: 3 },
             grant: ['smelting',5],
+            condition() {
+                return global.race['steelen'] ? false : true;
+            },
             cost: { 
                 Knowledge(){ return 46800; },
                 Coal(){ return 10000; }
@@ -5555,6 +5606,9 @@ export const actions = {
             category: 'upgrade',
             reqs: { smelting: 5, high_tech: 4 },
             grant: ['smelting',6],
+            condition() {
+                return global.race['steelen'] ? false : true;
+            },
             cost: { 
                 Knowledge(){ return 85500; },
                 Copper(){ return 25000; }
@@ -13224,9 +13278,6 @@ function sentience(){
     global.civic.govern.rev = 0;
     global.civic.govern.fr = 0;
 
-    if (global.race.gods !== 'none'){
-        global.tech['religion'] = 1;
-    }
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.tech['r_queue'] = 1;

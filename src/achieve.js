@@ -151,6 +151,11 @@ var achievements = {
         desc: loc("achieve_joyless_desc"),
         flair: loc("achieve_joyless_flair")
     },
+    steelen: {
+        name: loc("achieve_steelen_name"),
+        desc: loc("achieve_steelen_desc"),
+        flair: loc("achieve_steelen_flair")
+    },
     biome_grassland: {
         name: loc("achieve_biome_grassland_name"),
         desc: loc("achieve_biome_grassland_desc"),
@@ -1111,6 +1116,12 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
     }
 
+    if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1){
+        unlocked++;
+        let bonus = global.stats.achieve['steelen'].l * 2;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_steelen",[bonus])}</span></div>`);
+    }
+
     if (global.stats.achieve['whitehole']){
         unlocked++;
         let bonus = global.stats.achieve['whitehole'].l * 5;
@@ -1229,6 +1240,12 @@ export function drawPerks(){
         let rna = global.stats.feat['novice'] / 2;
         let dna = global.stats.feat['novice'] / 4;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_novice",[rna,dna])}</span></div>`); 
+    }
+    
+    if (global.genes['plasma']) {
+        unlocked++;
+        let plasmid_cap = global.genes['plasma'] >= 2 ? 5 : 3;
+        perks.append(`<div><span class="has-text-warning">${loc('arpa_genepool_mitosis_desc',[plasmid_cap])}</span></div>`); 
     }
 
     if (global.genes['mutation']){ 

@@ -1468,6 +1468,9 @@ export function cleanAddTrait(trait){
             if (global.city['sawmill']){
                 delete global.city['sawmill'];
             }
+            if (global.city['graveyard']){
+                delete global.city['graveyard'];
+            }
             if (global.city['lumber_yard']){
                 delete global.city['lumber_yard'];
             }
@@ -1475,6 +1478,9 @@ export function cleanAddTrait(trait){
             delete global.tech['saw'];
             global.civic.lumberjack.display = false;
             global.civic.lumberjack.workers = 0;
+            if (global.civic.d_job === 'lumberjack') {
+                global.civic.d_job = 'unemployed';
+            }   
             if (global.tech['foundry']){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
@@ -1497,6 +1503,9 @@ export function cleanAddTrait(trait){
                 global.city['smokehouse'] = { count: global.city.silo.count };
                 delete global.city['silo'];
             }
+            else{
+                global.city['smokehouse'] = { count: 0 };
+            }
             if (global.city['mill']){
                 delete global.city['mill'];
             }
@@ -1505,6 +1514,9 @@ export function cleanAddTrait(trait){
             global.civic.farmer.workers = 0;
             global.civic.farmer.max = 0;
             global.civic.farmer.display = false;
+            if (global.civic.d_job === 'farmer') {
+                global.civic.d_job = 'unemployed';
+            }
             break;
         case 'terrifying':
             Object.keys(global.resource).forEach(function (res){

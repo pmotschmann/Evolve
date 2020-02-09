@@ -2018,10 +2018,6 @@ const interstellarProjects = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('xfer_station', offset, 3500, 1.28, 'interstellar'); },
             },
             effect(){
-                if (global.tech['proxima'] === 1){
-                    global.tech['proxima'] = 2;
-                    global.interstellar['cargo_yard'] = { count: 0 };
-                }
                 let fuel = 0.28;
                 let helium = spatialReasoning(5000);
                 let oil = spatialReasoning(4000);
@@ -2044,6 +2040,10 @@ const interstellarProjects = {
                         global['resource']['Helium_3'].max += spatialReasoning(5000);
                         global['resource']['Oil'].max += spatialReasoning(4000);
                         global['resource']['Deuterium'].max += spatialReasoning(2000);
+                    }
+                    if (global.tech['proxima'] === 1){
+                        global.tech['proxima'] = 2;
+                        global.interstellar['cargo_yard'] = { count: 0 };
                     }
                     return true;
                 }
