@@ -868,6 +868,9 @@ const spaceProjects = {
                 if (global.tech['swarm'] >= 3){
                     reduce -= quantum_level / 100;
                 }
+                if (reduce < 0.05){
+                    reduce = 0.05;
+                }
                 reduce = +((1 - reduce) * 100).toFixed(2);
                 return loc('space_hell_swarm_plant_effect1',[reduce]);
             },
@@ -2119,6 +2122,9 @@ const interstellarProjects = {
             no_queue(){ return global.interstellar.dyson.count ? false : true },
             queue_size: 10,
             queue_complete(){ return global.interstellar.dyson.count >= 100 ? true : false; },
+            condition(){
+                return global.interstellar.dyson.count >= 100 && global.tech['dyson'] ? false : true;
+            },
             cost: {
                 Money(){ return global.interstellar.dyson.count < 100 ? 250000 : 0; },
                 Adamantite(){ return global.interstellar.dyson.count < 100 ? 10000 : 0; },
@@ -2138,6 +2144,45 @@ const interstellarProjects = {
                 if (payCosts($(this)[0].cost)){
                     if (global.interstellar.dyson.count < 100){
                         incrementStruct('dyson','interstellar');
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        dyson_sphere: {
+            id: 'interstellar-dyson_sphere',
+            title: loc('interstellar_dyson_sphere_title'),
+            desc(){
+                return `<div>${loc('interstellar_dyson_sphere_title')}</div>`;
+            },
+            reqs: { proxima: 3, dyson: 1 },
+            no_queue(){ return global.interstellar.dyson_sphere.count ? false : true },
+            queue_size: 10,
+            queue_complete(){ return global.interstellar.dyson_sphere.count >= 100 ? true : false; },
+            condition(){
+                return global.interstellar.dyson.count >= 100 && global.tech['dyson'] ? true : false;
+            },
+            cost: {
+                Money(){ return global.interstellar.dyson_sphere.count < 100 ? 5000000 : 0; },
+                Bolognium(){ return global.interstellar.dyson_sphere.count < 100 ? 25000 : 0; },
+                Vitreloy(){ return global.interstellar.dyson_sphere.count < 100 ? 1000 : 0; },
+                Aerogel(){ return global.interstellar.dyson_sphere.count < 100 ? 75000 : 0; }
+            },
+            effect(){
+                if (global.interstellar.dyson_sphere.count < 100){
+                    let power = 175 + (global.interstellar.dyson_sphere.count * 5);
+                    let remain = 100 - global.interstellar.dyson_sphere.count;
+                    return `<div>${loc('interstellar_dyson_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return loc('interstellar_dyson_complete',[powerModifier(750)]);
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.dyson_sphere.count < 100){
+                        incrementStruct('dyson_sphere','interstellar');
                     }
                     return true;
                 }
@@ -3137,7 +3182,7 @@ const galaxyProjects = {
             ship: {
                 civ: 6,
                 mil: 10,
-                helium: 80,
+                deuterium: 25,
                 rating: 250
             },
             powered(){ return 1; },
@@ -3910,6 +3955,9 @@ export function swarm_adjust(res){
         let reduce = global.tech['swarm'] ? 0.88 : 0.94;
         if (global.tech['swarm'] >= 3){
             reduce -= quantum_level / 100;
+        }
+        if (reduce < 0.05){
+            reduce = 0.05;
         }
         res *= reduce ** global.space.swarm_plant.count;
     }
