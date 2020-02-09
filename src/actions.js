@@ -10316,7 +10316,6 @@ export const actions = {
             effect: loc('tech_dyson_sphere_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.interstellar['dyson_sphere'] = { count: 0 };
                     return true;
                 }
                 return false;
