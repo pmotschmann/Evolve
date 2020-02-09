@@ -10449,6 +10449,24 @@ export const actions = {
                 return false;
             }
         },
+        dyson_sphere2: {
+            id: 'tech-dyson_sphere2',
+            title: loc('tech_dyson_sphere'),
+            desc: loc('tech_dyson_sphere'),
+            category: 'research',
+            reqs: { proxima: 3, piracy: 1 },
+            grant: ['dyson',1],
+            cost: {
+                Knowledge(){ return 5000000; }
+            },
+            effect: loc('tech_dyson_sphere2_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         gps: {
             id: 'tech-gps',
             title: loc('tech_gps'),
@@ -11443,6 +11461,25 @@ export const actions = {
                 return false;
             }
         },
+        enhanced_sensors: {
+            id: 'tech-enhanced_sensors',
+            title: loc('tech_enhanced_sensors'),
+            desc: loc('tech_enhanced_sensors'),
+            category: 'upgrade',
+            reqs: { infernite: 5, xeno: 4 },
+            grant: ['infernite',6],
+            cost: {
+                Knowledge(){ return 4750000; },
+                Vitreloy(){ return 25000; }
+            },
+            effect(){ return loc('tech_enhanced_sensors_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         xeno_linguistics: {
             id: 'tech-xeno_linguistics',
             title: loc('tech_xeno_linguistics'),
@@ -11508,6 +11545,27 @@ export const actions = {
                 return false;
             }
         },
+        advanced_telemetry: {
+            id: 'tech-advanced_telemetry',
+            title: loc('tech_advanced_telemetry'),
+            desc: loc('tech_advanced_telemetry'),
+            category: 'upgrade',
+            reqs: { xeno: 5 },
+            grant: ['telemetry',1],
+            cost: {
+                Knowledge(){ return 4200000; },
+                Vitreloy(){ return 10000; }
+            },
+            effect(){
+                return loc('tech_advanced_telemetry_effect');
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         scout_ship: {
             id: 'tech-scout_ship',
             title: loc('galaxy_scout_ship'),
@@ -11560,6 +11618,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['frigate_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    renderSpace();
                     return true;
                 }
                 return false;

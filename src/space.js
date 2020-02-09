@@ -199,7 +199,7 @@ const spaceProjects = {
                 let oil = +(fuel_adjust(2)).toFixed(2);
                 return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('plus_max_resource',[iridium,loc('resource_Iridium_name')])}</div><div>${loc('space_moon_base_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
-            support: 2,
+            support(){ return 2; },
             powered(){ return 4; },
             refresh: true,
             action(){
@@ -237,7 +237,7 @@ const spaceProjects = {
                 iridium = +(iridium * zigguratBonus()).toFixed(3);
                 return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -270,7 +270,7 @@ const spaceProjects = {
                 let helium = +(0.18 * zigguratBonus()).toFixed(3);
                 return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_helium_mine_effect',[helium])}</div><div>${loc('plus_max_resource',[storage,loc('resource_Helium_3_name')])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -299,7 +299,7 @@ const spaceProjects = {
             effect(){
                 return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect',[5])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -367,7 +367,7 @@ const spaceProjects = {
                 let helium = +(fuel_adjust(1.25)).toFixed(2);
                 return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red])}</div><div>${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('space_red_spaceport_effect3',[global.resource.Food.name])}</div>`;
             },
-            support: 3,
+            support(){ return 3; },
             powered(){ return 5; },
             refresh: true,
             action(){
@@ -427,7 +427,7 @@ const spaceProjects = {
             effect(){
                 return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('plus_max_resource',[1,loc('colonist')])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -458,7 +458,7 @@ const spaceProjects = {
             effect(){
                 return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[1])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -554,7 +554,7 @@ const spaceProjects = {
                 let titanium = +(0.02 * zigguratBonus()).toFixed(3);
                 return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -583,7 +583,7 @@ const spaceProjects = {
             effect(){
                 return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1')}</div><div>${loc('space_red_fabrication_effect2')}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -660,7 +660,7 @@ const spaceProjects = {
                 let food = +(2 * zigguratBonus()).toFixed(2);
                 return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             refresh: true,
             action(){
@@ -706,7 +706,7 @@ const spaceProjects = {
                 let elerium = spatialReasoning(10);
                 return `<div>${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             refresh: true,
             action(){
@@ -932,7 +932,7 @@ const spaceProjects = {
                 let control = global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10;
                 return loc('space_sun_swarm_control_effect1',[control]);
             },
-            support: 6,
+            support(){ return 6; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('swarm_control');
@@ -959,7 +959,7 @@ const spaceProjects = {
                 let solar = global.tech.swarm >= 4 ? (global.tech.swarm >= 5 ? 0.65 : 0.5) : 0.35;
                 return loc('space_sun_swarm_satellite_effect1',[powerModifier(solar)]);
             },
-            support: -1,
+            support(){ return -1; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('swarm_satellite');
@@ -1288,7 +1288,7 @@ const spaceProjects = {
                 let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('plus_max_resource',[elerium_cap, loc('resource_Elerium_name')])}</div>` : '';
                 return `<div>${loc('plus_max_space_miners',[3])}</div>${elerium}<div>${loc('space_belt_station_effect3',[helium])}</div><div>${loc('space_belt_station_effect4',[food,$(this)[0].powered(),global.resource.Food.name])}</div>`;
             },
-            support: 3,
+            support(){ return 3; },
             powered(){ return 3; },
             refresh: true,
             action(){
@@ -1324,7 +1324,7 @@ const spaceProjects = {
                 let elerium = +((global.tech.asteroid >= 6 ?  (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005) * zigguratBonus()).toFixed(4);
                 return `<div>${loc('space_belt_elerium_ship_effect1')}</div><div>${loc('space_belt_elerium_ship_effect2',[elerium])}</div>`;
             },
-            support: -2,
+            support(){ return -2; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1355,7 +1355,7 @@ const spaceProjects = {
                 let iridium = +((global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus()).toFixed(3);
                 return `<div>${loc('space_belt_iridium_ship_effect1')}</div><div>${loc('space_belt_iridium_ship_effect2',[iridium])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1391,7 +1391,7 @@ const spaceProjects = {
                     return `<div>${loc('space_belt_iron_ship_effect1')}</div><div>${loc('space_belt_iron_ship_effect2',[iron])}</div>`;
                 }
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1617,9 +1617,9 @@ const interstellarProjects = {
             effect(){
                 let helium = +(int_fuel_adjust(5)).toFixed(2);
                 let food = 100;
-                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support()])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
-            support: 5,
+            support(){ return 5; },
             powered(){ return 10; },
             refresh: true,
             action(){
@@ -1652,9 +1652,9 @@ const interstellarProjects = {
             },
             effect(){
                 let citizens = 1;
-                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('interstellar_habitat_effect',[citizens,$(this)[0].powered()])}</div>`;
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support()])}</div><div>${loc('interstellar_habitat_effect',[citizens,$(this)[0].powered()])}</div>`;
             },
-            support: 1,
+            support(){ return 1; },
             powered(){ return 2; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1682,7 +1682,7 @@ const interstellarProjects = {
             effect(){
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_mining_droid_effect')}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             special: true,
             refresh: true,
@@ -1723,7 +1723,7 @@ const interstellarProjects = {
                 }
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_processing_effect',[bonus])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1751,7 +1751,7 @@ const interstellarProjects = {
                 let det = 1.25;
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_fusion_effect',[-($(this)[0].powered()),det])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return powerModifier(-22); },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1786,7 +1786,7 @@ const interstellarProjects = {
                 }
                 return desc;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1816,7 +1816,7 @@ const interstellarProjects = {
                 vault = +(vault).toFixed(0);
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1844,7 +1844,7 @@ const interstellarProjects = {
             effect(){
                 return `<div>${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             special: true,
             action(){
@@ -2027,9 +2027,9 @@ const interstellarProjects = {
                 if (global.resource.Deuterium.display){
                     det = `<div>${loc('plus_max_resource',[spatialReasoning(2000),loc('resource_Deuterium_name')])}</div>`;
                 }
-                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[uranium,loc('resource_Uranium_name')])}</div>${det}<div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support()])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[uranium,loc('resource_Uranium_name')])}</div>${det}<div>${loc('city_fission_power_effect',[fuel])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
-            support: 1,
+            support(){ return 1; },
             powered(){ return 1; },
             refresh: true,
             action(){
@@ -2187,9 +2187,9 @@ const interstellarProjects = {
                 let helium = spatialReasoning(4000);
                 let deuterium = spatialReasoning(3000);
                 let elerium = spatialReasoning(25);
-                return `<div>${loc('interstellar_nexus_effect1',[$(this)[0].support])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('interstellar_nexus_effect2',[$(this)[0].powered(),350])}</div>`;
+                return `<div>${loc('interstellar_nexus_effect1',[$(this)[0].support()])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div>${loc('interstellar_nexus_effect2',[$(this)[0].powered(),350])}</div>`;
             },
-            support: 2,
+            support(){ return 2; },
             powered(){ return 8; },
             refresh: true,
             action(){
@@ -2229,7 +2229,7 @@ const interstellarProjects = {
                 let ram = global.tech['ram_scoop'] ? `<div>${loc('interstellar_harvester_effect',[deuterium])}</div>` : '';
                 return `<div>${loc('space_used_support',[loc('interstellar_nebula_name')])}</div><div>${loc('space_gas_mining_effect1',[helium])}</div>${ram}`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2258,7 +2258,7 @@ const interstellarProjects = {
                 let elerium = +(0.014 * zigguratBonus()).toFixed(3);
                 return `<div>${loc('space_used_support',[loc('interstellar_nebula_name')])}</div><div>${loc('space_belt_elerium_ship_effect2',[elerium])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             powered(){ return 1; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2754,14 +2754,17 @@ const galaxyProjects = {
                 Iridium(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 177000, 1.25, 'galaxy'); },
             },
             effect(){
-                let know = p_on['telemetry_beacon'] ? 600 * p_on['telemetry_beacon'] : 0;
+                let know = p_on['telemetry_beacon'] ? 800 * p_on['telemetry_beacon'] : 0;
+                if (global.tech['telemetry']){
+                    know *= 1.5;
+                }
                 let gateway = '';
                 if (global.tech['gateway'] && global.tech['gateway'] >= 2){
-                    gateway = `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div>`;
+                    gateway = `<div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div>`;
                 }
-                return `${gateway}<div>${loc('galaxy_telemetry_beacon_effect1',[600])}</div><div>${loc('galaxy_telemetry_beacon_effect2',[know])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `${gateway}<div>${loc('galaxy_telemetry_beacon_effect1',[global.tech['telemetry'] ? 1200 : 800])}</div><div>${loc('galaxy_telemetry_beacon_effect2',[know])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
-            support: 0.5,
+            support(){ return global.tech['telemetry'] ? 0.75 : 0.5; },
             powered(){ return p_on['s_gate'] ? 4 : 0; },
             postPower(o){
                 let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
@@ -2871,9 +2874,9 @@ const galaxyProjects = {
             effect(){
                 let helium = +(int_fuel_adjust(25)).toFixed(2);
                 let food = 250;
-                return `<div>${loc('galaxy_gateway_support',[$(this)[0].support])}</div><div>${loc('plus_max_soldiers',[4])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
+                return `<div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div><div>${loc('plus_max_soldiers',[4])}</div><div>${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div>${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
-            support: 2,
+            support(){ return 2; },
             powered(){ return p_on['s_gate'] ? 12 : 0; },
             refresh: true,
             action(){
@@ -2907,9 +2910,9 @@ const galaxyProjects = {
             effect(){
                 let bolognium = +(0.008 * zigguratBonus()).toFixed(3);
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+                return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             ship: {
                 civ: 2,
                 mil: 0,
@@ -2944,9 +2947,9 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             ship: {
                 civ: 1,
                 mil: 1,
@@ -2982,9 +2985,9 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
-            support: -1,
+            support(){ return -1; },
             ship: {
                 civ: 2,
                 mil: 3,
@@ -3013,16 +3016,16 @@ const galaxyProjects = {
             reqs: { andromeda: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('frigate_ship', offset, 18000000, 1.25, 'galaxy'); },
-                //Steel(offset){ return spaceCostMultiplier('frigate_ship', offset, 1750000, 1.25, 'galaxy'); },
-                //Infernite(offset){ return spaceCostMultiplier('frigate_ship', offset, 16000, 1.25, 'galaxy'); },
-                //Bolognium(offset){ return spaceCostMultiplier('frigate_ship', offset, 80000, 1.25, 'galaxy'); },
+                Elerium(offset){ return spaceCostMultiplier('frigate_ship', offset, 1250, 1.25, 'galaxy'); },
+                Mythril(offset){ return spaceCostMultiplier('frigate_ship', offset, 350000, 1.25, 'galaxy'); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('frigate_ship', offset, 800000, 1.25, 'galaxy'); },
                 Soul_Gem(offset){ return spaceCostMultiplier('frigate_ship', offset, 2, 1.25, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
-            support: -2,
+            support(){ return -2; },
             ship: {
                 civ: 3,
                 mil: 5,
@@ -3058,9 +3061,9 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support)])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div>${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div>${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div>${loc('space_red_factory_effect3',[helium])}</div>`;
             },
-            support: -3,
+            support(){ return -3; },
             ship: {
                 civ: 6,
                 mil: 10,
@@ -3648,6 +3651,50 @@ function galaxySpace(){
                 methods: {
                     owner(){
                         return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
+                    },
+                    threat(r){
+                        let pirates = Math.round((1 - piracy(r)) * 100);
+                        if (pirates === 0){
+                            return "has-text-success";
+                        }
+                        else if (pirates <= 20){
+                            return "has-text-advanced";
+                        }
+                        else if (pirates <= 40){
+                            return "has-text-info";
+                        }
+                        else if (pirates <= 60){
+                            return "has-text-warning";
+                        }
+                        else if (pirates <= 80){
+                            return "has-text-caution";
+                        }
+                        else {
+                            return "has-text-danger";
+                        }
+                    }
+                },
+                filters: {
+                    pirate(r){
+                        let pirates = Math.round((1 - piracy(r)) * 100);
+                        if (pirates === 0){
+                            return loc('galaxy_piracy_none');
+                        }
+                        else if (pirates <= 20){
+                            return loc('galaxy_piracy_vlow');
+                        }
+                        else if (pirates <= 40){
+                            return loc('galaxy_piracy_low');
+                        }
+                        else if (pirates <= 60){
+                            return loc('galaxy_piracy_avg');
+                        }
+                        else if (pirates <= 80){
+                            return loc('galaxy_piracy_high');
+                        }
+                        else {
+                            return loc('galaxy_piracy_vhigh');
+                        }
                     }
                 }
             };
@@ -3656,6 +3703,10 @@ function galaxySpace(){
                 let support = galaxyProjects[region].info['support'];
                 regionContent.append(`<span class="regionSupport" v-show="s.s_max">{{ s.support }}/{{ s.s_max }}</span>`);
                 vData.data['s'] = global.galaxy[support];
+            }
+
+            if (global.tech['piracy']){
+                regionContent.append(`<div><span class="has-text-caution pirate">${loc('galaxy_piracy_threat',[races[global.galaxy.alien2.id].name])}</span><span :class="threat('${region}')">{{ '${region}' | pirate }}</span></div>`);
             }
 
             vBind(vData);

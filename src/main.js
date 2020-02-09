@@ -912,10 +912,11 @@ function fastLoop(){
                     }
                 }
 
+                let pirate = piracy('gxy_gorddon');
                 for (let j=0; j<global.galaxy.trade[`f${i}`]; j++){
                     exp_total += exprt_vol;
                     if (modRes(exprt_res,-(exprt_vol * time_multiplier))){
-                        modRes(imprt_res,imprt_vol * time_multiplier);
+                        modRes(imprt_res,imprt_vol * time_multiplier * pirate);
                         imp_total += imprt_vol;
                     }
                 }
@@ -935,6 +936,15 @@ function fastLoop(){
                     }
                     else {
                         breakdown.p.consume[imprt_res][loc('trade')] = imp_total;
+                    }
+                }
+
+                if (pirate < 1){
+                    if (breakdown.p.consume[imprt_res][loc('galaxy_piracy')]){
+                        breakdown.p.consume[imprt_res][loc('galaxy_piracy')] += -((1 - pirate) * imp_total);
+                    }
+                    else {
+                        breakdown.p.consume[imprt_res][loc('galaxy_piracy')] = -((1 - pirate) * imp_total);
                     }
                 }
 
@@ -1148,7 +1158,7 @@ function fastLoop(){
                     break;
                 }
             }
-            global.space.moon_base.s_max = p_on['moon_base'] * actions.space.spc_moon.moon_base.support;
+            global.space.moon_base.s_max = p_on['moon_base'] * actions.space.spc_moon.moon_base.support();
             global.space.moon_base.s_max += global.tech['luna'] && global.tech['luna'] >= 2 ? p_on['nav_beacon'] : 0;
         }
 
@@ -1208,7 +1218,7 @@ function fastLoop(){
                     break;
                 }
             }
-            global.space.spaceport.s_max = p_on['spaceport'] * actions.space.spc_red.spaceport.support;
+            global.space.spaceport.s_max = p_on['spaceport'] * actions.space.spc_red.spaceport.support();
             global.space.spaceport.s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? p_on['red_tower'] : 0;
             global.space.spaceport.s_max += global.tech['luna'] && global.tech['luna'] >= 3 ? p_on['nav_beacon'] : 0;
         }
@@ -1249,9 +1259,9 @@ function fastLoop(){
                     break;
                 }
             }
-            global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support;
-            global.interstellar.starport.s_max += p_on['habitat'] * actions.interstellar.int_alpha.habitat.support;
-            global.interstellar.starport.s_max += p_on['xfer_station'] * actions.interstellar.int_proxima.xfer_station.support;
+            global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support();
+            global.interstellar.starport.s_max += p_on['habitat'] * actions.interstellar.int_alpha.habitat.support();
+            global.interstellar.starport.s_max += p_on['xfer_station'] * actions.interstellar.int_proxima.xfer_station.support();
         }
 
         // Droids
@@ -1313,8 +1323,8 @@ function fastLoop(){
                     break;
                 }
             }
-            global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support;
-            global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support;
+            global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support();
+            global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support();
         }
 
         if (global.galaxy['starbase']){
@@ -1331,7 +1341,7 @@ function fastLoop(){
                     else {
                         $(`#${id} .on`).removeClass('warn');
                     }
-                    used_support += operating;
+                    used_support += operating * -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
                     gal_on[gateway_structs[i]] = operating;
                 }
                 else {
@@ -1362,14 +1372,14 @@ function fastLoop(){
                 if (global.space[belt_structs[i]]){
                     let operating = global.space[belt_structs[i]].on;
                     let id = actions.space.spc_belt[belt_structs[i]].id;
-                    if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support)) > global.space.space_station.s_max){
-                        operating -= used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support)) - global.space.space_station.s_max;
+                    if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) > global.space.space_station.s_max){
+                        operating -= used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) - global.space.space_station.s_max;
                         $(`#${id} .on`).addClass('warn');
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
                     }
-                    used_support += (operating * -(actions.space.spc_belt[belt_structs[i]].support));
+                    used_support += (operating * -(actions.space.spc_belt[belt_structs[i]].support()));
                     belt_on[belt_structs[i]] = operating;
                 }
                 else {
@@ -1390,7 +1400,7 @@ function fastLoop(){
                     break;
                 }
             }
-            global.interstellar.nexus.s_max = p_on['nexus'] * actions.interstellar.int_nebula.nexus.support;
+            global.interstellar.nexus.s_max = p_on['nexus'] * actions.interstellar.int_nebula.nexus.support();
         }
 
         if (global.interstellar['nexus']){
@@ -3176,7 +3186,7 @@ function fastLoop(){
             
             let sensors = 1;
             if (global.tech['infernite'] >= 2 && p_on['sensor_drone']){
-                let drone_rate = global.tech.infernite >= 4 ? 0.2 : 0.1;
+                let drone_rate = global.tech.infernite >= 4 ? (global.tech.infernite >= 6 ? 0.5 : 0.2) : 0.1;
                 sensors = 1 + (p_on['sensor_drone'] * drone_rate);
             }
 
@@ -4184,7 +4194,7 @@ function midLoop(){
             bd_Knowledge[global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')] = gain+'v';
         }
         if (global.portal['sensor_drone']){
-            let gain = p_on['sensor_drone'] * 1000;
+            let gain = p_on['sensor_drone'] * (global.tech.infernite >= 6 ? 2500 : 1000);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('portal_sensor_drone_title')] = gain+'v';
         }
@@ -4356,7 +4366,7 @@ function midLoop(){
             bd_Elerium[loc('galaxy_gateway_station')] = gain+'v';
         }
         if (p_on['s_gate'] && p_on['telemetry_beacon']){
-            let gain = p_on['telemetry_beacon'] ** 2 * 600;
+            let gain = p_on['telemetry_beacon'] ** 2 * (global.tech['telemetry'] ? 1200 : 800);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('galaxy_telemetry_beacon_bd')] = gain+'v';
         }
@@ -5395,6 +5405,14 @@ function longLoop(){
             ($('#tech-dist-research').length > 0 ||
              $('#tech-dist-upgrade').length > 0)){
             drawTech();
+        }
+    }
+
+    if (global.tech['xeno'] && global.tech['xeno'] >= 4 && !global.tech['piracy']){
+        if (Math.rand(0,5) === 0){
+            global.tech['piracy'] = 1;
+            messageQueue(loc('galaxy_piracy_msg',[races[global.galaxy.alien2.id].name]),'danger');
+            renderSpace();
         }
     }
 
