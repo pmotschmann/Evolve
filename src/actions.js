@@ -12747,9 +12747,6 @@ function sentience(){
     global.civic.govern.rev = 0;
     global.civic.govern.fr = 0;
 
-    if (global.race.gods !== 'none'){
-        global.tech['religion'] = 1;
-    }
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.tech['r_queue'] = 1;

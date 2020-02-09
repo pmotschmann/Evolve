@@ -1250,6 +1250,12 @@ export function drawPerks(){
         let dna = global.stats.feat['novice'] / 4;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_novice",[rna,dna])}</span></div>`); 
     }
+    
+    if (global.genes['plasma']) {
+        unlocked++;
+        let plasmid_cap = global.genes['plasma'] >= 2 ? 5 : 3;
+        perks.append(`<div><span class="has-text-warning">${loc('arpa_genepool_mitosis_desc',[plasmid_cap])}</span></div>`); 
+    }
 
     if (global.genes['mutation']){ 
         unlocked++;
