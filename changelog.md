@@ -1,3 +1,11 @@
+#### 0.7.22 - 2/9/2020 ####
+Steelen Challenge<br>
+Graveyards are now removed upon gaining Kindling Kindred.<br>
+If Default job is set to Farmer/Lumberjack for Carnivore/Kindling Kindred, it will be changed to Unemployed upon adding those traits.<br>
+Fixed bug where gaining Carnivore and having no Grain Mills would make Smokehouses unpurchasable until refresh.<br>
+Cargo Yard now requires the construction of a Transfer Station to be unlocked.<br>
+Mitosis/Metaphase effect now appears on perks list.<br>
+
 #### 0.7.21 - 1/28/2020 ####
 More bug fixes<br>
 
