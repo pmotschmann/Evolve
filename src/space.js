@@ -379,6 +379,9 @@ const spaceProjects = {
                     if (!global.tech['mars']){
                         global.tech['mars'] = 1;
                     }
+                    if (global.race['steelen'] && global.race['steelen'] >= 1){
+                        unlockAchieve(`steelen`);
+                    }
                     return true;
                 }
                 return false;
