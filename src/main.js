@@ -2220,6 +2220,10 @@ function fastLoop(){
             let consume_oil = global.race['forge'] ? 0 : global.city['smelter'].Oil * 0.35;
             iron_smelter = global.city['smelter'].Iron;
             let steel_smelter = global.city['smelter'].Steel;
+            if (global.race['steelen']) {
+                iron_smelter += steel_smelter;
+                steel_smelter = 0;
+            }
             let oil_bonus = global.race['forge'] ? global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil : global.city['smelter'].Oil;
             while (iron_smelter + steel_smelter > global.city['smelter'].Wood + global.city['smelter'].Coal + global.city['smelter'].Oil ){
                 if (steel_smelter > 0){
