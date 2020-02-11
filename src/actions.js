@@ -13156,7 +13156,10 @@ function bioseed(){
     if (bad_rocks >= 3){
         if (unlockFeat('rocky_road')){ new_achieve = true; };
     }
-
+    if (global.race['steelen'] && global.race['steelen'] >= 1){
+        if (unlockAchieve(`steelen`)){ new_achieve = true; }
+    }
+    
     switch (global.race.universe){
         case 'heavy':
             if (unlockFeat(`heavy_genus_${genus}`)){ new_achieve = true; };
