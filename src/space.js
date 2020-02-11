@@ -3295,7 +3295,7 @@ const galaxyProjects = {
                 Money(offset){ return spaceCostMultiplier('dormitory', offset, 10000000, 1.25, 'galaxy'); },
                 Furs(offset){ return spaceCostMultiplier('dormitory', offset, 700000, 1.25, 'galaxy'); },
                 Cement(offset){ return spaceCostMultiplier('dormitory', offset, 1200000, 1.25, 'galaxy'); },
-                Plywood(offset){ return spaceCostMultiplier('dormitory', offset, 65000, 1.25, 'galaxy'); },
+                Plywood(offset){ return spaceCostMultiplier('dormitory', offset, 85000, 1.25, 'galaxy'); },
             },
             effect(){
                 return `<div>${loc('plus_max_citizens',[3])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;

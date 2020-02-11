@@ -14,6 +14,8 @@ Repair Droids for Fortress<br>
 Smoldering and Chilled now have reduced effectiveness after 100 stacks<br>
 Removed Heavy Genus Feats, these were redundant with Universe Icons<br>
 Blackhole reset now also grants species level extinction achievement<br>
+Human Creative trait rescaled<br>
+Various racial traits now apply to ARPA projects<br>
 
 #### 0.7.22 - 2/9/2020 ####
 Steelen Challenge<br>

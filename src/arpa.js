@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { timeFormat, vBind, messageQueue } from './functions.js';
+import { timeFormat, vBind, messageQueue, adjustCosts } from './functions.js';
 import { dragQueue } from './civics.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
@@ -833,7 +833,7 @@ function checkRequirements(tech){
 }
 
 function payCosts(costs){
-    costs = adjustCosts(costs);
+    costs = arpaAdjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
             global['resource'][res].amount -= costs[res]() / 100;
@@ -855,17 +855,16 @@ function checkCosts(costs){
     return test;
 }
 
-function adjustCosts(costs){
-    return kindlingAdjust(costs);
+function arpaAdjustCosts(costs){
+    costs = creativeAdjust(costs);
+    return adjustCosts(costs);
 }
 
-function kindlingAdjust(costs){
-    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+function creativeAdjust(costs){
+    if (global.race['creative']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Lumber' && res !== 'Plywood'){
-                newCosts[res] = function(){ return costs[res](); }
-            }
+            newCosts[res] = function(){ return costs[res]() * 0.8; }
         });
         return newCosts;
     }
@@ -875,7 +874,7 @@ function kindlingAdjust(costs){
 function costMultiplier(project,offset,base,mutiplier){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
     if (global.race['creative']){
-        mutiplier -= 0.01;
+        mutiplier -= 0.005;
     }
     if (offset){
         rank += offset;
@@ -1352,7 +1351,7 @@ function addProject(parent,project){
                 arpaProjectSRCosts(id,project){
                     let inc = id === '100' ? 100 - global.arpa[project].complete : id;
                     var cost = `Construct ${inc}%. Costs:`;
-                    var costs = adjustCosts(arpaProjects[project].cost);
+                    var costs = arpaAdjustCosts(arpaProjects[project].cost);
                     Object.keys(costs).forEach(function (res){
                         var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
                         if (res_cost > 0){
@@ -1471,7 +1470,7 @@ export function buildArpa(pro,num,update){
 function arpaProjectCosts(id,project){
     let inc = id === 100 ? 100 - global.arpa[project].complete : id;
     var cost = $('<div></div>');
-    var costs = adjustCosts(arpaProjects[project].cost);
+    var costs = arpaAdjustCosts(arpaProjects[project].cost);
     Object.keys(costs).forEach(function (res){
         var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
         if (res_cost > 0){
