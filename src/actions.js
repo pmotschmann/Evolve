@@ -13638,7 +13638,10 @@ function bioseed(){
     if (bad_rocks >= 3){
         unlockFeat('rocky_road');
     }
-
+    if (global.race['steelen'] && global.race['steelen'] >= 1){
+        if (unlockAchieve(`steelen`)){ new_achieve = true; }
+    }
+    
     switch (global.race.universe){
         case 'micro':
             if (global.race['small'] || global.race['compact']){
@@ -13723,6 +13726,9 @@ function big_bang(){
     }
     if (global.race['decay']){
         unlockAchieve(`dissipated`);
+    }
+    if (global.race['steelen']){
+        unlockFeat('steelem');
     }
 
     let god = global.race.species;
