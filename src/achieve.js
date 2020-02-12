@@ -634,6 +634,11 @@ const feats = {
         desc: loc("feat_nephilim_desc"),
         flair: loc("feat_nephilim_flair")
     },
+    valentine: {
+        name: loc("feat_love_name"),
+        desc: loc("feat_love_desc"),
+        flair: loc("feat_love_flair")
+    },
     halloween: {
         name: loc("feat_boo_name"),
         desc: loc("feat_boo_desc"),
@@ -824,6 +829,13 @@ export function drawAchieve(){
     let earned = 0;
     let total = 0;
     let level = 0;
+
+    let baseIcon = 'star';
+    const date = new Date();
+    if (date.getMonth() === 1 && date.getDate() === 14){
+        baseIcon = 'heart';
+    }
+
     Object.keys(achievements).forEach(function (achievement){
         total++;
         if (global.stats.achieve[achievement]){
@@ -832,7 +844,7 @@ export function drawAchieve(){
             if (achievement === 'joyless'){
                 level += global.stats.achieve[achievement].l;
             }
-            let emblem = format_emblem(achievement,16);            
+            let emblem = format_emblem(achievement,16,baseIcon);
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${emblem}</div></b-tooltip>`));
         }
     });
@@ -840,7 +852,7 @@ export function drawAchieve(){
 
     Object.keys(feats).forEach(function (feat){
         if (global.stats.feat[feat]){
-            let star = global.stats.feat[feat] > 1 ? `<p class="flair"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></p>` : '';
+            let star = global.stats.feat[feat] > 1 ? `<p class="flair"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
             achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
         }
     });
@@ -870,7 +882,7 @@ export function drawAchieve(){
         $('#topBar span.flair').remove();
     }
     if (a_level > 1 && $('#topBar .planet .flair').length === 0){
-        $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 640 640" xml:space="preserve"><path class="star" d="M320.012 15.662l88.076 215.246L640 248.153 462.525 398.438l55.265 225.9-197.778-122.363-197.778 122.363 55.264-225.9L0 248.153l231.936-17.245z"/></svg></span>`);
+    $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></span>`);
     
         $('#topBar .planetWrap .flair').on('mouseover',function(){
             var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
@@ -934,7 +946,15 @@ export function checkAchievements(){
         unlockFeat('supermassive');
     }
     const date = new Date();
-    if (date.getMonth() === 9 && date.getDate() === 31){
+    if (date.getMonth() === 1 && date.getDate() === 14){
+        if (global.race.universe === 'micro'){
+            unlockFeat('valentine',true);
+        }
+        else {
+            unlockFeat('valentine');
+        }
+    }
+    else if (date.getMonth() === 9 && date.getDate() === 31){
         if (global.race.universe === 'micro'){
             unlockFeat('halloween',true);
         }

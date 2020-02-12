@@ -475,6 +475,7 @@ resourceAlt();
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 function fastLoop(){
     keyMultiplier();
+    const date = new Date();
     
     breakdown.p['Global'] = {};
     var global_multiplier = 1;
@@ -1720,6 +1721,9 @@ function fastLoop(){
             }
             else {
                 var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
+                if (global.tech['reproduction'] && date.getMonth() === 1 && date.getDate() === 14){
+                    lowerBound += 5;
+                }
                 if (global.race['fast_growth']){
                     lowerBound *= 2;
                     lowerBound += 2;
