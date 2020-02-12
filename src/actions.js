@@ -13247,6 +13247,9 @@ function big_bang(){
     if (global.race['decay']){
         unlockAchieve(`dissipated`);
     }
+    if (global.race['steelen']){
+        unlockFeat('steelem');
+    }
 
     let god = global.race.species;
     let old_god = global.race.gods;

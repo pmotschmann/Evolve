@@ -1,3 +1,8 @@
+#### 0.7.23 - 2/11/2020 ####
+Steelen Challenge now requires Bioseed as its win condition<br>
+Added Feat for Blackhole reset with Steelen Challenge<br>
+Added V-Day Event stuff<br>
+
 #### 0.7.22 - 2/9/2020 ####
 Steelen Challenge<br>
 Graveyards are now removed upon gaining Kindling Kindred.<br>
