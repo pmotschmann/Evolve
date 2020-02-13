@@ -385,7 +385,7 @@ if (convertVersion(global['version']) < 7019 && global.race['fraile']){
 }
 
 
-global['version'] = '0.7.23';
+global['version'] = '0.7.24';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -413,7 +413,12 @@ if (!global['settings']){
         tLabels: true,
         theme: 'dark',
         locale: 'en-US',
+        icon: 'star'
     };
+}
+
+if (!global.settings['icon']){
+    global.settings['icon'] = 'star';
 }
 
 if (!global.settings['showResources']){

@@ -1,5 +1,5 @@
 import { global, set_alevel, poppers } from './vars.js';
-import { svgIcons, svgViewBox, format_emblem, vBind, messageQueue } from './functions.js'; 
+import { svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue } from './functions.js'; 
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
@@ -835,13 +835,8 @@ export function drawAchieve(){
     let total = 0;
     let level = 0;
 
-    let baseIcon = 'star';
-    const date = new Date();
-    if (date.getMonth() === 1 && date.getDate() === 14){
-        baseIcon = 'heart';
-    }
-
     Object.keys(achievements).forEach(function (achievement){
+        let baseIcon = getBaseIcon(achievement,'achievement');
         total++;
         if (global.stats.achieve[achievement]){
             earned++;
@@ -856,8 +851,9 @@ export function drawAchieve(){
     set_alevel(level);
 
     Object.keys(feats).forEach(function (feat){
+        let baseIcon = getBaseIcon(feat,'feat');
         if (global.stats.feat[feat]){
-            let star = global.stats.feat[feat] > 1 ? `<p class="flair"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
+            let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
             achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
         }
     });
@@ -887,7 +883,8 @@ export function drawAchieve(){
         $('#topBar span.flair').remove();
     }
     if (a_level > 1 && $('#topBar .planet .flair').length === 0){
-    $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></span>`);
+    let bIcon = getBaseIcon('topbar','challenge');
+    $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(bIcon)}" xml:space="preserve">${svgIcons(bIcon)}</svg></span>`);
     
         $('#topBar .planetWrap .flair').on('mouseover',function(){
             var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);

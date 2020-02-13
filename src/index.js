@@ -200,6 +200,43 @@ export function index(){
     </b-tab-item>`);
     tabs.append(stats);
 
+    let iconlist = '';
+    let icons = [
+        {i: 'nuclear',  f: 'steelem'},
+        {i: 'zombie',   f: 'the_misery'},
+        {i: 'fire',     f: 'ill_advised'},
+        {i: 'heart',    f: 'valentine'},
+        {i: 'ghost',    f: 'halloween'},
+        {i: 'turkey',   f: 'thanksgiving'},
+        {i: 'present',  f: 'xmas'}
+    ];
+
+    for (let i=0; i<icons.length; i++){
+        if (global.stats.feat[icons[i]['f']] && global.stats.feat[icons[i]['f']] >= 2){
+            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i]['i']}')">{{ '${icons[i]['i']}' | label }}</b-dropdown-item>`;
+        }
+        else if (global.settings.icon === icons[i]['i']){
+            global.settings.icon = 'star';
+        }
+    }
+
+    switch (name){
+        case 'steelem':
+            return 'nuclear';
+        case 'the_misery':
+            return 'zombie';
+        case 'ill_advised':
+            return 'fire';
+        case 'valentine':
+            return 'heart';
+        case 'halloween':
+            return 'ghost';
+        case 'thanksgiving':
+            return 'turkey';
+        case 'xmas':
+            return 'present';
+    }
+
     // Settings Tab
     let settings = $(`<b-tab-item class="settings">
         <template slot="header">
@@ -226,6 +263,16 @@ export function index(){
                 <b-dropdown-item v-on:click="si">{{ 'metric' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="sci">{{ 'scientific' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="sln">{{ 'sln' | label }}</b-dropdown-item>
+            </b-dropdown>
+
+            <span>{{ 'icons' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ s.icon | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="icon('star')">{{ 'star' | label }}</b-dropdown-item>
+                ${iconlist}
             </b-dropdown>
         </div>
         <div id="localization" class="localization"></div>

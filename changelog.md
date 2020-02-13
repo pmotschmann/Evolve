@@ -1,3 +1,6 @@
+#### 0.7.24 - 2/12/2020 ####
+Special Prestige icons awarded to players from certain feats can now be set to replace the standard Star icon<br>
+
 #### 0.7.23 - 2/11/2020 ####
 Steelen Challenge now requires Bioseed as its win condition<br>
 Added Feat for Blackhole reset with Steelen Challenge<br>
