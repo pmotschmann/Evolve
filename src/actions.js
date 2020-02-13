@@ -13639,7 +13639,7 @@ function bioseed(){
         unlockFeat('rocky_road');
     }
     if (global.race['steelen'] && global.race['steelen'] >= 1){
-        if (unlockAchieve(`steelen`)){ new_achieve = true; }
+        unlockAchieve(`steelen`);
     }
     
     switch (global.race.universe){
