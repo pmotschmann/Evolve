@@ -8,7 +8,7 @@ import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue } from './actions.js';
-import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, piracy } from './space.js';
+import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
@@ -4027,31 +4027,33 @@ function midLoop(){
         }
 
         if (global.galaxy['gateway_depot']){
-            caps['Crates'] += (global.galaxy.gateway_depot.count * 100);
-            caps['Containers'] += (global.galaxy.gateway_depot.count * 100);
+            let containers = global.tech['world_control'] ? 150 : 100;
+            caps['Crates'] += (global.galaxy.gateway_depot.count * containers);
+            caps['Containers'] += (global.galaxy.gateway_depot.count * containers);
 
             let label = loc('galaxy_gateway_depot');
+            let multiplier = gatewayStorage();
 
             if (global.resource.Uranium.display){
-                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(6000)));
+                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(3000 * multiplier)));
                 caps['Uranium'] += gain;
                 bd_Uranium[label] = gain+'v';
             }
 
             if (global.resource.Nano_Tube.display){
-                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(400000)));
+                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(250000 * multiplier)));
                 caps['Nano_Tube'] += gain;
                 bd_Nano_Tube[label] = gain+'v';
             }
 
             if (global.resource.Neutronium.display){
-                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(9001)));
+                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(9001 * multiplier)));
                 caps['Neutronium'] += gain;
                 bd_Neutronium[label] = gain+'v';
             }
 
             if (global.resource.Infernite.display){
-                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(6660)));
+                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(6660 * multiplier)));
                 caps['Infernite'] += gain;
                 bd_Infernite[label] = gain+'v';
             }

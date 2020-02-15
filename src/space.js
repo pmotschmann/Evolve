@@ -3049,12 +3049,13 @@ const galaxyProjects = {
             },
             wide: true,
             effect(){
-                let containers = 100;
+                let containers = global.tech['world_control'] ? 150 : 100;
                 let elerium = spatialReasoning(200);
-                let uranium = sizeApproximation(+(spatialReasoning(6000)).toFixed(0),1);
-                let nano = sizeApproximation(+(spatialReasoning(400000)).toFixed(0),1);
-                let neutronium = sizeApproximation(+(spatialReasoning(9001)).toFixed(0),1);
-                let infernite = sizeApproximation(+(spatialReasoning(6660)).toFixed(0),1);
+                let multiplier = gatewayStorage();
+                let uranium = sizeApproximation(+(spatialReasoning(3000 * multiplier)).toFixed(0),1);
+                let nano = sizeApproximation(+(spatialReasoning(250000 * multiplier)).toFixed(0),1);
+                let neutronium = sizeApproximation(+(spatialReasoning(9001 * multiplier)).toFixed(0),1);
+                let infernite = sizeApproximation(+(spatialReasoning(6660 * multiplier)).toFixed(0),1);
                 let desc = '<div class="aTable">';
                 desc = desc + `<span>${loc('plus_max_crates',[containers])}</span><span>${loc('plus_max_containers',[containers])}</span>`;
                 desc = desc + `<span>${loc('plus_max_resource',[uranium,global.resource.Uranium.name])}</span>`;
@@ -3068,6 +3069,11 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('gateway_depot','galaxy');
+                    let multiplier = gatewayStorage();
+                    global['resource']['Uranium'].max += (spatialReasoning(3000 * multiplier));
+                    global['resource']['Nano_Tube'].max += (spatialReasoning(250000 * multiplier));
+                    global['resource']['Neutronium'].max += (spatialReasoning(9001 * multiplier));
+                    global['resource']['Infernite'].max += (spatialReasoning(6660 * multiplier));
                     if (global.city.power >= $(this)[0].powered()){
                         global.galaxy['gateway_depot'].on++;
                     }
@@ -3566,6 +3572,18 @@ function xeno_race(){
             };
         }
     }
+}
+
+export function gatewayStorage(){
+    let multiplier = 1;
+    if (global.race['pack_rat']){
+        multiplier *= 1.05;
+    }
+    if (global.stats.achieve['blackhole']){
+        multiplier *= 1 + global.stats.achieve.blackhole.l * 0.05;
+    }
+    multiplier *= global.tech['world_control'] ? 2 : 1;
+    return multiplier;
 }
 
 const structDefinitions = {
