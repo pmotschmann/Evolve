@@ -389,26 +389,28 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 return global.resource.Crates.display;
             },
             craft(res,vol){
-                let craft_bonus = craftingRatio(res);
-                let craft_costs = craftCost();
-                let volume = Math.floor(global.resource[craft_costs[res][0].r].amount / craft_costs[res][0].a);
-                for (let i=1; i<craft_costs[res].length; i++){
-                    let temp = Math.floor(global.resource[craft_costs[res][i].r].amount / craft_costs[res][i].a);
-                    if (temp < volume){
-                        volume = temp;
+                if (!global.race['no_craft']){
+                    let craft_bonus = craftingRatio(res);
+                    let craft_costs = craftCost();
+                    let volume = Math.floor(global.resource[craft_costs[res][0].r].amount / craft_costs[res][0].a);
+                    for (let i=1; i<craft_costs[res].length; i++){
+                        let temp = Math.floor(global.resource[craft_costs[res][i].r].amount / craft_costs[res][i].a);
+                        if (temp < volume){
+                            volume = temp;
+                        }
                     }
-                }
-                if (vol !== 'A'){
-                    let total = vol * keyMultiplier();
-                    if (total < volume){
-                        volume = total;
+                    if (vol !== 'A'){
+                        let total = vol * keyMultiplier();
+                        if (total < volume){
+                            volume = total;
+                        }
                     }
+                    for (let i=0; i<craft_costs[res].length; i++){
+                        let num = volume * craft_costs[res][i].a;
+                        global.resource[craft_costs[res][i].r].amount -= num;
+                    }
+                    global.resource[res].amount += volume * craft_bonus;
                 }
-                for (let i=0; i<craft_costs[res].length; i++){
-                    let num = volume * craft_costs[res][i].a;
-                    global.resource[craft_costs[res][i].r].amount -= num;
-                }
-                global.resource[res].amount += volume * craft_bonus;
             },
             craftCost(res,vol){
                 let costs = '';
