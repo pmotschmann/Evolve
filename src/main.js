@@ -1127,9 +1127,9 @@ function fastLoop(){
 
         // Power usage
         let p_structs = [
-            'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','int_neutron:stellar_forge',
+            'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','gxy_gateway:ship_dock','int_neutron:stellar_forge',
             'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station',
-            'gxy_stargate:telemetry_beacon','int_nebula:nexus','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
+            'gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_gateway:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
             'spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory',
             'spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry',
             'city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge',
@@ -1341,8 +1341,15 @@ function fastLoop(){
                 }
             }
             global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support();
-            global.galaxy.starbase.s_max += p_on['gateway_station'] * actions.galaxy.gxy_stargate.gateway_station.support();
-            global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support();
+            if (p_on['gateway_station']){
+                global.galaxy.starbase.s_max += p_on['gateway_station'] * actions.galaxy.gxy_stargate.gateway_station.support();
+            }
+            if (p_on['telemetry_beacon']){
+                global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support();
+            }
+            if (p_on['ship_dock']){
+                global.galaxy.starbase.s_max += p_on['ship_dock'] * actions.galaxy.gxy_gateway.ship_dock.support();
+            }
         }
 
         if (global.galaxy['starbase']){
@@ -4019,6 +4026,43 @@ function midLoop(){
             }
         }
 
+        if (global.galaxy['gateway_depot']){
+            caps['Crates'] += (global.galaxy.gateway_depot.count * 100);
+            caps['Containers'] += (global.galaxy.gateway_depot.count * 100);
+
+            let label = loc('galaxy_gateway_depot');
+
+            if (global.resource.Uranium.display){
+                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(6000)));
+                caps['Uranium'] += gain;
+                bd_Uranium[label] = gain+'v';
+            }
+
+            if (global.resource.Nano_Tube.display){
+                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(400000)));
+                caps['Nano_Tube'] += gain;
+                bd_Nano_Tube[label] = gain+'v';
+            }
+
+            if (global.resource.Neutronium.display){
+                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(9001)));
+                caps['Neutronium'] += gain;
+                bd_Neutronium[label] = gain+'v';
+            }
+
+            if (global.resource.Infernite.display){
+                let gain = (global.galaxy.gateway_depot.count * (spatialReasoning(6660)));
+                caps['Infernite'] += gain;
+                bd_Infernite[label] = gain+'v';
+            }
+
+            if (global.resource.Elerium.display && p_on['gateway_depot'] && p_on['s_gate']){
+                let gain = (p_on['gateway_depot'] * (spatialReasoning(200)));
+                caps['Elerium'] += gain;
+                bd_Elerium[label] = gain+'v';
+            }
+        }
+
         if (global.resource.Infernite.display && global.portal['fortress']){
             let gain = spatialReasoning(1000);
             caps['Infernite'] += gain;
@@ -4266,7 +4310,15 @@ function midLoop(){
         if (p_on['embassy'] && global.galaxy['symposium']){
             let dorm = 1750 * p_on['dormitory'];
             let gtrade = 650 * global.galaxy.trade.cur;
-            let know = (dorm + gtrade) * p_on['symposium'];
+            let leave = 0;
+            if (global.tech.xeno >= 7){
+                let crew = global.galaxy.defense.gxy_gorddon.scout_ship * (actions.galaxy.gxy_gateway.scout_ship.ship.civ + actions.galaxy.gxy_gateway.scout_ship.ship.mil);
+                crew += global.galaxy.defense.gxy_gorddon.corvette_ship * (actions.galaxy.gxy_gateway.corvette_ship.ship.civ + actions.galaxy.gxy_gateway.corvette_ship.ship.mil);
+                crew += global.galaxy.defense.gxy_gorddon.frigate_ship * (actions.galaxy.gxy_gateway.frigate_ship.ship.civ + actions.galaxy.gxy_gateway.frigate_ship.ship.mil);
+                crew += global.galaxy.defense.gxy_gorddon.cruiser_ship * (actions.galaxy.gxy_gateway.cruiser_ship.ship.civ + actions.galaxy.gxy_gateway.cruiser_ship.ship.mil);
+                leave = crew * 300;
+            }
+            let know = (dorm + gtrade + leave) * p_on['symposium'];
             caps['Knowledge'] += know;
             bd_Knowledge[loc('galaxy_symposium')] = know +'v';
         }

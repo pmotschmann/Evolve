@@ -11639,6 +11639,24 @@ export const actions = {
                 return false;
             }
         },
+        shore_leave: {
+            id: 'tech-shore_leave',
+            title: loc('tech_shore_leave'),
+            desc: loc('tech_shore_leave'),
+            category: 'upgrade',
+            reqs: { andromeda: 3, xeno: 6 },
+            grant: ['xeno',7],
+            cost: {
+                Knowledge(){ return 4600000; }
+            },
+            effect(){ return loc('tech_shore_leave_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         advanced_telemetry: {
             id: 'tech-advanced_telemetry',
             title: loc('tech_advanced_telemetry'),
@@ -11732,6 +11750,44 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['frigate_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
                     renderSpace();
+                    return true;
+                }
+                return false;
+            }
+        },
+        ship_dock: {
+            id: 'tech-ship_dock',
+            title: loc('galaxy_ship_dock'),
+            desc: loc('galaxy_ship_dock'),
+            category: 'research',
+            reqs: { gateway: 3, xeno: 6 },
+            grant: ['gateway',4],
+            cost: {
+                Knowledge(){ return 3900000; }
+            },
+            effect(){ return loc('tech_ship_dock_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['ship_dock'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        gateway_depot: {
+            id: 'tech-gateway_depot',
+            title: loc('galaxy_gateway_depot'),
+            desc: loc('galaxy_gateway_depot'),
+            category: 'research',
+            reqs: { gateway: 4 },
+            grant: ['gateway',5],
+            cost: {
+                Knowledge(){ return 4350000; }
+            },
+            effect(){ return loc('tech_gateway_depot_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['gateway_depot'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
