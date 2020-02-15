@@ -323,7 +323,8 @@ const fortressModules = {
             effect(){
                 let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
                 if (global.portal.soul_forge.count >= 1){
-                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,1000000])}</div>`;
+                    let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
+                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,cap])}</div>`;
                 }
                 return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -334,6 +335,35 @@ const fortressModules = {
                         if (global.city.powered && global.city.power >= $(this)[0].powered()){
                             global.portal.soul_forge.on++;
                         }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        soul_attractor: {
+            id: 'portal-soul_attractor',
+            title: loc('portal_soul_attractor_title'),
+            desc(){
+                return `<div>${loc('portal_soul_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { hell_pit: 5 },
+            powered(){ return 8; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('soul_attractor', offset, 12000000, 1.25, 'portal'); },
+                Stone(offset){ return spaceCostMultiplier('soul_attractor', offset, 23000000, 1.25, 'portal'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('soul_attractor', offset, 314159, 1.25, 'portal'); },
+                Vitreloy(offset){ return spaceCostMultiplier('soul_attractor', offset, 1618, 1.25, 'portal'); },
+                Aerogel(offset){ return spaceCostMultiplier('soul_attractor', offset, 180000, 1.25, 'portal'); },
+            },
+            effect(){
+                return `<div>${loc('portal_soul_attractor_effect',[25,75])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('soul_attractor','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.soul_attractor.on++;
                     }
                     return true;
                 }
@@ -966,8 +996,15 @@ export function bloodwar(){
         renderFortress();
     }
 
-    if (p_on['soul_forge'] && global.portal.soul_forge.kills >= 1000000){
-        global.portal.soul_forge.kills = 0;
-        global.resource.Soul_Gem.amount++;
+    if (global.tech['hell_pit']){
+        if (global.tech.hell_pit >= 5 && p_on['soul_attractor']){
+            global.portal.soul_forge.kills += p_on['soul_attractor'] * Math.rand(25,75);
+        }
+
+        let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
+        if (p_on['soul_forge'] && global.portal.soul_forge.kills >= cap){
+            global.portal.soul_forge.kills = 0;
+            global.resource.Soul_Gem.amount++;
+        }
     }
 }

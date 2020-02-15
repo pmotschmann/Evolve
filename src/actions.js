@@ -7870,6 +7870,26 @@ export const actions = {
                 return false;
             }
         },
+        metaphysics: {
+            id: 'tech-metaphysics',
+            title: loc('tech_metaphysics'),
+            desc: loc('tech_metaphysics'),
+            category: 'upgrade',
+            reqs: { high_tech: 15, xeno: 5 },
+            grant: ['high_tech',16],
+            cost: {
+                Knowledge(){ return 5000000; },
+                Vitreloy(){ return 10000; },
+                Soul_Gem(){ return 10; }
+            },
+            effect(){ return loc('tech_metaphysics_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         cement_processing: {
             id: 'tech-cement_processing',
             title: loc('tech_cement_processing'),
@@ -11807,6 +11827,44 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.portal['soul_forge'] = { count: 0, on: 0, kills: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        soul_attractor: {
+            id: 'tech-soul_attractor',
+            title: loc('portal_soul_attractor_title'),
+            desc: loc('portal_soul_attractor_title'),
+            category: 'research',
+            reqs: { hell_pit: 4, high_tech: 16 },
+            grant: ['hell_pit',5],
+            cost: {
+                Knowledge(){ return 5500000; }
+            },
+            effect(){ return loc('tech_soul_attractor_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['soul_attractor'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        soul_absorption: {
+            id: 'tech-soul_absorption',
+            title: loc('tech_soul_absorption'),
+            desc: loc('tech_soul_absorption'),
+            category: 'upgrade',
+            reqs: { hell_pit: 5 },
+            grant: ['hell_pit',6],
+            cost: {
+                Knowledge(){ return 6000000; },
+                Infernite(){ return 250000; }
+            },
+            effect(){ return loc('tech_soul_absorption_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
