@@ -2688,10 +2688,10 @@ export const actions = {
             effect(){
                 if (global.tech['home_safe']){
                     let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '10000' : '5000') : '2000');
-                    return `<div>${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
+                    return `<div>${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
-                    return `${loc('plus_max_citizens',[5])}. ${loc('minus_power',[$(this)[0].powered()])}`;
+                    return `${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
                 }
             },
             powered(){ return 1; },
@@ -3342,7 +3342,7 @@ export const actions = {
                     desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`; 
                 }
                 if (global.city.powered){
-                    desc = desc + `<div>${loc('city_sawmill_effect3',[4])}</div>`; 
+                    desc = desc + `<div class="has-text-caution">${loc('city_sawmill_effect3',[4])}</div>`; 
                 }
                 return desc;
             },
@@ -3376,7 +3376,7 @@ export const actions = {
                 let stone = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div><div class="has-text-caution">${loc('city_rock_quarry_effect2',[4])}</div>`;
                 }
                 else {
                     return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>`;
@@ -3411,7 +3411,7 @@ export const actions = {
             effect(){ 
                 if (global.tech['cement'] >= 5){
                     let screws = global.tech['cement'] >= 6 ? 8 : 5;
-                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div>${loc('city_cement_plant_effect2',[$(this)[0].powered(),screws])}</div>`;
+                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div class="has-text-caution">${loc('city_cement_plant_effect2',[$(this)[0].powered(),screws])}</div>`;
                 }
                 else {
                     return loc('city_cement_plant_effect1',[2]);
@@ -3489,7 +3489,7 @@ export const actions = {
                 Titanium(offset){ return costMultiplier('factory', offset, 2500, 1.32); }
             },
             effect(){
-                let desc = `<div>${loc('city_factory_effect',[$(this)[0].powered()])}</div>`;
+                let desc = `<div>${loc('city_factory_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 if (global.tech['foundry'] >= 7){
                     desc = desc + `<div>${loc('city_crafted_mats',[5])}</div>`;
                 }
@@ -3566,10 +3566,10 @@ export const actions = {
             power_reqs: { alumina: 2 },
             effect() {
                 if (global.tech['alumina'] >= 2){
-                    return `<div>${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</div>`;
+                    return `<span>${loc('city_metal_refinery_effect',[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</span>`;
                 }
                 else {
-                    return `<div>${loc('city_metal_refinery_effect',[6])}</div>`;
+                    return loc('city_metal_refinery_effect',[6]);
                 }
             },
             action(){
@@ -3599,7 +3599,7 @@ export const actions = {
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_mine_effect1')}</div><div>${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
+                    return `<div>${loc('city_mine_effect1')}</div><div class="has-text-caution">${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
                     return loc('city_mine_effect1');
@@ -3634,7 +3634,7 @@ export const actions = {
             },
             effect() { 
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_coal_mine_effect1')}</div><div>${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
+                    return `<div>${loc('city_coal_mine_effect1')}</div><div class="has-text-caution">${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
                     return loc('city_coal_mine_effect1');
@@ -3883,7 +3883,7 @@ export const actions = {
                     if (global.civic.govern.type === 'corpocracy'){
                         cash = (cash * 3).toFixed(2);
                     }
-                    desc = desc + `<div>${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`
+                    desc = desc + `<div class="has-text-caution">${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`
                 }
                 return desc;
             },
@@ -4195,10 +4195,10 @@ export const actions = {
                     }
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div>${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain,morale])}</div>`
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain,morale])}</div>`
                     }
                     else {
-                        desc = desc + `<div>${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain])}</div>`;
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain])}</div>`;
                     }
                 }
                 return desc;
@@ -4243,7 +4243,7 @@ export const actions = {
                     gain *= 1 + (p_on['sensor_drone'] * 0.02);
                     gain = +(gain).toFixed(0);
                 }
-                return `${loc('city_max_knowledge',[gain])}, -${$(this)[0].powered()}kW`;
+                return `<span>${loc('city_max_knowledge',[gain])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){ return 2; },
             action(){
@@ -4279,7 +4279,7 @@ export const actions = {
             effect(){
                 let consume = 0.35;
                 let power = -($(this)[0].powered());
-                return global.race['environmentalist'] ? `+${power}kW` : `+${power}kW. ${loc('city_coal_power_effect',[consume])}`;
+                return global.race['environmentalist'] ? `+${power}kW` : `<span>+${power}kW.</span> <span class="has-text-caution">${loc('city_coal_power_effect',[consume])}</span>`;
             },
             powered(){
                 return global.race['environmentalist']
@@ -4317,7 +4317,7 @@ export const actions = {
             effect(){
                 let consume = 0.65;
                 let power = -($(this)[0].powered());
-                return global.race['environmentalist'] ? `+${power}kW` : `+${power}kW. ${loc('city_oil_power_effect',[consume])}`;
+                return global.race['environmentalist'] ? `+${power}kW` : `<span>+${power}kW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
             },
             powered(){
                 if (global.race['environmentalist']){
@@ -4362,7 +4362,7 @@ export const actions = {
             },
             effect(){
                 let consume = 0.1;
-                return `+${-($(this)[0].powered())}kW. ${loc('city_fission_power_effect',[consume])}`;
+                return `<span>+${-($(this)[0].powered())}kW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[consume])}</span>`;
             },
             powered(){ return powerModifier(global.tech['uranium'] >= 4 ? -18 : -14); },
             action(){
@@ -4388,7 +4388,7 @@ export const actions = {
                 Iridium(offset){ return costMultiplier('mass_driver', offset, 2200, 1.32); }
             },
             effect(){
-                return loc('city_mass_driver_effect',[5,$(this)[0].powered(),races[global.race.species].name]);
+                return `<span>${loc('city_mass_driver_effect',[5,races[global.race.species].name])}</span> <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5; },
             action(){
@@ -12595,6 +12595,9 @@ export function setPlanet(hell){
     if (global.stats.achieve['whitehole']){
         top += global.stats.achieve['whitehole'].l * 5;
         max += global.stats.achieve['whitehole'].l;
+    }
+    if (biome === 'eden'){
+        top += 5;
     }
 
     for (let i=0; i<max; i++){

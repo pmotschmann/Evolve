@@ -16,6 +16,7 @@ Removed Heavy Genus Feats, these were redundant with Universe Icons<br>
 Blackhole reset now also grants species level extinction achievement<br>
 Human Creative trait rescaled<br>
 Various racial traits now apply to ARPA projects<br>
+Power cost of Mass Ejector increased to 3kW<br>
 
 #### 0.7.24 - 2/12/2020 ####
 Special Prestige icons awarded to players from certain feats can now be set to replace the standard Star icon<br>

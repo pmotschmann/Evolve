@@ -4318,6 +4318,12 @@ function midLoop(){
                 crew += global.galaxy.defense.gxy_gorddon.corvette_ship * (actions.galaxy.gxy_gateway.corvette_ship.ship.civ + actions.galaxy.gxy_gateway.corvette_ship.ship.mil);
                 crew += global.galaxy.defense.gxy_gorddon.frigate_ship * (actions.galaxy.gxy_gateway.frigate_ship.ship.civ + actions.galaxy.gxy_gateway.frigate_ship.ship.mil);
                 crew += global.galaxy.defense.gxy_gorddon.cruiser_ship * (actions.galaxy.gxy_gateway.cruiser_ship.ship.civ + actions.galaxy.gxy_gateway.cruiser_ship.ship.mil);
+                if (gal_on['freighter']){
+                    crew += gal_on['freighter'] * (actions.galaxy.gxy_gorddon.freighter.ship.civ + actions.galaxy.gxy_gorddon.freighter.ship.mil);
+                }
+                if (gal_on['super_freighter']){
+                    crew += gal_on['super_freighter'] * (actions.galaxy.gxy_gorddon.super_freighter.ship.civ + actions.galaxy.gxy_gorddon.super_freighter.ship.mil);
+                }
                 leave = crew * 300;
             }
             let know = (dorm + gtrade + leave) * p_on['symposium'];

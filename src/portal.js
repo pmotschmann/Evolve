@@ -46,7 +46,7 @@ const fortressModules = {
             effect(){
                 let rating = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
                 let power = $(this)[0].powered();
-                return `<div>${loc('portal_turret_effect',[rating])}</div><div>${loc('minus_power',[power])}</div>`;
+                return `<div>${loc('portal_turret_effect',[rating])}</div><div class="has-text-caution">${loc('minus_power',[power])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -113,7 +113,7 @@ const fortressModules = {
             },
             powered(){ return 2; },
             effect(){
-                return `<div>${loc('portal_war_droid_effect')}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_war_droid_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -143,7 +143,7 @@ const fortressModules = {
             },
             powered(){ return 3; },
             effect(){
-                return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[5])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[5])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -179,7 +179,7 @@ const fortressModules = {
                 Soul_Gem(offset){ return spaceCostMultiplier('war_drone', offset, 1, 1.28, 'portal'); }
             },
             effect(){
-                return `<div>${loc('portal_war_drone_effect')}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_war_drone_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -211,7 +211,7 @@ const fortressModules = {
                 let bonus = global.tech.infernite >= 4 ? (global.tech.infernite >= 6 ? 50 : 20) : 10;
                 let know = global.tech.infernite >= 6 ? 2500 : 1000;
                 let sci = global.tech['science'] >= 14 ? `<div>${loc('city_max_knowledge',[know])}</div><div>${loc('space_moon_observatory_effect',[2])}</div><div>${loc('portal_sensor_drone_effect2',[2])}</div>` : '';
-                return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div>${sci}<div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div>${sci}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -238,7 +238,7 @@ const fortressModules = {
                 Stanene(offset){ return spaceCostMultiplier('attractor', offset, 90000, 1.25, 'portal'); },
             },
             effect(){
-                return `<div>${loc('portal_attractor_effect1')}</div><div>${loc('portal_attractor_effect2',[global.resource.Soul_Gem.name])}</div><div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_attractor_effect1')}</div><div>${loc('portal_attractor_effect2',[global.resource.Soul_Gem.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -325,7 +325,7 @@ const fortressModules = {
                 if (global.portal.soul_forge.count >= 1){
                     desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,1000000])}</div>`;
                 }
-                return `${desc}<div>${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
