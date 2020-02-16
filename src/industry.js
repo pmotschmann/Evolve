@@ -1,4 +1,4 @@
-import { global, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { vBind } from './functions.js';
 
@@ -422,6 +422,9 @@ function loadFactory(parent,bind){
             },
             addItem: function(item){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                if (global.interstellar['int_factory'] && p_on['int_factory']){
+                    max += p_on['int_factory'] * 2;
+                }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
                     if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene < max){
@@ -484,6 +487,9 @@ function loadFactory(parent,bind){
             level(){
                 let on = global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                if (global.interstellar['int_factory'] && p_on['int_factory']){
+                    max += p_on['int_factory'] * 2;
+                }
                 return colorRange(on,max);
             }
         },
@@ -492,7 +498,11 @@ function loadFactory(parent,bind){
                 return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
             },
             max(){
-                return global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                if (global.interstellar['int_factory'] && p_on['int_factory']){
+                    max += p_on['int_factory'] * 2;
+                }
+                return max;
             }
         }
     });

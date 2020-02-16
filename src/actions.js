@@ -7387,6 +7387,24 @@ export const actions = {
                 return false;
             }
         },
+        expedition: {
+            id: 'tech-expedition',
+            title: loc('tech_expedition'),
+            desc: loc('tech_expedition'),
+            category: 'upgrade',
+            reqs: { science: 15, neutron: 1 },
+            grant: ['science',16],
+            cost: {
+                Knowledge(){ return 5350000; }
+            },
+            effect(){ return loc('tech_expedition_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         bioscience: {
             id: 'tech-bioscience',
             title: loc('tech_bioscience'),
@@ -11128,6 +11146,25 @@ export const actions = {
                 return false;
             }
         },
+        mega_manufacturing: {
+            id: 'tech-mega_manufacturing',
+            title: loc('tech_mega_manufacturing'),
+            desc: loc('tech_mega_manufacturing'),
+            category: 'research',
+            reqs: { high_tech: 16, alpha: 3 },
+            grant: ['alpha',4],
+            cost: {
+                Knowledge(){ return 5650000; }
+            },
+            effect(){ return loc('tech_mega_manufacturing_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['int_factory'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         stellar_engine: {
             id: 'tech-stellar_engine',
             title: loc('tech_stellar_engine'),
@@ -13143,7 +13180,7 @@ export function challengeActionHeader(){
 }
 
 function drawModal(c_action,type){
-    if (type === 'red_factory'){
+    if (type === 'red_factory' || type === 'int_factory'){
         type = 'factory';
     }
 

@@ -1130,7 +1130,7 @@ function fastLoop(){
             'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','gxy_gateway:ship_dock','int_neutron:stellar_forge',
             'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station',
             'gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_gateway:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
-            'spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','spc_gas_moon:oil_extractor','city:factory','spc_red:red_factory',
+            'spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory',
             'spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry',
             'city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge',
             'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station',
@@ -1221,6 +1221,12 @@ function fastLoop(){
             let h_consume = p_on['red_factory'] * fuel_adjust(1);
             modRes('Helium_3',-(h_consume * time_multiplier));
             breakdown.p.consume.Helium_3[loc('space_red_factory_title')] = -(h_consume);
+        }
+
+        if (p_on['int_factory'] && p_on['int_factory'] > 0){
+            let d_consume = p_on['int_factory'] * int_fuel_adjust(5);
+            modRes('Deuterium',-(d_consume * time_multiplier));
+            breakdown.p.consume.Deuterium[loc('interstellar_int_factory_title')] = -(d_consume);
         }
 
         // spaceports
@@ -2159,6 +2165,9 @@ function fastLoop(){
         if (global.city['factory']){
             let operating = 0;
             let on_factories = global.space['red_factory'] ? p_on['factory'] + p_on['red_factory'] : p_on['factory'];
+            if (global.interstellar['int_factory'] && p_on['int_factory']){
+                on_factories += p_on['int_factory'] * 2;
+            }
             let assembly = global.tech['factory'] ? true : false;
 
             if (global.city.factory['Lux'] && global.city.factory['Lux'] > 0){
@@ -4294,6 +4303,9 @@ function midLoop(){
             bd_Knowledge[loc('space_moon_observatory_title')] = gain+'v';
         }
         if (global.interstellar['laboratory'] && int_on['laboratory'] > 0){
+            if (global.tech.science >= 16){
+                lCaps['scientist'] += int_on['laboratory'];
+            }
             let gain = (int_on['laboratory'] * 10000);
             if (global.tech.science >= 15){
                 gain *= 1 + (global.city.wardenclyffe.count * 0.02);

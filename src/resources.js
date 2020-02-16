@@ -138,6 +138,9 @@ export function craftingRatio(res,auto){
         if (global.tech['mars'] >= 4){
             multiplier += p_on['red_factory'] * 0.05;
         }
+        if (global.interstellar['int_factory'] && p_on['int_factory']){
+            multiplier += p_on['int_factory'] * 0.1;
+        }
     }
     if (global.space['fabrication']){
         multiplier += red_on['fabrication'] * global.civic.colonist.workers * 0.02;

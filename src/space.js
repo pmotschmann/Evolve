@@ -1752,7 +1752,7 @@ const interstellarProjects = {
             },
             effect(){
                 let det = 1.25;
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div><span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[det])}</span></div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div><span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('interstellar_fusion_effect',[det])}</span></div>`;
             },
             support(){ return -1; },
             powered(){ return powerModifier(-22); },
@@ -1783,7 +1783,11 @@ const interstellarProjects = {
                 if (global.tech.science >= 15){
                     know *= 1 + (global.city.wardenclyffe.count * 0.02);
                 }
-                let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
+                let sci = '';
+                if (global.tech.science >= 16){
+                    sci = `<div>${loc('city_wardenclyffe_effect1')}</div>`;
+                }
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div>${sci}<div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.tech['science'] >= 13){
                     desc = desc + `<div>${loc('interstellar_laboratory_effect',[5])}</div>`;
                 }
@@ -1860,6 +1864,34 @@ const interstellarProjects = {
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
+                    return true;
+                }
+                return false;
+            }
+        },
+        int_factory: {
+            id: 'interstellar-int_factory',
+            title: loc('interstellar_int_factory_title'),
+            desc: `<div>${loc('interstellar_int_factory_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { alpha: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('int_factory', offset, 25000000, 1.26, 'interstellar'); },
+                Coal(offset){ return spaceCostMultiplier('int_factory', offset, 10000000, 1.26, 'interstellar'); },
+                Brick(offset){ return spaceCostMultiplier('int_factory', offset, 750000, 1.26, 'interstellar'); },
+                Bolognium(offset){ return spaceCostMultiplier('int_factory', offset, 50000, 1.26, 'interstellar'); }
+            },
+            effect(){
+                let deuterium = +int_fuel_adjust(5).toFixed(2);
+                return `<div>${loc('interstellar_int_factory_effect')}</div><div>${loc('city_crafted_mats',[10])}</div><div class="has-text-caution"><span>${loc('interstellar_fusion_effect',[deuterium])}</span> <span>${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
+            },
+            powered(){ return 5; },
+            special: true,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('int_factory','interstellar');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.interstellar.int_factory.on++;
+                    }
                     return true;
                 }
                 return false;
