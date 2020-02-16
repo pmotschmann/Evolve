@@ -413,6 +413,9 @@ if (global.race.species === 'protoplasm'){
     }
 }
 else {
+    if (global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.on){
+        p_on['soul_forge'] = 1;
+    }
     drawCity();
     drawTech();
     renderSpace();
@@ -5150,6 +5153,10 @@ function midLoop(){
         if (global['loadFoundry']){
             loadFoundry();
             delete global['loadFoundry'];
+        }
+
+        if (p_on['soul_forge']){
+            vBind({el: `#fort`},'update');
         }
 
         checkAchievements();

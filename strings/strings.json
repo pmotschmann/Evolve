@@ -3417,6 +3417,7 @@
   "portal_soul_forge_desc": "Captures the souls of defeated demons",
   "portal_soul_forge_effect": "Fuses the souls of defeated demons into a %0",
   "portal_soul_forge_effect2": "%0 / %1 Demon Souls",
+  "portal_soul_forge_soldiers": "%0 Soldiers",
   "portal_soul_attractor_title": "Soul Attractor",
   "portal_soul_attractor_effect": "Attracts %0-%1 roaming souls into your Soul Forge per day",
   "portal_first_gem": "Your soldiers discovered a peculiar stone in the aftermath of a battle. It makes everyone who goes near it uneasy and almost seems to be alive.",
