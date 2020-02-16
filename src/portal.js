@@ -1042,7 +1042,9 @@ export function bloodwar(){
         }
 
         if (forgeOperating){
-            global.portal.soul_forge.kills += Math.rand(25,150);
+            let forgeKills = Math.rand(25,150);
+            global.stats.dkills += forgeKills;
+            global.portal.soul_forge.kills += forgeKills;
             if (Math.rand(0,5000) === 0){
                 global.resource.Soul_Gem.amount++;
             }
