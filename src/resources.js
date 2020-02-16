@@ -705,7 +705,7 @@ function marketItem(mount,market_item,name,color,full){
 }
 
 function initGalaxyTrade(){
-    $('#market').append($(`<div id="galaxyTrade" class="market-header galaxyTrade"><h2 class="is-sr-only">${loc('galaxy_trade')}</h2></div>`));
+    $('#market').append($(`<div id="galaxyTrade" v-show="t.xeno && t.xeno >= 5" class="market-header galaxyTrade"><h2 class="is-sr-only">${loc('galaxy_trade')}</h2></div>`));
     galacticTrade();
 }
 
@@ -773,14 +773,17 @@ export function galacticTrade(modal){
             let assign = loc('galaxy_freighter_assign',[global.resource[galaxyOffers[i].buy.res].name,global.resource[galaxyOffers[i].sell.res].name]);
             let unassign = loc('galaxy_freighter_unassign',[global.resource[galaxyOffers[i].buy.res].name,global.resource[galaxyOffers[i].sell.res].name]);
             trade.append($(`<b-tooltip :label="desc('${unassign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${unassign}" class="sub has-text-danger" @click="less('${i}')"><span>-</span></span></b-tooltip>`));
-            trade.append($(`<span class="current">{{ f${i} }}</span>`));
+            trade.append($(`<span class="current">{{ g.f${i} }}</span>`));
             trade.append($(`<b-tooltip :label="desc('${assign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${assign}" class="add has-text-success" @click="more('${i}')"><span>+</span></span></b-tooltip>`));
         }
     }
 
     vBind({
         el: modal ? '#specialModal' : '#galaxyTrade',
-        data: global.galaxy.trade,
+        data: {
+            g: global.galaxy.trade,
+            t: global.tech
+        },
         methods: {
             less(idx){
                 let keyMutipler = keyMultiplier();

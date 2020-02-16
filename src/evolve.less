@@ -178,6 +178,21 @@ a {
     user-select: none;
 }
 
+.tradeOffer {
+    .trade-offer {
+        margin: 0;
+        padding: .125rem 0;
+        .offer-item {
+            width: 7.5rem;
+        }
+        .offer-vol {
+            width: 3.75rem;
+            border-right: 1px solid;
+            margin-right: .125rem;
+        }
+    }
+}
+
 .main {
     margin: 1rem 1rem 1.25rem;
 
@@ -828,18 +843,7 @@ a {
         justify-content: center;
     }
 
-    .trade-offer {
-        margin: 0;
-        padding: .125rem 0;
-        .offer-item {
-            width: 7.5rem;
-        }
-        .offer-vol {
-            width: 3.75rem;
-            border-right: 1px solid;
-            margin-right: .125rem;
-        }
-    }
+    .tradeOffer();
     
     .importExport {
         margin-top: 1rem;
@@ -1170,6 +1174,18 @@ body .modal > div.popper.wide {
     }
     .crateModal {
         margin-bottom: 1.25rem;
+    }
+}
+
+.modalBox {
+    .tradeOffer();
+    .market-item {
+        display: flex;
+        justify-content: center;
+    }
+    .trade-header {
+        border-top: 0 !important;
+        padding-top: 0;
     }
 }
 
