@@ -1,6 +1,6 @@
 import { global, save, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, achieve_level, universe_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
-import { mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue } from './functions.js';
+import { vBind, mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue } from './functions.js';
 import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
 import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
@@ -1521,8 +1521,11 @@ function fastLoop(){
 
         // Stargate
         if (p_on['s_gate']){
-            global.settings.showGalactic = true;
-            global.settings.space.stargate = true;
+            if (!global.settings.showGalactic){
+                global.settings.showGalactic = true;
+                global.settings.space.stargate = true;
+                renderSpace();
+            }
         }
         else {
             global.settings.showGalactic = false;

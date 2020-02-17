@@ -12610,7 +12610,7 @@ export function setAction(c_action,action,type,old){
     let pop_target = action === 'starDock' ? 'body .modal' : '#main';
     $('#'+id).on('mouseover',function(){
             let wide = c_action['wide'] ? ' wide' : '';
-            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark"><div id="popDesc"></div></div>`);
+            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
             $(pop_target).append(popper);
             actionDesc(popper,c_action,global[action][type],old);
             popper.show();
