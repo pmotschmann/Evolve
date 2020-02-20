@@ -330,8 +330,7 @@ const fortressModules = {
                     desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,cap])}</div>`;
                 }
 
-                let soldiers = Math.round(650 / armyRating(1,'army'));
-
+                let soldiers = soulForgeSoldiers();
                 return `${desc}<div><span class="has-text-caution">${loc('portal_soul_forge_soldiers',[soldiers])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
             },
             action(){
@@ -341,6 +340,34 @@ const fortressModules = {
                         if (global.city.powered && global.city.power >= $(this)[0].powered()){
                             global.portal.soul_forge.on++;
                         }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        gun_emplacement: {
+            id: 'portal-gun_emplacement',
+            title: loc('portal_gun_emplacement_title'),
+            desc(){
+                return `<div>${loc('portal_gun_emplacement_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { hell_gun: 1 },
+            powered(){ return 3; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('gun_emplacement', offset, 4000000, 1.25, 'portal'); },
+                Coal(offset){ return spaceCostMultiplier('gun_emplacement', offset, 250000, 1.25, 'portal'); },
+                Steel(offset){ return spaceCostMultiplier('gun_emplacement', offset, 1200000, 1.25, 'portal'); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('gun_emplacement', offset, 200000, 1.25, 'portal'); },
+            },
+            effect(){
+                return `<div>${loc('portal_gun_emplacement_effect',[2])}</div><div>${loc('portal_gun_emplacement_effect2',[10,25])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('gun_emplacement','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.gun_emplacement.on++;
                     }
                     return true;
                 }
@@ -378,6 +405,17 @@ const fortressModules = {
         },
     }
 };
+
+function soulForgeSoldiers(){
+    let soldiers = Math.round(650 / armyRating(1,'army'));
+    if (p_on['gun_emplacement']){
+        soldiers -= p_on['gun_emplacement'] * 2;
+        if (soldiers < 0){
+            soldiers = 0;
+        }
+    }
+    return soldiers;
+}
 
 export function fortressTech(){
     return fortressModules;
@@ -569,7 +607,7 @@ function buildFortress(parent,full){
                 let dec = keyMultiplier();
                 let min = global.portal.fortress.patrols * global.portal.fortress.patrol_size;
                 if (p_on['soul_forge']){
-                    min += Math.round(650 / armyRating(1,'army'));
+                    min += soulForgeSoldiers();
                 }
                 if (global.portal.fortress.garrison > min){
                     global.portal.fortress.garrison -= dec;
@@ -686,7 +724,7 @@ function buildFortress(parent,full){
             patrolling(v){
                 let stationed =  v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
                 if (p_on['soul_forge']){
-                    let forge = Math.round(650 / armyRating(1,'army'));
+                    let forge = soulForgeSoldiers();
                     if (forge <= stationed){
                         stationed -= forge;
                     }
@@ -720,7 +758,7 @@ function buildFortress(parent,full){
 function fortressDefenseRating(v){
     let army = v - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
     if (p_on['soul_forge']){
-        let forge = Math.round(650 / armyRating(1,'army'));
+        let forge = soulForgeSoldiers();
         if (forge <= army){
             army -= forge;
         }
@@ -769,7 +807,7 @@ export function bloodwar(){
     let forgeOperating = false;                    
     if (p_on['soul_forge']){
         let troops = global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
-        let forge = Math.round(650 / armyRating(1,'army'));
+        let forge = soulForgeSoldiers();
         if (forge <= troops){
             forgeOperating = true;
             $(`#portal-soul_forge .on`).removeClass('altwarn');
@@ -1039,6 +1077,17 @@ export function bloodwar(){
     if (global.tech['hell_pit']){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             global.portal.soul_forge.kills += p_on['soul_attractor'] * Math.rand(25,75);
+        }
+
+        if (forgeOperating && global.tech['hell_gun'] && p_on['gun_emplacement']){
+            let gunKills = p_on['gun_emplacement'] * Math.rand(10,25);
+            global.portal.soul_forge.kills += gunKills;
+            global.stats.dkills += gunKills;
+            for (let i=0; i<p_on['gun_emplacement']; i++){
+                if (Math.rand(0,7500) === 0){
+                    global.resource.Soul_Gem.amount++;
+                }
+            }
         }
 
         if (forgeOperating){

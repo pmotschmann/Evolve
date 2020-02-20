@@ -11907,6 +11907,25 @@ export const actions = {
                 return false;
             }
         },
+        gun_emplacement: {
+            id: 'tech-gun_emplacement',
+            title: loc('portal_gun_emplacement_title'),
+            desc: loc('portal_gun_emplacement_title'),
+            category: 'research',
+            reqs: { hell_pit: 4 },
+            grant: ['hell_gun',1],
+            cost: {
+                Knowledge(){ return 3000000; }
+            },
+            effect(){ return loc('tech_gun_emplacement_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['gun_emplacement'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
