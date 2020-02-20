@@ -1245,6 +1245,9 @@ function genetics(){
                     if (t === 'mastery'){ cost *= 2; }
                     return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
                 },
+                traitEffect(t){
+                    return loc(`trait_${t}_effect`);
+                },
                 removeCost(t){
                     let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
                     return loc('arpa_remove',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
@@ -1276,12 +1279,10 @@ function bindTrait(breakdown,trait){
         let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
         m_trait.append(phage);
     }
-    if (global.race[trait] > 1){
-        m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
-    }
-    else {
-        m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
-    }
+
+    let total = global.race[trait] > 1 ? `(${global.race[trait]}) ` : '';
+    m_trait.append(`<b-tooltip :label="traitEffect('${trait}')" position="is-bottom" multilined animated><span class="has-text-warning">${total}${traits[trait].desc}</span></b-tooltip>`);
+
     breakdown.append(m_trait);
 }
 
