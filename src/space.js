@@ -258,7 +258,7 @@ const spaceProjects = {
         helium_mine: {
             id: 'space-helium_mine',
             title: loc('space_moon_helium_mine_title'),
-            desc: `<div class="has-text-caution">${loc('space_moon_helium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
+            desc: `<div>${loc('space_moon_helium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
             reqs: { space: 3, luna: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('helium_mine', offset, 38000, 1.35); },
@@ -268,7 +268,7 @@ const spaceProjects = {
             effect(){
                 let storage = spatialReasoning(100);
                 let helium = +(0.18 * zigguratBonus()).toFixed(3);
-                return `<div>${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_helium_mine_effect',[helium])}</div><div>${loc('plus_max_resource',[storage,loc('resource_Helium_3_name')])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_helium_mine_effect',[helium])}</div><div>${loc('plus_max_resource',[storage,loc('resource_Helium_3_name')])}</div>`;
             },
             support(){ return -1; },
             powered(){ return 1; },
