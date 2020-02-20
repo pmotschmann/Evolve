@@ -666,6 +666,47 @@ const feats = {
     }
 }
 
+{
+    let affix = 'l';
+    if (global.race.universe !== 'standard'){
+        switch (global.race.universe){
+            case 'evil':
+                affix = 'e';
+                break;
+            case 'antimatter':
+                affix = 'a';
+                break;
+            case 'heavy':
+                affix = 'h';
+                break;
+            case 'micro':
+                affix = 'm';
+                break;
+            default:
+                break;
+        }
+    }
+    
+    let lvl = 0;
+    let ulvl = 0;
+    Object.keys(achievements).forEach(function (achievement){
+        if (global.stats.achieve[achievement]){
+            lvl += global.stats.achieve[achievement].l > 5 ? 5 : global.stats.achieve[achievement].l;
+            if (global.stats.achieve[achievement][affix]){
+                ulvl += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
+            }
+            if (achievement === 'joyless'){
+                lvl += global.stats.achieve[achievement].l > 5 ? 5 : global.stats.achieve[achievement].l;
+                if (global.stats.achieve[achievement][affix]){
+                    ulvl += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
+                }
+            }
+        }
+    });
+    set_alevel(lvl);
+    set_ulevel(ulvl);
+}
+
 export function unlockAchieve(achievement,small,rank){
     if (global.race.universe !== 'micro' && small === true){
         return false;

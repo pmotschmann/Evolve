@@ -8,6 +8,8 @@ Unification 3.0, the unification system has been reworked<br>
 Federation Government type<br>
 New Faith CRISPR line of upgrades, unlocks priest job<br>
 Universal, Standard and Mastered CRISPR Upgrades, for masters of the universes<br>
+Added Negotiator CRISPR upgrade<br>
+Added Persuasive Minor Gene<br>
 Extended the Deify and Study Ancients tech trees<br>
 Enhanced Droids upgrade for War Droids<br>
 Repair Droids for Fortress<br>

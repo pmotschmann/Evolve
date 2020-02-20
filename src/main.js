@@ -1,7 +1,7 @@
 import { global, save, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, achieve_level, universe_level, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
-import { vBind, mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue } from './functions.js';
 import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
+import { vBind, mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery } from './functions.js';
 import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
@@ -540,23 +540,7 @@ function fastLoop(){
         }
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-        let m_rate = global.race.universe === 'standard' ? 0.25 : 0.15;
-        let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
-        if (global.genes['challenge'] >= 4 && global.race.universe !== 'standard'){
-            m_rate += 0.05;
-            u_rate -= 0.05;
-        }
-        if (global.race['weak_mastery']){
-            m_rate /= 10;
-            u_rate /= 10;
-        }
-        let mastery = achieve_level * m_rate;
-        if (global.race.universe !== 'standard'){
-            mastery += universe_level * u_rate;
-        }
-        if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
-            mastery *= 1 + (0.01 * global.race.mastery);
-        }
+        let mastery = calc_mastery();
         breakdown.p['Global'][loc('mastery')] = mastery + '%';
         global_multiplier *= 1 + (mastery / 100);
     }
@@ -866,10 +850,18 @@ function fastLoop(){
                     let price = tradeBuyPrice(res) * global.resource[res].trade;
 
                     if (global.resource.Money.amount >= price * time_multiplier){
-                        modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
+                        let rate = tradeRatio[res];
+                        if (global.race['persuasive']){
+                            rate *= 1 + (global.race['persuasive'] / 100);
+                        }
+                        if (global.genes['trader']){
+                            let mastery = calc_mastery();
+                            rate *= 1 + (mastery / 100);
+                        }
+                        modRes(res,global.resource[res].trade * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
-                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * tradeRatio[res];
+                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * rate;
                     }
                     steelCheck();
                 }
@@ -910,6 +902,14 @@ function fastLoop(){
                 let imprt_vol = galaxyOffers[i].buy.vol;
                 let exp_total = 0;
                 let imp_total = 0;
+
+                if (global.race['persuasive']){
+                    imprt_vol *= 1 + (global.race['persuasive'] / 100);
+                }
+                if (global.genes['trader']){
+                    let mastery = calc_mastery();
+                    imprt_vol *= 1 + (mastery / 100);
+                }
 
                 used += global.galaxy.trade[`f${i}`];
                 if (used > cap){

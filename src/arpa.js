@@ -602,6 +602,23 @@ const genePool = {
             return false;
         }
     },
+    negotiator: {
+        id: 'genes-negotiator',
+        title: loc('arpa_genepool_negotiator_title'),
+        desc: loc('arpa_genepool_negotiator_desc'),
+        reqs: {challenge:2},
+        grant: ['trader',1],
+        cost: 750,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('negotiator')){
+                global.genes['trader'] = 1;
+                vBind({el: `#galaxyTrade`},'update');
+                return true;
+            }
+            return false;
+        }
+    },
     ancients: {
         id: 'genes-ancients',
         title: loc('arpa_genepool_ancients_title'),
@@ -1146,6 +1163,9 @@ function genetics(){
                         global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
                         global.race[t] ? global.race[t]++ : global.race[t] = 1;
                         genetics();
+                        if (t === 'persuasive'){
+                            vBind({el: `#galaxyTrade`},'update');
+                        }
                     }
                 },
                 phage(t){
@@ -1156,6 +1176,9 @@ function genetics(){
                         global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
                         global.race[t] ? global.race[t]++ : global.race[t] = 1;
                         genetics();
+                        if (t === 'persuasive'){
+                            vBind({el: `#galaxyTrade`},'update');
+                        }
                     }
                 },
                 purge(t){

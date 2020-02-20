@@ -1,4 +1,4 @@
-import { global, save } from './vars.js';
+import { global, save, achieve_level, universe_level } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
 
@@ -427,6 +427,30 @@ export function powerModifier(energy){
         energy = +energy.toFixed(2);
     }
     return energy;
+}
+
+export function calc_mastery(){
+    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        let m_rate = global.race.universe === 'standard' ? 0.25 : 0.15;
+        let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
+        if (global.genes['challenge'] >= 4 && global.race.universe !== 'standard'){
+            m_rate += 0.05;
+            u_rate -= 0.05;
+        }
+        if (global.race['weak_mastery']){
+            m_rate /= 10;
+            u_rate /= 10;
+        }
+        let mastery = achieve_level * m_rate;
+        if (global.race.universe !== 'standard'){
+            mastery += universe_level * u_rate;
+        }
+        if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
+            mastery *= 1 + (0.01 * global.race.mastery);
+        }
+        return mastery;
+    }
+    return 0;
 }
 
 export function challenge_multiplier(value,type,decimals){

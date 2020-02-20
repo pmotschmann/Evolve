@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, modRes } from './functions.js';
+import { vBind, modRes, calc_mastery } from './functions.js';
 import { races } from './races.js';
 import { loc } from './locale.js';
 
@@ -591,9 +591,18 @@ function marketItem(mount,market_item,name,color,full){
                 return loc('resource_market_auto_sell_desc',[tradeRatio[res],unit,price]);
             },
             aBuy(res){
-                let unit = tradeRatio[res] === 1 ? loc('resource_market_unit') : loc('resource_market_units');
+                let rate = tradeRatio[res];
+                if (global.race['persuasive']){
+                    rate *= 1 + (global.race['persuasive'] / 100);
+                }
+                if (global.genes['trader']){
+                    let mastery = calc_mastery();
+                    rate *= 1 + (mastery / 100);
+                }
+                rate = +(rate).toFixed(2);
+                let unit = rate === 1 ? loc('resource_market_unit') : loc('resource_market_units');
                 let price = tradeBuyPrice(res);
-                return loc('resource_market_auto_buy_desc',[tradeRatio[res],unit,price]);
+                return loc('resource_market_auto_buy_desc',[rate,unit,price]);
             },
             purchase(res){
                 if (!global.race['no_trade']){
@@ -762,7 +771,7 @@ export function galacticTrade(modal){
             galaxyTrade.append(offer);
 
             offer.append($(`<span class="offer-item has-text-success">${global.resource[galaxyOffers[i].buy.res].name}</span>`));
-            offer.append($(`<span class="offer-vol has-text-advanced">+${galaxyOffers[i].buy.vol}/s</span>`));
+            offer.append($(`<span class="offer-vol has-text-advanced">+{{ '${i}' | t_vol }}/s</span>`));
             
             offer.append($(`<span class="offer-item has-text-danger">${global.resource[galaxyOffers[i].sell.res].name}</span>`));
             offer.append($(`<span class="offer-vol has-text-caution">-${galaxyOffers[i].sell.vol}/s</span>`));
@@ -805,6 +814,20 @@ export function galacticTrade(modal){
             },
             desc(s){
                 return s; 
+            }
+        },
+        filters: {
+            t_vol(idx){
+                let buy_vol = galaxyOffers[idx].buy.vol;
+                if (global.race['persuasive']){
+                    buy_vol *= 1 + (global.race['persuasive'] / 100);
+                }
+                if (global.genes['trader']){
+                    let mastery = calc_mastery();
+                    buy_vol *= 1 + (mastery / 100);
+                }
+                buy_vol = +(buy_vol).toFixed(2);
+                return buy_vol;
             }
         }
     });

@@ -1340,6 +1340,10 @@ export const traits = {
         desc: loc('trait_gambler'),
         type: 'minor',
     },
+    persuasive: { // Trade bonus
+        desc: loc('trait_persuasive'),
+        type: 'minor',
+    },
     fortify: { // gene fortification
         desc: loc('trait_fortify'),
         type: 'special',
