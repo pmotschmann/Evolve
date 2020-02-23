@@ -3409,7 +3409,7 @@
   "galaxy_vitreloy_plant_effect": "+%0 Vitreloy/s",
   "galaxy_vitreloy_plant_effect2": "-%0 Bolognium/s, -%1 Stanene/s",
   "galaxy_vitreloy_plant_effect3": "-%0 Money/s, -%1kW",
-  "interstellar_vitreloy_plant_bd": "Vit. Plant",
+  "galaxy_vitreloy_plant_bd": "Vit. Plant",
   "galaxy_super_freighter": "Super Freighter",
   "galaxy_alien": "%0 System",
   "galaxy_alien1_desc": "The %0 System is the home system of the %0. It is a binary star system 4.2 light years from the Gorddon System.",

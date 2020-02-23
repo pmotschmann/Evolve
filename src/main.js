@@ -2787,9 +2787,9 @@ function fastLoop(){
             if (vitreloy_production > 0){
                 vitreloy_production *= 0.18;
 
-                breakdown.p.consume.Money[loc('interstellar_vitreloy_plant_bd')] = -(consume_money);
-                breakdown.p.consume.Bolognium[loc('interstellar_vitreloy_plant_bd')] = -(consume_bolognium);
-                breakdown.p.consume.Stanene[loc('interstellar_vitreloy_plant_bd')] = -(consume_stanene);
+                breakdown.p.consume.Money[loc('galaxy_vitreloy_plant_bd')] = -(consume_money);
+                breakdown.p.consume.Bolognium[loc('galaxy_vitreloy_plant_bd')] = -(consume_bolognium);
+                breakdown.p.consume.Stanene[loc('galaxy_vitreloy_plant_bd')] = -(consume_stanene);
 
                 modRes('Money', -(consume_money * time_multiplier));
                 modRes('Bolognium', -(consume_bolognium * time_multiplier));
@@ -2803,7 +2803,7 @@ function fastLoop(){
                 let pirate = piracy('gxy_alien1');
 
                 let vitreloy_bd = {};
-                vitreloy_bd[loc('interstellar_vitreloy_plant_bd')] = (vitreloy_production * zig) + 'v';
+                vitreloy_bd[loc('galaxy_vitreloy_plant_bd')] = (vitreloy_production * zig) + 'v';
                 vitreloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 vitreloy_bd[loc('galaxy_piracy')] = -((1 - pirate) * 100) + '%';
                 breakdown.p['Vitreloy'] = vitreloy_bd;
