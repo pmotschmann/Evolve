@@ -2762,7 +2762,7 @@ function fastLoop(){
             modRes('Graphene', delta * time_multiplier);
         }
 
-        // Vitreloy vitreloy_plant
+        // Vitreloy
         if (global.galaxy['vitreloy_plant'] && p_on['vitreloy_plant'] > 0){
 
             let consume_money = p_on['vitreloy_plant'] * 50000;
@@ -2801,7 +2801,7 @@ function fastLoop(){
 
                 let zig = zigguratBonus();
                 let pirate = piracy('gxy_alien1');
-                
+
                 let vitreloy_bd = {};
                 vitreloy_bd[loc('interstellar_vitreloy_plant_bd')] = (vitreloy_production * zig) + 'v';
                 vitreloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
