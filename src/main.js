@@ -4557,7 +4557,11 @@ function midLoop(){
             bd_Elerium[loc('galaxy_gateway_station')] = gain+'v';
         }
         if (p_on['s_gate'] && p_on['telemetry_beacon']){
-            let gain = p_on['telemetry_beacon'] ** 2 * (global.tech['telemetry'] ? 1200 : 800);
+            let base_val = global.tech['telemetry'] ? 1200 : 800;
+            if (global.tech.science >= 17){
+                base_val += gal_on['scout_ship'] * 25;
+            }
+            let gain = p_on['telemetry_beacon'] ** 2 * base_val;
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('galaxy_telemetry_beacon_bd')] = gain+'v';
         }

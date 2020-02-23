@@ -7392,12 +7392,30 @@ export const actions = {
             title: loc('tech_expedition'),
             desc: loc('tech_expedition'),
             category: 'upgrade',
-            reqs: { science: 15, neutron: 1 },
+            reqs: { science: 15, xeno: 4 },
             grant: ['science',16],
             cost: {
                 Knowledge(){ return 5350000; }
             },
             effect(){ return loc('tech_expedition_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        subspace_sensors: {
+            id: 'tech-subspace_sensors',
+            title: loc('tech_subspace_sensors'),
+            desc: loc('tech_subspace_sensors'),
+            category: 'upgrade',
+            reqs: { science: 16, high_tech: 16 },
+            grant: ['science',17],
+            cost: {
+                Knowledge(){ return 6000000; }
+            },
+            effect(){ return loc('tech_subspace_sensors_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -11730,6 +11748,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['consulate'] = { count: 0 };
                     global.settings.space.alien1 = true;
+                    messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.alien1.id].name]),'success');
                     return true;
                 }
                 return false;
@@ -11846,6 +11865,27 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['frigate_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    renderSpace();
+                    return true;
+                }
+                return false;
+            }
+        },
+        cruiser_ship: {
+            id: 'tech-cruiser_ship',
+            title: loc('galaxy_cruiser_ship'),
+            desc: loc('galaxy_cruiser_ship'),
+            category: 'research',
+            reqs: { andromeda: 3, xeno: 10 },
+            grant: ['andromeda',4],
+            cost: {
+                Knowledge(){ return 7500000; }
+            },
+            effect(){ return loc('tech_cruiser_ship_effect',[races[global.galaxy.alien2.id].name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['cruiser_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    global.settings.space.alien2 = true;
                     renderSpace();
                     return true;
                 }
