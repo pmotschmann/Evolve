@@ -641,6 +641,7 @@ function fastLoop(){
         Stanene: {},
         Bolognium: {},
         Vitreloy: {},
+        Orichalcum: {},
         Plywood: {},
         Brick: {},
         Wrought_Iron: {},
@@ -1131,12 +1132,12 @@ function fastLoop(){
         // Power usage
         let p_structs = [
             'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','gxy_gateway:ship_dock','int_neutron:stellar_forge',
-            'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station',
-            'gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_gateway:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
-            'spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory',
+            'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon',
+            'int_nebula:nexus','gxy_stargate:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy',
+            'gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory',
             'spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry',
             'city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge',
-            'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station',
+            'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant',
             'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_pit:gun_emplacement','prtl_pit:soul_attractor'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
@@ -1363,7 +1364,7 @@ function fastLoop(){
 
         if (global.galaxy['starbase']){
             let used_support = 0;
-            let gateway_structs = ['bolognium_ship','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
+            let gateway_structs = ['bolognium_ship','dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
             for (var i = 0; i < gateway_structs.length; i++){
                 if (global.galaxy[gateway_structs[i]]){
                     let operating = global.galaxy[gateway_structs[i]].on;
@@ -1535,11 +1536,16 @@ function fastLoop(){
         var galaxy_ship_types = [
             {
                 region: 'gxy_gateway',
-                ships: ['bolognium_ship','cruiser_ship','frigate_ship','corvette_ship','scout_ship']
+                ships: ['bolognium_ship','dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship']
             },
             {
                 region: 'gxy_gorddon',
-                ships: ['freighter','super_freighter'],
+                ships: ['freighter'],
+                req: 'embassy'
+            },
+            {
+                region: 'gxy_alien1',
+                ships: ['super_freighter'],
                 req: 'embassy'
             }
         ];
@@ -1713,6 +1719,9 @@ function fastLoop(){
         mBaseCap += global.city['casino'] ? global.city['casino'].count : 0;
         if (red_on['vr_center']){
             mBaseCap += red_on['vr_center'] * 2;
+        }
+        if (p_on['resort']){
+            mBaseCap += p_on['resort'] * 2;
         }
         if (global.tech['superstar']){
             mBaseCap += global.civic.entertainer.workers;
@@ -2753,6 +2762,55 @@ function fastLoop(){
             modRes('Graphene', delta * time_multiplier);
         }
 
+        // Vitreloy vitreloy_plant
+        if (global.galaxy['vitreloy_plant'] && p_on['vitreloy_plant'] > 0){
+
+            let consume_money = p_on['vitreloy_plant'] * 50000;
+            let consume_bolognium = p_on['vitreloy_plant'] * 2.5;
+            let consume_stanene = p_on['vitreloy_plant'] * 100;
+
+            let vitreloy_production = p_on['vitreloy_plant'];
+
+            while (consume_money * time_multiplier > global.resource.Money.amount && consume_money > 0){
+                consume_money -= 350;
+                vitreloy_production--;
+            }
+            while (consume_bolognium * time_multiplier > global.resource.Bolognium.amount && consume_coal > 0){
+                consume_bolognium -= 25;
+                vitreloy_production--;
+            }
+            while (consume_stanene * time_multiplier > global.resource.Stanene.amount && consume_oil > 0){
+                consume_stanene -= 15;
+                vitreloy_production--;
+            }
+            
+            if (vitreloy_production > 0){
+                vitreloy_production *= 0.18;
+
+                breakdown.p.consume.Money[loc('interstellar_vitreloy_plant_bd')] = -(consume_money);
+                breakdown.p.consume.Bolognium[loc('interstellar_vitreloy_plant_bd')] = -(consume_bolognium);
+                breakdown.p.consume.Stanene[loc('interstellar_vitreloy_plant_bd')] = -(consume_stanene);
+
+                modRes('Money', -(consume_money * time_multiplier));
+                modRes('Bolognium', -(consume_bolognium * time_multiplier));
+                modRes('Stanene', -(consume_stanene * time_multiplier));
+
+                if (global.civic.govern.type === 'socialist'){
+                    vitreloy_production *= 1.05;
+                }
+
+                let zig = zigguratBonus();
+                let pirate = piracy('gxy_alien1');
+                
+                let vitreloy_bd = {};
+                vitreloy_bd[loc('interstellar_vitreloy_plant_bd')] = (vitreloy_production * zig) + 'v';
+                vitreloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+                vitreloy_bd[loc('galaxy_piracy')] = -((1 - pirate) * 100) + '%';
+                breakdown.p['Vitreloy'] = vitreloy_bd;
+                modRes('Vitreloy', vitreloy_production * hunger * global_multiplier * zig * pirate * time_multiplier);
+            }
+        }
+
         // Lumber
         { //block scope
             if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
@@ -3676,7 +3734,8 @@ function midLoop(){
             Graphene: 0,
             Stanene: 0,
             Bolognium: 0,
-            Vitreloy: 0
+            Vitreloy: 0,
+            Orichalcum: 0
         };
         // labor caps
         var lCaps = {
@@ -3731,6 +3790,7 @@ function midLoop(){
         var bd_Stanene = { Base: caps['Stanene']+'v' };
         var bd_Bolognium = { Base: caps['Bolognium']+'v' };
         var bd_Vitreloy = { Base: caps['Vitreloy']+'v' };
+        var bd_Orichalcum = { Base: caps['Orichalcum']+'v' };
 
         caps[global.race.species] = 0;
         caps['Slave'] = 0;
@@ -3839,6 +3899,9 @@ function midLoop(){
         if (global.city['casino']){
             lCaps['entertainer'] += global.city['casino'].count;
         }
+        if (global.galaxy['resort']){
+            lCaps['entertainer'] += p_on['resort'] * 2;
+        }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += global.city['cement_plant'].count * 2;
         }
@@ -3899,6 +3962,10 @@ function midLoop(){
                 caps['Money'] += gain;
                 bd_Money[housingLabel('large')] = gain+'v';
             }
+        }
+        if (global.galaxy['consulate'] && global.galaxy.consulate.count >= 1){
+            caps[global.race.species] += 10;
+            bd_Citizen[loc('galaxy_consulate')] = '10v';
         }
         if (p_on['embassy'] && global.galaxy['dormitory']){
             caps[global.race.species] += p_on['dormitory'] * 3;
@@ -4336,11 +4403,10 @@ function midLoop(){
                 crew += global.galaxy.defense.gxy_gorddon.corvette_ship * (actions.galaxy.gxy_gateway.corvette_ship.ship.civ + actions.galaxy.gxy_gateway.corvette_ship.ship.mil);
                 crew += global.galaxy.defense.gxy_gorddon.frigate_ship * (actions.galaxy.gxy_gateway.frigate_ship.ship.civ + actions.galaxy.gxy_gateway.frigate_ship.ship.mil);
                 crew += global.galaxy.defense.gxy_gorddon.cruiser_ship * (actions.galaxy.gxy_gateway.cruiser_ship.ship.civ + actions.galaxy.gxy_gateway.cruiser_ship.ship.mil);
+                crew += global.galaxy.defense.gxy_gorddon.dreadnought * (actions.galaxy.gxy_gateway.dreadnought.ship.civ + actions.galaxy.gxy_gateway.dreadnought.ship.mil);
+                
                 if (gal_on['freighter']){
                     crew += gal_on['freighter'] * (actions.galaxy.gxy_gorddon.freighter.ship.civ + actions.galaxy.gxy_gorddon.freighter.ship.mil);
-                }
-                if (gal_on['super_freighter']){
-                    crew += gal_on['super_freighter'] * (actions.galaxy.gxy_gorddon.super_freighter.ship.civ + actions.galaxy.gxy_gorddon.super_freighter.ship.mil);
                 }
                 leave = crew * 300;
             }
@@ -4397,6 +4463,11 @@ function midLoop(){
             }
             caps['Money'] += vault;
             bd_Money[loc('city_casino')] = vault+'v';
+        }
+        if (global.galaxy['resort']){
+            let vault = p_on['resort'] * spatialReasoning(global.tech['world_control'] ? 1250000 : 1000000);
+            caps['Money'] += vault;
+            bd_Money[loc('galaxy_resort')] = vault+'v';
         }
         if (global.tech['banking'] >= 4){
             let cm = 250;
@@ -4528,8 +4599,14 @@ function midLoop(){
         if (global.galaxy['cruiser_ship']){
             lCaps['crew'] += global.galaxy.cruiser_ship.on * actions.galaxy.gxy_gateway.cruiser_ship.ship.civ;
         }
+        if (global.galaxy['dreadnought']){
+            lCaps['crew'] += global.galaxy.dreadnought.on * actions.galaxy.gxy_gateway.dreadnought.ship.civ;
+        }
         if (global.galaxy['freighter']){
             lCaps['crew'] += global.galaxy.freighter.on * actions.galaxy.gxy_gorddon.freighter.ship.civ;
+        }
+        if (global.galaxy['super_freighter']){
+            lCaps['crew'] += global.galaxy.super_freighter.on * actions.galaxy.gxy_alien1.super_freighter.ship.civ;
         }
 
         if (global.race['inspired']){
@@ -4591,6 +4668,7 @@ function midLoop(){
             Stanene: bd_Stanene,
             Bolognium: bd_Bolognium,
             Vitreloy: bd_Vitreloy,
+            Orichalcum: bd_Orichalcum,
         };
 
         let create_value = crateValue();
@@ -4699,7 +4777,7 @@ function midLoop(){
         }
 
         if (global.galaxy['defense']){
-            let armada_ships = ['cruiser_ship','frigate_ship','corvette_ship','scout_ship']
+            let armada_ships = ['dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship']
             for (let i=0; i<armada_ships.length; i++){
                 let count = 0;
                 Object.keys(global.galaxy.defense).forEach(function (region){

@@ -31,6 +31,7 @@ export const resource_values = {
     Stanene: 3600,
     Bolognium: 9000,
     Vitreloy: 10200,
+    Orichalcum: 99000,
     Genes: 0,
     Soul_Gem: 0,
 };
@@ -46,7 +47,7 @@ export const tradeRatio = {
     Cement: 1,
     Coal: 1,
     Oil: 0.5,
-    Uranium: 0.15,
+    Uranium: 0.12,
     Steel: 0.5,
     Titanium: 0.25,
     Alloy: 0.2,
@@ -61,8 +62,9 @@ export const tradeRatio = {
     Nano_Tube: 0.1,
     Graphene: 0.1,
     Stanene: 0.1,
-    Bolognium: 0.1,
-    Vitreloy: 0.1,
+    Bolognium: 0.12,
+    Vitreloy: 0.12,
+    Orichalcum: 0.05,
 }
 
 export const atomic_mass = {
@@ -93,6 +95,7 @@ export const atomic_mass = {
     Stanene: 33.9615,
     Bolognium: 75.898,
     Vitreloy: 41.08,
+    Orichalcum: 237.8,
     Plywood: 7.666,
     Brick: 20.009,
     Wrought_Iron: 55.845,
@@ -244,6 +247,7 @@ export function defineResources(){
         loadResource('Stanene',0,1,false,true,'advanced');
         loadResource('Bolognium',0,1,false,true,'advanced');
         loadResource('Vitreloy',0,1,false,true,'advanced');
+        loadResource('Orichalcum',0,1,false,true,'advanced');
         loadResource('Genes',-2,0,false,false,'advanced');
         loadResource('Soul_Gem',-2,0,false,false,'advanced');
         loadResource('Plywood',-1,0,false,false,'danger');

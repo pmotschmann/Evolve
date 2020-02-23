@@ -3842,7 +3842,7 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('amphitheatre', offset, 50, 1.75); },
                 Stone(offset){ return costMultiplier('amphitheatre', offset, 200, 1.75); }
             },
-            effect: `<div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`,
+            effect: `<div>${loc('city_max_entertainer',[1])}</div><div>${loc('city_max_morale')}</div>`,
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['amphitheatre'].count++;
@@ -3876,14 +3876,14 @@ export const actions = {
                 }
                 money = Math.round(money);
                 money = '$'+money;
-                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer')}</div>`;
+                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
                 if (global.tech['gambling'] >= 2){
                     let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
                     if (global.civic.govern.type === 'corpocracy'){
                         cash = (cash * 3).toFixed(2);
                     }
-                    desc = desc + `<div class="has-text-caution">${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`
+                    desc = desc + `<div class="has-text-caution">${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`;
                 }
                 return desc;
             },
@@ -11709,6 +11709,46 @@ export const actions = {
             effect(){ return loc('tech_shore_leave_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        xeno_gift: {
+            id: 'tech-xeno_gift',
+            title: loc('tech_xeno_gift'),
+            desc: loc('tech_xeno_gift'),
+            category: 'research',
+            reqs: { high_tech: 16, xeno: 7 },
+            grant: ['xeno',8],
+            cost: {
+                Knowledge(){ return 6500000; },
+                Infernite(){ return 125000; }
+            },
+            effect(){ return loc('tech_xeno_gift_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['consulate'] = { count: 0 };
+                    global.settings.space.alien1 = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        industrial_partnership: {
+            id: 'tech-industrial_partnership',
+            title: loc('tech_industrial_partnership'),
+            desc(){ return loc('tech_industrial_partnership'); },
+            category: 'research',
+            reqs: { xeno: 9 },
+            grant: ['xeno',10],
+            cost: {
+                Knowledge(){ return 7250000; }
+            },
+            effect(){ return loc('tech_industrial_partnership_effect',[races[global.galaxy.alien1.id].name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['vitreloy_plant'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
