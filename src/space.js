@@ -3708,6 +3708,42 @@ const galaxyProjects = {
                 }; 
             },
         },
+        alien2_mission: {
+            id: 'galaxy-alien2_mission',
+            title(){ return loc('galaxy_alien2_mission',[races[global.galaxy.alien2.id].name]); },
+            desc(){ return loc('galaxy_alien2_mission_desc',[races[global.galaxy.alien2.id].name]); },
+            reqs: { andromeda: 4 },
+            grant: ['conflict',1],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Structs(){
+                    return {
+                        galaxy: {
+                            frigate_ship: { s: 'gxy_gateway', count: 2, on: 2 },
+                            cruiser_ship: { s: 'gxy_gateway', count: 1, on: 1 },
+                        }
+                    };
+                },
+            },
+            effect(){ return `<div>${loc('galaxy_alien2_mission_desc',[races[global.galaxy.alien2.id].name])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[races[global.galaxy.alien2.id].name])}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.galaxy.defense.gxy_alien2.frigate_ship >= 2 && global.galaxy.defense.gxy_alien2.cruiser_ship >= 1){
+                        global.galaxy.defense.gxy_alien2.frigate_ship--;
+                        global.galaxy.frigate_ship.on--;
+                        global.galaxy.frigate_ship.count--;
+                        global.galaxy.frigate_ship.crew -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
+                        global.galaxy.frigate_ship.mil -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
+                        global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
+                        global.civic.garrison.workers -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
+                        messageQueue(loc('galaxy_alien2_mission_result',[races[global.galaxy.alien2.id].name]),'danger');
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            }
+        },
     },
     gxy_chthonian: {
         info: {

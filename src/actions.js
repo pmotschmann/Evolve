@@ -4632,6 +4632,30 @@ export const actions = {
                 return false;
             }
         },
+        bolognium_alloy_beams: {
+            id: 'tech-bolognium_alloy_beams',
+            title: loc('tech_bolognium_alloy_beams'),
+            desc: loc('tech_housing_cost'),
+            category: 'upgrade',
+            reqs: { housing_reduction: 3, gateway: 3 },
+            grant: ['housing_reduction',4],
+            cost: { 
+                Knowledge(){ return 3750000; },
+                Adamantite(){ return 2500000; },
+                Bolognium(){ return 100000; }
+            },
+            effect(){
+                let label = housingLabel('small');
+                let cLabel = housingLabel('medium');
+                return loc('tech_bolognium_alloy_beams_effect',[label,cLabel]);
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         aphrodisiac: {
             id: 'tech-aphrodisiac',
             title: loc('tech_aphrodisiac'),

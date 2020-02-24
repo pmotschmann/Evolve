@@ -5763,6 +5763,7 @@ function longLoop(){
             global.galaxy.scout_ship.crew--;
             global.galaxy.scout_ship.mil--;
             global.resource[global.race.species].amount--;
+            global.civic.garrison.workers--;
             messageQueue(loc('galaxy_encounter'),'danger');
             drawTech();
         }
