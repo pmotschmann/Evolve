@@ -3538,7 +3538,12 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.city['smelter'].count++;
                     if (global.race['kindling_kindred']){
-                        global.city['smelter'].Coal++;
+                        if (global.race['evil']) {
+                            global.city['smelter'].Wood++;
+                        }
+                        else {
+                            global.city['smelter'].Coal++;
+                        }
                     }
                     else {
                         global.city['smelter'].Wood++;
@@ -3789,6 +3794,12 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.resource.Containers.display === false){
+                        messageQueue(loc('city_warehouse_msg'),'success');
+                        global.resource.Containers.display = true;
+                        $('#resources').empty();
+                        defineResources();
+                    }
                     global.city['wharf'].count++;
                     global.city.market.mtrade += 2;
                     let vol = global.tech['world_control'] ? 15 : 10
@@ -6545,6 +6556,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.tech['high_tech'] >= 6) {
+                        let tech = $(this)[0].grant[0];
+                        global.tech[tech] = $(this)[0].grant[1];
                         arpa('Physics');
                     }
                     return true;

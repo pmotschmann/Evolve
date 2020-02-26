@@ -2219,7 +2219,7 @@ function fastLoop(){
                 }
             }
 
-            let consume_wood = global.race['forge'] ? 0 : global.city['smelter'].Wood * (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
+            let consume_wood = global.race['forge'] ? 0 : global.city['smelter'].Wood * (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? 1 : 3);
             let consume_coal = global.race['forge'] ? 0 : global.city['smelter'].Coal * coal_fuel;
             let consume_oil = global.race['forge'] ? 0 : global.city['smelter'].Oil * 0.35;
             iron_smelter = global.city['smelter'].Iron;
@@ -2239,7 +2239,7 @@ function fastLoop(){
             }
             let l_type = global.race['soul_eater'] && global.race.species !== 'wendigo' ? 'Food' : (global.race['evil'] ? 'Furs' : 'Lumber');
             while (consume_wood * time_multiplier > global.resource[l_type].amount && consume_wood > 0){
-                consume_wood -= (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
+                consume_wood -= (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? 1 : 3);
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
