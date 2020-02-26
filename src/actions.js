@@ -1,6 +1,6 @@
 import { global, save, poppers, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem, shrineBonusActive, getShrineBonus } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -4007,20 +4007,21 @@ export const actions = {
             effect(){
                 let desc = `<div class="has-text-special">${loc('city_shrine_effect')}</div>`;
                 if (global.city.shrine.morale > 0){
-                    let morale = global.city.shrine.morale;
-                    desc = desc + `<div>${loc('city_shrine_morale',[morale])}</div>`;
+                    let morale = getShrineBonus('morale');
+                    desc = desc + `<div>${loc('city_shrine_morale',[(morale.add).toFixed(1)])}</div>`;
                 }
                 if (global.city.shrine.metal > 0){
-                    let metal = global.city.shrine.metal;
-                    desc = desc + `<div>${loc('city_shrine_metal',[metal])}</div>`;
+                    let metal = getShrineBonus('metal');
+                    desc = desc + `<div>${loc('city_shrine_metal',[((metal.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 if (global.city.shrine.know > 0){
-                    desc = desc + `<div>${loc('city_shrine_know',[global.city.shrine.know * 400])}</div>`;
+                    let know = getShrineBonus('know');
+                    desc = desc + `<div>${loc('city_shrine_know',[(know.add).toFixed(1)])}</div>`;
                     desc = desc + `<div>${loc('city_shrine_know2',[global.city.shrine.know * 3])}</div>`;
                 }
                 if (global.city.shrine.tax > 0){
-                    let tax = global.city.shrine.tax;
-                    desc = desc + `<div>${loc('city_shrine_tax',[tax])}</div>`;
+                    let tax = getShrineBonus('tax');
+                    desc = desc + `<div>${loc('city_shrine_tax',[((tax.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 return desc;
             },
