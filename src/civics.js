@@ -834,6 +834,9 @@ export function buildGarrison(garrison,full){
     if (!global.civic.garrison['crew']){
         global.civic.garrison['crew'] = 0;
     }
+    if (!global.civic.garrison['rCap']){
+        global.civic.garrison['rCap'] = 0;
+    }
 
     vBind({
         el: full ? '#garrison' : '#c_garrison',
