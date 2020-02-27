@@ -1,4 +1,6 @@
 #### 0.7.25 - 2/26/2020 ####
+Unicorn Shrine bonus is now determined by the moon phase when constructed<br>
+Shrine Knowledge bonus now applies an additional affect to universities<br>
 Smelters in Evil universe when using Kindling Kindred default to Flesh instead of Coal.<br>
 Evil Wendigo Smelters correctly display that they use 1 Flesh/s instead of 3 Souls/s. Also fixed the bug where they end up using 3 Flesh/s instead of 1.<br>
 Fixed bug where the Evil Wendigo Reclaimer description would show the Lumberjack description.<br>

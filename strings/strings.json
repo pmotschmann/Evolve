@@ -567,6 +567,7 @@
   "city_shrine_morale": "+%0% Morale",
   "city_shrine_metal": "+%0% Metals Production",
   "city_shrine_know": "+%0 Max Knowledge",
+  "city_shrine_know2": "+%0% University Knowledge",
   "city_shrine_tax": "+%0% Tax Income",
   "city_s_alter": "Sacrificial Altar",
   "city_s_alter_desc": "Click to consume a citizen",

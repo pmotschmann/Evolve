@@ -3792,7 +3792,7 @@ function midLoop(){
             bd_Helium[loc('space_moon_helium_mine_title')] = gain+'v';
         }
         if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
-            let gain = +(global.city.shrine.know * 500);
+            let gain = +(global.city.shrine.know * 400);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_shrine')] = gain+'v';
         }
@@ -3816,6 +3816,10 @@ function midLoop(){
             if (global.tech['supercollider']){
                 let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
+            }
+            if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                let shrine = 1 + (global.city.shrine.know * 0.03);
+                gain *= shrine;
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_university')] = gain+'v';

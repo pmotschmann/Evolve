@@ -4014,8 +4014,8 @@ export const actions = {
                     desc = desc + `<div>${loc('city_shrine_metal',[metal])}</div>`;
                 }
                 if (global.city.shrine.know > 0){
-                    let know = global.city.shrine.know * 500;
-                    desc = desc + `<div>${loc('city_shrine_know',[know])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know',[global.city.shrine.know * 400])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know2',[global.city.shrine.know * 3])}</div>`;
                 }
                 if (global.city.shrine.tax > 0){
                     let tax = global.city.shrine.tax;
@@ -4026,19 +4026,33 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.shrine.count++;
-                    switch (Math.floor(Math.seededRandom(0,4))){
-                        case 0:
-                            global.city.shrine.morale++;
-                            break;
-                        case 1:
-                            global.city.shrine.metal++;
-                            break;
-                        case 2:
-                            global.city.shrine.know++;
-                            break;
-                        case 3:
-                            global.city.shrine.tax++;
-                            break;
+                    if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
+                        global.city.shrine.morale++;
+                    }
+                    else if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){
+                        global.city.shrine.metal++;
+                    }
+                    else if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){
+                        global.city.shrine.know++;
+                    }
+                    else if (global.city.calendar.moon > 21){
+                        global.city.shrine.tax++;
+                    }
+                    else {
+                        switch (Math.floor(Math.seededRandom(0,4))){
+                            case 0:
+                                global.city.shrine.morale++;
+                                break;
+                            case 1:
+                                global.city.shrine.metal++;
+                                break;
+                            case 2:
+                                global.city.shrine.know++;
+                                break;
+                            case 3:
+                                global.city.shrine.tax++;
+                                break;
+                        }
                     }
                     return true;
                 }
@@ -4078,6 +4092,10 @@ export const actions = {
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                    let shrine = 1 + (global.city.shrine.know * 0.03);
+                    gain *= shrine;
                 }
                 gain = gain.toFixed(0);
                 return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
