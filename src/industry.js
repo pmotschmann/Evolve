@@ -56,7 +56,7 @@ function loadSmelter(parent,bind){
         parent.append(fuelTypes);
 
         if (!global.race['kindling_kindred'] || global.race['evil']){
-            let f_label = global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
+            let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
             let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ s.Wood }}</span></b-tooltip>`);
             let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
             let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
@@ -88,7 +88,7 @@ function loadSmelter(parent,bind){
 
         if (!global.race['kindling_kindred'] || global.race['evil']){
             if (global.race['evil']){
-                if (global.race['soul_eater']){
+                if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
                     available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
                 }
                 else {
@@ -307,7 +307,7 @@ function loadSmelter(parent,bind){
             buildLabel(type){
                 switch(type){
                     case 'wood':
-                        return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && ! global.race['soul_eater'] ? 1 : 3]);
+                        return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && !global.race['soul_eater'] || global.race.species === 'wendigo' ? 1 : 3]);
                     case 'coal':
                         let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
                         if (global.tech['uranium'] && global.tech['uranium'] >= 3){

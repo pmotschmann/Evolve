@@ -21,13 +21,13 @@ export const job_desc = {
         return desc;
     },
     lumberjack: function(){
-        if (global.race['evil'] && !global.race['soul_eater']){
+        if (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
             let multiplier = 1;
             multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
             let impact = global.civic.lumberjack.impact;
             let bone = +(impact * multiplier).toFixed(2);
             let flesh = +(impact / 4 * multiplier).toFixed(2);
-            let desc = loc('job_reclaimer_desc',[bone,flesh]);
+            let desc = global.race.species === 'wendigo' ? loc('job_reclaimer_desc2',[bone]) : loc('job_reclaimer_desc',[bone,flesh]);
             if (global.civic.d_job === 'lumberjack'){
                 desc = desc + ' ' + loc('job_default',[loc('job_reclaimer')]);
             }

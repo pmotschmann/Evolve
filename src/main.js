@@ -2547,14 +2547,14 @@ function fastLoop(){
             else if (global.city.smelter.Iron + global.city.smelter.Steel < global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil){
                 global.city.smelter.Iron++;
             }
-
-            let consume_wood = global.race['forge'] ? 0 : global.city.smelter.Wood * (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
+            
+            let consume_wood = global.race['forge'] ? 0 : global.city.smelter.Wood * (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? 1 : 3);
             let consume_coal = global.race['forge'] ? 0 : global.city.smelter.Coal * coal_fuel;
             let consume_oil = global.race['forge'] ? 0 : global.city.smelter.Oil * 0.35;
             iron_smelter = global.city.smelter.Iron;
             let steel_smelter = global.city.smelter.Steel;
             let oil_bonus = global.race['forge'] ? global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil : global.city.smelter.Oil;
-            
+
             if (global.race['steelen']) {
                 iron_smelter += steel_smelter;
                 steel_smelter = 0;
@@ -2570,7 +2570,7 @@ function fastLoop(){
             }
             let l_type = global.race['soul_eater'] && global.race.species !== 'wendigo' ? 'Food' : (global.race['evil'] ? 'Furs' : 'Lumber');
             while (consume_wood * time_multiplier > global.resource[l_type].amount && consume_wood > 0){
-                consume_wood -= (global.race['evil'] && !global.race['soul_eater'] ? 1 : 3);
+                consume_wood -= (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? 1 : 3);
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
@@ -4305,7 +4305,7 @@ function midLoop(){
             bd_Helium[loc('space_moon_helium_mine_title')] = gain+'v';
         }
         if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
-            let gain = +(global.city.shrine.know * 500);
+            let gain = +(global.city.shrine.know * 400);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_shrine')] = gain+'v';
         }
@@ -4335,6 +4335,10 @@ function midLoop(){
             if (global.tech['supercollider']){
                 let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
+            }
+            if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                let shrine = 1 + (global.city.shrine.know * 0.03);
+                gain *= shrine;
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_university')] = gain+'v';
