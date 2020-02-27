@@ -834,9 +834,6 @@ export function buildGarrison(garrison,full){
     if (!global.civic.garrison['crew']){
         global.civic.garrison['crew'] = 0;
     }
-    if (!global.civic.garrison['rCap']){
-        global.civic.garrison['rCap'] = 0;
-    }
 
     vBind({
         el: full ? '#garrison' : '#c_garrison',
@@ -1109,8 +1106,8 @@ function war_campaign(gov){
     }
 
     let wounded = 0;
-    if (global.civic.garrison.raid > global.civic.garrison.workers - global.civic.garrison.wounded){
-        wounded = global.civic.garrison.raid - (global.civic.garrison.workers - global.civic.garrison.wounded);
+    if (global.civic.garrison.raid > global.civic.garrison.workers - global.civic.garrison.crew - global.civic.garrison.wounded){
+        wounded = global.civic.garrison.raid - (global.civic.garrison.workers - global.civic.garrison.crew - global.civic.garrison.wounded);
     }
 
     global.civic.garrison.fatigue++;
@@ -1538,8 +1535,8 @@ function war_campaign(gov){
             messageQueue(loc('civics_garrison_defeat',[death]),'danger');
         }
     }
-    if (global.civic.garrison.wounded > global.civic.garrison.workers){
-        global.civic.garrison.wounded = global.civic.garrison.workers;
+    if (global.civic.garrison.wounded > global.civic.garrison.workers - global.civic.garrison.crew){
+        global.civic.garrison.wounded = global.civic.garrison.workers - global.civic.garrison.crew;
     }
     else if (global.civic.garrison.wounded < 0){
         global.civic.garrison.wounded = 0;
@@ -1665,9 +1662,9 @@ export function armyRating(val,type,wound){
 export function garrisonSize(max){
     let type = max ? 'max' : 'workers';
     if (global.portal['fortress']){
-        return global.civic.garrison[type] - global.portal.fortress.garrison;
+        return global.civic.garrison[type] - global.civic.garrison.crew - global.portal.fortress.garrison;
     }
-    return global.civic.garrison[type];
+    return global.civic.garrison[type] - global.civic.garrison.crew;
 }
 
 function defineMad(){

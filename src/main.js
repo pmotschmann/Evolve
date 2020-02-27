@@ -1595,21 +1595,18 @@ function fastLoop(){
                     }
 
                     if (actions.galaxy[region][ship].ship['mil'] && global.galaxy[ship].hasOwnProperty('mil')){
-                        if (global.galaxy[ship]['mil'] < global.galaxy[ship].on * actions.galaxy[region][ship].ship.mil){
-                            if (actions.galaxy[region][ship].ship.mil <= global.civic.garrison.workers + global.civic.garrison.crew - global.portal.fortress.garrison - crew_mil){
-                                if (global.civic.garrison.workers >= actions.galaxy[region][ship].ship.mil && global.civic.garrison.workers - global.portal.fortress.garrison > 0){
-                                    global.galaxy[ship]['mil'] += actions.galaxy[region][ship].ship.mil;
-                                    global.civic.garrison.workers -= actions.galaxy[region][ship].ship.mil;
-                                }
-                            }
-                        }
-                        if (global.galaxy[ship]['mil'] > global.galaxy[ship].on * actions.galaxy[region][ship].ship.mil){
-                            global.galaxy[ship]['mil'] -= actions.galaxy[region][ship].ship.mil;
-                            global.civic.garrison.workers += actions.galaxy[region][ship].ship.mil;
+                        if (global.galaxy[ship]['mil'] !== global.galaxy[ship].on * actions.galaxy[region][ship].ship.mil){
+                            global.galaxy[ship]['mil'] = global.galaxy[ship].on * actions.galaxy[region][ship].ship.mil;
                         }
                         if (global.civic.garrison.workers - global.portal.fortress.garrison < 0){
                             let underflow = global.civic.garrison.workers - global.portal.fortress.garrison;
                             global.galaxy[ship]['mil'] -= underflow;
+                        }
+                        if (crew_mil + global.galaxy[ship]['mil'] > global.civic.garrison.workers - global.portal.fortress.garrison){
+                            global.galaxy[ship]['mil'] = global.civic.garrison.workers - global.portal.fortress.garrison - crew_mil;
+                        }
+                        if (global.galaxy[ship]['mil'] < 0){
+                            global.galaxy[ship]['mil'] = 0;
                         }
                         crew_mil += global.galaxy[ship]['mil'];
                     }
@@ -1622,10 +1619,6 @@ function fastLoop(){
                     }
                 }
             }
-        }
-
-        if (global.civic.garrison.workers + crew_mil > global.civic.garrison.rCap){
-            crew_mil = global.civic.garrison.rCap - global.portal.fortress.garrison - global.civic.garrison.workers;
         }
 
         global.civic.crew.workers = crew_civ;
@@ -3946,8 +3939,7 @@ function midLoop(){
             }
         }
         if (global.civic.garrison['crew']){
-            global.civic.garrison['rCap'] = lCaps['garrison'];
-            lCaps['garrison'] -= global.civic.garrison.crew;
+            lCaps['garrison'];
         }
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
             caps['Slave'] = global.city.slave_pen.count * 5;
