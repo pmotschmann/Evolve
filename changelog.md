@@ -1,3 +1,10 @@
+#### 0.7.25 - 2/26/2020 ####
+Smelters in Evil universe when using Kindling Kindred default to Flesh instead of Coal.<br>
+Evil Wendigo Smelters correctly display that they use 1 Flesh/s instead of 3 Souls/s. Also fixed the bug where they end up using 3 Flesh/s instead of 1.<br>
+Fixed bug where the Evil Wendigo Reclaimer description would show the Lumberjack description.<br>
+If Containers have not yet been unlocked as a resource, getting a Wharf will unlock it.<br>
+Fixed bug where, if Frieght Trains was gotten after ARPA, the Railway project would need a refresh to appear.<br>
+
 #### 0.7.24 - 2/12/2020 ####
 Special Prestige icons awarded to players from certain feats can now be set to replace the standard Star icon<br>
 
