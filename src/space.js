@@ -2910,7 +2910,7 @@ const galaxyProjects = {
             effect(){
                 let helium = +(int_fuel_adjust(25)).toFixed(2);
                 let food = 250;
-                return `<div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div><div>${loc('plus_max_soldiers',[4])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[25])}</div><div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div><div>${loc('plus_max_soldiers',[4])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
             support(){ return 2; },
             powered(){ return p_on['s_gate'] ? 12 : 0; },
@@ -3729,17 +3729,93 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.galaxy.defense.gxy_alien2.frigate_ship >= 2 && global.galaxy.defense.gxy_alien2.cruiser_ship >= 1){
-                        global.galaxy.defense.gxy_alien2.frigate_ship--;
-                        global.galaxy.frigate_ship.on--;
-                        global.galaxy.frigate_ship.count--;
-                        global.galaxy.frigate_ship.crew -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
-                        global.galaxy.frigate_ship.mil -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
-                        global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
-                        global.civic.garrison.workers -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
-                        messageQueue(loc('galaxy_alien2_mission_result',[races[global.galaxy.alien2.id].name]),'danger');
+                        if (global.galaxy.defense.gxy_alien2.cruiser_ship >= 2){
+                            messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].name]),'success');
+                        }
+                        else {
+                            global.galaxy.defense.gxy_alien2.frigate_ship--;
+                            global.galaxy.frigate_ship.on--;
+                            global.galaxy.frigate_ship.count--;
+                            global.galaxy.frigate_ship.crew -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
+                            global.galaxy.frigate_ship.mil -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
+                            global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
+                            global.civic.garrison.workers -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
+                            messageQueue(loc('galaxy_alien2_mission_result',[races[global.galaxy.alien2.id].name]),'danger');
+                        }
+                        global.galaxy['foothold'] = { count: 0, on: 0 };
                         return true;
                     }
                     return false;
+                }
+                return false;
+            }
+        },
+        foothold: {
+            id: 'galaxy-foothold',
+            title: loc('galaxy_foothold'),
+            desc: `<div>${loc('galaxy_foothold')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { conflict: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('foothold', offset, 25000000, 1.25, 'galaxy'); },
+                Titanium(offset){ return spaceCostMultiplier('foothold', offset, 3000000, 1.25, 'galaxy'); },
+                Polymer(offset){ return spaceCostMultiplier('foothold', offset, 1750000, 1.25, 'galaxy'); },
+                Iridium(offset){ return spaceCostMultiplier('foothold', offset, 900000, 1.25, 'galaxy'); },
+                Bolognium(offset){ return spaceCostMultiplier('foothold', offset, 50000, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let elerium = 2.5;
+                return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[50])}</div><div>${loc('galaxy_foothold_effect',[10])}</div><div class="has-text-caution">${loc('galaxy_foothold_effect2',[elerium,$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return p_on['s_gate'] ? 20 : 0; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('foothold','galaxy');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.galaxy['foothold'].on++;
+                    }
+                    if (global.tech['conflict'] === 1){
+                        global.galaxy['armed_miner'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                        global.tech['conflict'] = 2;
+                        galaxySpace();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        armed_miner: {
+            id: 'galaxy-armed_miner',
+            title: loc('galaxy_armed_miner'),
+            desc(){
+                return `<div>${loc('galaxy_armed_miner')}</div>`;
+            },
+            reqs: { conflict: 2 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('armed_miner', offset, 5000000, 1.25, 'galaxy'); },
+                Steel(offset){ return spaceCostMultiplier('armed_miner', offset, 1800000, 1.25, 'galaxy'); },
+                Stanene(offset){ return spaceCostMultiplier('armed_miner', offset, 1975000, 1.25, 'galaxy'); },
+                Vitreloy(offset){ return spaceCostMultiplier('armed_miner', offset, 20000, 1.25, 'galaxy'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('armed_miner', offset, 1, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let bolognium = +(0.032 * zigguratBonus()).toFixed(3);
+                let adamantite = +(0.23 * zigguratBonus()).toFixed(3);
+                let iridium = +(0.65 * zigguratBonus()).toFixed(3);
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('gain',[adamantite,loc('resource_Adamantite_name')])}</div><div>${loc('gain',[iridium,loc('resource_Iridium_name')])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+            },
+            ship: {
+                civ: 2,
+                mil: 1,
+                helium: 10,
+                rating: 5
+            },
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('armed_miner','galaxy');
+                    global.galaxy.armed_miner.on++;
+                    return true;
                 }
                 return false;
             }
@@ -3772,12 +3848,15 @@ export function piracy(region,rating){
         }
         
         let pirate = 0;
+        let pillage = 0.75;
         switch(region){
             case 'gxy_stargate':
                 pirate = 500;
+                pillage = 0.5;
                 break;
             case 'gxy_gateway':
-                pirate = 250;
+                pirate = 500;
+                pillage = 1;
                 break;
             case 'gxy_gorddon':
                 pirate = 800;
@@ -3787,9 +3866,11 @@ export function piracy(region,rating){
                 break;
             case 'gxy_alien2':
                 pirate = 2500;
+                pillage = 1;
                 break;
             case 'gxy_chthonian':
                 pirate = 7500;
+                pillage = 1;
                 break;
         }
 
@@ -3797,13 +3878,24 @@ export function piracy(region,rating){
             armada += p_on['defense_platform'] * 20;
         }
 
+        if (region === 'gxy_gateway' && p_on['starbase']){
+            armada += p_on['starbase'] * 25;
+        }
+
+        if (region === 'gxy_alien2' && p_on['foothold']){
+            armada += p_on['foothold'] * 50;
+            if (gal_on['armed_miner']){
+                armada += gal_on['armed_miner'] * 5;
+            }
+        }
+
         if (region !== 'gxy_stargate'){
             let patrol = armada > pirate ? pirate : armada;
-            return ((1 - (pirate - patrol) / pirate) * 0.75 + 0.25) * (rating ? 1 : piracy('gxy_stargate'));
+            return ((1 - (pirate - patrol) / pirate) * pillage + (1 - pillage)) * (rating ? 1 : piracy('gxy_stargate'));
         }
         else {
             let patrol = armada > pirate ? pirate : armada;
-            return (1 - (pirate - patrol) / pirate) * 0.5 + 0.5;
+            return (1 - (pirate - patrol) / pirate) * pillage + (1 - pillage);
         }
     }
     else {

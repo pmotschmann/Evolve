@@ -1137,7 +1137,7 @@ function fastLoop(){
             'gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory',
             'spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry',
             'city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge',
-            'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant',
+            'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
             'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_pit:gun_emplacement','prtl_pit:soul_attractor'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
@@ -1165,6 +1165,18 @@ function fastLoop(){
                 p_on[parts[1]] = 0;
                 $(`#${region}-${parts[1]} .on`).removeClass('warn');
             }
+        }
+
+        if (p_on['s_gate'] && p_on['foothold']){
+            let increment = 2.5;
+            let consume = (p_on['foothold'] * increment);
+            while (consume * time_multiplier > global.resource['Elerium'].amount && consume > 0){
+                consume -= increment;
+                p_on['foothold']--;
+            }
+            breakdown.p.consume.Elerium[loc('galaxy_foothold')] = -(consume);
+            let number = consume * time_multiplier;
+            modRes('Elerium', -(number));
         }
 
         // Moon Bases
@@ -1547,6 +1559,11 @@ function fastLoop(){
                 region: 'gxy_alien1',
                 ships: ['super_freighter'],
                 req: 'embassy'
+            },
+            {
+                region: 'gxy_alien2',
+                ships: ['armed_miner'],
+                req: 'foothold'
             }
         ];
 
@@ -3369,7 +3386,7 @@ function fastLoop(){
                             operating--;
                         }
                         modRes('Deuterium', -(consume * time_multiplier));
-                        andromeda_helium += consume;
+                        andromeda_deuterium += consume;
                     }
 
                     gal_on[ship] = operating;
