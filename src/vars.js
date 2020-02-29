@@ -471,6 +471,7 @@ if (!global.settings['space']){
         belt: false,
         dwarf: false,
         blackhole: false,
+        sirius: false,
         stargate: false,
         gateway: false,
         gorddon: false,
@@ -506,6 +507,9 @@ if (typeof global.settings.space['alien1'] === 'undefined'){
 }
 if (typeof global.settings.space['chthonian'] === 'undefined'){
     global.settings.space['chthonian'] = false;
+}
+if (typeof global.settings.space['sirius'] === 'undefined'){
+    global.settings.space['sirius'] = false;
 }
 
 if (!global.settings['showDeep']){

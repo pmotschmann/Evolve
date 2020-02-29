@@ -2816,6 +2816,33 @@ const interstellarProjects = {
                 return false;
             }
         },
+    },
+    int_sirius: {
+        info: {
+            name: loc('interstellar_sirius_name'),
+            desc(){ loc('interstellar_sirius_desc',[races[global.race.species].home]); },
+        },
+        sirius_mission: {
+            id: 'interstellar-sirius_mission',
+            title: loc('space_mission_title', [loc('interstellar_sirius_name')]),
+            desc: loc('space_mission_desc', [loc('interstellar_sirius_name')]),
+            reqs: { sirius: 1, locked: 1 },
+            grant: ['sirius',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Helium_3(){ return +int_fuel_adjust(500000).toFixed(0); },
+                Deuterium(){ return +int_fuel_adjust(250000).toFixed(0); }
+            },
+            effect(){ return loc('interstellar_sirius_mission_effect',[races[global.race.species].home]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    //global.interstellar['neutron_miner'] = { count: 0, on: 0 };
+                    //messageQueue(loc('interstellar_neutron_mission_result'),'success');
+                    return true;
+                }
+                return false;
+            }
+        },
     }
 };
 
@@ -3823,14 +3850,56 @@ const galaxyProjects = {
     },
     gxy_chthonian: {
         info: {
-            name(){ return loc('galaxy_alien',[races[global.galaxy.alien2.id].name]); },
-            desc(){ return loc('galaxy_alien2_desc',[races[global.galaxy.alien2.id].name]); },
+            name(){ return loc('galaxy_chthonian'); },
+            desc(){ return loc('galaxy_chthonian_desc',[races[global.galaxy.alien2.id].name]); },
             control(){
                 return {
                     name: races[global.galaxy.alien2.id].name,
                     color: 'danger',
                 }; 
             },
+        },
+        chthonian_mission: {
+            id: 'galaxy-chthonian_mission',
+            title(){ return loc('galaxy_alien2_mission',[races[global.galaxy.alien2.id].name]); },
+            desc(){ return loc('galaxy_alien2_mission_desc',[races[global.galaxy.alien2.id].name]); },
+            reqs: { chthonian: 1, locked: 1 },
+            grant: ['chthonian',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Structs(){
+                    return {
+                        galaxy: {
+                            frigate_ship: { s: 'gxy_gateway', count: 2, on: 2 },
+                            cruiser_ship: { s: 'gxy_gateway', count: 1, on: 1 },
+                        }
+                    };
+                },
+            },
+            effect(){ return `<div>${loc('galaxy_alien2_mission_desc',[races[global.galaxy.alien2.id].name])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[races[global.galaxy.alien2.id].name])}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.galaxy.defense.gxy_alien2.frigate_ship >= 2 && global.galaxy.defense.gxy_alien2.cruiser_ship >= 1){
+                        /*if (global.galaxy.defense.gxy_alien2.cruiser_ship >= 2){
+                            messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].name]),'success');
+                        }
+                        else {
+                            global.galaxy.defense.gxy_alien2.frigate_ship--;
+                            global.galaxy.frigate_ship.on--;
+                            global.galaxy.frigate_ship.count--;
+                            global.galaxy.frigate_ship.crew -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
+                            global.galaxy.frigate_ship.mil -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
+                            global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
+                            global.civic.garrison.workers -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
+                            messageQueue(loc('galaxy_alien2_mission_result',[races[global.galaxy.alien2.id].name]),'danger');
+                        }
+                        global.galaxy['foothold'] = { count: 0, on: 0 };*/
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            }
         },
     },
 };

@@ -3316,7 +3316,7 @@ function fastLoop(){
                 }
                 let bonus = int_on['processing'] * rate;
                 driod_delta *= 1 + bonus;
-                adamantite_bd[loc('interstellar_processing_title')] = (bonus * 100) + '%';
+                adamantite_bd[`ᄂ${loc('interstellar_processing_title')}`] = (bonus * 100) + '%';
             }
             if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                 let bonus = global.city.shrine.metal * 0.01;
@@ -3408,7 +3408,7 @@ function fastLoop(){
             let delta = base * global_multiplier * pirate;
             
             bolognium_bd[loc('galaxy_bolognium_ship')] = base + 'v';
-            bolognium_bd[loc('galaxy_piracy')] = -((1 - pirate) * 100) + '%';
+            bolognium_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
             modRes('Bolognium', delta * time_multiplier);
         }
         breakdown.p['Bolognium'] = bolognium_bd;
