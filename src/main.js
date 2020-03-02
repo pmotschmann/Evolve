@@ -2677,8 +2677,8 @@ function fastLoop(){
             modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
         }
         if (shrineBonusActive()){
-            copper_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1).toFixed(1) + '%';
-            titanium_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1).toFixed(1) + '%';
+            copper_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
+            titanium_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
         }
         copper_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Copper'] = copper_bd;
