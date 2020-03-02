@@ -3215,6 +3215,19 @@ function fastLoop(){
             iridium_bd[loc('job_space_miner')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
         }
+
+        if (p_on['s_gate'] && global.resource.Adamantite.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
+            let base = gal_on['armed_miner'] * 0.65 * zigguratBonus();
+            let foothold = 1 + (p_on['foothold'] * 0.1);
+            let pirate = piracy('gxy_alien2');
+            let delta = base * global_multiplier * pirate * foothold * hunger * iridium_shrine;
+            
+            iridium_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
+            iridium_bd[`ᄂ${loc('galaxy_foothold_bd')}`] = -((1 - foothold) * 100) + '%';
+            iridium_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+            modRes('Iridium', delta * time_multiplier);
+        }
+
         if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
             iridium_bd[loc('city_shrine')] = ((iridium_shrine - 1) * 100) + '%';
         }
@@ -3325,6 +3338,18 @@ function fastLoop(){
             }
             modRes('Adamantite', driod_delta * time_multiplier);
         }
+
+        if (p_on['s_gate'] && global.resource.Adamantite.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
+            let base = gal_on['armed_miner'] * 0.23 * zigguratBonus();
+            let foothold = 1 + (p_on['foothold'] * 0.1);
+            let pirate = piracy('gxy_alien2');
+            let delta = base * global_multiplier * pirate * foothold;
+            
+            adamantite_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
+            adamantite_bd[`ᄂ${loc('galaxy_foothold_bd')}`] = -((1 - foothold) * 100) + '%';
+            adamantite_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+            modRes('Adamantite', delta * time_multiplier);
+        }
         breakdown.p['Adamantite'] = adamantite_bd;
 
         // Infernite
@@ -3394,7 +3419,7 @@ function fastLoop(){
                 else {
                     gal_on[ship] = 0;
                 }
-            }
+            } 
         }
 
         breakdown.p.consume.Helium_3[loc('galaxy_fuel_consume')] = -(andromeda_helium);
@@ -3408,7 +3433,19 @@ function fastLoop(){
             let delta = base * global_multiplier * pirate;
             
             bolognium_bd[loc('galaxy_bolognium_ship')] = base + 'v';
-            bolognium_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+            bolognium_bd[`ᄂ${loc('galaxy_piracy')}+0`] = -((1 - pirate) * 100) + '%';
+            modRes('Bolognium', delta * time_multiplier);
+        }
+
+        if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
+            let base = gal_on['armed_miner'] * 0.032 * zigguratBonus();
+            let foothold = 1 + (p_on['foothold'] * 0.1);
+            let pirate = piracy('gxy_alien2');
+            let delta = base * global_multiplier * pirate * foothold;
+            
+            bolognium_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
+            bolognium_bd[`ᄂ${loc('galaxy_foothold_bd')}`] = -((1 - foothold) * 100) + '%';
+            bolognium_bd[`ᄂ${loc('galaxy_piracy')}+1`] = -((1 - pirate) * 100) + '%';
             modRes('Bolognium', delta * time_multiplier);
         }
         breakdown.p['Bolognium'] = bolognium_bd;
@@ -3954,9 +3991,6 @@ function midLoop(){
             if (global.civic.foreign.gov2.occ){
                 lCaps['garrison'] -= 20;
             }
-        }
-        if (global.civic.garrison['crew']){
-            lCaps['garrison'];
         }
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
             caps['Slave'] = global.city.slave_pen.count * 5;
@@ -4636,6 +4670,9 @@ function midLoop(){
         }
         if (global.galaxy['super_freighter']){
             lCaps['crew'] += global.galaxy.super_freighter.on * actions.galaxy.gxy_alien1.super_freighter.ship.civ;
+        }
+        if (global.galaxy['armed_miner']){
+            lCaps['crew'] += global.galaxy.armed_miner.on * actions.galaxy.gxy_alien2.armed_miner.ship.civ;
         }
 
         if (global.race['inspired']){

@@ -995,6 +995,7 @@ function breakdownPopover(id,name,type){
                         if (val != 0 && !isNaN(val)){
                             let type = val > 0 ? 'success' : 'danger';
                             let label = mod.replace("_"," ");
+                            label = mod.replace(/\+.+$/,"");
                             col1.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ ${t}['${mod}'] | translate }}</span></div>`);
                         }
                     });
@@ -1011,6 +1012,7 @@ function breakdownPopover(id,name,type){
                 if (val != 0 && !isNaN(val)){
                     let type = val > 0 ? 'success' : 'danger';
                     let label = mod.replace("_"," ");
+                    label = mod.replace(/\+.+$/,"");
                     col2.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
                 }
             });

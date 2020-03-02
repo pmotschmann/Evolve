@@ -1,4 +1,4 @@
-#### 0.8.0 - ?/??/2020
+#### 0.8.0 - 3/??/2020
 Intergalactic Content<br>
 Universe Mastery Rework<br>
 -Each Universe now tracks its own mastery level responsible for 40% of the mastery bonus, the remaining 60% comes from the general mastery level<br>
