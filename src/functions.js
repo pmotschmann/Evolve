@@ -682,3 +682,69 @@ export function sLevel(level){
             return '';
     }
 }
+
+export function calculateResetRewards(type) {
+
+	var result = {
+		plasmid: 0,
+		antiplasmid: 0,
+		dark: 0,
+		phage: 0
+	};
+	
+	var dividerPops = 999999;
+	var knowledgeExponent = 99.9;
+	var knowledgeIncrement = 99999999;
+	var challengeMultPhage = 0.0;
+	
+	if (type === 'bigbang'){
+        dividerPops = 2;
+		knowledgeExponent = 1.012;
+		knowledgeIncrement = 40000;
+		challengeMultPhage = 2.5;
+    } else if (type === 'mad'){
+		knowledgeExponent = 1.1;
+		knowledgeIncrement = 100000;
+		challengeMultPhage = 0.0;
+    } else if (type === 'bioseed'){
+		dividerPops = 3;
+		knowledgeExponent = 1.015;
+		knowledgeIncrement = 50000;
+		challengeMultPhage = 1.0;
+    }
+	
+    let garrisoned = global.civic.garrison.workers;
+    for (let i=0; i<3; i++){
+        if (global.civic.foreign[`gov${i}`].occ){
+            garrisoned += 20;
+        }
+    }
+    let pop = global['resource'][global.race.species].amount + garrisoned;
+    let new_plasmid = Math.round(pop / dividerPops);
+	
+    let k_base = global.stats.know;
+    let k_inc = knowledgeIncrement;
+    while (k_base > k_inc) {
+        new_plasmid++;
+        k_base -= k_inc;
+        k_inc *= knowledgeExponent;
+    }
+    new_plasmid = challenge_multiplier(new_plasmid,type);
+    if (global.race.universe === 'antimatter'){
+        result.antiplasmid = new_plasmid;
+    }
+    else {
+        result.plasmid = new_plasmid;
+    }
+	
+    result.phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * challengeMultPhage),type);
+	
+	if (type === 'bigbang'){
+		let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
+		new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
+		new_dark = challenge_multiplier(new_dark,'bigbang',3);
+		result.dark = new_dark;
+	}
+	
+	return result;
+}

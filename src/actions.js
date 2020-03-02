@@ -1,6 +1,6 @@
 import { global, save, poppers, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, adjustCosts, modRes, messageQueue, format_emblem, calculateResetRewards } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -11541,25 +11541,14 @@ export const actions = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
+                var rewards = calculateResetRewards('bioseed');
+                var plasmidCount = rewards.plasmid; 
+                var plasmidType = loc('resource_Plasmid_plural_name');
+                if (global.race.universe === 'antimatter') {
+                    plasmidType = loc('resource_AntiPlasmid_plural_name');
+                    plasmidCount = rewards.antiplasmid;
                 }
-                let pop = global['resource'][global.race.species].amount + garrisoned;
-                let plasmid = Math.round(pop / 3);
-                let k_base = global.stats.know;
-                let k_inc = 50000;
-                while (k_base > k_inc){
-                    plasmid++;
-                    k_base -= k_inc;
-                    k_inc *= 1.015;
-                }
-                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                plasmid = challenge_multiplier(plasmid,'bioseed');
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
-                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmidCount,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[rewards.phage])}</div>`;
             },
             action(){
                 global.tech['genesis'] = 7;
@@ -11580,25 +11569,14 @@ export const actions = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
+                var rewards = calculateResetRewards('bioseed');
+                var plasmidCount = rewards.plasmid; 
+                var plasmidType = loc('resource_Plasmid_plural_name');
+                if (global.race.universe === 'antimatter') {
+                    plasmidType = loc('resource_AntiPlasmid_plural_name');
+                    plasmidCount = rewards.antiplasmid;
                 }
-                let pop = global['resource'][global.race.species].amount + garrisoned;
-                let plasmid = Math.round(pop / 3);
-                let k_base = global.stats.know;
-                let k_inc = 50000;
-                while (k_base > k_inc){
-                    plasmid++;
-                    k_base -= k_inc;
-                    k_inc *= 1.015;
-                }
-                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                plasmid = challenge_multiplier(plasmid,'bioseed');
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
-                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmidCount,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[rewards.phage])}</div>`;
             },
             action(){
                 bioseed();
@@ -13121,24 +13099,10 @@ function bioseed(){
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let pop = global['resource'][global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / 3);
-    let k_base = global.stats.know;
-    let k_inc = 50000;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.015;
-    }
-    new_plasmid = challenge_multiplier(new_plasmid,'bioseed');
-    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E),'bioseed');
-    phage += new_phage;
+
+    var rewards = calculateResetRewards('bioseed');
+    
+    phage += rewards.phage;
     global.stats.reset++;
     global.stats.bioseed++;
     global.stats.tdays += global.stats.days;
@@ -13150,14 +13114,14 @@ function bioseed(){
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
     if (global.race.universe === 'antimatter'){
-        antiplasmid += new_plasmid;
-        global.stats.antiplasmid += new_plasmid;
+        antiplasmid += rewards.antiplasmid;
+        global.stats.antiplasmid += rewards.antiplasmid;
     }
     else {
-        plasmid += new_plasmid;
-        global.stats.plasmid += new_plasmid;
+        plasmid += rewards.plasmid;
+        global.stats.plasmid += rewards.plasmid;
     }
-    global.stats.phage += new_phage;
+    global.stats.phage += rewards.phage;
     unlockAchieve(`seeder`);
     let new_biome = unlockAchieve(`biome_${biome}`);
     if (atmo !== 'none'){
@@ -13292,30 +13256,12 @@ function big_bang(){
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
     let dark = global.race.Dark.count;
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let pop = global['resource'][global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / 2);
-    let k_base = global.stats.know;
-    let k_inc = 40000;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.012;
-    }
-    new_plasmid = challenge_multiplier(new_plasmid,'bigbang');
-    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5),'bigbang');
-    let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
-    new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
-    new_dark = challenge_multiplier(new_dark,'bigbang',3);
 
+    var rewards = calculateResetRewards('bigbang');
+    
     checkAchievements();
 
-    phage += new_phage;
+    phage += rewards.phage;
     global.stats.reset++;
     global.stats.blackhole++;
     global.stats.tdays += global.stats.days;
@@ -13327,14 +13273,14 @@ function big_bang(){
     global.stats.tdied += global.stats.died;
     global.stats.died = 0;
     if (global.race.universe === 'antimatter'){
-        antiplasmid += new_plasmid;
-        global.stats.antiplasmid += new_plasmid;
+        antiplasmid += rewards.antiplasmid;
+        global.stats.antiplasmid += rewards.antiplasmid;
     }
     else {
-        plasmid += new_plasmid;
-        global.stats.plasmid += new_plasmid;
+        plasmid += rewards.plasmid;
+        global.stats.plasmid += rewards.plasmid;
     }
-    global.stats.phage += new_phage;
+    global.stats.phage += rewards.phage;
     global.stats.universes++;
     global['race'] = { 
         species : 'protoplasm', 
@@ -13342,7 +13288,7 @@ function big_bang(){
         old_gods: old_god,
         Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: phage },
-        Dark: { count: +(dark + new_dark).toFixed(3) },
+        Dark: { count: +(dark + rewards.dark).toFixed(3) },
         universe: 'bigbang',
         seeded: true,
         bigbang: true,

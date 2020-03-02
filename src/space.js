@@ -1,5 +1,5 @@
 import { global, poppers, sizeApproximation, p_on, belt_on, int_on, quantum_level } from './vars.js';
-import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue } from './functions.js';
+import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue, calculateResetRewards } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -2367,29 +2367,9 @@ const interstellarProjects = {
                     let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
                     let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                     if (global.tech['whitehole']){
-                        let garrisoned = global.civic.garrison.workers;
-                        for (let i=0; i<3; i++){
-                            if (global.civic.foreign[`gov${i}`].occ){
-                                garrisoned += 20;
-                            }
-                        }
-                        let pop = global['resource'][global.race.species].amount + garrisoned;
-                        let plasmid = Math.round(pop / 2);
-                        let k_base = global.stats.know;
-                        let k_inc = 40000;
-                        while (k_base > k_inc){
-                            plasmid++;
-                            k_base -= k_inc;
-                            k_inc *= 1.012;
-                        }
+                        var rewards = calculateResetRewards('bigbang');
                         let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                        plasmid = challenge_multiplier(plasmid,'bigbang');
-                        let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 2.5),'bigbang');
-                        let dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
-                        dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
-                        dark = challenge_multiplier(dark,'bigbang',3);
-
-                        return `<div>${loc('interstellar_blackhole_desc4',[home,mass,exotic])}</div><div class="has-text-advanced">${loc('interstellar_blackhole_desc5',[plasmid,phage,dark,plasmidType])}</div>`;
+                        return `<div>${loc('interstellar_blackhole_desc4',[home,mass,exotic])}</div><div class="has-text-advanced">${loc('interstellar_blackhole_desc5',[rewards.plasmid,rewards.phage,rewards.dark,plasmidType])}</div>`;
                     }
                     else {
                         return global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_blackhole_desc4',[home,mass,exotic]) : loc('interstellar_blackhole_desc3',[home,mass]);
