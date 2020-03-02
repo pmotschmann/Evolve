@@ -4017,7 +4017,7 @@ export const actions = {
                 if (global.city.shrine.know > 0){
                     let know = getShrineBonus('know');
                     desc = desc + `<div>${loc('city_shrine_know',[(know.add).toFixed(1)])}</div>`;
-                    desc = desc + `<div>${loc('city_shrine_know2',[(know.addSecondary).toFixed(1)])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know2',[((know.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 if (global.city.shrine.tax > 0){
                     let tax = getShrineBonus('tax');
@@ -4096,8 +4096,8 @@ export const actions = {
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
                 if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
-                    let shrine = 1 + (global.city.shrine.know * 0.03);
-                    gain *= shrine;
+                    let shrineBonus = getShrineBonus('know');
+                    gain *= shrineBonus.mult;
                 }
                 gain = gain.toFixed(0);
                 return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;

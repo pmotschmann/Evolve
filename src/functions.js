@@ -694,8 +694,7 @@ export function shrineBonusActive() {
 export function getShrineBonus(type) {
 	let shrine_bonus = {
 		mult: 1,
-		add: 0,
-		addSecondary: 0
+		add: 0
 	};
 	
 	if (shrineBonusActive()){
@@ -707,8 +706,8 @@ export function getShrineBonus(type) {
 				shrine_bonus.mult += +(global.city.shrine.tax / 100) * global.race['magnificent'];
 				break;
 			case 'know':
-				shrine_bonus.add += +(global.city.shrine.know * 400) * global.race['magnificent'];
-				shrine_bonus.addSecondary += +(global.city.shrine.know * 3) * global.race['magnificent'];
+                shrine_bonus.add += +(global.city.shrine.know * 400) * global.race['magnificent'];
+                shrine_bonus.mult += +(global.city.shrine.know * 3 / 100) * global.race['magnificent'];
 				break;
 			case 'morale':
 				shrine_bonus.add += global.city.shrine.morale * global.race['magnificent'];

@@ -3786,9 +3786,9 @@ function midLoop(){
                 let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
-            if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
-                let shrine = 1 + (global.city.shrine.know * 0.03);
-                gain *= shrine;
+            if (shrineBonusActive()){
+                let shrineBonus = getShrineBonus('know');
+                gain *= shrineBonus.mult;
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_university')] = gain+'v';
