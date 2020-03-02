@@ -3762,10 +3762,11 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['trade'].count++;
-                    global.city.market.mtrade += global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+                    let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
                     if (global.tech['trade'] && global.tech['trade'] >= 3){
                         routes--;
                     }
+                    global.city.market.mtrade += routes;
                     return true;
                 }
                 return false;
