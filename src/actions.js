@@ -4017,7 +4017,7 @@ export const actions = {
                 if (global.city.shrine.know > 0){
                     let know = getShrineBonus('know');
                     desc = desc + `<div>${loc('city_shrine_know',[(know.add).toFixed(1)])}</div>`;
-                    desc = desc + `<div>${loc('city_shrine_know2',[global.city.shrine.know * 3])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know2',[(know.addSecondary).toFixed(1)])}</div>`;
                 }
                 if (global.city.shrine.tax > 0){
                     let tax = getShrineBonus('tax');
