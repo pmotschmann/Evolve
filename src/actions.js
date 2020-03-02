@@ -3763,8 +3763,8 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.city['trade'].count++;
                     global.city.market.mtrade += global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-                    if (global.race['resourceful']){
-                        global.city.market.mtrade++;
+                    if (global.tech['trade'] && global.tech['trade'] >= 3){
+                        routes--;
                     }
                     return true;
                 }
