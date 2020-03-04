@@ -743,9 +743,9 @@ function fastLoop(){
         }
 
         if (shrineBonusActive()){
-            let morale = getShrineBonus('morale');
-            global.city.morale.shrine = morale.add;
-            morale += morale.add;
+            let shrineMorale = getShrineBonus('morale');
+            global.city.morale.shrine = shrineMorale.add;
+            morale += shrineMorale.add;
         }
 
         if (global.civic.govern.type === 'corpocracy'){
