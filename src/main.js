@@ -4716,7 +4716,7 @@ function midLoop(){
         if (global.galaxy['armed_miner']){
             lCaps['crew'] += global.galaxy.armed_miner.on * actions.galaxy.gxy_alien2.armed_miner.ship.civ;
         }
-        if (global.galaxy['armed_miner']){
+        if (global.galaxy['scavenger']){
             lCaps['crew'] += global.galaxy.scavenger.on * actions.galaxy.gxy_alien2.scavenger.ship.civ;
         }
 
