@@ -1398,6 +1398,33 @@ function fastLoop(){
             global.galaxy.starbase.support = used_support;
         }
 
+        // Foothold
+        if (global.galaxy['foothold'] && global.galaxy.foothold.count > 0){
+            global.galaxy.foothold.s_max = p_on['foothold'] * actions.galaxy.gxy_alien2.foothold.support();
+
+            let used_support = 0;
+            let foothold_structs = ['armed_miner','ore_processor','scavenger'];
+            for (var i = 0; i < foothold_structs.length; i++){
+                if (global.galaxy[foothold_structs[i]]){
+                    let operating = global.galaxy[foothold_structs[i]].on;
+                    let id = actions.galaxy.gxy_alien2[foothold_structs[i]].id;
+                    if (used_support + operating > global.galaxy.foothold.s_max){
+                        operating -= (used_support + operating) - global.galaxy.foothold.s_max;
+                        $(`#${id} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${id} .on`).removeClass('warn');
+                    }
+                    used_support += operating * -(actions.galaxy.gxy_alien2[foothold_structs[i]].support());
+                    gal_on[foothold_structs[i]] = operating;
+                }
+                else {
+                    gal_on[foothold_structs[i]] = 0;
+                }
+            }
+            global.galaxy.foothold.support = used_support;
+        }
+
         // Space Station
         if (global.space['space_station'] && global.space['space_station'].count > 0){
             let fuel_cost = +fuel_adjust(2.5);
@@ -1562,7 +1589,7 @@ function fastLoop(){
             },
             {
                 region: 'gxy_alien2',
-                ships: ['armed_miner'],
+                ships: ['armed_miner','scavenger'],
                 req: 'foothold'
             }
         ];
@@ -2072,6 +2099,64 @@ function fastLoop(){
             }
         }
         
+        let andromeda_helium = 0;
+        let andromeda_deuterium = 0;
+
+        for (let j=0; j<galaxy_ship_types.length; j++){
+            let region = galaxy_ship_types[j].region;
+            for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
+                let ship = galaxy_ship_types[j].ships[i];
+                let req = galaxy_ship_types[j].hasOwnProperty('req') ? (p_on[galaxy_ship_types[j].req] > 0 ? true : false) : true;
+                if (p_on['s_gate'] && req && global.galaxy[ship] && global.galaxy[ship].crew > 0){
+                    let operating = 0;
+                    if (actions.galaxy[region][ship].ship.civ > 0){
+                        operating = Math.floor(global.galaxy[ship].crew / actions.galaxy[region][ship].ship.civ);
+                    }
+                    if (actions.galaxy[region][ship].ship.mil > 0){
+                        let mil_operating = Math.floor(global.galaxy[ship].mil / actions.galaxy[region][ship].ship.mil);
+                        if (mil_operating < operating){
+                            operating = mil_operating;
+                        }
+                    }
+                    
+                    if (actions.galaxy[region][ship].ship.hasOwnProperty('helium')){
+                        let increment = +int_fuel_adjust(actions.galaxy[region][ship].ship.helium).toFixed(2);
+                        let consume = (operating * increment);
+                        while (consume * time_multiplier > global.resource.Helium_3.amount && consume > 0){
+                            consume -= increment;
+                            operating--;
+                        }
+                        modRes('Helium_3', -(consume * time_multiplier));
+                        andromeda_helium += consume;
+                    }
+
+                    if (actions.galaxy[region][ship].ship.hasOwnProperty('deuterium')){
+                        let increment = +int_fuel_adjust(actions.galaxy[region][ship].ship.deuterium).toFixed(2);
+                        let consume = (operating * increment);
+                        while (consume * time_multiplier > global.resource.Deuterium.amount && consume > 0){
+                            consume -= increment;
+                            operating--;
+                        }
+                        modRes('Deuterium', -(consume * time_multiplier));
+                        andromeda_deuterium += consume;
+                    }
+
+                    if (gal_on.hasOwnProperty(ship)){
+                        gal_on[ship] = gal_on[ship] > operating ? operating : gal_on[ship];
+                    }
+                    else {
+                        gal_on[ship] = operating;
+                    }
+                }
+                else {
+                    gal_on[ship] = 0;
+                }
+            } 
+        }
+
+        breakdown.p.consume.Helium_3[loc('galaxy_fuel_consume')] = -(andromeda_helium);
+        breakdown.p.consume.Deuterium[loc('galaxy_fuel_consume')] = -(andromeda_deuterium);
+
         // Resource Income
         let hunger = fed ? 1 : 0.5;
         if (global.race['angry'] && fed === false){
@@ -3218,7 +3303,7 @@ function fastLoop(){
 
         if (p_on['s_gate'] && global.resource.Adamantite.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
             let base = gal_on['armed_miner'] * 0.65 * zigguratBonus();
-            let foothold = 1 + (p_on['foothold'] * 0.1);
+            let foothold = 1 + (gal_on['ore_processor'] * 0.1);
             let pirate = piracy('gxy_alien2');
             let delta = base * global_multiplier * pirate * foothold * hunger * iridium_shrine;
             
@@ -3341,7 +3426,7 @@ function fastLoop(){
 
         if (p_on['s_gate'] && global.resource.Adamantite.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
             let base = gal_on['armed_miner'] * 0.23 * zigguratBonus();
-            let foothold = 1 + (p_on['foothold'] * 0.1);
+            let foothold = 1 + (gal_on['ore_processor'] * 0.1);
             let pirate = piracy('gxy_alien2');
             let delta = base * global_multiplier * pirate * foothold;
             
@@ -3372,59 +3457,6 @@ function fastLoop(){
         }
         breakdown.p['Infernite'] = infernite_bd;
 
-        let andromeda_helium = 0;
-        let andromeda_deuterium = 0;
-
-        for (let j=0; j<galaxy_ship_types.length; j++){
-            let region = galaxy_ship_types[j].region;
-            for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
-                let ship = galaxy_ship_types[j].ships[i];
-                let req = galaxy_ship_types[j].hasOwnProperty('req') ? (p_on[galaxy_ship_types[j].req] > 0 ? true : false) : true;
-                if (p_on['s_gate'] && req && global.galaxy[ship] && global.galaxy[ship].crew > 0){
-                    let operating = 0;
-                    if (actions.galaxy[region][ship].ship.civ > 0){
-                        operating = Math.floor(global.galaxy[ship].crew / actions.galaxy[region][ship].ship.civ);
-                    }
-                    if (actions.galaxy[region][ship].ship.mil > 0){
-                        let mil_operating = Math.floor(global.galaxy[ship].mil / actions.galaxy[region][ship].ship.mil);
-                        if (mil_operating < operating){
-                            operating = mil_operating;
-                        }
-                    }
-                    
-                    if (actions.galaxy[region][ship].ship.hasOwnProperty('helium')){
-                        let increment = +int_fuel_adjust(actions.galaxy[region][ship].ship.helium).toFixed(2);
-                        let consume = (operating * increment);
-                        while (consume * time_multiplier > global.resource.Helium_3.amount && consume > 0){
-                            consume -= increment;
-                            operating--;
-                        }
-                        modRes('Helium_3', -(consume * time_multiplier));
-                        andromeda_helium += consume;
-                    }
-
-                    if (actions.galaxy[region][ship].ship.hasOwnProperty('deuterium')){
-                        let increment = +int_fuel_adjust(actions.galaxy[region][ship].ship.deuterium).toFixed(2);
-                        let consume = (operating * increment);
-                        while (consume * time_multiplier > global.resource.Deuterium.amount && consume > 0){
-                            consume -= increment;
-                            operating--;
-                        }
-                        modRes('Deuterium', -(consume * time_multiplier));
-                        andromeda_deuterium += consume;
-                    }
-
-                    gal_on[ship] = operating;
-                }
-                else {
-                    gal_on[ship] = 0;
-                }
-            } 
-        }
-
-        breakdown.p.consume.Helium_3[loc('galaxy_fuel_consume')] = -(andromeda_helium);
-        breakdown.p.consume.Deuterium[loc('galaxy_fuel_consume')] = -(andromeda_deuterium);
-
         // Bolognium
         let bolognium_bd = {};
         if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['bolognium_ship'] && gal_on['bolognium_ship'] > 0){
@@ -3439,7 +3471,7 @@ function fastLoop(){
 
         if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
             let base = gal_on['armed_miner'] * 0.032 * zigguratBonus();
-            let foothold = 1 + (p_on['foothold'] * 0.1);
+            let foothold = 1 + (gal_on['ore_processor'] * 0.1);
             let pirate = piracy('gxy_alien2');
             let delta = base * global_multiplier * pirate * foothold;
             
@@ -4358,6 +4390,7 @@ function midLoop(){
         if (global.space['ziggurat'] && global.genes['ancients'] && global.genes['ancients'] >= 3){
             lCaps['priest'] += global.space.ziggurat.count;
         }
+        let pirate_alien2 = piracy('gxy_alien2');
         if (global.city['university']){
             let multiplier = 1;
             let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
@@ -4372,6 +4405,10 @@ function midLoop(){
             }
             if (global.race['hard_of_hearing']){
                 multiplier *= 0.95;
+            }
+            if (p_on['s_gate'] && gal_on['scavenger']){
+                let uni = gal_on['scavenger'] * +(pirate_alien2 / 4).toFixed(1);
+                multiplier *= 1 + uni;
             }
             let gain = (global.city['university'].count * base * multiplier);
             lCaps['professor'] += global.city['university'].count;
@@ -4624,6 +4661,11 @@ function midLoop(){
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('galaxy_telemetry_beacon_bd')] = gain+'v';
         }
+        if (p_on['s_gate'] && gal_on['scavenger']){
+            let gain = gal_on['scavenger'] * Math.round(pirate_alien2 * 25000);
+            caps['Knowledge'] += gain;
+            bd_Knowledge[loc('galaxy_scavenger')] = gain+'v';
+        }
         if (global.city['trade']){
             let routes = global.race['nomadic'] || global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
             if (global.tech['trade'] && global.tech['trade'] >= 3){
@@ -4673,6 +4715,9 @@ function midLoop(){
         }
         if (global.galaxy['armed_miner']){
             lCaps['crew'] += global.galaxy.armed_miner.on * actions.galaxy.gxy_alien2.armed_miner.ship.civ;
+        }
+        if (global.galaxy['armed_miner']){
+            lCaps['crew'] += global.galaxy.scavenger.on * actions.galaxy.gxy_alien2.scavenger.ship.civ;
         }
 
         if (global.race['inspired']){

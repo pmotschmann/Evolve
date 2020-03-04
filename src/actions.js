@@ -1,4 +1,4 @@
-import { global, save, poppers, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
+import { global, save, poppers, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
@@ -7,7 +7,7 @@ import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
 import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating, dragQueue } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, renderSpace } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
 
@@ -4109,6 +4109,10 @@ export const actions = {
                 }
                 if (global.race['hard_of_hearing']){
                     multiplier *= 0.95;
+                }
+                if (p_on['s_gate'] && gal_on['scavenger']){
+                    let uni = gal_on['scavenger'] * +(piracy('gxy_alien2') / 4).toFixed(1);
+                    multiplier *= 1 + uni;
                 }
                 gain *= multiplier;
                 if (global.tech['supercollider']){
@@ -11941,6 +11945,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['cruiser_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    global.galaxy['foothold'] = { count: 0, on: 0, support: 0, s_max: 0 };
                     global.settings.space.alien2 = true;
                     renderSpace();
                     return true;
@@ -11962,6 +11967,44 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['ship_dock'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        ore_processor: {
+            id: 'tech-ore_processor',
+            title: loc('galaxy_ore_processor'),
+            desc: loc('galaxy_ore_processor'),
+            category: 'research',
+            reqs: { conflict: 2 },
+            grant: ['conflict',3],
+            cost: {
+                Knowledge(){ return 7500000; }
+            },
+            effect(){ return loc('tech_ore_processor_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['ore_processor'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        scavenger: {
+            id: 'tech-scavenger',
+            title: loc('galaxy_scavenger'),
+            desc: loc('galaxy_scavenger'),
+            category: 'research',
+            reqs: { conflict: 3 },
+            grant: ['conflict',4],
+            cost: {
+                Knowledge(){ return 8000000; }
+            },
+            effect(){ return loc('tech_scavenger_effect',[races[global.galaxy.alien2.id].name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['scavenger'] = { count: 0, on: 0, crew: 0 };
                     return true;
                 }
                 return false;
