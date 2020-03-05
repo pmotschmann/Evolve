@@ -648,6 +648,7 @@ function fastLoop(){
         Sheet_Metal: {},
         Mythril: {},
         Aerogel: {},
+        Nanoweave: {},
     };
     
     var time_multiplier = 0.25;
@@ -4545,6 +4546,15 @@ function midLoop(){
 
             if (global.interstellar['exchange']){
                 let g_vault = spatialReasoning(int_on['exchange'] * (vault * global.city['bank'].count / 18));
+                if (global.tech.banking >= 13){
+                    if (global.galaxy['freighter']){
+                        g_vault *= 1 + (gal_on['freighter'] * 0.03);
+                    }
+                    if (global.galaxy['super_freighter']){
+                        g_vault *= 1 + (gal_on['super_freighter'] * 0.08);
+                    }
+                }
+                g_vault = Math.round(g_vault);
                 caps['Money'] += g_vault;
                 bd_Money[loc('interstellar_exchange_bd')] = g_vault+'v';
             }
@@ -4593,7 +4603,7 @@ function midLoop(){
         if (red_on['exotic_lab']){
             let el_gain = red_on['exotic_lab'] * spatialReasoning(10);
             caps['Elerium'] += el_gain;
-            bd_Elerium['Exotic_Lab'] = el_gain+'v';
+            bd_Elerium[loc('space_red_exotic_lab_bd')] = el_gain+'v';
             let sci = 500;
             if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
                 sci += int_on['laboratory'] * 25;
@@ -5878,6 +5888,12 @@ function longLoop(){
             global.civic.garrison.workers--;
             global.civic.garrison.crew--;
             messageQueue(loc('galaxy_encounter'),'danger');
+            drawTech();
+        }
+
+        if (global.galaxy['scavenger'] && global.tech['conflict'] && global.tech['conflict'] === 4 && gal_on['scavenger'] > 0 && Math.rand(0, 50) >= gal_on['scavenger']){
+            global.tech['conflict'] = 5;
+            messageQueue(loc('galaxy_scavenger_find'),'success');
             drawTech();
         }
 

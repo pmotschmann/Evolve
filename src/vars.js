@@ -411,7 +411,7 @@ if (convertVersion(global['version']) < 8000 && global.civic['foreign']){
 }
 
 global['version'] = '0.8.0';
-global['beta'] = 19;
+global['beta'] = 20;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -912,6 +912,10 @@ if (global.city['foundry'] && !global.city.foundry['Mythril']){
 
 if (global.city['foundry'] && !global.city.foundry['Aerogel']){
     global.city.foundry['Aerogel'] = 0;
+}
+
+if (global.city['foundry'] && !global.city.foundry['Nanoweave']){
+    global.city.foundry['Nanoweave'] = 0;
 }
 
 if (!global.settings['arpa']){

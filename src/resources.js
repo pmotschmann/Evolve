@@ -101,7 +101,8 @@ export const atomic_mass = {
     Wrought_Iron: 55.845,
     Sheet_Metal: 26.9815,
     Mythril: 94.239,
-    Aerogel: 7.84
+    Aerogel: 7.84,
+    Nanoweave: 23.71
 };
 
 export function craftCost(){
@@ -113,6 +114,7 @@ export function craftCost(){
             Sheet_Metal: [{ r: 'Aluminium', a: 130 }],
             Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 260 }],
             Aerogel: [{ r: 'Graphene', a: 2550 },{ r: 'Infernite', a: 55 }],
+            Nanoweave: [{ r: 'Nano_Tube', a: 1109 },{ r: 'Vitreloy', a: 45 }],
         }
         : {
             Plywood: [{ r: 'Lumber', a: 100 }],
@@ -121,6 +123,7 @@ export function craftCost(){
             Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
             Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
             Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
+            Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
         };
 }
 
@@ -256,6 +259,7 @@ export function defineResources(){
         loadResource('Sheet_Metal',-1,0,false,false,'danger');
         loadResource('Mythril',-1,0,false,false,'danger');
         loadResource('Aerogel',-1,0,false,false,'danger');
+        loadResource('Nanoweave',-1,0,false,false,'danger');
         loadRouteCounter();
         loadContainerCounter();
         initGalaxyTrade();
@@ -1321,6 +1325,9 @@ export function containerValue(){
     }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 6){
         container_value += global.tech['steel_container'] >= 7 ? 7500 : 1000;
+    }
+    if (global.tech['steel_container'] && global.tech['steel_container'] >= 8){
+        container_value += 8000;
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(container_value));

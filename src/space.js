@@ -1830,6 +1830,14 @@ const interstellarProjects = {
             },
             effect(){
                 let vault = spatialReasoning(bank_vault() * global.city['bank'].count / 18);
+                if (global.tech.banking >= 13){
+                    if (global.galaxy['freighter']){
+                        vault *= 1 + (gal_on['freighter'] * 0.03);
+                    }
+                    if (global.galaxy['super_freighter']){
+                        vault *= 1 + (gal_on['super_freighter'] * 0.08);
+                    }
+                }
                 vault = +(vault).toFixed(0);
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div>`;
             },
@@ -3184,9 +3192,11 @@ const galaxyProjects = {
             reqs: { andromeda: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dreadnought', offset, 250000000, 1.25, 'galaxy'); },
-                //Steel(offset){ return spaceCostMultiplier('dreadnought', offset, 1750000, 1.25, 'galaxy'); },
-                //Infernite(offset){ return spaceCostMultiplier('dreadnought', offset, 16000, 1.25, 'galaxy'); },
-                //Bolognium(offset){ return spaceCostMultiplier('dreadnought', offset, 80000, 1.25, 'galaxy'); },
+                Neutronium(offset){ return spaceCostMultiplier('dreadnought', offset, 250000, 1.25, 'galaxy'); },
+                Bolognium(offset){ return spaceCostMultiplier('dreadnought', offset, 1500000, 1.25, 'galaxy'); },
+                Vitreloy(offset){ return spaceCostMultiplier('dreadnought', offset, 1000000, 1.25, 'galaxy'); },
+                Infernite(offset){ return spaceCostMultiplier('dreadnought', offset, 400000, 1.25, 'galaxy'); },
+                Aerogel(offset){ return spaceCostMultiplier('dreadnought', offset, 800000, 1.25, 'galaxy'); },
                 Soul_Gem(offset){ return spaceCostMultiplier('dreadnought', offset, 25, 1.25, 'galaxy'); },
             },
             effect(){
@@ -3198,7 +3208,7 @@ const galaxyProjects = {
                 civ: 10,
                 mil: 20,
                 deuterium: 100,
-                rating: 2500
+                rating: 1800
             },
             powered(){ return 1; },
             action(){
@@ -3561,7 +3571,11 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div>${loc('galaxy_freighter_effect',[2,races[global.galaxy.alien1.id].name])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                let bank = '';
+                if (global.tech.banking >= 13){
+                    bank = `<div>${loc('interstellar_exchange_boost',[3])}</div>`;
+                }
+                return `<div>${loc('galaxy_freighter_effect',[2,races[global.galaxy.alien1.id].name])}</div>${bank}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
                 civ: 3,
@@ -3706,7 +3720,11 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div>${loc('galaxy_freighter_effect',[5,races[global.galaxy.alien1.id].name])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                let bank = '';
+                if (global.tech.banking >= 13){
+                    bank = `<div>${loc('interstellar_exchange_boost',[8])}</div>`;
+                }
+                return `<div>${loc('galaxy_freighter_effect',[5,races[global.galaxy.alien1.id].name])}</div>${bank}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
                 civ: 5,
@@ -3793,7 +3811,7 @@ const galaxyProjects = {
                 let elerium = 2.5;
                 return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[50])}</div><div>${loc('galaxy_foothold_effect',[$(this)[0].support(),races[global.galaxy.alien2.id].name])}</div><div class="has-text-caution">${loc('galaxy_foothold_effect2',[elerium,$(this)[0].powered()])}</div>`;
             },
-            support(){ return 5; },
+            support(){ return 4; },
             powered(){ return p_on['s_gate'] ? 20 : 0; },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3805,6 +3823,7 @@ const galaxyProjects = {
                         global.galaxy['armed_miner'] = { count: 0, on: 0, crew: 0, mil: 0 };
                         global.tech['conflict'] = 2;
                         galaxySpace();
+                        drawTech();
                     }
                     return true;
                 }

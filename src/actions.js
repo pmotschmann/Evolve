@@ -5005,7 +5005,8 @@ export const actions = {
                         Wrought_Iron: 0,
                         Sheet_Metal: 0,
                         Mythril: 0,
-                        Aerogel: 0
+                        Aerogel: 0,
+                        Nanoweave: 0,
                     };
                     return true;
                 }
@@ -6211,6 +6212,25 @@ export const actions = {
                 return false;
             }
         },
+        nanoweave_containers: {
+            id: 'tech-nanoweave_containers',
+            title: loc('tech_nanoweave_containers'),
+            desc: loc('tech_nanoweave_containers'),
+            category: 'upgrade',
+            reqs: { steel_container: 7, nanoweave: 1 },
+            grant: ['steel_container',8],
+            cost: {
+                Knowledge(){ return 9000000; },
+                Nanoweave(){ return 50000; }
+            },
+            effect: loc('tech_nanoweave_containers_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         evil_planning: {
             id: 'tech-evil_planning',
             title: loc('tech_urban_planning'),
@@ -6990,6 +7010,25 @@ export const actions = {
                 return false;
             }
         },
+        foreign_investment: {
+            id: 'tech-foreign_investment',
+            title: loc('tech_foreign_investment'),
+            desc: loc('tech_foreign_investment'),
+            category: 'upgrade',
+            reqs: { banking: 12, xeno: 10 },
+            grant: ['banking',13],
+            cost: {
+                Money(){ return 100000000; },
+                Knowledge(){ return 8000000; }
+            },
+            effect: loc('tech_foreign_investment_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mythril_vault: {
             id: 'tech-mythril_vault',
             title: loc('tech_mythril_vault'),
@@ -7476,6 +7515,24 @@ export const actions = {
                 Knowledge(){ return 6000000; }
             },
             effect(){ return loc('tech_subspace_sensors_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        alien_database: {
+            id: 'tech-alien_database',
+            title: loc('tech_alien_database'),
+            desc: loc('tech_alien_database'),
+            category: 'research',
+            reqs: { science: 17, conflict: 5 },
+            grant: ['science',18],
+            cost: {
+                Knowledge(){ return 8250000; }
+            },
+            effect(){ return loc('tech_alien_database_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -8408,6 +8465,29 @@ export const actions = {
             effect: loc('tech_fluidized_bed_reactor_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        nanoweave: {
+            id: 'tech-nanoweave',
+            title: loc('tech_nanoweave'),
+            desc: loc('tech_nanoweave'),
+            category: 'upgrade',
+            reqs: { science: 18 },
+            grant: ['nanoweave',1],
+            cost: {
+                Knowledge(){ return 8500000; },
+                Nano_Tube(){ return 5000000; },
+                Vitreloy(){ return 250000; },
+            },
+            effect: loc('tech_nanoweave_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Nanoweave.display = true;
+                    messageQueue(loc('tech_nanoweave_avail'));
+                    loadFoundry();
                     return true;
                 }
                 return false;
@@ -9512,6 +9592,29 @@ export const actions = {
                 return false;
             }
         },
+        gauss_rifles: {
+            id: 'tech-gauss_rifles',
+            title: loc('tech_gauss_rifles'),
+            desc: loc('tech_gauss_rifles'),
+            category: 'upgrade',
+            reqs: { military: 9, science: 18 },
+            grant: ['military',10],
+            cost: {
+                Knowledge(){ return 9500000; },
+                Bolognium(){ return 100000; }
+            },
+            effect: loc('tech_gauss_rifles_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    vBind({el: `#garrison`},'update');
+                    vBind({el: `#c_garrison`},'update');
+                    return true;
+                }
+                return false;
+            }
+        },
         space_marines: {
             id: 'tech-space_marines',
             title: loc('tech_space_marines'),
@@ -9603,6 +9706,25 @@ export const actions = {
                 Polymer(){ return 750; },
             },
             effect: loc('tech_kevlar_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        nanoweave_vest: {
+            id: 'tech-nanoweave_vest',
+            title: loc('tech_nanoweave_vest'),
+            desc: loc('tech_nanoweave_vest'),
+            category: 'upgrade',
+            reqs: { armor: 3, nanoweave: 1 },
+            grant: ['armor',4],
+            cost: {
+                Knowledge(){ return 9250000; },
+                Nanoweave(){ return 75000; },
+            },
+            effect: loc('tech_nanoweave_vest_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -11293,7 +11415,7 @@ export const actions = {
                         Vitreloy: 0, Plywood: 0,
                         Brick: 0, Wrought_Iron: 0,
                         Sheet_Metal: 0, Mythril: 0,
-                        Aerogel: 0
+                        Aerogel: 0, Nanoweave: 0
                     };
                     return true;
                 }
@@ -11947,6 +12069,26 @@ export const actions = {
                     global.galaxy['cruiser_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
                     global.galaxy['foothold'] = { count: 0, on: 0, support: 0, s_max: 0 };
                     global.settings.space.alien2 = true;
+                    renderSpace();
+                    return true;
+                }
+                return false;
+            }
+        },
+        dreadnought: {
+            id: 'tech-dreadnought',
+            title: loc('galaxy_dreadnought'),
+            desc: loc('galaxy_dreadnought'),
+            category: 'research',
+            reqs: { andromeda: 4, science: 18 },
+            grant: ['andromeda',5],
+            cost: {
+                Knowledge(){ return 10000000; }
+            },
+            effect(){ return loc('tech_dreadnought_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['dreadnought'] = { count: 0, on: 0, crew: 0, mil: 0 };
                     renderSpace();
                     return true;
                 }
