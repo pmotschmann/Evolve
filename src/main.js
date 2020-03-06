@@ -4316,7 +4316,7 @@ function midLoop(){
                     let trait = randomMinorTrait();
                     let gene = global.genes['synthesis'] ? (2 ** (global.race.mutation - 1)) * (global.genes['synthesis'] + 1) : global.race.mutation;
                     if (global.stats.achieve['creator']){
-                        gene *= 1 + (global.stats.achieve['creator'].l * 0.5);
+                        gene = Math.round(gene * (1 + (global.stats.achieve['creator'].l * 0.5)));
                     }
                     messageQueue(loc('gene_therapy',[trait,gene]),'success');
                     global.resource.Genes.amount += gene;
