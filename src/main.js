@@ -1446,6 +1446,10 @@ function fastLoop(){
             moraleCap += 10 - Math.floor(global.civic.taxes.tax_rate / 2);
         }
 
+        if (global.stats.achieve['joyless']){
+            moraleCap += global.stats.achieve['joyless'].l * 2;
+        }
+
         let m_min = global.race['optimistic'] ? 60 : 50;
         if (global.civic.govern.fr > 0){
             let rev = morale / 2;

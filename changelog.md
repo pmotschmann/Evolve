@@ -1,3 +1,6 @@
+#### 0.7.26 - 3/5/2020 ####
+Joyless perk changed to +2% Max Morale per star level<br>
+
 #### 0.7.25 - 2/26/2020 ####
 Unicorn Shrine bonus is now determined by the moon phase when constructed<br>
 Shrine Knowledge bonus now applies an additional affect to universities<br>

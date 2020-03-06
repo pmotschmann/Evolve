@@ -841,9 +841,6 @@ export function drawAchieve(){
         if (global.stats.achieve[achievement]){
             earned++;
             level += global.stats.achieve[achievement].l;
-            if (achievement === 'joyless'){
-                level += global.stats.achieve[achievement].l;
-            }
             let emblem = format_emblem(achievement,16,baseIcon);
             achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${emblem}</div></b-tooltip>`));
         }
