@@ -639,6 +639,11 @@ const feats = {
         desc: loc("feat_nephilim_desc"),
         flair: loc("feat_nephilim_flair")
     },
+    friday: {
+        name: loc("feat_friday_name"),
+        desc: loc("feat_friday_desc"),
+        flair: loc("feat_friday_flair")
+    },
     valentine: {
         name: loc("feat_love_name"),
         desc: loc("feat_love_desc"),
@@ -945,7 +950,19 @@ export function checkAchievements(){
         unlockFeat('supermassive');
     }
     const date = new Date();
-    if (date.getMonth() === 1 && date.getDate() === 14){
+    if (date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
+        let murder = false;
+        if (global.race.universe === 'micro'){
+            murder = unlockFeat('friday',true);
+        }
+        else {
+            murder = unlockFeat('friday');
+        }
+        if (murder){
+            global.resource[global.race.species].amount--;
+        }
+    }
+    else if (date.getMonth() === 1 && date.getDate() === 14){
         if (global.race.universe === 'micro'){
             unlockFeat('valentine',true);
         }
