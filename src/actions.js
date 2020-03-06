@@ -11521,7 +11521,7 @@ export const actions = {
 
 function addRaces(races){
     let add_all = false;
-    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
+    if (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1)){
         add_all = true;
     }
     for (let i=0; i<races.length; i++){

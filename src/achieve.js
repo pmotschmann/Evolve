@@ -1139,19 +1139,19 @@ export function drawPerks(){
         let bonus = global.stats.achieve.blackhole.l * 5;
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_blackhole",[bonus])}</span></div>`);
     }
+    
+    if (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1){
+        unlocked++;
+        let bonus = 1 + (global.stats.achieve['creator'].l * 0.5);
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator",[bonus])}</span></div>`);
+    }
 
     if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1){
         unlocked++;
-        let bonus = global.stats.achieve['mass_extinction'].l + 1
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator")}</span></div>`);
-        if (global.stats.achieve['creator'].l > 1){
-            let bonus = (global.stats.achieve['creator'].l - 1) * 50;
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator2",[bonus])}</span></div>`);
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction")}</span></div>`);
+        if (global.stats.achieve['mass_extinction'].l > 1){
+            let bonus = (global.stats.achieve['mass_extinction'].l - 1) * 50;
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction2",[bonus])}</span></div>`);
         }
     }
 
