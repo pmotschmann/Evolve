@@ -175,8 +175,8 @@ if (global.resource[races[global.race.species].name]){
 export function defineResources(){
     if (global.race.species === 'protoplasm'){
         let base = 100;
-        if (global.stats.achieve['creator'] && global.stats.achieve['creator'].l > 1){
-            base += 50 * (global.stats.achieve['creator'].l - 1);
+        if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l > 1){
+            base += 50 * (global.stats.achieve['mass_extinction'].l - 1);
         }
         loadResource('RNA',base,1,false);
         loadResource('DNA',base,1,false);

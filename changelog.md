@@ -1,3 +1,10 @@
+#### 0.7.26 - 3/5/2020 ####
+Any race where the associated extinction achievement has been unlocked is now always available during evolution<br>
+Joyless perk changed to +2% Max Morale per star level<br>
+The effects of the Mass Extinction and Creator perks have been swapped<br>
+Creator perk (old mass extinction) changed to 1.5x / 2x / 2.5x / 3x / 3.5x genes gained on mutation<br>
+Minor traits bought with Phage now count twice when you complete evolution<br>
+
 #### 0.7.25 - 2/26/2020 ####
 Unicorn Shrine bonus is now determined by the moon phase when constructed<br>
 Shrine Knowledge bonus now applies an additional affect to universities<br>
