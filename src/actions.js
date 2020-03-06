@@ -2492,7 +2492,7 @@ export const actions = {
                                         break;
                                 }
                             }
-                            switch (Math.rand(0,5)){
+                            switch (global.race['kindling_kindred'] ? Math.rand(0,4) : Math.rand(0,5)){
                                 case 0:
                                     global.city.s_alter.rage += Math.rand(low,high);
                                     break;
@@ -8473,6 +8473,7 @@ export const actions = {
             effect: loc('tech_reclaimer_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.civic.lumberjack.name = loc('job_reclaimer');
                     global.civic.lumberjack.display = true;
                     global.city['graveyard'] = { count: 0 };
                     return true;

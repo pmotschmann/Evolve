@@ -1189,6 +1189,12 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
     }
 
+    if (global.stats.achieve['joyless'] && global.stats.achieve['joyless'].l >= 1){
+        unlocked++;
+        let bonus = global.stats.achieve['joyless'].l * 2;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_joyless",[bonus])}</span></div>`);
+    }
+
     if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1){
         unlocked++;
         let bonus = global.stats.achieve['steelen'].l * 2;

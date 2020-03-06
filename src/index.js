@@ -255,7 +255,7 @@ export function index(){
             <span>{{ 'theme' | label }} </span>
             <b-dropdown hoverable>
                 <button class="button is-primary" slot="trigger">
-                    <span>{{ s.theme | namecase }}</span>
+                    <span>{{ 'theme_' + s.theme | label }}</span>
                     <i class="fas fa-sort-down"></i>
                 </button>
                 <b-dropdown-item v-on:click="dark">{{ 'theme_dark' | label }}</b-dropdown-item>

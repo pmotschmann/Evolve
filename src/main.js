@@ -2389,6 +2389,9 @@ function fastLoop(){
                 breakdown.p['Alloy'] = alloy_bd;
                 modRes('Alloy', delta * time_multiplier);
             }
+            else {
+                breakdown.p['Alloy'] = 0;
+            }
 
             if (global.city.factory['Polymer'] && global.city.factory['Polymer'] > 0){
                 operating += global.city.factory.Polymer;
@@ -2446,6 +2449,9 @@ function fastLoop(){
                 polymer_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Polymer'] = polymer_bd;
                 modRes('Polymer', delta * time_multiplier);
+            }
+            else {
+                breakdown.p['Polymer'] = 0;
             }
 
             if (global.city.factory['Nano'] && global.city.factory['Nano'] > 0){
@@ -2505,6 +2511,9 @@ function fastLoop(){
                 breakdown.p['Nano_Tube'] = nano_bd;
                 modRes('Nano_Tube', delta * time_multiplier);
             }
+            else {
+                breakdown.p['Nano_Tube'] = 0;
+            }
 
             if (global.city.factory['Stanene'] && global.city.factory['Stanene'] > 0){
                 operating += global.city.factory.Stanene;
@@ -2556,6 +2565,9 @@ function fastLoop(){
                 stanene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Stanene'] = stanene_bd;
                 modRes('Stanene', delta * time_multiplier);
+            }
+            else {
+                breakdown.p['Stanene'] = 0;
             }
         }
 
@@ -2869,6 +2881,9 @@ function fastLoop(){
             graphene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Graphene'] = graphene_bd;
             modRes('Graphene', delta * time_multiplier);
+        }
+        else {
+            breakdown.p['Graphene'] = 0;
         }
 
         // Vitreloy
