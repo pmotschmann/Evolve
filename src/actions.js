@@ -12764,7 +12764,7 @@ function sentience(){
     }
 
     Object.keys(global.genes.minor).forEach(function (trait){
-        global.race[trait] = global.genes.minor[trait];
+        global.race[trait] = trait === 'mastery' ? global.genes.minor[trait] : global.genes.minor[trait] * 2;
     });
 
     if (global.genes['evolve'] && global.genes['evolve'] >= 2){
