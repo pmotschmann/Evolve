@@ -379,12 +379,10 @@ if (global.race.species === 'protoplasm'){
             }
         }
 
-        if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-            let race_options = ['human','orc','elven','troll','orge','cyclops','kobold','goblin','gnome','cath','wolven','centaur','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','mantis','scorpid','antid','entish','cacti','sharkin','octigoran','imp','balorg','seraph','unicorn','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel'];
-            for (var i = 0; i < race_options.length; i++){
-                if (global.evolution[race_options[i]] && global.evolution[race_options[i]].count == 0){
-                    addAction('evolution',race_options[i]);
-                }
+        let race_options = ['human','orc','elven','troll','orge','cyclops','kobold','goblin','gnome','cath','wolven','centaur','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','mantis','scorpid','antid','entish','cacti','sharkin','octigoran','imp','balorg','seraph','unicorn','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel'];
+        for (var i = 0; i < race_options.length; i++){
+            if (global.evolution[race_options[i]] && global.evolution[race_options[i]].count == 0){
+                addAction('evolution',race_options[i]);
             }
         }
     }

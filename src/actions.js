@@ -371,20 +371,14 @@ export const actions = {
                     global.evolution['final'] = 100;
                     global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        if (global.evolution['chitin']){
-                            global.evolution['sporgar'] = { count: 0 };
-                            global.evolution['shroomi'] = { count: 0 };
-                            addAction('evolution','sporgar');
-                            addAction('evolution','shroomi');
-                        }
-                        else {
-                            global.evolution['entish'] = { count: 0 };
-                            global.evolution['cacti'] = { count: 0 };
-                            addAction('evolution','entish');
-                            addAction('evolution','cacti');
-                        }
+
+                    if (global.evolution['chitin']){
+                        addRaces(['sporgar','shroomi']);
                     }
+                    else {
+                        addRaces(['entish','cacti']);
+                    }
+
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -433,14 +427,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['mantis'] = { count: 0 };
-                        global.evolution['scorpid'] = { count: 0 };
-                        global.evolution['antid'] = { count: 0 };
-                        addAction('evolution','mantis');
-                        addAction('evolution','scorpid');
-                        addAction('evolution','antid');
-                    }
+                    addRaces(['mantis','scorpid','antid']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -537,14 +524,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['human'] = { count: 0 };
-                        global.evolution['orc'] = { count: 0 };
-                        global.evolution['elven'] = { count: 0 };
-                        addAction('evolution','human');
-                        addAction('evolution','orc');
-                        addAction('evolution','elven');
-                    }
+                    addRaces(['human','orc','elven']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -583,14 +563,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['troll'] = { count: 0 };
-                        global.evolution['orge'] = { count: 0 };
-                        global.evolution['cyclops'] = { count: 0 };
-                        addAction('evolution','troll');
-                        addAction('evolution','orge');
-                        addAction('evolution','cyclops');
-                    }
+                    addRaces(['troll','orge','cyclops']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -629,14 +602,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['kobold'] = { count: 0 };
-                        global.evolution['goblin'] = { count: 0 };
-                        global.evolution['gnome'] = { count: 0 };
-                        addAction('evolution','kobold');
-                        addAction('evolution','goblin');
-                        addAction('evolution','gnome');
-                    }
+                    addRaces(['kobold','goblin','gnome']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -675,14 +641,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['cath'] = { count: 0 };
-                        global.evolution['wolven'] = { count: 0 };
-                        global.evolution['centaur'] = { count: 0 };
-                        addAction('evolution','cath');
-                        addAction('evolution','wolven');
-                        addAction('evolution','centaur');
-                    }
+                    addRaces(['cath','wolven','centaur']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -715,12 +674,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['seraph'] = { count: 0 };
-                        global.evolution['unicorn'] = { count: 0 };
-                        addAction('evolution','seraph');
-                        addAction('evolution','unicorn');
-                    }
+                    addRaces(['seraph','unicorn']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -753,12 +707,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['balorg'] = { count: 0 };
-                        global.evolution['imp'] = { count: 0 };
-                        addAction('evolution','balorg');
-                        addAction('evolution','imp');
-                    }
+                    addRaces(['balorg','imp']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -789,12 +738,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['sharkin'] = { count: 0 };
-                        global.evolution['octigoran'] = { count: 0 };
-                        addAction('evolution','sharkin');
-                        addAction('evolution','octigoran');
-                    }
+                    addRaces(['sharkin','octigoran']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -825,12 +769,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['dryad'] = { count: 0 };
-                        global.evolution['satyr'] = { count: 0 };
-                        addAction('evolution','dryad');
-                        addAction('evolution','satyr');
-                    }
+                    addRaces(['dryad','satyr']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -861,12 +800,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['phoenix'] = { count: 0 };
-                        global.evolution['salamander'] = { count: 0 };
-                        addAction('evolution','phoenix');
-                        addAction('evolution','salamander');
-                    }
+                    addRaces(['phoenix','salamander']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -897,12 +831,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['yeti'] = { count: 0 };
-                        global.evolution['wendigo'] = { count: 0 };
-                        addAction('evolution','yeti');
-                        addAction('evolution','wendigo');
-                    }
+                    addRaces(['yeti','wendigo']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -933,12 +862,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['tuskin'] = { count: 0 };
-                        global.evolution['kamel'] = { count: 0 };
-                        addAction('evolution','tuskin');
-                        addAction('evolution','kamel');
-                    }
+                    addRaces(['tuskin','kamel']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -1011,14 +935,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['arraak'] = { count: 0 };
-                        global.evolution['pterodacti'] = { count: 0 };
-                        global.evolution['dracnid'] = { count: 0 };
-                        addAction('evolution','arraak');
-                        addAction('evolution','pterodacti');
-                        addAction('evolution','dracnid');
-                    }
+                    addRaces(['arraak','pterodacti','dracnid']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -1045,14 +962,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['tortoisan'] = { count: 0 };
-                        global.evolution['gecko'] = { count: 0 };
-                        global.evolution['slitheryn'] = { count: 0 };
-                        addAction('evolution','tortoisan');
-                        addAction('evolution','gecko');
-                        addAction('evolution','slitheryn');
-                    }
+                    addRaces(['tortoisan','gecko','slitheryn']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -11608,6 +11518,19 @@ export const actions = {
     },
     portal: fortressTech()
 };
+
+function addRaces(races){
+    let add_all = false;
+    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
+        add_all = true;
+    }
+    for (let i=0; i<races.length; i++){
+        if (add_all || (global.stats.achieve[`extinct_${races[i]}`] && global.stats.achieve[`extinct_${races[i]}`].l >= 1)){
+            global.evolution[races[i]] = { count: 0 };
+            addAction('evolution',races[i]);
+        }
+    }
+}
 
 export function storageMultipler(){
     var multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
