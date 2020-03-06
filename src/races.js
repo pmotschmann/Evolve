@@ -1471,6 +1471,7 @@ export function cleanAddTrait(trait){
                 delete global.city['lumber_yard'];
             }
             delete global.tech['axe'];
+            delete global.tech['reclaimer'];
             delete global.tech['saw'];
             global.civic.lumberjack.display = false;
             global.civic.lumberjack.workers = 0;
@@ -1482,6 +1483,9 @@ export function cleanAddTrait(trait){
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
                 global.city.foundry['Plywood'] = 0;
                 global['loadFoundry'] = true;
+            }
+            if (global.city['s_alter']) {
+                global.city.s_alter.harvest = 0;
             }
             break;
         case 'carnivore':
