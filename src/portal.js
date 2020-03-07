@@ -298,7 +298,7 @@ const fortressModules = {
             effect: loc('portal_assault_forge_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_pit_mission_result'),'success');
+                    messageQueue(loc('portal_assault_forge_result'),'success');
                     return true;
                 }
                 return false;
