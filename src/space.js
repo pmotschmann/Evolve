@@ -4380,48 +4380,54 @@ function galaxySpace(){
                         return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
                     },
                     threat(r){
-                        let pirates = Math.round((1 - piracy(r,true)) * 100);
-                        if (pirates === 0){
-                            return "has-text-success";
+                        if (global.galaxy.defense[r].scout_ship >= 2){
+                            let pirates = Math.round((1 - piracy(r,true)) * 100);
+                            if (pirates === 0){
+                                return "has-text-success";
+                            }
+                            else if (pirates <= 20){
+                                return "has-text-advanced";
+                            }
+                            else if (pirates <= 40){
+                                return "has-text-info";
+                            }
+                            else if (pirates <= 60){
+                                return "has-text-warning";
+                            }
+                            else if (pirates <= 80){
+                                return "has-text-caution";
+                            }
+                            else {
+                                return "has-text-danger";
+                            }
                         }
-                        else if (pirates <= 20){
-                            return "has-text-advanced";
-                        }
-                        else if (pirates <= 40){
-                            return "has-text-info";
-                        }
-                        else if (pirates <= 60){
-                            return "has-text-warning";
-                        }
-                        else if (pirates <= 80){
-                            return "has-text-caution";
-                        }
-                        else {
-                            return "has-text-danger";
-                        }
+                        return "has-text-danger";
                     }
                 },
                 filters: {
                     pirate(r){
-                        let pirates = Math.round((1 - piracy(r,true)) * 100);
-                        if (pirates === 0){
-                            return loc('galaxy_piracy_none');
+                        if (global.galaxy.defense[r].scout_ship >= 2){
+                            let pirates = Math.round((1 - piracy(r,true)) * 100);
+                            if (pirates === 0){
+                                return loc('galaxy_piracy_none');
+                            }
+                            else if (pirates <= 20){
+                                return loc('galaxy_piracy_vlow');
+                            }
+                            else if (pirates <= 40){
+                                return loc('galaxy_piracy_low');
+                            }
+                            else if (pirates <= 60){
+                                return loc('galaxy_piracy_avg');
+                            }
+                            else if (pirates <= 80){
+                                return loc('galaxy_piracy_high');
+                            }
+                            else {
+                                return loc('galaxy_piracy_vhigh');
+                            }
                         }
-                        else if (pirates <= 20){
-                            return loc('galaxy_piracy_vlow');
-                        }
-                        else if (pirates <= 40){
-                            return loc('galaxy_piracy_low');
-                        }
-                        else if (pirates <= 60){
-                            return loc('galaxy_piracy_avg');
-                        }
-                        else if (pirates <= 80){
-                            return loc('galaxy_piracy_high');
-                        }
-                        else {
-                            return loc('galaxy_piracy_vhigh');
-                        }
+                        return '???';
                     }
                 }
             };
@@ -4476,6 +4482,7 @@ function armada(parent,id){
         parent.append(header);
 
         let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+        header.append($(`<span>|</span>`));
         header.append($(`<span class="has-text-caution"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></span>`));
         header.append($(`<span>|</span>`));
         header.append($(`<span class="has-text-caution"><b-tooltip :label="crewMil()" position="is-bottom" multilined animated><span>${loc('job_crew_mil')}</span></b-tooltip> <span>{{ g.crew }}</span></span>`));
