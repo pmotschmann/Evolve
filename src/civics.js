@@ -900,26 +900,7 @@ export function buildGarrison(garrison,full){
                 return loc('civics_garrison_army_label');
             },
             soldierDesc(){
-                let rating = armyRating(garrisonSize(),'hunting');
-                let food = +(rating / 3).toFixed(2);
-                let fur = +(rating / 10).toFixed(2);
-                if (global.race['evil']){
-                    if (global.race['soul_eater']){
-                        let bones = +(armyRating(garrisonSize(),'hunting') / 3).toFixed(2);
-                        return loc('civics_garrison_evil_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
-                    }
-                    else {
-                        let bones = +(armyRating(garrisonSize(),'hunting') / 5).toFixed(2);
-                        return global.race['herbivore']
-                            ? loc('civics_garrison_evil_alt_soldier_desc_herb',[fur,bones,global.resource.Furs.name,global.resource.Lumber.name])
-                            : loc('civics_garrison_evil_alt_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
-                    }
-                }
-                else {
-                    return global.race['herbivore']
-                        ? loc('civics_garrison_soldier_desc_herb',[fur,global.resource.Furs.name])
-                        : loc('civics_garrison_soldier_desc',[food,fur,global.resource.Food.name,global.resource.Furs.name]);
-                }
+                return describeSoldier();
             },
             crewDesc(){
                 return loc('civics_garrison_crew_desc');
@@ -994,6 +975,29 @@ export function buildGarrison(garrison,full){
             }
         }
     });
+}
+
+export function describeSoldier(){
+    let rating = armyRating(garrisonSize(),'hunting');
+    let food = +(rating / 3).toFixed(2);
+    let fur = +(rating / 10).toFixed(2);
+    if (global.race['evil']){
+        if (global.race['soul_eater']){
+            let bones = +(armyRating(garrisonSize(),'hunting') / 3).toFixed(2);
+            return loc('civics_garrison_evil_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
+        }
+        else {
+            let bones = +(armyRating(garrisonSize(),'hunting') / 5).toFixed(2);
+            return global.race['herbivore']
+                ? loc('civics_garrison_evil_alt_soldier_desc_herb',[fur,bones,global.resource.Furs.name,global.resource.Lumber.name])
+                : loc('civics_garrison_evil_alt_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
+        }
+    }
+    else {
+        return global.race['herbivore']
+            ? loc('civics_garrison_soldier_desc_herb',[fur,global.resource.Furs.name])
+            : loc('civics_garrison_soldier_desc',[food,fur,global.resource.Food.name,global.resource.Furs.name]);
+    }
 }
 
 function battleAssessment(gov){

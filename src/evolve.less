@@ -710,7 +710,15 @@ a {
         }
     }
 
+    .armHead {
+        > span {
+            margin-left: 1rem;
+        }
+    }
+
     .fleet {
+        display: flex;
+        flex-wrap: wrap;
         width: 100%;
         min-height: 1rem;
         margin: .25rem 0;
@@ -719,7 +727,7 @@ a {
         border-bottom: 1px solid;
 
         .area {
-            display: flex;
+            width: 8rem;
             > span {
                 display: inline-block;
                 min-width: 8rem;

@@ -210,6 +210,8 @@
   "job_hell_surveyor": "Surveyor",
   "job_hell_surveyor_desc": "Surveyors are tasked with scouting the Hell dimension for Infernite. Workers are routinely killed by demonic creatures and must be protected by patrols. This is pretty much the worst job in the empire.",
   "job_crew": "Ship Crew",
+  "job_crew_civ": "Civ Ship Crew",
+  "job_crew_mil": "Mil Ship Crew",
   "job_crew_desc": "Ships often require crew members to operate.",
   "job_unemployed": "Unemployed",
   "job_unemployed_desc": "The number of unemployed citizens. Unemployed citizens lower morale and do not pay taxes. However, they also consume half rations.",

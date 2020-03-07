@@ -4,7 +4,7 @@ import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineIndustry } from './civics.js';
+import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc } from './actions.js';
 import { loc } from './locale.js';
 
@@ -4472,28 +4472,69 @@ function galaxySpace(){
 function armada(parent,id){
     if (global.tech['piracy']){
 
-        parent.append(`<div><h3 class="has-text-warning">${loc('galaxy_armada')}</h3></div>`);
+        let header = $(`<div id="h${id}" class="armHead"><h3 class="has-text-warning">${loc('galaxy_armada')}</h3></div>`);
+        parent.append(header);
+
+        let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+        header.append($(`<span class="has-text-caution"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></span>`));
+        header.append($(`<span>|</span>`));
+        header.append($(`<span class="has-text-caution"><b-tooltip :label="crewMil()" position="is-bottom" multilined animated><span>${loc('job_crew_mil')}</span></b-tooltip> <span>{{ g.crew }}</span></span>`));
+        header.append($(`<span>|</span>`));
+        header.append($(`<span class="has-text-success"><b-tooltip :label="crewCiv()" position="is-bottom" multilined animated><span>${loc('job_crew_civ')}</span></b-tooltip> <span>{{ c.workers }} / {{ c.max }}</span></span>`));
+
+        vBind({
+            el: `#h${id}`,
+            data: {
+                g: global.civic.garrison,
+                c: global.civic.crew,
+            },
+            methods: {
+                soldierDesc(){
+                    return describeSoldier();
+                },
+                crewMil(){
+                    return loc('civics_garrison_crew_desc');
+                },
+                crewCiv(){
+                    return loc('job_crew_desc');
+                }
+            },
+            filters: {
+                stationed(v){
+                    return garrisonSize();
+                },
+                s_max(v){
+                    return garrisonSize(true);
+                }
+            }
+        });
+
         let fleet = $(`<div id="${id}" class="fleet"></div>`);
         parent.append(fleet);
 
         let ships = ['scout_ship','corvette_ship','frigate_ship','cruiser_ship','dreadnought'];
 
-        let header = $(`<div class="area"><span></span></div>`);
-        fleet.append(header);
+        let cols = [];
+        for (let i=0; i<6; i++){
+            let col = $(`<div class="area"></div>`);
+            cols.push(col);
+            fleet.append(col);
+        }
+
         for (let i=0; i<ships.length; i++){
             if (global.galaxy.hasOwnProperty(ships[i])){
                 let ship = $(`<span class="ship has-text-advanced">${galaxyProjects.gxy_gateway[ships[i]].title}</span>`);
-                header.append(ship);
+                cols[i+1].append(ship);
             }
         }
 
-        let gateway = $(`<div class="area"><span class="has-text-danger">${galaxyProjects.gxy_gateway.info.name}</span></div>`);
-        fleet.append(gateway);
+        cols[0].append($(`<span></span>`));
+        cols[0].append($(`<span class="has-text-danger">${galaxyProjects.gxy_gateway.info.name}</span>`));
 
         for (let i=0; i<ships.length; i++){
             if (global.galaxy.hasOwnProperty(ships[i])){
                 let ship = $(`<span class="ship">{{ gateway.${ships[i]} }}</span>`);
-                gateway.append(ship);
+                cols[i+1].append(ship);
             }
         }
 
@@ -4501,8 +4542,8 @@ function armada(parent,id){
             let r = area.substring(4);
             if (global.settings.space[r] && r !== 'gateway'){
 
-                let region = $(`<div class="area"><span class="has-text-caution">${typeof galaxyProjects[area].info.name === 'string' ? galaxyProjects[area].info.name : galaxyProjects[area].info.name()}</span></div>`);
-                fleet.append(region);
+                let region = $(`<span class="has-text-caution">${typeof galaxyProjects[area].info.name === 'string' ? galaxyProjects[area].info.name : galaxyProjects[area].info.name()}</span>`);
+                cols[0].append(region);
 
                 for (let i=0; i<ships.length; i++){
                     if (global.galaxy.hasOwnProperty(ships[i])){
@@ -4510,7 +4551,7 @@ function armada(parent,id){
                         let sub = $(`<span role="button" aria-label="remove ${ships[i]}" class="sub has-text-danger" @click="sub('${area}','${ships[i]}')"><span>&laquo;</span></span>`);
                         let count = $(`<span class="current">{{ ${r}.${ships[i]} }}</span>`);
                         let add = $(`<span role="button" aria-label="add ${ships[i]}" class="add has-text-success" @click="add('${area}','${ships[i]}')"><span>&raquo;</span></span>`);
-                        region.append(ship);
+                        cols[i+1].append(ship);
                         ship.append(sub);
                         ship.append(count);
                         ship.append(add);
