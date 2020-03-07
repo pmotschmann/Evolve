@@ -1240,6 +1240,8 @@
   "tech_space_marines_effect1": "Militarize space with",
   "tech_space_marines_effect2": "a %0 garrison.",
   "tech_space_marines_bd": "Marines",
+  "tech_hammocks": "Nanoweave Hammocks",
+  "tech_hammocks_effect": "Replace traditional bunks with Nanoweave Hammocks. Increases soldier capactiy of Marine Barracks and Starbases.",
   "tech_cruiser": "Patrol Cruiser",
   "tech_cruiser_effect": "Design a spaceship that is made for combat to patrol your space and provide security.",
   "tech_armor": "Leather Armor",

@@ -473,6 +473,7 @@ else {
 
 resourceAlt();
 
+var firstRun = true;
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 function fastLoop(){
     keyMultiplier();
@@ -3705,6 +3706,10 @@ function fastLoop(){
                 }
             });
         }
+
+        if (firstRun && global.tech['piracy']){
+            renderSpace();
+        }
     }
     
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
@@ -3760,6 +3765,8 @@ function fastLoop(){
         window.evolve.craftCost = JSON.parse(JSON.stringify(craftCost())),
         window.evolve.breakdown = JSON.parse(JSON.stringify(breakdown));
     }
+
+    firstRun = false;
 }
 
 function midLoop(){
@@ -4023,13 +4030,15 @@ function midLoop(){
             }
         }
         if (global.space['space_barracks']){
-            lCaps['garrison'] += global.space.space_barracks.on * 2;
+            let soldiers = global.tech.marines >= 2 ? 3 : 2;
+            lCaps['garrison'] += global.space.space_barracks.on * soldiers;
         }
         if (global.interstellar['cruiser']){
             lCaps['garrison'] += int_on['cruiser'] * 3;
         }
         if (p_on['s_gate'] && global.galaxy['starbase']){
-            lCaps['garrison'] += p_on['starbase'] * 4;
+            let soldiers = global.tech.marines >= 2 ? 5 : 4;
+            lCaps['garrison'] += p_on['starbase'] * soldiers;
         }
         if (!global.tech['world_control']){
             if (global.civic.foreign.gov0.occ){

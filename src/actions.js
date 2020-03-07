@@ -9546,6 +9546,25 @@ export const actions = {
             },
             flair: 'Outer space treaty be damned.'
         },
+        hammocks: {
+            id: 'tech-hammocks',
+            title: loc('tech_hammocks'),
+            desc: loc('tech_hammocks'),
+            category: 'upgrade',
+            reqs: { marines: 1, nanoweave: 1 },
+            grant: ['marines',2],
+            cost: {
+                Knowledge(){ return 8900000; },
+                Nanoweave(){ return 30000; },
+            },
+            effect(){ return loc('tech_hammocks_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         cruiser: {
             id: 'tech-cruiser',
             title: loc('tech_cruiser'),
