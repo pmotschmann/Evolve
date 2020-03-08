@@ -11885,6 +11885,24 @@ export const actions = {
                 return false;
             }
         },
+        embassy_housing: {
+            id: 'tech-embassy_housing',
+            title: loc('tech_embassy_housing'),
+            desc(){ return loc('tech_embassy_housing'); },
+            category: 'upgrade',
+            reqs: { xeno: 10, science: 18 },
+            grant: ['xeno',11],
+            cost: {
+                Knowledge(){ return 10750000; }
+            },
+            effect(){ return loc('tech_embassy_housing_effect',[races[global.galaxy.alien1.id].name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         advanced_telemetry: {
             id: 'tech-advanced_telemetry',
             title: loc('tech_advanced_telemetry'),
@@ -12077,6 +12095,26 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['scavenger'] = { count: 0, on: 0, crew: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        coordinates: {
+            id: 'tech-coordinates',
+            title: loc('tech_coordinates'),
+            desc: loc('tech_coordinates'),
+            category: 'research',
+            reqs: { science: 18, conflict: 5 },
+            grant: ['chthonian',1],
+            cost: {
+                Knowledge(){ return 10000000; }
+            },
+            effect(){ return loc('tech_coordinates_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['minelayer'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    global.settings.space.chthonian = true;
                     return true;
                 }
                 return false;
@@ -12706,7 +12744,9 @@ export function setAction(c_action,action,type,old){
                             if (!(global.settings.qKey && keyMap.q) && c_action.action()){
                                 gainTech(type);
                                 if (c_action['post']){
-                                    c_action.post();
+                                    setTimeout(function(){
+                                        c_action.post();
+                                    }, 250);
                                 }
                             }
                             else {
@@ -12738,7 +12778,9 @@ export function setAction(c_action,action,type,old){
                             if (c_action.action()){
                                 gainGene(type);
                                 if (c_action['post']){
-                                    c_action.post();
+                                    setTimeout(function(){
+                                        c_action.post();
+                                    }, 250);
                                 }
                             }
                             break;
@@ -12821,6 +12863,11 @@ export function setAction(c_action,action,type,old){
                                     renderSpace();
                                     renderFortress();
                                 }
+                                if (c_action['post']){
+                                    setTimeout(function(){
+                                        c_action.post();
+                                    }, 250);
+                                }
                                 updateDesc(c_action,action,type);
                                 break;
                             }
@@ -12860,7 +12907,9 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 if (c_action['postPower']){
-                    c_action.postPower(true);
+                    setTimeout(function(){
+                        c_action.postPower(true);
+                    }, 250);
                 }
             },
             power_off(){
@@ -12874,7 +12923,9 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 if (c_action['postPower']){
-                    c_action.postPower(false);
+                    setTimeout(function(){
+                        c_action.postPower(false);
+                    }, 250);
                 }
             },
             repair(){

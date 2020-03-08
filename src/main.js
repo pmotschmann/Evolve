@@ -1591,6 +1591,11 @@ function fastLoop(){
                 region: 'gxy_alien2',
                 ships: ['armed_miner','scavenger'],
                 req: 'foothold'
+            },
+            {
+                region: 'gxy_chthonian',
+                ships: ['minelayer'],
+                req: 'starbase'
             }
         ];
 
@@ -2106,19 +2111,28 @@ function fastLoop(){
         let andromeda_helium = 0;
         let andromeda_deuterium = 0;
 
+        if (p_on['s_gate']){
+            let ship_list = ['freighter','super_freighter','minelayer'];
+            for (let i=0; i<ship_list.length; i++){
+                if (p_on['s_gate'] && global.galaxy.hasOwnProperty(ship_list[i])){
+                    gal_on[ship_list[i]] = global.galaxy[ship_list[i]].on;
+                }
+            }
+        }
+
         for (let j=0; j<galaxy_ship_types.length; j++){
             let region = galaxy_ship_types[j].region;
             for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
                 let ship = galaxy_ship_types[j].ships[i];
                 let req = galaxy_ship_types[j].hasOwnProperty('req') ? (p_on[galaxy_ship_types[j].req] > 0 ? true : false) : true;
-                if (p_on['s_gate'] && req && global.galaxy[ship] && global.galaxy[ship].crew > 0){
+                if (p_on['s_gate'] && req && global.galaxy[ship] && (global.galaxy[ship].crew > 0 || global.galaxy[ship].mil > 0)){
                     let operating = 0;
                     if (actions.galaxy[region][ship].ship.civ > 0){
                         operating = Math.floor(global.galaxy[ship].crew / actions.galaxy[region][ship].ship.civ);
                     }
                     if (actions.galaxy[region][ship].ship.mil > 0){
                         let mil_operating = Math.floor(global.galaxy[ship].mil / actions.galaxy[region][ship].ship.mil);
-                        if (mil_operating < operating){
+                        if (actions.galaxy[region][ship].ship.civ === 0 || mil_operating < operating){
                             operating = mil_operating;
                         }
                     }
@@ -4080,6 +4094,10 @@ function midLoop(){
         if (global.galaxy['consulate'] && global.galaxy.consulate.count >= 1){
             caps[global.race.species] += 10;
             bd_Citizen[loc('galaxy_consulate')] = '10v';
+        }
+        if (p_on['embassy'] && global.tech.xeno >= 11){
+            caps[global.race.species] += 20;
+            bd_Citizen[loc('galaxy_embassy')] = '20v';
         }
         if (p_on['embassy'] && global.galaxy['dormitory']){
             caps[global.race.species] += p_on['dormitory'] * 3;

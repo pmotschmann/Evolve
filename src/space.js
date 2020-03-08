@@ -3409,6 +3409,9 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                vBind({el: `#gxy_stargate`},'update');
             }
         },
     },
@@ -3475,7 +3478,11 @@ const galaxyProjects = {
             },
             effect(){
                 let food = 7500;
-                return `<div>${loc('galaxy_embassy_effect',[races[global.galaxy.alien1.id].name])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let housing = '';
+                if (global.tech.xeno >= 11){
+                    housing = `<div>${loc('plus_max_citizens',[20])}</div>`;
+                }
+                return `<div>${loc('galaxy_embassy_effect',[races[global.galaxy.alien1.id].name])}</div>${housing}<div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return p_on['s_gate'] ? 25 : 0; },
             refresh: true,
@@ -3922,6 +3929,7 @@ const galaxyProjects = {
             },
             ship: {
                 civ: 1,
+                mil: 0,
                 helium: 12,
             },
             support(){ return -1; },
@@ -3951,38 +3959,55 @@ const galaxyProjects = {
         },
         chthonian_mission: {
             id: 'galaxy-chthonian_mission',
-            title(){ return loc('galaxy_alien2_mission',[races[global.galaxy.alien2.id].name]); },
-            desc(){ return loc('galaxy_alien2_mission_desc',[races[global.galaxy.alien2.id].name]); },
-            reqs: { chthonian: 1, locked: 1 },
+            title(){ return loc('galaxy_alien2_mission',[loc('galaxy_chthonian')]); },
+            desc(){ return loc('galaxy_alien2_mission_desc',[loc('galaxy_chthonian')]); },
+            reqs: { chthonian: 1 },
             grant: ['chthonian',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Structs(){
                     return {
                         galaxy: {
-                            frigate_ship: { s: 'gxy_gateway', count: 2, on: 2 },
-                            cruiser_ship: { s: 'gxy_gateway', count: 1, on: 1 },
+                            frigate_ship: { s: 'gxy_gateway', count: 5, on: 5 },
+                            cruiser_ship: { s: 'gxy_gateway', count: 3, on: 3 },
                         }
                     };
                 },
             },
-            effect(){ return `<div>${loc('galaxy_alien2_mission_desc',[races[global.galaxy.alien2.id].name])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[races[global.galaxy.alien2.id].name])}</div>`; },
+            effect(){ return `<div>${loc('galaxy_alien2_mission_desc',[loc('galaxy_chthonian')])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[loc('galaxy_chthonian')])}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    if (global.galaxy.defense.gxy_alien2.frigate_ship >= 2 && global.galaxy.defense.gxy_alien2.cruiser_ship >= 1){
-                        /*if (global.galaxy.defense.gxy_alien2.cruiser_ship >= 2){
-                            messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].name]),'success');
+                    if (global.galaxy.defense.gxy_chthonian.frigate_ship >= 5 && global.galaxy.defense.gxy_chthonian.cruiser_ship >= 3){
+                        let loss = [];
+                        if (global.galaxy.defense.gxy_chthonian.dreadnought >= 1){
+                            if (global.galaxy.defense.gxy_chthonian.dreadnought >= 2){
+                                loss.push('frigate_ship');
+                                messageQueue(`${loc('galaxy_chthonian_mission_result')} ${loc('galaxy_chthonian_mission_result_c')}`,'success');
+                            }
+                            else {
+                                loss.push('frigate_ship');
+                                loss.push('frigate_ship');
+                                messageQueue(`${loc('galaxy_chthonian_mission_result')} ${loc('galaxy_chthonian_mission_result_b')}`,'caution');
+                                messageQueue(loc('galaxy_chthonian_mission_result_b'),'success');
+                            }
                         }
                         else {
-                            global.galaxy.defense.gxy_alien2.frigate_ship--;
-                            global.galaxy.frigate_ship.on--;
-                            global.galaxy.frigate_ship.count--;
-                            global.galaxy.frigate_ship.crew -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
-                            global.galaxy.frigate_ship.mil -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
-                            global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway.frigate_ship.ship.civ;
-                            global.civic.garrison.workers -= galaxyProjects.gxy_gateway.frigate_ship.ship.mil;
-                            messageQueue(loc('galaxy_alien2_mission_result',[races[global.galaxy.alien2.id].name]),'danger');
-                        }*/
+                            loss.push('cruiser_ship');
+                            loss.push('frigate_ship');
+                            loss.push('frigate_ship');
+                            loss.push('frigate_ship');
+                            messageQueue(`${loc('galaxy_chthonian_mission_result')} ${loc('galaxy_chthonian_mission_result_a')}`,'danger');
+                        }
+                        for (let i=0; i<loss.length; i++){
+                            let ship = loss[i];
+                            global.galaxy.defense.gxy_chthonian[ship]--;
+                            global.galaxy[ship].on--;
+                            global.galaxy[ship].count--;
+                            global.galaxy[ship].crew -= galaxyProjects.gxy_gateway[ship].ship.civ;
+                            global.galaxy[ship].mil -= galaxyProjects.gxy_gateway[ship].ship.mil;
+                            global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway[ship].ship.civ;
+                            global.civic.garrison.workers -= galaxyProjects.gxy_gateway[ship].ship.mil;
+                        }
                         return true;
                     }
                     return false;
@@ -3990,10 +4015,49 @@ const galaxyProjects = {
                 return false;
             }
         },
+        minelayer: {
+            id: 'galaxy-minelayer',
+            title: loc('galaxy_minelayer'),
+            desc(){
+                return `<div>${loc('galaxy_minelayer')}</div>`;
+            },
+            reqs: { chthonian: 2 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('minelayer', offset, 9000000, 1.25, 'galaxy'); },
+                Iron(offset){ return spaceCostMultiplier('minelayer', offset, 4800000, 1.25, 'galaxy'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('minelayer', offset, 1250000, 1.25, 'galaxy'); },
+                Nanoweave(offset){ return spaceCostMultiplier('minelayer', offset, 100000, 1.02, 'galaxy'); },
+            },
+            effect(){
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+            },
+            ship: {
+                civ: 0,
+                mil: 1,
+                helium: 8,
+                rating: 50
+            },
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('minelayer','galaxy');
+                    global.galaxy.minelayer.on++;
+                    return true;
+                }
+                return false;
+            },
+            postPower(){
+                vBind({el: `#gxy_chthonian`},'update');
+            },
+            post(){
+                vBind({el: `#gxy_chthonian`},'update');
+            }
+        },
     },
 };
 
-export function piracy(region,rating){
+export function piracy(region,rating,raw){
     if (global.tech['piracy']){
         let armada = 0;
         let ships = ['dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
@@ -4045,6 +4109,14 @@ export function piracy(region,rating){
             if (gal_on['armed_miner']){
                 armada += gal_on['armed_miner'] * 5;
             }
+        }
+
+        if (region === 'gxy_chthonian' && gal_on['minelayer']){
+            armada += gal_on['minelayer'] * 50;
+        }
+
+        if (raw){
+            return armada;
         }
 
         if (region !== 'gxy_stargate'){
@@ -4428,6 +4500,9 @@ function galaxySpace(){
                             }
                         }
                         return '???';
+                    },
+                    defense(r){
+                        return piracy(r,true,true);
                     }
                 }
             };
@@ -4443,7 +4518,7 @@ function galaxySpace(){
             }
 
             if (global.tech['piracy']){
-                regionContent.append(`<div><span class="has-text-caution pirate">${loc('galaxy_piracy_threat',[races[global.galaxy.alien2.id].name])}</span><span :class="threat('${region}')">{{ '${region}' | pirate }}</span></div>`);
+                regionContent.append(`<div><span class="has-text-caution pirate">${loc('galaxy_piracy_threat',[races[global.galaxy.alien2.id].name])}</span><span :class="threat('${region}')">{{ '${region}' | pirate }}</span><span class="sep">|</span><span class="has-text-warning">${loc('galaxy_armada')}</span>: <span class="has-text-success">{{ '${region}' | defense }}</span></div>`);
             }
 
             vBind(vData);
