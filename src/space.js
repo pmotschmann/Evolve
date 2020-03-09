@@ -713,6 +713,9 @@ const spaceProjects = {
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
                     sci += global.space.ziggurat.count * 15;
                 }
+                if (global.tech.mass >= 2){
+                    sci += p_on['mass_driver'] * global.civic.scientist.workers;
+                }
                 let elerium = spatialReasoning(10);
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
@@ -1577,6 +1580,9 @@ const spaceProjects = {
                 let boost = 25;
                 if (global.interstellar['far_reach'] && p_on['far_reach'] > 0){
                     boost += p_on['far_reach'] * 1;
+                }
+                if (global.tech.science >= 19){
+                    boost += 15;
                 }
                 return `<div>${loc('plus_max_resource',[boost+'%',loc('resource_Knowledge_name')])}</div><div>${loc('space_dwarf_controller_effect3')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -4026,11 +4032,11 @@ const galaxyProjects = {
                 Money(offset){ return spaceCostMultiplier('minelayer', offset, 9000000, 1.25, 'galaxy'); },
                 Iron(offset){ return spaceCostMultiplier('minelayer', offset, 4800000, 1.25, 'galaxy'); },
                 Nano_Tube(offset){ return spaceCostMultiplier('minelayer', offset, 1250000, 1.25, 'galaxy'); },
-                Nanoweave(offset){ return spaceCostMultiplier('minelayer', offset, 100000, 1.02, 'galaxy'); },
+                Nanoweave(offset){ return spaceCostMultiplier('minelayer', offset, 100000, 1.25, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[$(this)[0].ship.rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
                 civ: 0,
@@ -4043,6 +4049,80 @@ const galaxyProjects = {
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('minelayer','galaxy');
                     global.galaxy.minelayer.on++;
+                    return true;
+                }
+                return false;
+            },
+            postPower(){
+                vBind({el: `#gxy_chthonian`},'update');
+            },
+            post(){
+                vBind({el: `#gxy_chthonian`},'update');
+            }
+        },
+        excavator: {
+            id: 'galaxy-excavator',
+            title: loc('galaxy_excavator'),
+            desc(){
+                return `<div>${loc('galaxy_excavator')}</div>`;
+            },
+            reqs: { chthonian: 3 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('excavator', offset, 12000000, 1.25, 'galaxy'); },
+                Polymer(offset){ return spaceCostMultiplier('excavator', offset, 4400000, 1.25, 'galaxy'); },
+                Iridium(offset){ return spaceCostMultiplier('excavator', offset, 3600000, 1.25, 'galaxy'); },
+                Mythril(offset){ return spaceCostMultiplier('excavator', offset, 180000, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let orichalcum = +(0.2 * zigguratBonus()).toFixed(3);
+                return `<div>${loc('gain',[orichalcum,loc('resource_Orichalcum_name')])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return 8; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('excavator','galaxy');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.galaxy.excavator.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        raider: {
+            id: 'galaxy-raider',
+            title: loc('galaxy_raider'),
+            desc(){
+                return `<div>${loc('galaxy_raider')}</div>`;
+            },
+            reqs: { chthonian: 3 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('raider', offset, 12000000, 1.25, 'galaxy'); },
+                Titanium(offset){ return spaceCostMultiplier('raider', offset, 1250000, 1.25, 'galaxy'); },
+                Bolognium(offset){ return spaceCostMultiplier('raider', offset, 600000, 1.25, 'galaxy'); },
+                Vitreloy(offset){ return spaceCostMultiplier('raider', offset, 125000, 1.25, 'galaxy'); },
+                Stanene(offset){ return spaceCostMultiplier('raider', offset, 825000, 1.25, 'galaxy'); },
+            },
+            effect(){
+                let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
+                let pirate = piracy('gxy_chthonian');
+                let deuterium = +(pirate * zigguratBonus() * 0.65).toFixed(3);
+                let vitreloy = +(pirate * zigguratBonus() * 0.05).toFixed(3);
+                let polymer = +(pirate * zigguratBonus() * 2.3).toFixed(3);
+                let neutronium = +(pirate * zigguratBonus() * 0.8).toFixed(3);
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating])}</div><div>${loc('galaxy_raider_effect')}</div><div>${loc('gain',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('gain',[vitreloy,loc('resource_Vitreloy_name')])}</div><div>${loc('gain',[polymer,loc('resource_Polymer_name')])}</div><div>${loc('gain',[neutronium,loc('resource_Neutronium_name')])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+            },
+            ship: {
+                civ: 0,
+                mil: 2,
+                helium: 18,
+                rating: 12
+            },
+            powered(){ return 1; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('raider','galaxy');
+                    global.galaxy.raider.on++;
                     return true;
                 }
                 return false;
@@ -4111,8 +4191,13 @@ export function piracy(region,rating,raw){
             }
         }
 
-        if (region === 'gxy_chthonian' && gal_on['minelayer']){
-            armada += gal_on['minelayer'] * 50;
+        if (region === 'gxy_chthonian'){
+            if (gal_on['minelayer']){
+                armada += gal_on['minelayer'] * 50;
+            }
+            if (gal_on['minelayer']){
+                armada += gal_on['raider'] * 12;
+            }
         }
 
         if (raw){

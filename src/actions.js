@@ -4332,9 +4332,13 @@ export const actions = {
                 Iridium(offset){ return costMultiplier('mass_driver', offset, 2200, 1.32); }
             },
             effect(){
-                return `<span>${loc('city_mass_driver_effect',[5,races[global.race.species].name])}</span> <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
+                let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[1])}</div>` : '';
+                return `${exo}<span>${loc('city_mass_driver_effect',[5,races[global.race.species].name])}</span> <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
-            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5; },
+            powered(){
+                let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5;
+                return global.tech.mass >= 2 ? power - 1 : power;
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.mass_driver.count++;
@@ -5175,6 +5179,26 @@ export const actions = {
                 Elerium(){ return 200; }
             },
             effect: `<span>${loc('tech_laser_cutters_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        high_tech_factories: {
+            id: 'tech-high_tech_factories',
+            title: loc('tech_high_tech_factories'),
+            desc: loc('tech_high_tech_factories'),
+            category: 'upgrade',
+            reqs: { high_tech: 17, alpha: 4, factory: 3 },
+            grant: ['factory',4],
+            cost: {
+                Knowledge(){ return 13500000; },
+                Vitreloy(){ return 500000; },
+                Orichalcum(){ return 300000; }
+            },
+            effect: `<span>${loc('tech_high_tech_factories_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -7450,6 +7474,25 @@ export const actions = {
                 return false;
             }
         },
+        orichalcum_capacitor: {
+            id: 'tech-orichalcum_capacitor',
+            title: loc('tech_orichalcum_capacitor'),
+            desc: loc('tech_orichalcum_capacitor'),
+            category: 'research',
+            reqs: { science: 18, high_tech: 17 },
+            grant: ['science',19],
+            cost: {
+                Knowledge(){ return 12500000; },
+                Orichalcum(){ return 250000; }
+            },
+            effect(){ return loc('tech_orichalcum_capacitor_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         bioscience: {
             id: 'tech-bioscience',
             title: loc('tech_bioscience'),
@@ -7953,6 +7996,26 @@ export const actions = {
                 return false;
             }
         },
+        orichalcum_analysis: {
+            id: 'tech-orichalcum_analysis',
+            title: loc('tech_orichalcum_analysis'),
+            desc: loc('tech_orichalcum_analysis'),
+            category: 'research',
+            reqs: { high_tech: 16, chthonian: 3 },
+            grant: ['high_tech',17],
+            cost: {
+                Knowledge(){ return 12200000; },
+                Orichalcum(){ return 100000; }
+            },
+            effect(){ return loc('tech_orichalcum_analysis_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('tech_orichalcum_analysis_result'),'success');
+                    return true;
+                }
+                return false;
+            }
+        },
         cement_processing: {
             id: 'tech-cement_processing',
             title: loc('tech_cement_processing'),
@@ -8332,6 +8395,25 @@ export const actions = {
                         count: 0,
                         on: 0
                     };
+                    return true;
+                }
+                return false;
+            }
+        },
+        orichalcum_driver: {
+            id: 'tech-orichalcum_driver',
+            title: loc('tech_orichalcum_driver'),
+            desc: loc('tech_orichalcum_driver'),
+            category: 'upgrade',
+            reqs: { mass: 1, science: 19 },
+            grant: ['mass',2],
+            cost: {
+                Knowledge(){ return 14000000; },
+                Orichalcum(){ return 400000; }
+            },
+            effect(){ return loc('tech_orichalcum_driver_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
@@ -11295,6 +11377,25 @@ export const actions = {
                 return false;
             }
         },
+        /*luxury_condo: {
+            id: 'tech-luxury_condo',
+            title: loc('tech_luxury_condo'),
+            desc: loc('tech_luxury_condo'),
+            category: 'research',
+            reqs: { high_tech: 17, alpha: 4 },
+            grant: ['alpha',5],
+            cost: {
+                Knowledge(){ return 5650000; }
+            },
+            effect(){ return loc('tech_mega_manufacturing_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['int_factory'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },*/
         stellar_engine: {
             id: 'tech-stellar_engine',
             title: loc('tech_stellar_engine'),
@@ -12115,6 +12216,28 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['minelayer'] = { count: 0, on: 0, crew: 0, mil: 0 };
                     global.settings.space.chthonian = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        chthonian_survey : {
+            id: 'tech-chthonian_survey',
+            title: loc('tech_chthonian_survey'),
+            desc: loc('tech_chthonian_survey'),
+            category: 'research',
+            reqs: { chthonian: 2 },
+            grant: ['chthonian',3],
+            cost: {
+                Knowledge(){ return 11800000; }
+            },
+            effect(){ return loc('tech_chthonian_survey_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Orichalcum.display = true;
+                    global.galaxy['excavator'] = { count: 0, on: 0 };
+                    global.galaxy['raider'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    messageQueue(loc('tech_chthonian_survey_result'),'success');
                     return true;
                 }
                 return false;

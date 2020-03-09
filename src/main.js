@@ -1136,7 +1136,7 @@ function fastLoop(){
             'int_nebula:nexus','gxy_stargate:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy',
             'gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory',
             'spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry',
-            'city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge',
+            'city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator',
             'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
             'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_pit:gun_emplacement','prtl_pit:soul_attractor'];
         for (var i = 0; i < p_structs.length; i++){
@@ -1594,7 +1594,7 @@ function fastLoop(){
             },
             {
                 region: 'gxy_chthonian',
-                ships: ['minelayer'],
+                ships: ['minelayer','raider'],
                 req: 'starbase'
             }
         ];
@@ -2112,7 +2112,7 @@ function fastLoop(){
         let andromeda_deuterium = 0;
 
         if (p_on['s_gate']){
-            let ship_list = ['freighter','super_freighter','minelayer'];
+            let ship_list = ['freighter','super_freighter','minelayer','raider'];
             for (let i=0; i<ship_list.length; i++){
                 if (p_on['s_gate'] && global.galaxy.hasOwnProperty(ship_list[i])){
                     gal_on[ship_list[i]] = global.galaxy[ship_list[i]].on;
@@ -2398,7 +2398,7 @@ function fastLoop(){
                 if (global.tech['q_factory']){
                     let q_bonus = (quantum_level - 1) / 2 + 1;
                     delta *= q_bonus;
-                    alloy_bd[loc('quantum')] = ((q_bonus - 1) * 100) + '%';
+                    alloy_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
                 }
                 alloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Alloy'] = alloy_bd;
@@ -2408,6 +2408,7 @@ function fastLoop(){
                 breakdown.p['Alloy'] = 0;
             }
 
+            let polymer_bd = {};
             if (global.city.factory['Polymer'] && global.city.factory['Polymer'] > 0){
                 operating += global.city.factory.Polymer;
                 while (operating > on_factories && operating > 0){
@@ -2454,20 +2455,26 @@ function fastLoop(){
                 let delta = factory_output;
                 delta *= hunger * global_multiplier;
 
-                let polymer_bd = {};
                 polymer_bd[loc('city_factory')] = factory_output + 'v';
                 if (global.tech['q_factory']){
                     let q_bonus = (quantum_level - 1) / 2 + 1;
                     delta *= q_bonus;
-                    polymer_bd[loc('quantum')] = ((q_bonus - 1) * 100) + '%';
+                    polymer_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
                 }
                 polymer_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-                breakdown.p['Polymer'] = polymer_bd;
                 modRes('Polymer', delta * time_multiplier);
             }
-            else {
-                breakdown.p['Polymer'] = 0;
+
+            if (p_on['s_gate'] && global.galaxy['raider'] && gal_on['raider'] > 0){
+                let base = gal_on['raider'] * 2.3 * zigguratBonus();
+                let pirate = piracy('gxy_chthonian');
+                let delta = base * global_multiplier * pirate * hunger;
+                
+                polymer_bd[loc('galaxy_raider')] = base + 'v';
+                polymer_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+                modRes('Polymer', delta * time_multiplier);
             }
+            breakdown.p['Polymer'] = polymer_bd;
 
             if (global.city.factory['Nano'] && global.city.factory['Nano'] > 0){
                 operating += global.city.factory.Nano;
@@ -2520,7 +2527,7 @@ function fastLoop(){
                 if (global.tech['q_factory']){
                     let q_bonus = (quantum_level - 1) / 2 + 1;
                     delta *= q_bonus;
-                    nano_bd[loc('quantum')] = ((q_bonus - 1) * 100) + '%';
+                    nano_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
                 }
                 nano_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Nano_Tube'] = nano_bd;
@@ -2575,7 +2582,7 @@ function fastLoop(){
                 if (global.tech['q_factory']){
                     let q_bonus = (quantum_level - 1) / 2 + 1;
                     delta *= q_bonus;
-                    stanene_bd[loc('quantum')] = ((q_bonus - 1) * 100) + '%';
+                    stanene_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
                 }
                 stanene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Stanene'] = stanene_bd;
@@ -2902,6 +2909,7 @@ function fastLoop(){
         }
 
         // Vitreloy
+        let vitreloy_bd = {};
         if (global.galaxy['vitreloy_plant'] && p_on['vitreloy_plant'] > 0){
 
             let consume_money = p_on['vitreloy_plant'] * 50000;
@@ -2940,15 +2948,24 @@ function fastLoop(){
 
                 let zig = zigguratBonus();
                 let pirate = piracy('gxy_alien1');
-
-                let vitreloy_bd = {};
+                
                 vitreloy_bd[loc('galaxy_vitreloy_plant_bd')] = (vitreloy_production * zig) + 'v';
                 vitreloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-                vitreloy_bd[loc('galaxy_piracy')] = -((1 - pirate) * 100) + '%';
-                breakdown.p['Vitreloy'] = vitreloy_bd;
+                vitreloy_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
                 modRes('Vitreloy', vitreloy_production * hunger * global_multiplier * zig * pirate * time_multiplier);
             }
         }
+
+        if (p_on['s_gate'] && global.galaxy['raider'] && gal_on['raider'] > 0){
+            let base = gal_on['raider'] * 0.05 * zigguratBonus();
+            let pirate = piracy('gxy_chthonian');
+            let delta = base * global_multiplier * pirate * hunger;
+            
+            vitreloy_bd[loc('galaxy_raider')] = base + 'v';
+            vitreloy_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+            modRes('Vitreloy', delta * time_multiplier);
+        }
+        breakdown.p['Vitreloy'] = vitreloy_bd;
 
         // Lumber
         { //block scope
@@ -3370,6 +3387,7 @@ function fastLoop(){
             modRes('Helium_3', delta * time_multiplier);
         }
 
+        let deuterium_bd = {};
         if (global.interstellar['harvester'] && int_on['harvester']){
             let gas_mining = int_on['harvester'] * 0.85 * zigguratBonus();
             let delta = gas_mining * hunger * global_multiplier;
@@ -3378,7 +3396,6 @@ function fastLoop(){
             modRes('Helium_3', delta * time_multiplier);
 
             if (global.tech['ram_scoop']){
-                let deuterium_bd = {};
                 let deut_mining = int_on['harvester'] * 0.15 * zigguratBonus();
                 let deut_delta = deut_mining * hunger * global_multiplier;
 
@@ -3386,9 +3403,19 @@ function fastLoop(){
                 modRes('Deuterium', deut_delta * time_multiplier);
 
                 deuterium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-                breakdown.p['Deuterium'] = deuterium_bd;
             }
         }
+
+        if (p_on['s_gate'] && global.galaxy['raider'] && gal_on['raider'] > 0){
+            let base = gal_on['raider'] * 0.65 * zigguratBonus();
+            let pirate = piracy('gxy_chthonian');
+            let delta = base * global_multiplier * pirate * hunger;
+            
+            deuterium_bd[loc('galaxy_raider')] = base + 'v';
+            deuterium_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+            modRes('Deuterium', delta * time_multiplier);
+        }
+        breakdown.p['Deuterium'] = deuterium_bd;
         
         helium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Helium_3'] = helium_bd;
@@ -3409,6 +3436,16 @@ function fastLoop(){
             let n_base = p_on['neutron_miner'] * 0.055 * zigguratBonus();
             let delta = n_base * hunger * global_multiplier;
             neutronium_bd[loc('interstellar_neutron_miner_bd')] = n_base + 'v';
+            modRes('Neutronium', delta * time_multiplier);
+        }
+
+        if (p_on['s_gate'] && global.galaxy['raider'] && gal_on['raider'] > 0){
+            let base = gal_on['raider'] * 0.8 * zigguratBonus();
+            let pirate = piracy('gxy_chthonian');
+            let delta = base * global_multiplier * pirate * hunger;
+            
+            neutronium_bd[loc('galaxy_raider')] = base + 'v';
+            neutronium_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
             modRes('Neutronium', delta * time_multiplier);
         }
 
@@ -3514,6 +3551,19 @@ function fastLoop(){
             modRes('Bolognium', delta * time_multiplier);
         }
         breakdown.p['Bolognium'] = bolognium_bd;
+
+        // Orichalcum
+        let orichalcum_bd = {};
+        if (p_on['s_gate'] && global.resource.Orichalcum.display && global.galaxy['excavator'] && p_on['excavator'] > 0){
+            let base = p_on['excavator'] * 0.2 * zigguratBonus();
+            let pirate = piracy('gxy_chthonian');
+            let delta = base * global_multiplier * pirate;
+            
+            orichalcum_bd[loc('galaxy_excavator')] = base + 'v';
+            orichalcum_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+            modRes('Orichalcum', delta * time_multiplier);
+        }
+        breakdown.p['Orichalcum'] = orichalcum_bd;
 
         // Income
         if (global.tech['currency'] >= 1){
@@ -4655,6 +4705,9 @@ function midLoop(){
             if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
                 sci += global.space.ziggurat.count * 15;
             }
+            if (global.tech.mass >= 2){
+                sci += p_on['mass_driver'] * global.civic.scientist.workers;
+            }
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('tech_exotic_bd')] = gain+'v';
@@ -4795,6 +4848,9 @@ function midLoop(){
             let boost = 0.25;
             if (global.interstellar['far_reach'] && p_on['far_reach'] > 0){
                 boost += p_on['far_reach'] * 0.01;
+            }
+            if (global.tech.science >= 19){
+                boost += 0.15;
             }
             let gain = Math.round(caps['Knowledge'] * boost);
             caps['Knowledge'] += gain;
