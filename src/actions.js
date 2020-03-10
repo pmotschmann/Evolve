@@ -8016,6 +8016,45 @@ export const actions = {
                 return false;
             }
         },
+        incorporeal: {
+            id: 'tech-incorporeal',
+            title: loc('tech_incorporeal'),
+            desc: loc('tech_incorporeal'),
+            category: 'research',
+            reqs: { science: 19, locked: 1 },
+            grant: ['ascension',1],
+            cost: {
+                Knowledge(){ return 17500000; },
+                Plasmid(){ return 100; }
+            },
+            effect(){ return loc('tech_incorporeal_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        tech_ascension: {
+            id: 'tech-tech_ascension',
+            title: loc('tech_ascension'),
+            desc: loc('tech_ascension'),
+            category: 'research',
+            reqs: { ascension: 1 },
+            grant: ['ascension',2],
+            cost: {
+                Knowledge(){ return 18000000; },
+                Phage(){ return 25; }
+            },
+            effect(){ return loc('tech_ascension_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.settings.space.sirius = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         cement_processing: {
             id: 'tech-cement_processing',
             title: loc('tech_cement_processing'),
@@ -13328,6 +13367,16 @@ function srDesc(c_action,old){
                     });
                 });
             }
+            else if (res === 'Plasmid' || res === 'Phage'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc(`resource_${res}_name`);
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (global.race[res].count < res_cost){
+                        desc = desc + `${loc('insufficient')} ${label}. `;
+                    }
+                }
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
@@ -13397,6 +13446,17 @@ function actionDesc(parent,c_action,obj,old){
                         cost.append($(`<div class="${color}">${label}: ${res_cost}</div>`));
                     });
                 });
+            }
+            else if (res === 'Plasmid' || res === 'Phage'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc(`resource_${res}_name`);
+                    let color = 'has-text-dark';
+                    if (global.race[res].count < res_cost){
+                        color = 'has-text-danger';
+                    }
+                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                }
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
@@ -13477,7 +13537,16 @@ export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool'){
+            if (res === 'Plasmid' || res === 'Phage'){
+                let cost = costs[res]();
+                if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                    global.race.Plasmid.anti -= cost;
+                }
+                else {
+                    global.race[res].count -= cost;
+                }
+            }
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool'){
                 let cost = costs[res]();
                 global['resource'][res].amount -= cost;
                 if (res === 'Knowledge'){
@@ -13507,6 +13576,18 @@ function checkMaxCosts(costs){
     Object.keys(costs).forEach(function (res){
         if (res === 'Structs'){
             if (!checkStructs(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Plasmid' || res === 'Phage'){
+            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                if (global.race.Plasmid.anti < Number(costs[res]())){
+                    test = false;
+                    return;
+                }
+            }
+            else if (global.race[res].count < Number(costs[res]())){
                 test = false;
                 return;
             }
@@ -13551,6 +13632,18 @@ function checkCosts(costs){
     Object.keys(costs).forEach(function (res){
         if (res === 'Structs'){
             if (!checkStructs(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Plasmid' || res === 'Phage'){
+            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                if (global.race.Plasmid.anti < Number(costs[res]())){
+                    test = false;
+                    return;
+                }
+            }
+            else if (global.race[res].count < Number(costs[res]())){
                 test = false;
                 return;
             }

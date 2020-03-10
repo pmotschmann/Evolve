@@ -2835,20 +2835,20 @@ const interstellarProjects = {
     int_sirius: {
         info: {
             name: loc('interstellar_sirius_name'),
-            desc(){ loc('interstellar_sirius_desc',[races[global.race.species].home]); },
+            desc(){ return loc('interstellar_sirius_desc',[races[global.race.species].home]); },
         },
         sirius_mission: {
             id: 'interstellar-sirius_mission',
             title: loc('space_mission_title', [loc('interstellar_sirius_name')]),
             desc: loc('space_mission_desc', [loc('interstellar_sirius_name')]),
-            reqs: { sirius: 1, locked: 1 },
-            grant: ['sirius',2],
+            reqs: { ascension: 2 },
+            grant: ['ascension',3],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Helium_3(){ return +int_fuel_adjust(500000).toFixed(0); },
                 Deuterium(){ return +int_fuel_adjust(250000).toFixed(0); }
             },
-            effect(){ return loc('interstellar_sirius_mission_effect',[races[global.race.species].home]); },
+            effect(){ return loc('interstellar_sirius_mission_effect',[races[global.race.species].name,races[global.race.species].home]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     //global.interstellar['neutron_miner'] = { count: 0, on: 0 };
@@ -2952,7 +2952,7 @@ const galaxyProjects = {
             effect(){
                 let helium = +(int_fuel_adjust(25)).toFixed(2);
                 let food = 250;
-                let soldiers = global.tech.marines >= 2 ? 5 : 4;
+                let soldiers = global.tech.marines >= 2 ? 6 : 4;
                 return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[25])}</div><div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div><div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
             support(){ return 2; },

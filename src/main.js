@@ -4101,7 +4101,7 @@ function midLoop(){
             lCaps['garrison'] += int_on['cruiser'] * 3;
         }
         if (p_on['s_gate'] && global.galaxy['starbase']){
-            let soldiers = global.tech.marines >= 2 ? 5 : 4;
+            let soldiers = global.tech.marines >= 2 ? 6 : 4;
             lCaps['garrison'] += p_on['starbase'] * soldiers;
         }
         if (!global.tech['world_control']){
