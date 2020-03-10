@@ -11443,10 +11443,11 @@ export const actions = {
                         Infernite: 0, Elerium: 0,
                         Nano_Tube: 0, Graphene: 0,
                         Stanene: 0, Bolognium: 0,
-                        Vitreloy: 0, Plywood: 0,
-                        Brick: 0, Wrought_Iron: 0,
-                        Sheet_Metal: 0, Mythril: 0,
-                        Aerogel: 0, Nanoweave: 0
+                        Vitreloy: 0, Orichalcum: 0,
+                        Plywood: 0, Brick: 0,
+                        Wrought_Iron: 0, Sheet_Metal: 0,
+                        Mythril: 0, Aerogel: 0,
+                        Nanoweave: 0
                     };
                     return true;
                 }

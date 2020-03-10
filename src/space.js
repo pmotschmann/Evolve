@@ -4594,12 +4594,14 @@ function galaxySpace(){
 
             if (galaxyProjects[region].info['support']){
                 let support = galaxyProjects[region].info['support'];
-                if (!global.galaxy[support].hasOwnProperty('support')){
-                    global.galaxy[support]['support'] = 0;
-                    global.galaxy[support]['s_max'] = 0;
+                if (global.galaxy[support]){
+                    if (!global.galaxy[support].hasOwnProperty('support')){
+                        global.galaxy[support]['support'] = 0;
+                        global.galaxy[support]['s_max'] = 0;
+                    }
+                    regionContent.append(`<span class="regionSupport" v-show="s.s_max">{{ s.support }}/{{ s.s_max }}</span>`);
+                    vData.data['s'] = global.galaxy[support];
                 }
-                regionContent.append(`<span class="regionSupport" v-show="s.s_max">{{ s.support }}/{{ s.s_max }}</span>`);
-                vData.data['s'] = global.galaxy[support];
             }
 
             if (global.tech['piracy']){

@@ -411,7 +411,7 @@ if (convertVersion(global['version']) < 8000 && global.civic['foreign']){
 }
 
 global['version'] = '0.8.0';
-global['beta'] = 23;
+global['beta'] = 24;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -567,6 +567,12 @@ if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Bo
 }
 if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Vitreloy']){
     global.interstellar.mass_ejector['Vitreloy'] = 0;
+}
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Orichalcum']){
+    global.interstellar.mass_ejector['Orichalcum'] = 0;
+}
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Nanoweave']){
+    global.interstellar.mass_ejector['Nanoweave'] = 0;
 }
 
 if (!global.settings.space['alpha']){
@@ -1373,8 +1379,14 @@ export function clearStates(){
     global.settings.space.nebula = false;
     global.settings.space.neutron = false;
     global.settings.space.blackhole = false;
+    global.settings.space.sirius = false;
     global.settings.space.stargate = false;
     global.settings.space.gateway = false;
+    global.settings.space.gorddon = false;
+    global.settings.space.alien1 = false;
+    global.settings.space.alien1 = false;
+    global.settings.space.alien2 = false;
+    global.settings.space.chthonian = false;
     global.settings.portal.fortress = false;
     global.settings.portal.badlands = false;
     global.settings.portal.pit = false;
