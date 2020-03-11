@@ -1,5 +1,5 @@
 import { global, set_alevel, poppers } from './vars.js';
-import { svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue } from './functions.js'; 
+import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue } from './functions.js'; 
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
@@ -820,8 +820,8 @@ export function unlockFeat(feat,small,rank){
 }
 
 export function setupStats(){
-    $('#achieve').empty();
-    $('#stats').empty();
+    clearElement($('#achieve'));
+    clearElement($('#stats'));
     let stats = $('<div id="statsPanel"></div>');
     $('#stats').append(stats);
     let perks = $('<div id="perksPanel"></div>');
@@ -834,7 +834,7 @@ export function setupStats(){
 }
 
 export function drawAchieve(){
-    $('#achievePanel').empty();
+    clearElement($('#achievePanel'));
     let achieve = $('#achievePanel');
     let earned = 0;
     let total = 0;
@@ -882,7 +882,7 @@ export function drawAchieve(){
     if (global.race['weak_mastery']){ a_level++; }
 
     if ($('#topBar span.flair')){
-        $('#topBar span.flair').remove();
+        clearElement($('#topBar span.flair'),true);
     }
     if (a_level > 1 && $('#topBar .planet .flair').length === 0){
     let bIcon = getBaseIcon('topbar','challenge');
@@ -906,7 +906,7 @@ export function drawAchieve(){
         $('#topBar .planetWrap .flair').on('mouseout',function(){
             $(`#topbarPlanet`).hide();
             poppers['topbarPlanet'].destroy();
-            $(`#topbarPlanet`).remove();
+            clearElement($(`#topbarPlanet`),true);
         });
     }
 }
@@ -1130,7 +1130,7 @@ function checkBigAchievementUniverse(frag, name, num, level){
 }
 
 export function drawPerks(){
-    $('#perksPanel').empty();
+    clearElement($('#perksPanel'));
     let perks = $('#perksPanel');
     
     let unlocked = 0;
@@ -1335,7 +1335,7 @@ export function drawPerks(){
 }
 
 export function drawStats(){
-    $('#statsPanel').empty();
+    clearElement($('#statsPanel'));
     let stats = $('#statsPanel');
     
     stats.append(`<div><span class="has-text-success">${loc("achieve_stats_overall")}</span></div>`);

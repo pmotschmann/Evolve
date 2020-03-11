@@ -1,5 +1,6 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
+import { clearElement } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 
 const date = new Date();
@@ -1550,8 +1551,8 @@ export function cleanAddTrait(trait){
         case 'unified':
             global.tech['world_control'] = 1;
             global.tech['unify'] = 2;
-            $('#garrison').empty();
-            $('#c_garrison').empty();
+            clearElement($('#garrison'));
+            clearElement($('#c_garrison'));
             buildGarrison($('#garrison'),true);
             buildGarrison($('#c_garrison'),false);
             for (let i=0; i<3; i++){

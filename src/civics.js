@@ -1,6 +1,6 @@
 import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { challenge_multiplier, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
+import { clearElement, challenge_multiplier, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -32,7 +32,7 @@ export function defineGovernment(){
 
 
 export function defineIndustry(){
-    $(`#industry`).empty();
+    clearElement($('#industry'));
 
     if (global.city['smelter'] && global.city.smelter.count > 0){
         var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
@@ -67,7 +67,7 @@ export function defineGarrison(){
 }
 
 export function buildQueue(){
-    $('#buildQueue').empty();
+    clearElement($('#buildQueue'));
     $('#buildQueue').append($('<h2 class="has-text-success is-sr-only">Building Queue</h2>'));
 
     let queue = $(`<ul class="buildList"></ul>`);
@@ -203,7 +203,7 @@ function government(govern){
     $('#govLabel').on('mouseout',function(){
         $('#popGov').hide();
         poppers['govPop'].destroy();
-        $('#popGov').remove();
+        clearElement($(`#popGov`),true);
     });
 }
 
@@ -274,12 +274,12 @@ function drawGovModal(){
                     $('.modal-background').click();
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
-                    $('#popGov').remove();
+                    clearElement($(`#popGov`),true);
 
                     setTimeout(function(){
                         $('#popGov').hide();
                         poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        clearElement($(`#popGov`),true);
                     },250);
                 }
             }
@@ -297,7 +297,7 @@ function drawGovModal(){
     $('#govModal button').on('mouseout',function(){
         $('#popGov').hide();
         poppers['govPop'].destroy();
-        $('#popGov').remove();
+        clearElement($(`#popGov`),true);
     });
 }
 
@@ -523,12 +523,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
-                    $('#popGov').remove();
+                    clearElement($(`#popGov`),true);
 
                     setTimeout(function(){
                         $('#popGov').hide();
                         poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        clearElement($(`#popGov`),true);
                     },250);
                 }
             },
@@ -541,12 +541,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
-                    $('#popGov').remove();
+                    clearElement($(`#popGov`),true);
 
                     setTimeout(function(){
                         $('#popGov').hide();
                         poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        clearElement($(`#popGov`),true);
                     },250);
                 }
             },
@@ -559,12 +559,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
-                    $('#popGov').remove();
+                    clearElement($(`#popGov`),true);
 
                     setTimeout(function(){
                         $('#popGov').hide();
                         poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        clearElement($(`#popGov`),true);
                     },250);
                 }
             }
@@ -608,7 +608,7 @@ function drawEspModal(gov){
     $('#espModal button').on('mouseout',function(){
         $('#popGov').hide();
         poppers['govPop'].destroy();
-        $('#popGov').remove();
+        clearElement($(`#popGov`),true);
     });
 }
 
@@ -689,7 +689,7 @@ function taxRates(govern){
     $('#taxRateLabel').on('mouseout',function(){
             $('#popTaxRate').hide();
             poppers['popTaxRate'].destroy();
-            $('#popTaxRate').remove();
+            clearElement($(`#popTaxRate`),true);
         });
 }
 

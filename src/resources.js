@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, modRes } from './functions.js';
+import { clearElement, vBind, modRes } from './functions.js';
 import { races } from './races.js';
 import { loc } from './locale.js';
 
@@ -440,7 +440,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
             unhover(res,vol){
                 $(`#popRes${res}${vol}`).hide();
                 poppers[`r${res}${vol}`].destroy();
-                $(`#popRes${res}${vol}`).remove();
+                clearElement($(`#popRes${res}${vol}`),true);
             }
         }
     });
@@ -461,7 +461,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
         $(`#con${name}`).on('mouseout',function(){
             $(`#popContainer${name}`).hide();
             poppers[name].destroy();
-            $(`#popContainer${name}`).remove();
+            clearElement($(`#popContainer${name}`),true);
         });
         var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
         $('#resStorage').append(market_item);
@@ -936,7 +936,7 @@ function breakdownPopover(id,name,type){
         if (poppers[type+name]){
             poppers[type+name].destroy();
         }
-        $(`#resBreak${id}`).remove();
+        clearElement($(`#resBreak${id}`),true);
         vBind({el: `#resBreak${id} > div`},'destroy');
     });
 }
@@ -1161,14 +1161,14 @@ export function containerValue(){
 
 export function initMarket(){
     let market = $(`<div id="market-qty" class="market-header"><h2 class="is-sr-only">${loc('resource_market')}</h2</div>`);
-    $('#market').empty();
+    clearElement($('#market'));
     $('#market').append(market);
     loadMarket();
 }
 
 function initStorage(){
     let store = $(`<div id="createHead" class="storage-header"><h2 class="is-sr-only">${loc('tab_storage')}</h2></div>`);
-    $('#resStorage').empty();
+    clearElement($('#resStorage'));
     $('#resStorage').append(store);
     
     if (global.resource['Crates'] && global.resource['Containers']){
@@ -1201,7 +1201,7 @@ function initStorage(){
 
 export function loadMarket(){
     let market = $('#market-qty');
-    market.empty();
+    clearElement(market);
 
     if (!global.race['no_trade']){
         market.append($(`<h3 class="is-sr-only">${loc('resource_trade_qty')}</h3>`));
@@ -1246,7 +1246,7 @@ function tradeMax(){
 }
 
 function initEjector(){
-    $('#resEjector').empty();
+    clearElement($('#resEjector'));
     if (global.interstellar['mass_ejector']){
         let ejector = $(`<div id="eject" class="market-item"><h3 class="res has-text-warning">${loc('interstellar_mass_ejector_vol')}</h3></div>`);
         $('#resEjector').append(ejector);

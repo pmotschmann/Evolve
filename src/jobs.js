@@ -1,4 +1,5 @@
 import { global, keyMultiplier, poppers } from './vars.js';
+import { clearElement } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
@@ -217,7 +218,7 @@ function loadUnemployed(){
     $(`#${id} .job_label`).on('mouseout',function(){
             $(`#pop${id}`).hide();
             poppers[id].destroy();
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
 }
 
@@ -344,7 +345,7 @@ function loadJob(job, impact, stress, color){
     $(`#${id} .job_label`).on('mouseout',function(){
             $(`#pop${id}`).hide();
             poppers[id].destroy();
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
 }
 
@@ -353,7 +354,7 @@ export function loadFoundry(){
     if (v_foundry){
         v_foundry.$destroy();
     }
-    $('#foundry').empty();
+    clearElement($('#foundry'));
     if (global.city['foundry']){
         var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span :class="level()">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
@@ -451,7 +452,7 @@ export function loadFoundry(){
                 unhover(res){
                     $(`#popCraft${res}`).hide();
                     poppers[`cr${res}`].destroy();
-                    $(`#popCraft${res}`).remove();
+                    clearElement($(`#popCraft${res}`),true);
                 },
                 level(){
                     if (global.civic.craftsman.workers === 0){
@@ -486,7 +487,7 @@ export function loadFoundry(){
         $(`#foundry .foundry`).on('mouseout',function(){
             $(`#popFoundry`).hide();
             poppers['popFoundry'].destroy();
-            $(`#popFoundry`).remove();
+            clearElement($(`#popFoundry`),true);
         });
     }
 }

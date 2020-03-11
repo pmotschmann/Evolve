@@ -1,3 +1,6 @@
+#### 0.7.27 - 3/10/2020 ####
+Memory leak fixes<br>
+
 #### 0.7.26 - 3/5/2020 ####
 Any race where the associated extinction achievement has been unlocked is now always available during evolution<br>
 Joyless perk changed to +2% Max Morale per star level<br>

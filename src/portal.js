@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, p_on } from './vars.js';
-import { vBind, spaceCostMultiplier, messageQueue } from './functions.js';
+import { vBind, clearElement, spaceCostMultiplier, messageQueue } from './functions.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
@@ -215,7 +215,7 @@ export function fortressTech(){
 
 export function renderFortress(){
     let parent = $('#portal');
-    parent.empty();
+    clearElement(parent);
     parent.append($(`<h2 class="is-sr-only">${loc('tab_portal')}</h2>`));
     if (!global.tech['portal'] || global.tech['portal'] < 2){
         return;
@@ -252,7 +252,7 @@ export function renderFortress(){
                 if (poppers[region]){
                     poppers[region].destroy();
                 }
-                $(`#pop${region}`).remove();
+                clearElement($(`#pop${region}`),true);
             });
 
             if (region === 'prtl_fortress'){
@@ -278,7 +278,7 @@ function buildFortress(parent,full){
     }
     else {
         if (fort.length > 0){
-            fort.empty();
+            clearElement(fort);
         }
         else {
             fort = $(`<div id="${id}" class="fort gFort"></div>`);
