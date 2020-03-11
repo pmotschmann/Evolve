@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue, randomKey } from './functions.js';
+import { clearElement, powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue, randomKey } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 import { races } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
@@ -672,7 +672,6 @@ const spaceProjects = {
             },
             support(){ return -1; },
             powered(){ return 1; },
-            refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('biodome');
@@ -680,6 +679,7 @@ const spaceProjects = {
                     if (global.race['joyless']){
                         unlockAchieve('joyless');
                         delete global.race['joyless'];
+                        drawTech();
                     }
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['biodome'].on++;
@@ -721,7 +721,6 @@ const spaceProjects = {
             },
             support(){ return -1; },
             powered(){ return 1; },
-            refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('exotic_lab');
@@ -764,7 +763,6 @@ const spaceProjects = {
                 }
                 return desc;
             },
-            refresh: true,
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('ziggurat');
@@ -2696,7 +2694,7 @@ const interstellarProjects = {
                     if (global.city.power >= $(this)[0].powered()){
                         global.interstellar['mass_ejector'].on++;
                     }
-                    $('#resources').empty();
+                    clearElement($('#resources'));
                     defineResources();
                     return true;
                 }
@@ -2801,7 +2799,7 @@ const interstellarProjects = {
                             if (poppers[id]){
                                 poppers[id].destroy();
                             }
-                            $(`#pop${id}`).remove();
+                            clearElement($(`#pop${id}`),true);
                         }
                     }
                     return true;
@@ -4390,7 +4388,7 @@ export function renderSpace(){
 
 function space(){
     let parent = $('#space');
-    parent.empty();
+    clearElement(parent);
     parent.append($(`<h2 class="is-sr-only">${loc('tab_space')}</h2>`));
     if (!global.settings.showSpace){
         return false;
@@ -4431,7 +4429,7 @@ function space(){
                 if (poppers[region]){
                     poppers[region].destroy();
                 }
-                $(`#pop${region}`).remove();
+                clearElement($(`#pop${region}`),true);
             });
 
             Object.keys(spaceProjects[region]).forEach(function (tech){
@@ -4446,7 +4444,7 @@ function space(){
 
 function deepSpace(){
     let parent = $('#interstellar');
-    parent.empty();
+    clearElement(parent);
     parent.append($(`<h2 class="is-sr-only">${loc('tab_interstellar')}</h2>`));
     if (!global.settings.showDeep){
         return false;
@@ -4487,7 +4485,7 @@ function deepSpace(){
                 if (poppers[region]){
                     poppers[region].destroy();
                 }
-                $(`#pop${region}`).remove();
+                clearElement($(`#pop${region}`),true);
             });
 
             Object.keys(interstellarProjects[region]).forEach(function (tech){
@@ -4502,7 +4500,7 @@ function deepSpace(){
 
 function galaxySpace(){
     let parent = $('#galaxy');
-    parent.empty();
+    clearElement(parent);
     parent.append($(`<h2 class="is-sr-only">${loc('tab_galactic')}</h2>`));
     if (!global.settings.showGalactic){
         return false;
@@ -4624,7 +4622,7 @@ function galaxySpace(){
                 if (poppers[region]){
                     poppers[region].destroy();
                 }
-                $(`#pop${region}`).remove();
+                clearElement($(`#pop${region}`),true);
             });
 
             Object.keys(galaxyProjects[region]).forEach(function (tech){
@@ -4866,7 +4864,7 @@ export function setUniverse(){
 
         $('#'+id).on('click',function(){
             global.race['universe'] = universe;
-            $('#evolution').empty();
+            clearElement($('#evolution'));
 
             if (global.race.probes === 0){
                 setPlanet();
@@ -4884,7 +4882,7 @@ export function setUniverse(){
             if (poppers[id]){
                 poppers[id].destroy();
             }
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
 
         $('#'+id).on('mouseover',function(){
@@ -4904,7 +4902,7 @@ export function setUniverse(){
                 if (poppers[id]){
                     poppers[id].destroy();
                 }
-                $(`#pop${id}`).remove();
+                clearElement($(`#pop${id}`),true);
             });
     }
 }

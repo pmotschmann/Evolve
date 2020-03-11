@@ -373,18 +373,37 @@ export function timeCheck(c_action,track,detailed){
     }
 }
 
+export function clearElement(elm,remove){
+    elm.find('.vb').each(function(){
+        try {
+            $(this)[0].__vue__.$destroy();
+        }
+        catch(e){}
+    });
+    if (remove){
+        elm.remove();
+    }
+    else {
+        elm.empty();
+    }
+}
+
 export function vBind(bind,action){
     action = action || 'create';
     if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue__ !== "undefined"){
-        if (action === 'update'){
-            $(bind.el)[0].__vue__.$forceUpdate();
+        try {
+            if (action === 'update'){
+                $(bind.el)[0].__vue__.$forceUpdate();
+            }
+            else {
+                $(bind.el)[0].__vue__.$destroy();
+            }
         }
-        else {
-            $(bind.el)[0].__vue__.$destroy();
-        }
+        catch(e){}
     }
     if (action === 'create'){
         new Vue(bind);
+        $(bind.el).addClass('vb');
     }
 }
 

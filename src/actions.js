@@ -1,6 +1,6 @@
 import { global, save, poppers, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -3089,7 +3089,7 @@ export const actions = {
                     global.resource.Crates.max += cap;
                     if (!global.resource.Crates.display){
                         global.resource.Crates.display = true;
-                        $('#resources').empty();
+                        clearElement($('#resources'));
                         defineResources();
                     }
                     return true;
@@ -3136,7 +3136,7 @@ export const actions = {
                     global.resource.Containers.max += cap;
                     if (!global.resource.Containers.display){
                         global.resource.Containers.display = true;
-                        $('#resources').empty();
+                        clearElement($('#resources'));
                         defineResources();
                     }
                     return true;
@@ -3708,7 +3708,7 @@ export const actions = {
                     if (global.resource.Containers.display === false){
                         messageQueue(loc('city_warehouse_msg'),'success');
                         global.resource.Containers.display = true;
-                        $('#resources').empty();
+                        clearElement($('#resources'));
                         defineResources();
                     }
                     global.city['wharf'].count++;
@@ -11162,8 +11162,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.tech['world_control'] = 1;
-                    $('#garrison').empty();
-                    $('#c_garrison').empty();
+                    clearElement($('#garrison'));
+                    clearElement($('#c_garrison'));
                     buildGarrison($('#garrison'),true);
                     buildGarrison($('#c_garrison'),false);
                     if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
@@ -12440,8 +12440,8 @@ export const actions = {
                     global.starDock.seeder.count++;
                     if (global.starDock.seeder.count >= 100){
                         global.tech.genesis = 6;
-                        $('#popspcdock-seeder').remove();
-                        $('#modalBox').empty();
+                        clearElement($('#popspcdock-seeder'),true);
+                        clearElement($('#modalBox'));
                         let c_action = actions.space.spc_gas.star_dock;
                         drawModal(c_action,'star_dock');
                     }
@@ -12482,8 +12482,8 @@ export const actions = {
             },
             action(){
                 global.tech['genesis'] = 7;
-                $('#popspcdock-seeder').remove();
-                $('#modalBox').empty();
+                clearElement($('#popspcdock-seeder'),true);
+                clearElement($('#modalBox'));
                 let c_action = actions.space.spc_gas.star_dock;
                 drawModal(c_action,'star_dock');
                 return true;
@@ -12662,8 +12662,8 @@ export function drawCity(){
         'utility'
     ];
 
-    city_categories.forEach(function(category) {
-        $(`#city-dist-${category}`).remove();
+    city_categories.forEach(function(category){
+        clearElement($(`#city-dist-${category}`),true);
         if (global.settings['cLabels']){
             if(!(category in city_buildings))
                 return;
@@ -12711,8 +12711,8 @@ export function drawTech(){
         'upgrade'
     ];
 
-    tech_categories.forEach(function(category) {
-        $(`#tech-dist-${category}`).remove();
+    tech_categories.forEach(function(category){
+        clearElement($(`#tech-dist-${category}`),true);
         if (global.settings['tLabels']){
             if(!(category in techs))
                 return;
@@ -12962,7 +12962,7 @@ export function setAction(c_action,action,type,old){
                                         if (poppers[id]){
                                             poppers[id].destroy();
                                         }
-                                        $(`#pop${id}`).remove();
+                                        clearElement($(`#pop${id}`),true);
                                     }
                                     else {
                                         updateDesc(c_action,action,type);
@@ -13119,7 +13119,7 @@ export function setAction(c_action,action,type,old){
             if (poppers[id]){
                 poppers[id].destroy();
             }
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
 }
 
@@ -13255,12 +13255,12 @@ export function setPlanet(hell){
         global.city.calendar.orbit = orbit;
         global.city.geology = geology;
         global.city.ptrait = trait;
-        $('#evolution').empty();
+        clearElement($('#evolution'));
         $(`#pop${id}`).hide();
         if (poppers[id]){
             poppers[id].destroy();
         }
-        $(`#pop${id}`).remove();
+        clearElement($(`#pop${id}`),true);
         addAction('evolution','rna');
     });
 
@@ -13323,7 +13323,7 @@ export function setPlanet(hell){
             if (poppers[id]){
                 poppers[id].destroy();
             }
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
     return biome === 'eden' ? 'hellscape' : biome;
 }
@@ -13410,7 +13410,7 @@ function srDesc(c_action,old){
 }
 
 function actionDesc(parent,c_action,obj,old){
-    parent.empty();
+    clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     parent.append($('<div>'+desc+'</div>'));
 
@@ -13515,8 +13515,8 @@ function actionDesc(parent,c_action,obj,old){
 }
 
 export function removeAction(id){
-    $('#'+id).remove();
-    $('#pop'+id).remove();
+    clearElement($(`#${id}`),true);
+    clearElement($(`#pop${id}`),true);
 }
 
 export function updateDesc(c_action,category,action){
@@ -13816,7 +13816,7 @@ function grapheneModal(modal){
 }
 
 export function evoProgress(){
-    $('#evolution .evolving').remove();
+    clearElement($('#evolution .evolving'),true);
     let progress = $(`<div class="evolving"><progress class="progress" value="${global.evolution.final}" max="100">${global.evolution.final}%</progress></div>`);
     $('#evolution').append(progress);
 }
@@ -13906,8 +13906,8 @@ function sentience(){
     var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
     for (var i = 0; i < evolve_actions.length; i++) {
         if (global.race[evolve_actions[i]]){
-            $('#'+actions.evolution[evolve_actions[i]].id).remove();
-            $('#pop'+actions.evolution[evolve_actions[i]].id).remove();
+            clearElement($('#'+actions.evolution[evolve_actions[i]].id),true);
+            clearElement($('#pop'+actions.evolution[evolve_actions[i]].id),true);
         }
     }
 
@@ -14188,7 +14188,7 @@ function fanaticTrait(trait){
 }
 
 export function resQueue(){
-    $('#resQueue').empty();
+    clearElement($('#resQueue'));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);

@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { timeFormat, vBind, messageQueue, adjustCosts } from './functions.js';
+import { clearElement, timeFormat, vBind, messageQueue, adjustCosts } from './functions.js';
 import { dragQueue } from './civics.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
@@ -901,7 +901,7 @@ function costMultiplier(project,offset,base,mutiplier){
 
 function physics(){
     let parent = $('#arpaPhysics');
-    parent.empty();
+    clearElement(parent);
     addProject(parent,'lhc');
     addProject(parent,'stock_exchange');
     addProject(parent,'launch_facility');
@@ -911,7 +911,7 @@ function physics(){
 
 function genetics(){
     let parent = $('#arpaGenetics');
-    parent.empty();
+    clearElement(parent);
     if (!global.settings.arpa.genetics){
         return false;
     }
@@ -1295,7 +1295,7 @@ function fibonacci(num, memo){
 
 function crispr(){
     if (global.tech['genetics'] > 3){
-        $('#arpaCrispr').empty();
+        clearElement($('#arpaCrispr'));
         $('#arpaCrispr').append(`<div class="has-text-warning">${loc('arpa_crispr_desc')}</div>`);
         $('#arpaCrispr').append('<div id="genes"></div>');
         drawGenes();
@@ -1405,7 +1405,7 @@ function addProject(parent,project){
             if (poppers[`popArpa${project}`]){
                 poppers[`popArpa${project}`].destroy();
             }
-            $(`#popArpa${project}`).remove();
+            clearElement($(`#popArpa${project}`),true);
         });
 
         $(`#arpa${project} .head .rank`).on('mouseover',function(){
@@ -1420,7 +1420,7 @@ function addProject(parent,project){
             if (poppers[`popArpa${project}`]){
                 poppers[`popArpa${project}`].destroy();
             }
-            $(`#popArpa${project}`).remove();
+            clearElement($(`#popArpa${project}`),true);
         });
 
         let classes = [1,10,25,100];
@@ -1439,7 +1439,7 @@ function addProject(parent,project){
                 if (poppers[`popArpa${project}`]){
                     poppers[`popArpa${project}`].destroy();
                 }
-                $(`#popArpa${project}`).remove();
+                clearElement($(`#popArpa${project}`),true);
             });
         }
     }
@@ -1475,7 +1475,7 @@ export function buildArpa(pro,num,update){
                     if (poppers[`popArpa${pro}`]){
                         poppers[`popArpa${pro}`].destroy();
                     }
-                    $(`#popArpa${pro}`).remove();
+                    clearElement($(`#popArpa${pro}`),true);
                     physics();
                     renderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
@@ -1485,7 +1485,7 @@ export function buildArpa(pro,num,update){
         }
     }
     if (update && $(`#popArpa${pro}`).length > 0){
-        $(`#popArpa${pro}`).empty();
+        clearElement($(`#popArpa${pro}`));
         $(`#popArpa${pro}`).append(arpaProjectCosts(oNum,pro));
     }
     return completed;
