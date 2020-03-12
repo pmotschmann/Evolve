@@ -11416,7 +11416,7 @@ export const actions = {
                 return false;
             }
         },
-        /*luxury_condo: {
+        luxury_condo: {
             id: 'tech-luxury_condo',
             title: loc('tech_luxury_condo'),
             desc: loc('tech_luxury_condo'),
@@ -11424,17 +11424,17 @@ export const actions = {
             reqs: { high_tech: 17, alpha: 4 },
             grant: ['alpha',5],
             cost: {
-                Knowledge(){ return 5650000; }
+                Knowledge(){ return 15000000; }
             },
-            effect(){ return loc('tech_mega_manufacturing_effect'); },
+            effect(){ return loc('tech_luxury_condo_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.interstellar['int_factory'] = { count: 0, on: 0 };
+                    global.interstellar['luxury_condo'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
             }
-        },*/
+        },
         stellar_engine: {
             id: 'tech-stellar_engine',
             title: loc('tech_stellar_engine'),

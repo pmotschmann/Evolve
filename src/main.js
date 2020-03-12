@@ -1131,7 +1131,7 @@ function fastLoop(){
 
         // Power usage
         let p_structs = [
-            'city:apartment','int_alpha:habitat','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','gxy_gateway:ship_dock','int_neutron:stellar_forge',
+            'city:apartment','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','gxy_gateway:ship_dock','int_neutron:stellar_forge',
             'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon',
             'int_nebula:nexus','gxy_stargate:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy',
             'gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory',
@@ -4162,6 +4162,13 @@ function midLoop(){
             caps[global.race.species] += p_on['habitat'];
             bd_Citizen[loc('interstellar_habitat_title')] = p_on['habitat'] + 'v';
         }
+        if (global.interstellar['luxury_condo'] && p_on['luxury_condo']){
+            caps[global.race.species] += p_on['luxury_condo'];
+            bd_Citizen[loc('tech_luxury_condo')] = p_on['luxury_condo'] + 'v';
+            let gain = (p_on['luxury_condo']  * spatialReasoning(750000));
+            caps['Money'] += gain;
+            bd_Money[loc('tech_luxury_condo')] = gain+'v';
+        }
         if (global.city['lodge']){
             caps[global.race.species] += global.city['lodge'].count;
         }
@@ -4665,7 +4672,7 @@ function midLoop(){
             bd_Money[loc('city_casino')] = vault+'v';
         }
         if (global.galaxy['resort']){
-            let vault = p_on['resort'] * spatialReasoning(global.tech['world_control'] ? 1250000 : 1000000);
+            let vault = p_on['resort'] * spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
             caps['Money'] += vault;
             bd_Money[loc('galaxy_resort')] = vault+'v';
         }
