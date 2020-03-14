@@ -2923,7 +2923,7 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return global.interstellar.space_elevator.count >= 100 ? true : false; },
             cost: {
-                Money(){ return global.interstellar.space_elevator.count < 100 ? 10000000 : 0; },
+                Money(){ return global.interstellar.space_elevator.count < 100 ? 20000000 : 0; },
                 Nano_Tube(){ return global.interstellar.space_elevator.count < 100 ? 500000 : 0; },
                 Bolognium(){ return global.interstellar.space_elevator.count < 100 ? 100000 : 0; },
                 Mythril(){ return global.interstellar.space_elevator.count < 100 ? 125000 : 0; },
@@ -2950,6 +2950,160 @@ const interstellarProjects = {
                             clearElement($(`#pop${id}`),true);
                         }
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        gravity_dome: {
+            id: 'interstellar-gravity_dome',
+            title: loc('interstellar_gravity_dome'),
+            desc(){
+                if (global.interstellar.gravity_dome.count < 100){
+                    return `<div>${loc('interstellar_gravity_dome')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_gravity_dome')}</div>`;
+                }
+            },
+            reqs: { ascension: 5 },
+            condition(){
+                return global.interstellar.gravity_dome.count >= 100 ? false : true;
+            },
+            no_queue(){ return global.interstellar.gravity_dome.count < 100 ? false : true },
+            queue_size: 5,
+            queue_complete(){ return global.interstellar.gravity_dome.count >= 100 ? true : false; },
+            cost: {
+                Money(){ return global.interstellar.gravity_dome.count < 100 ? 35000000 : 0; },
+                Cement(){ return global.interstellar.gravity_dome.count < 100 ? 1250000 : 0; },
+                Adamantite(){ return global.interstellar.gravity_dome.count < 100 ? 650000 : 0; },
+                Aerogel(){ return global.interstellar.gravity_dome.count < 100 ? 180000 : 0; },
+            },
+            effect(){
+                if (global.interstellar.gravity_dome.count < 100){
+                    let remain = 100 - global.interstellar.gravity_dome.count;
+                    return `<div>${loc('interstellar_gravity_dome_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.gravity_dome.count < 100){
+                        incrementStruct('gravity_dome','interstellar');
+                        if (global.interstellar.gravity_dome.count >= 100){
+                            global.tech['ascension'] = 6;
+                            global.interstellar['ascension_machine'] = { count: 0 };
+                            global.interstellar['thermal_collector'] = { count: 0 };
+                            deepSpace();
+                            var id = $(this)[0].id;
+                            $(`#pop${id}`).hide();
+                            if (poppers[id]){
+                                poppers[id].destroy();
+                            }
+                            clearElement($(`#pop${id}`),true);
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        ascension_machine: {
+            id: 'interstellar-ascension_machine',
+            title: loc('interstellar_ascension_machine'),
+            desc(){
+                if (global.interstellar.ascension_machine.count < 100){
+                    return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_ascension_machine')}</div>`;
+                }
+            },
+            reqs: { ascension: 6 },
+            condition(){
+                return global.interstellar.ascension_machine.count >= 100 ? false : true;
+            },
+            no_queue(){ return global.interstellar.ascension_machine.count < 100 ? false : true },
+            queue_size: 5,
+            queue_complete(){ return global.interstellar.ascension_machine.count >= 100 ? true : false; },
+            cost: {
+                Money(){ return global.interstellar.ascension_machine.count < 100 ? 75000000 : 0; },
+                Alloy(){ return global.interstellar.ascension_machine.count < 100 ? 750000 : 0; },
+                Neutronium(){ return global.interstellar.ascension_machine.count < 100 ? 125000 : 0; },
+                Elerium(){ return global.interstellar.ascension_machine.count < 100 ? 1000 : 0; },
+                Orichalcum(){ return global.interstellar.ascension_machine.count < 100 ? 250000 : 0; },
+                Nanoweave(){ return global.interstellar.ascension_machine.count < 100 ? 75000 : 0; },
+            },
+            effect(){
+                if (global.interstellar.ascension_machine.count < 100){
+                    let remain = 100 - global.interstellar.ascension_machine.count;
+                    return `<div>${loc('interstellar_ascension_machine_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.ascension_machine.count < 100){
+                        incrementStruct('ascension_machine','interstellar');
+                        if (global.interstellar.ascension_machine.count >= 100){
+                            global.tech['ascension'] = 7;
+                            global.interstellar['ascension_trigger'] = { count: 1, on: 0 };
+                            deepSpace();
+                            var id = $(this)[0].id;
+                            $(`#pop${id}`).hide();
+                            if (poppers[id]){
+                                poppers[id].destroy();
+                            }
+                            clearElement($(`#pop${id}`),true);
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        ascension_trigger: {
+            id: 'interstellar-ascension_machine',
+            title: loc('interstellar_ascension_machine'),
+            desc(){ return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { ascension: 7 },
+            condition(){
+                return global.interstellar.ascension_machine.count >= 100 ? true : false;
+            },
+            no_queue(){ return true; },
+            cost: {},
+            powered(){
+                let power = 10000 - (100 * global.interstellar.thermal_collector.count);
+                if (power < 0){
+                    power = 0;
+                }
+                return power;
+            },
+            effect(){
+                let plasmids = 0;
+                let phage = 0;
+                let dark = 0;
+                return `<div>${loc('interstellar_ascension_trigger_effect')}</div><div>${loc('interstellar_ascension_trigger_effect2',[plasmids,loc('resource_Plasmid_plural_name')])}</div><div>${loc('interstellar_ascension_trigger_effect2',[phage,loc('resource_Phage_name')])}</div><div>${loc('interstellar_ascension_trigger_effect2',[dark,loc('resource_Dark_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                return false;
+            }
+        },
+        thermal_collector: {
+            id: 'interstellar-thermal_collector',
+            title: loc('interstellar_thermal_collector'),
+            desc: loc('interstellar_thermal_collector'),
+            reqs: { ascension: 6 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('thermal_collector', offset, 5000000, 1.08, 'interstellar'); },
+                Infernite(offset){ return spaceCostMultiplier('thermal_collector', offset, 25000, 1.08, 'interstellar'); },
+                Stanene(offset){ return spaceCostMultiplier('thermal_collector', offset, 1000000, 1.08, 'interstellar'); },
+                Vitreloy(offset){ return spaceCostMultiplier('thermal_collector', offset, 100000, 1.08, 'interstellar'); },
+            },
+            effect(){
+                return loc('interstellar_thermal_collector_effect',[100]);
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('thermal_collector','interstellar');
                     return true;
                 }
                 return false;
