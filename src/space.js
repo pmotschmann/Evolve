@@ -2863,8 +2863,8 @@ const interstellarProjects = {
     },
     int_sirius: {
         info: {
-            name: loc('interstellar_sirius_name'),
-            desc(){ return loc('interstellar_sirius_desc',[races[global.race.species].home]); },
+            name(){ return global.tech.ascension >= 3 ? loc('interstellar_sirius_b_name') : loc('interstellar_sirius_name'); },
+            desc(){ return global.tech.ascension >= 3 ? loc('interstellar_sirius_b_desc') : loc('interstellar_sirius_desc',[races[global.race.species].home]); },
         },
         sirius_mission: {
             id: 'interstellar-sirius_mission',
@@ -2887,19 +2887,69 @@ const interstellarProjects = {
         },
         sirius_b: {
             id: 'interstellar-sirius_b',
-            title: loc('space_mission_title', [loc('interstellar_sirius_name')]),
-            desc: loc('space_mission_desc', [loc('interstellar_sirius_name')]),
+            title: loc('interstellar_sirius_b'),
+            desc: loc('interstellar_sirius_b'),
             reqs: { ascension: 3 },
             grant: ['ascension',4],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Knowledge(){ return 20000000; },
+                Knowledge(){ return 19000000; },
             },
-            effect(){ return loc('interstellar_sirius_mission_effect',[races[global.race.species].name,races[global.race.species].home]); },
+            effect(){ return loc('interstellar_sirius_b_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    //global.interstellar['neutron_miner'] = { count: 0, on: 0 };
-                    //messageQueue(loc('interstellar_neutron_mission_result'),'success');
+                    global.interstellar['space_elevator'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        space_elevator: {
+            id: 'interstellar-space_elevator',
+            title: loc('interstellar_space_elevator'),
+            desc(){
+                if (global.interstellar.space_elevator.count < 100){
+                    return `<div>${loc('interstellar_space_elevator')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_space_elevator')}</div>`;
+                }
+            },
+            reqs: { ascension: 4 },
+            condition(){
+                return global.interstellar.space_elevator.count >= 100 ? false : true;
+            },
+            no_queue(){ return global.interstellar.space_elevator.count < 100 ? false : true },
+            queue_size: 5,
+            queue_complete(){ return global.interstellar.space_elevator.count >= 100 ? true : false; },
+            cost: {
+                Money(){ return global.interstellar.space_elevator.count < 100 ? 10000000 : 0; },
+                Nano_Tube(){ return global.interstellar.space_elevator.count < 100 ? 500000 : 0; },
+                Bolognium(){ return global.interstellar.space_elevator.count < 100 ? 100000 : 0; },
+                Mythril(){ return global.interstellar.space_elevator.count < 100 ? 125000 : 0; },
+            },
+            effect(){
+                if (global.interstellar.space_elevator.count < 100){
+                    let remain = 100 - global.interstellar.space_elevator.count;
+                    return `<div>${loc('interstellar_space_elevator_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.space_elevator.count < 100){
+                        incrementStruct('space_elevator','interstellar');
+                        if (global.interstellar.space_elevator.count >= 100){
+                            global.tech['ascension'] = 5;
+                            global.interstellar['gravity_dome'] = { count: 0 };
+                            deepSpace();
+                            var id = $(this)[0].id;
+                            $(`#pop${id}`).hide();
+                            if (poppers[id]){
+                                poppers[id].destroy();
+                            }
+                            clearElement($(`#pop${id}`),true);
+                        }
+                    }
                     return true;
                 }
                 return false;

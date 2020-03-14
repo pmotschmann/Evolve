@@ -8021,7 +8021,7 @@ export const actions = {
             title: loc('tech_incorporeal'),
             desc: loc('tech_incorporeal'),
             category: 'research',
-            reqs: { science: 19, locked: 1 },
+            reqs: { science: 19 },
             grant: ['ascension',1],
             cost: {
                 Knowledge(){ return 17500000; },
