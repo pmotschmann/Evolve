@@ -3066,7 +3066,7 @@ const interstellarProjects = {
             }
         },
         ascension_trigger: {
-            id: 'interstellar-ascension_machine',
+            id: 'interstellar-ascension_trigger',
             title: loc('interstellar_ascension_machine'),
             desc(){ return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             reqs: { ascension: 7 },
@@ -3083,10 +3083,25 @@ const interstellarProjects = {
                 return power;
             },
             effect(){
-                let plasmids = 0;
-                let phage = 0;
+                let garrisoned = global.civic.garrison.workers;
+                for (let i=0; i<3; i++){
+                    if (global.civic.foreign[`gov${i}`].occ){
+                        garrisoned += 20;
+                    }
+                }
+                let plasmid = global['resource'][global.race.species].amount + garrisoned;
+                let k_base = global.stats.know;
+                let k_inc = 30000;
+                while (k_base > k_inc){
+                    plasmid++;
+                    k_base -= k_inc;
+                    k_inc *= 1.008;
+                }
+                plasmid = challenge_multiplier(plasmid,'ascend');
+                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 3.5),'ascend');
+
                 let dark = 0;
-                return `<div>${loc('interstellar_ascension_trigger_effect')}</div><div>${loc('interstellar_ascension_trigger_effect2',[plasmids,loc('resource_Plasmid_plural_name')])}</div><div>${loc('interstellar_ascension_trigger_effect2',[phage,loc('resource_Phage_name')])}</div><div>${loc('interstellar_ascension_trigger_effect2',[dark,loc('resource_Dark_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('interstellar_ascension_trigger_effect')}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[plasmid,loc('resource_Plasmid_plural_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[dark,loc('resource_Dark_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 return false;

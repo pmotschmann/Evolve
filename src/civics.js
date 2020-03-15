@@ -1847,7 +1847,6 @@ function warhead(){
     };
     global.tech = { theology: 1 };
     clearStates();
-    global.arpa = {};
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
