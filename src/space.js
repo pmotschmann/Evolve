@@ -971,7 +971,11 @@ const spaceProjects = {
                 Helium_3(offset){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(fuel_adjust(50)), 1.1); }
             },
             effect(){
-                let solar = global.tech.swarm >= 4 ? (global.tech.swarm >= 5 ? 0.65 : 0.5) : 0.35;
+                let solar = 0.35;
+                if (global.tech.swarm >= 4){
+                    solar += 0.15 * (global.tech.swarm - 3);
+                }
+                solar = +(solar).toFixed(2);
                 return `<span>${loc('space_dwarf_reactor_effect1',[powerModifier(solar)])}</span>, <span class="has-text-caution">${loc('space_sun_swarm_satellite_effect1',[1])}</span>`;
             },
             support(){ return -1; },
@@ -2205,7 +2209,7 @@ const interstellarProjects = {
                 }
             },
             reqs: { proxima: 3 },
-            no_queue(){ return global.interstellar.dyson.count ? false : true },
+            no_queue(){ return global.interstellar.dyson.count >= 100 ? false : true },
             queue_size: 10,
             queue_complete(){ return global.interstellar.dyson.count >= 100 ? true : false; },
             condition(){
@@ -2243,7 +2247,7 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_dyson_sphere_title')}</div>`;
             },
             reqs: { proxima: 3, dyson: 1 },
-            no_queue(){ return global.interstellar.dyson_sphere.count ? false : true },
+            no_queue(){ return global.interstellar.dyson_sphere.count >= 100 ? false : true },
             queue_size: 10,
             queue_complete(){ return global.interstellar.dyson_sphere.count >= 100 ? true : false; },
             condition(){
@@ -2473,6 +2477,7 @@ const interstellarProjects = {
                 Elerium(offset){ return spaceCostMultiplier('citadel', offset, 250, 1.25, 'interstellar'); },
                 Soul_Gem(offset){ return spaceCostMultiplier('citadel', offset, 1, 1.25, 'interstellar'); },
             },
+            wide: true,
             effect(){
                 let desc = `<div>${loc('interstellar_citadel_effect',[5])}</div>`;
                 if (global.tech['ai_core']){
@@ -2893,7 +2898,7 @@ const interstellarProjects = {
             grant: ['ascension',4],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Knowledge(){ return 19000000; },
+                Knowledge(){ return 20000000; },
             },
             effect(){ return loc('interstellar_sirius_b_effect'); },
             action(){
@@ -3036,7 +3041,7 @@ const interstellarProjects = {
             effect(){
                 if (global.interstellar.ascension_machine.count < 100){
                     let remain = 100 - global.interstellar.ascension_machine.count;
-                    return `<div>${loc('interstellar_ascension_machine_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    return `<div>${loc('interstellar_ascension_machine_effect',[races[global.race.species].name])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
             action(){

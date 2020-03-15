@@ -422,7 +422,7 @@ else {
 }
 
 setupStats();
-q_check();
+q_check(true);
 
 $('#lbl_city').html('Village');
 
@@ -1108,7 +1108,11 @@ function fastLoop(){
                 active = global.space.swarm_control.s_max;
             }
             global.space.swarm_control.support = active;
-            let solar = global.tech.swarm >= 4 ? (global.tech.swarm >= 5 ? 0.65 : 0.5) : 0.35;
+            let solar = 0.35;
+            if (global.tech.swarm >= 4){
+                solar += 0.15 * (global.tech.swarm - 3);
+            }
+            solar = +(solar).toFixed(2);
             let output = powerModifier(active * solar);
             max_power -= output;
             power_grid += output;
@@ -4163,8 +4167,9 @@ function midLoop(){
             bd_Citizen[loc('interstellar_habitat_title')] = p_on['habitat'] + 'v';
         }
         if (global.interstellar['luxury_condo'] && p_on['luxury_condo']){
-            caps[global.race.species] += p_on['luxury_condo'];
-            bd_Citizen[loc('tech_luxury_condo')] = p_on['luxury_condo'] + 'v';
+            let cit = p_on['luxury_condo'] * 2;
+            caps[global.race.species] += cit;
+            bd_Citizen[loc('tech_luxury_condo')] = cit + 'v';
             let gain = (p_on['luxury_condo']  * spatialReasoning(750000));
             caps['Money'] += gain;
             bd_Money[loc('tech_luxury_condo')] = gain+'v';
@@ -5222,7 +5227,7 @@ function midLoop(){
             global.city.foundry['Plywood'] = 0;
         }
 
-        q_check();
+        q_check(false);
 
         let belt_mining = belt_on['iron_ship'] + belt_on['iridium_ship'];
         if (belt_mining > 0 && global.tech['asteroid'] && global.tech['asteroid'] === 3){
@@ -6029,7 +6034,7 @@ function buildGene(){
     }
 }
 
-function q_check(){
+function q_check(load){
     if (global.tech['high_tech'] && global.tech['high_tech'] >= 11){
         let k_base = global.resource.Knowledge.max;
         let k_inc = 250000;
@@ -6040,8 +6045,11 @@ function q_check(){
             qbits++;
         }
         qbits += +(k_base / k_inc).toFixed(2);
-        if (global.tech['high_tech'] && global.tech['high_tech'] >= 15 && p_on['citadel'] > 0){
-            qbits *= 1 + (p_on['citadel'] * 0.05);
+        if (global.interstellar['citadel']){
+            let citadel = load ? global.interstellar.citadel.on : p_on['citadel']
+            if (global.tech['high_tech'] && global.tech['high_tech'] >= 15 && citadel > 0){
+                qbits *= 1 + (citadel * 0.05);
+            }
         }
         set_qlevel(qbits);
     }

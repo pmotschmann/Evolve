@@ -1102,7 +1102,7 @@ function genetics(){
             let trait_list = [];
             let conflict_traits = ['dumb','smart','carnivore','herbivore']; //Conflicting traits are paired together
             Object.keys(races).forEach(function (race){
-                if (race !== 'junker' && races[race].type === races[global.race.species].type){
+                if (race !== 'junker' && race !== 'custom' && races[race].type === races[global.race.species].type){
                     Object.keys(races[race].traits).forEach(function (trait){
                         if (!global.race[trait] && trait !== 'soul_eater'){
                             let conflict_pos = conflict_traits.indexOf(trait);

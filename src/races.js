@@ -757,8 +757,32 @@ export const races = {
             gas_moon: loc('race_junker_solar_gas_moon'),
             dwarf: loc('race_junker_solar_dwarf'),
         }
-    }
+    },
+    custom: customRace()
 };
+
+function customRace(){
+    if (global.hasOwnProperty('custom')){
+        return {
+            name: global.custom.race0.name,
+            desc: loc('race_unicorn_desc'),
+            type: global.custom.race0.type,
+            home: loc('race_unicorn_home'),
+            entity: loc('race_unicorn_entity'),
+            traits: global.custom.race0.traits,
+            solar: {
+                red: loc('race_unicorn_solar_red'),
+                hell: loc('race_unicorn_solar_hell'),
+                gas: loc('race_unicorn_solar_gas'),
+                gas_moon: loc('race_unicorn_solar_gas_moon'),
+                dwarf: loc('race_unicorn_solar_dwarf'),
+            }
+        };
+    }
+    else {
+        return {};
+    }
+}
 
 export const genus_traits = {
     humanoid: {

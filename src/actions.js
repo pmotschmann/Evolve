@@ -8043,7 +8043,7 @@ export const actions = {
             reqs: { ascension: 1 },
             grant: ['ascension',2],
             cost: {
-                Knowledge(){ return 18000000; },
+                Knowledge(){ return 18500000; },
                 Phage(){ return 25; }
             },
             effect(){ return loc('tech_ascension_effect'); },
@@ -10805,6 +10805,25 @@ export const actions = {
                 Stanene(){ return 100000; }
             },
             effect: loc('tech_swarm_convection_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        orichalcum_panels: {
+            id: 'tech-orichalcum_panels',
+            title: loc('tech_orichalcum_panels'),
+            desc: loc('tech_orichalcum_panels'),
+            category: 'upgrade',
+            reqs: { high_tech: 17, swarm: 5 },
+            grant: ['swarm',6],
+            cost: {
+                Knowledge(){ return 14000000; },
+                Orichalcum(){ return 125000; }
+            },
+            effect(){ return loc('tech_orichalcum_panels_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
