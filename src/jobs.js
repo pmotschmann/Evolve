@@ -91,7 +91,7 @@ export const job_desc = {
     },
     cement_worker: function(){
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
-        let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
+        let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
         gain = +(gain).toFixed(2);
         return loc('job_cement_worker_desc',[gain]);

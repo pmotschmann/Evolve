@@ -1,6 +1,6 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
-import { clearElement } from './functions.js';
+import { clearElement, removeFromQueue, removeFromRQueue } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 
 const date = new Date();
@@ -1462,6 +1462,8 @@ export function cleanAddTrait(trait){
             global.resource.Lumber.trade = 0;
             global.resource.Plywood.display = false;
             global.city['lumber'] = 0;
+            removeFromQueue(['city-graveyard', 'city-lumber_yard', 'city-sawmill']);
+            removeFromRQueue(['reclaimer', 'axe', 'saw']);
             if (global.city['sawmill']){
                 delete global.city['sawmill'];
             }
@@ -1490,6 +1492,8 @@ export function cleanAddTrait(trait){
             }
             break;
         case 'carnivore':
+            removeFromQueue(['city-farm', 'city-silo', 'city-mill']);
+            removeFromRQueue(['farm', 'agriculture']);
             if (global.tech['farm'] >= 1){
                 global.tech['hunting'] = 2;
             }
@@ -1579,6 +1583,8 @@ export function cleanAddTrait(trait){
             }
             break;
         case 'thalassophobia':
+            removeFromQueue(['city-wharf']);
+            removeFromRQueue(['wharf']);
             delete global.city['wharf'];
             break;
         default:
@@ -1596,6 +1602,8 @@ export function cleanRemoveTrait(trait){
             break;
         case 'carnivore':
             global.civic.farmer.display = true;
+            removeFromQueue(['city-lodge', 'city-smokehouse', 'city-windmill']);
+            removeFromRQueue(['hunting', 'wind_plant']);
             global.tech['agriculture'] = 1;
             if (global.tech['hunting'] >= 2){
                 global.tech['farm'] = 1;
@@ -1619,6 +1627,8 @@ export function cleanRemoveTrait(trait){
             global.settings.showMarket = true;
             break;
         case 'slaver':
+            removeFromQueue(['city-slave_pen']);
+            removeFromRQueue(['slaves']);
             delete global.city['slave_pen'];
             delete global.tech['slaves'];
             global.resource.Slave.amount = 0;
@@ -1626,6 +1636,8 @@ export function cleanRemoveTrait(trait){
             global.resource.Slave.display = false;
             break;
         case 'cannibalize':
+            removeFromQueue(['city-s_alter']);
+            removeFromRQueue(['sacrifice']);
             delete global.city['s_alter'];
             break;
         case 'magnificent':

@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, timeFormat, vBind, messageQueue } from './functions.js';
+import { clearElement, timeFormat, vBind, messageQueue, removeFromQueue } from './functions.js';
 import { dragQueue } from './civics.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
@@ -1328,11 +1328,7 @@ export function buildArpa(pro,num,update){
                     $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
                 }
                 if (pro === 'launch_facility'){
-                    for (let i=0; i<global.queue.queue.length; i++){
-                        if (global.queue.queue[i].id === 'arpalaunch_facility'){
-                            global.queue.queue.splice(i, 1);
-                        }
-                    }
+                    removeFromQueue(['arpalaunch_facility']);
                     global.settings.showSpace = true;
                     global.tech['space'] = 1;
                     $(`#popArpa${pro}`).hide();
