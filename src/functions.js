@@ -1,6 +1,7 @@
 import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
+import { actions } from './actions.js';
 
 export function mainVue(){
     vBind({
@@ -166,6 +167,22 @@ export function messageQueue(msg,color){
     global.lastMsg = { m: msg, c: color };
     if ($('#msgQueue').children().length > 30){
         $('#msgQueue').children().last().remove();
+    }
+}
+
+export function removeFromQueue(build_ids){
+    for (let i=global.queue.queue.length-1; i>=0; i--){
+        if (build_ids.includes(global.queue.queue[i].id)){
+            global.queue.queue.splice(i, 1);
+        }
+    }
+}
+
+export function removeFromRQueue(tech_trees){
+    for (let i=global.r_queue.queue.length-1; i>=0; i--){
+        if (tech_trees.includes(actions.tech[global.r_queue.queue[i].type].grant[0])){
+            global.r_queue.queue.splice(i, 1);
+        }
     }
 }
 

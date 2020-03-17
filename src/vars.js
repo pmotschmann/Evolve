@@ -384,6 +384,12 @@ if (convertVersion(global['version']) < 7019 && global.race['fraile']){
     global.race['frail'] = 1;
 }
 
+if (convertVersion(global['version']) < 7028){
+    if (global.stats['achieve'] && global.stats.achieve['blood_war'] && global.stats.achieve['blood_war']['e']){
+        global.stats.achieve['blood_war'].e = undefined;
+    }
+}
+
 
 global['version'] = '0.7.28';
 delete global['beta'];
