@@ -2446,7 +2446,8 @@ export const actions = {
                 Stone(){ return global.city['s_alter'].count >= 1 ? 0 : 100; }
             },
             effect(){
-                let desc = '';
+                let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
+                let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
                 if (global.city.s_alter.rage > 0){
                     desc = desc + `<div>${loc('city_s_alter_rage',[15,timeFormat(global.city.s_alter.rage)])}</div>`;
                 }
@@ -2471,8 +2472,12 @@ export const actions = {
                         global.city['s_alter'].count++;
                     }
                     else {
-                        if (global['resource'][global.race.species].amount > 0){
+                        let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
+                        if (sacrifices > 0){
                             global['resource'][global.race.species].amount--;
+                            if (global.civic.d_job !== 'unemployed'){
+                                global.civic[global.civic.d_job].workers--;
+                            }
                             global['resource'].Food.amount += Math.rand(250,1000);
                             let low = 300;
                             let high = 600;

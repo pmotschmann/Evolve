@@ -1617,7 +1617,7 @@ function fastLoop(){
                         }
                         if (global.galaxy[ship]['crew'] < global.galaxy[ship].on * actions.galaxy[region][ship].ship.civ){
                             if (global.civic.d_job === 'unemployed'){
-                                if (global.civic.free > actions.galaxy[region][ship].ship.civ){
+                                if (global.civic.free > 0 && global.civic.free > actions.galaxy[region][ship].ship.civ){
                                     global.civic.free -= actions.galaxy[region][ship].ship.civ;
                                     global.civic.crew.workers += actions.galaxy[region][ship].ship.civ;
                                     global.galaxy[ship]['crew'] += actions.galaxy[region][ship].ship.civ;
@@ -1706,6 +1706,10 @@ function fastLoop(){
             if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
                 global.civic[job].workers++;
                 global.civic.free--;
+            }
+            else if (global.civic.d_job !== 'unemployed' && global.civic.d_job !== job && job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
+                global.civic[job].workers++;
+                global.civic[global.civic.d_job]--;
             }
         });
 
