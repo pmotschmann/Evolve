@@ -1,6 +1,7 @@
 import { global, save, achieve_level, universe_level } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
+import { actions } from './actions.js';
 
 export function mainVue(){
     vBind({
@@ -166,6 +167,22 @@ export function messageQueue(msg,color){
     global.lastMsg = { m: msg, c: color };
     if ($('#msgQueue').children().length > 30){
         $('#msgQueue').children().last().remove();
+    }
+}
+
+export function removeFromQueue(build_ids){
+    for (let i=global.queue.queue.length-1; i>=0; i--){
+        if (build_ids.includes(global.queue.queue[i].id)){
+            global.queue.queue.splice(i, 1);
+        }
+    }
+}
+
+export function removeFromRQueue(tech_trees){
+    for (let i=global.r_queue.queue.length-1; i>=0; i--){
+        if (tech_trees.includes(actions.tech[global.r_queue.queue[i].type].grant[0])){
+            global.r_queue.queue.splice(i, 1);
+        }
     }
 }
 
@@ -484,6 +501,7 @@ export function challenge_multiplier(value,type,decimals){
         challenge_level = 4;
     }
     if (global.race.universe === 'micro'){ value = value * 0.25; }
+    if (global.race.universe === 'antimatter' && type !== 'mad'){ value = value * 1.1; }
     if (global.race.universe === 'heavy' && type !== 'mad'){
         switch (challenge_level){
             case 1:
@@ -632,6 +650,8 @@ export function svgIcons(icon){
             return `<path class="micro" d="m150.18 114.71c-11.276-6.0279-15.771-19.766-9.9989-30.563 6.0279-11.276 19.766-15.771 30.563-9.9989 11.276 6.0279 15.771 19.766 9.9989 30.563-6.0279 11.276-19.766 15.771-30.563 9.9989z"/><path d="m47.263 265.24c-0.41891-0.4189-0.76165-5.194-0.76165-10.611 0-11.606 2.7184-18.417 9.0231-22.606 3.8412-2.5527 4.2946-2.5798 43.128-2.5798h39.246v-13.71-13.71h10.905c10.055 0 11.124-0.2186 13.71-2.8043 2.5824-2.5824 2.8043-3.66 2.8043-13.619v-10.815l3.3639-0.73883c1.8501-0.40636 5.1713-2.7395 7.3804-5.1847 8.0637-8.9255 9.8103-25.642 3.9223-37.54l-2.9588-5.9787 5.9675-5.9676c9.887-9.887 12.537-24.129 6.6886-35.949-1.3037-2.635-2.1165-4.7908-1.8062-4.7908 0.31024 0 3.5239 1.798 7.1414 3.9955 14.491 8.8026 26.675 25.759 31.636 44.025 2.7168 10.004 2.7314 30.947 0.0286 41.093-4.445 16.685-15.856 33.364-29.027 42.425l-4.9176 3.3834v7.9424 7.9424h10.966c12.713 0 17.226 1.5998 21.944 7.7794 2.828 3.7038 3.1086 5.033 3.464 16.405l0.4 12.38h-90.737c-49.906 0-91.08-0.34274-91.499-0.76165zm17.518-81.497v-9.1398h45.699 45.699v9.1398 9.1398h-45.699-45.699v-9.1398zm32.227-32.318-4.8078-4.8988v-13.72-13.72l-4.5699-4.4624-4.5699-4.4624v-27.527-27.527l4.5699-4.4624c4.5593-4.452 4.5699-4.4831 4.5699-13.37 0-8.6703-0.07402-8.9079-2.7746-8.9079-4.4514 0-6.3652-2.8757-6.3652-9.5641 0-3.2854 0.61694-6.5904 1.371-7.3445 1.9422-1.9422 50.155-1.9422 52.097 0 0.75403 0.75403 1.371 4.3347 1.371 7.9571 0 6.9911-1.4848 8.9515-6.7797 8.9515-2.1833 0-2.3601 0.66715-2.3601 8.9079 0 8.8872 0.0103 8.9183 4.5699 13.37l4.5699 4.4624v9.5554c0 8.412-0.33908 10-2.8338 13.271-6.443 8.4472-7.9966 20.22-4.0419 30.628 2.2572 5.9405 2.2572 5.9661 0 8.3688-1.997 2.1258-2.2642 4.0244-2.2642 16.094v13.684l-4.8988 4.8078c-4.877 4.7864-4.9369 4.8078-13.472 4.8078h-8.5731l-4.8078-4.8988z"/>`;
         case 'heart':
             return `<g transform="translate(-607.63544,-698.58531)"><path class="star" stroke-linejoin="bevel" d="m617.13,701.11c-1.4819-1.5161-3.8406-2.4136-5.9091-1.5906-3.1802,1.2712-3.8517,4.1218-2.2123,6.797,1.8712,2.8746,4.5334,5.1378,7.2328,7.2307,0.50882,0.48806,1.0416,0.83797,1.5551,0.16685,2.744-2.1002,5.4398-4.3792,7.3689-7.2612,1.8138-3.0332,1.0747-5.4453-1.935-6.8574-2.1226-0.94739-4.5563-0.0556-6.1004,1.5147z" stroke="#333" stroke-linecap="square" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1"/></g>`;
+        case 'clover':
+            return `<g transform="translate(-126.4 -67.282)"><path style="stroke:#000000;stroke-width:.25pt" d="m452.02 434.8c-34.94 243.11-14.78 319.53 160.84 411.18 15.36 3.36 40.79 0.96 33.11-20.15-199.14-114.69-188.7-141.27-175.23-393.91-43.63 768.78 702.86-132.4 10.47-30.23 711.79-66.28-46.43-703.13-22.24-23.18 11.94-684.77-733.52 34.13-25.81 24.02-675.4-13.74-31.72 748.27 18.86 32.27z"/><path style="fill-rule:evenodd;fill:url(#radialGradient2313)" d="m445.85 337.53c-16.28-66.5-8.14-216.47-116.04-242.26-151.33-4.074-200.87 130.29-185.26 195.44 38 96.36 177.79 86.86 278.91 93.65"/><path style="fill-rule:evenodd;fill:url(#radialGradient2317)" d="m464.84 325.36c18.32-95 22.39-222.58 130.29-248.37 151.34-4.072 204.95 126.22 179.16 191.37-54.29 96.36-173.73 111.29-274.84 118.08"/><path style="fill-rule:evenodd;fill:url(#radialGradient2319)" d="m443.15 455.24c-15.85 66.04-26.25 249.56-131.26 275.17-124.88 30.51-195.49-129.38-180.3-194.07 36.99-95.68 199.51-120.86 297.91-127.6"/><path style="fill-rule:evenodd;fill:url(#radialGradient2321)" d="m477.05 465.75c16.29 66.5-12.21 244.98 95.69 270.77 151.33 4.07 211.05-181.19 195.44-246.34-38-96.37-163.55-84.83-262.62-81.44"/></g>`;
         case 'candy':
             return `<g transform="translate(-66.38 -391.32)"><path style="stroke-linejoin:round;fill-rule:evenodd;stroke:#000000;stroke-width:5.1638" d="m157.3 429.82c10.05 10.99 5.39 31.63-10.4 46.06s-36.76 17.22-46.8 6.23c-10.051-10.99-5.391-31.63 10.4-46.06 15.72-14.37 36.57-17.21 46.68-6.36l0.12 0.13z"/><path style="fill-rule:evenodd;fill:#ff0000" d="m100.63 448.65c15.97 5.86 28.88 16.17 34.76 36.69l20.79-21.5c-4.54-18.43-16.11-30.05-34.65-34.88l-20.9 19.69z"/><path style="stroke-linejoin:round;stroke:#000000;stroke-width:6;fill:none" d="m157.52 429.78c10.05 10.99 5.39 31.63-10.4 46.06s-36.76 17.22-46.8 6.23c-10.049-11-5.389-31.63 10.4-46.06 15.72-14.37 36.57-17.21 46.68-6.36l0.12 0.13z"/><path style="stroke-linejoin:round;fill-rule:evenodd;stroke:#000000;stroke-linecap:round;stroke-width:6;fill:#ff0000" d="m158.25 427.32c10 4.4 25.15 2.18 30.2-3.53-2.58-0.54-5.01-3.15-6.51-6.17-1.58-3.17-0.15-7.29-2.82-9.74-3.06-2.79-7.3-1.26-10.54-2.94-2.85-1.47-3.77-4.59-6.72-8.06-7.07 9.56-6.45 21.01-3.61 30.44z"/><path style="stroke-linejoin:round;fill-rule:evenodd;stroke:#000000;stroke-linecap:round;stroke-width:6;fill:#ff0000" d="m102.03 483.87c-9.981-4.45-25.143-2.32-30.23 3.35 2.578 0.56 4.997 3.19 6.478 6.21 1.555 3.18 0.1 7.29 2.76 9.76 3.036 2.81 7.294 1.3 10.521 3 2.84 1.49 3.74 4.62 6.669 8.1 7.132-9.51 6.582-20.97 3.802-30.42z"/></g>`;
         case 'ghost':
@@ -665,6 +685,8 @@ export function svgViewBox(icon){
             return `0 0 276 276`;
         case 'heart':
             return `0 0 20 16`;
+        case 'clover':
+            return `0 0 660.51 780.1`;
         case 'candy':
             return `0 0 128 128`;
         case 'ghost':
@@ -697,6 +719,8 @@ export function getBaseIcon(name,type){
                 return 'mask';
             case 'valentine':
                 return 'heart';
+            case 'leprechaun':
+                return 'clover';
             case 'halloween':
                 return 'ghost';
             case 'thanksgiving':

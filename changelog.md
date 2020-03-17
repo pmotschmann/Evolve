@@ -21,6 +21,12 @@ Various racial traits now apply to ARPA projects<br>
 Power cost of Mass Ejector increased to 3kW<br>
 Colonists will now be automatically assigned when a Living Quarter is completed if the default job has any available citizens<br>
 
+#### 0.7.28 - 3/16/2020 ####
+Antimatter Universe now gives a 10% prestige bonus post MAD<br>
+St. Patricks Day event<br>
+Blood War can no longer be earned by none demonic evil races<br>
+Build Crate/Container buttons now update create/container values when upgraded by research<br>
+
 #### 0.7.27 - 3/10/2020 ####
 Memory leak fixes<br>
 

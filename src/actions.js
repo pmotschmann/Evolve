@@ -5890,6 +5890,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5929,6 +5930,7 @@ export const actions = {
             effect: loc('tech_titanium_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5948,6 +5950,7 @@ export const actions = {
             effect: loc('tech_mythril_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5967,6 +5970,7 @@ export const actions = {
             effect: loc('tech_infernite_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5986,6 +5990,7 @@ export const actions = {
             effect: loc('tech_graphene_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -6065,6 +6070,7 @@ export const actions = {
             effect: loc('tech_alloy_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -6084,6 +6090,7 @@ export const actions = {
             effect: loc('tech_mythril_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -6103,6 +6110,7 @@ export const actions = {
             effect: loc('tech_adamantite_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -6122,6 +6130,7 @@ export const actions = {
             effect: loc('tech_aerogel_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -11716,7 +11725,7 @@ export const actions = {
                     };
                     global.portal['turret'] = { count: 0, on: 0 };
                     global.portal['carport'] = { count: 0, damaged: 0, repair: 0 };
-                    if (global.race['evil']){
+                    if (races[global.race.species].type === 'demonic'){
                         unlockAchieve('blood_war');
                     }
                     else {

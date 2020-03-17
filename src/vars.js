@@ -389,6 +389,12 @@ if (convertVersion(global['version']) < 7019 && global.race['fraile']){
     global.race['frail'] = 1;
 }
 
+if (convertVersion(global['version']) < 7028){
+    if (global.stats['achieve'] && global.stats.achieve['blood_war'] && global.stats.achieve['blood_war']['e']){
+        global.stats.achieve['blood_war'].e = undefined;
+    }
+}
+
 if (convertVersion(global['version']) < 8000 && global.civic['foreign']){
     if (typeof global.civic.foreign.gov0['anx'] === 'undefined'){
         global.civic.foreign.gov0['anx'] = false;
