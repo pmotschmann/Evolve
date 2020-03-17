@@ -1709,7 +1709,7 @@ function fastLoop(){
             }
             else if (global.civic.d_job !== 'unemployed' && global.civic.d_job !== job && job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
                 global.civic[job].workers++;
-                global.civic[global.civic.d_job]--;
+                global.civic[global.civic.d_job].workers--;
             }
         });
 
