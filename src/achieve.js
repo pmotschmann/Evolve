@@ -649,6 +649,11 @@ const feats = {
         desc: loc("feat_love_desc"),
         flair: loc("feat_love_flair")
     },
+    leprechaun: {
+        name: loc("feat_leprechaun_name"),
+        desc: loc("feat_leprechaun_desc"),
+        flair: loc("feat_leprechaun_flair")
+    },
     halloween: {
         name: loc("feat_boo_name"),
         desc: loc("feat_boo_desc"),
@@ -968,6 +973,14 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('valentine');
+        }
+    }
+    else if (date.getMonth() === 2 && date.getDate() === 17){
+        if (global.race.universe === 'micro'){
+            unlockFeat('leprechaun',true);
+        }
+        else {
+            unlockFeat('leprechaun');
         }
     }
     else if (date.getMonth() === 9 && date.getDate() === 31){

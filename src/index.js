@@ -207,6 +207,7 @@ export function index(){
         {i: 'fire',     f: 'ill_advised'},
         {i: 'mask',     f: 'friday'},
         {i: 'heart',    f: 'valentine'},
+        {i: 'clover',   f: 'leprechaun'},
         {i: 'ghost',    f: 'halloween'},
         {i: 'turkey',   f: 'thanksgiving'},
         {i: 'present',  f: 'xmas'}

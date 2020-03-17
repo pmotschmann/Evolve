@@ -1,3 +1,7 @@
+#### 0.7.28 - 3/16/2020 ####
+Antimatter Universe now gives a 10% prestige bonus post MAD<br>
+St. Patricks Day event<br>
+
 #### 0.7.27 - 3/10/2020 ####
 Memory leak fixes<br>
 
