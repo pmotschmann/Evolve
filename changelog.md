@@ -20,6 +20,7 @@ Human Creative trait rescaled<br>
 Various racial traits now apply to ARPA projects<br>
 Power cost of Mass Ejector increased to 3kW<br>
 Colonists will now be automatically assigned when a Living Quarter is completed if the default job has any available citizens<br>
+More robust research catagories<br>
 
 #### 0.7.28 - 3/16/2020 ####
 Antimatter Universe now gives a 10% prestige bonus post MAD<br>

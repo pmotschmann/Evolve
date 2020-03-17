@@ -53,18 +53,18 @@ a {
     margin-top: 0;
 }
 
-.block:not(:last-child), 
-.box:not(:last-child), 
-.breadcrumb:not(:last-child), 
-.content:not(:last-child), 
-.highlight:not(:last-child), 
-.level:not(:last-child), 
-.list:not(:last-child), 
-.message:not(:last-child), 
-.notification:not(:last-child), 
-.progress:not(:last-child), 
-.subtitle:not(:last-child), 
-.table-container:not(:last-child), 
+.block:not(:last-child),
+.box:not(:last-child),
+.breadcrumb:not(:last-child),
+.content:not(:last-child),
+.highlight:not(:last-child),
+.level:not(:last-child),
+.list:not(:last-child),
+.message:not(:last-child),
+.notification:not(:last-child),
+.progress:not(:last-child),
+.subtitle:not(:last-child),
+.table-container:not(:last-child),
 .table:not(:last-child),
 .title:not(:last-child) {
     margin-bottom: 1rem;
@@ -236,7 +236,7 @@ a {
             text-align: center;
         }
     }
-    
+
     .queueCol {
         div:first-child {
             margin-top: 2.625rem;
@@ -255,7 +255,7 @@ a {
             padding: 1rem;
         }
     }
-    
+
     .msgQueue {
         font-size: .75rem;
         &.right {
@@ -286,7 +286,7 @@ a {
         .buildList {
             margin-left: 2rem;
             margin-top: 0;
-            
+
             li {
                 display: inline-block;
                 height: 1rem;
@@ -300,13 +300,13 @@ a {
             }
         }
     }
-    
+
     .resources {
         margin-top: 1rem;
         .resource {
             display: flex;
             cursor: default;
-            
+
             :first-child {
                 width: 30%;
             }
@@ -335,7 +335,7 @@ a {
             }
         }
     }
-    
+
     .evolving {
         margin-top: 1rem;
         max-width: 51rem;
@@ -386,7 +386,7 @@ a {
             span.oldTech {
                 width: 12.5rem;
                 margin: .5rem .5rem 0 0;
-                
+
                 span.count {
                     position: absolute;
                     top: 0;
@@ -489,14 +489,14 @@ a {
         }
 
         .challenge {
-            width: 100%; 
+            width: 100%;
             .actionWidth();
             text-align: center;
         }
         .divider {
-            width: 100%; 
-            text-align: center; 
-            border-bottom: .0625rem solid; 
+            width: 100%;
+            text-align: center;
+            border-bottom: .0625rem solid;
             margin: .625rem 0 .625rem;
 
             h2 {
@@ -506,16 +506,16 @@ a {
             }
         }
     }
-    
+
     .job {
         margin-left: 1rem;
         display: flex;
         min-width: 18rem;
-        
+
         .controls {
             margin-bottom: 1px;
         }
-        
+
         .job_label {
             cursor: default;
             span {
@@ -539,7 +539,7 @@ a {
     .foundry {
         margin-top: 1rem;
     }
-    
+
     .civics {
         padding-top: 0;
 
@@ -557,7 +557,7 @@ a {
 
         .govType {
             margin-bottom: .25rem;
-            
+
             button {
                 margin-top: .25rem;
                 height: 1.75rem;
@@ -848,7 +848,7 @@ a {
 
         .help {
             margin-left: 1rem;
-        } 
+        }
     }
 
     .galaxyTrade {
@@ -872,7 +872,7 @@ a {
 
     .reset {
         margin-top: 3rem;
-        
+
         .notification {
             margin-top: .5rem;
         }
@@ -937,11 +937,11 @@ a {
     }
 
     .space,
-    .city {
+    .city, .tech {
         margin-top: .75rem;
     }
     .space:nth-child(2),
-    .city:first-child {
+    .city:first-child, .tech:first-child {
         margin-top: 0;
     }
 
@@ -981,18 +981,18 @@ a {
     margin: .125rem 0 0 1rem;
     display: flex;
     cursor: default;
-    
+
     .res {
         display: inline-flex;
         cursor: default;
         margin-right: .5rem;
         width: 7.5rem;
     }
-    
+
     .buy {
         display: inline-flex;
     }
-    
+
     .sell {
         display: inline-flex;
         margin-left: .5rem;
@@ -1001,7 +1001,7 @@ a {
         position: relative;
         bottom: 1px;
     }
-    
+
     .order {
         .basic-button();
         min-width: 4.5rem;
@@ -1313,7 +1313,7 @@ body .modal > div.popper.wide {
         text-align: right;
         margin-right: 1rem;
         right: 0;
-        
+
         span {
             margin: 0 .5rem;
         }
@@ -1334,7 +1334,7 @@ body .modal > div.popper.wide {
 
         > span {
             display: inline-block;
-            width: 50%;   
+            width: 50%;
         }
 
         .rank {
@@ -1422,7 +1422,7 @@ div.nuke {
     top: 0;
     left: 0;
     transition: all 2s;
-    opacity: 0; 
+    opacity: 0;
 
     &.burn {
         opacity: 1;
@@ -1459,7 +1459,7 @@ div.nuke {
     top: 0;
     left: 0;
     transition: all 2s;
-    opacity: 0; 
+    opacity: 0;
 
     &.burn {
         opacity: 1;
@@ -1496,7 +1496,7 @@ div.bigbang {
     top: 0;
     left: 0;
     transition: all 1s;
-    opacity: 0; 
+    opacity: 0;
 
     &.burn {
         opacity: 1;
@@ -1589,12 +1589,12 @@ html.dark {
         background-color: #282f2f;
         color: #fff;
     }
-    .button.is-hovered, 
+    .button.is-hovered,
     .button:hover {
         background-color: #3a4344;
         color: #f2f2f2;
     }
-    .button.is-focused, 
+    .button.is-focused,
     .button:focus {
         border-color: #dbdbdb;
     }
@@ -1728,13 +1728,13 @@ html.dark {
                 background: #1f2424;
             }
         }
-    
+
         .government {
             .header {
                 border-bottom: .0625rem solid #ccc;
             }
         }
-    
+
         .garrison {
             .header {
                 border-bottom: .0625rem solid #ccc;
@@ -2034,7 +2034,7 @@ html.light {
                 color: #000;
                 border: solid .0625rem black;
             }
-            .button.is-dark.is-hovered, 
+            .button.is-dark.is-hovered,
             .button.is-dark:hover {
                 background-color: #ccc;
             }
@@ -2049,13 +2049,13 @@ html.light {
                 border-top: solid .0625rem black;
             }
         }
-    
+
         .government {
             .header {
                 border-bottom: .0625rem solid #4e4e4e;
             }
         }
-    
+
         .garrison {
             .header {
                 border-bottom: .0625rem solid #4e4e4e;
