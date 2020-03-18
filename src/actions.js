@@ -3257,7 +3257,7 @@ export const actions = {
                     desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`;
                 }
                 if (global.city.powered){
-                    desc = desc + `<div class="has-text-caution">${loc('city_sawmill_effect3',[4])}</div>`; 
+                    desc = desc + `<div class="has-text-caution">${loc('city_sawmill_effect3',[4])}</div>`;
                 }
                 return desc;
             },
@@ -4589,10 +4589,10 @@ export const actions = {
             id: 'tech-bolognium_alloy_beams',
             title: loc('tech_bolognium_alloy_beams'),
             desc: loc('tech_housing_cost'),
-            category: 'upgrade',
+            category: 'housing',
             reqs: { housing_reduction: 3, gateway: 3 },
             grant: ['housing_reduction',4],
-            cost: { 
+            cost: {
                 Knowledge(){ return 3750000; },
                 Adamantite(){ return 2500000; },
                 Bolognium(){ return 100000; }
@@ -5101,7 +5101,7 @@ export const actions = {
             id: 'tech-stellar_forge',
             title: loc('tech_stellar_forge'),
             desc: loc('tech_stellar_forge'),
-            category: 'research',
+            category: 'crafting',
             reqs: { foundry: 8, high_tech: 15, gateway: 3, neutron: 1 },
             grant: ['star_forge',1],
             cost: {
@@ -5120,7 +5120,7 @@ export const actions = {
             id: 'tech-stellar_smelting',
             title: loc('tech_stellar_smelting'),
             desc: loc('tech_stellar_smelting'),
-            category: 'upgrade',
+            category: 'crafting',
             reqs: { star_forge: 1, xeno: 4 },
             grant: ['star_forge',2],
             cost: {
@@ -5195,7 +5195,7 @@ export const actions = {
             id: 'tech-high_tech_factories',
             title: loc('tech_high_tech_factories'),
             desc: loc('tech_high_tech_factories'),
-            category: 'upgrade',
+            category: 'crafting',
             reqs: { high_tech: 17, alpha: 4, factory: 3 },
             grant: ['factory',4],
             cost: {
@@ -6005,7 +6005,7 @@ export const actions = {
             id: 'tech-bolognium_crates',
             title: loc('tech_bolognium_crates'),
             desc: loc('tech_bolognium_crates'),
-            category: 'upgrade',
+            category: 'storage',
             reqs: { container: 7, gateway: 3 },
             grant: ['container',8],
             cost: {
@@ -6145,7 +6145,7 @@ export const actions = {
             id: 'tech-bolognium_containers',
             title: loc('tech_bolognium_containers'),
             desc: loc('tech_bolognium_containers'),
-            category: 'upgrade',
+            category: 'storage',
             reqs: { steel_container: 6, gateway: 3 },
             grant: ['steel_container',7],
             cost: {
@@ -6164,7 +6164,7 @@ export const actions = {
             id: 'tech-nanoweave_containers',
             title: loc('tech_nanoweave_containers'),
             desc: loc('tech_nanoweave_containers'),
-            category: 'upgrade',
+            category: 'storage',
             reqs: { steel_container: 7, nanoweave: 1 },
             grant: ['steel_container',8],
             cost: {
@@ -6398,7 +6398,7 @@ export const actions = {
             id: 'tech-federation',
             title: loc('govern_federation'),
             desc: loc('govern_federation'),
-            category: 'research',
+            category: 'government',
             reqs: { govern: 2 },
             condition(){
                 return (global.tech['unify'] && global.tech['unify'] >= 2) || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy ? true : false;
@@ -6962,7 +6962,7 @@ export const actions = {
             id: 'tech-foreign_investment',
             title: loc('tech_foreign_investment'),
             desc: loc('tech_foreign_investment'),
-            category: 'upgrade',
+            category: 'banking',
             reqs: { banking: 12, xeno: 10 },
             grant: ['banking',13],
             cost: {
@@ -7438,7 +7438,7 @@ export const actions = {
             id: 'tech-expedition',
             title: loc('tech_expedition'),
             desc: loc('tech_expedition'),
-            category: 'upgrade',
+            category: 'science',
             reqs: { science: 15, xeno: 4 },
             grant: ['science',16],
             cost: {
@@ -7456,7 +7456,7 @@ export const actions = {
             id: 'tech-subspace_sensors',
             title: loc('tech_subspace_sensors'),
             desc: loc('tech_subspace_sensors'),
-            category: 'upgrade',
+            category: 'science',
             reqs: { science: 16, high_tech: 16 },
             grant: ['science',17],
             cost: {
@@ -7474,7 +7474,7 @@ export const actions = {
             id: 'tech-alien_database',
             title: loc('tech_alien_database'),
             desc: loc('tech_alien_database'),
-            category: 'research',
+            category: 'progress',
             reqs: { science: 17, conflict: 5 },
             grant: ['science',18],
             cost: {
@@ -7492,7 +7492,7 @@ export const actions = {
             id: 'tech-orichalcum_capacitor',
             title: loc('tech_orichalcum_capacitor'),
             desc: loc('tech_orichalcum_capacitor'),
-            category: 'research',
+            category: 'science',
             reqs: { science: 18, high_tech: 17 },
             grant: ['science',19],
             cost: {
@@ -7994,7 +7994,7 @@ export const actions = {
             id: 'tech-metaphysics',
             title: loc('tech_metaphysics'),
             desc: loc('tech_metaphysics'),
-            category: 'upgrade',
+            category: 'progress',
             reqs: { high_tech: 15, xeno: 5 },
             grant: ['high_tech',16],
             cost: {
@@ -8014,7 +8014,7 @@ export const actions = {
             id: 'tech-orichalcum_analysis',
             title: loc('tech_orichalcum_analysis'),
             desc: loc('tech_orichalcum_analysis'),
-            category: 'research',
+            category: 'progress',
             reqs: { high_tech: 16, chthonian: 3 },
             grant: ['high_tech',17],
             cost: {
@@ -8034,7 +8034,7 @@ export const actions = {
             id: 'tech-incorporeal',
             title: loc('tech_incorporeal'),
             desc: loc('tech_incorporeal'),
-            category: 'research',
+            category: 'special',
             reqs: { science: 19 },
             grant: ['ascension',1],
             cost: {
@@ -8053,7 +8053,7 @@ export const actions = {
             id: 'tech-tech_ascension',
             title: loc('tech_ascension'),
             desc: loc('tech_ascension'),
-            category: 'research',
+            category: 'special',
             reqs: { ascension: 1 },
             grant: ['ascension',2],
             cost: {
@@ -8457,7 +8457,7 @@ export const actions = {
             id: 'tech-orichalcum_driver',
             title: loc('tech_orichalcum_driver'),
             desc: loc('tech_orichalcum_driver'),
-            category: 'upgrade',
+            category: 'science',
             reqs: { mass: 1, science: 19 },
             grant: ['mass',2],
             cost: {
@@ -8519,7 +8519,7 @@ export const actions = {
             id: 'tech-nanoweave',
             title: loc('tech_nanoweave'),
             desc: loc('tech_nanoweave'),
-            category: 'upgrade',
+            category: 'crafting',
             reqs: { science: 18 },
             grant: ['nanoweave',1],
             cost: {
@@ -9642,7 +9642,7 @@ export const actions = {
             id: 'tech-gauss_rifles',
             title: loc('tech_gauss_rifles'),
             desc: loc('tech_gauss_rifles'),
-            category: 'upgrade',
+            category: 'military',
             reqs: { military: 9, science: 18 },
             grant: ['military',10],
             cost: {
@@ -9685,7 +9685,7 @@ export const actions = {
             id: 'tech-hammocks',
             title: loc('tech_hammocks'),
             desc: loc('tech_hammocks'),
-            category: 'upgrade',
+            category: 'military',
             reqs: { marines: 1, nanoweave: 1 },
             grant: ['marines',2],
             cost: {
@@ -9782,7 +9782,7 @@ export const actions = {
             id: 'tech-nanoweave_vest',
             title: loc('tech_nanoweave_vest'),
             desc: loc('tech_nanoweave_vest'),
-            category: 'upgrade',
+            category: 'military',
             reqs: { armor: 3, nanoweave: 1 },
             grant: ['armor',4],
             cost: {
@@ -10284,7 +10284,7 @@ export const actions = {
             id: 'tech-encoding',
             title: loc('tech_encoding'),
             desc: loc('tech_encoding_desc'),
-            category: 'upgrade',
+            category: 'religion',
             reqs: { ancient_study: 1, mars: 5 },
             grant: ['ancient_study',2],
             cost: {
@@ -10322,7 +10322,7 @@ export const actions = {
             id: 'tech-infusion',
             title: loc('tech_infusion'),
             desc: loc('tech_infusion_desc'),
-            category: 'upgrade',
+            category: 'religion',
             reqs: { ancient_deify: 1, mars: 5 },
             grant: ['ancient_deify',2],
             cost: {
@@ -10830,7 +10830,7 @@ export const actions = {
             id: 'tech-orichalcum_panels',
             title: loc('tech_orichalcum_panels'),
             desc: loc('tech_orichalcum_panels'),
-            category: 'upgrade',
+            category: 'power_generation',
             reqs: { high_tech: 17, swarm: 5 },
             grant: ['swarm',6],
             cost: {
@@ -10868,7 +10868,7 @@ export const actions = {
             id: 'tech-dyson_sphere2',
             title: loc('tech_dyson_sphere'),
             desc: loc('tech_dyson_sphere'),
-            category: 'research',
+            category: 'power_generation',
             reqs: { proxima: 3, piracy: 1 },
             grant: ['dyson',1],
             cost: {
@@ -11177,7 +11177,7 @@ export const actions = {
             id: 'tech-unification2',
             title: loc('tech_unification'),
             desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
-            category: 'research',
+            category: 'special',
             reqs: { unify: 1 },
             grant: ['unify',2],
             cost: {
@@ -11434,7 +11434,7 @@ export const actions = {
             id: 'tech-mega_manufacturing',
             title: loc('tech_mega_manufacturing'),
             desc: loc('tech_mega_manufacturing'),
-            category: 'research',
+            category: 'crafting',
             reqs: { high_tech: 16, alpha: 3 },
             grant: ['alpha',4],
             cost: {
@@ -11453,7 +11453,7 @@ export const actions = {
             id: 'tech-luxury_condo',
             title: loc('tech_luxury_condo'),
             desc: loc('tech_luxury_condo'),
-            category: 'research',
+            category: 'housing',
             reqs: { high_tech: 17, alpha: 4 },
             grant: ['alpha',5],
             cost: {
@@ -11807,7 +11807,7 @@ export const actions = {
             id: 'tech-repair_droids',
             title: loc('tech_repair_droids'),
             desc: loc('tech_repair_droids'),
-            category: 'research',
+            category: 'hell_dimension',
             reqs: { portal: 5 },
             grant: ['portal',6],
             cost: {
@@ -11827,7 +11827,7 @@ export const actions = {
             id: 'tech-enhanced_droids',
             title: loc('tech_enhanced_droids'),
             desc: loc('tech_enhanced_droids'),
-            category: 'upgrade',
+            category: 'hell_dimension',
             reqs: { portal: 5, military: 9 },
             grant: ['hdroid',1],
             cost: {
@@ -11901,7 +11901,7 @@ export const actions = {
             id: 'tech-shield_generator',
             title: loc('tech_shield_generator'),
             desc: loc('tech_shield_generator'),
-            category: 'upgrade',
+            category: 'hell_dimension',
             reqs: { high_tech: 14, gateway: 3, infernite: 4 },
             grant: ['infernite',5],
             cost: {
@@ -11920,7 +11920,7 @@ export const actions = {
             id: 'tech-enhanced_sensors',
             title: loc('tech_enhanced_sensors'),
             desc: loc('tech_enhanced_sensors'),
-            category: 'upgrade',
+            category: 'hell_dimension',
             reqs: { infernite: 5, xeno: 4 },
             grant: ['infernite',6],
             cost: {
@@ -11939,7 +11939,7 @@ export const actions = {
             id: 'tech-xeno_linguistics',
             title: loc('tech_xeno_linguistics'),
             desc: loc('tech_xeno_linguistics'),
-            category: 'research',
+            category: 'andromeda',
             reqs: { xeno: 1 },
             grant: ['xeno',2],
             cost: {
@@ -11958,7 +11958,7 @@ export const actions = {
             id: 'tech-xeno_culture',
             title: loc('tech_xeno_culture'),
             desc: loc('tech_xeno_culture'),
-            category: 'research',
+            category: 'progress',
             reqs: { xeno: 3 },
             grant: ['xeno',4],
             cost: {
@@ -11981,7 +11981,7 @@ export const actions = {
             id: 'tech-cultural_exchange',
             title: loc('tech_cultural_exchange'),
             desc: loc('tech_cultural_exchange'),
-            category: 'research',
+            category: 'andromeda',
             reqs: { xeno: 5 },
             grant: ['xeno',6],
             cost: {
@@ -12004,7 +12004,7 @@ export const actions = {
             id: 'tech-shore_leave',
             title: loc('tech_shore_leave'),
             desc: loc('tech_shore_leave'),
-            category: 'upgrade',
+            category: 'science',
             reqs: { andromeda: 3, xeno: 6 },
             grant: ['xeno',7],
             cost: {
@@ -12022,7 +12022,7 @@ export const actions = {
             id: 'tech-xeno_gift',
             title: loc('tech_xeno_gift'),
             desc: loc('tech_xeno_gift'),
-            category: 'research',
+            category: 'andromeda',
             reqs: { high_tech: 16, xeno: 7 },
             grant: ['xeno',8],
             cost: {
@@ -12044,7 +12044,7 @@ export const actions = {
             id: 'tech-industrial_partnership',
             title: loc('tech_industrial_partnership'),
             desc(){ return loc('tech_industrial_partnership'); },
-            category: 'research',
+            category: 'andromeda',
             reqs: { xeno: 9 },
             grant: ['xeno',10],
             cost: {
@@ -12063,7 +12063,7 @@ export const actions = {
             id: 'tech-embassy_housing',
             title: loc('tech_embassy_housing'),
             desc(){ return loc('tech_embassy_housing'); },
-            category: 'upgrade',
+            category: 'andromeda',
             reqs: { xeno: 10, science: 18 },
             grant: ['xeno',11],
             cost: {
@@ -12081,7 +12081,7 @@ export const actions = {
             id: 'tech-advanced_telemetry',
             title: loc('tech_advanced_telemetry'),
             desc: loc('tech_advanced_telemetry'),
-            category: 'upgrade',
+            category: 'science',
             reqs: { xeno: 5 },
             grant: ['telemetry',1],
             cost: {
@@ -12102,7 +12102,7 @@ export const actions = {
             id: 'tech-defense_platform',
             title: loc('galaxy_defense_platform'),
             desc: loc('galaxy_defense_platform'),
-            category: 'research',
+            category: 'andromeda',
             reqs: { stargate: 5, piracy: 1 },
             grant: ['stargate',6],
             cost: {
@@ -12121,7 +12121,7 @@ export const actions = {
             id: 'tech-scout_ship',
             title: loc('galaxy_scout_ship'),
             desc: loc('galaxy_scout_ship'),
-            category: 'research',
+            category: 'andromeda_ships',
             reqs: { gateway: 3 },
             grant: ['andromeda',1],
             cost: {
@@ -12140,7 +12140,7 @@ export const actions = {
             id: 'tech-corvette_ship',
             title: loc('galaxy_corvette_ship'),
             desc: loc('galaxy_corvette_ship'),
-            category: 'research',
+            category: 'andromeda_ships',
             reqs: { andromeda: 1, xeno: 1 },
             grant: ['andromeda',2],
             cost: {
@@ -12159,7 +12159,7 @@ export const actions = {
             id: 'tech-frigate_ship',
             title: loc('galaxy_frigate_ship'),
             desc: loc('galaxy_frigate_ship'),
-            category: 'research',
+            category: 'andromeda_ships',
             reqs: { andromeda: 2, xeno: 6 },
             grant: ['andromeda',3],
             cost: {
@@ -12179,7 +12179,7 @@ export const actions = {
             id: 'tech-cruiser_ship',
             title: loc('galaxy_cruiser_ship'),
             desc: loc('galaxy_cruiser_ship'),
-            category: 'research',
+            category: 'andromeda_ships',
             reqs: { andromeda: 3, xeno: 10 },
             grant: ['andromeda',4],
             cost: {
@@ -12201,7 +12201,7 @@ export const actions = {
             id: 'tech-dreadnought',
             title: loc('galaxy_dreadnought'),
             desc: loc('galaxy_dreadnought'),
-            category: 'research',
+            category: 'andromeda_ships',
             reqs: { andromeda: 4, science: 18 },
             grant: ['andromeda',5],
             cost: {
@@ -12221,7 +12221,7 @@ export const actions = {
             id: 'tech-ship_dock',
             title: loc('galaxy_ship_dock'),
             desc: loc('galaxy_ship_dock'),
-            category: 'research',
+            category: 'andromeda_ships',
             reqs: { gateway: 3, xeno: 6 },
             grant: ['gateway',4],
             cost: {
@@ -12240,7 +12240,7 @@ export const actions = {
             id: 'tech-ore_processor',
             title: loc('galaxy_ore_processor'),
             desc: loc('galaxy_ore_processor'),
-            category: 'research',
+            category: 'space_mining',
             reqs: { conflict: 2 },
             grant: ['conflict',3],
             cost: {
@@ -12259,7 +12259,7 @@ export const actions = {
             id: 'tech-scavenger',
             title: loc('galaxy_scavenger'),
             desc: loc('galaxy_scavenger'),
-            category: 'research',
+            category: 'science',
             reqs: { conflict: 3 },
             grant: ['conflict',4],
             cost: {
@@ -12278,7 +12278,7 @@ export const actions = {
             id: 'tech-coordinates',
             title: loc('tech_coordinates'),
             desc: loc('tech_coordinates'),
-            category: 'research',
+            category: 'andromeda',
             reqs: { science: 18, conflict: 5 },
             grant: ['chthonian',1],
             cost: {
@@ -12298,7 +12298,7 @@ export const actions = {
             id: 'tech-chthonian_survey',
             title: loc('tech_chthonian_survey'),
             desc: loc('tech_chthonian_survey'),
-            category: 'research',
+            category: 'space_mining',
             reqs: { chthonian: 2 },
             grant: ['chthonian',3],
             cost: {
@@ -12320,7 +12320,7 @@ export const actions = {
             id: 'tech-gateway_depot',
             title: loc('galaxy_gateway_depot'),
             desc: loc('galaxy_gateway_depot'),
-            category: 'research',
+            category: 'storage',
             reqs: { gateway: 4 },
             grant: ['gateway',5],
             cost: {
@@ -12339,7 +12339,7 @@ export const actions = {
             id: 'tech-soul_forge',
             title: loc('portal_soul_forge_title'),
             desc: loc('portal_soul_forge_title'),
-            category: 'research',
+            category: 'hell_dimension',
             reqs: { hell_pit: 3 },
             grant: ['hell_pit',4],
             cost: {
@@ -12358,7 +12358,7 @@ export const actions = {
             id: 'tech-soul_attractor',
             title: loc('portal_soul_attractor_title'),
             desc: loc('portal_soul_attractor_title'),
-            category: 'research',
+            category: 'hell_dimension',
             reqs: { hell_pit: 4, high_tech: 16 },
             grant: ['hell_pit',5],
             cost: {
@@ -12377,7 +12377,7 @@ export const actions = {
             id: 'tech-soul_absorption',
             title: loc('tech_soul_absorption'),
             desc: loc('tech_soul_absorption'),
-            category: 'upgrade',
+            category: 'hell_dimension',
             reqs: { hell_pit: 5 },
             grant: ['hell_pit',6],
             cost: {
@@ -12396,7 +12396,7 @@ export const actions = {
             id: 'tech-gun_emplacement',
             title: loc('portal_gun_emplacement_title'),
             desc: loc('portal_gun_emplacement_title'),
-            category: 'research',
+            category: 'hell_dimension',
             reqs: { hell_pit: 4 },
             grant: ['hell_gun',1],
             cost: {
@@ -13432,7 +13432,7 @@ function srDesc(c_action,old){
                         }
                         else {
                             label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
-                        }                        
+                        }
                         desc = desc + `${label}. `;
 
                         if (!global[region][struct]){
@@ -13462,7 +13462,7 @@ function srDesc(c_action,old){
                 if (res_cost > 0){
                     let label = res === 'Money' ? '$' : global.resource[res].name+': ';
                     label = label.replace("_", " ");
-                    
+
                     let display_cost = sizeApproximation(res_cost,1);
                     desc = desc + `${label}${display_cost}. `;
                     if (global.resource[res].amount < res_cost){
@@ -13514,7 +13514,7 @@ function actionDesc(parent,c_action,obj,old){
                         else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
                             color = 'has-text-alert';
                         }
-                        
+
                         let label = '';
                         if (structs[region][struct].hasOwnProperty('s')){
                             let sector = structs[region][struct].s;
