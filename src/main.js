@@ -5513,12 +5513,6 @@ let sythMap = {
 function longLoop(){
     const date = new Date();
     if (global.race.species !== 'protoplasm'){
-        
-        if (global.tech['ascension'] && global.tech.ascension === 7){
-            if (p_on['ascension_trigger']){
-                console.log('ascend me!');
-            }
-        }
 
         if (global.portal['fortress']){
             bloodwar();

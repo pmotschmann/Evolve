@@ -3082,50 +3082,40 @@ const interstellarProjects = {
                 }
                 return power;
             },
+            postPower(o){
+                if (o){
+                    setTimeout(function(){
+                        global.tech.ascension = p_on['ascension_trigger'] ? 8 : 7;
+                        deepSpace();
+                    }, 250);
+                }
+                else {
+                    global.tech.ascension = 7;
+                    deepSpace();
+                }
+            },
             effect(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
-                }
-                let plasmid = global['resource'][global.race.species].amount + garrisoned;
-                let k_base = global.stats.know;
-                let k_inc = 30000;
-                while (k_base > k_inc){
-                    plasmid++;
-                    k_base -= k_inc;
-                    k_inc *= 1.008;
-                }
-                plasmid = challenge_multiplier(plasmid,'ascend');
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 3.5),'ascend');
-
-                let harmony = 1;
-                if (global.race['no_plasmid']){ harmony++; }
-                if (global.race['no_trade']){ harmony++; }
-                if (global.race['no_craft']){ harmony++; }
-                if (global.race['no_crispr']){ harmony++; }
-                if (global.race['weak_mastery']){ harmony++; }
-                if (harmony > 5){
-                    harmony = 5;
-                }
-                switch (global.race.universe){
-                    case 'micro':
-                        harmony *= 0.25;
-                        break;
-                    case 'heavy':
-                        harmony *= 1.2;
-                        break;
-                    case 'antimatter':
-                        harmony *= 1.1;
-                        break;
-                    default:
-                        break;
-                }
-
-                return `<div>${loc('interstellar_ascension_trigger_effect')}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[plasmid,loc('resource_Plasmid_plural_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let reward = astrialProjection();
+                return `<div>${loc('interstellar_ascension_trigger_effect')}</div>${reward}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
+                return false;
+            }
+        },
+        ascend: {
+            id: 'interstellar-ascend',
+            title: loc('interstellar_ascend'),
+            desc: loc('interstellar_ascend'),
+            reqs: { ascension: 8 },
+            cost: {},
+            effect(){
+                let reward = astrialProjection();
+                return `<div>${loc('interstellar_ascend_effect')}</div>${reward}`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
                 return false;
             }
         },
@@ -3153,6 +3143,50 @@ const interstellarProjects = {
         },
     }
 };
+
+function astrialProjection(){
+    let garrisoned = global.civic.garrison.workers;
+    for (let i=0; i<3; i++){
+        if (global.civic.foreign[`gov${i}`].occ){
+            garrisoned += 20;
+        }
+    }
+    let plasmid = global['resource'][global.race.species].amount + garrisoned;
+    let k_base = global.stats.know;
+    let k_inc = 30000;
+    while (k_base > k_inc){
+        plasmid++;
+        k_base -= k_inc;
+        k_inc *= 1.008;
+    }
+    plasmid = challenge_multiplier(plasmid,'ascend');
+    let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 3.5),'ascend');
+
+    let harmony = 1;
+    if (global.race['no_plasmid']){ harmony++; }
+    if (global.race['no_trade']){ harmony++; }
+    if (global.race['no_craft']){ harmony++; }
+    if (global.race['no_crispr']){ harmony++; }
+    if (global.race['weak_mastery']){ harmony++; }
+    if (harmony > 5){
+        harmony = 5;
+    }
+    switch (global.race.universe){
+        case 'micro':
+            harmony *= 0.25;
+            break;
+        case 'heavy':
+            harmony *= 1.2;
+            break;
+        case 'antimatter':
+            harmony *= 1.1;
+            break;
+        default:
+            break;
+    }
+
+    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[plasmid,loc('resource_Plasmid_plural_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div>`;
+}
 
 const galaxyProjects = {
     gxy_gateway: {
