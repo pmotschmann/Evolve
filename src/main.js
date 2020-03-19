@@ -1,4 +1,4 @@
-import { global, save, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
 import { vBind, mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery } from './functions.js';
@@ -438,11 +438,11 @@ if (global.race['hyper']){
 }
 
 if (window.Worker){
-    var worker = new Worker("evolve.js");
-    worker.postMessage({ loop: 'short', period: main_timer });
-    worker.postMessage({ loop: 'mid', period: mid_timer });
-    worker.postMessage({ loop: 'long', period: long_timer });
-    worker.addEventListener('message', function(e){
+    webWorker.w = new Worker("evolve.js");
+    webWorker.w.postMessage({ loop: 'short', period: main_timer });
+    webWorker.w.postMessage({ loop: 'mid', period: mid_timer });
+    webWorker.w.postMessage({ loop: 'long', period: long_timer });
+    webWorker.w.addEventListener('message', function(e){
         var data = e.data;
         switch (data) {
             case 'fast':

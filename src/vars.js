@@ -417,7 +417,7 @@ if (convertVersion(global['version']) < 8000 && global.civic['foreign']){
 }
 
 global['version'] = '0.8.0';
-global['beta'] = 29;
+global['beta'] = 30;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -1213,13 +1213,6 @@ export function srSpeak(text, priority) {
     }, 1000);
 }
 
-// executes a hard reset
-window.reset = function reset(){
-    localStorage.removeItem('evolved');
-    global = null;
-    window.location.reload();
-}
-
 // executes a soft reset
 window.soft_reset = function reset(){
     let replace = {
@@ -1293,6 +1286,7 @@ window.soft_reset = function reset(){
     window.location.reload();
 }
 
+export var webWorker = { w: false };
 export function clearStates(){
     global['queue'] = { display: false, queue: [] };
     global['r_queue'] = { display: false, queue: [] };
@@ -1405,4 +1399,17 @@ export function clearStates(){
     global.settings.statsTabs = 0
     global.settings.disableReset = false;
     global.arpa = {};
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+}
+
+// executes a hard reset
+window.reset = function reset(){
+    localStorage.removeItem('evolved');
+    global = null;
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    window.location.reload();
 }

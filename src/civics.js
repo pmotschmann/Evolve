@@ -1,6 +1,6 @@
 import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { clearElement, challenge_multiplier, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
+import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -1730,22 +1730,8 @@ function defineMad(){
                     : loc('civics_mad_missiles_desc');
             },
             warning(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
-                }
-                let plasma = Math.round((global['resource'][global.race.species].amount + garrisoned) / 3);
-                let k_base = global.stats.know;
-                let k_inc = 100000;
-                while (k_base > k_inc){
-                    plasma++;
-                    k_base -= k_inc;
-                    k_inc *= 1.1;
-                }
-                plasma = challenge_multiplier(plasma,'mad');
-                return loc('civics_mad_missiles_warning',[plasma,plasmidType]);
+                let gains = calcPrestige('mad');
+                return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
             }
         }
     });
@@ -1775,22 +1761,10 @@ function warhead(){
     let geo = global.city.geology;
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let pop = global['resource'][global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / 3);
-    let k_base = global.stats.know;
-    let k_inc = 100000;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.1;
-    }
-    new_plasmid = challenge_multiplier(new_plasmid,'mad');
+
+    let gains = calcPrestige('mad');
+    let new_plasmid = gains.plasmid;
+
     global.stats.reset++;
     global.stats.mad++;
     global.stats.tdays += global.stats.days;

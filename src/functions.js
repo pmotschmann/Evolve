@@ -1,4 +1,4 @@
-import { global, save, achieve_level, universe_level } from './vars.js';
+import { global, save, webWorker, achieve_level, universe_level } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
 import { actions } from './actions.js';
@@ -24,6 +24,9 @@ export function mainVue(){
             lChange(){
                 global.settings.locale = $('#localization select').children("option:selected").val();
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                if (webWorker.w){
+                    webWorker.w.terminate();
+                }
                 window.location.reload();
             },
             dark(){
@@ -58,6 +61,9 @@ export function mainVue(){
             icon(icon){
                 global.settings.icon = icon;
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                if (webWorker.w){
+                    webWorker.w.terminate();
+                }
                 window.location.reload();
             },
             keys(){
@@ -156,6 +162,9 @@ window.importGame = function importGame(data){
     if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
         global = saveState;
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
         window.location.reload();
     }
 }
@@ -264,7 +273,7 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
         mutiplier -= +(dark).toFixed(5);
     }
     if (global.race['small']){ mutiplier -= 0.01; }
-    else if (global.race['large']){ mutiplier += 0.01; }
+    else if (global.race['large']){ mutiplier += 0.005; }
     if (global.race['compact']){ mutiplier -= 0.02; }
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
@@ -489,7 +498,7 @@ export function calc_mastery(){
     return 0;
 }
 
-export function challenge_multiplier(value,type,decimals){
+function challenge_multiplier(value,type,decimals){
     decimals = decimals || 0;
     let challenge_level = 0;
     if (global.race['no_plasmid']){ challenge_level++; }
@@ -533,6 +542,100 @@ export function challenge_multiplier(value,type,decimals){
         default:
             return +(value).toFixed(decimals);
     }
+}
+
+export function calcPrestige(type){
+    let gains = {
+        plasmid: 0,
+        phage: 0,
+        dark: 0,
+        harmony: 0
+    };
+
+    let garrisoned = global.civic.garrison.workers;
+    for (let i=0; i<3; i++){
+        if (global.civic.foreign[`gov${i}`].occ){
+            garrisoned += 20;
+        }
+    }
+
+    let pop_divisor = 999;
+    let k_inc = 1000000;
+    let k_mult = 100;
+    let phage_mult = 0;
+
+    switch (type){
+        case 'mad':
+            pop_divisor = 3;
+            k_inc = 100000;
+            k_mult = 1.1;
+            break;
+        case 'bioseed':
+            pop_divisor = 3;
+            k_inc = 50000;
+            k_mult = 1.015;
+            phage_mult = 1;
+            break;
+        case 'bigbang':
+            pop_divisor = 2;
+            k_inc = 40000;
+            k_mult = 1.012;
+            phage_mult = 2.5;
+            break;
+        case 'ascend':
+            pop_divisor = 1;
+            k_inc = 30000;
+            k_mult = 1.008;
+            phage_mult = 3.5;
+            break;
+    }
+
+    let pop = global.resource[global.race.species].amount + garrisoned;
+    let new_plasmid = Math.round(pop / pop_divisor);
+    let k_base = global.stats.know;
+    while (k_base > k_inc){
+        new_plasmid++;
+        k_base -= k_inc;
+        k_inc *= k_mult;
+    }
+
+    gains.plasmid = challenge_multiplier(new_plasmid,type);
+    gains.phage = challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type);
+
+    if (type === 'bigbang'){
+        let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
+        new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
+        new_dark = challenge_multiplier(new_dark,'bigbang',3);
+        gains.dark = new_dark;
+    }
+
+    if (type === 'ascend'){
+        let harmony = 1;
+        if (global.race['no_plasmid']){ harmony++; }
+        if (global.race['no_trade']){ harmony++; }
+        if (global.race['no_craft']){ harmony++; }
+        if (global.race['no_crispr']){ harmony++; }
+        if (global.race['weak_mastery']){ harmony++; }
+        if (harmony > 5){
+            harmony = 5;
+        }
+        switch (global.race.universe){
+            case 'micro':
+                harmony *= 0.25;
+                break;
+            case 'heavy':
+                harmony *= 1.2;
+                break;
+            case 'antimatter':
+                harmony *= 1.1;
+                break;
+            default:
+                break;
+        }
+        gains.harmony = harmony;
+    }
+
+    return gains;
 }
 
 export function adjustCosts(costs){

@@ -21,6 +21,8 @@ Various racial traits now apply to ARPA projects<br>
 Power cost of Mass Ejector increased to 3kW<br>
 Colonists will now be automatically assigned when a Living Quarter is completed if the default job has any available citizens<br>
 More robust research catagories<br>
+Large cost creep penalty reduced to 0.005 from 0.01<br>
+Strong gathering bonus increased from 2 to 5<br>
 
 #### 0.7.28 - 3/16/2020 ####
 Antimatter Universe now gives a 10% prestige bonus post MAD<br>

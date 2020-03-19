@@ -1534,6 +1534,53 @@ div.bigbang {
     }
 }
 
+.celestialLab {
+
+    .fields {
+        margin-top: .5rem;
+
+        .name {
+            display: inline-block;
+            width: 10rem;
+            margin-right: 1rem;
+        }
+        .entity {
+            display: inline-block;
+            width: 20rem;
+            margin-right: 1rem;
+        }
+    }
+
+    .sequence {
+        display: flex;
+        margin-top: .5rem;
+
+        .genus_selection {
+            width: 10rem;
+            section {
+                margin-top: .5rem;
+            }
+        }
+        .trait_selection {
+            margin-left: 2rem;
+            section {
+                margin-top: .5rem;
+                display: flex;
+                flex-wrap: wrap;
+
+                > div {
+                    width: 11.5rem;
+                }
+            }
+        }
+        > div {
+            .field:not(:last-child){
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
 .darkTheme,
 html.dark {
     background-color: #1f2424;

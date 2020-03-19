@@ -1,6 +1,6 @@
-import { global, save, poppers, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
+import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -2321,7 +2321,7 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',global.race['strong'] ? 2 : 1);
+                    modRes('Food',global.race['strong'] ? 5 : 1);
                 }
                 return false;
             }
@@ -2352,7 +2352,7 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',global.race['strong'] ? 2 : 1);
+                    modRes('Lumber',global.race['strong'] ? 5 : 1);
                 }
                 return false;
             }
@@ -2366,7 +2366,7 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    modRes('Stone',global.race['strong'] ? 2 : 1);
+                    modRes('Stone',global.race['strong'] ? 5 : 1);
                 }
                 return false;
             }
@@ -2389,13 +2389,13 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',1);
+                    modRes('Lumber',global.race['strong'] ? 5 : 1);
                 }
                 if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',1);
+                    modRes('Food',global.race['strong'] ? 5 : 1);
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
-                    modRes('Furs',1);
+                    modRes('Furs',global.race['strong'] ? 5 : 1);
                 }
                 return false;
             }
@@ -12493,25 +12493,8 @@ export const actions = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
-                }
-                let pop = global['resource'][global.race.species].amount + garrisoned;
-                let plasmid = Math.round(pop / 3);
-                let k_base = global.stats.know;
-                let k_inc = 50000;
-                while (k_base > k_inc){
-                    plasmid++;
-                    k_base -= k_inc;
-                    k_inc *= 1.015;
-                }
-                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                plasmid = challenge_multiplier(plasmid,'bioseed');
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
-                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+                let gains = calcPrestige('bioseed');
+                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){
                 global.tech['genesis'] = 7;
@@ -12532,25 +12515,8 @@ export const actions = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
-                }
-                let pop = global['resource'][global.race.species].amount + garrisoned;
-                let plasmid = Math.round(pop / 3);
-                let k_base = global.stats.know;
-                let k_inc = 50000;
-                while (k_base > k_inc){
-                    plasmid++;
-                    k_base -= k_inc;
-                    k_inc *= 1.015;
-                }
-                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                plasmid = challenge_multiplier(plasmid,'bioseed');
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
-                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+                let gains = calcPrestige('bioseed');
+                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){
                 bioseed();
@@ -14104,6 +14070,9 @@ function sentience(){
 
     if (global.race['slow'] || global.race['hyper']){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
         window.location.reload();
     }
 
@@ -14353,23 +14322,11 @@ function bioseed(){
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let pop = global['resource'][global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / 3);
-    let k_base = global.stats.know;
-    let k_inc = 50000;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.015;
-    }
-    new_plasmid = challenge_multiplier(new_plasmid,'bioseed');
-    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E),'bioseed');
+
+    let gains = calcPrestige('bioseed');
+    let new_plasmid = gains.plasmid;
+    let new_phage = gains.phage;
+
     phage += new_phage;
     global.stats.reset++;
     global.stats.bioseed++;
@@ -14525,26 +14482,11 @@ function big_bang(){
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
     let dark = global.race.Dark.count;
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let pop = global['resource'][global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / 2);
-    let k_base = global.stats.know;
-    let k_inc = 40000;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.012;
-    }
-    new_plasmid = challenge_multiplier(new_plasmid,'bigbang');
-    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5),'bigbang');
-    let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
-    new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
-    new_dark = challenge_multiplier(new_dark,'bigbang',3);
+
+    let gains = calcPrestige('bioseed');
+    let new_plasmid = gains.plasmid;
+    let new_phage = gains.phage;
+    let new_dark = gains.dark;
 
     checkAchievements();
 

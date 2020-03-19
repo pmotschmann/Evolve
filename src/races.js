@@ -856,466 +856,582 @@ export const traits = {
     adaptable: { // Genetic Mutations occur faster from gene tampering
         desc: loc('trait_adaptable'),
         type: 'genus',
+        val: 3,
     },
     wasteful: { // Craftings cost more materials
         desc: loc('trait_wasteful'),
         type: 'genus',
+        val: -3,
     },
     xenophobic: { // Trade posts suffer a -1 penalty per post
         desc: loc('trait_xenophobic'),
         type: 'genus',
+        val: -5,
     },
     beast: { // Hunting improved when it's windy
         desc: loc('trait_beast'),
         type: 'genus',
+        val: 2,
     },
     cautious: { // Rain reduces combat rating
         desc: loc('trait_cautious'),
         type: 'genus',
+        val: -2,
     },
     small: { // Reduces cost creep multipliers by 0.01
         desc: loc('trait_small'),
         type: 'genus',
+        val: 6,
     },
     weak: { // Lumberjacks, miners, and quarry workers are 10% less effective
         desc: loc('trait_weak'),
         type: 'genus',
+        val: -3,
     },
     large: { // Increases cost creep multipliers by 0.01
         desc: loc('trait_large'),
         type: 'genus',
+        val: -5,
     },
     strong: { // Increased manual resource gain
         desc: loc('trait_strong'),
         type: 'genus',
+        val: 1,
     },
     cold_blooded: { // Weather affects productivity
         desc: loc('trait_cold_blooded'),
         type: 'genus',
+        val: -2,
     },
     scales: { // Minor decrease of soldiers killed in combat
         desc: loc('trait_scales'),
         type: 'genus',
+        val: 5,
     },
     hollow_bones: { // Less Crafted Materials Needed
         desc: loc('trait_hollow_bones'),
         type: 'genus',
+        val: 3,
     },
     rigid: { // Crafting production lowered slightly
         desc: loc('trait_rigid'),
         type: 'genus',
+        val: -1,
     },
     fast_growth: { // Greatly increases odds of population growth each cycle
         desc: loc('trait_fast_growth'),
         type: 'genus',
+        val: 3,
     },
     high_metabolism: { // Food requirements increased by 10%
         desc: loc('trait_high_metabolism'),
         type: 'genus',
+        val: -1,
     },
     photosynth: { // Reduces food requirements dependant on sunshine.
         desc: loc('trait_photosynth'),
         type: 'genus',
+        val: 3,
     },
     asymmetrical: { // Trade selling prices are slightly worse then normal
         desc: loc('trait_asymmetrical'),
         type: 'genus',
+        val: -3,
     },
     spores: { // Birthrate increased when it's windy
         desc: loc('trait_spores'),
         type: 'genus',
+        val: 2,
     },
     spongy: { // Birthrate decreased when it's raining
         desc: loc('trait_spongy'),
         type: 'genus',
+        val: -2,
     },
     submerged: { // Immune to weather effects
         desc: loc('trait_submerged'),
         type: 'genus',
+        val: 3,
     },
     low_light: { // Farming effectiveness decreased
         desc: loc('trait_low_light'),
         type: 'genus',
+        val: -2,
     },
     elusive: { // Spies are never caught
         desc: loc('trait_elusive'),
         type: 'genus',
+        val: 7,
     },
     iron_allergy: { // Iron mining reduced
         desc: loc('trait_iron_allergy'),
         type: 'genus',
+        val: -4,
     },
     smoldering: { // Hot weather is a bonus
         desc: loc('trait_smoldering'),
         type: 'genus',
+        val: 7,
     },
     cold_intolerance: { // Cold weather is a detriment
         desc: loc('trait_cold_intolerance'),
         type: 'genus',
+        val: -4,
     },
     chilled: { // Cold weather is a bonus
         desc: loc('trait_chilled'),
         type: 'genus',
+        val: 7,
     },
     heat_intolerance: { // Hot weather is a detriment
         desc: loc('trait_heat_intolerance'),
         type: 'genus',
+        val: -4,
     },
     scavenger: { // scavenger job is always available
         desc: loc('trait_scavenger'),
         type: 'genus',
+        val: 3,
     },
     nomadic: { // -1 Trade route from trade post
         desc: loc('trait_nomadic'),
         type: 'genus',
+        val: -5,
     },
     immoral: { // Warmonger is a bonus instead of a penalty
         desc: loc('trait_immoral'),
         type: 'genus',
+        val: 4,
     },
     evil: { // You are pure evil
         desc: loc('trait_evil'),
         type: 'genus',
+        val: 0,
     },
     blissful: { // Low morale penalty is halved and citizens never riot.
         desc: loc('trait_blissful'),
         type: 'genus',
+        val: 4,
     },
     pompous: { // Professors are less effective
         desc: loc('trait_pompous'),
         type: 'genus',
+        val: -6,
     },
     creative: { // A.R.P.A. Projects are cheaper
         desc: loc('trait_creative'),
         type: 'major',
+        val: 8,
     },
     diverse: { // Training soldiers takes longer
         desc: loc('trait_diverse'),
         type: 'major',
+        val: -4,
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second
         desc: loc('trait_studious'),
         type: 'major',
+        val: 2,
     },
     arrogant: { // Market prices are higher
         desc: loc('trait_arrogant'),
         type: 'major',
+        val: -2,
     },
     brute: { // Recruitment costs are 1/2 price
         desc: loc('trait_brute'),
         type: 'major',
+        val: 7,
     },
     angry: { // When hungry you get hangry, low food penalty is more severe
         desc: loc('trait_angry'),
         type: 'major',
+        val: -1,
     },
     lazy: { // All production is lowered when the temperature is hot
         desc: loc('trait_lazy'),
         type: 'major',
+        val: -4,
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
         desc: loc('trait_carnivore'),
         type: 'major',
+        val: 2,
     },
     pack_mentality: { // Cabins cost more, but cottages cost less.
         desc: loc('trait_pack_mentality'),
         type: 'major',
+        val: 4,
     },
     tracker: { // 10% increased gains from hunting
         desc: loc('trait_tracker'),
         type: 'major',
+        val: 2,
     },
     beast_of_burden: { // Gains more loot during raids
         desc: loc('trait_beast_of_burden'),
         type: 'major',
+        val: 3,
     },
     herbivore: { // No food is gained from hunting
         desc: loc('trait_herbivore'),
         type: 'major',
+        val: -7,
     },
     pack_rat: { // Storage space is increased
         desc: loc('trait_pack_rat'),
         type: 'major',
+        val: 3,
     },
     paranoid: { // Bank capacity reduced by 10%
         desc: loc('trait_paranoid'),
         type: 'major',
+        val: -3,
     },
     greedy: { // Lowers income from taxes
         desc: loc('trait_greedy'),
         type: 'major',
+        val: -5,
     },
     merchant: { // Better commodity selling prices
         desc: loc('trait_merchant'),
         type: 'major',
+        val: 3,
     },
     smart: { // Knowledge costs reduced by 10%
         desc: loc('trait_smart'),
         type: 'major',
+        val: 6,
     },
     puny: { // Lowers minium bound for army score roll
         desc: loc('trait_puny'),
         type: 'major',
+        val: -4,
     },
     dumb: { // Knowledge costs increased by 5%
         desc: loc('trait_dumb'),
         type: 'major',
+        val: -5,
     },
     tough: { // Mining output increased by 25%
         desc: loc('trait_tough'),
         type: 'major',
+        val: 4,
     },
     nearsighted: { // Libraries are less effective
         desc: loc('trait_nearsighted'),
         type: 'major',
+        val: -4,
     },
     intelligent: { // Professors and Scientists add a global production bonus
         desc: loc('trait_intelligent'),
         type: 'major',
+        val: 7,
     },
     regenerative: { // Wounded soldiers heal 4x as fast
         desc: loc('trait_regenerative'),
         type: 'major',
+        val: 8,
     },
     gluttony: { // Eats 25% more food per rank
         desc: loc('trait_gluttony'),
         type: 'major',
+        val: -2,
     },
     slow: { // The game moves at a 10% slower pace
         desc: loc('trait_slow'),
         type: 'major',
+        val: -5,
     },
     armored: { // Less soldiers die in combat
         desc: loc('trait_armored'),
         type: 'major',
+        val: 4,
     },
     optimistic: { // Minor reduction to stress
         desc: loc('trait_optimistic'),
         type: 'major',
+        val: 5,
     },
     chameleon: { // Barracks have less soldiers
         desc: loc('trait_chameleon'),
         type: 'major',
+        val: 6,
     },
     slow_digestion: { // Your race is more resilient to starvation
         desc: loc('trait_slow_digestion'),
         type: 'major',
+        val: 1,
     },
     hard_of_hearing: { // University science cap gain reduced by 5%
         desc: loc('trait_hard_of_hearing'),
         type: 'major',
+        val: -3,
     },
     resourceful: { // Crafting costs are reduced slightly
         desc: loc('trait_resourceful'),
         type: 'major',
+        val: 4,
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
         desc: loc('trait_selenophobia'),
         type: 'major',
+        val: -6,
     },
     leathery: { // Morale penalty from some weather conditions are reduced.
         desc: loc('trait_leathery'),
         type: 'major',
+        val: 2,
     },
     pessimistic: { // Minor increase to stress
         desc: loc('trait_pessimistic'),
         type: 'major',
+        val: -1,
     },
     hoarder: { // Banks can store 20% more money
         desc: loc('trait_hoarder'),
         type: 'major',
+        val: 4,
     },
     solitary: { // Cabins are cheaper however cottages cost more
         desc: loc('trait_solitary'),
         type: 'major',
+        val: -1,
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
         desc: loc('trait_kindling_kindred'),
         type: 'major',
+        val: 8,
     },
     pyrophobia: { // Smelter productivity is reduced
         desc: loc('trait_pyrophobia'),
         type: 'major',
+        val: -4,
     },
     hyper: { // The game moves at a 5% faster pace
         desc: loc('trait_hyper'),
         type: 'major',
+        val: 4,
     },
     skittish: { // Thunderstorms lower all production
         desc: loc('trait_skittish'),
         type: 'major',
+        val: -4,
     },
     infectious: { // Attacking has a chance to infect other creatures and grow your population
         desc: loc('trait_infectious'),
         type: 'major',
+        val: 4,
     },
     parasite: { // You can only reproduce by infecting victims, spores sometimes find a victim when it's windy
         desc: loc('trait_parasite'),
         type: 'major',
+        val: -4,
     },
     toxic: { // Factory type jobs are more productive
         desc: loc('trait_toxic'),
         type: 'major',
+        val: 5,
     },
     nyctophilia: { // Productivity is lost when it is sunny
         desc: loc('trait_nyctophilia'),
         type: 'major',
+        val: -3,
     },
     cannibalize: { // Eat your own for buffs
         desc: loc('trait_cannibalize'),
         type: 'major',
+        val: 5,
     },
     frail: { // More soldiers die in combat
         desc: loc('trait_frail'),
         type: 'major',
+        val: -5,
     },
     malnutrition: { // The rationing penalty is weaker
         desc: loc('trait_malnutrition'),
         type: 'major',
+        val: 1,
     },
     claws: { // Raises maximum bound for army score roll
         desc: loc('trait_claws'),
         type: 'major',
+        val: 5,
     },
     atrophy: { // More prone to starvation
         desc: loc('trait_atrophy'),
         type: 'major',
+        val: -1,
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
         desc: loc('trait_hivemind'),
         type: 'major',
+        val: 9,
     },
     tunneler: { // Mines and Coal Mines are cheaper. 
         desc: loc('trait_tunneler'),
         type: 'major',
+        val: 2,
     },
     frenzy: { // Combat causes a temporary increase in morale
         desc: loc('trait_frenzy'),
         type: 'major',
+        val: 5,
     },
     apex_predator: { // Hunting and Combat ratings are significantly higher, but you can't use armor
         desc: loc('trait_apex_predator'),
         type: 'major',
+        val: 6,
     },
     invertebrate: { // You have no bones
         desc: loc('trait_invertebrate'),
         type: 'major',
+        val: -2,
     },
     suction_grip: { // Global productivity boost
         desc: loc('trait_suction_grip'),
         type: 'major',
+        val: 4,
     },
     befuddle: { // Spy actions complete in 1/2 time
         desc: loc('trait_befuddle'),
         type: 'major',
+        val: 4,
     },
     environmentalist: { // Use renewable energy instead of dirtly coal & oil power.
         desc: loc('trait_environmentalist'),
         type: 'major',
+        val: -5,
     },
     unorganized: { // Increased time between revolutions
         desc: loc('trait_unorganized'),
         type: 'major',
+        val: -2,
     },
     musical: { // Entertainers are more effective
         desc: loc('trait_musical'),
         type: 'major',
+        val: 5,
     },
     revive: { // Soldiers sometimes self res
         desc: loc('trait_revive'),
         type: 'major',
+        val: 4,
     },
     slow_regen: { // Your soldiers wounds heal slower.
         desc: loc('trait_slow_regen'),
         type: 'major',
+        val: -4,
     },
     forge: { // Smelters do not require fuel
         desc: loc('trait_forge'),
         type: 'major',
+        val: 4,
     },
     autoignition: { // Library knowledge bonus reduced
         desc: loc('trait_autoignition'),
         type: 'major',
+        val: -4,
     },
     blurry: { // Increased success chance of spies
         desc: loc('trait_blurry'),
         type: 'major',
+        val: 5,
     },
     snowy: { // You lose morale if it's not snowing
         desc: loc('trait_snowy'),
         type: 'major',
+        val: -3,
     },
     ravenous: { // Drastically increases food consumption
         desc: loc('trait_ravenous'),
         type: 'major',
+        val: -5,
     },
     ghostly: { // More souls from hunting and soul wells, increased soul gem drop chance
         desc: loc('trait_ghostly'),
         type: 'major',
+        val: 5,
     },
     lawless: { // Government lockout timer is reduced by 90%
         desc: loc('trait_lawless'),
         type: 'major',
+        val: 3,
     },
     mistrustful: { // Lose standing with rival cities quicker
         desc: loc('trait_mistrustful'),
         type: 'major',
+        val: -1,
     },
     humpback: { // Starvation resistance and miner/lumberjack boost
         desc: loc('trait_humpback'),
         type: 'major',
+        val: 4,
     },
     thalassophobia: { // Wharves are unavailable
         desc: loc('trait_thalassophobia'),
         type: 'major',
+        val: -4,
     },
     fiery: { // Major war bonus
         desc: loc('trait_fiery'),
         type: 'major',
+        val: 10,
     },
     terrifying: { // No one will trade with you
         desc: loc('trait_terrifying'),
         type: 'major',
+        val: 6,
     },
     slaver: { // You capture victims and force them to work for you
         desc: loc('trait_slaver'),
         type: 'major',
+        val: 10,
     },
     compact: { // You hardly take up any space at all
         desc: loc('trait_compact'),
         type: 'major',
+        val: 10,
     },
     conniving: { // Better trade deals
         desc: loc('trait_conniving'),
         type: 'major',
+        val: 4,
     },
     pathetic: { // You suck at combat
         desc: loc('trait_pathetic'),
         type: 'major',
+        val: -5,
     },
     spiritual: { // Temples are 13% more effective
         desc: loc('trait_spiritual'),
         type: 'major',
+        val: 4,
     },
     truthful: { // Bankers are less effective
         desc: loc('trait_truthful'),
         type: 'major',
+        val: -7,
     },
     unified: { // Start with unification
         desc: loc('trait_unified'),
         type: 'major',
+        val: 4,
     },
     rainbow: { // Gain a bonus if sunny after raining
         desc: loc('trait_rainbow'),
         type: 'major',
+        val: 3,
     },
     magnificent: { // construct shrines to receive boons
         desc: loc('trait_magnificent'),
         type: 'major',
+        val: 6,
     },
     noble: { // Unable to raise taxes above base value or set very low taxes
         desc: loc('trait_noble'),
         type: 'major',
+        val: -3,
     },
     tactical: { // War Bonus
         desc: loc('trait_tactical'),

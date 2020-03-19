@@ -1,7 +1,7 @@
-import { global, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { clearElement, powerModifier, challenge_multiplier, spaceCostMultiplier, vBind, messageQueue, randomKey } from './functions.js';
+import { global, webWorker, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
+import { clearElement, powerModifier, calcPrestige, spaceCostMultiplier, vBind, messageQueue, randomKey } from './functions.js';
 import { unlockAchieve } from './achieve.js';
-import { races } from './races.js';
+import { races, traits, genus_traits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
@@ -2561,29 +2561,9 @@ const interstellarProjects = {
                     let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
                     let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                     if (global.tech['whitehole']){
-                        let garrisoned = global.civic.garrison.workers;
-                        for (let i=0; i<3; i++){
-                            if (global.civic.foreign[`gov${i}`].occ){
-                                garrisoned += 20;
-                            }
-                        }
-                        let pop = global['resource'][global.race.species].amount + garrisoned;
-                        let plasmid = Math.round(pop / 2);
-                        let k_base = global.stats.know;
-                        let k_inc = 40000;
-                        while (k_base > k_inc){
-                            plasmid++;
-                            k_base -= k_inc;
-                            k_inc *= 1.012;
-                        }
+                        let gains = calcPrestige('bigbang');
                         let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                        plasmid = challenge_multiplier(plasmid,'bigbang');
-                        let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 2.5),'bigbang');
-                        let dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
-                        dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
-                        dark = challenge_multiplier(dark,'bigbang',3);
-
-                        return `<div>${loc('interstellar_blackhole_desc4',[home,mass,exotic])}</div><div class="has-text-advanced">${loc('interstellar_blackhole_desc5',[plasmid,phage,dark,plasmidType])}</div>`;
+                        return `<div>${loc('interstellar_blackhole_desc4',[home,mass,exotic])}</div><div class="has-text-advanced">${loc('interstellar_blackhole_desc5',[gains.plasmid,gains.phage,gains.dark,plasmidType])}</div>`;
                     }
                     else {
                         return global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_blackhole_desc4',[home,mass,exotic]) : loc('interstellar_blackhole_desc3',[home,mass]);
@@ -3114,6 +3094,7 @@ const interstellarProjects = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    ascendLab();
                     return true;
                 }
                 return false;
@@ -3145,47 +3126,8 @@ const interstellarProjects = {
 };
 
 function astrialProjection(){
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let plasmid = global['resource'][global.race.species].amount + garrisoned;
-    let k_base = global.stats.know;
-    let k_inc = 30000;
-    while (k_base > k_inc){
-        plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.008;
-    }
-    plasmid = challenge_multiplier(plasmid,'ascend');
-    let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E * 3.5),'ascend');
-
-    let harmony = 1;
-    if (global.race['no_plasmid']){ harmony++; }
-    if (global.race['no_trade']){ harmony++; }
-    if (global.race['no_craft']){ harmony++; }
-    if (global.race['no_crispr']){ harmony++; }
-    if (global.race['weak_mastery']){ harmony++; }
-    if (harmony > 5){
-        harmony = 5;
-    }
-    switch (global.race.universe){
-        case 'micro':
-            harmony *= 0.25;
-            break;
-        case 'heavy':
-            harmony *= 1.2;
-            break;
-        case 'antimatter':
-            harmony *= 1.1;
-            break;
-        default:
-            break;
-    }
-
-    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[plasmid,loc('resource_Plasmid_plural_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div>`;
+    let gains = calcPrestige('ascend');
+    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,loc('resource_Plasmid_plural_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div>`;
 }
 
 const galaxyProjects = {
@@ -5234,4 +5176,202 @@ export function setUniverse(){
                 clearElement($(`#pop${id}`),true);
             });
     }
+}
+
+function ascendLab(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    clearElement($(`#city`));
+    global.settings.showCivic = false;
+    global.settings.showResearch = false;
+    global.settings.showResources = false;
+    global.settings.showGenetics = false;
+    global.settings.showSpace = false;
+    global.settings.showDeep = false;
+    global.settings.showGalactic = false;
+    global.settings.showPortal = false;
+    global.settings.spaceTabs = 0;
+
+    let lab = $(`<div id="celestialLab" class="celestialLab"></div>`);
+    $(`#city`).append(lab);
+
+    lab.append(`<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ genes }}</span></div>`);
+    
+    let name = $(`<div class="fields"><div class="name">${loc('genelab_name')} <b-input v-model="name" maxlength="20"></b-input></div><div class="entity">${loc('genelab_entity')} <b-input v-model="entity" maxlength="40"></b-input></div><div class="name">${loc('genelab_home')} <b-input v-model="home" maxlength="20"></b-input></div> <div>${loc('genelab_desc')} <b-input v-model="desc" maxlength="255"></b-input></div></div>`);
+    lab.append(name);
+
+    let planets = $(`<div class="fields">
+        <div class="name">${loc('genelab_red')} <b-input v-model="red" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_hell')} <b-input v-model="hell" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_gas')} <b-input v-model="gas" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_gas_moon')} <b-input v-model="gas_moon" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_dwarf')} <b-input v-model="dwarf" maxlength="20"></b-input></div></div>`);
+    lab.append(planets);
+
+    let genes = $(`<div class="sequence"></div>`);
+    lab.append(genes);
+
+    let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
+    Object.keys(genus_traits).forEach(function (type){
+        genus = genus + `<div class="field"><b-tooltip :label="genusDesc('${type}')" position="is-bottom" multilined animated><b-radio v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></b-tooltip></div>`;
+    });
+    genus = genus + `</section></template></div>`;
+    genes.append($(genus));
+
+    let trait_list = `<div class="trait_selection"><div class="has-text-warning">${loc('genelab_traits')}</div><template><section>`;
+    Object.keys(traits).sort().forEach(function (trait){
+        if (traits[trait].type === 'major'){
+            let cost = traits[trait].val >= 0 ? `<span class="has-text-advanced">${traits[trait].val}</span>` : `<span class="has-text-caution">${traits[trait].val}</span>`;
+            let shade = traits[trait].val >= 0 ? 'success' : 'danger';
+            trait_list = trait_list + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-${shade}">${loc(`trait_${trait}_name`)}</span> (${cost})</b-checkbox></b-tooltip></div>`;
+        }
+    });
+    trait_list = trait_list + `</section></template></div>`;
+    genes.append($(trait_list));
+
+    var genome = {
+        name: 'Zombie',
+        desc: `Zombies aren't so much a species as they are the shambling remains of one who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
+        entity: 'rotting bipedal creatures',
+        home: 'Grave',
+        red: 'Brains',
+        hell: 'Rigor Mortis',
+        gas: 'Decompose',
+        gas_moon: 'Bones',
+        dwarf: 'Double Tap',
+        genes: 10,
+        genus: 'humanoid',
+        traitlist: []
+    };
+
+    vBind({
+        el: '#celestialLab',
+        data: genome,
+        methods: {
+            genusDesc(g){
+                let desc = '';
+                Object.keys(genus_traits[g]).forEach(function (t){
+                    if (traits[t]){
+                        desc = desc + `${traits[t].desc} `;
+                    }
+                });                
+                return desc;
+            },
+            trait(t){
+                return traits[t].desc;
+            },
+            geneEdit(){
+                genome.genes = calcGenomScore(genome);
+            }
+        }
+    });
+}
+
+function calcGenomScore(genome){
+    let genes = 10;
+    Object.keys(genus_traits[genome.genus]).forEach(function (t){
+        genes -= traits[t].val;
+    });
+    for (let i=0; i<genome.traitlist.length; i++){
+        genes -= traits[genome.traitlist[i]].val;
+    }
+    return genes;
+}
+
+function ascend(){
+    global.lastMsg = false;
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let genus = races[god].type;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let plasmid = global.race.Plasmid.count;
+    let antiplasmid = global.race.Plasmid.anti;
+    let phage = global.race.Phage.count;
+
+    let gains = calcPrestige('ascend');
+    let new_plasmid = gains.plasmid;
+    let new_phage = gains.phage;
+
+    phage += new_phage;
+    global.stats.reset++;
+    global.stats.bioseed++;
+    global.stats.tdays += global.stats.days;
+    global.stats.days = 0;
+    global.stats.tknow += global.stats.know;
+    global.stats.know = 0;
+    global.stats.tstarved += global.stats.starved;
+    global.stats.starved = 0;
+    global.stats.tdied += global.stats.died;
+    global.stats.died = 0;
+    if (global.race.universe === 'antimatter'){
+        antiplasmid += new_plasmid;
+        global.stats.antiplasmid += new_plasmid;
+    }
+    else {
+        plasmid += new_plasmid;
+        global.stats.plasmid += new_plasmid;
+    }
+    global.stats.phage += new_phage;
+    unlockAchieve(`biome_${biome}`);
+    if (atmo !== 'none'){
+        unlockAchieve(`atmo_${atmo}`);
+    }
+    unlockAchieve(`genus_${genus}`);
+
+    if (typeof global.tech['world_control'] === 'undefined'){
+        unlockAchieve(`cult_of_personality`);
+    }
+
+    let good_rocks = 0;
+    Object.keys(global.city.geology).forEach(function (g){
+        if (global.city.geology[g] > 0) {
+            good_rocks++;
+        }
+        else if (global.city.geology[g] < 0){
+            bad_rocks++;
+        }
+    });
+    if (good_rocks >= 4) {
+        unlockAchieve('miners_dream');
+    }
+
+    checkAchievements();
+
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        Plasmid: { count: plasmid, anti: antiplasmid },
+        Phage: { count: phage },
+        Dark: { count: global.race.Dark.count },
+        universe: global.race.universe,
+        seeded: true,
+        probes: 4,
+        seed: Math.floor(Math.seededRandom(10000)),
+    };
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome,
+        ptrait: atmo
+    };
+    global.tech = { theology: 1 };
+    clearStates();
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
 }
