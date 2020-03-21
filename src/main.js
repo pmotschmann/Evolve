@@ -504,7 +504,7 @@ function fastLoop(){
     const date = new Date();
 
     breakdown.p['Global'] = {};
-    var global_multiplier = 1000;
+    var global_multiplier = 1;
     let applyPlasmid = false;
     if (global.race.Plasmid.count > 0  && ((global.race.universe !== 'antimatter') || (global.genes['bleed'] && global.race.universe === 'antimatter'))){
         breakdown.p['Global'][loc('resource_Plasmid_name')] = (plasmidBonus('plasmid') * 100) + '%';
