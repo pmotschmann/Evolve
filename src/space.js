@@ -5187,11 +5187,11 @@ export function setUniverse(){
 }
 
 function ascendLab(){
-    unlockAchieve(`biome_${global.city.biome}`);
-    unlockAchieve(`ascended`);
     if (webWorker.w){
         webWorker.w.terminate();
     }
+    unlockAchieve(`biome_${global.city.biome}`);
+    unlockAchieve(`ascended`);
     global.race['noexport'] = 1;
     clearElement($(`#city`));
     global.settings.showCivic = false;
