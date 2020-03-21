@@ -2,7 +2,7 @@ import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, s
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
-import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
+import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
@@ -14305,6 +14305,15 @@ function fanaticism(god){
             break;
         case 'unicorn':
             fanaticTrait('magnificent');
+            break;
+        case 'custom':
+            let trait = 'pathetic';
+            for (let i=0; i<global.custom.race0.traits.length; i++){
+                if (traits[global.custom.race0.traits[i]].val > traits[trait].val){
+                    trait = global.custom.race0.traits[i];
+                }
+            }
+            fanaticTrait(trait);
             break;
         default:
             randomMinorTrait();

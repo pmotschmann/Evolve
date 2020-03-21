@@ -154,6 +154,9 @@ export function mainVue(){
 }
 
 window.exportGame = function exportGame(){
+    if (global.race['noexport']){
+        return 'Export is not available during Race Creation';
+    }
     return LZString.compressToBase64(JSON.stringify(global));
 }
 

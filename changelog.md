@@ -23,6 +23,7 @@ Colonists will now be automatically assigned when a Living Quarter is completed 
 More robust research catagories<br>
 Large cost creep penalty reduced to 0.005 from 0.01<br>
 Strong gathering bonus increased from 2 to 5<br>
+Genetics lab custom mutation costs rescaled to static values depending on the genetic trait<br>
 
 #### 0.7.28 - 3/16/2020 ####
 Antimatter Universe now gives a 10% prestige bonus post MAD<br>

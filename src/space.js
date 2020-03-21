@@ -5187,10 +5187,12 @@ export function setUniverse(){
 }
 
 function ascendLab(){
+    unlockAchieve(`biome_${global.city.biome}`);
     unlockAchieve(`ascended`);
     if (webWorker.w){
         webWorker.w.terminate();
     }
+    global.race['noexport'] = 1;
     clearElement($(`#city`));
     global.settings.showCivic = false;
     global.settings.showResearch = false;
@@ -5315,7 +5317,8 @@ function ascendLab(){
                 genome.genes = calcGenomeScore(genome);
             },
             setRace(){
-                if (calcGenomeScore(genome) >= 0){
+                if (calcGenomeScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
+                    && genome.red.length > 0 && genome.hell.length > 0 && genome.gas.length > 0 && genome.gas_moon.length > 0 && genome.dwarf.length > 0){
                     global['custom'] = {
                         race0: {
                             name: genome.name,
@@ -5403,7 +5406,6 @@ function ascend(){
     global.stats.phage += new_phage;
     global.stats.harmony += new_harmony;
 
-    unlockAchieve(`biome_${biome}`);
     if (atmo !== 'none'){
         unlockAchieve(`atmo_${atmo}`);
     }

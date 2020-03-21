@@ -1182,7 +1182,10 @@ function genetics(){
                     }
                 },
                 purge(t){
-                    let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
+                    let cost = traits[t].val * 5;
+                    if (global.race.species === 'custom'){
+                        cost *= 10;
+                    }
                     if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
                         if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti -= cost;
@@ -1214,7 +1217,10 @@ function genetics(){
                     }
                 },
                 gain(t){
-                    let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
+                    let cost = traits[t].val * 5;
+                    if (global.race.species === 'custom'){
+                        cost *= 10;
+                    }
                     if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
                         if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti -= cost;
