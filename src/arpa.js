@@ -1255,11 +1255,17 @@ function genetics(){
                     return loc(`trait_${t}_effect`);
                 },
                 removeCost(t){
-                    let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
+                    let cost = traits[t].val * 5;
+                    if (global.race.species === 'custom'){
+                        cost *= 10;
+                    }
                     return loc('arpa_remove',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
                 },
                 addCost(t){
-                    let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
+                    let cost = traits[t].val * 5;
+                    if (global.race.species === 'custom'){
+                        cost *= 10;
+                    }
                     return loc('arpa_gain',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
                 },
                 genePurchasable(t){
