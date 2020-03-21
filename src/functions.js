@@ -266,7 +266,11 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
         cat = 'city';
     }
     if (global.race.universe === 'micro'){
-        let dark = 0.02 + (Math.log(100 + global.race.Dark.count) - 4.605170185988092) / 20;
+        let de = global.race.Dark.count;
+        if (global.race.Harmony.count > 0){
+            de *= 1 + (global.race.Harmony.count * 0.01);
+        }
+        let dark = 0.02 + (Math.log(100 + de) - 4.605170185988092) / 20;
         if (dark > 0.06){
             dark = 0.06;
         }
@@ -321,7 +325,11 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
         sector = 'space';
     }
     if (global.race.universe === 'micro'){
-        let dark = 0.01 + (Math.log(100 + global.race.Dark.count) - 4.605170185988092) / 35;
+        let de = global.race.Dark.count;
+        if (global.race.Harmony.count > 0){
+            de *= 1 + (global.race.Harmony.count * 0.01);
+        }
+        let dark = 0.01 + (Math.log(100 + de) - 4.605170185988092) / 35;
         if (dark > 0.04){
             dark = 0.04;
         }
@@ -335,6 +343,40 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     }
     if (global.race['small']){ mutiplier -= 0.005; }
     if (global.race['compact']){ mutiplier -= 0.01; }
+    if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
+        let boost = 0;
+        switch (global.race.universe){
+            case 'heavy':
+                if (global.stats.achieve.ascended.hasOwnProperty('h')){
+                    boost = global.stats.achieve.ascended.h * global.race.Harmony.count;
+                }
+                break;
+            case 'antimatter':
+                if (global.stats.achieve.ascended.hasOwnProperty('a')){
+                    boost = global.stats.achieve.ascended.a * global.race.Harmony.count;
+                }
+                break;
+            case 'evil':
+                if (global.stats.achieve.ascended.hasOwnProperty('e')){
+                    boost = global.stats.achieve.ascended.e * global.race.Harmony.count;
+                }
+                break;
+            case 'micro':
+                if (global.stats.achieve.ascended.hasOwnProperty('m')){
+                    boost = global.stats.achieve.ascended.m * global.race.Harmony.count;
+                }
+                break;
+            default:
+                if (global.stats.achieve.ascended.hasOwnProperty('l')){
+                    boost = global.stats.achieve.ascended.l * global.race.Harmony.count;
+                }
+                break;
+        }
+        if (boost > 0){
+            boost = (Math.log(50 + boost) - 3.912023005428146) * 0.01;
+            mutiplier -= +(boost).toFixed(5);
+        }
+    }
     if (mutiplier < 0.01){
         mutiplier = 0.01;
     }
@@ -468,7 +510,11 @@ export function timeFormat(time){
 
 export function powerModifier(energy){
     if (global.race.universe === 'antimatter'){
-        energy *= 1 + (Math.log(50 + global.race.Dark.count) - 3.912023005428146) / 5;
+        let de = global.race.Dark.count;
+        if (global.race.Harmony.count > 0){
+            de *= 1 + (global.race.Harmony.count * 0.01);
+        }
+        energy *= 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
         energy = +energy.toFixed(2);
     }
     return energy;

@@ -1583,7 +1583,11 @@ function lootModify(val,gov){
         loot = loot * 0.9;
     }
     if (global.race.universe === 'evil'){
-        loot = loot * (1 + ((Math.log2(10 + global.race.Dark.count) - 3.321928094887362) / 5));
+        let de = global.race.Dark.count;
+        if (global.race.Harmony.count > 0){
+            de *= 1 + (global.race.Harmony.count * 0.01);
+        }
+        loot = loot * (1 + ((Math.log2(10 + de) - 3.321928094887362) / 5));
     }
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }
@@ -1802,6 +1806,7 @@ function warhead(){
         Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
+        Harmony: { count: global.race.Harmony.count },
         universe: global.race.universe,
         seeded: false,
     };

@@ -5058,7 +5058,11 @@ export function swarm_adjust(res){
 
 export function fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
-        fuel *= 1.25 + (0.5 * 0.995 ** global.race.Dark.count);
+        let de = global.race.Dark.count;
+        if (global.race.Harmony.count > 0){
+            de *= 1 + (global.race.Harmony.count * 0.01);
+        }
+        fuel *= 1.25 + (0.5 * 0.995 ** de);
     }
     if (global.city['mass_driver'] && p_on['mass_driver']){
         fuel *= 0.95 ** p_on['mass_driver'];
@@ -5071,7 +5075,11 @@ export function fuel_adjust(fuel){
 
 export function int_fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
-        fuel *= 1.2 + (0.3 * 0.995 ** global.race.Dark.count);
+        let de = global.race.Dark.count;
+        if (global.race.Harmony.count > 0){
+            de *= 1 + (global.race.Harmony.count * 0.01);
+        }
+        fuel *= 1.2 + (0.3 * 0.995 ** de);
     }
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
@@ -5364,14 +5372,18 @@ function ascend(){
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
+    let harmony = global.race.Harmony.count;
 
     let gains = calcPrestige('ascend');
     let new_plasmid = gains.plasmid;
     let new_phage = gains.phage;
+    let new_harmony = gains.harmony;
 
     phage += new_phage;
+    harmony += new_harmony;
+
     global.stats.reset++;
-    global.stats.bioseed++;
+    global.stats.ascend++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
     global.stats.tknow += global.stats.know;
@@ -5389,6 +5401,8 @@ function ascend(){
         global.stats.plasmid += new_plasmid;
     }
     global.stats.phage += new_phage;
+    global.stats.harmony += new_harmony;
+
     unlockAchieve(`biome_${biome}`);
     if (atmo !== 'none'){
         unlockAchieve(`atmo_${atmo}`);
@@ -5425,6 +5439,7 @@ function ascend(){
         Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: phage },
         Dark: { count: global.race.Dark.count },
+        Harmony: { count: harmony },
         universe: global.race.universe,
         seeded: true,
         probes: 4,

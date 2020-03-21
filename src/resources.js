@@ -268,6 +268,7 @@ export function defineResources(){
     loadSpecialResource('AntiPlasmid');
     loadSpecialResource('Phage');
     loadSpecialResource('Dark');
+    loadSpecialResource('Harmony');
 }
 
 // Load resource function
@@ -1508,7 +1509,11 @@ export function spatialReasoning(value){
         value *= 1 + (plasmids / divisor);
     }
     if (global.race.universe === 'standard'){
-        value *= 1 + (global.race.Dark.count / 200);
+        let de = global.race.Dark.count;
+        if (global.race.Harmony.count > 0){
+            de *= 1 + (global.race.Harmony.count * 0.0001);
+        }
+        value *= 1 + (de / 200);
     }
     if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
         let temple = 0.06;

@@ -682,6 +682,12 @@ if (!global.stats['bioseed']){
 if (!global.stats['blackhole']){
     global.stats['blackhole'] = 0;
 }
+if (!global.stats['ascend']){
+    global.stats['ascend'] = 0;
+}
+if (!global.stats['harmony']){
+    global.stats['harmony'] = 0;
+}
 if (!global['lastMsg']){
     global['lastMsg'] = false;
 }
@@ -699,6 +705,9 @@ if (!global.race['Phage']){
 }
 if (!global.race['Dark']){
     global.race['Dark'] = { count: 0 };
+}
+if (!global.race['Harmony']){
+    global.race['Harmony'] = { count: 0 };
 }
 if (!global.race['deterioration']){
     global.race['deterioration'] = 0;
@@ -1221,6 +1230,7 @@ window.soft_reset = function reset(){
         Plasmid: { count: global.race.Plasmid.count, anti: global.race.Plasmid.anti },
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
+        Harmony: { count: global.race.Harmony.count },
         universe: global.race.universe,
         seeded: global.race.seeded,
         probes: global.race.probes,
