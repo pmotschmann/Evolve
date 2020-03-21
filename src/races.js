@@ -763,19 +763,23 @@ export const races = {
 
 function customRace(){
     if (global.hasOwnProperty('custom')){
+        let trait = {};
+        for (let i=0; i<global.custom.race0.traits.length; i++){
+            trait[global.custom.race0.traits[i]] = 1;
+        }
         return {
             name: global.custom.race0.name,
-            desc: loc('race_unicorn_desc'),
-            type: global.custom.race0.type,
-            home: loc('race_unicorn_home'),
-            entity: loc('race_unicorn_entity'),
-            traits: global.custom.race0.traits,
+            desc: global.custom.race0.desc,
+            type: global.custom.race0.genus,
+            home: global.custom.race0.home,
+            entity: global.custom.race0.entity,
+            traits: trait,
             solar: {
-                red: loc('race_unicorn_solar_red'),
-                hell: loc('race_unicorn_solar_hell'),
-                gas: loc('race_unicorn_solar_gas'),
-                gas_moon: loc('race_unicorn_solar_gas_moon'),
-                dwarf: loc('race_unicorn_solar_dwarf'),
+                red: global.custom.race0.red,
+                hell: global.custom.race0.hell,
+                gas: global.custom.race0.gas,
+                gas_moon: global.custom.race0.gas_moon,
+                dwarf: global.custom.race0.dwarf,
             }
         };
     }
@@ -1432,6 +1436,11 @@ export const traits = {
         desc: loc('trait_noble'),
         type: 'major',
         val: -3,
+    },
+    soul_eater: {
+        desc: loc('trait_soul_eater'),
+        type: 'special',
+        val: 0,
     },
     tactical: { // War Bonus
         desc: loc('trait_tactical'),

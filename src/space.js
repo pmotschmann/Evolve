@@ -1,6 +1,6 @@
-import { global, webWorker, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
+import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
 import { clearElement, powerModifier, calcPrestige, spaceCostMultiplier, vBind, messageQueue, randomKey } from './functions.js';
-import { unlockAchieve } from './achieve.js';
+import { unlockAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -5179,6 +5179,7 @@ export function setUniverse(){
 }
 
 function ascendLab(){
+    unlockAchieve(`ascended`);
     if (webWorker.w){
         webWorker.w.terminate();
     }
@@ -5212,27 +5213,66 @@ function ascendLab(){
     let genes = $(`<div class="sequence"></div>`);
     lab.append(genes);
 
+    let dGenus = false;
     let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
     Object.keys(genus_traits).forEach(function (type){
-        genus = genus + `<div class="field"><b-tooltip :label="genusDesc('${type}')" position="is-bottom" multilined animated><b-radio v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></b-tooltip></div>`;
+        if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
+            if (!dGenus){ dGenus = type; }
+            genus = genus + `<div class="field"><b-tooltip :label="genusDesc('${type}')" position="is-bottom" multilined animated><b-radio v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></b-tooltip></div>`;
+        }
     });
     genus = genus + `</section></template></div>`;
     genes.append($(genus));
 
     let trait_list = `<div class="trait_selection"><div class="has-text-warning">${loc('genelab_traits')}</div><template><section>`;
-    Object.keys(traits).sort().forEach(function (trait){
-        if (traits[trait].type === 'major'){
-            let cost = traits[trait].val >= 0 ? `<span class="has-text-advanced">${traits[trait].val}</span>` : `<span class="has-text-caution">${traits[trait].val}</span>`;
-            let shade = traits[trait].val >= 0 ? 'success' : 'danger';
-            trait_list = trait_list + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-${shade}">${loc(`trait_${trait}_name`)}</span> (${cost})</b-checkbox></b-tooltip></div>`;
+    let negative = '';
+    let unlockedTraits = {};
+    Object.keys(races).forEach(function (race){
+        let type = races[race].type;
+        if (
+            (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l > 0)
+                ||
+            (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)
+            ){
+            if (races[race].hasOwnProperty('traits')){
+                Object.keys(races[race].traits).forEach(function (trait){
+                    unlockedTraits[trait] = true;
+                });
+            }
         }
     });
-    trait_list = trait_list + `</section></template></div>`;
+
+    Object.keys(unlockedTraits).sort().forEach(function (trait){
+        if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
+            if (traits[trait].val >= 0){
+                trait_list = trait_list + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">${traits[trait].val}</span>)</b-checkbox></b-tooltip></div>`;
+            }
+            else {
+                negative = negative + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">${traits[trait].val}</span>)</b-checkbox></b-tooltip></div>`;
+            }
+        }
+    });
+    trait_list = trait_list + negative + `</section></template></div>`;
     genes.append($(trait_list));
 
-    var genome = {
+    lab.append($(`<hr><div class="create"><button class="button" @click="setRace()">${loc('genelab_create')}</button></div>`));
+
+    var genome = global.hasOwnProperty('custom') ? {
+        name: global.custom.race0.name,
+        desc: global.custom.race0.desc,
+        entity: global.custom.race0.entity,
+        home: global.custom.race0.home,
+        red: global.custom.race0.red,
+        hell: global.custom.race0.hell,
+        gas: global.custom.race0.gas,
+        gas_moon: global.custom.race0.gas_moon,
+        dwarf: global.custom.race0.dwarf,
+        genes: 0,
+        genus: global.custom.race0.genus,
+        traitlist: global.custom.race0.traits
+    } : {
         name: 'Zombie',
-        desc: `Zombies aren't so much a species as they are the shambling remains of one who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
+        desc: `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
         entity: 'rotting bipedal creatures',
         home: 'Grave',
         red: 'Brains',
@@ -5241,9 +5281,11 @@ function ascendLab(){
         gas_moon: 'Bones',
         dwarf: 'Double Tap',
         genes: 10,
-        genus: 'humanoid',
+        genus: dGenus,
         traitlist: []
     };
+
+    genome.genes = calcGenomeScore(genome);
 
     vBind({
         el: '#celestialLab',
@@ -5262,14 +5304,45 @@ function ascendLab(){
                 return traits[t].desc;
             },
             geneEdit(){
-                genome.genes = calcGenomScore(genome);
+                genome.genes = calcGenomeScore(genome);
+            },
+            setRace(){
+                if (calcGenomeScore(genome) >= 0){
+                    global['custom'] = {
+                        race0: {
+                            name: genome.name,
+                            desc: genome.desc,
+                            entity: genome.entity,
+                            home: genome.home,
+                            red: genome.red,
+                            hell: genome.hell,
+                            gas: genome.gas,
+                            gas_moon: genome.gas_moon,
+                            dwarf: genome.dwarf,
+                            genus: genome.genus,
+                            traits: genome.traitlist
+                        }
+                    }
+                    ascend();
+                }
             }
         }
     });
 }
 
-function calcGenomScore(genome){
-    let genes = 10;
+function calcGenomeScore(genome){
+    let genes = 0;
+
+    if (global.stats.achieve[`ascended`]){
+        let types = ['l','a','h','e','m'];
+        for (let i=0; i<types.length; i++){
+            if (global.stats.achieve.ascended.hasOwnProperty(types[i])){
+                genes += global.stats.achieve.ascended[types[i]];
+            }
+        }
+    }
+    global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l > 0
+
     Object.keys(genus_traits[genome.genus]).forEach(function (t){
         genes -= traits[t].val;
     });
@@ -5337,6 +5410,10 @@ function ascend(){
     });
     if (good_rocks >= 4) {
         unlockAchieve('miners_dream');
+    }
+
+    if (global.galaxy.hasOwnProperty('dreadnought') && global.galaxy.dreadnought.count === 0){
+        unlockAchieve(`dreaded`);
     }
 
     checkAchievements();

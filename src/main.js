@@ -374,7 +374,7 @@ if (global.race.species === 'protoplasm'){
         addAction('evolution','chitin');
     }
     else {
-        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','fey','sand','heat','polar','demonic','celestial','sentience','bunker'];
+        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','fey','sand','heat','polar','demonic','angelic','sentience','bunker'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -382,6 +382,30 @@ if (global.race.species === 'protoplasm'){
         }
 
         let race_options = ['human','orc','elven','troll','orge','cyclops','kobold','goblin','gnome','cath','wolven','centaur','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','mantis','scorpid','antid','entish','cacti','sharkin','octigoran','imp','balorg','seraph','unicorn','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel'];
+        
+        const custom_map = {
+            humanoid: 'humanoid',
+            animal: 'animalism',
+            small: 'dwarfism',
+            giant : 'gigantism',
+            reptilian: 'ectothermic',
+            avian: 'endothermic',
+            insectoid: 'athropods',
+            plant: 'chloroplasts',
+            fungi: 'chitin',
+            aquatic: 'aquatic',
+            fey: 'fey',
+            heat: 'heat',
+            polar: 'polar',
+            sand: 'sand',
+            demonic: 'demonic',
+            angelic: 'celestial'
+        };
+
+        if (races.custom.hasOwnProperty('type') && global.evolution[custom_map[races.custom.type]] && global.evolution[custom_map[races.custom.type]].count > 0){
+            race_options.push('custom');
+        }
+
         for (var i = 0; i < race_options.length; i++){
             if (global.evolution[race_options[i]] && global.evolution[race_options[i]].count == 0){
                 addAction('evolution',race_options[i]);

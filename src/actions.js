@@ -374,9 +374,17 @@ export const actions = {
 
                     if (global.evolution['chitin']){
                         addRaces(['sporgar','shroomi']);
+                        if (races.custom.hasOwnProperty('type') && races.custom.type === 'fungi'){
+                            global.evolution['custom'] = { count: 0 };
+                            addAction('evolution','custom');
+                        }
                     }
                     else {
                         addRaces(['entish','cacti']);
+                        if (races.custom.hasOwnProperty('type') && races.custom.type === 'plant'){
+                            global.evolution['custom'] = { count: 0 };
+                            addAction('evolution','custom');
+                        }
                     }
 
                     if (global.genes['challenge']){
@@ -428,6 +436,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['mantis','scorpid','antid']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'insectoid'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -525,6 +537,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['human','orc','elven']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'humanoid'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -564,6 +580,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['troll','orge','cyclops']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'giant'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -603,6 +623,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['kobold','goblin','gnome']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'small'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -642,6 +666,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['cath','wolven','centaur']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'animal'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -675,6 +703,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['seraph','unicorn']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'angelic'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -708,6 +740,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['balorg','imp']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'demonic'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -739,6 +775,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['sharkin','octigoran']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'aquatic'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -770,6 +810,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['dryad','satyr']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'fey'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -801,6 +845,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['phoenix','salamander']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'heat'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -832,6 +880,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['yeti','wendigo']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'polar'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -863,6 +915,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['tuskin','kamel']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'sand'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -1178,6 +1234,18 @@ export const actions = {
                 }
                 else if (global.evolution['aquatic']){
                     return format_emblem('genus_aquatic');
+                }
+                else if (global.evolution['fey']){
+                    return format_emblem('genus_fey');
+                }
+                else if (global.evolution['heat']){
+                    return format_emblem('genus_heat');
+                }
+                else if (global.evolution['polar']){
+                    return format_emblem('genus_polar');
+                }
+                else if (global.evolution['sand']){
+                    return format_emblem('genus_sand');
                 }
                 else if (global.evolution['demonic']){
                     return format_emblem('genus_demonic');
@@ -1969,6 +2037,26 @@ export const actions = {
                 return false;
             },
             emblem(){ return format_emblem('extinct_unicorn'); }
+        },
+        custom: {
+            id: 'evo-custom',
+            title(){ return races.custom.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.custom.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.custom.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'custom';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_custom'); }
         },
         bunker: {
             id: 'evo-bunker',

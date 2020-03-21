@@ -1,5 +1,6 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue } from './functions.js';
+import { piracy } from './space.js';
 import { loc } from './locale.js'
 
 if (!global.stats['achieve']){
@@ -15,6 +16,16 @@ var achievements = {
         name: loc("achieve_apocalypse_name"),
         desc: loc("achieve_apocalypse_desc"),
         flair: loc("achieve_apocalypse_flair")
+    },
+    ascended: {
+        name: loc("achieve_ascended_name"),
+        desc: loc("achieve_ascended_desc"),
+        flair: loc("achieve_ascended_flair")
+    },
+    dreaded: {
+        name: loc("achieve_dreaded_name"),
+        desc: loc("achieve_dreaded_desc"),
+        flair: loc("achieve_dreaded_flair")
     },
     anarchist: {
         name: loc("achieve_anarchist_name"),
@@ -50,6 +61,11 @@ var achievements = {
         name: loc("achieve_pacifist_name"),
         desc: loc("achieve_pacifist_desc"),
         flair: loc("achieve_pacifist_flair")
+    },
+    neutralized: {
+        name: loc("achieve_neutralized_name"),
+        desc: loc("achieve_neutralized_desc"),
+        flair: loc("achieve_neutralized_flair")
     },
     madagascar_tree: {
         name: loc("achieve_madagascar_tree_name"),
@@ -565,6 +581,11 @@ var achievements = {
         name: loc("achieve_extinct_junker_name"),
         desc: loc("achieve_extinct_junker_desc"),
         flair: loc("achieve_extinct_junker_flair")
+    },
+    extinct_custom: {
+        name: loc("achieve_extinct_custom_name"),
+        desc: loc("achieve_extinct_custom_desc"),
+        flair: loc("achieve_extinct_custom_flair")
     }
 };
 
@@ -967,6 +988,13 @@ export function checkAchievements(){
     if (global.interstellar['stellar_engine'] && (global.interstellar['stellar_engine'].mass + global.interstellar['stellar_engine'].exotic) >= 100){
         unlockFeat('supermassive');
     }
+
+    if (global.tech['piracy'] && global.tech['chthonian'] && global.tech['chthonian'] >= 2 && global.galaxy){
+        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && piracy('gxy_chthonian') === 1){
+            unlockAchieve('neutralized');
+        }
+    }
+
     const date = new Date();
     if (date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
         let murder = false;
