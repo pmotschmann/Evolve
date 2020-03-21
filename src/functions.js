@@ -728,7 +728,16 @@ function scienceAdjust(costs){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * (global.race['smart'] ? 0.9 : 1.05)); }
+                newCosts[res] = function(){
+                    let cost = costs[res]();
+                    if (global.race['smart']){
+                        cost *= 0.9;
+                    }
+                    if (global.race['dumb']){
+                        cost *= 1.05;
+                    }
+                    return Math.round(cost);
+                }
             }
             else {
                 newCosts[res] = function(){ return costs[res](); }

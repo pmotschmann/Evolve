@@ -5417,11 +5417,8 @@ function ascend(){
 
     let good_rocks = 0;
     Object.keys(global.city.geology).forEach(function (g){
-        if (global.city.geology[g] > 0) {
+        if (global.city.geology[g] > 0){
             good_rocks++;
-        }
-        else if (global.city.geology[g] < 0){
-            bad_rocks++;
         }
     });
     if (good_rocks >= 4) {

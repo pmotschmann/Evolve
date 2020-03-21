@@ -2983,7 +2983,7 @@ function fastLoop(){
                 
                 vitreloy_bd[loc('galaxy_vitreloy_plant_bd')] = (vitreloy_production * zig) + 'v';
                 vitreloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-                vitreloy_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+                vitreloy_bd[`ᄂ${loc('galaxy_piracy')}+0`] = -((1 - pirate) * 100) + '%';
                 modRes('Vitreloy', vitreloy_production * hunger * global_multiplier * zig * pirate * time_multiplier);
             }
         }
@@ -2994,7 +2994,7 @@ function fastLoop(){
             let delta = base * global_multiplier * pirate * hunger;
             
             vitreloy_bd[loc('galaxy_raider')] = base + 'v';
-            vitreloy_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
+            vitreloy_bd[`ᄂ${loc('galaxy_piracy')}+1`] = -((1 - pirate) * 100) + '%';
             modRes('Vitreloy', delta * time_multiplier);
         }
         breakdown.p['Vitreloy'] = vitreloy_bd;
@@ -6085,7 +6085,11 @@ function q_check(load){
 }
 
 function diffCalc(res,period){
-    let sec = global.race['slow'] ? 1100 : (global.race['hyper'] ? 950 : 1000);
+    let sec = global.race['slow'] ? 1100 : 1000;
+    if (global.race['hyper']){
+        sec = Math.floor(sec * 0.95);
+    }
+
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;
     if (global.race['decay']){
