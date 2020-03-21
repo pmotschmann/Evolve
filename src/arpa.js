@@ -1186,6 +1186,9 @@ function genetics(){
                     if (global.race.species === 'custom'){
                         cost *= 10;
                     }
+                    if (cost < 0){
+                        cost *= -1;
+                    }
                     if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
                         if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti -= cost;
@@ -1220,6 +1223,9 @@ function genetics(){
                     let cost = traits[t].val * 5;
                     if (global.race.species === 'custom'){
                         cost *= 10;
+                    }
+                    if (cost < 0){
+                        cost *= -1;
                     }
                     if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
                         if (global.race.universe === 'antimatter'){
@@ -1259,12 +1265,18 @@ function genetics(){
                     if (global.race.species === 'custom'){
                         cost *= 10;
                     }
+                    if (cost < 0){
+                        cost *= -1;
+                    }
                     return loc('arpa_remove',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
                 },
                 addCost(t){
                     let cost = traits[t].val * 5;
                     if (global.race.species === 'custom'){
                         cost *= 10;
+                    }
+                    if (cost < 0){
+                        cost *= -1;
                     }
                     return loc('arpa_gain',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
                 },
