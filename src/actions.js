@@ -11926,7 +11926,6 @@ export const actions = {
             effect: loc('tech_advanced_predators_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.portal['repair_droid'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
