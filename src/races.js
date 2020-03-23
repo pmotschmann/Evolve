@@ -1437,10 +1437,15 @@ export const traits = {
         type: 'major',
         val: -3,
     },
-    soul_eater: {
+    soul_eater: { // You eat souls for breakfast, lunch, and dinner
         desc: loc('trait_soul_eater'),
         type: 'special',
         val: 0,
+    },
+    emfield: { // Your body produces a natural electromagnetic field that disrupts electriciy
+        desc: loc('trait_emfield'),
+        type: 'special',
+        val: -20,
     },
     tactical: { // War Bonus
         desc: loc('trait_tactical'),

@@ -361,7 +361,10 @@ const fortressModules = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('gun_emplacement', offset, 200000, 1.25, 'portal'); },
             },
             effect(){
-                return `<div>${loc('portal_gun_emplacement_effect',[2])}</div><div>${loc('portal_gun_emplacement_effect2',[10,25])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let soldiers = global.tech.hell_gun >= 2 ? 2 : 1;
+                let min = global.tech.hell_gun >= 2 ? 20 : 10;
+                let max = global.tech.hell_gun >= 2 ? 45 : 25;
+                return `<div>${loc('portal_gun_emplacement_effect',[soldiers])}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -409,7 +412,7 @@ const fortressModules = {
 function soulForgeSoldiers(){
     let soldiers = Math.round(650 / armyRating(1,'army'));
     if (p_on['gun_emplacement']){
-        soldiers -= p_on['gun_emplacement'] * 2;
+        soldiers -= p_on['gun_emplacement'] * (global.tech.hell_gun >= 2 ? 2 : 1);
         if (soldiers < 0){
             soldiers = 0;
         }
@@ -826,7 +829,8 @@ export function bloodwar(){
         for (let i=0; i<p_on['war_drone']; i++){
             if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
                 let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
-                let remain = demons - Math.rand(25,75);
+                let killed = global.tech.portal >= 7 ? Math.rand(50,125) : Math.rand(25,75);
+                let remain = demons - killed;
                 if (remain > 0){
                     global.portal.fortress.threat -= demons - remain;
                     global.stats.dkills += demons - remain;

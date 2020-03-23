@@ -3127,7 +3127,8 @@ const interstellarProjects = {
 
 function astrialProjection(){
     let gains = calcPrestige('ascend');
-    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,loc('resource_Plasmid_plural_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div>`;
+    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div>`;
 }
 
 const galaxyProjects = {
@@ -3816,7 +3817,7 @@ const galaxyProjects = {
             reqs: { xeno: 6 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('symposium', offset, 8000000, 1.25, 'galaxy'); },
-                Food(offset){ return spaceCostMultiplier('symposium', offset, 125000, 1.25, 'galaxy'); },
+                Food(offset){ return global.race['ravenous'] ? 0 : spaceCostMultiplier('symposium', offset, 125000, 1.25, 'galaxy'); },
                 Lumber(offset){ return spaceCostMultiplier('symposium', offset, 460000, 1.25, 'galaxy'); },
                 Brick(offset){ return spaceCostMultiplier('symposium', offset, 261600, 1.25, 'galaxy'); },
             },

@@ -11911,6 +11911,27 @@ export const actions = {
                 return false;
             }
         },
+        advanced_predators: {
+            id: 'tech-advanced_predators',
+            title: loc('tech_advanced_predators'),
+            desc: loc('tech_advanced_predators'),
+            category: 'hell_dimension',
+            reqs: { portal: 6, xeno: 4 },
+            grant: ['portal',7],
+            cost: {
+                Knowledge(){ return 5000000; },
+                Bolognium(){ return 500000; },
+                Vitreloy(){ return 250000; }
+            },
+            effect: loc('tech_repair_droids_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['repair_droid'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         enhanced_droids: {
             id: 'tech-enhanced_droids',
             title: loc('tech_enhanced_droids'),
@@ -12499,6 +12520,25 @@ export const actions = {
                 return false;
             }
         },
+        advanced_emplacement: {
+            id: 'tech-advanced_emplacement',
+            title: loc('tech_advanced_emplacement'),
+            desc: loc('tech_advanced_emplacement'),
+            category: 'hell_dimension',
+            reqs: { hell_gun: 1, high_tech: 17 },
+            grant: ['hell_gun',2],
+            cost: {
+                Knowledge(){ return 12500000; },
+                Orichalcum(){ return 180000; }
+            },
+            effect(){ return loc('tech_advanced_emplacement_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
@@ -12582,6 +12622,7 @@ export const actions = {
             no_queue(){ return true },
             effect(){
                 let gains = calcPrestige('bioseed');
+                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
                 return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){
@@ -12604,6 +12645,7 @@ export const actions = {
             no_queue(){ return true },
             effect(){
                 let gains = calcPrestige('bioseed');
+                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
                 return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){

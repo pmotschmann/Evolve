@@ -1735,6 +1735,7 @@ function defineMad(){
             },
             warning(){
                 let gains = calcPrestige('mad');
+                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
                 return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
             }
         }
