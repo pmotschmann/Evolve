@@ -11923,7 +11923,7 @@ export const actions = {
                 Bolognium(){ return 500000; },
                 Vitreloy(){ return 250000; }
             },
-            effect: loc('tech_repair_droids_effect'),
+            effect: loc('tech_advanced_predators_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.portal['repair_droid'] = { count: 0, on: 0 };
