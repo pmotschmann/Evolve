@@ -3076,7 +3076,9 @@ const interstellarProjects = {
             },
             effect(){
                 let reward = astrialProjection();
-                return `<div>${loc('interstellar_ascension_trigger_effect')}</div>${reward}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let power = $(this)[0].powered();
+                let power_label = power > 0 ? `<div class="has-text-caution">${loc('minus_power',[power])}</div>` : '';
+                return `<div>${loc('interstellar_ascension_trigger_effect')}</div>${reward}${power_label}`;
             },
             action(){
                 return false;

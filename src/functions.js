@@ -281,7 +281,7 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     }
     if (global.race['small']){ mutiplier -= 0.01; }
     else if (global.race['large']){ mutiplier += 0.005; }
-    if (global.race['compact']){ mutiplier -= 0.02; }
+    if (global.race['compact']){ mutiplier -= 0.015; }
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
         mutiplier -= global.tech['housing_reduction'] * 0.02;
@@ -345,7 +345,7 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
         mutiplier -= global.genes['creep'] * 0.002;
     }
     if (global.race['small']){ mutiplier -= 0.005; }
-    if (global.race['compact']){ mutiplier -= 0.01; }
+    if (global.race['compact']){ mutiplier -= 0.0075; }
     if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         let boost = 0;
         switch (global.race.universe){
@@ -635,7 +635,7 @@ export function calcPrestige(type){
             pop_divisor = 1;
             k_inc = 30000;
             k_mult = 1.008;
-            phage_mult = 3.5;
+            phage_mult = 4;
             break;
     }
 

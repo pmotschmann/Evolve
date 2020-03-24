@@ -506,8 +506,8 @@ function spyCost(i){
 
 function govPrice(gov){
     let price = global.civic.foreign[`gov${gov}`].eco * 15384;
-    price *= 1 + global.civic.foreign[`gov${gov}`].hstl * 1.5 / 100;
-    price *= 1 + global.civic.foreign[`gov${gov}`].unrest * 0.75 / 100;
+    price *= 1 + global.civic.foreign[`gov${gov}`].hstl * 1.6 / 100;
+    price *= 1 - global.civic.foreign[`gov${gov}`].unrest * 0.25 / 100;
     return +price.toFixed(0);
 }
 
@@ -521,7 +521,7 @@ function drawEspModal(gov){
         body.append($(`<button class="button gap" data-esp="influence" @click="influence('${gov}')">${loc(`civics_spy_influence`)}</button>`));
         body.append($(`<button class="button gap" data-esp="sabotage" @click="sabotage('${gov}')">${loc(`civics_spy_sabotage`)}</button>`));
         body.append($(`<button class="button gap" data-esp="incite" @click="incite('${gov}')">${loc(`civics_spy_incite`)}</button>`));
-        if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
+        if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50){
             body.append($(`<button class="button gap" data-esp="annex" @click="annex('${gov}')">${loc(`civics_spy_annex`)}</button>`));
         }
         if (global.civic.foreign[`gov${gov}`].spy >= 3){
@@ -638,6 +638,15 @@ function drawEspModal(gov){
         if (esp === 'purchase'){
             let price = govPrice(gov);
             desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov),price])
+        }
+        else if (esp === 'annex'){
+            if (global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
+                desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov)]);
+            }
+            else {
+                let morale = 200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest
+                desc = loc(`civics_spy_${esp}_goal`,[govTitle(gov),morale]);
+            }
         }
         else {
             desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov)]);

@@ -1442,6 +1442,11 @@ export const traits = {
         type: 'special',
         val: 0,
     },
+    untapped: { // Untapped Potential
+        desc: loc('trait_untapped'),
+        type: 'special',
+        val: 0,
+    },
     emfield: { // Your body produces a natural electromagnetic field that disrupts electriciy
         desc: loc('trait_emfield'),
         type: 'special',

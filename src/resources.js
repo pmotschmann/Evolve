@@ -796,6 +796,9 @@ export function galacticTrade(modal){
         }
     }
 
+    let totals = $(`<div class="market-item trade-offer"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div>`);
+    galaxyTrade.append(totals);
+
     vBind({
         el: modal ? '#specialModal' : '#galaxyTrade',
         data: {
@@ -1112,7 +1115,7 @@ function breakdownPopover(id,name,type){
 
 function loadRouteCounter(){
     let no_market = global.race['no_trade'] ? ' nt' : '';
-    var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><span class="tradeTotal${no_market}"><span class="has-text-warning">${loc('resource_market_trade_routes')}</span> {{ trade }} / {{ mtrade }}</span></div>`);
+    var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><span class="tradeTotal${no_market}"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> {{ trade }} / {{ mtrade }}</span></div>`);
     $('#market').append(market_item);
     vBind({
         el: '#tradeTotal',
