@@ -407,16 +407,16 @@ export function foreignGov(){
             },
             discontent(r,i){
                 if (global.civic.foreign[`gov${i}`].spy >= 3){
-                    if (r < 25){
+                    if (r <= 0){
                         return loc('civics_gov_none');
                     }
-                    else if (r < 50){
+                    else if (r < 30){
                         return loc('civics_gov_low');
                     }
-                    else if (r < 75){
+                    else if (r < 60){
                         return loc('civics_gov_medium');
                     }
-                    else if (r < 100){
+                    else if (r < 90){
                         return loc('civics_gov_high');
                     }
                     else {
