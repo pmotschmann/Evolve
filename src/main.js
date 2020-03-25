@@ -1979,7 +1979,7 @@ function fastLoop(){
 
             let biodome = 0;
             if (global.tech['mars']){
-                biodome = red_on['biodome'] * 2 * global.civic.colonist.workers * zigguratBonus();
+                biodome = red_on['biodome'] * 0.25 * global.civic.colonist.workers * zigguratBonus();
             }
 
             let generated = food_base + hunting + biodome;
@@ -4126,14 +4126,14 @@ function midLoop(){
             }
         }
         if (global.space['space_barracks']){
-            let soldiers = global.tech.marines >= 2 ? 3 : 2;
+            let soldiers = global.tech.marines >= 2 ? 4 : 2;
             lCaps['garrison'] += global.space.space_barracks.on * soldiers;
         }
         if (global.interstellar['cruiser']){
             lCaps['garrison'] += int_on['cruiser'] * 3;
         }
         if (p_on['s_gate'] && global.galaxy['starbase']){
-            let soldiers = global.tech.marines >= 2 ? 6 : 4;
+            let soldiers = global.tech.marines >= 2 ? 8 : 5;
             lCaps['garrison'] += p_on['starbase'] * soldiers;
         }
         if (!global.tech['world_control']){
@@ -4186,9 +4186,15 @@ function midLoop(){
             bd_Citizen[loc('galaxy_dormitory')] = (p_on['dormitory'] * 3)+'v';
         }
         if (global.space['living_quarters']){
-            caps[global.race.species] += red_on['living_quarters'];
+            let base = 1;
+            if (red_on['biodome']){
+                let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
+                base += pop * red_on['biodome'];
+            }
+            let gain = Math.round(red_on['living_quarters'] * base);
+            caps[global.race.species] += gain;
             lCaps['colonist'] += red_on['living_quarters'];
-            bd_Citizen[`${races[global.race.species].solar.red}`] = red_on['living_quarters'] + 'v';
+            bd_Citizen[`${races[global.race.species].solar.red}`] = gain + 'v';
         }
         if (global.interstellar['habitat'] && p_on['habitat']){
             caps[global.race.species] += p_on['habitat'];

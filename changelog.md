@@ -1,4 +1,4 @@
-#### 0.8.0 - 3/??/2020
+#### 0.8.0 - 3/27/2020
 Intergalactic Content<br>
 Universe Mastery Rework<br>
 -Each Universe now tracks its own mastery level responsible for 40% of the mastery bonus, the remaining 60% comes from the general mastery level<br>
@@ -16,14 +16,15 @@ Repair Droids for Fortress<br>
 Smoldering and Chilled now have reduced effectiveness after 100 stacks<br>
 Removed Heavy Genus Feats, these were redundant with Universe Icons<br>
 Blackhole reset now also grants species level extinction achievement<br>
-Human Creative trait rescaled<br>
-Various racial traits now apply to ARPA projects<br>
 Power cost of Mass Ejector increased to 3kW<br>
+Genetics lab custom mutation costs rescaled to static values depending on the genetic trait<br>
 Colonists will now be automatically assigned when a Living Quarter is completed if the default job has any available citizens<br>
+Biodome redesigned, produces less food but increases living quarter capacity for Citizens<br>
 More robust research catagories<br>
+Various racial traits now apply to ARPA projects<br>
+Human Creative trait rescaled<br>
 Large cost creep penalty reduced to 0.005 from 0.01<br>
 Strong gathering bonus increased from 2 to 5<br>
-Genetics lab custom mutation costs rescaled to static values depending on the genetic trait<br>
 Compact lowered from -0.02 to -0.015<br>
 
 #### 0.7.28 - 3/16/2020 ####

@@ -626,13 +626,13 @@ export function calcPrestige(type){
             phage_mult = 1;
             break;
         case 'bigbang':
-            pop_divisor = 2;
+            pop_divisor = 2.2;
             k_inc = 40000;
             k_mult = 1.012;
             phage_mult = 2.5;
             break;
         case 'ascend':
-            pop_divisor = 1;
+            pop_divisor = 1.15;
             k_inc = 30000;
             k_mult = 1.008;
             phage_mult = 4;

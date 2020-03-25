@@ -5,7 +5,7 @@ import { races, traits, genus_traits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc } from './actions.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc } from './actions.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -425,7 +425,14 @@ const spaceProjects = {
                 Polymer(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(9500), 1.28); }
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('plus_max_resource',[1,loc('colonist')])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>`;
+                let gain = 1;
+                if (red_on['biodome']){
+                    let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
+                    gain += pop * red_on['biodome'];
+                    console.log(gain);
+                }
+                gain = +(gain).toFixed(1);
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('plus_max_resource',[1,loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
             },
             support(){ return -1; },
             powered(){ return 1; },
@@ -667,8 +674,9 @@ const spaceProjects = {
                 Brick(offset){ return spaceCostMultiplier('biodome', offset, 1000, 1.28); }
             },
             effect(){
-                let food = +(2 * zigguratBonus()).toFixed(2);
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div>`;
+                let food = +(0.25 * zigguratBonus()).toFixed(2);
+                let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[pop])}</div>`;
             },
             support(){ return -1; },
             powered(){ return 1; },
@@ -786,7 +794,7 @@ const spaceProjects = {
             },
             effect(){
                 let oil = +fuel_adjust(2).toFixed(2);
-                let soldiers = global.tech.marines >= 2 ? 3 : 2;
+                let soldiers = global.tech.marines >= 2 ? 4 : 2;
                 return `<div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
             },
             powered(){ return 1; },
@@ -3224,7 +3232,7 @@ const galaxyProjects = {
             effect(){
                 let helium = +(int_fuel_adjust(25)).toFixed(2);
                 let food = 250;
-                let soldiers = global.tech.marines >= 2 ? 6 : 4;
+                let soldiers = global.tech.marines >= 2 ? 8 : 5;
                 return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[25])}</div><div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div><div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
             support(){ return 2; },
@@ -3507,7 +3515,7 @@ const galaxyProjects = {
     gxy_stargate: {
         info: {
             name: loc('galaxy_stargate'),
-            desc(){ return loc('galaxy_stargate_desc'); },
+            desc(){ return global.tech['piracy'] ? loc('galaxy_stargate_desc_alt') : loc('galaxy_stargate_desc'); },
             control(){
                 return {
                     name: races[global.race.species].name,
@@ -4837,23 +4845,28 @@ function galaxySpace(){
                     pirate(r){
                         if (global.galaxy.defense[r].scout_ship >= 2){
                             let pirates = Math.round((1 - piracy(r,true)) * 100);
-                            if (pirates === 0){
-                                return loc('galaxy_piracy_none');
-                            }
-                            else if (pirates <= 20){
-                                return loc('galaxy_piracy_vlow');
-                            }
-                            else if (pirates <= 40){
-                                return loc('galaxy_piracy_low');
-                            }
-                            else if (pirates <= 60){
-                                return loc('galaxy_piracy_avg');
-                            }
-                            else if (pirates <= 80){
-                                return loc('galaxy_piracy_high');
+                            if (global.galaxy.defense[r].scout_ship >= 4){
+                                return `${pirates}%`;
                             }
                             else {
-                                return loc('galaxy_piracy_vhigh');
+                                if (pirates === 0){
+                                    return loc('galaxy_piracy_none');
+                                }
+                                else if (pirates <= 20){
+                                    return loc('galaxy_piracy_vlow');
+                                }
+                                else if (pirates <= 40){
+                                    return loc('galaxy_piracy_low');
+                                }
+                                else if (pirates <= 60){
+                                    return loc('galaxy_piracy_avg');
+                                }
+                                else if (pirates <= 80){
+                                    return loc('galaxy_piracy_high');
+                                }
+                                else {
+                                    return loc('galaxy_piracy_vhigh');
+                                }
                             }
                         }
                         return '???';
@@ -4964,13 +4977,13 @@ function armada(parent,id){
 
         for (let i=0; i<ships.length; i++){
             if (global.galaxy.hasOwnProperty(ships[i])){
-                let ship = $(`<span class="ship has-text-advanced">${galaxyProjects.gxy_gateway[ships[i]].title}</span>`);
+                let ship = $(`<span id="armada${ships[i]}" class="ship has-text-advanced">${galaxyProjects.gxy_gateway[ships[i]].title}</span>`);
                 cols[i+1].append(ship);
             }
         }
 
         cols[0].append($(`<span></span>`));
-        cols[0].append($(`<span class="has-text-danger">${galaxyProjects.gxy_gateway.info.name}</span>`));
+        cols[0].append($(`<span id="armadagateway" class="has-text-danger">${galaxyProjects.gxy_gateway.info.name}</span>`));
 
         for (let i=0; i<ships.length; i++){
             if (global.galaxy.hasOwnProperty(ships[i])){
@@ -4983,7 +4996,7 @@ function armada(parent,id){
             let r = area.substring(4);
             if (global.settings.space[r] && r !== 'gateway'){
 
-                let region = $(`<span class="has-text-caution">${typeof galaxyProjects[area].info.name === 'string' ? galaxyProjects[area].info.name : galaxyProjects[area].info.name()}</span>`);
+                let region = $(`<span id="armada${r}" class="has-text-caution">${typeof galaxyProjects[area].info.name === 'string' ? galaxyProjects[area].info.name : galaxyProjects[area].info.name()}</span>`);
                 cols[0].append(region);
 
                 for (let i=0; i<ships.length; i++){
@@ -5028,6 +5041,45 @@ function armada(parent,id){
                 }
             }
         });
+
+        Object.keys(global.galaxy.defense).forEach(function (area){
+            let r = area.substring(4);
+            if (global.settings.space[r]){
+                $('#armada'+r).on('mouseover',function(){
+                    var popper = $(`<div id="pop${r}" class="popper has-background-light has-text-dark pop-desc"></div>`);
+                    popper.append(`<div>${typeof galaxyProjects[area].info.desc === 'string' ? galaxyProjects[area].info.desc : galaxyProjects[area].info.desc()}</div>`);
+                    $('#main').append(popper);
+                    popper.show();
+                    poppers[r] = new Popper($('#armada'+r),popper);
+                });
+                $('#armada'+r).on('mouseout',function(){
+                    $(`#pop${r}`).hide();
+                    if (poppers[r]){
+                        poppers[r].destroy();
+                    }
+                    clearElement($(`#pop${r}`),true);
+                });
+            }
+        });
+
+        for (let i=0; i<ships.length; i++){
+            if (global.galaxy.hasOwnProperty(ships[i])){
+                $('#armada'+ships[i]).on('mouseover',function(){
+                    var popper = $(`<div id="pop${ships[i]}" class="popper has-background-light has-text-dark pop-desc"></div>`);
+                    actionDesc(popper,galaxyProjects.gxy_gateway[ships[i]],global.galaxy[ships[i]]);
+                    $('#main').append(popper);
+                    popper.show();
+                    poppers[ships[i]] = new Popper($('#armada'+ships[i]),popper);
+                });
+                $('#armada'+ships[i]).on('mouseout',function(){
+                    $(`#pop${ships[i]}`).hide();
+                    if (poppers[ships[i]]){
+                        poppers[ships[i]].destroy();
+                    }
+                    clearElement($(`#pop${ships[i]}`),true);
+                });
+            }
+        }
     }
 }
 

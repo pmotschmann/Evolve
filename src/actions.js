@@ -10748,6 +10748,25 @@ export const actions = {
                 return false;
             }
         },
+        hydroponics: {
+            id: 'tech-hydroponics',
+            title: loc('tech_hydroponics'),
+            desc(){ return loc('tech_hydroponics'); },
+            category: 'agriculture',
+            reqs: { mars: 5, gateway: 3 },
+            grant: ['mars',6],
+            cost: {
+                Knowledge(){ return 3000000; },
+                Bolognium(){ return 500000; }
+            },
+            effect(){ return loc('tech_hydroponics_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson_sphere: {
             id: 'tech-dyson_sphere',
             title: loc('tech_dyson_sphere'),
@@ -13584,7 +13603,7 @@ function srDesc(c_action,old){
     return desc.replace("..",".");
 }
 
-function actionDesc(parent,c_action,obj,old){
+export function actionDesc(parent,c_action,obj,old){
     clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     parent.append($('<div>'+desc+'</div>'));
