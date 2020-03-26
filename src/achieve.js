@@ -615,6 +615,11 @@ const feats = {
         desc: loc("feat_the_misery_desc"),
         flair: loc("feat_the_misery_flair")
     },
+    garbage_pie: {
+        name: loc("feat_garbage_pie_name"),
+        desc: loc("feat_garbage_pie_desc"),
+        flair: loc("feat_garbage_pie_flair")
+    },
     blank_slate: {
         name: loc("feat_blank_slate_name"),
         desc: loc("feat_blank_slate_desc"),

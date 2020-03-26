@@ -5247,6 +5247,12 @@ function ascendLab(){
     }
     unlockAchieve(`biome_${global.city.biome}`);
     unlockAchieve(`ascended`);
+    if (global.race.species === 'junker'){
+        unlockFeat('the_misery');
+    }
+    if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
+        unlockFeat(`garbage_pie`);
+    }
     global.race['noexport'] = 1;
     clearElement($(`#city`));
     global.settings.showCivic = false;
