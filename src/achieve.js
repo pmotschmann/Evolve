@@ -67,6 +67,11 @@ var achievements = {
         desc: loc("achieve_neutralized_desc"),
         flair: loc("achieve_neutralized_flair")
     },
+    paradise: {
+        name: loc("achieve_paradise_name"),
+        desc: loc("achieve_paradise_desc"),
+        flair: loc("achieve_paradise_flair")
+    },
     madagascar_tree: {
         name: loc("achieve_madagascar_tree_name"),
         desc: loc("achieve_madagascar_tree_desc"),
@@ -992,6 +997,13 @@ export function checkAchievements(){
     if (global.tech['piracy'] && global.tech['chthonian'] && global.tech['chthonian'] >= 2 && global.galaxy){
         if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && piracy('gxy_chthonian') === 1){
             unlockAchieve('neutralized');
+        }
+    }
+
+    if (global.city.morale.current >= 200){
+        unlockAchieve('paradise');
+        if (global.city.morale.current >= 500){
+            unlockFeat('utopia');
         }
     }
 

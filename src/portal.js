@@ -1088,7 +1088,10 @@ export function bloodwar(){
         }
 
         if (forgeOperating && global.tech['hell_gun'] && p_on['gun_emplacement']){
-            let gunKills = p_on['gun_emplacement'] * Math.rand(10,25);
+            let gunKills = 0;
+            for (let i=0; i<p_on['gun_emplacement']; i++){
+                gunKills += global.tech.hell_gun >= 2 ? Math.rand(20,45) : Math.rand(10,25);
+            }
             global.portal.soul_forge.kills += gunKills;
             global.stats.dkills += gunKills;
             for (let i=0; i<p_on['gun_emplacement']; i++){

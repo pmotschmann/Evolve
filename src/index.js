@@ -212,6 +212,7 @@ export function index(){
         {i: 'zombie',   f: 'the_misery'},
         {i: 'fire',     f: 'ill_advised'},
         {i: 'mask',     f: 'friday'},
+        {i: 'skull',    f: 'demon_slayer'},
         {i: 'heart',    f: 'valentine'},
         {i: 'clover',   f: 'leprechaun'},
         {i: 'ghost',    f: 'halloween'},
