@@ -411,13 +411,13 @@ if (convertVersion(global['version']) < 8000 && global.civic['foreign']){
 }
 
 if (convertVersion(global['version']) < 8000){
-    if (global['settings'] && global.settings.hasClass('tLabels')){
+    if (global['settings'] && global.settings.hasOwnProperty('tLabels')){
         delete global.settings['tLabels'];
     }
 }
 
 global['version'] = '0.8.0';
-global['beta'] = 39;
+global['beta'] = 40;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

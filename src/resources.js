@@ -794,10 +794,10 @@ export function galacticTrade(modal){
             trade.append($(`<span class="current">{{ g.f${i} }}</span>`));
             trade.append($(`<b-tooltip :label="desc('${assign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${assign}" class="add has-text-success" @click="more('${i}')"><span>+</span></span></b-tooltip>`));
         }
-    }
 
-    let totals = $(`<div class="market-item trade-offer"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div>`);
-    galaxyTrade.append(totals);
+        let totals = $(`<div class="market-item trade-offer"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div>`);
+        galaxyTrade.append(totals);
+    }
 
     vBind({
         el: modal ? '#specialModal' : '#galaxyTrade',
