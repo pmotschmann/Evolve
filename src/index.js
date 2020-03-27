@@ -290,7 +290,6 @@ export function index(){
         <div id="localization" class="localization"></div>
         <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.cLabels"><b-tooltip :label="city()" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.tLabels"><b-tooltip :label="tech()" position="is-bottom" size="is-small" multilined animated>{{ 't_cat' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="qKey()" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="qAny()" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.expose"><b-tooltip :label="expose()" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>

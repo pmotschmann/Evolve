@@ -1629,6 +1629,7 @@ function fastLoop(){
 
         let crew_civ = 0;
         let crew_mil = 0;
+        let total = 0;
         for (let j=0; j<galaxy_ship_types.length; j++){
             let region = galaxy_ship_types[j].region;
             for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
@@ -1640,18 +1641,20 @@ function fastLoop(){
                             global.galaxy[ship].crew = 0;
                         }
                         if (global.galaxy[ship]['crew'] < global.galaxy[ship].on * actions.galaxy[region][ship].ship.civ){
-                            if (global.civic.d_job === 'unemployed'){
-                                if (global.civic.free > 0 && global.civic.free > actions.galaxy[region][ship].ship.civ){
-                                    global.civic.free -= actions.galaxy[region][ship].ship.civ;
-                                    global.civic.crew.workers += actions.galaxy[region][ship].ship.civ;
-                                    global.galaxy[ship]['crew'] += actions.galaxy[region][ship].ship.civ;
+                            if (total < global.resource[global.race.species].amount){
+                                if (global.civic.d_job === 'unemployed' || (global.civic.free > 0 && global.civic.free > actions.galaxy[region][ship].ship.civ)){
+                                    if (global.civic.free > 0 && global.civic.free > actions.galaxy[region][ship].ship.civ){
+                                        global.civic.free -= actions.galaxy[region][ship].ship.civ;
+                                        global.civic.crew.workers += actions.galaxy[region][ship].ship.civ;
+                                        global.galaxy[ship]['crew'] += actions.galaxy[region][ship].ship.civ;
+                                    }
                                 }
-                            }
-                            else {
-                                if (global.civic[global.civic.d_job].workers > actions.galaxy[region][ship].ship.civ){
-                                    global.civic[global.civic.d_job].workers -= actions.galaxy[region][ship].ship.civ;
-                                    global.civic.crew.workers += actions.galaxy[region][ship].ship.civ;
-                                    global.galaxy[ship]['crew'] += actions.galaxy[region][ship].ship.civ;
+                                else {
+                                    if (global.civic[global.civic.d_job].workers > actions.galaxy[region][ship].ship.civ){
+                                        global.civic[global.civic.d_job].workers -= actions.galaxy[region][ship].ship.civ;
+                                        global.civic.crew.workers += actions.galaxy[region][ship].ship.civ;
+                                        global.galaxy[ship]['crew'] += actions.galaxy[region][ship].ship.civ;
+                                    }
                                 }
                             }
                         }
@@ -1669,6 +1672,7 @@ function fastLoop(){
                         }
                         global.civic.crew.assigned = global.civic.crew.workers;
                         crew_civ += global.galaxy[ship]['crew'];
+                        total += global.galaxy[ship]['crew'];
                     }
 
                     if (actions.galaxy[region][ship].ship['mil'] && global.galaxy[ship].hasOwnProperty('mil')){
@@ -1704,12 +1708,14 @@ function fastLoop(){
         }
 
         // Detect labor anomalies
-        let total = 0;
         Object.keys(job_desc).forEach(function (job) {
-            if (global.civic[job]){
+            if (global.civic[job] && job !== 'crew'){
                 total += global.civic[job].workers;
                 if (total > global.resource[global.race.species].amount){
                     global.civic[job].workers -= total - global.resource[global.race.species].amount;
+                }
+                if (global.civic[job].workers < 0){
+                    global.civic[job].workers = 0;
                 }
 
                 let stress_level = global.civic[job].stress;
@@ -1721,10 +1727,13 @@ function fastLoop(){
                     stress_level += global.race['content'] * effectiveness;
                 }
 
-                stress -= global.civic[job].workers / stress_level
+                stress -= global.civic[job].workers / stress_level;
             }
         });
         global.civic.free = global.resource[global.race.species].amount - total;
+        if (global.civic.free < 0){
+            //global.civic.free = 0;
+        }
 
         Object.keys(job_desc).forEach(function (job){
             if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
@@ -5870,17 +5879,6 @@ function longLoop(){
         if (!global.settings['cLabels'] && $('#city-dist-outskirts').length > 0){
             drawCity();
         }
-
-		let categories = [];
-		Object.keys(global.tech).forEach(function (tech_name) {
-			if (categories.indexOf(tech_name) === -1) categories.push(tech_name);
-		});
-		let count = 0;
-		categories.forEach(function(category_name){
-			if ($(`#tech-dist-${category_name}`).length > 0 || $(`#tech-dist-old-${category_name}`).length > 0) count++;
-		});
-		if (global.settings['tLabels'] && count === 0) drawTech();
-        if (!global.settings['tLabels'] && count > 0) drawTech();
     }
 
     if (global.tech['xeno'] && global.tech['xeno'] >= 4 && !global.tech['piracy']){

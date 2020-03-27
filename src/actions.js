@@ -12914,12 +12914,7 @@ export function drawTech(){
                 old_techs[category] = [];
             }
 
-            if (global.settings['tLabels']){
-                old_techs[category].push(tech_name);
-            }
-            else {
-                addAction('tech', tech_name, true);
-            }
+            old_techs[category].push(tech_name);
         }
         else {
             if (!checkTechRequirements(tech_name)){
@@ -12934,12 +12929,7 @@ export function drawTech(){
                 techs[category] = [];
             }
 
-            if (global.settings['tLabels']){
-                techs[category].push(tech_name);
-            }
-            else {
-                addAction('tech', tech_name);
-            }
+            addAction('tech', tech_name);
         }
     });
 
@@ -12947,35 +12937,20 @@ export function drawTech(){
         clearElement($(`#tech-dist-${category}`),true);
         clearElement($(`#tech-dist-old-${category}`),true);
     });
+    
+    old_categories.forEach(function(category){
+        if(!(category in old_techs)){
+            return;
+        }
 
-    if (global.settings['tLabels']){
-        tech_categories.forEach(function(category){
-            if(!(category in techs)){
-                return;
-            }
+        $(`<div id="tech-dist-old-${category}" class="tech"></div>`)
+            .appendTo('#oldTech')
+            .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
 
-            $(`<div id="tech-dist-${category}" class="tech"></div>`)
-                .appendTo('#tech')
-                .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
-
-            techs[category].forEach(function(tech_name) {
-                addAction('tech', tech_name);
-            });
+        old_techs[category].forEach(function(tech_name) {
+            addAction('tech', tech_name, true);
         });
-        old_categories.forEach(function(category){
-            if(!(category in old_techs)){
-                return;
-            }
-
-            $(`<div id="tech-dist-old-${category}" class="tech"></div>`)
-                .appendTo('#oldTech')
-                .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
-
-            old_techs[category].forEach(function(tech_name) {
-                addAction('tech', tech_name, true);
-            });
-        });
-    }
+    });
 }
 
 export function evalAffordable(){
@@ -13606,11 +13581,15 @@ function srDesc(c_action,old){
 export function actionDesc(parent,c_action,obj,old){
     clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
-    parent.append($('<div>'+desc+'</div>'));
+    parent.append($(`<div>${desc}</div>`));
 
     let tc = timeCheck(c_action,false,true);
     if (c_action.cost && !old){
         var cost = $('<div></div>');
+        if (c_action['category'] && c_action.id.substring(0,4) === 'tech'){
+            cost.append($(`<div class="has-text-flair">${loc('tech_dist_category')}: ${loc(`tech_dist_${c_action.category}`)}</div>`));
+        }
+        
         var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
             if (res === 'Structs'){

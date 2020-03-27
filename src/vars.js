@@ -378,12 +378,6 @@ if (convertVersion(global['version']) < 7007 && global['queue'] && global['queue
     }
 }
 
-if (convertVersion(global['version']) < 7014){
-    if (global['settings']){
-        global.settings['tLabels'] = false;
-    }
-}
-
 if (convertVersion(global['version']) < 7019 && global.race['fraile']){
     delete global.race['fraile'];
     global.race['frail'] = 1;
@@ -416,6 +410,12 @@ if (convertVersion(global['version']) < 8000 && global.civic['foreign']){
     }
 }
 
+if (convertVersion(global['version']) < 8000){
+    if (global['settings'] && global.settings.hasClass('tLabels')){
+        delete global.settings['tLabels'];
+    }
+}
+
 global['version'] = '0.8.0';
 global['beta'] = 38;
 
@@ -441,7 +441,6 @@ if (!global['settings']){
         animated: true,
         disableReset: false,
         cLabels: true,
-        tLabels: true,
         theme: 'dark',
         locale: 'en-US',
         icon: 'star'
