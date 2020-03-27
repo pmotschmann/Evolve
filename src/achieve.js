@@ -595,6 +595,11 @@ var achievements = {
 };
 
 const feats = {
+    utopia: {
+        name: loc("feat_utopia_name"),
+        desc: loc("feat_utopia_desc"),
+        flair: loc("feat_utopia_flair")
+    },
     take_no_advice: {
         name: loc("feat_take_no_advice_name"),
         desc: loc("feat_take_no_advice_desc"),

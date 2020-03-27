@@ -213,6 +213,7 @@ export function index(){
         {i: 'fire',     f: 'ill_advised'},
         {i: 'mask',     f: 'friday'},
         {i: 'skull',    f: 'demon_slayer'},
+        {i: 'martini',  f: 'utopia'},
         {i: 'trash',    f: 'garbage_pie'},
         {i: 'heart',    f: 'valentine'},
         {i: 'clover',   f: 'leprechaun'},
@@ -228,25 +229,6 @@ export function index(){
         else if (global.settings.icon === icons[i]['i']){
             global.settings.icon = 'star';
         }
-    }
-
-    switch (name){
-        case 'steelem':
-            return 'nuclear';
-        case 'the_misery':
-            return 'zombie';
-        case 'ill_advised':
-            return 'fire';
-        case 'friday':
-            return 'mask';
-        case 'valentine':
-            return 'heart';
-        case 'halloween':
-            return 'ghost';
-        case 'thanksgiving':
-            return 'turkey';
-        case 'xmas':
-            return 'present';
     }
 
     // Settings Tab

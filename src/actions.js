@@ -13583,12 +13583,13 @@ export function actionDesc(parent,c_action,obj,old){
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     parent.append($(`<div>${desc}</div>`));
 
+    if (c_action['category'] && c_action.id.substring(0,4) === 'tech' && !old){
+        parent.append($(`<div class="has-text-flair">${loc('tech_dist_category')}: ${loc(`tech_dist_${c_action.category}`)}</div>`));
+    }
+
     let tc = timeCheck(c_action,false,true);
     if (c_action.cost && !old){
         var cost = $('<div></div>');
-        if (c_action['category'] && c_action.id.substring(0,4) === 'tech'){
-            cost.append($(`<div class="has-text-flair">${loc('tech_dist_category')}: ${loc(`tech_dist_${c_action.category}`)}</div>`));
-        }
         
         var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
