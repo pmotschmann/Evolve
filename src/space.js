@@ -429,7 +429,6 @@ const spaceProjects = {
                 if (red_on['biodome']){
                     let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                     gain += pop * red_on['biodome'];
-                    console.log(gain);
                 }
                 gain = +(gain).toFixed(1);
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('plus_max_resource',[1,loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;

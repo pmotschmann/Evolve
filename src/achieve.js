@@ -1086,7 +1086,6 @@ export function checkAchievements(){
                     total++;
                 }
             }
-            //console.log(`${t_level}: ${total}`);
             let progress = [
                 {c: 10, f: 'novice'},
                 {c: 25, f: 'journeyman'},
