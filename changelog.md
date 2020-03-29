@@ -1,5 +1,5 @@
 #### 0.8.1 - 3/29/2020
-Piracy now slowly takes effect in the Gateway System and Stargate region over 1000 days after second contact<br>
+Piracy now slowly takes effect in the Gateway System and Stargate region over 1000 days after piracy begins<br>
 Purchasing Negotiator and levels of Persuasive will now update the regular Market as well as the Galactic Market.<br>
 Added new CRISPR upgrade effects from the Challenge, Ancients, and Trader trees to the perks list.<br>
 Queued Monuments will update their name in the queue when a Monument is constructed.<br>
