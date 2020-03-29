@@ -1156,12 +1156,25 @@ function genetics(){
             },
             methods: {
                 gene(t){
-                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
-                    if (t === 'mastery'){ cost *= 5; }
-                    if (global.resource.Genes.amount >= cost){
-                        global.resource.Genes.amount -= cost;
-                        global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
-                        global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                    let curr_iteration = 0;
+                    let iterations = keyMultiplier();
+                    let can_purchase = true;
+                    let redraw = false;
+                    while (curr_iteration < iterations && can_purchase){
+                        let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                        if (t === 'mastery'){ cost *= 5; }
+                        if (global.resource.Genes.amount >= cost){
+                            global.resource.Genes.amount -= cost;
+                            global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
+                            global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                            redraw = true;
+                        }
+                        else {
+                            can_purchase = false;
+                        }
+                        curr_iteration++;
+                    }
+                    if (redraw){
                         genetics();
                         if (t === 'persuasive'){
                             updateTrades();
@@ -1169,12 +1182,26 @@ function genetics(){
                     }
                 },
                 phage(t){
-                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
-                    if (t === 'mastery'){ cost *= 2; }
-                    if (global.race.Phage.count >= cost){
-                        global.race.Phage.count -= cost;
-                        global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
-                        global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                    let curr_iteration = 0;
+                    let iterations = keyMultiplier();
+                    let can_purchase = true;
+                    let redraw = false;
+                    while (curr_iteration < iterations && can_purchase){
+                        let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                        if (t === 'mastery'){ cost *= 2; }
+                        if (global.race.Phage.count >= cost){
+                            global.race.Phage.count -= cost;
+                            global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
+                            global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                            genetics();
+                            redraw = true;
+                        }
+                        else {
+                            can_purchase = false;
+                        }
+                        curr_iteration++;
+                    }
+                    if (redraw){
                         genetics();
                         if (t === 'persuasive'){
                             updateTrades();

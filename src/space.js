@@ -5029,14 +5029,22 @@ function armada(parent,id){
             methods: {
                 sub(area,ship){
                     if (global.galaxy.defense[area][ship] > 0){
-                        global.galaxy.defense.gxy_gateway[ship]++;
-                        global.galaxy.defense[area][ship]--;
+                        let ship_change = keyMultiplier();
+                        if (ship_change > global.galaxy.defense[area][ship]) {
+                            ship_change = global.galaxy.defense[area][ship];
+                        }
+                        global.galaxy.defense.gxy_gateway[ship] += ship_change;
+                        global.galaxy.defense[area][ship] -= ship_change;
                     }
                 },
                 add(area,ship){
                     if (global.galaxy.defense.gxy_gateway[ship] > 0){
-                        global.galaxy.defense.gxy_gateway[ship]--;
-                        global.galaxy.defense[area][ship]++;
+                        let ship_change = keyMultiplier();
+                        if (ship_change > global.galaxy.defense.gxy_gateway[ship]) {
+                            ship_change = global.galaxy.defense.gxy_gateway[ship];
+                        }
+                        global.galaxy.defense.gxy_gateway[ship] -= ship_change;
+                        global.galaxy.defense[area][ship] += ship_change;
                     }
                 }
             }
