@@ -14629,7 +14629,7 @@ function big_bang(){
     let phage = global.race.Phage.count;
     let dark = global.race.Dark.count;
 
-    let gains = calcPrestige('bioseed');
+    let gains = calcPrestige('bigbang');
     let new_plasmid = gains.plasmid;
     let new_phage = gains.phage;
     let new_dark = gains.dark;
