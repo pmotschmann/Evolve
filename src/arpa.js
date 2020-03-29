@@ -1530,7 +1530,7 @@ export function buildArpa(pro,num,update){
                     clearElement($(`#popArpa${pro}`),true);
                     physics();
                     renderSpace();
-                    messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
+                    messageQueue(loc('arpa_projects_launch_facility_msg'),'info');
                 }
                 drawTech();
             }

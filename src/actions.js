@@ -2370,12 +2370,12 @@ export const actions = {
                         if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti += 100;
                             global.stats.antiplasmid += 100;
-                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'success');
+                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'info');
                         }
                         else {
                             global.race.Plasmid.count += 100;
                             global.stats.plasmid += 100;
-                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'success');
+                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info');
                         }
                         drawCity();
                     }
@@ -3164,7 +3164,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.resource.Crates.display === false){
-                        messageQueue(loc('city_storage_yard_msg'),'success');
+                        messageQueue(loc('city_storage_yard_msg'),'info');
                     }
                     global.city['storage_yard'].count++;
                     global.settings.showResources = true;
@@ -3214,7 +3214,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'success');
+                        messageQueue(loc('city_warehouse_msg'),'info');
                     }
                     global.city['warehouse'].count++;
                     global.settings.showResources = true;
@@ -3460,6 +3460,14 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.city['foundry'].count === 0){
+                        if (global.race['no_craft']) {
+                            messageQueue(loc('city_foundry_msg2'),'info');
+                        }
+                        else {
+                            messageQueue(loc('city_foundry_msg1'),'info');
+                        }
+                    }
                     global.city['foundry'].count++;
                     global.civic.craftsman.max++;
                     global.civic.craftsman.display = true;
@@ -3799,7 +3807,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'success');
+                        messageQueue(loc('city_warehouse_msg'),'info');
                         global.resource.Containers.display = true;
                         clearElement($('#resources'));
                         defineResources();
@@ -4525,7 +4533,7 @@ export const actions = {
             effect: loc('tech_sundial_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('tech_sundial_msg'),'success');
+                    messageQueue(loc('tech_sundial_msg'),'info');
                     global.resource.Knowledge.display = true;
                     global.city.calendar.day++;
                     if (global.race['infectious']){
@@ -7785,7 +7793,7 @@ export const actions = {
             effect: loc('tech_electricity_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue('Electricity is a major advancement for your people, the future possibilities are endless.','success');
+                    messageQueue('Electricity is a major advancement for your people, the future possibilities are endless.','info');
                     global.city['power'] = 0;
                     global.city['powered'] = true;
                     global.city['coal_power'] = {
@@ -7861,7 +7869,7 @@ export const actions = {
             effect: loc('tech_fission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('tech_fission_msg'),'success');
+                    messageQueue(loc('tech_fission_msg'),'info');
                     global.city['fission_power'] = {
                         count: 0,
                         on: 0
@@ -8112,7 +8120,7 @@ export const actions = {
             effect(){ return loc('tech_orichalcum_analysis_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('tech_orichalcum_analysis_result'),'success');
+                    messageQueue(loc('tech_orichalcum_analysis_result'),'info');
                     return true;
                 }
                 return false;
@@ -12161,7 +12169,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['consulate'] = { count: 0 };
                     global.settings.space.alien1 = true;
-                    messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.alien1.id].name]),'success');
+                    messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.alien1.id].name]),'info');
                     return true;
                 }
                 return false;
@@ -12437,7 +12445,7 @@ export const actions = {
                     global.resource.Orichalcum.display = true;
                     global.galaxy['excavator'] = { count: 0, on: 0 };
                     global.galaxy['raider'] = { count: 0, on: 0, crew: 0, mil: 0 };
-                    messageQueue(loc('tech_chthonian_survey_result'),'success');
+                    messageQueue(loc('tech_chthonian_survey_result'),'info');
                     return true;
                 }
                 return false;
