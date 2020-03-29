@@ -1344,12 +1344,29 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge")}</span></div>`);
         if (global.genes['challenge'] >= 2){
             perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_unlocked_desc")}</span></div>`);
+            if (global.genes['challenge'] >= 3){
+                perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge2",[global.genes['challenge'] >= 4 ? 80 : 60, global.genes['challenge'] >= 4 ? 40 : 60])}</span></div>`);
+                if (global.genes['challenge'] >= 5){
+                    perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge3")}</span></div>`);
+                }
+            }
         }
     }
 
     if (global.genes['ancients']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_ancients")}</span></div>`);
+        if (global.genes['ancients'] >= 2){
+            perks.append(`<div><span class="has-text-warning">${global.genes['ancients'] >= 3 ? loc("arpa_perks_ancients3") : loc("arpa_perks_ancients2")}</span></div>`);
+            if (global.genes['ancients'] >= 4) {
+                perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_ancients4")}</span></div>`);
+            }
+        }
+    }
+    
+    if (global.genes['trader']){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_negotiator_desc")}</span></div>`);
     }
     
     if (global.genes['transcendence']){ 

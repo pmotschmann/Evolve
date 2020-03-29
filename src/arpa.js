@@ -613,7 +613,7 @@ const genePool = {
         action(){
             if (payPlasmids('negotiator')){
                 global.genes['trader'] = 1;
-                vBind({el: `#galaxyTrade`},'update');
+                updateTrades();
                 return true;
             }
             return false;
@@ -1164,7 +1164,7 @@ function genetics(){
                         global.race[t] ? global.race[t]++ : global.race[t] = 1;
                         genetics();
                         if (t === 'persuasive'){
-                            vBind({el: `#galaxyTrade`},'update');
+                            updateTrades();
                         }
                     }
                 },
@@ -1177,7 +1177,7 @@ function genetics(){
                         global.race[t] ? global.race[t]++ : global.race[t] = 1;
                         genetics();
                         if (t === 'persuasive'){
-                            vBind({el: `#galaxyTrade`},'update');
+                            updateTrades();
                         }
                     }
                 },
@@ -1486,6 +1486,11 @@ export function buildArpa(pro,num,update){
                 if (pro === 'monument'){
                     global.arpa['m_type'] = pick_monument();
                     $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
+                    for (let i=0; i<global.queue.queue.length; i++){
+                        if (global.queue.queue[i].action === 'monument') {
+                            global.queue.queue[i].label = arpaProjects['monument'].title();
+                        }
+                    }
                 }
                 if (pro === 'launch_facility'){
                     removeFromQueue(['arpalaunch_facility']);
@@ -1524,4 +1529,11 @@ function arpaProjectCosts(id,project){
         }
     });
     return cost;
+}
+
+function updateTrades() {
+    Object.keys(global.resource).forEach(function (res){
+        vBind({el: `#market-${res}`},'update');
+    });
+    vBind({el: `#galaxyTrade`},'update');
 }

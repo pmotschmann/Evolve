@@ -1690,6 +1690,10 @@ export function cleanAddTrait(trait){
                 global.civic.d_job = 'unemployed';
             }
             break;
+        case 'apex_predator':
+            removeFromRQueue(['armor']);
+            delete global.tech['armor'];
+            break;
         case 'terrifying':
             Object.keys(global.resource).forEach(function (res){
                 global.resource[res].trade = 0;

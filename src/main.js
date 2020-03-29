@@ -5207,7 +5207,7 @@ function midLoop(){
                     if (global.stats.achieve['creator']){
                         gene = Math.round(gene * (1 + (global.stats.achieve['creator'].l * 0.5)));
                     }
-                    messageQueue(loc('gene_therapy',[trait,gene]),'success');
+                    messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene]),'success');
                     global.resource.Genes.amount += gene;
                     global.resource.Genes.display = true;
                     let plasma = global.genes['plasma'] ? global.race.mutation : 1;
@@ -5351,12 +5351,7 @@ function midLoop(){
                 }
 
                 if (struct.type === 'arpa'){
-                    if (!stop){
-                        c_action = t_action;
-                        idx = i;
-                        arpa = true;
-                    }
-                    stop = global.settings.qAny ? false : true;
+                    let curr_time = time;
                     let base_time = global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
                     let remain = (100 - global.arpa[global.queue.queue[i].action].complete) / 100;
                     time += base_time * remain;
@@ -5367,6 +5362,29 @@ function midLoop(){
                         }
                     }
                     global.queue.queue[i]['t_max'] = time;
+                    if (global.settings.qAny){
+                        if (Math.floor(global.queue.queue[i]['time']) === 0){
+                            if (!stop){
+                                c_action = t_action;
+                                idx = i;
+                                arpa = true;
+                            }
+                            stop = true;
+                        }
+                        else {
+                            if (!stop){
+                                buildArpa(global.queue.queue[i].action,100);
+                            }
+                        }
+                    }
+                    else {
+                        if (!stop){
+                            c_action = t_action;
+                            idx = i;
+                            arpa = true;
+                        }
+                        stop = true;
+                    }
                 }
                 else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.queue.queue.splice(i,1);
@@ -5401,13 +5419,16 @@ function midLoop(){
             }
             if (idx >= 0 && c_action){
                 if (arpa){
+                    let label = global.queue.queue[idx].label;
                     if (buildArpa(global.queue.queue[idx].action,100)){
-                        messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
-                        if (global.queue.queue[idx].q > 1){
-                            global.queue.queue[idx].q--;
-                        }
-                        else {
-                            global.queue.queue.splice(idx,1);
+                        messageQueue(loc('build_success',[label]),'success');
+                        if (label !== 'Launch Facility') {
+                            if (global.queue.queue[idx].q > 1){
+                                global.queue.queue[idx].q--;
+                            }
+                            else {
+                                global.queue.queue.splice(idx,1);
+                            }
                         }
                     }
                 }

@@ -317,7 +317,7 @@ export function foreignGov(){
     };
 
     for (let i=0;i<3;i++){
-        let gov = $(`<div id="gov${i}" class="foreign"><span class="has-text-caution">{{ '${i}' | gov }}</span><span v-show="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span></div>`);
+        let gov = $(`<div id="gov${i}" class="foreign"><span class="has-text-caution">{{ '${i}' | gov }}</span><span v-if="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span><span v-else-if="f${i}.anx" class="has-text-advanced"> - ${loc('civics_garrison_annex')}</span></span><span v-else-if="f${i}.buy" class="has-text-advanced"> - ${loc('civics_garrison_purchase')}</span></div>`);
         foreign.append(gov);
 
         let actions = $(`<div></div>`);
