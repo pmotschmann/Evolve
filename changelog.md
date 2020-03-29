@@ -3,7 +3,7 @@ Piracy now slowly takes effect in the Gateway System and Stargate region over 10
 Purchasing Negotiator and levels of Persuasive will now update the regular Market as well as the Galactic Market.<br>
 Added new CRISPR upgrade effects from the Challenge, Ancients, and Trader trees to the perks list.<br>
 Queued Monuments will update their name in the queue when a Monument is constructed.<br>
-Fixed bug where ARPA projects at the end of the Queue while No Queue Order was active would cause No Queue Order to not work as intended. Fixes #285 Fixes #323<br>
+Fixed bug where ARPA projects at the end of the Queue while No Queue Order was active would cause No Queue Order to not work as intended.<br>
 The name of the trait gained from a Mutation in the message is now localized.<br>
 Adding Apex Predator will remove currently obtained Armor techs.<br>
 Annexed/Purchased powers will now have a respective " - Annexed"/" - Purchased" tag next to their name, like Occupied powers do.<br>
