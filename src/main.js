@@ -5909,6 +5909,9 @@ function longLoop(){
             renderSpace();
         }
     }
+    if (global.tech['piracy'] && global.tech.piracy < 1000){
+        global.tech.piracy++;
+    }
 
     // Event triggered
     if (!global.race.seeded || (global.race.seeded && global.race['chose'])){

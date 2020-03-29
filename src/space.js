@@ -4434,11 +4434,11 @@ export function piracy(region,rating,raw){
         let pillage = 0.75;
         switch(region){
             case 'gxy_stargate':
-                pirate = 500;
+                pirate = 0.5 * global.tech.piracy;
                 pillage = 0.5;
                 break;
             case 'gxy_gateway':
-                pirate = 500;
+                pirate = 0.5 * global.tech.piracy;
                 pillage = 1;
                 break;
             case 'gxy_gorddon':

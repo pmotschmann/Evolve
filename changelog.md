@@ -1,3 +1,20 @@
+#### 0.8.1 - 3/29/2020
+Piracy now slowly takes effect in the Gateway System and Stargate region over 1000 days after second contact<br>
+Purchasing Negotiator and levels of Persuasive will now update the regular Market as well as the Galactic Market.<br>
+Added new CRISPR upgrade effects from the Challenge, Ancients, and Trader trees to the perks list.<br>
+Queued Monuments will update their name in the queue when a Monument is constructed.<br>
+Fixed bug where ARPA projects at the end of the Queue while No Queue Order was active would cause No Queue Order to not work as intended. Fixes #285 Fixes #323<br>
+The name of the trait gained from a Mutation in the message is now localized.<br>
+Adding Apex Predator will remove currently obtained Armor techs.<br>
+Annexed/Purchased powers will now have a respective " - Annexed"/" - Purchased" tag next to their name, like Occupied powers do.<br>
+Blackhole reset gives its proper reward again.<br>
+The amount of Gene/Phage levels of Minor Traits purchased is now affected by Multiplier Keys.<br>
+The amount of Ships moved from one area to another is now affected by Multiplier Keys.<br>
+Manual Crafting button tooltips are more informational.<br>
+Constructing the first Foundry of a game will log a message briefly explaining what Crafted Resources are and the ways to make them.<br>
+Informative messages (mission results, messages that explain newly unlocked mechanics, the Launch Facility message that informs the player of the space tab, etc.) are now displayed in blue, to separate them from less important messages.<br>
+Added the missing Wormhole Mission result string<br>
+
 #### 0.8.0 - 3/27/2020
 Intergalactic Content<br>
 Universe Mastery Rework<br>
