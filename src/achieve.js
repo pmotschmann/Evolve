@@ -709,6 +709,11 @@ const feats = {
         name: loc("feat_xmas_name"),
         desc: loc("feat_xmas_desc"),
         flair: loc("feat_xmas_flair")
+    },
+    fool: {
+        name: loc("feat_fool_name"),
+        desc: loc("feat_fool_desc"),
+        flair: loc("feat_fool_flair")
     }
 }
 
@@ -856,7 +861,7 @@ export function setupStats(){
     drawAchieve();
 }
 
-export function drawAchieve(){
+export function drawAchieve(args){
     clearElement($('#achievePanel'));
     let achieve = $('#achievePanel');
     let earned = 0;
@@ -884,6 +889,8 @@ export function drawAchieve(){
         }
     }
 
+    let fool = typeof args === 'object' && args['fool'] ? args.fool : false;
+
     Object.keys(achievements).forEach(function (achievement){
         let baseIcon = getBaseIcon(achievement,'achievement');
         total++;
@@ -893,20 +900,31 @@ export function drawAchieve(){
             if (global.stats.achieve[achievement][affix]){
                 ulevel += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
             }
-            let emblem = format_emblem(achievement,16,baseIcon);
-            achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${emblem}</div></b-tooltip>`));
+            let emblem = format_emblem(achievement,16,baseIcon,fool);
+            if ((fool && global.stats.achieve[achievement].l > 1) || !fool){
+                achieve.append($(`<b-tooltip :label="flair('${achievement}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-warning">${achievements[achievement].name}</span><span>${achievements[achievement].desc}</span>${emblem}</div></b-tooltip>`));
+            }
+            else if (fool && global.stats.achieve[achievement].l === 1){
+                earned--;
+            }
         }
     });
     set_alevel(level);
     set_ulevel(ulevel);
 
-    Object.keys(feats).forEach(function (feat){
-        let baseIcon = getBaseIcon(feat,'feat');
-        if (global.stats.feat[feat]){
-            let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
-            achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
-        }
-    });
+    if (fool && !global.stats.feat['fool']){
+        let thefool = $(`<b-tooltip :label="feat('fool')" position="is-bottom" size="is-small" animated><div id="thefool" class="achievement"><span class="has-text-danger">${feats.fool.name}</span><span>${loc('feat_fool_spoof')}</span></div></b-tooltip>`);
+        achieve.append(thefool);
+    }
+    else {
+        Object.keys(feats).forEach(function (feat){
+            let baseIcon = getBaseIcon(feat,'feat');
+            if (global.stats.feat[feat]){
+                let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
+                achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
+            }
+        });
+    }
 
     achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}</div>`);
     
@@ -958,6 +976,14 @@ export function drawAchieve(){
             $(`#topbarPlanet`).hide();
             poppers['topbarPlanet'].destroy();
             clearElement($(`#topbarPlanet`),true);
+        });
+    }
+
+    if (fool && !global.stats.feat['fool']){
+        $(`#thefool`).on('mouseover',function(){
+            console.log('foolish morale');
+            unlockFeat('fool');
+            drawAchieve();
         });
     }
 }

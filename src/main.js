@@ -1,6 +1,6 @@
 import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
-import { setupStats, unlockAchieve, checkAchievements } from './achieve.js';
+import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
 import { vBind, mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery } from './functions.js';
 import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
@@ -5909,8 +5909,16 @@ function longLoop(){
             renderSpace();
         }
     }
-    if (global.tech['piracy'] && global.tech.piracy < 1000){
-        global.tech.piracy++;
+    if (global.tech['piracy']){
+        if (global.tech.piracy < 1000){
+            global.tech.piracy++;
+        }
+        else if (global.tech.xeno >= 8 && global.tech.piracy < 2500){
+            global.tech.piracy++;
+        }
+        else if (global.tech['conflict'] && global.tech.piracy < 5000){
+            global.tech.piracy++;
+        }
     }
 
     // Event triggered
@@ -6077,6 +6085,17 @@ function longLoop(){
     }
     else {
         delete global.tech['santa'];
+    }
+
+    if (date.getMonth() === 3 && date.getDate() === 1){
+        if (!$(`body`).hasClass('fool')){
+            $(`body`).addClass('fool');
+            drawAchieve({fool: true});
+        }
+    }
+    else if ($(`body`).hasClass('fool')){
+        $(`body`).removeClass('fool');
+        drawAchieve();
     }
 
     // Save game state

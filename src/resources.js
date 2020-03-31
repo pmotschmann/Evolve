@@ -488,7 +488,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 }
                 let costs = $(`<div><span class="has-text-danger">${loc('manual_crafting_hover_use')} </span></div>`);
                 for (let i=0; i<craft_costs[res].length; i++){
-                    costs.append($(`<span class="has-text-caution">${sizeApproximation(num_crafted * craft_costs[res][i].a,1)} ${global.resource[craft_costs[res][i].r].name}</span>`));
+                    costs.append($(`<span class="craft-elm has-text-caution">${sizeApproximation(num_crafted * craft_costs[res][i].a,1)} ${global.resource[craft_costs[res][i].r].name}</span>`));
+                    if (i + 1 < craft_costs[res].length){
+                        costs.append($(`<span>, </span>`));
+                    }
                 }
                 popper.append(crafts);
                 popper.append(costs);
