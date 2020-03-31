@@ -2273,7 +2273,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_dyson_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    return loc('interstellar_dyson_complete',[powerModifier(750)]);
+                    return loc('interstellar_dyson_sphere_complete',[powerModifier(750)]);
                 }
             },
             action(){

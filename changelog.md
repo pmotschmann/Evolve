@@ -1,6 +1,7 @@
 #### 0.8.2 - 3/30/2020
 Piracy in the Gateway and Stargate regions ramp up more slowly as you explore Andromeda<br>
 Fixed formatting of multiline Crafting Tooltip cost display<br>
+Fixed incorrect string used by completed Dyson Sphere<br>
 
 #### 0.8.1 - 3/29/2020
 Piracy now slowly takes effect in the Gateway System and Stargate region over 1000 days after piracy begins<br>
