@@ -7793,7 +7793,7 @@ export const actions = {
             effect: loc('tech_electricity_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue('Electricity is a major advancement for your people, the future possibilities are endless.','info');
+                    messageQueue(loc('tech_electricity_msg'),'info');
                     global.city['power'] = 0;
                     global.city['powered'] = true;
                     global.city['coal_power'] = {
@@ -8586,7 +8586,7 @@ export const actions = {
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Polymer.display = true;
-                    messageQueue(loc('tech_polymer_avail'));
+                    messageQueue(loc('tech_polymer_avail'),'info');
                     defineIndustry();
                     return true;
                 }
@@ -8627,7 +8627,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.resource.Nanoweave.display = true;
-                    messageQueue(loc('tech_nanoweave_avail'));
+                    messageQueue(loc('tech_nanoweave_avail'),'info');
                     loadFoundry();
                     return true;
                 }
@@ -8652,7 +8652,7 @@ export const actions = {
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Stanene.display = true;
-                    messageQueue(loc('tech_stanene_avail'));
+                    messageQueue(loc('tech_stanene_avail'),'info');
                     defineIndustry();
                     return true;
                 }
@@ -8678,7 +8678,7 @@ export const actions = {
                     global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Nano_Tube.display = true;
                     global.city.factory['Nano'] = 0;
-                    messageQueue('Nano Tubes are now available for manufacture');
+                    messageQueue(loc('tech_nano_tubes_msg'),'info');
                     defineIndustry();
                     return true;
                 }
@@ -14202,7 +14202,7 @@ function sentience(){
         s1: civ2name.s1
     };
 
-    messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]));
+    messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]),'info');
 
     if (global.race['slow'] || global.race['hyper']){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

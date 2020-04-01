@@ -416,6 +416,13 @@ if (convertVersion(global['version']) < 8000){
     }
 }
 
+if (convertVersion(global['version']) < 8003){
+    if (global.stats['harmony'] && global.stats['harmony'] > 0){
+        global.stats['harmony'] = parseFloat(global.stats['harmony'].toFixed(2));
+        global.race['Harmony'].count = parseFloat(global.race['Harmony'].count.toFixed(2));
+    }
+}
+
 global['version'] = '0.8.2';
 delete global['beta'];
 

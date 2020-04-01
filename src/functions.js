@@ -678,7 +678,7 @@ export function calcPrestige(type){
             default:
                 break;
         }
-        gains.harmony = harmony;
+        gains.harmony = parseFloat(harmony.toFixed(2));
     }
 
     return gains;

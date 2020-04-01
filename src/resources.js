@@ -484,7 +484,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 else {
                     num_crafted = keyMultiplier() * vol;
                     let total_crafted = sizeApproximation((bonus / 100) * num_crafted,1);
-                    crafts.append($(`<span class="has-text-advanced"><span class="craft" data-val="${total_crafted}">${total_crafted}</span> ${global.resource[res].name}</span>`));
+                    crafts.append($(`<span class="has-text-advanced"><span class="craft" data-val="${(sizeApproximation((bonus / 100) * vol))}">${total_crafted}</span> ${global.resource[res].name}</span>`));
                 }
                 let costs = $(`<div><span class="has-text-danger">${loc('manual_crafting_hover_use')} </span></div>`);
                 for (let i=0; i<craft_costs[res].length; i++){
