@@ -981,8 +981,12 @@ export function drawAchieve(args){
 
     if (fool && !global.stats.feat['fool']){
         $(`#thefool`).on('mouseover',function(){
-            console.log('foolish morale');
-            unlockFeat('fool');
+            if (global.race.universe === 'micro'){
+                unlockFeat('fool',true);
+            }
+            else {
+                unlockFeat('fool');
+            }
             drawAchieve();
         });
     }

@@ -272,7 +272,7 @@ const fortressModules = {
             effect: loc('portal_pit_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_pit_mission_result'),'success');
+                    messageQueue(loc('portal_pit_mission_result'),'info');
                     return true;
                 }
                 return false;
@@ -298,7 +298,7 @@ const fortressModules = {
             effect: loc('portal_assault_forge_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_assault_forge_result'),'success');
+                    messageQueue(loc('portal_assault_forge_result'),'info');
                     return true;
                 }
                 return false;
@@ -945,7 +945,7 @@ export function bloodwar(){
                     global.portal.fortress.pity = 0;
                     if (!global.resource.Soul_Gem.display){
                         global.resource.Soul_Gem.display = true;
-                        messageQueue(loc('portal_first_gem'),'success');
+                        messageQueue(loc('portal_first_gem'),'info');
                     }
                 }
                 else {
@@ -1078,7 +1078,7 @@ export function bloodwar(){
     if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
         global.tech['hell_pit'] = 1;
         global.settings.portal.pit = true;
-        messageQueue(loc('portal_hell_pit_found'),'success');
+        messageQueue(loc('portal_hell_pit_found'),'info');
         renderFortress();
     }
 

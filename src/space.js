@@ -2123,7 +2123,7 @@ const interstellarProjects = {
                 if (global.resource.Deuterium.display){
                     det = `<div>${loc('plus_max_resource',[spatialReasoning(2000),loc('resource_Deuterium_name')])}</div>`;
                 }
-                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support()])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[uranium,loc('resource_Uranium_name')])}</div>${det}<div>${loc('city_fission_power_effect',[fuel])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support()])}</div><div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}</div><div>${loc('plus_max_resource',[helium,loc('resource_Helium_3_name')])}</div><div>${loc('plus_max_resource',[uranium,loc('resource_Uranium_name')])}</div>${det}<div class="has-text-caution">${loc('city_fission_power_effect',[fuel])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             support(){ return 1; },
             powered(){ return 1; },
@@ -2710,7 +2710,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.interstellar.mass_ejector.count === 0){
-                        messageQueue(loc('interstellar_mass_ejector_msg'));
+                        messageQueue(loc('interstellar_mass_ejector_msg'),'info');
                     }
                     global.settings.showEjector = true;
                     incrementStruct('mass_ejector','interstellar');
