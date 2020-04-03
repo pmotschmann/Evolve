@@ -5422,7 +5422,6 @@ function calcGenomeScore(genome){
             }
         }
     }
-    global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l > 0
 
     Object.keys(genus_traits[genome.genus]).forEach(function (t){
         genes -= traits[t].val;

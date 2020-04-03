@@ -1,3 +1,6 @@
+#### 0.8.3 - 4/2/2020
+Fixed incorrect Industrious string<br>
+
 #### 0.8.2 - 3/30/2020
 Piracy in the Gateway and Stargate regions ramp up more slowly as you explore Andromeda<br>
 Fixed formatting of multiline Crafting Tooltip cost display<br>

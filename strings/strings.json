@@ -2893,7 +2893,7 @@
   "trait_ambidextrous_effect": "Crafting efficiency increased.",
   "trait_industrious": "Your naturally hard-working citizens produce extra copper and iron ore from mining.",
   "trait_industrious_name": "Industrious",
-  "trait_industrious_effect": "Miner efficiency increased (Coal & Iron).",
+  "trait_industrious_effect": "Miner efficiency increased (Copper & Iron).",
   "trait_content": "Your people are naturally content, reducing the stress gained from everyday life.",
   "trait_content_name": "Content",
   "trait_content_effect": "Reduces job stress.",
