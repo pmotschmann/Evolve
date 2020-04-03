@@ -1,4 +1,4 @@
-#### 0.8.3 - 4/2/2020
+#### 0.8.3 - 4/3/2020
 Federation now reduces the soldier requirement of occupied cities by 5<br>
 Fixed incorrect Industrious string<br>
 
