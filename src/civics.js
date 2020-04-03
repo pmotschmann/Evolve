@@ -885,7 +885,7 @@ export function buildGarrison(garrison,full){
                     case 3:
                         return loc('civics_garrison_tactic_assault_desc');
                     case 4:
-                        return loc('civics_garrison_tactic_siege_desc',[20]);
+                        return loc('civics_garrison_tactic_siege_desc',[global.civic.govern.type === 'federation' ? 15 : 20]);
                 }
             },
             hireLabel(){
@@ -1055,8 +1055,8 @@ function battleAssessment(gov){
 function war_campaign(gov){
     if (global.civic.foreign[`gov${gov}`].occ){
         global.civic.foreign[`gov${gov}`].occ = false;
-        global.civic.garrison.max += 20;
-        global.civic.garrison.workers += 20;
+        global.civic.garrison.max += global.civic.govern.type === 'federation' ? 15 : 20;
+        global.civic.garrison.workers += global.civic.govern.type === 'federation' ? 15 : 20;
         return;
     }
     if (global.civic.foreign[`gov${gov}`].buy || global.civic.foreign[`gov${gov}`].anx){
@@ -1467,8 +1467,9 @@ function war_campaign(gov){
             }
         }
 
-        if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= 20){
-            global.civic.garrison.workers -= 20;
+        let occCost = global.civic.govern.type === 'federation' ? 15 : 20;
+        if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= occCost){
+            global.civic.garrison.workers -= occCost;
             global.civic.foreign[`gov${gov}`].occ = true;
             global.civic.foreign[`gov${gov}`].sab = 0;
             global.civic.foreign[`gov${gov}`].act = 'none';

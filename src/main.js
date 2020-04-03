@@ -4147,13 +4147,13 @@ function midLoop(){
         }
         if (!global.tech['world_control']){
             if (global.civic.foreign.gov0.occ){
-                lCaps['garrison'] -= 20;
+                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
             }
             if (global.civic.foreign.gov1.occ){
-                lCaps['garrison'] -= 20;
+                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
             }
             if (global.civic.foreign.gov2.occ){
-                lCaps['garrison'] -= 20;
+                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
             }
         }
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {

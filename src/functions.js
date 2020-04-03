@@ -601,7 +601,7 @@ export function calcPrestige(type){
     let garrisoned = global.civic.garrison.workers;
     for (let i=0; i<3; i++){
         if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
+            garrisoned += global.civic.govern.type === 'federation' ? 15 : 20;
         }
     }
 
