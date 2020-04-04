@@ -40,4 +40,7 @@ Assuming you configured your build enviroment correctly the game can be built us
 npm run build // Builds the game bundle
 npm run dev // Builds the game bundle in debug mode
 npm run less // Builds the CSS file
+npm run wiki // Builds the wiki bundle
+npm run wiki-dev // Builds the wiki bundle in debug mode
+npm run wiki-less // Builds the Wiki CSS file
 ```

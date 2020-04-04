@@ -2,7 +2,7 @@ import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeAppr
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
-import { races, racialTrait } from './races.js';
+import { races, racialTrait, traits } from './races.js';
 import { loadIndustry } from './industry.js';
 
 // Sets up government in civics tab
@@ -1146,7 +1146,7 @@ function war_campaign(gov){
             armor += Math.floor(death * 0.75);
         }
         if (global.race['scales']){
-            armor += 2;
+            armor += traits.scales.vars[0];
         }
         if (global.tech['armor']){
             armor += global.tech['armor'];
@@ -1499,7 +1499,7 @@ function war_campaign(gov){
             armor += Math.floor(death * 0.75);
         }
         if (global.race['scales']){
-            armor++;
+            armor += traits.scales.vars[1];
         }
         if (global.tech['armor']){
             armor += global.tech['armor'];
@@ -1621,7 +1621,7 @@ export function armyRating(val,type,wound){
             army *= 1.2;
         }
         if (global.race['cautious'] && global.city.calendar.weather === 0){
-            army *= 0.9;
+            army *= 1 - (traits.cautious.vars[0] / 100);
         }
         if (global.race['apex_predator']){
             army *= 1.25;
@@ -1655,7 +1655,7 @@ export function armyRating(val,type,wound){
             army *= 1.1;
         }
         if (global.race['beast'] && global.city.calendar.wind === 1){
-            army *= 1.15;
+            army *= 1 + (traits.beast.vars[0] / 100);
         }
         if (global.race['apex_predator']){
             army *= 1.5;

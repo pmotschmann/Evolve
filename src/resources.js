@@ -109,12 +109,12 @@ export function craftCost(){
     return global.race['wasteful'] 
         ? {
             Plywood: [{ r: 'Lumber', a: 110 }],
-            Brick: [{ r: 'Cement', a: 45 }],
-            Wrought_Iron: [{ r: 'Iron', a: 85 }],
-            Sheet_Metal: [{ r: 'Aluminium', a: 130 }],
-            Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 260 }],
-            Aerogel: [{ r: 'Graphene', a: 2550 },{ r: 'Infernite', a: 55 }],
-            Nanoweave: [{ r: 'Nano_Tube', a: 1109 },{ r: 'Vitreloy', a: 45 }],
+            Brick: [{ r: 'Cement', a: 44 }],
+            Wrought_Iron: [{ r: 'Iron', a: 88 }],
+            Sheet_Metal: [{ r: 'Aluminium', a: 132 }],
+            Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 275 }],
+            Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
+            Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
         }
         : {
             Plywood: [{ r: 'Lumber', a: 100 }],
@@ -164,7 +164,7 @@ export function craftingRatio(res,auto){
         multiplier += (global.race['ambidextrous'] * 0.03);
     }
     if (global.race['rigid']){
-        multiplier -= 0.01;
+        multiplier -= traits.rigid.vars[0] / 100;
     }
     if (global.civic.govern.type === 'socialist'){
         multiplier *= 1.25;

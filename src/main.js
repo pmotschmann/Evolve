@@ -2,7 +2,7 @@ import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier,
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
 import { vBind, mainVue, timeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery } from './functions.js';
-import { races, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
+import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
@@ -2005,18 +2005,18 @@ function fastLoop(){
             let consume = (global.resource[global.race.species].amount + soldiers - (global.civic.free * 0.5));
             consume *= (global.race['gluttony'] ? 1.1 : 1);
             if (global.race['high_metabolism']){
-                consume *= 1.05;
+                consume *= 1 + (traits.high_metabolism.vars[0] / 100);
             }
             if (global.race['photosynth']){
                 switch(global.city.calendar.weather){
                     case 0:
-                        consume *= global.city.calendar.temp === 0 ? 1 : 0.9;
+                        consume *= global.city.calendar.temp === 0 ? 1 : (1 - (traits.photosynth.vars[2] / 100));
                         break;
                     case 1:
-                        consume *= 0.8;
+                        consume *= 1 - (traits.photosynth.vars[1] / 100);
                         break;
                     case 2:
-                        consume *= 0.6;
+                        consume *= 1 - (traits.photosynth.vars[0] / 100);
                         break;
                 }
             }
@@ -5192,7 +5192,8 @@ function midLoop(){
             if (global.arpa.sequence.time <= 0){
                 global.arpa.sequence.max = 50000 * (1 + (global.race.mutation ** 2));
                 if (global.race['adaptable']){
-                    global.arpa.sequence.max = Math.floor(global.arpa.sequence.max * 0.9);
+                    let adapt = 1 - (traits.adaptable.vars[0] / 100);
+                    global.arpa.sequence.max = Math.floor(global.arpa.sequence.max * adapt);
                 }
                 global.arpa.sequence.progress = 0;
                 global.arpa.sequence.time = global.arpa.sequence.max;
