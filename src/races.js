@@ -715,6 +715,7 @@ export const traits = {
         desc: loc('trait_autoignition'),
         type: 'major',
         val: -4,
+        vars: [3]
     },
     blurry: { // Increased success chance of spies
         name: loc('trait_blurry_name'),
