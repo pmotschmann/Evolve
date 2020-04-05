@@ -189,6 +189,7 @@ export const traits = {
         desc: loc('trait_asymmetrical'),
         type: 'genus',
         val: -3,
+        vars: [20]
     },
     spores: { // Birthrate increased when it's windy
         name: loc('trait_spores_name'),
@@ -213,6 +214,7 @@ export const traits = {
         desc: loc('trait_low_light'),
         type: 'genus',
         val: -2,
+        vars: [10]
     },
     elusive: { // Spies are never caught
         name: loc('trait_elusive_name'),
@@ -225,36 +227,42 @@ export const traits = {
         desc: loc('trait_iron_allergy'),
         type: 'genus',
         val: -4,
+        vars: [25]
     },
     smoldering: { // Hot weather is a bonus
         name: loc('trait_smoldering_name'),
         desc: loc('trait_smoldering'),
         type: 'genus',
         val: 7,
+        vars: [5,0.35,0.2]
     },
     cold_intolerance: { // Cold weather is a detriment
         name: loc('trait_cold_intolerance_name'),
         desc: loc('trait_cold_intolerance'),
         type: 'genus',
         val: -4,
+        vars: [0.25]
     },
     chilled: { // Cold weather is a bonus
         name: loc('trait_chilled_name'),
         desc: loc('trait_chilled'),
         type: 'genus',
         val: 7,
+        vars: [5,0.35,0.2,20,10,15]
     },
     heat_intolerance: { // Hot weather is a detriment
         name: loc('trait_heat_intolerance_name'),
         desc: loc('trait_heat_intolerance'),
         type: 'genus',
         val: -4,
+        vars: [0.25]
     },
     scavenger: { // scavenger job is always available
         name: loc('trait_scavenger_name'),
         desc: loc('trait_scavenger'),
         type: 'genus',
         val: 3,
+        vars: [25]
     },
     nomadic: { // -1 Trade route from trade post
         name: loc('trait_nomadic_name'),
@@ -285,48 +293,56 @@ export const traits = {
         desc: loc('trait_pompous'),
         type: 'genus',
         val: -6,
+        vars: [75]
     },
     creative: { // A.R.P.A. Projects are cheaper
         name: loc('trait_creative_name'),
         desc: loc('trait_creative'),
         type: 'major',
         val: 8,
+        vars: [0.005,20]
     },
     diverse: { // Training soldiers takes longer
         name: loc('trait_diverse_name'),
         desc: loc('trait_diverse'),
         type: 'major',
         val: -4,
+        vars: [25]
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second
         name: loc('trait_studious_name'),
         desc: loc('trait_studious'),
         type: 'major',
         val: 2,
+        vars: [0.25]
     },
     arrogant: { // Market prices are higher
         name: loc('trait_arrogant_name'),
         desc: loc('trait_arrogant'),
         type: 'major',
         val: -2,
+        vars: [10]
     },
     brute: { // Recruitment costs are 1/2 price
         name: loc('trait_brute_name'),
         desc: loc('trait_brute'),
         type: 'major',
         val: 7,
+        vars: [50,2.5]
     },
     angry: { // When hungry you get hangry, low food penalty is more severe
         name: loc('trait_angry_name'),
         desc: loc('trait_angry'),
         type: 'major',
         val: -1,
+        vars: [25]
     },
     lazy: { // All production is lowered when the temperature is hot
         name: loc('trait_lazy_name'),
         desc: loc('trait_lazy'),
         type: 'major',
         val: -4,
+        vars: [10]
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
         name: loc('trait_carnivore_name'),
@@ -339,18 +355,21 @@ export const traits = {
         desc: loc('trait_pack_mentality'),
         type: 'major',
         val: 4,
+        vars: [0.03,0.02]
     },
     tracker: { // 10% increased gains from hunting
         name: loc('trait_tracker_name'),
         desc: loc('trait_tracker'),
         type: 'major',
         val: 2,
+        vars: [10]
     },
     beast_of_burden: { // Gains more loot during raids
         name: loc('trait_beast_of_burden_name'),
         desc: loc('trait_beast_of_burden'),
         type: 'major',
         val: 3,
+        vars: [10]
     },
     herbivore: { // No food is gained from hunting
         name: loc('trait_herbivore_name'),
@@ -381,6 +400,7 @@ export const traits = {
         desc: loc('trait_merchant'),
         type: 'major',
         val: 3,
+        vars: [25]
     },
     smart: { // Knowledge costs reduced by 10%
         name: loc('trait_smart_name'),
@@ -501,6 +521,7 @@ export const traits = {
         desc: loc('trait_solitary'),
         type: 'major',
         val: -1,
+        vars: [0.02]
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
         name: loc('trait_kindling_kindred_name'),
@@ -567,6 +588,7 @@ export const traits = {
         desc: loc('trait_malnutrition'),
         type: 'major',
         val: 1,
+        vars: [25]
     },
     claws: { // Raises maximum bound for army score roll
         name: loc('trait_claws_name'),
@@ -609,6 +631,7 @@ export const traits = {
         desc: loc('trait_invertebrate'),
         type: 'major',
         val: -2,
+        vars: [10]
     },
     suction_grip: { // Global productivity boost
         name: loc('trait_suction_grip_name'),
@@ -742,6 +765,7 @@ export const traits = {
         desc: loc('trait_conniving'),
         type: 'major',
         val: 4,
+        vars: [5,15]
     },
     pathetic: { // You suck at combat
         name: loc('trait_pathetic_name'),

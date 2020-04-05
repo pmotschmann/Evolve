@@ -286,23 +286,23 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     }
     if (structure === 'basic_housing'){
         if (global.race['solitary']){
-            mutiplier -= 0.02;
+            mutiplier -= traits.solitary.vars[0];
         }
         if (global.race['pack_mentality']){
-            mutiplier += 0.03;
+            mutiplier += traits.pack_mentality.vars[0];
         }
     }
     if (structure === 'cottage'){
         if (global.race['solitary']){
-            mutiplier += 0.02;
+            mutiplier += traits.solitary.vars[0];
         }
         if (global.race['pack_mentality']){
-            mutiplier -= 0.02;
+            mutiplier -= traits.pack_mentality.vars[1];
         }
     }
     if (structure === 'apartment'){
         if (global.race['pack_mentality']){
-            mutiplier -= 0.02;
+            mutiplier -= traits.pack_mentality.vars[1];
         }
     }
     if (global.genes['creep'] && !global.race['no_crispr']){

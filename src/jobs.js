@@ -1,7 +1,7 @@
 import { global, keyMultiplier, poppers } from './vars.js';
 import { clearElement } from './functions.js';
 import { loc } from './locale.js';
-import { racialTrait, races } from './races.js';
+import { racialTrait, races, traits } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
@@ -118,11 +118,11 @@ export const job_desc = {
         return loc('job_priest_desc');
     },
     professor: function(){
-        let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
+        let impact = +(global.race['studious'] ? global.civic.professor.impact + traits.studious.vars[0] : global.civic.professor.impact).toFixed(2);
         if (global.tech['science'] && global.tech['science'] >= 3){
             impact += global.city.library.count * 0.01;
         }
-        impact *= global.race['pompous'] ? 0.25 : 1;
+        impact *= global.race['pompous'] ? (1 - traits.pompous.vars[0] / 100) : 1;
         impact *= racialTrait(global.civic.professor.workers,'science');
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
             impact *= 1 + (global.city.temple.count * 0.05);

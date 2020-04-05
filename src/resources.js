@@ -640,9 +640,12 @@ function marketItem(mount,market_item,name,color,full){
             purchase(res){
                 if (!global.race['no_trade']){
                     let qty = global.city.market.qty;
-                    let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+                    let value = global.resource[res].value;
+                    if (global.race['arrogant']){
+                        value *= 1 + (traits.arrogant.vars[0] / 100);
+                    }
                     if (global.race['conniving']){
-                        value *= 0.95;
+                        value *= 1 - (traits.conniving.vars[0] / 100);
                     }
                     var price = Math.round(value * qty);
                     if (global.resource.Money.amount >= price){
@@ -657,9 +660,15 @@ function marketItem(mount,market_item,name,color,full){
                 if (!global.race['no_trade']){
                     var qty = global.city.market.qty;
                     if (global.resource[res].amount >= qty){
-                        let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                        let divide = 4;
+                        if (global.race['merchant']){
+                            divide *= 1 - (traits.merchant.vars[0] / 100);
+                        }
+                        if (global.race['asymmetrical']){
+                            divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+                        }
                         if (global.race['conniving']){
-                            divide -= 0.5;
+                            divide *= 1 - (traits.conniving.vars[1] / 100);
                         } 
                         let price = Math.round(global.resource[res].value * qty / divide);
                         global.resource[res].amount -= Number(qty);
@@ -719,12 +728,18 @@ function marketItem(mount,market_item,name,color,full){
         filters: {
             buy(value){
                 if (global.race['arrogant']){
-                    value = Math.round(value * 1.1);
+                    value *= 1 + (traits.arrogant.vars[0] / 100);
                 }
                 return sizeApproximation(value * global.city.market.qty,0);
             },
             sell(value){
-                let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                let divide = 4;
+                if (global.race['merchant']){
+                    divide *= 1 - (traits.merchant.vars[0] / 100);
+                }
+                if (global.race['asymmetrical']){
+                    divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+                }
                 return sizeApproximation(value * global.city.market.qty / divide,0);
             },
             trade(val){
@@ -967,7 +982,13 @@ function containerItem(mount,market_item,name,color){
 }
 
 export function tradeSellPrice(res){
-    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+    let divide = 4;
+    if (global.race['merchant']){
+        divide *= 1 - (traits.merchant.vars[0] / 100);
+    }
+    if (global.race['asymmetrical']){
+        divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+    }
     if (global.race['conniving']){
         divide--;
     }
@@ -986,10 +1007,13 @@ export function tradeSellPrice(res){
 }
 
 export function tradeBuyPrice(res){
-    let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+    let rate = global.resource[res].value;
+    if (global.race['arrogant']){
+        rate *= 1 + (traits.arrogant.vars[0] / 100);
+    }
     if (global.race['conniving']){
-        rate *= 0.9;
-    }    
+        rate *= 1 - (traits.conniving.vars[0] / 100);
+    }
     let price = rate * tradeRatio[res];
     if (global.city['wharf']){
         price = price * (0.99 ** global.city['wharf'].count);

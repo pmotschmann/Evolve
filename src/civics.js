@@ -862,7 +862,7 @@ export function buildGarrison(garrison,full){
                     cost *= 1.1 ** global.civic.garrison.m_use;
                 }
                 if (global.race['brute']){
-                    cost = cost / 2;
+                    cost *= 1 - (traits.brute.vars[0] / 100);
                 }
                 cost = Math.round(cost);
                 if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
@@ -897,7 +897,7 @@ export function buildGarrison(garrison,full){
                     cost *= 1.1 ** global.civic.garrison.m_use;
                 }
                 if (global.race['brute']){
-                    cost = cost / 2;
+                    cost *= 1 - (traits.brute.vars[0] / 100);
                 }
                 cost = Math.round(cost);
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
@@ -1587,10 +1587,10 @@ function lootModify(val,gov){
     let looting = looters();
     let loot = val * Math.log(looting + 1);
     if (global.race['beast_of_burden']){
-        loot = loot * 1.1;
+        loot *= 1 + (traits.beast_of_burden.vars[0] / 100);
     }
     if (global.race['invertebrate']){
-        loot = loot * 0.9;
+        loot *= 1 - (traits.invertebrate.vars[0] / 100);
     }
     if (global.race.universe === 'evil'){
         let de = global.race.Dark.count;
@@ -1652,7 +1652,7 @@ export function armyRating(val,type,wound){
     }
     else if (type === 'hunting'){
         if (global.race['tracker']){
-            army *= 1.1;
+            army *= 1 + (traits.tracker.vars[0] / 100);
         }
         if (global.race['beast'] && global.city.calendar.wind === 1){
             army *= 1 + (traits.beast.vars[0] / 100);

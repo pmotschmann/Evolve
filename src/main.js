@@ -584,7 +584,7 @@ function fastLoop(){
     if ((global.city.ptrait === 'trashed' || global.race['scavenger']) && global.civic['scavenger'] && global.civic.scavenger.workers > 0){
         let bonus = (global.civic.scavenger.workers * global.civic.scavenger.impact);
         if (global.city.ptrait === 'trashed' && global.race['scavenger']){
-            bonus *= 1.25;
+            bonus *= 1 + (traits.scavenger.vars[0] / 100);
         }
         breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
@@ -599,28 +599,36 @@ function fastLoop(){
         global_multiplier *= 1 - (uv / 100);
     }
     if (global.race['smoldering'] && global.city['hot']){
-        let heat = global.city['hot'] * 0.35;
+        let heat = 0;
         if (global.city['hot'] > 100){
-            heat -= (global.city['hot'] - 100) * 0.15;
+            heat += 100 * traits.smoldering.vars[1];
+            heat += (global.city['hot'] - 100) * traits.smoldering.vars[2];
+        }
+        else {
+            heat = global.city['hot'] * traits.smoldering.vars[1];
         }
         breakdown.p['Global'][loc('hot')] = `${heat}%`;
         global_multiplier *= 1 + (heat / 100);
     }
     if (global.race['heat_intolerance'] && global.city['hot']){
-        let heat = global.city['hot'] * 0.25;
+        let heat = global.city['hot'] * traits.heat_intolerance.vars[0];
         breakdown.p['Global'][loc('hot')] = `-${heat}%`;
         global_multiplier *= 1 - (heat / 100);
     }
     if (global.race['chilled'] && global.city['cold']){
-        let cold = global.city['cold'] * 0.35;
-        if (global.city['hot'] > 100){
-            cold -= (global.city['cold'] - 100) * 0.15;
+        let cold = 0;
+        if (global.city['cold'] > 100){
+            cold += 100 * traits.chilled.vars[1];
+            cold += (global.city['cold'] - 100) * traits.chilled.vars[2];
+        }
+        else {
+            cold = global.city['cold'] * traits.chilled.vars[1];
         }
         breakdown.p['Global'][loc('cold')] = `${cold}%`;
         global_multiplier *= 1 + (cold / 100);
     }
     if (global.race['cold_intolerance'] && global.city['cold']){
-        let cold = global.city['cold'] * 0.25;
+        let cold = global.city['cold'] * traits.cold_intolerance.vars[0];
         breakdown.p['Global'][loc('cold')] = `-${cold}%`;
         global_multiplier *= 1 - (cold / 100);
     }
@@ -752,13 +760,13 @@ function fastLoop(){
             global.city.morale.season = spring;
         }
         else if (global.city.calendar.season === 1 && global.race['smoldering']){ // Summer
-            morale += 5;
-            global.city.morale.season = 5;
+            morale += traits.smoldering.vars[0];
+            global.city.morale.season = traits.smoldering.vars[0];
         }
         else if (global.city.calendar.season === 3){ // Winter
             if (global.race['chilled']){
-                morale += 5;
-                global.city.morale.season = 5;
+                morale += traits.chilled.vars[0];
+                global.city.morale.season = traits.chilled.vars[0];
             }
             else {
                 morale -= global.race['leathery'] ? 2 : 5;
@@ -1866,7 +1874,7 @@ function fastLoop(){
 
         if (global.race['lazy'] && global.city.calendar.temp === 2){
             breakdown.p['Global'][loc('trait_lazy_bd')] = '-10%';
-            global_multiplier *= 0.9;
+            global_multiplier *= 1 - (traits.lazy.vars[0] / 100);
         }
 
         if (global.race['selenophobia']){
@@ -1938,20 +1946,20 @@ function fastLoop(){
                 farmers_base *= global.city.ptrait === 'trashed' ? 0.75 : 1;
                 farmers_base *= racialTrait(global.civic.farmer.workers,'farmer');
                 farmers_base *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
-                farmers_base *= global.race['low_light'] ? 0.9 : 1;
+                farmers_base *= global.race['low_light'] ? (1 - traits.low_light.vars[0] / 100) : 1;
 
                 let weather_multiplier = 1;
                 if (!global.race['submerged']){
                     if (global.city.calendar.temp === 0){
                         if (global.city.calendar.weather === 0){
-                            weather_multiplier *= global.race['chilled'] ? 1.2 : 0.7;
+                            weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars[3] / 100) : 0.7;
                         }
                         else {
-                            weather_multiplier *= global.race['chilled'] ? 1.1 : 0.85;
+                            weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars[4] / 100) : 0.85;
                         }
                     }
                     if (global.city.calendar.weather === 2){
-                        weather_multiplier *= global.race['chilled'] ? 0.85 : 1.1;
+                        weather_multiplier *= global.race['chilled'] ? (1 - traits.chilled.vars[5] / 100) : 1.1;
                     }
                 }
 
@@ -1969,7 +1977,7 @@ function fastLoop(){
                     farm *= global.city.biome === 'hellscape' ? 0.25 : 1;
                     farm *= global.city.ptrait === 'trashed' ? 0.75 : 1;
                     farm *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
-                    farm *= global.race['low_light'] ? 0.9 : 1;
+                    farm *= global.race['low_light'] ? (1 - traits.low_light.vars[0] / 100) : 1;
                 }
 
                 food_bd[loc('city_farm')] = (farm) + 'v';
@@ -2219,10 +2227,10 @@ function fastLoop(){
         // Resource Income
         let hunger = fed ? 1 : 0.5;
         if (global.race['angry'] && fed === false){
-            hunger -= 0.25;
+            hunger -= traits.angry.vars[0] / 100;
         }
         if (global.race['malnutrition'] && fed === false){
-            hunger += 0.25;
+            hunger += traits.malnutrition.vars[0] / 100;
         }
 
         // Furs
@@ -2269,8 +2277,8 @@ function fastLoop(){
             }
 
             let professors_base = global.civic.professor.workers;
-            professors_base *= global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact;
-            professors_base *= global.race['pompous'] ? 0.25 : 1;
+            professors_base *= global.race['studious'] ? global.civic.professor.impact + traits.studious.vars[0] : global.civic.professor.impact;
+            professors_base *= global.race['pompous'] ? (1 - traits.pompous.vars[0] / 100) : 1;
             professors_base *= racialTrait(global.civic.professor.workers,'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
                 professors_base *= 1 + (global.city.temple.count * 0.05);
@@ -3202,7 +3210,7 @@ function fastLoop(){
                 let iron_mult = 1/4;
                 let iron_base = miner_base * iron_mult;
                 if (global.race['iron_allergy']){
-                    iron_base *= 0.75;
+                    iron_base *= 1 - (traits.iron_allergy.vars[0]);
                 }
                 let smelter_mult = 1 + (iron_smelter * 0.1);
 
@@ -3818,13 +3826,16 @@ function fastLoop(){
     }
 
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
-        let rate = global.race['diverse'] ? 2 : 2.5;
+        let rate = 2;
+        if (global.race['diverse']){
+            rate *= 1 + (traits.diverse.vars[0] / 100);
+        }
         if (global.city['boot_camp']){
             rate *= 1 + (global.city['boot_camp'].count * (global.tech['boot_camp'] >= 2 ? 0.08 : 0.05));
         }
         global.civic.garrison.progress += rate * time_multiplier;
         if (global.race['brute']){
-            global.civic.garrison.progress += 2.5 * time_multiplier;
+            global.civic.garrison.progress += traits.diverse.vars[1] * time_multiplier;
         }
         if (global.civic.garrison.progress >= 100){
             global.civic.garrison.progress = 0;
