@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
@@ -572,7 +572,7 @@ function fastLoop(){
         global_multiplier *= 1.08;
     }
     if (global.race['intelligent']){
-        let bonus = (global.civic.scientist.workers * 0.25) + (global.civic.professor.workers * 0.125);
+        let bonus = (global.civic.scientist.workers * traits.intelligent.vars[1]) + (global.civic.professor.workers * traits.intelligent.vars[0]);
         breakdown.p['Global'][loc('trait_intelligent_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
@@ -860,11 +860,11 @@ function fastLoop(){
         }
 
         if (global.race['optimistic']){
-            stress += 10;
+            stress += traits.optimistic.vars[0];
         }
 
         if (global.race['pessimistic']){
-            stress -= 2;
+            stress -= traits.pessimistic.vars[0];
         }
 
         if (global.civic['garrison']){
@@ -2011,7 +2011,7 @@ function fastLoop(){
             }
 
             let consume = (global.resource[global.race.species].amount + soldiers - (global.civic.free * 0.5));
-            consume *= (global.race['gluttony'] ? 1.1 : 1);
+            consume *= (global.race['gluttony'] ? (1 + traits.gluttony.vars[0] / 100) : 1);
             if (global.race['high_metabolism']){
                 consume *= 1 + (traits.high_metabolism.vars[0] / 100);
             }
@@ -2084,12 +2084,15 @@ function fastLoop(){
 
             if (!modRes('Food', delta * time_multiplier)){
                 fed = false;
-                let threshold = global.race['slow_digestion'] ? 2 : 1.25;
+                let threshold = 1.25;
+                if (global.race['slow_digestion']){
+                    threshold += traits.slow_digestion.vars[0];
+                }
                 if (global.race['humpback']){
-                    threshold += 0.5;
+                    threshold += traits.humpback.vars[0];
                 }
                 if (global.race['atrophy']){
-                    threshold -= 0.15;
+                    threshold -= traits.atrophy.vars[0];
                 }
 
                 // threshold can be thought of as the inverse of nutrition ratio per unit of food.
@@ -2782,7 +2785,7 @@ function fastLoop(){
             iron_smelter *= global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 1.5 : 1.2) : 1;
 
             if (global.race['pyrophobia']){
-                iron_smelter *= 0.9;
+                iron_smelter *= 1 - (traits.pyrophobia.vars[0] / 100);
             }
 
             if (oil_bonus > 0){
@@ -2853,7 +2856,7 @@ function fastLoop(){
 
                 let smelter_output = steel_smelter * steel_base;
                 if (global.race['pyrophobia']){
-                    smelter_output *= 0.9;
+                    smelter_output *= 1 - (traits.pyrophobia.vars[0] / 100);
                 }
 
                 let shrine_bonus = 1;
@@ -3163,7 +3166,7 @@ function fastLoop(){
             miner_base *= global.civic.miner.impact;
             miner_base *= racialTrait(global.civic.miner.workers,'miner');
             if (global.race['tough']){
-                miner_base *= 1.25;
+                miner_base *= 1 + (traits.tough.vars[0] / 100);
             }
             if (global.race['industrious']){
                 let bonus = 1 + (global.race['industrious'] / 50);
@@ -3292,7 +3295,7 @@ function fastLoop(){
             coal_base *= global.civic.coal_miner.impact;
             coal_base *= racialTrait(global.civic.coal_miner.workers,'miner');
             if (global.race['tough']){
-                coal_base *= 1.25;
+                coal_base *= 1 + (traits.tough.vars[0] / 100);
             }
             if (global.race['resilient']){
                 let bonus = 1 + (global.race['resilient'] / 50);
@@ -3617,8 +3620,10 @@ function fastLoop(){
         // Income
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - (global.race['carnivore'] || global.race['evil'] ? 0 : global.civic.free);
-            income_base *= ( global.race['greedy'] ? 1.75 : 2 );
-            income_base /= 5;
+            income_base *= 0.4;
+            if (global.race['greedy']){
+                income_base *= 1 - (traits.greedy.vars[0] / 100);
+            }
 
             if (fed){
                 if (global.tech['banking'] && global.tech['banking'] >= 2){
@@ -3722,7 +3727,7 @@ function fastLoop(){
 
         // Crafting
         if (global.tech['foundry']){
-            let craft_costs = global.race['resourceful'] ? 0.9 : 1;
+            let craft_costs = global.race['resourceful'] ? (1 - traits.resourceful.vars[0] / 100) : 1;
             let crafting_costs = craftCost();
             let crafting_usage = {};
 
@@ -4565,7 +4570,7 @@ function midLoop(){
                 multiplier += (p_on['sensor_drone'] * 0.02);
             }
             if (global.race['hard_of_hearing']){
-                multiplier *= 0.95;
+                multiplier *= 1 - (traits.hard_of_hearing.vars[0] / 100);
             }
             if (p_on['s_gate'] && gal_on['scavenger']){
                 let uni = gal_on['scavenger'] * +(pirate_alien2 / 4).toFixed(1);
@@ -4585,7 +4590,10 @@ function midLoop(){
             bd_Knowledge[loc('city_university')] = gain+'v';
         }
         if (global.city['library']){
-            let shelving = (global.race['nearsighted'] ? 110 : 125);
+            let shelving = 125;
+            if (global.race['nearsighted']){
+                shelving *= 1 - (traits.nearsighted.vars[0] / 100);
+            }
             if (global.tech['science'] && global.tech['science'] >= 8){
                 shelving *= 1.4;
             }
@@ -4672,34 +4680,7 @@ function midLoop(){
             bd_Knowledge[loc('galaxy_symposium')] = know +'v';
         }
         if (global.city['bank']){
-            let vault = 1800;
-            if (global.tech['vault'] >= 1){
-                vault = (global.tech['vault'] + 1) * 7500;
-            }
-            else if (global.tech['banking'] >= 5){
-                vault = 9000;
-            }
-            else if (global.tech['banking'] >= 3){
-                vault = 4000;
-            }
-            if (global.race['paranoid']){
-                vault *= 0.9;
-            }
-            else if (global.race['hoarder']){
-                vault *= 1.2;
-            }
-            if (global.tech['banking'] >= 7){
-                vault *= 1 + (global.civic.banker.workers * 0.05);
-            }
-            if (global.tech['banking'] >= 8){
-                vault += 25 * global.resource[global.race.species].amount;
-            }
-            if (global.tech['stock_exchange']){
-                vault *= 1 + (global.tech['stock_exchange'] * 0.1);
-            }
-            if (global.tech['world_control']){
-                vault *= 1.25;
-            }
+            let vault = bank_vault();
             let gain = (global.city['bank'].count * spatialReasoning(vault));
             caps['Money'] += gain;
             bd_Money[loc('city_bank')] = gain+'v';
@@ -5651,7 +5632,7 @@ function longLoop(){
 
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
-            let healed = global.race['regenerative'] ? 4 : 1;
+            let healed = global.race['regenerative'] ? traits.regenerative.vars[0] : 1;
             let hc = global.city['hospital'] ? global.city['hospital'].count : 0;
             if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= 2;

@@ -148,7 +148,7 @@ export const traits = {
         desc: loc('trait_scales'),
         type: 'genus',
         val: 5,
-        vars: [2,1]
+        vars: [2,1,1]
     },
     hollow_bones: { // Less Crafted Materials Needed
         name: loc('trait_hollow_bones_name'),
@@ -382,18 +382,21 @@ export const traits = {
         desc: loc('trait_pack_rat'),
         type: 'major',
         val: 3,
+        vars: [10,5]
     },
     paranoid: { // Bank capacity reduced by 10%
         name: loc('trait_paranoid_name'),
         desc: loc('trait_paranoid'),
         type: 'major',
         val: -3,
+        vars: [10]
     },
     greedy: { // Lowers income from taxes
         name: loc('trait_greedy_name'),
         desc: loc('trait_greedy'),
         type: 'major',
         val: -5,
+        vars: [12.5]
     },
     merchant: { // Better commodity selling prices
         name: loc('trait_merchant_name'),
@@ -407,6 +410,7 @@ export const traits = {
         desc: loc('trait_smart'),
         type: 'major',
         val: 6,
+        vars: [10]
     },
     puny: { // Lowers minium bound for army score roll
         name: loc('trait_puny_name'),
@@ -419,36 +423,42 @@ export const traits = {
         desc: loc('trait_dumb'),
         type: 'major',
         val: -5,
+        vars: [5]
     },
     tough: { // Mining output increased by 25%
         name: loc('trait_tough_name'),
         desc: loc('trait_tough'),
         type: 'major',
         val: 4,
+        vars: [25]
     },
     nearsighted: { // Libraries are less effective
         name: loc('trait_nearsighted_name'),
         desc: loc('trait_nearsighted'),
         type: 'major',
         val: -4,
+        vars: [12]
     },
     intelligent: { // Professors and Scientists add a global production bonus
         name: loc('trait_intelligent_name'),
         desc: loc('trait_intelligent'),
         type: 'major',
         val: 7,
+        vars: [0.125,0.25]
     },
     regenerative: { // Wounded soldiers heal 4x as fast
         name: loc('trait_regenerative_name'),
         desc: loc('trait_regenerative'),
         type: 'major',
         val: 8,
+        vars: [4]
     },
     gluttony: { // Eats 25% more food per rank
         name: loc('trait_gluttony_name'),
         desc: loc('trait_gluttony'),
         type: 'major',
         val: -2,
+        vars: [10]
     },
     slow: { // The game moves at a 10% slower pace
         name: loc('trait_slow_name'),
@@ -461,12 +471,14 @@ export const traits = {
         desc: loc('trait_armored'),
         type: 'major',
         val: 4,
+        vars: [25,2]
     },
     optimistic: { // Minor reduction to stress
         name: loc('trait_optimistic_name'),
         desc: loc('trait_optimistic'),
         type: 'major',
         val: 5,
+        vars: [10]
     },
     chameleon: { // Barracks have less soldiers
         name: loc('trait_chameleon_name'),
@@ -479,18 +491,21 @@ export const traits = {
         desc: loc('trait_slow_digestion'),
         type: 'major',
         val: 1,
+        vars: [0.75]
     },
     hard_of_hearing: { // University science cap gain reduced by 5%
         name: loc('trait_hard_of_hearing_name'),
         desc: loc('trait_hard_of_hearing'),
         type: 'major',
         val: -3,
+        vars: [5]
     },
     resourceful: { // Crafting costs are reduced slightly
         name: loc('trait_resourceful_name'),
         desc: loc('trait_resourceful'),
         type: 'major',
         val: 4,
+        vars: [10]
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
         name: loc('trait_selenophobia_name'),
@@ -509,12 +524,14 @@ export const traits = {
         desc: loc('trait_pessimistic'),
         type: 'major',
         val: -1,
+        vars: [2]
     },
     hoarder: { // Banks can store 20% more money
         name: loc('trait_hoarder_name'),
         desc: loc('trait_hoarder'),
         type: 'major',
         val: 4,
+        vars: [20]
     },
     solitary: { // Cabins are cheaper however cottages cost more
         name: loc('trait_solitary_name'),
@@ -528,12 +545,14 @@ export const traits = {
         desc: loc('trait_kindling_kindred'),
         type: 'major',
         val: 8,
+        vars: [5]
     },
     pyrophobia: { // Smelter productivity is reduced
         name: loc('trait_pyrophobia_name'),
         desc: loc('trait_pyrophobia'),
         type: 'major',
         val: -4,
+        vars: [10]
     },
     hyper: { // The game moves at a 5% faster pace
         name: loc('trait_hyper_name'),
@@ -601,6 +620,7 @@ export const traits = {
         desc: loc('trait_atrophy'),
         type: 'major',
         val: -1,
+        vars: [0.15]
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
         name: loc('trait_hivemind_name'),
@@ -728,6 +748,7 @@ export const traits = {
         desc: loc('trait_humpback'),
         type: 'major',
         val: 4,
+        vars: [0.5]
     },
     thalassophobia: { // Wharves are unavailable
         name: loc('trait_thalassophobia_name'),

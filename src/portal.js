@@ -1,5 +1,6 @@
 import { global, poppers, keyMultiplier, p_on } from './vars.js';
 import { vBind, clearElement, spaceCostMultiplier, messageQueue } from './functions.js';
+import { traits } from './races.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
@@ -801,10 +802,10 @@ function casualties(demons,pat_armor,ambush){
 export function bloodwar(){
     let pat_armor = global.tech['armor'] ? global.tech['armor'] : 0;
     if (global.race['armored']){
-        pat_armor += 2;
+        pat_armor += traits.armored.vars[1];
     }
     if (global.race['scales']){
-        pat_armor += 1;
+        pat_armor += traits.scales.vars[2];
     }
 
     let forgeOperating = false;                    

@@ -1143,7 +1143,8 @@ function war_campaign(gov){
         }
         let armor = 0;
         if (global.race['armored']){
-            armor += Math.floor(death * 0.75);
+            let armored = 1 - (traits.armored.vars[0] / 100);
+            armor += Math.floor(death *armored);
         }
         if (global.race['scales']){
             armor += traits.scales.vars[0];
@@ -1496,7 +1497,8 @@ function war_campaign(gov){
         }
         let armor = 0;
         if (global.race['armored']){
-            armor += Math.floor(death * 0.75);
+            let armored = 1 - (traits.armored.vars[0] / 100);
+            armor += Math.floor(death * armored);
         }
         if (global.race['scales']){
             armor += traits.scales.vars[1];

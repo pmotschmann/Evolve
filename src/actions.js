@@ -4119,7 +4119,7 @@ export const actions = {
                     multiplier += (p_on['sensor_drone'] * 0.02);
                 }
                 if (global.race['hard_of_hearing']){
-                    multiplier *= 0.95;
+                    multiplier *= 1 - (traits.hard_of_hearing.vars[0] / 100);
                 }
                 if (p_on['s_gate'] && gal_on['scavenger']){
                     let uni = gal_on['scavenger'] * +(piracy('gxy_alien2') / 4).toFixed(1);
@@ -4172,7 +4172,10 @@ export const actions = {
                 Brick(offset){ return costMultiplier('library', offset, 15, 1.20); }
             },
             effect(){
-                let gain = global.race['nearsighted'] ? 110 : 125;
+                let gain = 125;
+                if (global.race['nearsighted']){
+                    gain *= 1 - (traits.nearsighted.vars[0] / 100);
+                }
                 if (global.tech['science'] && global.tech['science'] >= 8){
                     gain *= 1.4;
                 }
@@ -4187,7 +4190,21 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global['resource']['Knowledge'].max += global.race['nearsighted'] ? 110 : 125;
+                    let gain = 125;
+                    if (global.race['nearsighted']){
+                        gain *= 1 - (traits.nearsighted.vars[0] / 100);
+                    }
+                    if (global.tech['science'] && global.tech['science'] >= 8){
+                        gain *= 1.4;
+                    }
+                    if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
+                        gain *= 1 + (global.city.temple.count * 0.05);
+                    }
+                    if (global.tech['science'] && global.tech['science'] >= 5){
+                        gain *= 1 + (global.civic.scientist.workers * 0.12);
+                    }
+                    gain = +(gain).toFixed(1);
+                    global['resource']['Knowledge'].max += gain;
                     global.city.library.count++;
                     if (global.tech['science'] && global.tech['science'] >= 3){
                         global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
@@ -12702,7 +12719,7 @@ export function storageMultipler(){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
     }
     if (global.race['pack_rat']){
-        multiplier *= 1.05;
+        multiplier *= 1 + (traits.pack_rat.vars[1] / 100);
     }
     if (global.tech['storage'] >= 6){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
@@ -14321,10 +14338,10 @@ export function bank_vault(){
         vault = 4000;
     }
     if (global.race['paranoid']){
-        vault *= 0.9;
+        vault *= 1 - (traits.paranoid.vars[0] / 100);
     }
     else if (global.race['hoarder']){
-        vault *= 1.2;
+        vault *= 1 + (traits.hoarder.vars[0] / 100);
     }
     if (global.tech['banking'] >= 7){
         vault *= 1 + (global.civic.banker.workers * 0.05);

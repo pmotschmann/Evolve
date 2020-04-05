@@ -729,10 +729,10 @@ function scienceAdjust(costs){
                 newCosts[res] = function(){
                     let cost = costs[res]();
                     if (global.race['smart']){
-                        cost *= 0.9;
+                        cost *= 1 - (traits.smart.vars[0] / 100);
                     }
                     if (global.race['dumb']){
-                        cost *= 1.05;
+                        cost *= 1 + (traits.dumb.vars[0] / 100);
                     }
                     return Math.round(cost);
                 }
@@ -749,9 +749,10 @@ function scienceAdjust(costs){
 function kindlingAdjust(costs){
     if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
+        let adjustRate = 1 + (traits.kindling_kindred.vars[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 1.05) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res]() * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
                 newCosts[res] = function(){ return costs[res](); }

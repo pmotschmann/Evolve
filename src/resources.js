@@ -1351,9 +1351,6 @@ function drawModal(name,color){
 
 export function crateValue(){
     let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 500 : 350;
-    if (global.race['pack_rat']){
-        create_value += global.tech.container >= 2 ? 50 : 25;
-    }
     if (global.tech['container'] && global.tech['container'] >= 4){
         create_value += global.tech['container'] >= 5 ? 500 : 250;
     }
@@ -1363,15 +1360,15 @@ export function crateValue(){
     if (global.tech['container'] && global.tech['container'] >= 8){
         create_value += 4000;
     }
+    if (global.race['pack_rat']){
+        create_value *= 1 + (traits.pack_rat.vars[0] / 100);
+    }
     create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(create_value));
 }
 
 export function containerValue(){
     let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 1200 : 800;
-    if (global.race['pack_rat']){
-        container_value += global.tech.steel_container >= 3 ? 100 : 50;
-    }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 4){
         container_value += global.tech['steel_container'] >= 5 ? 1000 : 400;
     }
@@ -1380,6 +1377,9 @@ export function containerValue(){
     }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 8){
         container_value += 8000;
+    }
+    if (global.race['pack_rat']){
+        container_value *= 1 + (traits.pack_rat.vars[0] / 100);
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(container_value));
