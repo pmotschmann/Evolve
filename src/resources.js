@@ -1,6 +1,6 @@
 import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
 import { vBind, clearElement, modRes, calc_mastery } from './functions.js';
-import { races } from './races.js';
+import { races, traits } from './races.js';
 import { loc } from './locale.js';
 
 export const resource_values = {
