@@ -858,7 +858,13 @@ const spaceProjects = {
                 let helium = +(fuel_adjust(0.5)).toFixed(2);
                 return `<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</span>`;
             },
-            powered(){ return powerModifier(global.race['forge'] ? -9 : -8); },
+            powered(){
+                let power = -8;
+                if (global.race['forge']){
+                    power -= traits.forge.vars[0];
+                }
+                return powerModifier(power);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('geothermal');

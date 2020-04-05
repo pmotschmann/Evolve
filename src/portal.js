@@ -1048,7 +1048,10 @@ export function bloodwar(){
 
     // Surveyor threats
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
-        let divisor = global.race['blurry'] ? 1250 : 1000;
+        let divisor = 1000;
+        if (global.race['blurry']){
+            divisor *= 1 + (traits.blurry.vars[0] / 100);
+        }
         if (global.tech['infernite'] && global.tech.infernite >= 5){
             divisor += 250;
         }

@@ -4186,7 +4186,7 @@ export const actions = {
                     gain *= 1 + (global.civic.scientist.workers * 0.12);
                 }
                 gain = +(gain).toFixed(1);
-                return `<div>${loc('city_max_knowledge',[gain])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? 3 : 5])}</div>`;
+                return `<div>${loc('city_max_knowledge',[gain])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : 5])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

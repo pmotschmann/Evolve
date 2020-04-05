@@ -569,7 +569,7 @@ function fastLoop(){
     }
     if (global.race['suction_grip']){
         breakdown.p['Global'][loc('trait_suction_grip_bd')] = '8%';
-        global_multiplier *= 1.08;
+        global_multiplier *= 1 + (traits.suction_grip.vars[0] / 100);
     }
     if (global.race['intelligent']){
         let bonus = (global.civic.scientist.workers * traits.intelligent.vars[1]) + (global.civic.professor.workers * traits.intelligent.vars[0]);
@@ -812,7 +812,7 @@ function fastLoop(){
                 if (global.city.calendar.wind === 1){
                     // Thunderstorm
                     if (global.race['skittish']){
-                        weather_morale = -12;
+                        weather_morale = -(traits.skittish.vars[0]);
                     }
                     else {
                         weather_morale = global.race['leathery'] ? -2 : -5;
@@ -827,7 +827,7 @@ function fastLoop(){
         else if (global.city.calendar.weather === 2){
             // Sunny
             if (global.race['nyctophilia']){
-                weather_morale = -5;
+                weather_morale = -(traits.nyctophilia.vars[0]);
             }
             else if ((global.city.calendar.wind === 0 && global.city.calendar.temp < 2) || (global.city.calendar.wind === 1 && global.city.calendar.temp === 2)){
                 //Still and Not Hot
@@ -839,11 +839,11 @@ function fastLoop(){
         else {
             //Cloudy
             if (global.race['nyctophilia']){
-                weather_morale = 2;
+                weather_morale = traits.nyctophilia.vars[1];
             }
         }
         if (global.race['snowy'] && (global.city.calendar.temp !== 0 || global.city.calendar.weather !== 0)){
-            weather_morale -= global.city.calendar.temp >= 2 ? 5 : 2;
+            weather_morale -= global.city.calendar.temp >= 2 ? traits.snowy.vars[1] : traits.snowy.vars[0];
         }
 
         global.city.morale.weather = global.race['submerged'] ? 0 : weather_morale;
@@ -2303,7 +2303,7 @@ function fastLoop(){
                 scientist_base *= 0.5;
             }
 
-            let library_bonus = global.race['autoignition'] ? 0.03 : 0.05;
+            let library_bonus = global.race['autoignition'] ? (traits.autoignition.vars[0] / 100) : 0.05;
             let library_mult = global.city['library'] ? 1 + (global.city.library.count * library_bonus) : 1;
 
             let gene_consume = 0;
@@ -2382,7 +2382,7 @@ function fastLoop(){
                 let demand = global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]);
                 let delta = workDone * demand;
                 if (global.race['toxic']){
-                    delta *= 1.20;
+                    delta *= 1 + (traits.toxic.vars[0] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     delta *= 2.5;
@@ -2427,7 +2427,7 @@ function fastLoop(){
 
                 let factory_output = workDone * (assembly ? f_rate.Alloy.output[global.tech['factory']] : f_rate.Alloy.output[0]);
                 if (global.race['toxic']){
-                    factory_output *= 1.20;
+                    factory_output *= 1 + (traits.toxic.vars[0] / 100);
                 }
                 if (global.tech['alloy']){
                     factory_output *= 1.37;
@@ -2492,7 +2492,7 @@ function fastLoop(){
 
                 let factory_output = workDone * (assembly ? f_rate.Polymer.output[global.tech['factory']] : f_rate.Polymer.output[0]);
                 if (global.race['toxic']) {
-                    factory_output *= 1.20;
+                    factory_output *= 1 + (traits.toxic.vars[0] / 100);
                 }
                 if (global.tech['polymer'] >= 2){
                     factory_output *= 1.42;
@@ -2559,7 +2559,7 @@ function fastLoop(){
 
                 let factory_output = workDone * (assembly ? f_rate.Nano_Tube.output[global.tech['factory']] : f_rate.Nano_Tube.output[0]);
                 if (global.race['toxic']) {
-                    factory_output *= 1.08;
+                    factory_output *= 1 + (traits.toxic.vars[1] / 100);
                 }
                 if (global.tech['polymer'] >= 2){
                     factory_output *= 1.42;
@@ -2619,6 +2619,9 @@ function fastLoop(){
                 modRes('Nano_Tube', -(nano_cost * time_multiplier));
 
                 let factory_output = workDone * (assembly ? f_rate.Stanene.output[global.tech['factory']] : f_rate.Stanene.output[0]);
+                if (global.race['toxic']) {
+                    factory_output *= 1 + (traits.toxic.vars[1] / 100);
+                }
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= 1.2;
                 }
@@ -2837,16 +2840,16 @@ function fastLoop(){
                 modRes('Coal', -(coal_consume * time_multiplier));
 
                 let steel_base = 1;
-                if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1) {
+                if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1){
                     let steelen_bonus = (global.stats.achieve['steelen'].l * 2) / 100;
                     steel_base *= (1 + steelen_bonus);
                 }
                 for (i = 4; i <= 6; i++) {
-                    if (global.tech['smelting'] >= i) {
+                    if (global.tech['smelting'] >= i){
                         steel_base *= 1.2;
                     }
                 }
-                if (global.tech['smelting'] >= 7) {
+                if (global.tech['smelting'] >= 7){
                     steel_base *= 1.25;
                 }
 
@@ -5643,7 +5646,10 @@ function longLoop(){
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc += 3
             }
-            let max_bound = global.race['slow_regen'] ? 25 : 20;
+            let max_bound = 20;
+            if (global.race['slow_regen']){
+                max_bound *= 1 + (traits.slow_regen.vars[0] / 100);
+            }
             if (hc > 0){
                 while (hc >= max_bound){
                     healed++;

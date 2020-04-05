@@ -565,6 +565,7 @@ export const traits = {
         desc: loc('trait_skittish'),
         type: 'major',
         val: -4,
+        vars: [12]
     },
     infectious: { // Attacking has a chance to infect other creatures and grow your population
         name: loc('trait_infectious_name'),
@@ -583,12 +584,14 @@ export const traits = {
         desc: loc('trait_toxic'),
         type: 'major',
         val: 5,
+        vars: [20,8,30]
     },
     nyctophilia: { // Productivity is lost when it is sunny
         name: loc('trait_nyctophilia_name'),
         desc: loc('trait_nyctophilia'),
         type: 'major',
         val: -3,
+        vars: [5,2]
     },
     cannibalize: { // Eat your own for buffs
         name: loc('trait_cannibalize_name'),
@@ -633,6 +636,7 @@ export const traits = {
         desc: loc('trait_tunneler'),
         type: 'major',
         val: 2,
+        vars: [0.01]
     },
     frenzy: { // Combat causes a temporary increase in morale
         name: loc('trait_frenzy_name'),
@@ -645,6 +649,7 @@ export const traits = {
         desc: loc('trait_apex_predator'),
         type: 'major',
         val: 6,
+        vars: [25,50]
     },
     invertebrate: { // You have no bones
         name: loc('trait_invertebrate_name'),
@@ -658,6 +663,7 @@ export const traits = {
         desc: loc('trait_suction_grip'),
         type: 'major',
         val: 4,
+        vars: [8]
     },
     befuddle: { // Spy actions complete in 1/2 time
         name: loc('trait_befuddle_name'),
@@ -676,6 +682,7 @@ export const traits = {
         desc: loc('trait_unorganized'),
         type: 'major',
         val: -2,
+        vars: [50]
     },
     musical: { // Entertainers are more effective
         name: loc('trait_musical_name'),
@@ -694,12 +701,14 @@ export const traits = {
         desc: loc('trait_slow_regen'),
         type: 'major',
         val: -4,
+        vars: [25]
     },
     forge: { // Smelters do not require fuel
         name: loc('trait_forge_name'),
         desc: loc('trait_forge'),
         type: 'major',
         val: 4,
+        vars: [1]
     },
     autoignition: { // Library knowledge bonus reduced
         name: loc('trait_autoignition_name'),
@@ -712,12 +721,14 @@ export const traits = {
         desc: loc('trait_blurry'),
         type: 'major',
         val: 5,
+        vars: [25]
     },
     snowy: { // You lose morale if it's not snowing
         name: loc('trait_snowy_name'),
         desc: loc('trait_snowy'),
         type: 'major',
         val: -3,
+        vars: [2,5]
     },
     ravenous: { // Drastically increases food consumption
         name: loc('trait_ravenous_name'),
@@ -1825,7 +1836,7 @@ export function racialTrait(workers,type){
         modifier *= 0.75;
     }
     if (global.race['toxic'] && type === 'factory'){
-        modifier *= 1.3;
+        modifier *= 1 + (traits.toxic.vars[2] / 100);
     }
     if (global.race['hardy'] && type === 'factory'){
         modifier *= 1 + (global.race['hardy'] / 100);

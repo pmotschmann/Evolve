@@ -266,7 +266,7 @@ function drawGovModal(){
                         time += 250;
                     }
                     if (global.race['unorganized']){
-                        time = Math.round(time * 1.5);
+                        time = Math.round(time * (1 + traits.unorganized.vars[0] / 100));
                     }
                     if (global.stats.achieve['anarchist']){
                         time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
@@ -1626,7 +1626,7 @@ export function armyRating(val,type,wound){
             army *= 1 - (traits.cautious.vars[0] / 100);
         }
         if (global.race['apex_predator']){
-            army *= 1.25;
+            army *= 1 + (traits.apex_predator.vars[0] / 100);
         }
         if (global.race['fiery']){
             army *= 1.65;
@@ -1660,7 +1660,7 @@ export function armyRating(val,type,wound){
             army *= 1 + (traits.beast.vars[0] / 100);
         }
         if (global.race['apex_predator']){
-            army *= 1.5;
+            army *= 1 + (traits.apex_predator.vars[1] / 100);
         }
         if (global.race['fiery']){
             army *= 1.25;
