@@ -485,6 +485,7 @@ export const traits = {
         desc: loc('trait_chameleon'),
         type: 'major',
         val: 6,
+        vars: [20]
     },
     slow_digestion: { // Your race is more resilient to starvation
         name: loc('trait_slow_digestion_name'),
@@ -617,6 +618,7 @@ export const traits = {
         desc: loc('trait_claws'),
         type: 'major',
         val: 5,
+        vars: [20]
     },
     atrophy: { // More prone to starvation
         name: loc('trait_atrophy_name'),
@@ -742,12 +744,14 @@ export const traits = {
         desc: loc('trait_ghostly'),
         type: 'major',
         val: 5,
+        vars: [50,1.5]
     },
     lawless: { // Government lockout timer is reduced by 90%
         name: loc('trait_lawless_name'),
         desc: loc('trait_lawless'),
         type: 'major',
         val: 3,
+        vars: [90]
     },
     mistrustful: { // Lose standing with rival cities quicker
         name: loc('trait_mistrustful_name'),
@@ -773,6 +777,7 @@ export const traits = {
         desc: loc('trait_fiery'),
         type: 'major',
         val: 10,
+        vars: [65,25]
     },
     terrifying: { // No one will trade with you
         name: loc('trait_terrifying_name'),
@@ -805,18 +810,21 @@ export const traits = {
         desc: loc('trait_pathetic'),
         type: 'major',
         val: -5,
+        vars: [25]
     },
     spiritual: { // Temples are 13% more effective
         name: loc('trait_spiritual_name'),
         desc: loc('trait_spiritual'),
         type: 'major',
         val: 4,
+        vars: [13]
     },
     truthful: { // Bankers are less effective
         name: loc('trait_truthful_name'),
         desc: loc('trait_truthful'),
         type: 'major',
         val: -7,
+        vars: [50]
     },
     unified: { // Start with unification
         name: loc('trait_unified_name'),
@@ -829,6 +837,7 @@ export const traits = {
         desc: loc('trait_rainbow'),
         type: 'major',
         val: 3,
+        vars: [50]
     },
     magnificent: { // construct shrines to receive boons
         name: loc('trait_magnificent_name'),
@@ -848,7 +857,7 @@ export const traits = {
         type: 'special',
         val: 0,
     },
-    untapped: { // Untapped Potential
+    /*untapped: { // Untapped Potential
         name: loc('trait_untapped_name'),
         desc: loc('trait_untapped'),
         type: 'special',
@@ -859,7 +868,7 @@ export const traits = {
         desc: loc('trait_emfield'),
         type: 'special',
         val: -20,
-    },
+    },*/
     tactical: { // War Bonus
         name: loc('trait_tactical_name'),
         desc: loc('trait_tactical'),

@@ -3952,7 +3952,7 @@ export const actions = {
                         faith += priest_bonus * global.civic.priest.workers;
                     }
                     if (global.race['spiritual']){
-                        faith *= 1.13;
+                        faith *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         faith *= 1.05;
@@ -3975,7 +3975,7 @@ export const actions = {
                         faith += priest_bonus * global.civic.priest.workers;
                     }
                     if (global.race['spiritual']){
-                        faith *= 1.13;
+                        faith *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         faith *= 1.05;
@@ -3993,7 +3993,7 @@ export const actions = {
                         plasmid += priest_bonus * global.civic.priest.workers;
                     }
                     if (global.race['spiritual']){
-                        plasmid *= 1.13;
+                        plasmid *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         plasmid *= 1.05;

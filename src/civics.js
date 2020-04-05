@@ -272,7 +272,7 @@ function drawGovModal(){
                         time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
                     }
                     if (global.race['lawless']){
-                        time = Math.round(time / 10);
+                        time = Math.round(time / (100 - traits.lawless.vars[0]));
                     }
                     global.civic.govern.rev = time + global.civic.govern.fr;
                     vBind({el: '#govModal'},'destroy');
@@ -1619,8 +1619,11 @@ export function armyRating(val,type,wound){
         if (global.race['puny']){
             army *= 0.9;
         }
-        if (global.race['claws'] || global.race['chameleon']){
-            army *= 1.2;
+        if (global.race['claws']){
+            army *= 1 + (traits.claws.vars[0] / 100);
+        }
+        if (global.race['chameleon']){
+            army *= 1 + (traits.chameleon.vars[0] / 100);
         }
         if (global.race['cautious'] && global.city.calendar.weather === 0){
             army *= 1 - (traits.cautious.vars[0] / 100);
@@ -1629,10 +1632,10 @@ export function armyRating(val,type,wound){
             army *= 1 + (traits.apex_predator.vars[0] / 100);
         }
         if (global.race['fiery']){
-            army *= 1.65;
+            army *= 1 + (traits.fiery.vars[0] / 100);
         }
         if (global.race['pathetic']){
-            army *= 0.75;
+            army *= 1 - (traits.fiery.vars[0] / 100);
         }
         if (global.race['tactical']){
             army *= 1 + (global.race['tactical'] / 20);
@@ -1663,7 +1666,7 @@ export function armyRating(val,type,wound){
             army *= 1 + (traits.apex_predator.vars[1] / 100);
         }
         if (global.race['fiery']){
-            army *= 1.25;
+            army *= 1 + (traits.fiery.vars[1] / 100);
         }
         if (global.city.ptrait === 'rage'){
             army *= 1.02;

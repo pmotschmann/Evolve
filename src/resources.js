@@ -1612,7 +1612,7 @@ export function plasmidBonus(type){
                 temple_bonus += priest_bonus * global.civic.priest.workers;
             }
             if (global.race['spiritual']){
-                temple_bonus *= 1.13;
+                temple_bonus *= 1 + (traits.spiritual.vars[0] / 100);
             }
             if (global.civic.govern.type === 'theocracy'){
                 temple_bonus *= 1.12;

@@ -102,7 +102,7 @@ export const job_desc = {
             interest += 2 * global.tech['stock_exchange'];
         }
         if (global.race['truthful']){
-            interest = interest / 2;
+            interest *= 1 - (traits.truthful.vars[0] / 100);
         }
         if (global.civic.govern.type === 'republic'){
             interest *= 1.25;

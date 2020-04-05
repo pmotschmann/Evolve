@@ -238,28 +238,28 @@ new Vue({
         },
         moon(){
             if (global.city.calendar.moon === 0){
-                return loc('moon1');
+                return loc('moon1'); // New Moon
             }
             else if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
-                return loc('moon2');
+                return loc('moon2'); // Waxing Crescent Moon
             }
             else if (global.city.calendar.moon === 7){
-                return loc('moon3');
+                return loc('moon3'); // First Quarter Moon
             }
             else if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){
-                return loc('moon4');
+                return loc('moon4'); // Waxing Gibbous Moon
             }
             else if (global.city.calendar.moon === 14){
-                return loc('moon5');
+                return loc('moon5'); // Full Moon
             }
             else if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){
-                return loc('moon6');
+                return loc('moon6'); // Waning Gibbous Moon
             }
             else if (global.city.calendar.moon === 21){
-                return loc('moon7');
+                return loc('moon7'); // Third Quarter Moon
             }
             else if (global.city.calendar.moon > 21){
-                return loc('moon8');
+                return loc('moon8'); // Waning Crescent Moon
             }
         },
         showUniverse(){
@@ -531,7 +531,7 @@ function fastLoop(){
                 temple_bonus /= 2;
             }
             if (global.race['spiritual']){
-                temple_bonus *= 1.13;
+                temple_bonus *= 1 + (traits.spiritual.vars[0] / 100);
             }
             if (global.civic.govern.type === 'theocracy'){
                 temple_bonus *= 1.12;
@@ -543,8 +543,8 @@ function fastLoop(){
         }
     }
     if (global.race['rainbow'] && global.race['rainbow'] > 1){
-        breakdown.p['Global'][loc('trait_rainbow_bd')] = '50%';
-        global_multiplier *= 1.5;
+        breakdown.p['Global'][loc('trait_rainbow_bd')] = `${traits.rainbow.vars[0]}%`;
+        global_multiplier *= 1 + (traits.rainbow.vars[0] / 100);
     }
     if (global.tech['world_control']){
         breakdown.p['Global'][loc('tech_unification')] = global.civic.govern.type === 'federation' ? '30%' : '25%';
@@ -3635,7 +3635,7 @@ function fastLoop(){
                         impact += 0.02 * global.tech['stock_exchange'];
                     }
                     if (global.race['truthful']){
-                        impact /= 2;
+                        impact *= 1 - (traits.truthful.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'republic'){
                         impact *= 1.25;
