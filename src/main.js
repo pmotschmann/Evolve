@@ -3210,7 +3210,7 @@ function fastLoop(){
                 let iron_mult = 1/4;
                 let iron_base = miner_base * iron_mult;
                 if (global.race['iron_allergy']){
-                    iron_base *= 1 - (traits.iron_allergy.vars[0]);
+                    iron_base *= 1 - (traits.iron_allergy.vars[0] / 100);
                 }
                 let smelter_mult = 1 + (iron_smelter * 0.1);
 
