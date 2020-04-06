@@ -2773,7 +2773,8 @@ export const actions = {
             effect(){
                 let souls = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ souls = Math.round(souls * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
-                return `<div>${loc('city_soul_well_effect',[global.race['ghostly'] ? 3.5 : 2])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`;
+                let production = global.race['ghostly'] ? (2 + traits.ghostly.vars[1]) : 2;
+                return `<div>${loc('city_soul_well_effect',[production])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

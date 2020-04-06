@@ -1928,12 +1928,12 @@ function fastLoop(){
                 let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 0.5);
                 if (global.race['ghostly']){
-                    food_base *= 1.5;
+                    food_base *= 1 + (traits.ghostly.vars[0] / 100);
                 }
                 food_bd[loc('job_hunter')] = food_base + 'v';
 
                 if (global.city['soul_well']){
-                    let souls = global.city['soul_well'].count * (global.race['ghostly'] ? 3.5 : 2);
+                    let souls = global.city['soul_well'].count * (global.race['ghostly'] ? (2 + traits.ghostly.vars[1]) : 2);
                     food_bd[loc('city_soul_well')] = souls + 'v';
                     food_base += souls;
                 }
