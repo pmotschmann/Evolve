@@ -18,3 +18,23 @@ export function popover(id,content,is_wide){
         clearElement($(`#pop${id}`),true);
     });
 }
+
+export function actionDesc(info, c_action, extended){
+    let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
+    if (extended){
+        info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2><span class="has-text-caution">${extended}</span></div>`);
+    }
+    else {
+        info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2></div>`);
+    }
+
+    let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
+    if (desc !== title){
+        info.append(`<div class="desc">${desc}</div>`);
+    }
+
+    if (c_action.hasOwnProperty('effect')){
+        let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
+        info.append(`<div class="desc">${effect}</div>`);
+    }
+}

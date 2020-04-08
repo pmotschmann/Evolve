@@ -4,8 +4,8 @@ import {} from './../achieve.js';
 import { vBind, clearElement } from './../functions.js';
 import { faqPage } from './faq.js';
 import { racesPage, traitsPage } from './species.js';
-import { prehistoricPage, planteryPage, spacePage, interstellarPage, intergalacticPage, hellPage } from './structures.js';
-import { primitiveTechPage, civilizedTechPage, discoveryTechPage, industrializedTechPage, globalizedTechPage, earlySpaceTechPage, deepSpaceTechPage, interstellarTechPage, intergalacticTechPage } from './tech.js';
+import { renderStructurePage } from './structures.js';
+import { renderTechPage } from './tech.js';
 
 $('body').empty();
 initPage();
@@ -99,58 +99,11 @@ function initPage(){
                         break;
 
                     case 'structures':
-                        switch (sub){
-                            case 'evolution':
-                                prehistoricPage();
-                                break;
-                            case 'plantery':
-                                planteryPage();
-                                break;
-                            case 'space':
-                                spacePage();
-                                break;
-                            case 'interstellar':
-                                interstellarPage();
-                                break;
-                            case 'intergalactic':
-                                intergalacticPage();
-                                break;
-                            case 'hell':
-                                hellPage();
-                                break;
-                        }
+                        renderStructurePage(sub);
                         break;
 
                     case 'tech':
-                        switch (sub){
-                            case 'primitive':
-                                primitiveTechPage();
-                                break;
-                            case 'civilized':
-                                civilizedTechPage();
-                                break;
-                            case 'discovery':
-                                discoveryTechPage();
-                                break;
-                            case 'industrialized':
-                                industrializedTechPage();
-                                break;
-                            case 'globalized':
-                                globalizedTechPage();
-                                break;
-                            case 'early_space':
-                                earlySpaceTechPage();
-                                break;
-                            case 'deep_space':
-                                deepSpaceTechPage();
-                                break;
-                            case 'interstellar':
-                                interstellarTechPage();
-                                break;
-                            case 'intergalactic':
-                                intergalacticTechPage();
-                                break;
-                        }
+                        renderTechPage(sub);
                         break;
                 }
             }
