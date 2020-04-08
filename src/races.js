@@ -951,7 +951,17 @@ export const races = {
         name: loc('race_protoplasm'),
         desc: loc('race_protoplasm_desc'),
         type: 'organism',
-        home: loc('race_prehistoric')
+        home: loc('race_prehistoric'),
+        entity: 'ooze',
+        traits: {},
+        solar: {
+            red: loc('race_human_solar_red'),
+            hell: loc('race_human_solar_hell'),
+            gas: loc('race_human_solar_gas'),
+            gas_moon: loc('race_human_solar_gas_moon'),
+            dwarf: loc('race_human_solar_dwarf'),
+        },
+        fanaticism: 'none'
     },
     human: {
         name: loc('race_human'),

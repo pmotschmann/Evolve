@@ -2,6 +2,7 @@ import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import {} from './../achieve.js';
 import { vBind, clearElement } from './../functions.js';
+import { faqPage } from './faq.js';
 import { racesPage, traitsPage } from './species.js';
 import { prehistoricPage, planteryPage, spacePage, interstellarPage, intergalacticPage, hellPage } from './structures.js';
 
@@ -19,7 +20,11 @@ function initPage(){
 
     let menuItems = [
         {
-            key: 'main'
+            key: 'main',
+            submenu: [
+                { key: 'intro' },
+                { key: 'faq' }
+            ]
         },
         {
             key: 'species',
@@ -38,7 +43,18 @@ function initPage(){
                 { key: 'intergalactic' },
                 { key: 'hell' }
             ]
-        }
+        },
+        /*{
+            key: 'tech',
+            submenu: [
+                { key: 'evolution' },
+                { key: 'plantery' },
+                { key: 'space' },
+                { key: 'interstellar' },
+                { key: 'intergalactic' },
+                { key: 'hell' }
+            ]
+        }*/
     ];
 
     let wikiMenu = `<template><b-menu><b-menu-list label="${loc('wiki_menu_evolve')}">`;
@@ -53,8 +69,11 @@ function initPage(){
         methods: {
             loadPage(page){
                 switch (page){
-                    case 'main':
+                    case 'intro':
                         mainPage();
+                        break;
+                    case 'faq':
+                        faqPage();
                         break;
                     case 'races':
                         racesPage();
