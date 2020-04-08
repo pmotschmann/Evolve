@@ -5,6 +5,7 @@ import { vBind, clearElement } from './../functions.js';
 import { faqPage } from './faq.js';
 import { racesPage, traitsPage } from './species.js';
 import { prehistoricPage, planteryPage, spacePage, interstellarPage, intergalacticPage, hellPage } from './structures.js';
+import { primitiveTechPage, civilizedTechPage, discoveryTechPage, industrializedTechPage, globalizedTechPage, earlySpaceTechPage, deepSpaceTechPage, interstellarTechPage, intergalacticTechPage } from './tech.js';
 
 $('body').empty();
 initPage();
@@ -20,10 +21,16 @@ function initPage(){
 
     let menuItems = [
         {
-            key: 'main',
+            key: 'intro',
+        },
+        {
+            key: 'faq',
+        },
+        {
+            key: 'gameplay',
             submenu: [
-                { key: 'intro' },
-                { key: 'faq' }
+                { key: 'mechanics' },
+                { key: 'prestige' },
             ]
         },
         {
@@ -44,21 +51,24 @@ function initPage(){
                 { key: 'hell' }
             ]
         },
-        /*{
+        {
             key: 'tech',
             submenu: [
-                { key: 'evolution' },
-                { key: 'plantery' },
-                { key: 'space' },
+                { key: 'primitive' },
+                { key: 'civilized' },
+                { key: 'discovery' },
+                { key: 'industrialized' },
+                { key: 'globalized' },
+                { key: 'early_space' },
+                { key: 'deep_space' },
                 { key: 'interstellar' },
-                { key: 'intergalactic' },
-                { key: 'hell' }
+                { key: 'intergalactic' }
             ]
-        }*/
+        }
     ];
 
     let wikiMenu = `<template><b-menu><b-menu-list label="${loc('wiki_menu_evolve')}">`;
-    wikiMenu = wikiMenu + buiildMenu(menuItems,true);
+    wikiMenu = wikiMenu + buiildMenu(menuItems,true,false);
     wikiMenu = wikiMenu + `</b-menu-list></b-menu></template>`;
     menu.append(wikiMenu);
 
@@ -67,37 +77,80 @@ function initPage(){
         el: `#menu`,
         data: menuData,
         methods: {
-            loadPage(page){
-                switch (page){
+            loadPage(main,sub){
+                switch (main){
                     case 'intro':
                         mainPage();
                         break;
+
                     case 'faq':
                         faqPage();
                         break;
-                    case 'races':
-                        racesPage();
+
+                    case 'species':
+                        switch (sub){
+                            case 'races':
+                                racesPage();
+                                break;
+                            case 'traits':
+                                traitsPage();
+                                break;
+                            }
                         break;
-                    case 'traits':
-                        traitsPage();
+
+                    case 'structures':
+                        switch (sub){
+                            case 'evolution':
+                                prehistoricPage();
+                                break;
+                            case 'plantery':
+                                planteryPage();
+                                break;
+                            case 'space':
+                                spacePage();
+                                break;
+                            case 'interstellar':
+                                interstellarPage();
+                                break;
+                            case 'intergalactic':
+                                intergalacticPage();
+                                break;
+                            case 'hell':
+                                hellPage();
+                                break;
+                        }
                         break;
-                    case 'prehistoric':
-                        prehistoricPage();
-                        break;
-                    case 'plantery':
-                        planteryPage();
-                        break;
-                    case 'space':
-                        spacePage();
-                        break;
-                    case 'interstellar':
-                        interstellarPage();
-                        break;
-                    case 'intergalactic':
-                        intergalacticPage();
-                        break;
-                    case 'hell':
-                        hellPage();
+
+                    case 'tech':
+                        switch (sub){
+                            case 'primitive':
+                                primitiveTechPage();
+                                break;
+                            case 'civilized':
+                                civilizedTechPage();
+                                break;
+                            case 'discovery':
+                                discoveryTechPage();
+                                break;
+                            case 'industrialized':
+                                industrializedTechPage();
+                                break;
+                            case 'globalized':
+                                globalizedTechPage();
+                                break;
+                            case 'early_space':
+                                earlySpaceTechPage();
+                                break;
+                            case 'deep_space':
+                                deepSpaceTechPage();
+                                break;
+                            case 'interstellar':
+                                interstellarTechPage();
+                                break;
+                            case 'intergalactic':
+                                intergalacticTechPage();
+                                break;
+                        }
                         break;
                 }
             }
@@ -110,18 +163,19 @@ function initPage(){
     mainPage();
 }
 
-function buiildMenu(items,set){
+function buiildMenu(items,set,parent){
     let menu = ``;
     for (let i=0; i<items.length; i++){
         let active = set && i === 0 ? `:active="true" ` : '';
 
         if (items[i].hasOwnProperty('submenu')){
             menu = menu + `<b-menu-item><template slot="label" slot-scope="props">${loc(`wiki_menu_${items[i].key}`)}</template>`;
-            menu = menu + buiildMenu(items[i].submenu, false);
+            menu = menu + buiildMenu(items[i].submenu,false,items[i].key);
             menu = menu + `</b-menu-item>`;
         }
         else {
-            menu = menu + `<b-menu-item ${active}label="${loc(`wiki_menu_${items[i].key}`)}" @click="loadPage('${items[i].key}')"></b-menu-item>`
+            let args = parent ? `'${parent}','${items[i].key}'` : `'${items[i].key}',false`;
+            menu = menu + `<b-menu-item ${active}label="${loc(`wiki_menu_${items[i].key}`)}" @click="loadPage(${args})"></b-menu-item>`
         }
     }
     return menu;

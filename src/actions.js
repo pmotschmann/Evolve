@@ -4476,6 +4476,7 @@ export const actions = {
             title: loc('tech_club'),
             desc: loc('tech_club_desc'),
             category: 'agriculture',
+            era: 'primative',
             reqs: {},
             grant: ['primitive',1],
             cost: {
@@ -4495,6 +4496,7 @@ export const actions = {
             title: loc('tech_bone_tools'),
             desc: loc('tech_bone_tools_desc'),
             category: 'stone_gathering',
+            era: 'primative',
             reqs: { primitive: 1 },
             grant: ['primitive',2],
             condition(){
@@ -4521,6 +4523,7 @@ export const actions = {
                 return global.race['evil'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc');
             },
             category: 'stone_gathering',
+            era: 'primative',
             reqs: { primitive: 1 },
             grant: ['primitive',2],
             condition(){
@@ -4542,6 +4545,7 @@ export const actions = {
             title: loc('tech_sundial'),
             desc: loc('tech_sundial_desc'),
             category: 'science',
+            era: 'primative',
             reqs: { primitive: 2 },
             grant: ['primitive',3],
             cost: {
@@ -4569,6 +4573,7 @@ export const actions = {
             title: loc('tech_housing'),
             desc: loc('tech_housing_desc'),
             category: 'housing',
+            era: 'civilized',
             reqs: { primitive: 3 },
             grant: ['housing',1],
             cost: {
@@ -4590,6 +4595,7 @@ export const actions = {
             },
             desc: loc('tech_cottage_desc'),
             category: 'housing',
+            era: 'civilized',
             reqs: { housing: 1, cement: 1, mining: 3 },
             grant: ['housing',2],
             cost: {
@@ -4728,6 +4734,7 @@ export const actions = {
             title: loc('tech_aphrodisiac'),
             desc: loc('tech_aphrodisiac_desc'),
             category: 'housing',
+            era: 'civilized',
             reqs: { housing: 2 },
             grant: ['reproduction',1],
             cost: {
@@ -4746,6 +4753,7 @@ export const actions = {
             title: loc('tech_smokehouse'),
             desc: loc('tech_smokehouse_desc'),
             category: 'storage',
+            era: 'civilized',
             reqs: { primitive: 3, storage: 1 },
             trait: ['carnivore'],
             grant: ['hunting',1],
@@ -4766,6 +4774,7 @@ export const actions = {
             title: loc('tech_lodge'),
             desc: loc('tech_lodge'),
             category: 'agriculture',
+            era: 'civilized',
             reqs: { hunting: 1, housing: 1, currency: 1 },
             grant: ['hunting',2],
             not_trait: ['soul_eater'],
@@ -4786,6 +4795,7 @@ export const actions = {
             title: loc('tech_lodge'),
             desc: loc('tech_lodge'),
             category: 'souls',
+            era: 'civilized',
             reqs: { housing: 1, currency: 1 },
             trait: ['soul_eater'],
             grant: ['s_lodge',1],
@@ -4809,6 +4819,7 @@ export const actions = {
             title: loc('tech_soul_well'),
             desc: loc('tech_soul_well'),
             category: 'souls',
+            era: 'civilized',
             reqs: { primitive: 3 },
             trait: ['soul_eater'],
             grant: ['soul_eater',1],
@@ -4829,6 +4840,7 @@ export const actions = {
             title: loc('tech_agriculture'),
             desc: loc('tech_agriculture_desc'),
             category: 'agriculture',
+            era: 'civilized',
             reqs: { primitive: 3 },
             not_trait: ['carnivore','soul_eater'],
             grant: ['agriculture',1],
@@ -4849,6 +4861,7 @@ export const actions = {
             title: loc('tech_farm_house'),
             desc: loc('tech_farm_house_desc'),
             category: 'housing',
+            era: 'civilized',
             reqs: { agriculture: 1, housing: 1, currency: 1 },
             grant: ['farm',1],
             cost: {
@@ -4868,6 +4881,7 @@ export const actions = {
             title: loc('tech_irrigation'),
             desc: loc('tech_irrigation_desc'),
             category: 'agriculture',
+            era: 'civilized',
             reqs: { agriculture: 1 },
             grant: ['agriculture',2],
             cost: {
@@ -4886,6 +4900,7 @@ export const actions = {
             title: loc('tech_silo'),
             desc: loc('tech_silo_desc'),
             category: 'storage',
+            era: 'civilized',
             reqs: { agriculture: 2, storage: 1 },
             grant: ['agriculture',3],
             cost: {
@@ -4905,6 +4920,7 @@ export const actions = {
             title: loc('tech_mill'),
             desc: loc('tech_mill_desc'),
             category: 'agriculture',
+            era: 'civilized',
             reqs: { agriculture: 3, mining: 3 },
             grant: ['agriculture',4],
             cost: {
@@ -5021,6 +5037,7 @@ export const actions = {
             title: loc('tech_foundry'),
             desc: loc('tech_foundry'),
             category: 'crafting',
+            era: 'civilized',
             reqs: { mining: 2 },
             grant: ['foundry',1],
             cost: {
@@ -5051,6 +5068,7 @@ export const actions = {
             title: loc('tech_artisans'),
             desc: loc('tech_artisans'),
             category: 'crafting',
+            era: 'civilized',
             reqs: { foundry: 1 },
             grant: ['foundry',2],
             cost: {
@@ -5069,6 +5087,7 @@ export const actions = {
             title: loc('tech_apprentices'),
             desc: loc('tech_apprentices'),
             category: 'crafting',
+            era: 'civilized',
             reqs: { foundry: 2 },
             grant: ['foundry',3],
             cost: {
@@ -5087,6 +5106,7 @@ export const actions = {
             title: loc('tech_carpentry'),
             desc: loc('tech_carpentry'),
             category: 'crafting',
+            era: 'civilized',
             reqs: { foundry: 3, saw: 1 },
             grant: ['foundry',4],
             not_trait: ['evil'],
@@ -5330,6 +5350,7 @@ export const actions = {
             title: loc('tech_theatre'),
             desc: loc('tech_theatre'),
             category: 'entertainment',
+            era: 'civilized',
             reqs: { housing: 1, currency: 1, cement: 1 },
             grant: ['theatre',1],
             not_trait: ['joyless'],
@@ -5350,6 +5371,7 @@ export const actions = {
             title: loc('tech_playwright'),
             desc: loc('tech_playwright'),
             category: 'entertainment',
+            era: 'civilized',
             reqs: { theatre: 1, science: 2 },
             grant: ['theatre',2],
             cost: {
@@ -5515,6 +5537,7 @@ export const actions = {
             title: loc('tech_mining'),
             desc: loc('tech_mining_desc'),
             category: 'mining',
+            era: 'civilized',
             reqs: { primitive: 3 },
             grant: ['mining',1],
             cost: {
@@ -5547,6 +5570,7 @@ export const actions = {
             title: loc('tech_bayer_process'),
             desc: loc('tech_bayer_process_desc'),
             category: 'mining',
+            era: 'civilized',
             reqs: { smelting: 2 },
             grant: ['alumina',1],
             cost: {
@@ -5588,6 +5612,7 @@ export const actions = {
             title: loc('tech_smelting'),
             desc: loc('tech_smelting_desc'),
             category: 'mining',
+            era: 'civilized',
             reqs: { mining: 3 },
             grant: ['smelting',1],
             cost: {
@@ -5621,6 +5646,7 @@ export const actions = {
             title: loc('tech_steel'),
             desc: loc('tech_steel_desc'),
             category: 'mining',
+            era: 'civilized',
             reqs: { smelting: 1, mining: 4 },
             grant: ['smelting',2],
             condition() {
@@ -5777,6 +5803,7 @@ export const actions = {
             title: loc('tech_metal_working'),
             desc: loc('tech_metal_working_desc'),
             category: 'mining',
+            era: 'civilized',
             reqs: { mining: 1 },
             grant: ['mining',2],
             cost: {
@@ -5799,6 +5826,7 @@ export const actions = {
             title: loc('tech_iron_mining'),
             desc: loc('tech_iron_mining_desc'),
             category: 'mining',
+            era: 'civilized',
             reqs: { mining: 2 },
             grant: ['mining',3],
             cost: {
@@ -5822,6 +5850,7 @@ export const actions = {
             title: loc('tech_coal_mining'),
             desc: loc('tech_coal_mining_desc'),
             category: 'power_generation',
+            era: 'civilized',
             reqs: { mining: 3 },
             grant: ['mining',4],
             cost: {
@@ -5845,6 +5874,7 @@ export const actions = {
             title: loc('tech_storage'),
             desc: loc('tech_storage_desc'),
             category: 'storage',
+            era: 'civilized',
             reqs: { primitive: 3, currency: 1 },
             grant: ['storage',1],
             cost: {
@@ -5864,6 +5894,7 @@ export const actions = {
             title: loc('tech_reinforced_shed'),
             desc: loc('tech_reinforced_shed_desc'),
             category: 'storage',
+            era: 'civilized',
             reqs: { storage: 1, cement: 1 },
             grant: ['storage',2],
             cost: {
@@ -5979,6 +6010,7 @@ export const actions = {
             title: loc('tech_containerization'),
             desc: loc('tech_containerization_desc'),
             category: 'storage',
+            era: 'civilized',
             reqs: { cement: 1 },
             grant: ['container',1],
             cost: {
@@ -5998,6 +6030,7 @@ export const actions = {
             title: loc('tech_reinforced_crates'),
             desc: loc('tech_reinforced_crates'),
             category: 'storage',
+            era: 'civilized',
             reqs: { container: 1, smelting: 2 },
             grant: ['container',2],
             cost: {
@@ -6298,6 +6331,7 @@ export const actions = {
             title: loc('tech_urban_planning'),
             desc: loc('tech_urban_planning'),
             category: 'queues',
+            era: 'civilized',
             reqs: { banking: 2 },
             grant: ['queue',1],
             trait: ['terrifying'],
@@ -6318,6 +6352,7 @@ export const actions = {
             title: loc('tech_urban_planning'),
             desc: loc('tech_urban_planning'),
             category: 'queues',
+            era: 'civilized',
             reqs: { banking: 2, currency: 2 },
             grant: ['queue',1],
             not_trait: ['terrifying'],
@@ -6378,6 +6413,7 @@ export const actions = {
             title: loc('tech_assistant'),
             desc: loc('tech_assistant'),
             category: 'queues',
+            era: 'civilized',
             reqs: { queue: 1, science: 4 },
             grant: ['r_queue',1],
             cost: {
@@ -6397,6 +6433,7 @@ export const actions = {
             title: loc('tech_government'),
             desc: loc('tech_government_desc'),
             category: 'government',
+            era: 'civilized',
             reqs: { currency: 1 },
             grant: ['govern',1],
             cost: {
@@ -6417,6 +6454,7 @@ export const actions = {
             title: loc('govern_theocracy'),
             desc: loc('govern_theocracy'),
             category: 'government',
+            era: 'civilized',
             reqs: { govern: 1, theology: 2 },
             grant: ['gov_theo',1],
             cost: {
@@ -6534,6 +6572,7 @@ export const actions = {
             title: loc('tech_spy'),
             desc: loc('tech_spy'),
             category: 'spies',
+            era: 'civilized',
             reqs: { govern: 1 },
             grant: ['spy',1],
             cost: {
@@ -6630,6 +6669,7 @@ export const actions = {
             title: loc('tech_currency'),
             desc: loc('tech_currency_desc'),
             category: 'banking',
+            era: 'civilized',
             reqs: { housing: 1 },
             grant: ['currency',1],
             cost: {
@@ -6650,6 +6690,7 @@ export const actions = {
             title: loc('tech_market'),
             desc: loc('tech_market_desc'),
             category: 'banking',
+            era: 'civilized',
             reqs: { banking: 1, govern: 1 },
             not_trait: ['terrifying'],
             grant: ['currency',2],
@@ -6671,6 +6712,7 @@ export const actions = {
             title: loc('tech_tax_rates'),
             desc: loc('tech_tax_rates_desc'),
             category: 'banking',
+            era: 'civilized',
             reqs: { banking: 2, currency: 2, queue: 1 },
             grant: ['currency',3],
             cost: {
@@ -6690,6 +6732,7 @@ export const actions = {
             title: loc('tech_large_trades'),
             desc: loc('tech_large_trades_desc'),
             category: 'market',
+            era: 'civilized',
             reqs: { currency: 3 },
             grant: ['currency',4],
             cost: {
@@ -6757,6 +6800,7 @@ export const actions = {
             title: loc('tech_trade'),
             desc: loc('tech_trade_desc'),
             category: 'market',
+            era: 'civilized',
             reqs: { currency: 2, military: 1 },
             grant: ['trade',1],
             cost: {
@@ -6838,6 +6882,7 @@ export const actions = {
             title: loc('tech_banking'),
             desc: loc('tech_banking_desc'),
             category: 'banking',
+            era: 'civilized',
             reqs: { currency: 1 },
             grant: ['banking',1],
             cost: {
@@ -6857,6 +6902,7 @@ export const actions = {
             title: loc('tech_investing'),
             desc: loc('tech_investing_desc'),
             category: 'banking',
+            era: 'civilized',
             reqs: { banking: 1 },
             grant: ['banking',2],
             cost: {
@@ -6877,6 +6923,7 @@ export const actions = {
             title: loc('tech_vault'),
             desc: loc('tech_vault_desc'),
             category: 'banking',
+            era: 'civilized',
             reqs: { banking: 2, cement: 1 },
             grant: ['banking',3],
             cost: {
@@ -6898,6 +6945,7 @@ export const actions = {
             title: loc('tech_bonds'),
             desc: loc('tech_bonds'),
             category: 'banking',
+            era: 'civilized',
             reqs: { banking: 3 },
             grant: ['banking',4],
             cost: {
@@ -6917,6 +6965,7 @@ export const actions = {
             title: loc('tech_steel_vault'),
             desc: loc('tech_steel_vault'),
             category: 'banking',
+            era: 'civilized',
             reqs: { banking: 4, smelting: 2 },
             grant: ['banking',5],
             cost: {
@@ -7277,6 +7326,7 @@ export const actions = {
             title: loc('tech_science'),
             desc: loc('tech_science_desc'),
             category: 'science',
+            era: 'civilized',
             reqs: { housing: 1 },
             grant: ['science',1],
             cost: {
@@ -7296,6 +7346,7 @@ export const actions = {
             title: loc('tech_library'),
             desc: loc('tech_library_desc'),
             category: 'science',
+            era: 'civilized',
             reqs: { science: 1, cement: 1 },
             grant: ['science',2],
             cost: {
@@ -7315,6 +7366,7 @@ export const actions = {
             title: loc('tech_thesis'),
             desc: loc('tech_thesis_desc'),
             category: 'science',
+            era: 'civilized',
             reqs: { science: 2 },
             grant: ['science',3],
             cost: {
@@ -7333,6 +7385,7 @@ export const actions = {
             title: loc('tech_research_grant'),
             desc: loc('tech_research_grant_desc'),
             category: 'science',
+            era: 'civilized',
             reqs: { science: 3 },
             grant: ['science',4],
             cost: {
@@ -8708,6 +8761,7 @@ export const actions = {
             title: loc('tech_reclaimer'),
             desc: loc('tech_reclaimer_desc'),
             category: 'reclaimer',
+            era: 'civilized',
             reqs: { primitive: 3 },
             grant: ['reclaimer',1],
             trait: ['evil'],
@@ -8735,6 +8789,7 @@ export const actions = {
             title: loc('tech_shovel'),
             desc: loc('tech_shovel'),
             category: 'reclaimer',
+            era: 'civilized',
             reqs: { reclaimer: 1, mining: 2 },
             grant: ['reclaimer',2],
             trait: ['evil'],
@@ -8758,6 +8813,7 @@ export const actions = {
             title: loc('tech_iron_shovel'),
             desc: loc('tech_iron_shovel'),
             category: 'reclaimer',
+            era: 'civilized',
             reqs: { reclaimer: 2, mining: 3 },
             grant: ['reclaimer',3],
             trait: ['evil'],
@@ -8897,6 +8953,7 @@ export const actions = {
             desc: loc('tech_stone_axe_desc'),
             category: 'lumber_gathering',
             reqs: { primitive: 3 },
+            era: 'civilized',
             grant: ['axe',1],
             not_trait: ['kindling_kindred','evil'],
             cost: {
@@ -8919,6 +8976,7 @@ export const actions = {
             title: loc('tech_copper_axes'),
             desc: loc('tech_copper_axes_desc'),
             category: 'lumber_gathering',
+            era: 'civilized',
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
             cost: {
@@ -8938,6 +8996,7 @@ export const actions = {
             title: loc('tech_iron_saw'),
             desc: loc('tech_iron_saw_desc'),
             category: 'lumber_gathering',
+            era: 'civilized',
             reqs: { axe: 1, mining: 3 },
             grant: ['saw',1],
             cost: {
@@ -8980,6 +9039,7 @@ export const actions = {
             title: loc('tech_iron_axes'),
             desc: loc('tech_iron_axes_desc'),
             category: 'lumber_gathering',
+            era: 'civilized',
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
             cost: {
@@ -9058,6 +9118,7 @@ export const actions = {
             title: loc('tech_copper_sledgehammer'),
             desc: loc('tech_copper_sledgehammer_desc'),
             category: 'stone_gathering',
+            era: 'civilized',
             reqs: { mining: 2 },
             grant: ['hammer',1],
             cost: {
@@ -9077,6 +9138,7 @@ export const actions = {
             title: loc('tech_iron_sledgehammer'),
             desc: loc('tech_iron_sledgehammer_desc'),
             category: 'stone_gathering',
+            era: 'civilized',
             reqs: { hammer: 1, mining: 3 },
             grant: ['hammer',2],
             cost: {
@@ -9134,6 +9196,7 @@ export const actions = {
             title: loc('tech_copper_pickaxe'),
             desc: loc('tech_copper_pickaxe_desc'),
             category: 'mining',
+            era: 'civilized',
             reqs: { mining: 2 },
             grant: ['pickaxe',1],
             cost: {
@@ -9153,6 +9216,7 @@ export const actions = {
             title: loc('tech_iron_pickaxe'),
             desc: loc('tech_iron_pickaxe_desc'),
             category: 'mining',
+            era: 'civilized',
             reqs: { pickaxe: 1, mining: 3 },
             grant: ['pickaxe',2],
             cost: {
@@ -9249,6 +9313,7 @@ export const actions = {
             title: loc('tech_copper_hoe'),
             desc: loc('tech_copper_hoe_desc'),
             category: 'agriculture',
+            era: 'civilized',
             reqs: { mining: 2, agriculture: 1 },
             grant: ['hoe',1],
             cost: {
@@ -9268,6 +9333,7 @@ export const actions = {
             title: loc('tech_iron_hoe'),
             desc: loc('tech_iron_hoe_desc'),
             category: 'agriculture',
+            era: 'civilized',
             reqs: { hoe: 1, mining: 3, agriculture: 1 },
             grant: ['hoe',2],
             cost: {
@@ -9344,6 +9410,7 @@ export const actions = {
             title: loc('tech_slave_pens'),
             desc: loc('tech_slave_pens'),
             category: 'slaves',
+            era: 'civilized',
             reqs: { military: 1, mining: 1 },
             grant: ['slaves',1],
             trait: ['slaver'],
@@ -9383,6 +9450,7 @@ export const actions = {
             title: loc('tech_ceremonial_dagger'),
             desc: loc('tech_ceremonial_dagger'),
             category: 'sacrifice',
+            era: 'civilized',
             reqs: { mining: 1 },
             grant: ['sacrifice',1],
             trait: ['cannibalize'],
@@ -9402,6 +9470,7 @@ export const actions = {
             title: loc('tech_last_rites'),
             desc: loc('tech_last_rites'),
             category: 'sacrifice',
+            era: 'civilized',
             reqs: { sacrifice: 1, theology: 2 },
             grant: ['sacrifice',2],
             trait: ['cannibalize'],
@@ -9440,6 +9509,7 @@ export const actions = {
             title: loc('tech_garrison'),
             desc: loc('tech_garrison_desc'),
             category: 'military',
+            era: 'civilized',
             reqs: { science: 1, housing: 1 },
             grant: ['military',1],
             cost: {
@@ -9459,6 +9529,7 @@ export const actions = {
             title: loc('tech_mercs'),
             desc: loc('tech_mercs_desc'),
             category: 'military',
+            era: 'civilized',
             reqs: { military: 1 },
             grant: ['mercs',1],
             cost: {
@@ -9498,6 +9569,7 @@ export const actions = {
             title: loc('tech_hospital'),
             desc: loc('tech_hospital'),
             category: 'military',
+            era: 'civilized',
             reqs: { military: 1, alumina: 1 },
             grant: ['medic',1],
             cost: {
@@ -9573,6 +9645,7 @@ export const actions = {
             title: loc('tech_bows'),
             desc: loc('tech_bows_desc'),
             category: 'military',
+            era: 'civilized',
             reqs: { military: 1 },
             grant: ['military',2],
             cost: {
@@ -9596,6 +9669,7 @@ export const actions = {
             title: loc('tech_flintlock_rifle'),
             desc: loc('tech_flintlock_rifle'),
             category: 'military',
+            era: 'civilized',
             reqs: { military: 2, explosives: 1 },
             grant: ['military',3],
             cost: {
@@ -9838,6 +9912,7 @@ export const actions = {
             title: loc('tech_armor'),
             desc: loc('tech_armor_desc'),
             category: 'military',
+            era: 'civilized',
             reqs: { military: 1 },
             not_trait: ['apex_predator'],
             grant: ['armor',1],
@@ -9859,6 +9934,7 @@ export const actions = {
             title: loc('tech_plate_armor'),
             desc: loc('tech_plate_armor_desc'),
             category: 'military',
+            era: 'civilized',
             reqs: { armor: 1, mining: 3 },
             grant: ['armor',2],
             cost: {
@@ -9960,6 +10036,7 @@ export const actions = {
             title: loc('tech_black_powder'),
             desc: loc('tech_black_powder_desc'),
             category: 'progress',
+            era: 'civilized',
             reqs: { mining: 4 },
             grant: ['explosives',1],
             cost: {
@@ -9979,6 +10056,7 @@ export const actions = {
             title: loc('tech_dynamite'),
             desc: loc('tech_dynamite'),
             category: 'mining',
+            era: 'civilized',
             reqs: { explosives: 1 },
             grant: ['explosives',2],
             cost: {
@@ -10038,6 +10116,7 @@ export const actions = {
             title: loc('tech_cement'),
             desc: loc('tech_cement_desc'),
             category: 'cement',
+            era: 'civilized',
             reqs: { mining: 1, storage: 1, science: 1 },
             grant: ['cement',1],
             cost: {
@@ -10060,6 +10139,7 @@ export const actions = {
             title: loc('tech_rebar'),
             desc: loc('tech_rebar'),
             category: 'cement',
+            era: 'civilized',
             reqs: { mining: 3, cement: 1 },
             grant: ['cement',2],
             cost: {
@@ -10079,6 +10159,7 @@ export const actions = {
             title: loc('tech_steel_rebar'),
             desc: loc('tech_steel_rebar'),
             category: 'cement',
+            era: 'civilized',
             reqs: { smelting: 2, cement: 2 },
             grant: ['cement',3],
             cost: {
@@ -10283,6 +10364,7 @@ export const actions = {
             title: loc('tech_theology'),
             desc: loc('tech_theology'),
             category: 'religion',
+            era: 'civilized',
             reqs: { theology: 1, housing: 1, cement: 1 },
             grant: ['theology',2],
             cost: {
@@ -10311,6 +10393,7 @@ export const actions = {
             title: loc('tech_fanaticism'),
             desc: loc('tech_fanaticism'),
             category: 'religion',
+            era: 'civilized',
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
@@ -10335,6 +10418,7 @@ export const actions = {
             title: loc('tech_fanaticism'),
             desc: loc('tech_fanaticism'),
             category: 'religion',
+            era: 'civilized',
             reqs: { theology: 2 },
             grant: ['fanaticism',1],
             gene: ['transcendence'],
@@ -10455,6 +10539,7 @@ export const actions = {
             title: loc('tech_indoctrination'),
             desc: loc('tech_indoctrination'),
             category: 'religion',
+            era: 'civilized',
             reqs: { fanaticism: 1 },
             grant: ['fanaticism',2],
             cost: {
@@ -10509,6 +10594,7 @@ export const actions = {
             title: loc('tech_anthropology'),
             desc: loc('tech_anthropology'),
             category: 'religion',
+            era: 'civilized',
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
@@ -10529,6 +10615,7 @@ export const actions = {
             title: loc('tech_anthropology'),
             desc: loc('tech_anthropology'),
             category: 'religion',
+            era: 'civilized',
             reqs: { theology: 2 },
             grant: ['anthropology',1],
             gene: ['transcendence'],
@@ -10551,6 +10638,7 @@ export const actions = {
             title: loc('tech_mythology'),
             desc: loc('tech_mythology'),
             category: 'religion',
+            era: 'civilized',
             reqs: { anthropology: 1 },
             grant: ['anthropology',2],
             cost: {
