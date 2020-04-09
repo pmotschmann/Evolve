@@ -599,7 +599,7 @@ export function calcPrestige(type){
         harmony: 0
     };
 
-    let garrisoned = global.civic.garrison.workers;
+    let garrisoned = global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0;
     for (let i=0; i<3; i++){
         if (global.civic.foreign[`gov${i}`].occ){
             garrisoned += global.civic.govern.type === 'federation' ? 15 : 20;
@@ -647,7 +647,7 @@ export function calcPrestige(type){
     }
 
     gains.plasmid = challenge_multiplier(new_plasmid,type);
-    gains.phage = challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type);
+    gains.phage = gains.plasmid > 0 ? challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type) : 0;
 
     if (type === 'bigbang'){
         let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);

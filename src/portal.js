@@ -319,14 +319,14 @@ const fortressModules = {
                 vBind({el: `#fort`},'update');
             },
             cost: {
-                Money(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000000, 1.25, 'portal'); },
-                Graphene(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 1500000, 1.25, 'portal'); },
-                Infernite(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000, 1.25, 'portal'); },
-                Bolognium(offset){ return global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 100000, 1.25, 'portal'); },
+                Money(offset){ return global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000000, 1.25, 'portal'); },
+                Graphene(offset){ return global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 1500000, 1.25, 'portal'); },
+                Infernite(offset){ return global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000, 1.25, 'portal'); },
+                Bolognium(offset){ return global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 100000, 1.25, 'portal'); },
             },
             effect(){
                 let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
-                if (global.portal.soul_forge.count >= 1){
+                if (global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1){
                     let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
                     desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,cap])}</div>`;
                 }

@@ -1605,6 +1605,10 @@ function lootModify(val,gov){
 }
 
 export function armyRating(val,type,wound){
+    if (!global.civic.hasOwnProperty('garrison')){
+        return 1;
+    }
+
     let wounded = 0;
     if (wound){
         wounded = wound;

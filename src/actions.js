@@ -45,7 +45,7 @@ export const actions = {
             id: 'evo-membrane',
             title: loc('evo_membrane_title'),
             desc: loc('evo_membrane_desc'),
-            cost: { RNA(){ return (global.evolution['membrane'].count * 2) + 2; } },
+            cost: { RNA(){ return evolveCosts('membrane',2,2); } },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
                 return loc('evo_membrane_effect',[effect]);
@@ -64,8 +64,8 @@ export const actions = {
             title: loc('evo_organelles_title'),
             desc: loc('evo_organelles_desc'),
             cost: {
-                RNA(){ return (global.evolution['organelles'].count * 8) + 12; },
-                DNA(){ return (global.evolution['organelles'].count * 4) + 4; }
+                RNA(){ return evolveCosts('organelles',12,8); },
+                DNA(){ return evolveCosts('organelles',4,4); }
             },
             effect(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
@@ -87,8 +87,8 @@ export const actions = {
             title: loc('evo_nucleus_title'),
             desc: loc('evo_nucleus_desc'),
             cost: {
-                RNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 16 : 32)) + 38; },
-                DNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16)) + 18; }
+                RNA(){ return evolveCosts('nucleus',38, global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 16 : 32 ); },
+                DNA(){ return evolveCosts('nucleus',18, global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16 ); }
             },
             effect(){
                 let dna = (global.evolution['bilateral_symmetry'] && global.evolution['bilateral_symmetry'].count > 0) || (global.evolution['poikilohydric'] && global.evolution['poikilohydric'].count > 0) || (global.evolution['spores'] && global.evolution['spores'].count > 0) ? 2 : 1;
@@ -107,8 +107,8 @@ export const actions = {
             title: loc('evo_eukaryotic_title'),
             desc: loc('evo_eukaryotic_desc'),
             cost: {
-                RNA(){ return (global.evolution['eukaryotic_cell'].count * 20) + 20; },
-                DNA(){ return (global.evolution['eukaryotic_cell'].count * 12) + 40; }
+                RNA(){ return evolveCosts('eukaryotic_cell',20,20); },
+                DNA(){ return evolveCosts('eukaryotic_cell',40,12); }
             },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 10 + 10 : 10;
@@ -128,8 +128,8 @@ export const actions = {
             title: loc('evo_mitochondria_title'),
             desc: loc('evo_mitochondria_desc'),
             cost: {
-                RNA(){ return (global.evolution['mitochondria'].count * 50) + 75; },
-                DNA(){ return (global.evolution['mitochondria'].count * 35) + 65; }
+                RNA(){ return evolveCosts('mitochondria',75,50); },
+                DNA(){ return evolveCosts('mitochondria',65,35); }
             },
             effect: loc('evo_mitochondria_effect'),
             action(){
@@ -2464,10 +2464,10 @@ export const actions = {
             title: loc('city_evil'),
             desc(){
                 if (global.race['soul_eater']){
-                    return global.tech['primitive'] ? (global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1');
+                    return global.tech['primitive'] ? (global.resource.hasOwnProperty('furs') && global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1');
                 }
                 else {
-                    return global.resource.Furs.display ? loc('city_evil_desc4') : loc('city_evil_desc1');
+                    return global.resource.hasOwnProperty('furs') && global.resource.Furs.display ? loc('city_evil_desc4') : loc('city_evil_desc1');
                 }
             },
             category: 'outskirts',
@@ -2525,30 +2525,30 @@ export const actions = {
             id: 'city-s_alter',
             title: loc('city_s_alter'),
             desc(){
-                return global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
+                return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
             },
             category: 'outskirts',
             reqs: { mining: 1 },
             trait: ['cannibalize'],
             cost: {
-                Stone(){ return global.city['s_alter'].count >= 1 ? 0 : 100; }
+                Stone(){ return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? 0 : 100; }
             },
             effect(){
                 let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
                 let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
-                if (global.city.s_alter.rage > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.rage > 0){
                     desc = desc + `<div>${loc('city_s_alter_rage',[15,timeFormat(global.city.s_alter.rage)])}</div>`;
                 }
-                if (global.city.s_alter.regen > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.regen > 0){
                     desc = desc + `<div>${loc('city_s_alter_regen',[15,timeFormat(global.city.s_alter.regen)])}</div>`;
                 }
-                if (global.city.s_alter.mind > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mind > 0){
                     desc = desc + `<div>${loc('city_s_alter_mind',[15,timeFormat(global.city.s_alter.mind)])}</div>`;
                 }
-                if (global.city.s_alter.mine > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mine > 0){
                     desc = desc + `<div>${loc('city_s_alter_mine',[15,timeFormat(global.city.s_alter.mine)])}</div>`;
                 }
-                if (global.city.s_alter.harvest > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.harvest > 0){
                     let jobType = global.race['evil'] && !global.race['soul_eater'] ? loc('job_reclaimer') : loc('job_lumberjack');
                     desc = desc + `<div>${loc('city_s_alter_harvest',[15,timeFormat(global.city.s_alter.harvest),jobType])}</div>`;
                 }
@@ -3932,7 +3932,7 @@ export const actions = {
             id: 'city-temple',
             title: loc('city_temple'),
             desc(){
-                let entity = races[global.race.gods.toLowerCase()].entity;
+                let entity = global.race.gods !== 'none' ? races[global.race.gods.toLowerCase()].entity : races[global.race.species].entity;
                 return loc('city_temple_desc',[entity]);
             },
             category: 'commercial',
@@ -10655,7 +10655,11 @@ export const actions = {
             cost: {
                 Knowledge(){ return 180000; }
             },
-            effect(){ return loc('tech_ancient_theology_effect',[races[global.race.old_gods.toLowerCase()].entity,races[global.race.gods.toLowerCase()].entity]); },
+            effect(){
+                let entityA = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+                let entityB = global.race.gods !== 'none' ? races[global.race.gods.toLowerCase()].entity : races[global.race.species].entity;
+                return loc('tech_ancient_theology_effect',[entityA,entityB]);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.space['ziggurat'] = { count: 0 };
@@ -10675,7 +10679,10 @@ export const actions = {
             cost: {
                 Knowledge(){ return 195000; }
             },
-            effect(){ return `<div>${loc('tech_study_effect',[races[global.race.old_gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_study_warning')}</div>`; },
+            effect(){
+                let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+                return `<div>${loc('tech_study_effect',[entity])}</div><div class="has-text-special">${loc('tech_study_warning')}</div>`;
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.tech['ancient_study'] = 1;
@@ -10714,7 +10721,10 @@ export const actions = {
             cost: {
                 Knowledge(){ return 195000; }
             },
-            effect(){ return `<div>${loc('tech_deify_effect',[races[global.race.old_gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_deify_warning')}</div>`; },
+            effect(){
+                let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+                return `<div>${loc('tech_deify_effect',[entity])}</div><div class="has-text-special">${loc('tech_deify_warning')}</div>`;
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.tech['ancient_deify'] = 1;
@@ -12492,8 +12502,8 @@ export const actions = {
                 Knowledge(){ return 3400000; }
             },
             effect(){
-                let s1name = races[global.galaxy.alien1.id].name;
-                let s1desc = races[global.galaxy.alien1.id].entity;
+                let s1name = races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name;
+                let s1desc = races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].entity;
                 return loc('tech_xeno_culture_effect',[s1name,s1desc]);
             },
             action(){
@@ -12516,7 +12526,7 @@ export const actions = {
                 Knowledge(){ return 3550000; }
             },
             effect(){
-                let s1name = races[global.galaxy.alien1.id].name;
+                let s1name = races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name;
                 return loc('tech_cultural_exchange_effect',[s1name]);
             },
             action(){
@@ -12564,7 +12574,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['consulate'] = { count: 0 };
                     global.settings.space.alien1 = true;
-                    messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.alien1.id].name]),'info');
+                    messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]),'info');
                     return true;
                 }
                 return false;
@@ -12581,7 +12591,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 7250000; }
             },
-            effect(){ return loc('tech_industrial_partnership_effect',[races[global.galaxy.alien1.id].name]); },
+            effect(){ return loc('tech_industrial_partnership_effect',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['vitreloy_plant'] = { count: 0, on: 0 };
@@ -12601,7 +12611,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 10750000; }
             },
-            effect(){ return loc('tech_embassy_housing_effect',[races[global.galaxy.alien1.id].name]); },
+            effect(){ return loc('tech_embassy_housing_effect',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -12723,7 +12733,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 7500000; }
             },
-            effect(){ return loc('tech_cruiser_ship_effect',[races[global.galaxy.alien2.id].name]); },
+            effect(){ return loc('tech_cruiser_ship_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['cruiser_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
@@ -12807,7 +12817,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 8000000; }
             },
-            effect(){ return loc('tech_scavenger_effect',[races[global.galaxy.alien2.id].name]); },
+            effect(){ return loc('tech_scavenger_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.galaxy['scavenger'] = { count: 0, on: 0, crew: 0 };
@@ -13097,6 +13107,13 @@ export const actions = {
     },
     portal: fortressTech()
 };
+
+function evolveCosts(molecule,base,mult){
+    if (global.evolution.hasOwnProperty(molecule)){
+        return global.evolution[molecule].count * mult + base;
+    }
+    return base;
+}
 
 function addRaces(races){
     let add_all = false;
