@@ -55,13 +55,14 @@ function planteryPage(content){
 function spacePage(content){
     Object.keys(actions.space).forEach(function (region){        
         let name = typeof actions.space[region].info.name === 'string' ? actions.space[region].info.name : actions.space[region].info.name();
-        //let desc = typeof actions.space[region].info.desc === 'string' ? actions.space[region].info.desc : actions.space[region].info.desc();
+        let desc = typeof actions.space[region].info.desc === 'string' ? actions.space[region].info.desc : actions.space[region].info.desc();
 
         Object.keys(actions.space[region]).forEach(function (struct){
             if (struct !== 'info'){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.space[region][struct],name);
+                actionDesc(info, actions.space[region][struct],`<span id="pop${actions.space[region][struct].id}">${name}</span>`);
+                popover(`pop${actions.space[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
     });
@@ -70,13 +71,14 @@ function spacePage(content){
 function interstellarPage(content){
     Object.keys(actions.interstellar).forEach(function (region){        
         let name = typeof actions.interstellar[region].info.name === 'string' ? actions.interstellar[region].info.name : actions.interstellar[region].info.name();
-        //let desc = typeof actions.interstellar[region].info.desc === 'string' ? actions.interstellar[region].info.desc : actions.interstellar[region].info.desc();
+        let desc = typeof actions.interstellar[region].info.desc === 'string' ? actions.interstellar[region].info.desc : actions.interstellar[region].info.desc();
 
         Object.keys(actions.interstellar[region]).forEach(function (struct){
             if (struct !== 'info'){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.interstellar[region][struct],name);
+                popover(`pop${actions.interstellar[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
     });
@@ -85,13 +87,14 @@ function interstellarPage(content){
 function intergalacticPage(content){
     Object.keys(actions.galaxy).forEach(function (region){        
         let name = typeof actions.galaxy[region].info.name === 'string' ? actions.galaxy[region].info.name : actions.galaxy[region].info.name();
-        //let desc = typeof actions.galaxy[region].info.desc === 'string' ? actions.galaxy[region].info.desc : actions.galaxy[region].info.desc();
+        let desc = typeof actions.galaxy[region].info.desc === 'string' ? actions.galaxy[region].info.desc : actions.galaxy[region].info.desc();
 
         Object.keys(actions.galaxy[region]).forEach(function (struct){
             if (struct !== 'info'){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.galaxy[region][struct],name);
+                popover(`pop${actions.galaxy[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
     });
@@ -100,13 +103,14 @@ function intergalacticPage(content){
 function hellPage(content){
     Object.keys(actions.portal).forEach(function (region){        
         let name = typeof actions.portal[region].info.name === 'string' ? actions.portal[region].info.name : actions.portal[region].info.name();
-        //let desc = typeof actions.portal[region].info.desc === 'string' ? actions.portal[region].info.desc : actions.portal[region].info.desc();
+        let desc = typeof actions.portal[region].info.desc === 'string' ? actions.portal[region].info.desc : actions.portal[region].info.desc();
 
         Object.keys(actions.portal[region]).forEach(function (struct){
             if (struct !== 'info'){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.portal[region][struct],name);
+                popover(`pop${actions.portal[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
     });
