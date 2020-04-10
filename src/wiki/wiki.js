@@ -6,6 +6,7 @@ import { faqPage } from './faq.js';
 import { racesPage, traitsPage } from './species.js';
 import { renderStructurePage } from './structures.js';
 import { renderTechPage } from './tech.js';
+import { changeLog } from './change.js';
 
 $('body').empty();
 initPage();
@@ -64,6 +65,9 @@ function initPage(){
                 { key: 'interstellar' },
                 { key: 'intergalactic' }
             ]
+        },
+        {
+            key: 'changelog',
         }
     ];
 
@@ -78,34 +82,7 @@ function initPage(){
         data: menuData,
         methods: {
             loadPage(main,sub){
-                switch (main){
-                    case 'intro':
-                        mainPage();
-                        break;
-
-                    case 'faq':
-                        faqPage();
-                        break;
-
-                    case 'species':
-                        switch (sub){
-                            case 'races':
-                                racesPage();
-                                break;
-                            case 'traits':
-                                traitsPage();
-                                break;
-                            }
-                        break;
-
-                    case 'structures':
-                        renderStructurePage(sub);
-                        break;
-
-                    case 'tech':
-                        renderTechPage(sub);
-                        break;
-                }
+                menuDispatch(main,sub);
             }
         }
     });
@@ -113,22 +90,77 @@ function initPage(){
     let content = $(`<div id="content" class="mainContent"></div>`);
     wiki.append(content);
 
-    mainPage();
+    if (window.location.hash){
+        let hash = window.location.hash.substring(1).split('-');
+        if (hash.length > 1){
+            menuDispatch(hash[1],hash[0]);
+        }
+        else {
+            menuDispatch(hash[0]);
+        }
+    }
+    else {
+        mainPage();
+    }
+}
+
+function menuDispatch(main,sub){
+    switch (main){
+        case 'intro':
+            mainPage();
+            window.location.hash = `#${main}`;
+            break;
+
+        case 'faq':
+            faqPage();
+            window.location.hash = `#${main}`;
+            break;
+
+        case 'species':
+            switch (sub){
+                case 'races':
+                    racesPage();
+                    break;
+                case 'traits':
+                    traitsPage();
+                    break;
+                }
+            window.location.hash = `#${sub}-${main}`;
+            break;
+
+        case 'structures':
+            renderStructurePage(sub);
+            window.location.hash = `#${sub}-${main}`;
+            break;
+
+        case 'tech':
+            renderTechPage(sub);
+            window.location.hash = `#${sub}-${main}`;
+            break;
+
+        case 'changelog':
+            changeLog();
+            window.location.hash = `#${main}`;
+            break;
+    }
 }
 
 function buiildMenu(items,set,parent){
+    let hash = window.location.hash ? window.location.hash.substring(1).split('-') : false;
+
     let menu = ``;
     for (let i=0; i<items.length; i++){
-        let active = set && i === 0 ? `:active="true" ` : '';
 
         if (items[i].hasOwnProperty('submenu')){
-            menu = menu + `<b-menu-item><template slot="label" slot-scope="props">${loc(`wiki_menu_${items[i].key}`)}</template>`;
+            let active = (!hash && set && i === 0) || (hash && hash.length > 1 && hash[1] === items[i].key) ? ` :active="true"` : '';
+            menu = menu + `<b-menu-item${active}><template slot="label" slot-scope="props">${loc(`wiki_menu_${items[i].key}`)}</template>`;
             menu = menu + buiildMenu(items[i].submenu,false,items[i].key);
             menu = menu + `</b-menu-item>`;
         }
         else {
+            let active = (!hash && set && i === 0) || (hash && hash[0] === items[i].key) ? ` :active="true"` : '';
             let args = parent ? `'${parent}','${items[i].key}'` : `'${items[i].key}',false`;
-            menu = menu + `<b-menu-item ${active}label="${loc(`wiki_menu_${items[i].key}`)}" @click="loadPage(${args})"></b-menu-item>`
+            menu = menu + `<b-menu-item${active} label="${loc(`wiki_menu_${items[i].key}`)}" @click="loadPage(${args})"></b-menu-item>`
         }
     }
     return menu;

@@ -17,7 +17,7 @@ export function index(){
             <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
             </span>
         </span>
-        <span class="version"><a href="https://github.com/${global.beta ? 'evolvebeta' : 'pmotschmann'}/Evolve/blob/master/changelog.md" target="_blank"></a></span>
+        <span class="version"><a href="wiki.html#changelog" target="_blank"></a></span>
     </div>`);
 
     let main = $(`<div id="main" class="main"></div>`);

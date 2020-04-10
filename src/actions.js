@@ -1043,161 +1043,136 @@ export const actions = {
                     removeAction(actions.evolution.sentience.id);
 
                     // Trigger Next Phase of game
-                    var path = Math.floor(Math.seededRandom(0,100));
+                    let races = [];
                     if (global.evolution['humanoid']){
-                        if (path < 33){
-                            global.race.species = 'elven';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'orc';
-                        }
-                        else {
-                            global.race.species = 'human';
+                        races.push('elven');
+                        races.push('orc');
+                        races.push('human');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'humanoid'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['gigantism']){
-                        if (path < 33){
-                            global.race.species = 'troll';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'orge';
-                        }
-                        else {
-                            global.race.species = 'cyclops';
+                        races.push('troll');
+                        races.push('orge');
+                        races.push('cyclops');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'giant'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['dwarfism']){
-                        if (path < 33){
-                            global.race.species = 'kobold';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'goblin';
-                        }
-                        else {
-                            global.race.species = 'gnome';
+                        races.push('kobold');
+                        races.push('goblin');
+                        races.push('gnome');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'small'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['animalism']){
-                        if (path < 33){
-                            global.race.species = 'cath';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'wolven';
-                        }
-                        else {
-                            global.race.species = 'centaur';
+                        races.push('cath');
+                        races.push('wolven');
+                        races.push('centaur');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'animal'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['ectothermic']){
-                        if (path < 33){
-                            global.race.species = 'tortoisan';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'gecko';
-                        }
-                        else {
-                            global.race.species = 'slitheryn';
+                        races.push('tortoisan');
+                        races.push('gecko');
+                        races.push('slitheryn');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'reptilian'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['endothermic']){
-                        if (path < 33){
-                            global.race.species = 'arraak';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'pterodacti';
-                        }
-                        else {
-                            global.race.species = 'dracnid';
+                        races.push('arraak');
+                        races.push('pterodacti');
+                        races.push('dracnid');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'avian'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['chitin']){
-                        if (path < 50){
-                            global.race.species = 'sporgar';
-                        }
-                        else {
-                            global.race.species = 'shroomi';
+                        races.push('sporgar');
+                        races.push('shroomi');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fungi'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['athropods']){
-                        if (path < 33){
-                            global.race.species = 'mantis';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'scorpid';
-                        }
-                        else {
-                            global.race.species = 'antid';
+                        races.push('mantis');
+                        races.push('scorpid');
+                        races.push('antid');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'insectoid'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['chloroplasts']){
-                        if (path < 50){
-                            global.race.species = 'entish';
-                        }
-                        else {
-                            global.race.species = 'cacti';
+                        races.push('entish');
+                        races.push('cacti');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'plant'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['aquatic']){
-                        if (path < 50){
-                            global.race.species = 'sharkin';
-                        }
-                        else {
-                            global.race.species = 'octigoran';
+                        races.push('sharkin');
+                        races.push('octigoran');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'aquatic'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['fey']){
-                        if (path < 50){
-                            global.race.species = 'dryad';
-                        }
-                        else {
-                            global.race.species = 'satyr';
+                        races.push('dryad');
+                        races.push('satyr');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fey'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['heat']){
-                        if (path < 50){
-                            global.race.species = 'phoenix';
-                        }
-                        else {
-                            global.race.species = 'salamander';
+                        races.push('phoenix');
+                        races.push('salamander');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'heat'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['polar']){
-                        if (path < 50){
-                            global.race.species = 'yeti';
-                        }
-                        else {
-                            global.race.species = 'wendigo';
+                        races.push('yeti');
+                        races.push('wendigo');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'polar'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['sand']){
-                        if (path < 50){
-                            global.race.species = 'tuskin';
-                        }
-                        else {
-                            global.race.species = 'kamel';
+                        races.push('tuskin');
+                        races.push('kamel');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'sand'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['demonic']){
-                        if (path < 50){
-                            global.race.species = 'balorg';
-                        }
-                        else {
-                            global.race.species = 'imp';
+                        races.push('balorg');
+                        races.push('imp');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'demonic'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['celestial']){
-                        if (path < 50){
-                            global.race.species = 'seraph';
-                        }
-                        else {
-                            global.race.species = 'unicorn';
+                        races.push('seraph');
+                        races.push('unicorn');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'angelic'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['eggshell']){
-                        global.race.species = 'dracnid';
+                        races.push('dracnid');
                     }
                     else {
-                        global.race.species = 'human';
+                        races.push('human');
+                    }
+
+                    global.race.species = races[Math.floor(Math.seededRandom(0,races.length))];
+                    if (global.stats.achieve[`extinct_${global.race.species}`] && global.stats.achieve[`extinct_${global.race.species}`].l >= 1){
+                        global.race.species = races[Math.floor(Math.seededRandom(0,races.length))];
                     }
 
                     sentience();
@@ -14565,6 +14540,7 @@ function sentience(){
         global.tech['unify'] = 2;
     }
 
+    clearElement($('#resources'));
     defineResources();
     if (!global.race['kindling_kindred']){
         global.resource.Lumber.display = true;
