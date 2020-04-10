@@ -33,18 +33,21 @@ export function renderStructurePage(zone){
 const extraInformation = {
     prehistoric: {},
     plantery: {
-        slaughter: loc(`wiki_structure_plantery_slaughter`),
+        slaughter: [loc(`wiki_structure_plantery_slaughter`)],
     },
     space: {},
     interstellar: {},
     intergalactic: {},
     hell: {},
-}
+};
 
 function addInfomration(parent,section,key){
     if (extraInformation[section].hasOwnProperty(key)){
-        let stats = $(`<div class="stats">${extraInformation[section][key]}</div>`);
-        parent.append(stats);
+        let extra = $(`<div class="extra"></div>`);
+        parent.append(extra);
+        for (let i=0; i<extraInformation[section][key].length; i++){
+            extra.append(`<div>${eextraInformation[section][key][i]}</div>`);
+        }
     }
 }
 
