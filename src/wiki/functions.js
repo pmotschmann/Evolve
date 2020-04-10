@@ -36,13 +36,13 @@ export function actionDesc(info, c_action, extended){
     }
 
     let stats = $(`<div class="stats"></div>`);
-    info.append(stats);
-
+    
     let hasEffect = false;
     if (c_action.hasOwnProperty('effect')){
         let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
         stats.append(`<div class="effect">${effect}</div>`);
         hasEffect = true;
+        info.append(stats);
     }
 
     if (c_action.hasOwnProperty('cost')){

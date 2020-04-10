@@ -2326,6 +2326,7 @@ export const actions = {
             id: 'city-gift',
             title: loc('city_gift'),
             desc: loc('city_gift_desc'),
+            wiki: false,
             category: 'outskirts',
             reqs: { primitive: 1 },
             no_queue(){ return true },
@@ -2871,6 +2872,7 @@ export const actions = {
                 let power = global.race['environmentalist'] ? 1.5 : 1;
                 return loc('city_windmill_desc',[power]);
             },
+            wiki: false,
             category: 'utility',
             reqs: { wind_plant: 1 },
             cost: {
@@ -4776,6 +4778,7 @@ export const actions = {
             id: 'tech-soul_lodge',
             title: loc('tech_lodge'),
             desc: loc('tech_lodge'),
+            wiki: false,
             category: 'souls',
             era: 'civilized',
             reqs: { housing: 1, currency: 1 },

@@ -1541,6 +1541,7 @@ const spaceProjects = {
                     return `<div>${loc('space_dwarf_collider_desc_req')}</div>`;
                 }
             },
+            wiki: false,
             reqs: { science: 10 },
             condition(){
                 return global.space.world_collider.count < 1859 ? true : false;
@@ -2791,6 +2792,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_stargate')}</div>`;
                 }
             },
+            wiki: false,
             reqs: { stargate: 3 },
             condition(){
                 return global.interstellar.stargate.count >= 200 ? false : true;
@@ -3017,6 +3019,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_ascension_machine')}</div>`;
                 }
             },
+            wiki: false,
             reqs: { ascension: 6 },
             condition(){
                 return global.interstellar.ascension_machine.count >= 100 ? false : true;

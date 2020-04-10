@@ -30,25 +30,43 @@ export function renderStructurePage(zone){
     }
 }
 
+const extraInformation = {
+    prehistoric: {},
+    plantery: {
+        slaughter: loc(`wiki_structure_plantery_slaughter`),
+    },
+    space: {},
+    interstellar: {},
+    intergalactic: {},
+    hell: {},
+}
+
+function addInfomration(parent,section,key){
+    if (extraInformation[section].hasOwnProperty(key)){
+        let stats = $(`<div class="stats">${extraInformation[section][key]}</div>`);
+        parent.append(stats);
+    }
+}
+
 function prehistoricPage(content){
     Object.keys(actions.evolution).forEach(function (action){
-        if (actions.evolution[action].hasOwnProperty('title') && typeof actions.evolution[action].title !== 'undefined'){
+        if (actions.evolution[action].hasOwnProperty('title') && typeof actions.evolution[action].title !== 'undefined' && (!actions.evolution[action].hasOwnProperty('wiki') || actions.evolution[action].wiki)){
             let info = $(`<div class="infoBox"></div>`);
             content.append(info);
             actionDesc(info, actions.evolution[action]);
+            addInfomration(info,'prehistoric',action);
         }
     });
 }
 
 function planteryPage(content){
     Object.keys(actions.city).forEach(function (action){
-        if (action === 'gift'){
-            return;
+        if (!actions.city[action].hasOwnProperty('wiki') || actions.city[action].wiki){            
+            let info = $(`<div class="infoBox"></div>`);
+            content.append(info);
+            actionDesc(info, actions.city[action]);
+            addInfomration(info,'plantery',action);
         }
-        
-        let info = $(`<div class="infoBox"></div>`);
-        content.append(info);
-        actionDesc(info, actions.city[action]);
     });
 }
 
@@ -58,10 +76,11 @@ function spacePage(content){
         let desc = typeof actions.space[region].info.desc === 'string' ? actions.space[region].info.desc : actions.space[region].info.desc();
 
         Object.keys(actions.space[region]).forEach(function (struct){
-            if (struct !== 'info'){
+            if (struct !== 'info' && (!actions.space[region][struct].hasOwnProperty('wiki') || actions.space[region][struct].wiki)){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.space[region][struct],`<span id="pop${actions.space[region][struct].id}">${name}</span>`);
+                addInfomration(info,'space',struct);
                 popover(`pop${actions.space[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
@@ -74,10 +93,11 @@ function interstellarPage(content){
         let desc = typeof actions.interstellar[region].info.desc === 'string' ? actions.interstellar[region].info.desc : actions.interstellar[region].info.desc();
 
         Object.keys(actions.interstellar[region]).forEach(function (struct){
-            if (struct !== 'info'){
+            if (struct !== 'info' && (!actions.interstellar[region][struct].hasOwnProperty('wiki') || actions.interstellar[region][struct].wiki)){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.interstellar[region][struct],name);
+                addInfomration(info,'interstellar',struct);
                 popover(`pop${actions.interstellar[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
@@ -90,10 +110,11 @@ function intergalacticPage(content){
         let desc = typeof actions.galaxy[region].info.desc === 'string' ? actions.galaxy[region].info.desc : actions.galaxy[region].info.desc();
 
         Object.keys(actions.galaxy[region]).forEach(function (struct){
-            if (struct !== 'info'){
+            if (struct !== 'info' && (!actions.galaxy[region][struct].hasOwnProperty('wiki') || actions.galaxy[region][struct].wiki)){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.galaxy[region][struct],name);
+                addInfomration(info,'intergalactic',struct);
                 popover(`pop${actions.galaxy[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
@@ -106,10 +127,11 @@ function hellPage(content){
         let desc = typeof actions.portal[region].info.desc === 'string' ? actions.portal[region].info.desc : actions.portal[region].info.desc();
 
         Object.keys(actions.portal[region]).forEach(function (struct){
-            if (struct !== 'info'){
+            if (struct !== 'info' && (!actions.portal[region][struct].hasOwnProperty('wiki') || actions.portal[region][struct].wiki)){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.portal[region][struct],name);
+                addInfomration(info,'hell',struct);
                 popover(`pop${actions.portal[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
