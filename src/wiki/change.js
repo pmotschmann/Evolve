@@ -7,7 +7,7 @@ const changeList = [
         date: `4/10/2020`,
         changes: [
             `Added New Work in Progress Game Wiki`,
-            `Sentience is now more likely to grant a species where the extinction achievemnet has not yet been earned.`,
+            `Sentience is now more likely to grant a species where the extinction achievement has not yet been earned.`,
             `Sentience can now include custom races.`,
             `The change log is now part of the Wiki.`,
         ]

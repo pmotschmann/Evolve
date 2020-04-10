@@ -46,7 +46,7 @@ function addInfomration(parent,section,key){
         let extra = $(`<div class="extra"></div>`);
         parent.append(extra);
         for (let i=0; i<extraInformation[section][key].length; i++){
-            extra.append(`<div>${eextraInformation[section][key][i]}</div>`);
+            extra.append(`<div>${extraInformation[section][key][i]}</div>`);
         }
     }
 }
