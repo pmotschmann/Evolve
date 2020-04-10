@@ -1,4 +1,4 @@
-import { global, save, webWorker, achieve_level, universe_level } from './vars.js';
+import { global, save, poppers, webWorker, achieve_level, universe_level } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits } from './races.js';
 import { actions } from './actions.js';
@@ -147,6 +147,24 @@ export function mainVue(){
                 }
             }
         }
+    });
+}
+
+export function popover(id,content,is_wide){
+    $('#'+id).on('mouseover',function(){
+        let wide = is_wide ? ' wide' : '';
+        var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
+        $(`#main`).append(popper);
+        popper.append(content);
+        popper.show();
+        poppers[id] = new Popper($('#'+id),popper);
+    });
+    $('#'+id).on('mouseout',function(){
+        $(`#pop${id}`).hide();
+        if (poppers[id]){
+            poppers[id].destroy();
+        }
+        clearElement($(`#pop${id}`),true);
     });
 }
 

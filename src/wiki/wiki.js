@@ -172,7 +172,7 @@ function mainPage(){
 
     let version = global['beta'] ? `beta v${global.version}.${global.beta}` : 'v'+global.version;
     content.append(`<div class="title has-text-warning">${loc(`wiki_main_title`)} - ${version}</div>`);
-    content.append(`<div class="paragraph has-text-advanced">${loc(`wiki_main_author`)}</div>`);
+    content.append(`<div class="paragraph has-text-advanced">${loc(`wiki_main_author`,['Demagorddon'])}</div>`);
     content.append(`<div class="paragraph has-text-danger">${loc(`wiki_main_spoiler`)}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_main_blurb`)}</div>`);
     content.append(`<div class="paragraph has-text-caution">${loc(`wiki_main_construction`)}</div>`);

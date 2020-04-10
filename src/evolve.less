@@ -1123,6 +1123,40 @@ body .modal > div.popper {
     }
 }
 
+.infoBox {
+    max-width: 50rem;
+    margin-bottom: .5rem;
+    margin-right: .5rem;
+    padding: .25rem .5rem;
+
+    h2 {
+        margin-bottom: .25rem;
+        border-bottom: .0625rem solid;
+    }
+
+    div {
+        margin-bottom: .5rem;
+        clear: both;
+    }
+
+    .type {
+        display: flex;
+        justify-content: space-between;
+        > span:nth-child(1) {
+            display: block;
+            text-align: left;
+        }
+        > span:nth-child(2) {
+            display: block;
+            text-align: right;
+        }
+    }
+
+    .desc {
+        text-align: left;
+    }
+}
+
 .main > div.popper.wide,
 body .modal > div.popper.wide {
     max-width: initial;

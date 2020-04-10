@@ -6,8 +6,10 @@ const changeList = [
         version: `0.8.5`,
         date: `4/10/2020`,
         changes: [
+            `Added New Work in Progress Game Wiki`,
             `Sentience is now more likely to grant a species where the extinction achievemnet has not yet been earned.`,
             `Sentience can now include custom races.`,
+            `The change log is now part of the Wiki.`,
         ]
     },
     {
@@ -1639,4 +1641,12 @@ export function changeLog(){
             change.append(`<div class="desc">${changeList[i].changes[j]}</div>`);
         }
     }
+}
+
+export function getTopChange(elm){
+    elm.append(`<div class="type"><h2 class="has-text-warning">v${changeList[0].version}</h2><span class="has-text-caution">${changeList[0].date}</span></div>`);
+    for (let i=0; i<changeList[0].changes.length; i++){
+        elm.append(`<div class="desc">${changeList[0].changes[i]}</div>`);
+    }
+    return elm;
 }
