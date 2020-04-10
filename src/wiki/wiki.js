@@ -27,13 +27,13 @@ function initPage(){
         {
             key: 'faq',
         },
-        {
+        /*{
             key: 'gameplay',
             submenu: [
                 { key: 'mechanics' },
                 { key: 'prestige' },
             ]
-        },
+        },*/
         {
             key: 'species',
             submenu: [
