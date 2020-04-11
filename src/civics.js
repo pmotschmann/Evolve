@@ -1639,7 +1639,7 @@ export function armyRating(val,type,wound){
             army *= 1 + (traits.fiery.vars[0] / 100);
         }
         if (global.race['pathetic']){
-            army *= 1 - (traits.fiery.vars[0] / 100);
+            army *= 1 - (traits.pathetic.vars[0] / 100);
         }
         if (global.race['tactical']){
             army *= 1 + (global.race['tactical'] / 20);
