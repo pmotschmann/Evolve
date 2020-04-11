@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.6`,
+        date: `4/11/2020`,
+        changes: [
+            `Fixed Bruite trait.`,
+            `Added section for Achievements and Feats to Wiki.`,
+        ]
+    },
+    {
         version: `0.8.5`,
         date: `4/11/2020`,
         changes: [

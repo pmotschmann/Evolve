@@ -6,6 +6,7 @@ import { faqPage } from './faq.js';
 import { racesPage, traitsPage } from './species.js';
 import { renderStructurePage } from './structures.js';
 import { renderTechPage } from './tech.js';
+import { renderAchievePage } from './achieve.js';
 import { changeLog } from './change.js';
 
 $('body').empty();
@@ -66,14 +67,13 @@ function initPage(){
                 { key: 'intergalactic' }
             ]
         },
-        /*{
+        {
             key: 'achievements',
             submenu: [
                 { key: 'list' },
-                { key: 'feats' },
-                { key: 'tracker' }
+                { key: 'feats' }
             ]
-        },*/
+        },
         {
             key: 'changelog',
         }
@@ -146,10 +146,17 @@ function menuDispatch(main,sub){
             window.location.hash = `#${sub}-${main}`;
             break;
 
-        /*case 'tracker':
-            loadTracker();
-            window.location.hash = `#${main}`;
-            break;*/
+        case 'achievements':
+            switch (sub){
+                case 'tracker':
+                    //loadTracker();
+                    break;
+                default:
+                    renderAchievePage(sub);
+                    break;
+                }
+            window.location.hash = `#${sub}-${main}`;
+            break;
 
         case 'changelog':
             changeLog();

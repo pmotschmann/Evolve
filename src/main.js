@@ -3844,7 +3844,7 @@ function fastLoop(){
         }
         global.civic.garrison.progress += rate * time_multiplier;
         if (global.race['brute']){
-            global.civic.garrison.progress += traits.diverse.vars[1] * time_multiplier;
+            global.civic.garrison.progress += traits.brute.vars[1] * time_multiplier;
         }
         if (global.civic.garrison.progress >= 100){
             global.civic.garrison.progress = 0;
