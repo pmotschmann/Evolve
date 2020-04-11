@@ -6,7 +6,7 @@ const changeList = [
         version: `0.8.6`,
         date: `4/11/2020`,
         changes: [
-            `Fixed Bruite trait.`,
+            `Fixed Brute trait.`,
             `Added section for Achievements and Feats to Wiki.`,
         ]
     },
