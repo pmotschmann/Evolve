@@ -1082,7 +1082,7 @@ export function checkAchievements(){
             unlockFeat('leprechaun');
         }
     }
-    else if (date.getMonth() === easter[0] && date.getDate() === easter[1] - 1){
+    else if (date.getMonth() === easter[0] && date.getDate() === easter[1]){
         if (global.race.universe === 'micro'){
             unlockFeat('easter',true);
         }
