@@ -2,6 +2,7 @@ import { global, save, poppers, webWorker, achieve_level, universe_level } from 
 import { loc } from './locale.js';
 import { races, traits } from './races.js';
 import { actions } from './actions.js';
+import { arpaAdjustCosts } from './arpa.js';
 
 export function mainVue(){
     vBind({
@@ -458,6 +459,27 @@ export function timeCheck(c_action,track,detailed){
     else {
         return 0;
     }
+}
+
+export function arpaSegmentTimeCheck(project){
+    let costs = arpaAdjustCosts(project.cost);
+    let time = 0;
+    Object.keys(costs).forEach(function (res){
+        let testCost = Number(costs[res]()) / 100;
+        let res_have = Number(global.resource[res].amount);
+        if (testCost > res_have){
+            if (global.resource[res].diff > 0){
+                let r_time = (testCost - res_have) / global.resource[res].diff;
+                if (r_time > time){
+                    time = r_time;
+                }
+            }
+            else {
+                time = -9999999;
+            }
+        }
+    });
+    return time;
 }
 
 export function clearElement(elm,remove){

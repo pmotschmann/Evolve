@@ -5116,7 +5116,7 @@ export const actions = {
             title: loc('tech_master_craftsman'),
             desc: loc('tech_master_craftsman'),
             category: 'crafting',
-            era: 'civilized',
+            era: 'discovery',
             reqs: { foundry: 3 },
             grant: ['foundry',5],
             trait: ['evil'],
