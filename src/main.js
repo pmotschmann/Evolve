@@ -1,7 +1,7 @@
 import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
-import { vBind, mainVue, popover, timeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery } from './functions.js';
+import { vBind, mainVue, popover, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
@@ -5348,10 +5348,10 @@ function midLoop(){
                 }
 
                 if (struct.type === 'arpa'){
-                    let curr_time = time;
                     let base_time = global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
-                    let remain = (100 - global.arpa[global.queue.queue[i].action].complete) / 100;
-                    time += base_time * remain;
+                    let remain = (100 - global.arpa[global.queue.queue[i].action].complete - 1) / 100;
+                    let s_time = arpaSegmentTimeCheck(t_action);
+                    time += base_time * remain + s_time;
                     global.queue.queue[i]['time'] = time;
                     if (global.queue.queue[i].q > 1){
                         for (let j=1; j<global.queue.queue[i].q; j++){

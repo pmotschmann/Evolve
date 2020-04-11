@@ -872,7 +872,7 @@ function checkCosts(costs){
     return test;
 }
 
-function arpaAdjustCosts(costs){
+export function arpaAdjustCosts(costs){
     costs = creativeAdjust(costs);
     return adjustCosts(costs);
 }
