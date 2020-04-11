@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue } from './functions.js';
+import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster } from './functions.js';
 import { piracy } from './space.js';
 import { loc } from './locale.js'
 
@@ -11,7 +11,7 @@ if (!global.stats['feat']){
     global.stats['feat'] = {};
 }
 
-var achievements = {
+export const achievements = {
     apocalypse: {
         name: loc("achieve_apocalypse_name"),
         desc: loc("achieve_apocalypse_desc"),
@@ -594,7 +594,7 @@ var achievements = {
     }
 };
 
-const feats = {
+export const feats = {
     utopia: {
         name: loc("feat_utopia_name"),
         desc: loc("feat_utopia_desc"),
@@ -694,6 +694,11 @@ const feats = {
         name: loc("feat_leprechaun_name"),
         desc: loc("feat_leprechaun_desc"),
         flair: loc("feat_leprechaun_flair")
+    },
+    easter: {
+        name: loc("feat_easter_name"),
+        desc: loc("feat_easter_desc"),
+        flair: loc("feat_easter_flair")
     },
     halloween: {
         name: loc("feat_boo_name"),
@@ -1048,6 +1053,7 @@ export function checkAchievements(){
     }
 
     const date = new Date();
+    let easter = getEaster(date.getFullYear());
     if (date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
         let murder = false;
         if (global.race.universe === 'micro'){
@@ -1074,6 +1080,14 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('leprechaun');
+        }
+    }
+    else if (date.getMonth() === easter[0] && date.getDate() === easter[1] - 1){
+        if (global.race.universe === 'micro'){
+            unlockFeat('easter',true);
+        }
+        else {
+            unlockFeat('easter');
         }
     }
     else if (date.getMonth() === 9 && date.getDate() === 31){

@@ -4,11 +4,13 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `0.8.5`,
-        date: `4/10/2020`,
+        date: `4/11/2020`,
         changes: [
             `Added New Work in Progress Game Wiki`,
             `Sentience is now more likely to grant a species where the extinction achievement has not yet been earned.`,
             `Sentience can now include custom races.`,
+            `Incorporeal Existence research now costs Phage instead of Plasmids.`,
+            `Ascension research now Plasmids instead of Phage.`,
             `The change log is now part of the Wiki.`,
         ]
     },

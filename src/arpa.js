@@ -139,7 +139,7 @@ export const arpaProjects = {
     },
 };
 
-const genePool = {
+export const genePool = {
     genetic_memory: {
         id: 'genes-genetic_memory',
         title: loc('arpa_genepool_genetic_memory_title'),

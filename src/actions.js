@@ -8311,7 +8311,7 @@ export const actions = {
             grant: ['ascension',1],
             cost: {
                 Knowledge(){ return 17500000; },
-                Plasmid(){ return 100; }
+                Phage(){ return 25; }
             },
             effect(){ return loc('tech_incorporeal_effect'); },
             action(){
@@ -8331,7 +8331,7 @@ export const actions = {
             grant: ['ascension',2],
             cost: {
                 Knowledge(){ return 18500000; },
-                Phage(){ return 25; }
+                Plasmid(){ return 100; }
             },
             effect(){ return loc('tech_ascension_effect'); },
             action(){

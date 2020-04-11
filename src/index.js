@@ -217,6 +217,7 @@ export function index(){
         {i: 'trash',    f: 'garbage_pie'},
         {i: 'heart',    f: 'valentine'},
         {i: 'clover',   f: 'leprechaun'},
+        {i: 'bunny',    f: 'easter'},
         {i: 'ghost',    f: 'halloween'},
         {i: 'turkey',   f: 'thanksgiving'},
         {i: 'present',  f: 'xmas'}

@@ -66,6 +66,14 @@ function initPage(){
                 { key: 'intergalactic' }
             ]
         },
+        /*{
+            key: 'achievements',
+            submenu: [
+                { key: 'list' },
+                { key: 'feats' },
+                { key: 'tracker' }
+            ]
+        },*/
         {
             key: 'changelog',
         }
@@ -137,6 +145,11 @@ function menuDispatch(main,sub){
             renderTechPage(sub);
             window.location.hash = `#${sub}-${main}`;
             break;
+
+        /*case 'tracker':
+            loadTracker();
+            window.location.hash = `#${main}`;
+            break;*/
 
         case 'changelog':
             changeLog();
