@@ -880,6 +880,15 @@ export function svgIcons(icon){
             return `<path d="M7.5,1c-2,0-7,0.25-6.5,0.75L7,8v4 c0,1-3,0.5-3,2h7c0-1.5-3-1-3-2V8l6-6.25C14.5,1.25,9.5,1,7.5,1z M7.5,2c2.5,0,4.75,0.25,4.75,0.25L11.5,3h-8L2.75,2.25 C2.75,2.25,5,2,7.5,2z"/>`;
         case 'bunny':
             return `<path style="stroke-linejoin:round;fill-rule:evenodd;stroke:#000000;stroke-linecap:round;stroke-width:6" d="m64.188 5.3125c-5.397 0.0813-10.898 1.0389-16.594 3.5313-9.817 4.2952-13.554 9.5252-16.282 14.968-6.538-0.307-13.468 2.455-18.218 7.938-7.3948 8.534-6.7113 20.389 1.531 26.438 2.24 1.644 4.798 2.641 7.5 3.124-1.063 4.28-0.91 8.757 0.187 13.219-0.158 0.044-0.31 0.076-0.468 0.125-6.958 2.178-10.97 9.256-8.938 15.75 0.747 2.386 2.204 4.346 4.094 5.782 1.73 1.79 4.454 2.466 7.125 1.5 3.388-1.226 5.531-4.662 5.25-8.063 4.838 7.044 11.348 13.245 17.969 17.565-3.132 2.04-5.007 4.69-4.938 7.56 0.045 1.87 0.5 4.28 2.406 5.16 5.356 2.46 12.173 2.75 18.907 2.68 6.644-0.07 13.36-0.49 18.562-3.03 1.833-0.89 2.139-3.3 2.094-5.15-0.013-0.55-0.101-1.1-0.25-1.63 3.256-0.79 6.06-1.98 8.344-3.53 4.213 3.86 10.941 4.27 16.151 0.66 6-4.15 7.72-12.064 3.85-17.66-3.11-4.492-8.87-6.111-14.126-4.438-1.317-4.594-3.729-9.761-7.406-15.5-8.605-13.428-28.229-23.563-43.969-25.531 0.719-2.053 1.093-4.161 1.093-6.219 10.581 1.08 21.879 1.693 38.594-0.906 5.763-0.896 7.759-2.691 2-7.031-7.125-5.37-15.153-9.126-25.437-8.906 5.516-2.421 10.784-5.283 15.25-8.375 5.825-4.034 7.757-7.3146-1.844-8.9378-4.128-0.6978-8.24-1.157-12.437-1.0937z"/><path d="m64.188 5.3125c-5.397 0.0813-10.898 1.0389-16.594 3.5313-9.817 4.2952-13.554 9.5252-16.282 14.968-6.538-0.307-13.468 2.455-18.218 7.938-7.3948 8.534-6.7113 20.389 1.531 26.438 2.24 1.644 4.798 2.641 7.5 3.124-1.063 4.28-0.91 8.757 0.187 13.219-0.158 0.044-0.31 0.076-0.468 0.125-6.958 2.178-10.97 9.256-8.938 15.75 0.747 2.386 2.204 4.346 4.094 5.782 1.73 1.79 4.454 2.466 7.125 1.5 3.388-1.226 5.531-4.662 5.25-8.063 4.838 7.044 11.348 13.245 17.969 17.565-3.132 2.04-5.007 4.69-4.938 7.56 0.045 1.87 0.5 4.28 2.406 5.16 5.356 2.46 12.173 2.75 18.907 2.68 6.644-0.07 13.36-0.49 18.562-3.03 1.833-0.89 2.139-3.3 2.094-5.15-0.013-0.55-0.101-1.1-0.25-1.63 3.256-0.79 6.06-1.98 8.344-3.53 4.213 3.86 10.941 4.27 16.151 0.66 6-4.15 7.72-12.064 3.85-17.66-3.11-4.492-8.87-6.111-14.126-4.438-1.317-4.594-3.729-9.761-7.406-15.5-8.605-13.428-28.229-23.563-43.969-25.531 0.719-2.053 1.093-4.161 1.093-6.219 10.581 1.08 21.879 1.693 38.594-0.906 5.763-0.896 7.759-2.691 2-7.031-7.125-5.37-15.153-9.126-25.437-8.906 5.516-2.421 10.784-5.283 15.25-8.375 5.825-4.034 7.757-7.3146-1.844-8.9378-4.128-0.6978-8.24-1.157-12.437-1.0937z"/><path style="fill-rule:evenodd;fill:#000000" d="m27.875 37.154a1.6792 1.5113 0 1 1 -3.358 0 1.6792 1.5113 0 1 1 3.358 0z" transform="matrix(2 0 0 2 -28.211 -37.658)"/><path style="stroke-linejoin:round;stroke:#000000;stroke-linecap:round;stroke-width:3;fill:none" d="m41.309 112.22c2.741-8.74 11.136-8.26 19.479-7.06-2.847-3.98-4.653-7.182-4.366-14.439 0.397-10.047 12.123-15.813 19.478-11.418"/>`;
+        case 'egg':
+            return `<g transform="translate(-23.4 -39.669)">
+            <g fill-rule="evenodd">
+              <path d="m209.88 233.69c-59.35 13.38-111.11 50.07-104.08 76.11 7.24 26.79 68.03 33.82 140.43 11.87 72.59-22.02 136.8-67.49 117.21-88.66-19.96-21.57-94.36-12.67-153.56 0.68z" fill="#555753" fill-opacity=".25098"/>
+              <path stroke-linejoin="round" d="m237.39 219.85c0.63 59.72-38.42 111.12-103.87 111.12-65.458 0-109.14-33.88-108.71-115.95 0.425-82.26 54.548-172.74 103.87-173.93 52.62-1.302 107.77 87.89 108.71 178.76z" stroke="#000" stroke-linecap="round" stroke-width="2.8183" fill="#fcfcfa"/>
+              <path d="m200.27 107.27c-4.58 4.32 2.48 11.42 2.87 16.88 11.18 34.97 15.59 72.86 7.97 109.05-8.88 35.66-36.04 67.41-71.85 77.78-14 4.35-28.78 5.33-43.361 5.3-4.701 6.19 8.951 5.84 12.621 7.35 31.12 6.05 66.19 0.87 90.45-20.77 22.64-20.08 33.83-50.84 33.2-80.74 0.18-35.03-8.95-69.68-23.29-101.47-2.63-4.42-4.34-10.71-8.61-13.38z" fill="#c6c6ba" fill-opacity=".25098"/>
+              <path stroke-linejoin="round" d="m110.75 105.79c-3.2 12.98-4.72 17.62-14.901 19.36-7.019 1.2-14.096-5.45-11.68-18.55 1.937-10.513 9.93-21.123 18.931-22.584 9.92-1.61 10.24 11.283 7.65 21.774z" stroke-opacity=".2809" fill-opacity=".9382" stroke="#000" stroke-linecap="round" stroke-width="1.1273" fill="#fff"/>
+            </g>
+          </g>`;
     }
 }
 
@@ -927,6 +936,8 @@ export function svgViewBox(icon){
             return `0 0 15 15`;
         case 'bunny':
             return `0 0 128 128`;
+        case 'egg':
+            return `0 0 343.61 295.02`;
     }
 }
 
@@ -966,6 +977,49 @@ export function getBaseIcon(name,type){
     return global.settings.icon;
 }
 
+export function drawIcon(icon,size,shade,id){
+    let select = '';
+    if (id){
+        select = `id="${id}" `;
+    }
+    return `<span ${select}class="flair drawnIcon"><svg class="star${shade}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></span>`;
+}
+
+export function easterEgg(num,size){
+    let easter = getEaster();
+    if (easter.active && !global.special.egg[`egg${num}`]){
+        return drawIcon('egg', size ? size : 16, 2, `egg${num}`);
+    }
+    return '';
+}
+
+export function easterEggBind(id){
+    $(`#egg${id}`).click(function(){
+        if (!global.special.egg[`egg${id}`]){
+            global.special.egg[`egg${id}`] = true;
+            if (id <= 10){
+                if (global.race.universe === 'antimatter'){
+                    global.race.Plasmid.anti += 10;
+                    global.stats.antiplasmid += 10;
+                    messageQueue(loc('city_egg_msg',[10,loc('resource_AntiPlasmid_plural_name')]),'success');
+                }
+                else {
+                    global.race.Plasmid.count += 10;
+                    global.stats.plasmid += 10;
+                    messageQueue(loc('city_egg_msg',[10,loc('resource_Plasmid_plural_name')]),'success');
+                }
+            }
+            else {
+                global.race.Phage.count += 5;
+                global.stats.phage += 5;
+                messageQueue(loc('city_egg_msg',[5,loc('resource_Phage_name')]),'success');
+            }
+            $(`#egg${id}`).remove();
+            $('.popper').hide();
+        }
+    });
+}
+
 export function format_emblem(achieve,size,baseIcon,fool){
     if (!size){
         size = 10;
@@ -1001,8 +1055,11 @@ export function sLevel(level){
     }
 }
 
-export function getEaster(year){
-	var f = Math.floor,
+export function getEaster(){
+    const date = new Date();
+    let year = date.getFullYear();
+
+	let f = Math.floor,
 		// Golden Number - 1
 		G = year % 19,
 		C = f(year / 100),
@@ -1015,6 +1072,23 @@ export function getEaster(year){
 		// number of days from 21 March to the Sunday on or before the Paschal full moon
 		L = I - J,
 		month = 3 + f((L + 40)/44),
-		day = L + 28 - 31 * f(month / 4);
-	return [month-1,day];
+        day = L + 28 - 31 * f(month / 4);
+    
+    let easter = {
+        date: [month-1,day],
+        active: false,
+        endDate: [month-1,day]
+    };
+
+    easter.endDate[1] += 10;
+    if ((easter.endDate[0] === 2 && easter.endDate[1] > 31) || (easter.endDate[0] === 3 && easter.endDate[1] > 30)){
+        easter.endDate[1] -= easter.endDate[0] === 2 ? 31 : 30;
+        easter.endDate[0]++;
+    }
+    if (date.getMonth() >= easter.date[0] && date.getDate() >= easter.date[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+        easter.active = true;
+    }
+
+    return easter;
+    
 }

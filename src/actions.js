@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -13444,8 +13444,8 @@ export function setAction(c_action,action,type,old){
         parent.append(special);
     }
     if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)){
-        var powerOn = $('<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON">{{ act.on }}</span>');
-        var powerOff = $('<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF">{{ act.on | off }}</span>');
+        var powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
+        var powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
         parent.append(powerOn);
         parent.append(powerOff);
     }
@@ -13686,8 +13686,24 @@ export function setAction(c_action,action,type,old){
             }
         },
         filters: {
-            off: function(value){
-                return global[action][type].count - value;
+            p_off(p,id){
+                let value = global[action][type].count - p;
+                if (id === 'city-casino'){
+                    let egg = easterEgg(5);
+                    if (value === 0 && egg.length > 0){
+                        return egg;
+                    }
+                }
+                return value;
+            },
+            p_on(p,id){
+                if (id === 'city-biolab'){
+                    let egg = easterEgg(12);
+                    if (p === 0 && egg.length > 0){
+                        return egg;
+                    }
+                }
+                return p;
             }
         }
     });
@@ -14513,6 +14529,13 @@ function sentience(){
     const date = new Date();
     if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
         global.race['slaver'] = 1;
+    }
+    const easter = getEaster();
+    if (easter.active){
+        global.race['hyper'] = 1;
+        global.race['fast_growth'] = 1;
+        global.race['rainbow'] = 1;
+        global.race['optimistic'] = 1;
     }
 
     if (global.race['no_crispr']){

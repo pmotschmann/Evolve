@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers } from './vars.js';
-import { clearElement } from './functions.js';
+import { clearElement, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
@@ -191,7 +191,7 @@ function loadUnemployed(){
     
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault()">{{ 'job' | title }}{{ 'unemployed' | d_state }}</a></h3><span class="count">{{ free }}</span></div>`);
+    let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault()">{{ 'job' | title }}{{ 'unemployed' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(free)"></span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
@@ -209,6 +209,15 @@ function loadUnemployed(){
             },
             d_state(j){
                 return global.civic.d_job === j ? '*' : '';
+            },
+            event(c){
+                let egg = easterEgg(3);
+                if (c === 0 && egg.length > 0){
+                    return egg;
+                }
+                else {
+                    return c;
+                }
             }
         }
     });

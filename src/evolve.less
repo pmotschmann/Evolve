@@ -193,6 +193,10 @@ a {
     }
 }
 
+#egg4 {
+    right: 0 !important;
+}
+
 .main {
     margin: 1rem 1rem 1.25rem;
 
@@ -436,12 +440,24 @@ a {
                 bottom: 0;
                 right: .5rem;
                 border-radius: .4375rem 0 .25rem 0;
+                
+                .flair {
+                    position: relative;
+                    left: .25rem;
+                    top: 0;
+                }
             }
 
             span.off {
                 bottom: 0;
                 left: 0;
                 border-radius: 0 .4375rem 0 .25rem;
+
+                .flair {
+                    position: relative;
+                    left: .125rem;
+                    top: 0;
+                }
             }
 
             div.repair {
@@ -532,6 +548,15 @@ a {
             :nth-child(2) {
                 min-width: 4rem;
                 text-align: center;
+            }
+            .count {
+                > span {
+                    margin-left: 1rem;
+                    width: 1rem;
+                }
+                svg {
+                    width: 1rem;
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement } from './../functions.js';
+import { clearElement, getEaster } from './../functions.js';
 import { races, traits, genus_traits } from './../races.js';
 import { popover } from './functions.js';
 
@@ -20,6 +20,7 @@ export function racesPage(){
         info.append(`<div class="desc">${races[race].desc}</div>`);
 
         let traitList = [];
+        let extraTraits = extraTraitList(race);
 
         let genes = $(`<div class="itemlist"></div>`);
         Object.keys(genus_traits[races[race].type]).sort().forEach(function (trait){
@@ -34,6 +35,12 @@ export function racesPage(){
             genes.append(`<span class="has-text-${color}" id="${id}">${traits[trait].name}<span>`);
             traitList.push(trait);
         });
+        for (let i=0; i<extraTraits.length; i++){
+            let id = `raceTrait${race}${extraTraits[i]}`;
+            let color = races[race].fanaticism === extraTraits[i] ? 'danger' : 'info';
+            genes.append(`<span class="has-text-${color}" id="${id}">${traits[extraTraits[i]].name}<span>`);
+            traitList.push(extraTraits[i]);
+        }
         info.append(genes);
 
         for (let i=0; i<traitList.length; i++){
@@ -43,6 +50,19 @@ export function racesPage(){
             popover(id,desc);
         }
     });
+}
+
+function extraTraitList(race){
+    const date = new Date();
+    switch (race){
+        case 'wolven':
+            let easter = getEaster();
+            return easter.active ? ['hyper','fast_growth','rainbow','optimistic'] : [];
+        case 'elven':
+            return date.getMonth() === 11 && date.getDate() >= 17 ? ['slaver'] : [];
+        default:
+            return [];
+    }
 }
 
 export function traitsPage(){

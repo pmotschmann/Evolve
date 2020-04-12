@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster } from './functions.js';
+import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
 import { piracy } from './space.js';
 import { loc } from './locale.js'
 
@@ -926,6 +926,12 @@ export function drawAchieve(args){
             let baseIcon = getBaseIcon(feat,'feat');
             if (global.stats.feat[feat]){
                 let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
+                if (feat === 'easter'){
+                    let egg = easterEgg(4);
+                    if (egg.length > 0){
+                        star = egg;
+                    }
+                }
                 achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
             }
         });
@@ -958,10 +964,16 @@ export function drawAchieve(args){
     if ($('#topBar span.flair')){
         clearElement($('#topBar span.flair'),true);
     }
+    let egg = easterEgg(1);
+    if (egg.length > 0){
+        $('#topBar .planet').after($(egg));
+    }
     if (a_level > 1 && $('#topBar .planet .flair').length === 0){
-    let bIcon = getBaseIcon('topbar','challenge');
-    $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(bIcon)}" xml:space="preserve">${svgIcons(bIcon)}</svg></span>`);
-    
+        if (egg.length === 0){
+            let bIcon = getBaseIcon('topbar','challenge');
+            $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(bIcon)}" xml:space="preserve">${svgIcons(bIcon)}</svg></span>`);
+        }
+
         $('#topBar .planetWrap .flair').on('mouseover',function(){
             var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
@@ -1053,7 +1065,7 @@ export function checkAchievements(){
     }
 
     const date = new Date();
-    let easter = getEaster(date.getFullYear());
+    let easter = getEaster();
     if (date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
         let murder = false;
         if (global.race.universe === 'micro'){
@@ -1082,7 +1094,7 @@ export function checkAchievements(){
             unlockFeat('leprechaun');
         }
     }
-    else if (date.getMonth() === easter[0] && date.getDate() === easter[1]){
+    else if (easter.active){
         if (global.race.universe === 'micro'){
             unlockFeat('easter',true);
         }

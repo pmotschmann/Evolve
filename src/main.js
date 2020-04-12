@@ -1,7 +1,7 @@
 import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
-import { vBind, mainVue, popover, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery } from './functions.js';
+import { vBind, mainVue, popover, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry } from './jobs.js';
@@ -3891,6 +3891,16 @@ function fastLoop(){
         window.evolve.breakdown = JSON.parse(JSON.stringify(breakdown));
     }
 
+    let easter = getEaster();
+    if (easter.active){
+        for (i=1; i<13; i++){
+            if ($(`#egg${i}`).length > 0 && !$(`#egg${i}`).hasClass('binded')){
+                easterEggBind(i);
+                $(`#egg${i}`).addClass('binded');
+            }
+        }
+    }
+
     firstRun = false;
 }
 
@@ -6080,8 +6090,22 @@ function longLoop(){
     }
 
     if (date.getMonth() === 11 && date.getDate() >= 17 && date.getDate() <= 24){
-        global['special'] = { gift: true };
+        global.special.gift = true;
         global.tech['santa'] = 1;
+        global.special.egg = {
+            egg1: false,
+            egg2: false,
+            egg3: false,
+            egg4: false,
+            egg5: false,
+            egg6: false,
+            egg7: false,
+            egg8: false,
+            egg9: false,
+            egg10: false,
+            egg11: false,
+            egg12: false
+        };
     }
     else {
         delete global.tech['santa'];
@@ -6179,6 +6203,7 @@ function steelCheck(){
 
 function setWeather(){
     // Moon Phase
+    let easter = getEaster();
     switch(global.city.calendar.moon){
         case 0:
             $('#moon').removeClass('wi-moon-waning-crescent-6');
@@ -6238,9 +6263,16 @@ function setWeather(){
             break;
         case 14:
             $('#moon').removeClass('wi-moon-waxing-gibbous-6');
-            $('#moon').addClass('wi-moon-full');
+            let egg = easterEgg(2);
+            if (egg.length > 0){
+                $('#moon').append(egg);
+            }
+            else {
+                $('#moon').addClass('wi-moon-full');
+            }
             break;
         case 15:
+            $('#moon').empty();
             $('#moon').removeClass('wi-moon-full');
             $('#moon').addClass('wi-moon-waning-gibbous-1');
             break;

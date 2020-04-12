@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, clearElement, modRes, calc_mastery } from './functions.js';
+import { vBind, clearElement, modRes, calc_mastery, easterEgg } from './functions.js';
 import { races, traits } from './races.js';
 import { loc } from './locale.js';
 
@@ -1248,6 +1248,13 @@ function drawModal(name,color){
     
     let body = $('<div class="modalBody crateModal"></div>');
     $('#modalBox').append(body);
+
+    if (name === 'Food'){
+        let egg = easterEgg(7,12);
+        if (egg.length > 0){
+            $('#modalBoxTitle').prepend(egg);
+        }
+    }
     
     let crates = $('<div id="modalCrates" class="crates"></div>');
     body.append(crates);

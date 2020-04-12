@@ -1,6 +1,6 @@
 import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
+import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait, traits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -211,6 +211,10 @@ function government(govern){
 
 function drawGovModal(){
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_government_type')}</p>`));
+    let egg = easterEgg(6,12);
+    if (egg.length > 0){
+        $('#modalBoxTitle').append(egg);
+    }
     
     var body = $('<div id="govModal" class="modalBody max40"></div>');
     $('#modalBox').append(body);
@@ -682,7 +686,7 @@ function taxRates(govern){
     var label = $(`<h3 id="taxRateLabel">${loc('civics_tax_rates')}</h3>`);
     tax_rates.append(label);
     
-    var tax_level = $('<span class="current">{{ tax_rate | tax_level }}</span>');
+    var tax_level = $('<span class="current" v-html="$options.filters.tax_level(tax_rate)"></span>');
     var sub = $(`<span role="button" aria-label="decrease taxes" class="sub has-text-success" @click="sub">&laquo;</span>`);
     var add = $(`<span role="button" aria-label="increase taxes" class="add has-text-danger" @click="add">&raquo;</span>`);
     tax_rates.append(sub);
@@ -694,7 +698,13 @@ function taxRates(govern){
         data: global.civic['taxes'],
         filters: {
             tax_level(rate){
-                return `${rate}%`;
+                let egg = easterEgg(11);
+                if (rate === 0 && egg.length > 0){
+                    return egg;
+                }
+                else {
+                    return `${rate}%`;
+                }
             }
         },
         methods: {
@@ -773,7 +783,7 @@ export function buildGarrison(garrison,full){
     
     bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></div>`));
     bunks.append($(`<div class="barracks" v-show="g.crew > 0"><b-tooltip :label="crewDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_crew')}</span></b-tooltip> <span>{{ g.crew }}</span></div>`));
-    bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span>{{ g.wounded }}</span></div>`));
+    bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
 
     barracks.append($(`<div class="hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="g.mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
     
@@ -981,6 +991,13 @@ export function buildGarrison(garrison,full){
             },
             s_max(v){
                 return garrisonSize(true);
+            },
+            wounded(w){
+                let egg = easterEgg(8,14);
+                if (full && w === 0 && egg.length > 0){
+                    return egg;
+                }
+                return w;
             }
         }
     });

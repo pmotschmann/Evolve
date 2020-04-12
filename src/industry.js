@@ -1,6 +1,6 @@
 import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind } from './functions.js';
+import { vBind, easterEgg } from './functions.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -47,9 +47,16 @@ export const f_rate = {
     }
 };
 
-function loadSmelter(parent,bind){
+function loadSmelter(parent,bind){    
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{s.count | on}}/{{ s.cap }}</span></div>`);
     parent.append(fuel);
+
+    if (parent.hasClass('modalBody')){
+        let egg = easterEgg(10);
+        if (egg.length > 0){
+            fuel.prepend(egg);
+        }
+    }
 
     if (!global.race['forge']){
         let fuelTypes = $('<div class="fuels"></div>');

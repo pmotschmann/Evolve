@@ -1,9 +1,10 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
-import { clearElement, removeFromQueue, removeFromRQueue } from './functions.js';
+import { clearElement, removeFromQueue, removeFromRQueue, getEaster } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 
 const date = new Date();
+const easter = getEaster();
 
 export const genus_traits = {
     humanoid: {
@@ -1040,21 +1041,21 @@ export const races = {
         fanaticism: 'carnivore'
     },
     wolven: {
-        name: loc('race_wolven'),
-        desc: loc('race_wolven_desc'),
+        name: easter.active ? loc('race_rabbit') : loc('race_wolven'),
+        desc: easter.active ? loc('race_rabbit_desc') : loc('race_wolven_desc'),
         type: 'animal',
-        home: loc('race_wolven_home'),
-        entity: loc('race_wolven_entity'),
+        home: easter.active ? loc('race_rabbit_home') : loc('race_wolven_home'),
+        entity: easter.active ? loc('race_rabbit_entity') : loc('race_wolven_entity'),
         traits: { 
             pack_mentality: 1,
             tracker: 1
         },
         solar: {
-            red: loc('race_wolven_solar_red'),
-            hell: loc('race_wolven_solar_hell'),
-            gas: loc('race_wolven_solar_gas'),
-            gas_moon: loc('race_wolven_solar_gas_moon'),
-            dwarf: loc('race_wolven_solar_dwarf'),
+            red: easter.active ? loc('race_rabbit_solar_red') : loc('race_wolven_solar_red'),
+            hell: easter.active ? loc('race_rabbit_solar_hell') : loc('race_wolven_solar_hell'),
+            gas: easter.active ? loc('race_rabbit_solar_gas') : loc('race_wolven_solar_gas'),
+            gas_moon: easter.active ? loc('race_rabbit_solar_gas_moon') : loc('race_wolven_solar_gas_moon'),
+            dwarf: easter.active ? loc('race_rabbit_solar_dwarf') : loc('race_wolven_solar_dwarf'),
         },
         fanaticism: 'tracker'
     },
