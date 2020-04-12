@@ -49,6 +49,21 @@ function featPage(){
         let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
         achieve.append(`<span id="f-${feat}" class="achieve has-text-${color}">${feats[feat].name}</span>${star}`);
         
-        popover(`f-${feat}`,$(`<div>${feats[feat].desc}</div>`));
+        popover(`f-${feat}`,featDesc(feat));
     });
+}
+
+function featDesc(feat){
+    if (feat === 'egghunt'){
+        let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt')}</div><div class="flexed">`;
+        for (let i=1; i<13; i++){
+            let egg = global.special.egg[`egg${i}`] ? 'has-text-success' : 'has-text-danger';
+            eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>`
+        }
+        eggs = eggs + `<div>`;
+        return $(`<div>${feats[feat].desc}</div>${eggs}`);
+    }
+    else {
+        return $(`<div>${feats[feat].desc}</div>`);
+    }
 }

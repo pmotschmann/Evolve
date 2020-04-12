@@ -13689,7 +13689,7 @@ export function setAction(c_action,action,type,old){
             p_off(p,id){
                 let value = global[action][type].count - p;
                 if (id === 'city-casino'){
-                    let egg = easterEgg(5);
+                    let egg = easterEgg(5,12);
                     if (value === 0 && egg.length > 0){
                         return egg;
                     }
@@ -13698,7 +13698,7 @@ export function setAction(c_action,action,type,old){
             },
             p_on(p,id){
                 if (id === 'city-biolab'){
-                    let egg = easterEgg(12);
+                    let egg = easterEgg(12,12);
                     if (p === 0 && egg.length > 0){
                         return egg;
                     }

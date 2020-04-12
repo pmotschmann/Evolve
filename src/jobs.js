@@ -211,7 +211,7 @@ function loadUnemployed(){
                 return global.civic.d_job === j ? '*' : '';
             },
             event(c){
-                let egg = easterEgg(3);
+                let egg = easterEgg(3,14);
                 if (c === 0 && egg.length > 0){
                     return egg;
                 }

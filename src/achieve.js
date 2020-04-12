@@ -700,6 +700,11 @@ export const feats = {
         desc: loc("feat_easter_desc"),
         flair: loc("feat_easter_flair")
     },
+    egghunt: {
+        name: loc("feat_egghunt_name"),
+        desc: loc("feat_egghunt_desc"),
+        flair: loc("feat_egghunt_flair")
+    },
     halloween: {
         name: loc("feat_boo_name"),
         desc: loc("feat_boo_desc"),
@@ -927,7 +932,7 @@ export function drawAchieve(args){
             if (global.stats.feat[feat]){
                 let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
                 if (feat === 'easter'){
-                    let egg = easterEgg(4);
+                    let egg = easterEgg(4,14);
                     if (egg.length > 0){
                         star = egg;
                     }
@@ -964,7 +969,7 @@ export function drawAchieve(args){
     if ($('#topBar span.flair')){
         clearElement($('#topBar span.flair'),true);
     }
-    let egg = easterEgg(1);
+    let egg = easterEgg(1,14);
     if (egg.length > 0){
         $('#topBar .planet').after($(egg));
     }
@@ -1100,6 +1105,23 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('easter');
+        }
+
+        let checkAll = true;
+        for (let i=1; i<13; i++){
+            if (!global.special.egg[`egg${i}`]){
+                checkAll = false;
+            }
+        }
+
+        if (checkAll){
+            if (global.race.universe === 'micro'){
+                unlockFeat('egghunt',true);
+            }
+            else {
+                unlockFeat('egghunt');
+            }
+    
         }
     }
     else if (date.getMonth() === 9 && date.getDate() === 31){

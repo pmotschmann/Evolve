@@ -211,7 +211,7 @@ function government(govern){
 
 function drawGovModal(){
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_government_type')}</p>`));
-    let egg = easterEgg(6,12);
+    let egg = easterEgg(6,10);
     if (egg.length > 0){
         $('#modalBoxTitle').append(egg);
     }
@@ -698,7 +698,7 @@ function taxRates(govern){
         data: global.civic['taxes'],
         filters: {
             tax_level(rate){
-                let egg = easterEgg(11);
+                let egg = easterEgg(11,14);
                 if (rate === 0 && egg.length > 0){
                     return egg;
                 }
@@ -993,7 +993,7 @@ export function buildGarrison(garrison,full){
                 return garrisonSize(true);
             },
             wounded(w){
-                let egg = easterEgg(8,14);
+                let egg = easterEgg(8,12);
                 if (full && w === 0 && egg.length > 0){
                     return egg;
                 }

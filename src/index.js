@@ -219,6 +219,7 @@ export function index(){
         {i: 'heart',    f: 'valentine'},
         {i: 'clover',   f: 'leprechaun'},
         {i: 'bunny',    f: 'easter'},
+        {i: 'egg',      f: 'egghunt'},
         {i: 'ghost',    f: 'halloween'},
         {i: 'turkey',   f: 'thanksgiving'},
         {i: 'present',  f: 'xmas'}
@@ -233,7 +234,7 @@ export function index(){
         }
     }
 
-    let egg = easterEgg(9);
+    let egg = easterEgg(9,14);
     let hideEgg = '';
     if (egg.length > 0){
         hideEgg = `<b-dropdown-item>${egg}</b-dropdown-item>`;

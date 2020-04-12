@@ -1250,7 +1250,7 @@ function drawModal(name,color){
     $('#modalBox').append(body);
 
     if (name === 'Food'){
-        let egg = easterEgg(7,12);
+        let egg = easterEgg(7,10);
         if (egg.length > 0){
             $('#modalBoxTitle').prepend(egg);
         }

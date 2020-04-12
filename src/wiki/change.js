@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.9`,
+        date: `4/12/2020`,
+        changes: [
+            `Added a Feat for finding all the Eggs.`,
+            `Current egg count can now be checked in the Wiki.`,
+        ]
+    },
+    {
         version: `0.8.8`,
         date: `4/12/2020`,
         changes: [
