@@ -22,6 +22,11 @@ export const achievements = {
         desc: loc("achieve_ascended_desc"),
         flair: loc("achieve_ascended_flair")
     },
+    technophobe: {
+        name: loc("achieve_technophobe_name"),
+        desc: loc("achieve_technophobe_desc"),
+        flair: loc("achieve_technophobe_flair")
+    },
     dreaded: {
         name: loc("achieve_dreaded_name"),
         desc: loc("achieve_dreaded_desc"),

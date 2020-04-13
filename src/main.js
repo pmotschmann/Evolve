@@ -310,6 +310,9 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         if (global.race['decay']){
             challenges = challenges + `<div>${loc('evo_challenge_decay_desc')}</div>`;
         }
+        if (global.race['emfield']){
+            challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
+        }
         popper.append($(`<div>${loc('home',[planet,race,planet_label,orbit])}</div>${challenges}`));
     }
     popper.show();
@@ -427,7 +430,7 @@ if (global.race.species === 'protoplasm'){
         }
 
         challengeActionHeader()
-        var challenge_actions = ['junker','joyless','steelen','decay'];
+        var challenge_actions = ['junker','joyless','steelen','decay','emfield'];
         for (var i = 0; i < challenge_actions.length; i++){
             if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
                 addAction('evolution',challenge_actions[i]);

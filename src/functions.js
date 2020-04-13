@@ -561,6 +561,20 @@ export function powerModifier(energy){
     return energy;
 }
 
+export function emdampener(){
+    if (global.race['emfield']){
+        
+    }
+    return 1;
+}
+
+export function powerCostMod(energy){
+    if (global.race['emfield']){
+        return +(energy * 1.5).toFixed(2);
+    }
+    return energy;
+}
+
 export function calc_mastery(){
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
         let m_rate = global.race.universe === 'standard' ? 0.25 : 0.15;

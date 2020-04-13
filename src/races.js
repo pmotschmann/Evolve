@@ -863,13 +863,13 @@ export const traits = {
         desc: loc('trait_untapped'),
         type: 'special',
         val: 0,
-    },
+    },*/
     emfield: { // Your body produces a natural electromagnetic field that disrupts electriciy
         name: loc('trait_emfield_name'),
         desc: loc('trait_emfield'),
         type: 'special',
         val: -20,
-    },*/
+    },
     tactical: { // War Bonus
         name: loc('trait_tactical_name'),
         desc: loc('trait_tactical'),

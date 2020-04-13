@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -2058,6 +2058,7 @@ export const actions = {
                     global.evolution['junker'] = { count: 0 };
                     global.evolution['joyless'] = { count: 0 };
                     global.evolution['steelen'] = { count: 0 };
+                    global.evolution['emfield'] = { count: 0 };
                     if (global.stats.achieve['whitehole']){
                         global.evolution['decay'] = { count: 0 };
                     }
@@ -2077,6 +2078,9 @@ export const actions = {
                     addAction('evolution','steelen');
                     if (global.stats.achieve['whitehole']){
                         addAction('evolution','decay');
+                    }
+                    if (global.stats.achieve['ascended']){
+                        addAction('evolution','emfield');
                     }
                 }
                 return false;
@@ -2319,6 +2323,34 @@ export const actions = {
             emblem(){ return format_emblem('dissipated'); },
             flair: loc('evo_challenge_decay_flair'),
             highlight(){ return global.race['decay'] ? true : false; }
+        },
+        emfield: {
+            id: 'evo-emfield',
+            title: loc('evo_challenge_emfield'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_emfield_desc')}</div>` : loc('evo_challenge_emfield_desc'); },
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect: loc('evo_challenge_emfield_effect'),
+            action(){
+                if (payCosts(actions.evolution.decay.cost)){
+                    if (payCosts($(this)[0].cost)){
+                        if (global.race['emfield']){
+                            delete global.race['emfield'];
+                            $(`#${$(this)[0].id}`).removeClass('hl');
+                        }
+                        else {
+                            global.race['emfield'] = 1;
+                            $(`#${$(this)[0].id}`).addClass('hl');
+                        }
+                        drawAchieve();
+                    }
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('technophobe'); },
+            flair: loc('evo_challenge_emfield_flair'),
+            highlight(){ return global.race['emfield'] ? true : false; }
         },
     },
     city: {
@@ -2673,7 +2705,7 @@ export const actions = {
                     return `${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
                 }
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['apartment'].count++;
@@ -2845,7 +2877,7 @@ export const actions = {
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
+            powered(){ return powerCostMod(global.race['environmentalist'] ? -1.5 : -1); },
             power_reqs: { agriculture: 6 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3328,7 +3360,7 @@ export const actions = {
                 }
                 return desc;
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['sawmill'].count++;
@@ -3364,7 +3396,7 @@ export const actions = {
                     return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>`;
                 }
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3399,7 +3431,7 @@ export const actions = {
                     return loc('city_cement_plant_effect1',[2]);
                 }
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             power_reqs: { cement: 5 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3485,7 +3517,7 @@ export const actions = {
                 }
                 return desc;
             },
-            powered(){ return 3; },
+            powered(){ return powerCostMod(3); },
             special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3557,7 +3589,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('metal_refinery', offset, 2500, 1.35); },
                 Steel(offset){ return costMultiplier('metal_refinery', offset, 350, 1.35); }
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             power_reqs: { alumina: 2 },
             effect() {
                 if (global.tech['alumina'] >= 2){
@@ -3600,7 +3632,7 @@ export const actions = {
                     return loc('city_mine_effect1');
                 }
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3635,7 +3667,7 @@ export const actions = {
                     return loc('city_coal_mine_effect1');
                 }
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3823,7 +3855,7 @@ export const actions = {
                 let mon = global.civic.govern.type === 'corpocracy' ? 4 : 2;
                 return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`;
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['tourist_center'].count++;
@@ -3890,7 +3922,7 @@ export const actions = {
                 }
                 return desc;
             },
-            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 3 : 4; },
+            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 3 : 4); },
             power_reqs: { gambling: 2 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -4245,7 +4277,7 @@ export const actions = {
                 }
                 return desc;
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     let gain = 1000;
@@ -4287,7 +4319,7 @@ export const actions = {
                 }
                 return `<span>${loc('city_max_knowledge',[gain])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.biolab.count++;
@@ -4435,7 +4467,7 @@ export const actions = {
             },
             powered(){
                 let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5;
-                return global.tech.mass >= 2 ? power - 1 : power;
+                return powerCostMod(global.tech.mass >= 2 ? power - 1 : power);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
