@@ -14531,7 +14531,7 @@ function sentience(){
         global.race['slaver'] = 1;
     }
     const easter = getEaster();
-    if (easter.active){
+    if (global.race.species === 'wolven' && easter.active){
         global.race['hyper'] = 1;
         global.race['fast_growth'] = 1;
         global.race['rainbow'] = 1;
