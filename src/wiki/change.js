@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.10`,
+        date: `4/13/2020`,
+        changes: [
+            `Added EM Field Challenge.`,
+        ]
+    },
+    {
         version: `0.8.9`,
         date: `4/12/2020`,
         changes: [

@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, p_on } from './vars.js';
-import { vBind, clearElement, spaceCostMultiplier, messageQueue } from './functions.js';
+import { vBind, clearElement, powerCostMod, spaceCostMultiplier, messageQueue } from './functions.js';
 import { traits } from './races.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction } from './actions.js';
@@ -38,7 +38,7 @@ const fortressModules = {
                 Nano_Tube(offset){ return spaceCostMultiplier('turret', offset, 28000, 1.28, 'portal'); }
             },
             powered(){
-                return global.tech['turret'] ? 4 + global.tech['turret'] : 4;
+                return powerCostMod(global.tech['turret'] ? 4 + global.tech['turret'] : 4);
             },
             postPower(o){
                 p_on['turret'] = global.portal.turret.on;
@@ -112,7 +112,7 @@ const fortressModules = {
                 Stanene(offset){ return spaceCostMultiplier('war_droid', offset, 37500, 1.26, 'portal'); },
                 Soul_Gem(offset){ return spaceCostMultiplier('war_droid', offset, 1, 1.26, 'portal'); }
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             effect(){
                 return `<div>${loc('portal_war_droid_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -142,7 +142,7 @@ const fortressModules = {
                 Infernite(offset){ return spaceCostMultiplier('repair_droid', offset, 666, 1.26, 'portal'); },
                 Soul_Gem(offset){ return spaceCostMultiplier('repair_droid', offset, 1, 1.15, 'portal'); }
             },
-            powered(){ return 3; },
+            powered(){ return powerCostMod(3); },
             effect(){
                 return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[5])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -171,7 +171,7 @@ const fortressModules = {
                 return `<div>${loc('portal_war_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 3 },
-            powered(){ return 5; },
+            powered(){ return powerCostMod(5); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('war_drone', offset, 650000, 1.28, 'portal'); },
                 Alloy(offset){ return spaceCostMultiplier('war_drone', offset, 60000, 1.28, 'portal'); },
@@ -201,7 +201,7 @@ const fortressModules = {
                 return `<div>${loc('portal_sensor_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { infernite: 2 },
-            powered(){ return 3; },
+            powered(){ return powerCostMod(3); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('sensor_drone', offset, 500000, 1.25, 'portal'); },
                 Polymer(offset){ return spaceCostMultiplier('sensor_drone', offset, 25000, 1.25, 'portal'); },
@@ -232,7 +232,7 @@ const fortressModules = {
                 return `<div>${loc('portal_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 4 },
-            powered(){ return 3; },
+            powered(){ return powerCostMod(3); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('attractor', offset, 350000, 1.25, 'portal'); },
                 Aluminium(offset){ return spaceCostMultiplier('attractor', offset, 175000, 1.25, 'portal'); },
@@ -314,7 +314,7 @@ const fortressModules = {
             reqs: { hell_pit: 4 },
             no_queue(){ return global.portal.soul_forge.count < 1 ? false : true },
             queue_complete(){ return global.portal.soul_forge.count >= 1 ? true : false; },
-            powered(){ return 60; },
+            powered(){ return powerCostMod(60); },
             postPower(o){
                 vBind({el: `#fort`},'update');
             },
@@ -354,7 +354,7 @@ const fortressModules = {
                 return `<div>${loc('portal_gun_emplacement_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_gun: 1 },
-            powered(){ return 3; },
+            powered(){ return powerCostMod(3); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('gun_emplacement', offset, 4000000, 1.25, 'portal'); },
                 Coal(offset){ return spaceCostMultiplier('gun_emplacement', offset, 250000, 1.25, 'portal'); },
@@ -385,7 +385,7 @@ const fortressModules = {
                 return `<div>${loc('portal_soul_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_pit: 5 },
-            powered(){ return 8; },
+            powered(){ return powerCostMod(8); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('soul_attractor', offset, 12000000, 1.25, 'portal'); },
                 Stone(offset){ return spaceCostMultiplier('soul_attractor', offset, 23000000, 1.25, 'portal'); },
@@ -853,7 +853,9 @@ export function bloodwar(){
     if (!global.portal.fortress['pity']){
         global.portal.fortress['pity'] = 0;
     }
-    let gem_chance = 10000 - global.portal.fortress.pity;
+
+    let game_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 9000 : 10000;
+    let gem_chance = game_base - global.portal.fortress.pity;
     if (global.race.universe === 'evil'){
         let de = global.race.Dark.count;
         if (global.race.Harmony.count > 0){
@@ -1098,8 +1100,9 @@ export function bloodwar(){
             }
             global.portal.soul_forge.kills += gunKills;
             global.stats.dkills += gunKills;
+            let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 6750 : 7500;
             for (let i=0; i<p_on['gun_emplacement']; i++){
-                if (Math.rand(0,7500) === 0){
+                if (Math.rand(0,gun_base) === 0){
                     global.resource.Soul_Gem.amount++;
                 }
             }
@@ -1109,7 +1112,8 @@ export function bloodwar(){
             let forgeKills = Math.rand(25,150);
             global.stats.dkills += forgeKills;
             global.portal.soul_forge.kills += forgeKills;
-            if (Math.rand(0,5000) === 0){
+            let forge_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 4500 : 5000;
+            if (Math.rand(0,forge_base) === 0){
                 global.resource.Soul_Gem.amount++;
             }
         }
