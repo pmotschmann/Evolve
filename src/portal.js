@@ -853,7 +853,9 @@ export function bloodwar(){
     if (!global.portal.fortress['pity']){
         global.portal.fortress['pity'] = 0;
     }
-    let gem_chance = 10000 - global.portal.fortress.pity;
+
+    let game_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 9000 : 10000;
+    let gem_chance = game_base - global.portal.fortress.pity;
     if (global.race.universe === 'evil'){
         let de = global.race.Dark.count;
         if (global.race.Harmony.count > 0){
@@ -1098,8 +1100,9 @@ export function bloodwar(){
             }
             global.portal.soul_forge.kills += gunKills;
             global.stats.dkills += gunKills;
+            let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 6750 : 7500;
             for (let i=0; i<p_on['gun_emplacement']; i++){
-                if (Math.rand(0,7500) === 0){
+                if (Math.rand(0,gun_base) === 0){
                     global.resource.Soul_Gem.amount++;
                 }
             }
@@ -1109,7 +1112,8 @@ export function bloodwar(){
             let forgeKills = Math.rand(25,150);
             global.stats.dkills += forgeKills;
             global.portal.soul_forge.kills += forgeKills;
-            if (Math.rand(0,5000) === 0){
+            let forge_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 4500 : 5000;
+            if (Math.rand(0,forge_base) === 0){
                 global.resource.Soul_Gem.amount++;
             }
         }

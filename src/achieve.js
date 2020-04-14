@@ -1508,6 +1508,34 @@ export function drawPerks(){
         } 
     }
 
+    if (global.stats.achieve['technophobe'] && global.stats.achieve['technophobe'].l >= 1){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe1",[25])}</span></div>`);
+        if (global.stats.achieve.technophobe.l >= 2){
+            let bonus = global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
+            let universes = ['h','a','e','m'];
+            for (let i=0; i<universes.length; i++){
+                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                    bonus += 5;
+                }
+            }
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe2",[bonus])}</span></div>`);
+        }
+        if (global.stats.achieve.technophobe.l >= 3){
+            let gems = 1;
+            let universes = ['h','a','e','m'];
+            for (let i=0; i<universes.length; i++){
+                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                    gems += 1;
+                }
+            }
+            perks.append(`<div><span class="has-text-warning">${gems > 1 ? loc("achieve_perks_technophobe3a",[gems]) : loc("achieve_perks_technophobe3",[gems])}</span></div>`);
+        }
+        if (global.stats.achieve.technophobe.l >= 5){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe4",[10])}</span></div>`);
+        }
+    }
+
     if (unlocked > 0){
         perks.prepend(`<div class="cstat"><span class="has-text-success">${loc("achieve_perks")}</span></div>`);
     }

@@ -3073,7 +3073,17 @@ const interstellarProjects = {
             no_queue(){ return true; },
             cost: {},
             powered(){
-                let power = 10000 - (100 * (global.interstellar.hasOwnProperty('thermal_collector') ? global.interstellar.thermal_collector.count : 0));
+                let heatsink = 100;
+                if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 2){
+                    heatsink += global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
+                    let universes = ['h','a','e','m'];
+                    for (let i=0; i<universes.length; i++){
+                        if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                            heatsink += 5;
+                        }
+                    }
+                }
+                let power = Math.round(10000 - (heatsink * (global.interstellar.hasOwnProperty('thermal_collector') ? global.interstellar.thermal_collector.count : 0)));
                 if (power < 0){
                     power = 0;
                 }
@@ -3131,7 +3141,17 @@ const interstellarProjects = {
                 Vitreloy(offset){ return spaceCostMultiplier('thermal_collector', offset, 100000, 1.08, 'interstellar'); },
             },
             effect(){
-                return loc('interstellar_thermal_collector_effect',[100]);
+                let heatsink = 100;
+                if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 2){
+                    heatsink += global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
+                    let universes = ['h','a','e','m'];
+                    for (let i=0; i<universes.length; i++){
+                        if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                            heatsink += 5;
+                        }
+                    }
+                }
+                return loc('interstellar_thermal_collector_effect',[heatsink]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){

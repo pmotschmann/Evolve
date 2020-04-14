@@ -14670,6 +14670,22 @@ function sentience(){
 
     messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]),'info');
 
+    if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+        global.resource.Steel.display = true;
+        global.resource.Steel.amount = 25;
+        if (global.stats.achieve.technophobe.l >= 3){
+            global.resource.Soul_Gem.display = true;
+            let gems = 1;
+            let universes = ['h','a','e','m'];
+            for (let i=0; i<universes.length; i++){
+                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                    gems++;
+                }
+            }
+            global.resource.Soul_Gem.amount = gems;
+        }
+    }
+
     if (global.race['slow'] || global.race['hyper']){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         if (webWorker.w){
