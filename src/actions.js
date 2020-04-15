@@ -14805,7 +14805,7 @@ export function bank_vault(){
     if (global.race['paranoid']){
         vault *= 1 - (traits.paranoid.vars[0] / 100);
     }
-    else if (global.race['hoarder']){
+    if (global.race['hoarder']){
         vault *= 1 + (traits.hoarder.vars[0] / 100);
     }
     if (global.tech['banking'] >= 7){
