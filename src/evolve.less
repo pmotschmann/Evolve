@@ -9,6 +9,7 @@ body, button, input, select, textarea {
 
 body {
     line-height: initial;
+    touch-action: manipulation;
 }
 
 h2, h3,
@@ -52,18 +53,18 @@ a {
     margin-top: 0;
 }
 
-.block:not(:last-child), 
-.box:not(:last-child), 
-.breadcrumb:not(:last-child), 
-.content:not(:last-child), 
-.highlight:not(:last-child), 
-.level:not(:last-child), 
-.list:not(:last-child), 
-.message:not(:last-child), 
-.notification:not(:last-child), 
-.progress:not(:last-child), 
-.subtitle:not(:last-child), 
-.table-container:not(:last-child), 
+.block:not(:last-child),
+.box:not(:last-child),
+.breadcrumb:not(:last-child),
+.content:not(:last-child),
+.highlight:not(:last-child),
+.level:not(:last-child),
+.list:not(:last-child),
+.message:not(:last-child),
+.notification:not(:last-child),
+.progress:not(:last-child),
+.subtitle:not(:last-child),
+.table-container:not(:last-child),
 .table:not(:last-child),
 .title:not(:last-child) {
     margin-bottom: 1rem;
@@ -177,6 +178,25 @@ a {
     user-select: none;
 }
 
+.tradeOffer {
+    .trade-offer {
+        margin: 0;
+        padding: .125rem 0;
+        .offer-item {
+            width: 7.5rem;
+        }
+        .offer-vol {
+            width: 4.25rem;
+            border-right: 1px solid;
+            margin-right: .125rem;
+        }
+    }
+}
+
+#egg4 {
+    right: 0 !important;
+}
+
 .main {
     margin: 1rem 1rem 1.25rem;
 
@@ -198,9 +218,13 @@ a {
         }
     }
 
+    .sep {
+        margin: 0 .5rem;
+    }
+
     .race {
         position: relative;
-        margin-top: 1.75rem;
+        margin-top: 1rem;
         margin-bottom: 0 !important;
         width: 100%;
         > span {
@@ -216,10 +240,10 @@ a {
             text-align: center;
         }
     }
-    
+
     .queueCol {
         div:first-child {
-            margin-top: 3.125rem;
+            margin-top: 2.625rem;
         }
     }
 
@@ -235,7 +259,7 @@ a {
             padding: 1rem;
         }
     }
-    
+
     .msgQueue {
         font-size: .75rem;
         &.right {
@@ -266,7 +290,7 @@ a {
         .buildList {
             margin-left: 2rem;
             margin-top: 0;
-            
+
             li {
                 display: inline-block;
                 height: 1rem;
@@ -280,13 +304,13 @@ a {
             }
         }
     }
-    
+
     .resources {
-        margin-top: 1rem;
+        margin-top: .25rem;
         .resource {
             display: flex;
             cursor: default;
-            
+
             :first-child {
                 width: 30%;
             }
@@ -315,7 +339,7 @@ a {
             }
         }
     }
-    
+
     .evolving {
         margin-top: 1rem;
         max-width: 51rem;
@@ -347,6 +371,11 @@ a {
         .tab-item {
             padding: 0 0 3rem 1rem;
         }
+        .tabs {
+            ul {
+                margin-top: .5rem;
+            }
+        }
         .action {
             display: inline-block;
             position: relative;
@@ -361,7 +390,7 @@ a {
             span.oldTech {
                 width: 12.5rem;
                 margin: .5rem .5rem 0 0;
-                
+
                 span.count {
                     position: absolute;
                     top: 0;
@@ -411,12 +440,24 @@ a {
                 bottom: 0;
                 right: .5rem;
                 border-radius: .4375rem 0 .25rem 0;
+                
+                .flair {
+                    position: relative;
+                    left: .25rem;
+                    top: 0;
+                }
             }
 
             span.off {
                 bottom: 0;
                 left: 0;
                 border-radius: 0 .4375rem 0 .25rem;
+
+                .flair {
+                    position: relative;
+                    left: .125rem;
+                    top: 0;
+                }
             }
 
             div.repair {
@@ -464,14 +505,14 @@ a {
         }
 
         .challenge {
-            width: 100%; 
+            width: 100%;
             .actionWidth();
             text-align: center;
         }
         .divider {
-            width: 100%; 
-            text-align: center; 
-            border-bottom: .0625rem solid; 
+            width: 100%;
+            text-align: center;
+            border-bottom: .0625rem solid;
             margin: .625rem 0 .625rem;
 
             h2 {
@@ -481,16 +522,16 @@ a {
             }
         }
     }
-    
+
     .job {
         margin-left: 1rem;
         display: flex;
         min-width: 18rem;
-        
+
         .controls {
             margin-bottom: 1px;
         }
-        
+
         .job_label {
             cursor: default;
             span {
@@ -508,13 +549,22 @@ a {
                 min-width: 4rem;
                 text-align: center;
             }
+            .count {
+                > span {
+                    margin-left: 1rem;
+                    width: 1rem;
+                }
+                svg {
+                    width: 1rem;
+                }
+            }
         }
     }
 
     .foundry {
         margin-top: 1rem;
     }
-    
+
     .civics {
         padding-top: 0;
 
@@ -532,7 +582,7 @@ a {
 
         .govType {
             margin-bottom: .25rem;
-            
+
             button {
                 margin-top: .25rem;
                 height: 1.75rem;
@@ -694,6 +744,42 @@ a {
         }
     }
 
+    .armHead {
+        > span {
+            margin-left: 1rem;
+        }
+    }
+
+    .fleet {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        min-height: 1rem;
+        margin: .25rem 0;
+        padding: .25rem 0;
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+
+        .area {
+            width: 8rem;
+            > span {
+                display: inline-block;
+                min-width: 8rem;
+            }
+            .ship {
+                text-align: center;
+                .current {
+                    width: 2.5rem;
+                    font-size: 1rem;
+                }
+            }
+        } 
+    }
+
+    .pirate {
+        margin-right: .75rem;
+    }
+
     .militaryTab {
         .garrison {
             .battle {
@@ -787,8 +873,19 @@ a {
 
         .help {
             margin-left: 1rem;
-        } 
+        }
     }
+
+    .galaxyTrade {
+        margin-right: 0;
+    }
+
+    .trade-header {
+        margin: .5rem 0;
+        justify-content: center;
+    }
+
+    .tradeOffer();
     
     .importExport {
         margin-top: 1rem;
@@ -800,7 +897,7 @@ a {
 
     .reset {
         margin-top: 3rem;
-        
+
         .notification {
             margin-top: .5rem;
         }
@@ -865,12 +962,17 @@ a {
     }
 
     .space,
-    .city {
+    .city, .tech {
         margin-top: .75rem;
     }
     .space:nth-child(2),
-    .city:first-child {
+    .city:first-child, .tech:first-child {
         margin-top: 0;
+    }
+
+    .regionControl,
+    .regionSupport {
+        margin-left: .5rem;
     }
 }
 
@@ -885,6 +987,9 @@ a {
 
 .popper {
     z-index: 100000;
+    .craft-elm {
+        white-space: nowrap;
+    }
 }
 
 .storage-header {
@@ -904,27 +1009,27 @@ a {
     margin: .125rem 0 0 1rem;
     display: flex;
     cursor: default;
-    
+
     .res {
         display: inline-flex;
         cursor: default;
         margin-right: .5rem;
-        width: 9rem;
+        width: 7.5rem;
     }
-    
+
     .buy {
         display: inline-flex;
     }
-    
+
     .sell {
         display: inline-flex;
-        margin-left: 1rem;
+        margin-left: .5rem;
     }
     .route {
         position: relative;
         bottom: 1px;
     }
-    
+
     .order {
         .basic-button();
         min-width: 4.5rem;
@@ -966,7 +1071,7 @@ a {
     }
 
     .tradeTotal {
-        margin-left: 25.25rem;
+        margin-left: 23.5rem;
     }
     .tradeTotal.nt {
         margin-left: 11.5rem;
@@ -1043,6 +1148,40 @@ body .modal > div.popper {
     }
 }
 
+.infoBox {
+    max-width: 50rem;
+    margin-bottom: .5rem;
+    margin-right: .5rem;
+    padding: .25rem .5rem;
+
+    h2 {
+        margin-bottom: .25rem;
+        border-bottom: .0625rem solid;
+    }
+
+    div {
+        margin-bottom: .5rem;
+        clear: both;
+    }
+
+    .type {
+        display: flex;
+        justify-content: space-between;
+        > span:nth-child(1) {
+            display: block;
+            text-align: left;
+        }
+        > span:nth-child(2) {
+            display: block;
+            text-align: right;
+        }
+    }
+
+    .desc {
+        text-align: left;
+    }
+}
+
 .main > div.popper.wide,
 body .modal > div.popper.wide {
     max-width: initial;
@@ -1114,6 +1253,18 @@ body .modal > div.popper.wide {
     }
     .crateModal {
         margin-bottom: 1.25rem;
+    }
+}
+
+.modalBox {
+    .tradeOffer();
+    .market-item {
+        display: flex;
+        justify-content: center;
+    }
+    .trade-header {
+        border-top: 0 !important;
+        padding-top: 0;
     }
 }
 
@@ -1224,7 +1375,7 @@ body .modal > div.popper.wide {
         text-align: right;
         margin-right: 1rem;
         right: 0;
-        
+
         span {
             margin: 0 .5rem;
         }
@@ -1245,7 +1396,7 @@ body .modal > div.popper.wide {
 
         > span {
             display: inline-block;
-            width: 50%;   
+            width: 50%;
         }
 
         .rank {
@@ -1333,7 +1484,7 @@ div.nuke {
     top: 0;
     left: 0;
     transition: all 2s;
-    opacity: 0; 
+    opacity: 0;
 
     &.burn {
         opacity: 1;
@@ -1370,7 +1521,7 @@ div.nuke {
     top: 0;
     left: 0;
     transition: all 2s;
-    opacity: 0; 
+    opacity: 0;
 
     &.burn {
         opacity: 1;
@@ -1407,7 +1558,7 @@ div.bigbang {
     top: 0;
     left: 0;
     transition: all 1s;
-    opacity: 0; 
+    opacity: 0;
 
     &.burn {
         opacity: 1;
@@ -1445,6 +1596,58 @@ div.bigbang {
     }
 }
 
+.celestialLab {
+
+    .fields {
+        margin-top: .5rem;
+
+        .name {
+            display: inline-block;
+            width: 10rem;
+            margin-right: 1rem;
+        }
+        .entity {
+            display: inline-block;
+            width: 20rem;
+            margin-right: 1rem;
+        }
+    }
+
+    .sequence {
+        display: flex;
+        margin-top: .5rem;
+
+        .genus_selection {
+            width: 10rem;
+            section {
+                margin-top: .5rem;
+            }
+        }
+        .trait_selection {
+            margin-left: 2rem;
+            section {
+                margin-top: .5rem;
+                display: flex;
+                flex-wrap: wrap;
+
+                > div {
+                    width: 11.5rem;
+                }
+            }
+        }
+        > div {
+            .field:not(:last-child){
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .create {
+        margin-top: 1rem;
+        text-align: center;
+    }
+}
+
 .darkTheme,
 html.dark {
     background-color: #1f2424;
@@ -1477,6 +1680,28 @@ html.dark {
             color: #776425 !important;
         }
     }
+    .fool {
+        .has-text-success {
+            color: #ff3860 !important;
+        }
+        .has-text-danger {
+            color: #23d160 !important;
+        }
+        .has-text-advanced {
+            color: #ffa500 !important;
+        }
+        .has-text-caution {
+            color: #00ac95 !important;
+        }
+        .popper {
+            .has-text-success {
+                color: #ff3860 !important;
+            }
+            .has-text-danger {
+                color: #1c7e21 !important;
+            }
+        }
+    }
     body {
         color: #fff;
     }
@@ -1500,12 +1725,12 @@ html.dark {
         background-color: #282f2f;
         color: #fff;
     }
-    .button.is-hovered, 
+    .button.is-hovered,
     .button:hover {
         background-color: #3a4344;
         color: #f2f2f2;
     }
-    .button.is-focused, 
+    .button.is-focused,
     .button:focus {
         border-color: #dbdbdb;
     }
@@ -1587,7 +1812,8 @@ html.dark {
                     color: #00af0f;
                     border: .0625rem solid #282f2f;
                 }
-                span.on.warn {
+                span.on.warn,
+                span.on.altwarn {
                     color: #af5d00;
                 }
                 span.off {
@@ -1638,13 +1864,13 @@ html.dark {
                 background: #1f2424;
             }
         }
-    
+
         .government {
             .header {
                 border-bottom: .0625rem solid #ccc;
             }
         }
-    
+
         .garrison {
             .header {
                 border-bottom: .0625rem solid #ccc;
@@ -1653,6 +1879,10 @@ html.dark {
 
         .market-header {
             border-bottom: #ccc solid 1px;
+        }
+
+        .galaxyTrade {
+            border-top: #ccc solid 1px;
         }
     }
 
@@ -1736,6 +1966,29 @@ html.dark {
     .star5 {
         fill: #d4af37;
     }
+
+    .fool {
+        .main {
+            .content {
+                .action {
+                    span.on {
+                        color: #c20000;
+                    }
+                    span.off {
+                        color: #00af0f;
+                    }
+                }
+            }
+        }
+    }
+}
+
+html.dark {
+    .pop-desc {
+        .has-text-caution {
+            color: #a30500 !important;
+        }
+    }
 }
 
 .modal .modal-content {
@@ -1792,6 +2045,20 @@ html.light {
     }
     .has-text-advanced {
         color: #0098a3 !important;
+    }
+    .fool {
+        .has-text-success {
+            color: #470303 !important;
+        }
+        .has-text-danger {
+            color: #082412 !important;
+        }
+        .has-text-advanced {
+            color: #966100 !important;
+        }
+        .has-text-caution {
+            color: #0098a3 !important;
+        }
     }
     .popper {
         .has-text-success {
@@ -1886,7 +2153,8 @@ html.light {
                     color: #008f0c;
                     border: .0625rem solid #000;
                 }
-                span.on.warn {
+                span.on.warn,
+                span.on.altwarn {
                     color: #743e00;
                 }
                 span.off {
@@ -1931,7 +2199,7 @@ html.light {
                 color: #000;
                 border: solid .0625rem black;
             }
-            .button.is-dark.is-hovered, 
+            .button.is-dark.is-hovered,
             .button.is-dark:hover {
                 background-color: #ccc;
             }
@@ -1946,13 +2214,13 @@ html.light {
                 border-top: solid .0625rem black;
             }
         }
-    
+
         .government {
             .header {
                 border-bottom: .0625rem solid #4e4e4e;
             }
         }
-    
+
         .garrison {
             .header {
                 border-bottom: .0625rem solid #4e4e4e;
@@ -1961,6 +2229,10 @@ html.light {
 
         .market-header {
             border-bottom: #4e4e4e solid 1px;
+        }
+
+        .galaxyTrade {
+            border-top:#4e4e4e solid 1px;
         }
     }
 
@@ -2024,6 +2296,21 @@ html.light {
     .star5 {
         fill: #d4af37;
     }
+
+    .fool {
+        .main {
+            .content {
+                .action {
+                    span.on {
+                        color: #800000;
+                    }
+                    span.off {
+                        color: #008f0c;
+                    }
+                }
+            }
+        }
+    }
 }
 
 .light .modal .action {
@@ -2036,8 +2323,41 @@ html.night {
     .has-text-special {
         color: #c50094 !important;
     }
+    .has-text-caution {
+        color: #ffa500 !important;
+    }
     .has-text-flair {
         color: #d39753 !important;
+    }
+    .popper {
+        .has-text-success {
+            color: #23d160 !important;
+        }
+        .has-text-warning {
+            color: #ffdd57 !important;
+        }
+    }
+    .fool {
+        .has-text-success {
+            color: #ff3860 !important;
+        }
+        .has-text-danger {
+            color: #23d160 !important;
+        }
+        .has-text-advanced {
+            color: #ffa500 !important;
+        }
+        .has-text-caution {
+            color: #00ac95 !important;
+        }
+        .popper {
+            .has-text-success {
+                color: #ff3860 !important;
+            }
+            .has-text-danger {
+                color: #23d160 !important;
+            }
+        }
     }
     background-color: #000;
     .main {
@@ -2054,7 +2374,8 @@ html.night {
                 span.on {
                     background: #000;
                 }
-                span.on.warn {
+                span.on.warn,
+                span.on.altwarn {
                     color: #af5d00;
                 }
                 span.off {
@@ -2137,6 +2458,20 @@ html.redgreen {
     .has-text-flair {
         color: #00ff00 !important;
     }
+    .fool {
+        .has-text-success {
+            color: #9900cc !important;
+        }
+        .has-text-danger {
+            color: #00ff00 !important;
+        }
+        .has-text-advanced {
+            color: #ffa500 !important;
+        }
+        .has-text-caution {
+            color: #00ac95 !important;
+        }
+    }
     .meter {
         &.low {
             color: #167df0;
@@ -2154,7 +2489,8 @@ html.redgreen {
                 span.on {
                     color: #00ff00;
                 }
-                span.on.warn {
+                span.on.warn,
+                span.on.altwarn {
                     color: #af5d00;
                 }
                 span.off {
@@ -2211,6 +2547,20 @@ html.redgreen {
             #000000 10px,
             #000000 20px
         );
+    }
+    .fool {
+        .main {
+            .content {
+                .action {
+                    span.on {
+                        color: #9900cc;
+                    }
+                    span.off {
+                        color: #00ff00;
+                    }
+                }
+            }
+        }
     }
 }
 

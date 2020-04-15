@@ -1,9 +1,9 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { timeFormat, vBind, messageQueue } from './functions.js';
+import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue } from './functions.js';
 import { dragQueue } from './civics.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
-import { space } from './space.js';
+import { renderSpace } from './space.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js'
 
@@ -139,7 +139,7 @@ export const arpaProjects = {
     },
 };
 
-const genePool = {
+export const genePool = {
     genetic_memory: {
         id: 'genes-genetic_memory',
         title: loc('arpa_genepool_genetic_memory_title'),
@@ -551,6 +551,74 @@ const genePool = {
             return false;
         }
     },
+    universal: {
+        id: 'genes-universal',
+        title: loc('arpa_genepool_universal_title'),
+        desc: loc('arpa_genepool_universal_desc'),
+        reqs: {challenge:2},
+        grant: ['challenge',3],
+        condition(){
+            return global.race.universe !== 'standard' ? true : false;
+        },
+        cost: 400,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('universal')){
+                return true;
+            }
+            return false;
+        }
+    },
+    standard: {
+        id: 'genes-standard',
+        title: loc('arpa_genepool_standard_title'),
+        desc: loc('arpa_genepool_standard_desc'),
+        reqs: {challenge:3},
+        grant: ['challenge',4],
+        condition(){
+            return global.race.universe !== 'standard' ? true : false;
+        },
+        cost: 2500,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('standard')){
+                return true;
+            }
+            return false;
+        }
+    },
+    mastered: {
+        id: 'genes-mastered',
+        title: loc('arpa_genepool_mastered_title'),
+        desc: loc('arpa_genepool_mastered_desc'),
+        reqs: {challenge:4},
+        grant: ['challenge',5],
+        cost: 4000,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('mastered')){
+                return true;
+            }
+            return false;
+        }
+    },
+    negotiator: {
+        id: 'genes-negotiator',
+        title: loc('arpa_genepool_negotiator_title'),
+        desc: loc('arpa_genepool_negotiator_desc'),
+        reqs: {challenge:2},
+        grant: ['trader',1],
+        cost: 750,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('negotiator')){
+                global.genes['trader'] = 1;
+                updateTrades();
+                return true;
+            }
+            return false;
+        }
+    },
     ancients: {
         id: 'genes-ancients',
         title: loc('arpa_genepool_ancients_title'),
@@ -563,6 +631,52 @@ const genePool = {
             if (payPlasmids('ancients')){
                 global.genes['ancients'] = 1;
                 drawTech();
+                return true;
+            }
+            return false;
+        }
+    },
+    faith: {
+        id: 'genes-faith',
+        title: loc('arpa_genepool_faith_title'),
+        desc: loc('arpa_genepool_faith_desc'),
+        reqs: { ancients: 1 },
+        grant: ['ancients',2],
+        cost: 300,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('faith')){
+                global.civic.priest.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    acolyte: {
+        id: 'genes-acolyte',
+        title: loc('arpa_genepool_acolyte_title'),
+        desc: loc('arpa_genepool_acolyte_desc'),
+        reqs: { ancients: 2 },
+        grant: ['ancients',3],
+        cost: 900,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('acolyte')){
+                return true;
+            }
+            return false;
+        }
+    },
+    conviction: {
+        id: 'genes-conviction',
+        title: loc('arpa_genepool_conviction_title'),
+        desc: loc('arpa_genepool_conviction_desc'),
+        reqs: { ancients: 3 },
+        grant: ['ancients',4],
+        cost: 2200,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('conviction')){
                 return true;
             }
             return false;
@@ -585,6 +699,21 @@ const genePool = {
             return false;
         }
     },
+    /*preeminence: {
+        id: 'genes-preeminence',
+        title: loc('arpa_genepool_preeminence_title'),
+        desc: loc('arpa_genepool_preeminence_desc'),
+        reqs: {transcendence: 1, challenge:3},
+        grant: ['transcendence',2],
+        cost: 4200,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('preeminence')){
+                return true;
+            }
+            return false;
+        }
+    },*/
     bleeding_effect: {
         id: 'genes-bleeding_effect',
         title: loc('arpa_genepool_bleeding_effect_title'),
@@ -632,7 +761,7 @@ const genePool = {
             }
             return false;
         }
-    }
+    },
 }
 
 function crispr_effect(cost){
@@ -721,7 +850,7 @@ function checkRequirements(tech){
 }
 
 function payCosts(costs){
-    costs = adjustCosts(costs);
+    costs = arpaAdjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
             global['resource'][res].amount -= costs[res]() / 100;
@@ -743,17 +872,16 @@ function checkCosts(costs){
     return test;
 }
 
-function adjustCosts(costs){
-    return kindlingAdjust(costs);
+export function arpaAdjustCosts(costs){
+    costs = creativeAdjust(costs);
+    return adjustCosts(costs);
 }
 
-function kindlingAdjust(costs){
-    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+function creativeAdjust(costs){
+    if (global.race['creative']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Lumber' && res !== 'Plywood'){
-                newCosts[res] = function(){ return costs[res](); }
-            }
+            newCosts[res] = function(){ return costs[res]() * (1 - traits.creative.vars[1] / 100); }
         });
         return newCosts;
     }
@@ -763,7 +891,7 @@ function kindlingAdjust(costs){
 function costMultiplier(project,offset,base,mutiplier){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
     if (global.race['creative']){
-        mutiplier -= 0.01;
+        mutiplier -= traits.creative.vars[0];
     }
     if (offset){
         rank += offset;
@@ -773,7 +901,7 @@ function costMultiplier(project,offset,base,mutiplier){
 
 function physics(){
     let parent = $('#arpaPhysics');
-    parent.empty();
+    clearElement(parent);
     addProject(parent,'lhc');
     addProject(parent,'stock_exchange');
     addProject(parent,'launch_facility');
@@ -783,7 +911,7 @@ function physics(){
 
 function genetics(){
     let parent = $('#arpaGenetics');
-    parent.empty();
+    clearElement(parent);
     if (!global.settings.arpa.genetics){
         return false;
     }
@@ -933,43 +1061,21 @@ function genetics(){
 
         let minor = false;
         if (global.tech['decay'] && global.tech['decay'] >= 2){
-            let trait = 'fortify';
             minor = true;
-            let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
-            let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
-            m_trait.append(gene);
-            if (global.race.Phage.count > 0){
-                let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
-                m_trait.append(phage);
-            }
-            if (global.race[trait] > 1){
-                m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
-            }
-            else {
-                m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
-            }
-            breakdown.append(m_trait);
+            bindTrait(breakdown,'fortify');
         }
 
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type === 'minor'){
                 minor = true;
-                let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
-                let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
-                m_trait.append(gene);
-                if (global.race.Phage.count > 0){
-                    let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
-                    m_trait.append(phage);
-                }
-                if (global.race[trait] > 1){
-                    m_trait.append(`<span class="has-text-warning">(${global.race[trait]}) ${traits[trait].desc}</span>`);
-                }
-                else {
-                    m_trait.append(`<span class="has-text-warning">${traits[trait].desc}</span>`);
-                }
-                breakdown.append(m_trait);
+                bindTrait(breakdown,trait);
             }
         });
+
+        if (global.genes['challenge'] && global.genes['challenge'] >= 5){
+            minor = true;
+            bindTrait(breakdown,'mastery');
+        }
 
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[races[global.race.species].name])}</div>`)
         
@@ -996,7 +1102,7 @@ function genetics(){
             let trait_list = [];
             let conflict_traits = ['dumb','smart','carnivore','herbivore']; //Conflicting traits are paired together
             Object.keys(races).forEach(function (race){
-                if (races[race].type === races[global.race.species].type){
+                if (race !== 'junker' && race !== 'custom' && races[race].type === races[global.race.species].type){
                     Object.keys(races[race].traits).forEach(function (trait){
                         if (!global.race[trait] && trait !== 'soul_eater'){
                             let conflict_pos = conflict_traits.indexOf(trait);
@@ -1050,25 +1156,66 @@ function genetics(){
             },
             methods: {
                 gene(t){
-                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
-                    if (global.resource.Genes.amount >= cost){
-                        global.resource.Genes.amount -= cost;
-                        global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
-                        global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                    let curr_iteration = 0;
+                    let iterations = keyMultiplier();
+                    let can_purchase = true;
+                    let redraw = false;
+                    while (curr_iteration < iterations && can_purchase){
+                        let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                        if (t === 'mastery'){ cost *= 5; }
+                        if (global.resource.Genes.amount >= cost){
+                            global.resource.Genes.amount -= cost;
+                            global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
+                            global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                            redraw = true;
+                        }
+                        else {
+                            can_purchase = false;
+                        }
+                        curr_iteration++;
+                    }
+                    if (redraw){
                         genetics();
+                        if (t === 'persuasive'){
+                            updateTrades();
+                        }
                     }
                 },
                 phage(t){
-                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
-                    if (global.race.Phage.count >= cost){
-                        global.race.Phage.count -= cost;
-                        global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
-                        global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                    let curr_iteration = 0;
+                    let iterations = keyMultiplier();
+                    let can_purchase = true;
+                    let redraw = false;
+                    while (curr_iteration < iterations && can_purchase){
+                        let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                        if (t === 'mastery'){ cost *= 2; }
+                        if (global.race.Phage.count >= cost){
+                            global.race.Phage.count -= cost;
+                            global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
+                            global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                            genetics();
+                            redraw = true;
+                        }
+                        else {
+                            can_purchase = false;
+                        }
+                        curr_iteration++;
+                    }
+                    if (redraw){
                         genetics();
+                        if (t === 'persuasive'){
+                            updateTrades();
+                        }
                     }
                 },
                 purge(t){
-                    let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
+                    let cost = traits[t].val * 5;
+                    if (global.race.species === 'custom'){
+                        cost *= 10;
+                    }
+                    if (cost < 0){
+                        cost *= -1;
+                    }
                     if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
                         if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti -= cost;
@@ -1100,7 +1247,13 @@ function genetics(){
                     }
                 },
                 gain(t){
-                    let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
+                    let cost = traits[t].val * 5;
+                    if (global.race.species === 'custom'){
+                        cost *= 10;
+                    }
+                    if (cost < 0){
+                        cost *= -1;
+                    }
                     if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
                         if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti -= cost;
@@ -1122,32 +1275,66 @@ function genetics(){
                     }
                 },
                 geneCost(t){
-                    let cost = sizeApproximation(fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4));
-                    return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),cost]);
+                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 5; }
+                    return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
                 },
                 phageCost(t){
-                    let cost = sizeApproximation(fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4));
-                    return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),cost]);
+                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 2; }
+                    return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
+                },
+                traitEffect(t){
+                    return loc(`trait_${t}_effect`);
                 },
                 removeCost(t){
-                    let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
+                    let cost = traits[t].val * 5;
+                    if (global.race.species === 'custom'){
+                        cost *= 10;
+                    }
+                    if (cost < 0){
+                        cost *= -1;
+                    }
                     return loc('arpa_remove',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
                 },
                 addCost(t){
-                    let cost = global.race['modified'] ? global.race['modified'] * 25 : 10;
+                    let cost = traits[t].val * 5;
+                    if (global.race.species === 'custom'){
+                        cost *= 10;
+                    }
+                    if (cost < 0){
+                        cost *= -1;
+                    }
                     return loc('arpa_gain',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
                 },
                 genePurchasable(t){
                     let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 5; }
                     return global.resource.Genes.amount >= cost;
                 },
                 phagePurchasable(t){
                     let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+                    if (t === 'mastery'){ cost *= 2; }
                     return global.race.Phage.count >= cost;
                 }
             }
         });
     }
+}
+
+function bindTrait(breakdown,trait){
+    let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
+    let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
+    m_trait.append(gene);
+    if (global.race.Phage.count > 0){
+        let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
+        m_trait.append(phage);
+    }
+
+    let total = global.race[trait] > 1 ? `(${global.race[trait]}) ` : '';
+    m_trait.append(`<b-tooltip :label="traitEffect('${trait}')" position="is-bottom" multilined animated><span class="has-text-warning">${total}${traits[trait].desc}</span></b-tooltip>`);
+
+    breakdown.append(m_trait);
 }
 
 function fibonacci(num, memo){
@@ -1159,7 +1346,7 @@ function fibonacci(num, memo){
 
 function crispr(){
     if (global.tech['genetics'] > 3){
-        $('#arpaCrispr').empty();
+        clearElement($('#arpaCrispr'));
         $('#arpaCrispr').append(`<div class="has-text-warning">${loc('arpa_crispr_desc')}</div>`);
         $('#arpaCrispr').append('<div id="genes"></div>');
         drawGenes();
@@ -1239,7 +1426,7 @@ function addProject(parent,project){
                 arpaProjectSRCosts(id,project){
                     let inc = id === '100' ? 100 - global.arpa[project].complete : id;
                     var cost = `Construct ${inc}%. Costs:`;
-                    var costs = adjustCosts(arpaProjects[project].cost);
+                    var costs = arpaAdjustCosts(arpaProjects[project].cost);
                     Object.keys(costs).forEach(function (res){
                         var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
                         if (res_cost > 0){
@@ -1269,7 +1456,7 @@ function addProject(parent,project){
             if (poppers[`popArpa${project}`]){
                 poppers[`popArpa${project}`].destroy();
             }
-            $(`#popArpa${project}`).remove();
+            clearElement($(`#popArpa${project}`),true);
         });
 
         $(`#arpa${project} .head .rank`).on('mouseover',function(){
@@ -1284,7 +1471,7 @@ function addProject(parent,project){
             if (poppers[`popArpa${project}`]){
                 poppers[`popArpa${project}`].destroy();
             }
-            $(`#popArpa${project}`).remove();
+            clearElement($(`#popArpa${project}`),true);
         });
 
         let classes = [1,10,25,100];
@@ -1303,7 +1490,7 @@ function addProject(parent,project){
                 if (poppers[`popArpa${project}`]){
                     poppers[`popArpa${project}`].destroy();
                 }
-                $(`#popArpa${project}`).remove();
+                clearElement($(`#popArpa${project}`),true);
             });
         }
     }
@@ -1326,30 +1513,31 @@ export function buildArpa(pro,num,update){
                 if (pro === 'monument'){
                     global.arpa['m_type'] = pick_monument();
                     $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
-                }
-                if (pro === 'launch_facility'){
                     for (let i=0; i<global.queue.queue.length; i++){
-                        if (global.queue.queue[i].id === 'arpalaunch_facility'){
-                            global.queue.queue.splice(i, 1);
+                        if (global.queue.queue[i].action === 'monument') {
+                            global.queue.queue[i].label = arpaProjects['monument'].title();
                         }
                     }
+                }
+                if (pro === 'launch_facility'){
+                    removeFromQueue(['arpalaunch_facility']);
                     global.settings.showSpace = true;
                     global.tech['space'] = 1;
                     $(`#popArpa${pro}`).hide();
                     if (poppers[`popArpa${pro}`]){
                         poppers[`popArpa${pro}`].destroy();
                     }
-                    $(`#popArpa${pro}`).remove();
+                    clearElement($(`#popArpa${pro}`),true);
                     physics();
-                    space();
-                    messageQueue(loc('arpa_projects_launch_facility_msg'),'success');
+                    renderSpace();
+                    messageQueue(loc('arpa_projects_launch_facility_msg'),'info');
                 }
                 drawTech();
             }
         }
     }
     if (update && $(`#popArpa${pro}`).length > 0){
-        $(`#popArpa${pro}`).empty();
+        clearElement($(`#popArpa${pro}`));
         $(`#popArpa${pro}`).append(arpaProjectCosts(oNum,pro));
     }
     return completed;
@@ -1358,7 +1546,7 @@ export function buildArpa(pro,num,update){
 function arpaProjectCosts(id,project){
     let inc = id === 100 ? 100 - global.arpa[project].complete : id;
     var cost = $('<div></div>');
-    var costs = adjustCosts(arpaProjects[project].cost);
+    var costs = arpaAdjustCosts(arpaProjects[project].cost);
     Object.keys(costs).forEach(function (res){
         var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
         if (res_cost > 0){
@@ -1368,4 +1556,11 @@ function arpaProjectCosts(id,project){
         }
     });
     return cost;
+}
+
+function updateTrades() {
+    Object.keys(global.resource).forEach(function (res){
+        vBind({el: `#market-${res}`},'update');
+    });
+    vBind({el: `#galaxyTrade`},'update');
 }

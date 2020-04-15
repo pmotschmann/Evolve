@@ -1,5 +1,6 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
+import { easterEgg } from './functions.js';
 
 export function index(){
     $('body').empty();
@@ -17,7 +18,7 @@ export function index(){
             <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
             </span>
         </span>
-        <span class="version"><a href="https://github.com/${global.beta ? 'evolvebeta' : 'pmotschmann'}/Evolve/blob/master/changelog.md" target="_blank"></a></span>
+        <span class="version" id="versionLog"><a href="wiki.html#changelog" target="_blank"></a></span>
     </div>`);
 
     let main = $(`<div id="main" class="main"></div>`);
@@ -81,6 +82,12 @@ export function index(){
                 <template slot="header">
                     <h2 class="is-sr-only">{{ 'tab_interstellar' | label }}</h2>
                     <span aria-hidden="true">{{ 'tab_interstellar' | label }}</span>
+                </template>
+            </b-tab-item>
+            <b-tab-item id="galaxy" :visible="s.showGalactic">
+                <template slot="header">
+                    <h2 class="is-sr-only">{{ 'tab_galactic' | label }}</h2>
+                    <span aria-hidden="true">{{ 'tab_galactic' | label }}</span>
                 </template>
             </b-tab-item>
             <b-tab-item id="portal" :visible="s.showPortal">
@@ -200,6 +207,39 @@ export function index(){
     </b-tab-item>`);
     tabs.append(stats);
 
+    let iconlist = '';
+    let icons = [
+        {i: 'nuclear',  f: 'steelem'},
+        {i: 'zombie',   f: 'the_misery'},
+        {i: 'fire',     f: 'ill_advised'},
+        {i: 'mask',     f: 'friday'},
+        {i: 'skull',    f: 'demon_slayer'},
+        {i: 'martini',  f: 'utopia'},
+        {i: 'trash',    f: 'garbage_pie'},
+        {i: 'heart',    f: 'valentine'},
+        {i: 'clover',   f: 'leprechaun'},
+        {i: 'bunny',    f: 'easter'},
+        {i: 'egg',      f: 'egghunt'},
+        {i: 'ghost',    f: 'halloween'},
+        {i: 'turkey',   f: 'thanksgiving'},
+        {i: 'present',  f: 'xmas'}
+    ];
+
+    for (let i=0; i<icons.length; i++){
+        if (global.stats.feat[icons[i]['f']] && global.stats.feat[icons[i]['f']] >= 2){
+            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i]['i']}')">{{ '${icons[i]['i']}' | label }}</b-dropdown-item>`;
+        }
+        else if (global.settings.icon === icons[i]['i']){
+            global.settings.icon = 'star';
+        }
+    }
+
+    let egg = easterEgg(9,14);
+    let hideEgg = '';
+    if (egg.length > 0){
+        hideEgg = `<b-dropdown-item>${egg}</b-dropdown-item>`;
+    }
+
     // Settings Tab
     let settings = $(`<b-tab-item class="settings">
         <template slot="header">
@@ -209,13 +249,14 @@ export function index(){
             <span>{{ 'theme' | label }} </span>
             <b-dropdown hoverable>
                 <button class="button is-primary" slot="trigger">
-                    <span>{{ s.theme | namecase }}</span>
+                    <span>{{ 'theme_' + s.theme | label }}</span>
                     <i class="fas fa-sort-down"></i>
                 </button>
                 <b-dropdown-item v-on:click="dark">{{ 'theme_dark' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="light">{{ 'theme_light' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="night">{{ 'theme_night' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="redgreen">{{ 'theme_redgreen' | label }}</b-dropdown-item>
+                ${hideEgg}
             </b-dropdown>
             <span>{{ 'units' | label }} </span>
             <b-dropdown hoverable>
@@ -227,11 +268,20 @@ export function index(){
                 <b-dropdown-item v-on:click="sci">{{ 'scientific' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="sln">{{ 'sln' | label }}</b-dropdown-item>
             </b-dropdown>
+
+            <span>{{ 'icons' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ s.icon | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="icon('star')">{{ 'star' | label }}</b-dropdown-item>
+                ${iconlist}
+            </b-dropdown>
         </div>
         <div id="localization" class="localization"></div>
         <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.cLabels"><b-tooltip :label="city()" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.tLabels"><b-tooltip :label="tech()" position="is-bottom" size="is-small" multilined animated>{{ 't_cat' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="qKey()" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="qAny()" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.expose"><b-tooltip :label="expose()" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
@@ -266,11 +316,12 @@ export function index(){
             </b-collapse>
         </div>
     </b-tab-item>`);
+
     tabs.append(settings);
     
     // Right Column
     columns.append(`<div id="queueColumn" class="queueCol column"></div>`);
 
     // Bottom Bar
-    $('body').append(`<div class="promoBar"><span class="left"><h1 class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</h1></span><span class="right"><h2 class="is-sr-only">External Links</h2><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a> | <a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a> | <a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a> | <a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a> | <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></span></div>`);
+    $('body').append(`<div class="promoBar"><span class="left"><h1 class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</h1></span><span class="right"><h2 class="is-sr-only">External Links</h2><a href="wiki.html" target="_blank">Wiki</a> | <a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a> | <a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a> | <a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a> | <a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a> | <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></span></div>`);
 }

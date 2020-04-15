@@ -1,8 +1,8 @@
 import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { challenge_multiplier, timeFormat, vBind, modRes, messageQueue, genCivName } from './functions.js';
+import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
-import { races, racialTrait } from './races.js';
+import { races, racialTrait, traits } from './races.js';
 import { loadIndustry } from './industry.js';
 
 // Sets up government in civics tab
@@ -32,7 +32,7 @@ export function defineGovernment(){
 
 
 export function defineIndustry(){
-    $(`#industry`).empty();
+    clearElement($('#industry'));
 
     if (global.city['smelter'] && global.city.smelter.count > 0){
         var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
@@ -67,7 +67,7 @@ export function defineGarrison(){
 }
 
 export function buildQueue(){
-    $('#buildQueue').empty();
+    clearElement($('#buildQueue'));
     $('#buildQueue').append($('<h2 class="has-text-success is-sr-only">Building Queue</h2>'));
 
     let queue = $(`<ul class="buildList"></ul>`);
@@ -133,7 +133,8 @@ const government_desc = {
     socialist: loc('govern_socialist_effect',[25,5,10,20]),
     corpocracy: loc('govern_corpocracy_effect',[200,150,100,10,20]),
     technocracy: loc('govern_technocracy_effect',[8,2]),
-    federation: loc('govern_federation_effect'),
+    federation: loc('govern_federation_effect',[3]),
+    federation_alt: loc('govern_federation_effect_alt',[5]),
 };
 
 function government(govern){
@@ -195,7 +196,8 @@ function government(govern){
     });
 
     $('#govLabel').on('mouseover',function(){
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc[global.civic.govern.type]}</div></div>`);
+        let effect_type = global.tech['unify'] && global.tech['unify'] >= 2 && global.civic.govern.type === 'federation' ? 'federation_alt' : global.civic.govern.type;
+        let popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc[effect_type]}</div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper($('#govLabel'),popper);
@@ -203,12 +205,16 @@ function government(govern){
     $('#govLabel').on('mouseout',function(){
         $('#popGov').hide();
         poppers['govPop'].destroy();
-        $('#popGov').remove();
+        clearElement($(`#popGov`),true);
     });
 }
 
 function drawGovModal(){
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_government_type')}</p>`));
+    let egg = easterEgg(6,10);
+    if (egg.length > 0){
+        $('#modalBoxTitle').append(egg);
+    }
     
     var body = $('<div id="govModal" class="modalBody max40"></div>');
     $('#modalBox').append(body);
@@ -238,6 +244,9 @@ function drawGovModal(){
         if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy'){
             body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc(`govern_technocracy`)}</button>`));
         }
+        if (global.tech['gov_fed'] && global.civic.govern.type !== 'federation'){
+            body.append($(`<button class="button gap" data-gov="federation" @click="setGov('federation')">${loc(`govern_federation`)}</button>`));
+        }
     }
 
     vBind({
@@ -261,25 +270,25 @@ function drawGovModal(){
                         time += 250;
                     }
                     if (global.race['unorganized']){
-                        time = Math.round(time * 1.5);
+                        time = Math.round(time * (1 + traits.unorganized.vars[0] / 100));
                     }
                     if (global.stats.achieve['anarchist']){
                         time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
                     }
                     if (global.race['lawless']){
-                        time = Math.round(time / 10);
+                        time = Math.round(time / (100 - traits.lawless.vars[0]));
                     }
                     global.civic.govern.rev = time + global.civic.govern.fr;
                     vBind({el: '#govModal'},'destroy');
                     $('.modal-background').click();
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
-                    $('#popGov').remove();
+                    clearElement($(`#popGov`),true);
 
                     setTimeout(function(){
                         $('#popGov').hide();
                         poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        clearElement($(`#popGov`),true);
                     },250);
                 }
             }
@@ -288,7 +297,8 @@ function drawGovModal(){
 
     $('#govModal button').on('mouseover',function(){
         let govType = $(this).data('gov');
-        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc[govType]}</div></div>`);
+        let effectType = global.tech['unify'] && global.tech['unify'] >= 2 && govType === 'federation' ? 'federation_alt' : govType;
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc[effectType]}</div></div>`);
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);
@@ -297,7 +307,7 @@ function drawGovModal(){
     $('#govModal button').on('mouseout',function(){
         $('#popGov').hide();
         poppers['govPop'].destroy();
-        $('#popGov').remove();
+        clearElement($(`#popGov`),true);
     });
 }
 
@@ -311,19 +321,19 @@ export function foreignGov(){
     };
 
     for (let i=0;i<3;i++){
-        let gov = $(`<div id="gov${i}" class="foreign"><span class="has-text-caution">{{ '${i}' | gov }}</span><span v-show="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span></div>`);
+        let gov = $(`<div id="gov${i}" class="foreign"><span class="has-text-caution">{{ '${i}' | gov }}</span><span v-if="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span><span v-else-if="f${i}.anx" class="has-text-advanced"> - ${loc('civics_garrison_annex')}</span></span><span v-else-if="f${i}.buy" class="has-text-advanced"> - ${loc('civics_garrison_purchase')}</span></div>`);
         foreign.append(gov);
 
         let actions = $(`<div></div>`);
-        actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
-        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
-        actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
+        actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ || f${i}.anx || f${i}.buy">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
+        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
+        actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
         gov.append(actions);
 
-        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
-        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f${i}.hstl | relation }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ f${i}.hstl | hate }})</span></span></div>`));
-        gov.append($(`<div v-show="!f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f${i}.eco | eco(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
-        gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f${i}.unrest | discontent(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ f${i}.unrest | turmoil }})</span></span></div>`));
+        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
+        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f${i}.hstl | relation }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ f${i}.hstl | hate }})</span></span></div>`));
+        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f${i}.eco | eco(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
+        gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f${i}.unrest | discontent(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ f${i}.unrest | turmoil }})</span></span></div>`));
     }
 
     vBind({
@@ -401,16 +411,16 @@ export function foreignGov(){
             },
             discontent(r,i){
                 if (global.civic.foreign[`gov${i}`].spy >= 3){
-                    if (r < 25){
+                    if (r <= 0){
                         return loc('civics_gov_none');
                     }
-                    else if (r < 50){
+                    else if (r < 30){
                         return loc('civics_gov_low');
                     }
-                    else if (r < 75){
+                    else if (r < 60){
                         return loc('civics_gov_medium');
                     }
-                    else if (r < 100){
+                    else if (r < 90){
                         return loc('civics_gov_high');
                     }
                     else {
@@ -498,6 +508,13 @@ function spyCost(i){
     return Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
 }
 
+function govPrice(gov){
+    let price = global.civic.foreign[`gov${gov}`].eco * 15384;
+    price *= 1 + global.civic.foreign[`gov${gov}`].hstl * 1.6 / 100;
+    price *= 1 - global.civic.foreign[`gov${gov}`].unrest * 0.25 / 100;
+    return +price.toFixed(0);
+}
+
 function drawEspModal(gov){
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('civics_espionage_actions')}</p>`));
     
@@ -508,6 +525,12 @@ function drawEspModal(gov){
         body.append($(`<button class="button gap" data-esp="influence" @click="influence('${gov}')">${loc(`civics_spy_influence`)}</button>`));
         body.append($(`<button class="button gap" data-esp="sabotage" @click="sabotage('${gov}')">${loc(`civics_spy_sabotage`)}</button>`));
         body.append($(`<button class="button gap" data-esp="incite" @click="incite('${gov}')">${loc(`civics_spy_incite`)}</button>`));
+        if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50){
+            body.append($(`<button class="button gap" data-esp="annex" @click="annex('${gov}')">${loc(`civics_spy_annex`)}</button>`));
+        }
+        if (global.civic.foreign[`gov${gov}`].spy >= 3){
+            body.append($(`<button class="button gap" data-esp="purchase" @click="purchase('${gov}')">${loc(`civics_spy_purchase`)}</button>`));
+        }
     }
 
     vBind({
@@ -523,12 +546,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
-                    $('#popGov').remove();
+                    clearElement($(`#popGov`),true);
 
                     setTimeout(function(){
                         $('#popGov').hide();
                         poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        clearElement($(`#popGov`),true);
                     },250);
                 }
             },
@@ -541,12 +564,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
-                    $('#popGov').remove();
+                    clearElement($(`#popGov`),true);
 
                     setTimeout(function(){
                         $('#popGov').hide();
                         poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        clearElement($(`#popGov`),true);
                     },250);
                 }
             },
@@ -559,13 +582,55 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGov').hide();
                     poppers['govPop'].destroy();
-                    $('#popGov').remove();
+                    clearElement($(`#popGov`),true);
 
                     setTimeout(function(){
                         $('#popGov').hide();
                         poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        clearElement($(`#popGov`),true);
                     },250);
+                }
+            },
+            annex(g){
+                if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
+                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                        let timer = global.tech['spy'] >= 4 ? 150 : 300;
+                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                        global.civic.foreign[`gov${g}`].act = 'annex';
+                        vBind({el: '#espModal'},'destroy');
+                        $('.modal-background').click();
+                        $('#popGov').hide();
+                        poppers['govPop'].destroy();
+                        $('#popGov').remove();
+
+                        setTimeout(function(){
+                            $('#popGov').hide();
+                            poppers['govPop'].destroy();
+                            $('#popGov').remove();
+                        },250);
+                    }
+                }
+            },
+            purchase(g){
+                let price = govPrice(g);
+                if (price <= global.resource.Money.amount){
+                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3){
+                        global.resource.Money.amount -= price;
+                        let timer = global.tech['spy'] >= 4 ? 150 : 300;
+                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                        global.civic.foreign[`gov${g}`].act = 'purchase';
+                        vBind({el: '#espModal'},'destroy');
+                        $('.modal-background').click();
+                        $('#popGov').hide();
+                        poppers['govPop'].destroy();
+                        $('#popGov').remove();
+
+                        setTimeout(function(){
+                            $('#popGov').hide();
+                            poppers['govPop'].destroy();
+                            $('#popGov').remove();
+                        },250);
+                    }
                 }
             }
         }
@@ -573,33 +638,35 @@ function drawEspModal(gov){
 
     $('#espModal button').on('mouseover',function(){
         let esp = $(this).data('esp');
-        var popper;
-        switch (esp) {
-            case 'influence':
-                if (global.civic.foreign[`gov${gov}`].hstl === 0){
-                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div class="has-text-danger">${loc(`civics_spy_warning`)}</div><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
-                }
-                else {
-                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
-                }
-                break;
-            case 'sabotage':
-                if (global.civic.foreign[`gov${gov}`].spy >= 2 && global.civic.foreign[`gov${gov}`].mil === 50){
-                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div class="has-text-danger">${loc(`civics_spy_warning`)}</div><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
-                }
-                else {
-                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
-                }
-                break;
-            case 'incite':
-                if (global.civic.foreign[`gov${gov}`].spy >= 4 && global.civic.foreign[`gov${gov}`].unrest === 100){
-                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div class="has-text-danger">${loc(`civics_spy_warning`)}</div><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
-                }
-                else {
-                    popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`civics_spy_${esp}_desc`,[govTitle(gov)])}</div></div>`);
-                }
-                break;
+        let desc = '';
+        if (esp === 'purchase'){
+            let price = govPrice(gov);
+            desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov),price])
         }
+        else if (esp === 'annex'){
+            if (global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
+                desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov)]);
+            }
+            else {
+                let morale = 200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest
+                desc = loc(`civics_spy_${esp}_goal`,[govTitle(gov),morale]);
+            }
+        }
+        else {
+            desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov)]);
+        }
+        
+        let warn = '';
+        if (
+            (esp === 'influence' && global.civic.foreign[`gov${gov}`].hstl === 0) || 
+            (esp === 'sabotage' && global.civic.foreign[`gov${gov}`].spy >= 2 && global.civic.foreign[`gov${gov}`].mil === 50) || 
+            (esp === 'incite' && global.civic.foreign[`gov${gov}`].spy >= 4 && global.civic.foreign[`gov${gov}`].unrest === 100)
+        ){
+            warn = `<div class="has-text-danger">${loc(`civics_spy_warning`)}</div>`;
+        }
+
+        var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark">${warn}<div>${desc}</div></div>`);
+
         $('#main').append(popper);
         popper.show();
         poppers['govPop'] = new Popper(this,popper);
@@ -608,7 +675,7 @@ function drawEspModal(gov){
     $('#espModal button').on('mouseout',function(){
         $('#popGov').hide();
         poppers['govPop'].destroy();
-        $('#popGov').remove();
+        clearElement($(`#popGov`),true);
     });
 }
 
@@ -619,7 +686,7 @@ function taxRates(govern){
     var label = $(`<h3 id="taxRateLabel">${loc('civics_tax_rates')}</h3>`);
     tax_rates.append(label);
     
-    var tax_level = $('<span class="current">{{ tax_rate | tax_level }}</span>');
+    var tax_level = $('<span class="current" v-html="$options.filters.tax_level(tax_rate)"></span>');
     var sub = $(`<span role="button" aria-label="decrease taxes" class="sub has-text-success" @click="sub">&laquo;</span>`);
     var add = $(`<span role="button" aria-label="increase taxes" class="add has-text-danger" @click="add">&raquo;</span>`);
     tax_rates.append(sub);
@@ -631,7 +698,13 @@ function taxRates(govern){
         data: global.civic['taxes'],
         filters: {
             tax_level(rate){
-                return `${rate}%`;
+                let egg = easterEgg(11,14);
+                if (rate === 0 && egg.length > 0){
+                    return egg;
+                }
+                else {
+                    return `${rate}%`;
+                }
             }
         },
         methods: {
@@ -689,7 +762,7 @@ function taxRates(govern){
     $('#taxRateLabel').on('mouseout',function(){
             $('#popTaxRate').hide();
             poppers['popTaxRate'].destroy();
-            $('#popTaxRate').remove();
+            clearElement($(`#popTaxRate`),true);
         });
 }
 
@@ -709,7 +782,8 @@ export function buildGarrison(garrison,full){
     let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
     
     bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></div>`));
-    bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span>{{ g.wounded }}</span></div>`));
+    bunks.append($(`<div class="barracks" v-show="g.crew > 0"><b-tooltip :label="crewDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_crew')}</span></b-tooltip> <span>{{ g.crew }}</span></div>`));
+    bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
 
     barracks.append($(`<div class="hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="g.mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
     
@@ -776,6 +850,9 @@ export function buildGarrison(garrison,full){
     if (!global.civic.garrison['m_use']){
         global.civic.garrison['m_use'] = 0;
     }
+    if (!global.civic.garrison['crew']){
+        global.civic.garrison['crew'] = 0;
+    }
 
     vBind({
         el: full ? '#garrison' : '#c_garrison',
@@ -795,7 +872,7 @@ export function buildGarrison(garrison,full){
                     cost *= 1.1 ** global.civic.garrison.m_use;
                 }
                 if (global.race['brute']){
-                    cost = cost / 2;
+                    cost *= 1 - (traits.brute.vars[0] / 100);
                 }
                 cost = Math.round(cost);
                 if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
@@ -818,7 +895,7 @@ export function buildGarrison(garrison,full){
                     case 3:
                         return loc('civics_garrison_tactic_assault_desc');
                     case 4:
-                        return loc('civics_garrison_tactic_siege_desc',[20]);
+                        return loc('civics_garrison_tactic_siege_desc',[global.civic.govern.type === 'federation' ? 15 : 20]);
                 }
             },
             hireLabel(){
@@ -830,7 +907,7 @@ export function buildGarrison(garrison,full){
                     cost *= 1.1 ** global.civic.garrison.m_use;
                 }
                 if (global.race['brute']){
-                    cost = cost / 2;
+                    cost *= 1 - (traits.brute.vars[0] / 100);
                 }
                 cost = Math.round(cost);
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
@@ -842,26 +919,10 @@ export function buildGarrison(garrison,full){
                 return loc('civics_garrison_army_label');
             },
             soldierDesc(){
-                let rating = armyRating(garrisonSize(),'hunting');
-                let food = +(rating / 3).toFixed(2);
-                let fur = +(rating / 10).toFixed(2);
-                if (global.race['evil']){
-                    if (global.race['soul_eater']){
-                        let bones = +(armyRating(garrisonSize(),'hunting') / 3).toFixed(2);
-                        return loc('civics_garrison_evil_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
-                    }
-                    else {
-                        let bones = +(armyRating(garrisonSize(),'hunting') / 5).toFixed(2);
-                        return global.race['herbivore']
-                            ? loc('civics_garrison_evil_alt_soldier_desc_herb',[fur,bones,global.resource.Furs.name,global.resource.Lumber.name])
-                            : loc('civics_garrison_evil_alt_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
-                    }
-                }
-                else {
-                    return global.race['herbivore']
-                        ? loc('civics_garrison_soldier_desc_herb',[fur,global.resource.Furs.name])
-                        : loc('civics_garrison_soldier_desc',[food,fur,global.resource.Food.name,global.resource.Furs.name]);
-                }
+                return describeSoldier();
+            },
+            crewDesc(){
+                return loc('civics_garrison_crew_desc');
             },
             woundedDesc(){
                 return loc('civics_garrison_wounded_desc');
@@ -930,14 +991,47 @@ export function buildGarrison(garrison,full){
             },
             s_max(v){
                 return garrisonSize(true);
+            },
+            wounded(w){
+                let egg = easterEgg(8,12);
+                if (full && w === 0 && egg.length > 0){
+                    return egg;
+                }
+                return w;
             }
         }
     });
 }
 
+export function describeSoldier(){
+    let rating = armyRating(garrisonSize(),'hunting');
+    let food = +(rating / 3).toFixed(2);
+    let fur = +(rating / 10).toFixed(2);
+    if (global.race['evil']){
+        if (global.race['soul_eater']){
+            let bones = +(armyRating(garrisonSize(),'hunting') / 3).toFixed(2);
+            return loc('civics_garrison_evil_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
+        }
+        else {
+            let bones = +(armyRating(garrisonSize(),'hunting') / 5).toFixed(2);
+            return global.race['herbivore']
+                ? loc('civics_garrison_evil_alt_soldier_desc_herb',[fur,bones,global.resource.Furs.name,global.resource.Lumber.name])
+                : loc('civics_garrison_evil_alt_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
+        }
+    }
+    else {
+        return global.race['herbivore']
+            ? loc('civics_garrison_soldier_desc_herb',[fur,global.resource.Furs.name])
+            : loc('civics_garrison_soldier_desc',[food,fur,global.resource.Food.name,global.resource.Furs.name]);
+    }
+}
+
 function battleAssessment(gov){
     if (global.civic.foreign[`gov${gov}`].occ){
         return loc('civics_garrison_deoccupy_desc');
+    }
+    else if (global.civic.foreign[`gov${gov}`].buy || global.civic.foreign[`gov${gov}`].anx){
+        return loc('civics_garrison_secede_desc');
     }
     else if (
         (global.civic.garrison.tactic <= 1 && global.civic.foreign[`gov${gov}`].spy < 1) || 
@@ -978,8 +1072,13 @@ function battleAssessment(gov){
 function war_campaign(gov){
     if (global.civic.foreign[`gov${gov}`].occ){
         global.civic.foreign[`gov${gov}`].occ = false;
-        global.civic.garrison.max += 20;
-        global.civic.garrison.workers += 20;
+        global.civic.garrison.max += global.civic.govern.type === 'federation' ? 15 : 20;
+        global.civic.garrison.workers += global.civic.govern.type === 'federation' ? 15 : 20;
+        return;
+    }
+    if (global.civic.foreign[`gov${gov}`].buy || global.civic.foreign[`gov${gov}`].anx){
+        global.civic.foreign[`gov${gov}`].buy = false;
+        global.civic.foreign[`gov${gov}`].anx = false;
         return;
     }
     if (global.civic.garrison.raid === 0){
@@ -1037,8 +1136,8 @@ function war_campaign(gov){
     }
 
     let wounded = 0;
-    if (global.civic.garrison.raid > global.civic.garrison.workers - global.civic.garrison.wounded){
-        wounded = global.civic.garrison.raid - (global.civic.garrison.workers - global.civic.garrison.wounded);
+    if (global.civic.garrison.raid > global.civic.garrison.workers - global.civic.garrison.crew - global.civic.garrison.wounded){
+        wounded = global.civic.garrison.raid - (global.civic.garrison.workers - global.civic.garrison.crew - global.civic.garrison.wounded);
     }
 
     global.civic.garrison.fatigue++;
@@ -1061,10 +1160,11 @@ function war_campaign(gov){
         }
         let armor = 0;
         if (global.race['armored']){
-            armor += Math.floor(death * 0.75);
+            let armored = 1 - (traits.armored.vars[0] / 100);
+            armor += Math.floor(death *armored);
         }
         if (global.race['scales']){
-            armor += 2;
+            armor += traits.scales.vars[0];
         }
         if (global.tech['armor']){
             armor += global.tech['armor'];
@@ -1385,8 +1485,9 @@ function war_campaign(gov){
             }
         }
 
-        if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= 20){
-            global.civic.garrison.workers -= 20;
+        let occCost = global.civic.govern.type === 'federation' ? 15 : 20;
+        if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= occCost){
+            global.civic.garrison.workers -= occCost;
             global.civic.foreign[`gov${gov}`].occ = true;
             global.civic.foreign[`gov${gov}`].sab = 0;
             global.civic.foreign[`gov${gov}`].act = 'none';
@@ -1413,10 +1514,11 @@ function war_campaign(gov){
         }
         let armor = 0;
         if (global.race['armored']){
-            armor += Math.floor(death * 0.75);
+            let armored = 1 - (traits.armored.vars[0] / 100);
+            armor += Math.floor(death * armored);
         }
         if (global.race['scales']){
-            armor++;
+            armor += traits.scales.vars[1];
         }
         if (global.tech['armor']){
             armor += global.tech['armor'];
@@ -1466,8 +1568,8 @@ function war_campaign(gov){
             messageQueue(loc('civics_garrison_defeat',[death]),'danger');
         }
     }
-    if (global.civic.garrison.wounded > global.civic.garrison.workers){
-        global.civic.garrison.wounded = global.civic.garrison.workers;
+    if (global.civic.garrison.wounded > global.civic.garrison.workers - global.civic.garrison.crew){
+        global.civic.garrison.wounded = global.civic.garrison.workers - global.civic.garrison.crew;
     }
     else if (global.civic.garrison.wounded < 0){
         global.civic.garrison.wounded = 0;
@@ -1504,18 +1606,26 @@ function lootModify(val,gov){
     let looting = looters();
     let loot = val * Math.log(looting + 1);
     if (global.race['beast_of_burden']){
-        loot = loot * 1.1;
+        loot *= 1 + (traits.beast_of_burden.vars[0] / 100);
     }
     if (global.race['invertebrate']){
-        loot = loot * 0.9;
+        loot *= 1 - (traits.invertebrate.vars[0] / 100);
     }
     if (global.race.universe === 'evil'){
-        loot = loot * (1 + ((Math.log2(10 + global.race.Dark.count) - 3.321928094887362) / 5));
+        let de = global.race.Dark.count;
+        if (global.race.Harmony.count > 0){
+            de *= 1 + (global.race.Harmony.count * 0.01);
+        }
+        loot = loot * (1 + ((Math.log2(10 + de) - 3.321928094887362) / 5));
     }
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }
 
 export function armyRating(val,type,wound){
+    if (!global.civic.hasOwnProperty('garrison')){
+        return 1;
+    }
+
     let wounded = 0;
     if (wound){
         wounded = wound;
@@ -1530,20 +1640,23 @@ export function armyRating(val,type,wound){
         if (global.race['puny']){
             army *= 0.9;
         }
-        if (global.race['claws'] || global.race['chameleon']){
-            army *= 1.2;
+        if (global.race['claws']){
+            army *= 1 + (traits.claws.vars[0] / 100);
+        }
+        if (global.race['chameleon']){
+            army *= 1 + (traits.chameleon.vars[0] / 100);
         }
         if (global.race['cautious'] && global.city.calendar.weather === 0){
-            army *= 0.9;
+            army *= 1 - (traits.cautious.vars[0] / 100);
         }
         if (global.race['apex_predator']){
-            army *= 1.25;
+            army *= 1 + (traits.apex_predator.vars[0] / 100);
         }
         if (global.race['fiery']){
-            army *= 1.65;
+            army *= 1 + (traits.fiery.vars[0] / 100);
         }
         if (global.race['pathetic']){
-            army *= 0.75;
+            army *= 1 - (traits.pathetic.vars[0] / 100);
         }
         if (global.race['tactical']){
             army *= 1 + (global.race['tactical'] / 20);
@@ -1565,16 +1678,16 @@ export function armyRating(val,type,wound){
     }
     else if (type === 'hunting'){
         if (global.race['tracker']){
-            army *= 1.1;
+            army *= 1 + (traits.tracker.vars[0] / 100);
         }
         if (global.race['beast'] && global.city.calendar.wind === 1){
-            army *= 1.15;
+            army *= 1 + (traits.beast.vars[0] / 100);
         }
         if (global.race['apex_predator']){
-            army *= 1.5;
+            army *= 1 + (traits.apex_predator.vars[1] / 100);
         }
         if (global.race['fiery']){
-            army *= 1.25;
+            army *= 1 + (traits.fiery.vars[1] / 100);
         }
         if (global.city.ptrait === 'rage'){
             army *= 1.02;
@@ -1593,9 +1706,9 @@ export function armyRating(val,type,wound){
 export function garrisonSize(max){
     let type = max ? 'max' : 'workers';
     if (global.portal['fortress']){
-        return global.civic.garrison[type] - global.portal.fortress.garrison;
+        return global.civic.garrison[type] - global.civic.garrison.crew - global.portal.fortress.garrison;
     }
-    return global.civic.garrison[type];
+    return global.civic.garrison[type] - global.civic.garrison.crew;
 }
 
 function defineMad(){
@@ -1657,22 +1770,9 @@ function defineMad(){
                     : loc('civics_mad_missiles_desc');
             },
             warning(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
-                }
-                let plasma = Math.round((global['resource'][global.race.species].amount + garrisoned) / 3);
-                let k_base = global.stats.know;
-                let k_inc = 100000;
-                while (k_base > k_inc){
-                    plasma++;
-                    k_base -= k_inc;
-                    k_inc *= 1.1;
-                }
-                plasma = challenge_multiplier(plasma,'mad');
-                return loc('civics_mad_missiles_warning',[plasma,plasmidType]);
+                let gains = calcPrestige('mad');
+                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+                return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
             }
         }
     });
@@ -1692,6 +1792,8 @@ export function dragQueue(){
 }
 
 function warhead(){
+    global.lastMsg = false;
+
     let god = global.race.species;
     let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;
@@ -1700,22 +1802,10 @@ function warhead(){
     let geo = global.city.geology;
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let pop = global['resource'][global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / 3);
-    let k_base = global.stats.know;
-    let k_inc = 100000;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.1;
-    }
-    new_plasmid = challenge_multiplier(new_plasmid,'mad');
+
+    let gains = calcPrestige('mad');
+    let new_plasmid = gains.plasmid;
+
     global.stats.reset++;
     global.stats.mad++;
     global.stats.tdays += global.stats.days;
@@ -1734,11 +1824,11 @@ function warhead(){
         plasmid += new_plasmid;
         global.stats.plasmid += new_plasmid;
     }
-    let new_achieve = unlockAchieve(`apocalypse`);
-    if (unlockAchieve(`squished`,true)){ new_achieve = true; }
-    if (unlockAchieve(`extinct_${god}`)){ new_achieve = true; }
+    unlockAchieve(`apocalypse`);
+    unlockAchieve(`squished`,true);
+    unlockAchieve(`extinct_${god}`);
     if (global.civic.govern.type === 'anarchy'){
-        if (unlockAchieve(`anarchist`)){ new_achieve = true; }
+        unlockAchieve(`anarchist`);
     }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
         unlockFeat('take_no_advice');
@@ -1753,6 +1843,7 @@ function warhead(){
         Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
+        Harmony: { count: global.race.Harmony.count },
         universe: global.race.universe,
         seeded: false,
     };
@@ -1772,10 +1863,6 @@ function warhead(){
     };
     global.tech = { theology: 1 };
     clearStates();
-    global.arpa = {};
-    if (!new_achieve){
-        global.lastMsg = false;
-    }
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;

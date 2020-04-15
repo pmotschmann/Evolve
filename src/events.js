@@ -325,6 +325,10 @@ export const events = {
             }
             let gov = govs[Math.rand(0,govs.length)];
             global.civic.foreign[`gov${gov}`].spy--;
+            if (global.civic.foreign[`gov${gov}`].spy === 0) {
+                global.civic.foreign[`gov${gov}`].act = 'none';
+                global.civic.foreign[`gov${gov}`].sab = 0;
+            }
             
             return loc('event_spy',[govTitle(gov)]);
         }

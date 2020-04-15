@@ -29,14 +29,19 @@ export var red_on = {};
 export var moon_on = {};
 export var belt_on = {};
 export var int_on = {};
+export var gal_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
+export var universe_level = 0;
 export function set_qlevel(q_level){
     quantum_level = q_level;
 }
 export function set_alevel(a_level){
     achieve_level = a_level;
-} 
+}
+export function set_ulevel(u_level){
+    universe_level = u_level;
+}
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -373,19 +378,52 @@ if (convertVersion(global['version']) < 7007 && global['queue'] && global['queue
     }
 }
 
-if (convertVersion(global['version']) < 7014){
-    if (global['settings']){
-        global.settings['tLabels'] = false;
-    }
-}
-
 if (convertVersion(global['version']) < 7019 && global.race['fraile']){
     delete global.race['fraile'];
     global.race['frail'] = 1;
 }
 
+if (convertVersion(global['version']) < 7028){
+    if (global.stats['achieve'] && global.stats.achieve['blood_war'] && global.stats.achieve['blood_war']['e']){
+        global.stats.achieve['blood_war'].e = undefined;
+    }
+}
 
-global['version'] = '0.7.21';
+if (convertVersion(global['version']) < 8000 && global.civic['foreign']){
+    if (typeof global.civic.foreign.gov0['anx'] === 'undefined'){
+        global.civic.foreign.gov0['anx'] = false;
+    }
+    if (typeof global.civic.foreign.gov1['anx'] === 'undefined'){
+        global.civic.foreign.gov1['anx'] = false;
+    }
+    if (typeof global.civic.foreign.gov2['anx'] === 'undefined'){
+        global.civic.foreign.gov2['anx'] = false;
+    }
+    if (typeof global.civic.foreign.gov0['buy'] === 'undefined'){
+        global.civic.foreign.gov0['buy'] = false;
+    }
+    if (typeof global.civic.foreign.gov1['buy'] === 'undefined'){
+        global.civic.foreign.gov1['buy'] = false;
+    }
+    if (typeof global.civic.foreign.gov2['buy'] === 'undefined'){
+        global.civic.foreign.gov2['buy'] = false;
+    }
+}
+
+if (convertVersion(global['version']) < 8000){
+    if (global['settings'] && global.settings.hasOwnProperty('tLabels')){
+        delete global.settings['tLabels'];
+    }
+}
+
+if (convertVersion(global['version']) < 8003){
+    if (global.stats['harmony'] && global.stats['harmony'] > 0){
+        global.stats['harmony'] = parseFloat(global.stats['harmony'].toFixed(2));
+        global.race['Harmony'].count = parseFloat(global.race['Harmony'].count.toFixed(2));
+    }
+}
+
+global['version'] = '0.8.10';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -410,10 +448,14 @@ if (!global['settings']){
         animated: true,
         disableReset: false,
         cLabels: true,
-        tLabels: true,
         theme: 'dark',
         locale: 'en-US',
+        icon: 'star'
     };
+}
+
+if (!global.settings['icon']){
+    global.settings['icon'] = 'star';
 }
 
 if (!global.settings['showResources']){
@@ -440,7 +482,14 @@ if (!global.settings['space']){
         gas_moon: false,
         belt: false,
         dwarf: false,
-        blackhole: false
+        blackhole: false,
+        sirius: false,
+        stargate: false,
+        gateway: false,
+        gorddon: false,
+        alien1: false,
+        alien2: false,
+        chthonian: false
     }
 }
 
@@ -452,8 +501,35 @@ if (!global.settings.space['alpha']){
     global.settings.space['blackhole'] = false;
 }
 
+if (typeof global.settings.space['stargate'] === 'undefined'){
+    global.settings.space['stargate'] = false;
+    global.settings.space['gateway'] = false;
+}
+
+if (typeof global.settings.space['gorddon'] === 'undefined'){
+    global.settings.space['gorddon'] = false;
+}
+if (typeof global.settings.space['alien1'] === 'undefined'){
+    global.settings.space['alien1'] = false;
+    global.settings.space['alien2'] = false;
+}
+if (typeof global.settings.space['alien1'] === 'undefined'){
+    global.settings.space['alien1'] = false;
+    global.settings.space['alien2'] = false;
+}
+if (typeof global.settings.space['chthonian'] === 'undefined'){
+    global.settings.space['chthonian'] = false;
+}
+if (typeof global.settings.space['sirius'] === 'undefined'){
+    global.settings.space['sirius'] = false;
+}
+
 if (!global.settings['showDeep']){
     global.settings['showDeep'] = false;
+}
+
+if (!global.settings['showGalactic']){
+    global.settings['showGalactic'] = false;
 }
 
 if (!global.settings['showPortal']){
@@ -492,6 +568,23 @@ if (!global['starDock']){
 
 if (!global['interstellar']){
     global['interstellar'] = {};
+}
+
+if (!global['galaxy']){
+    global['galaxy'] = {};
+}
+
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Bolognium']){
+    global.interstellar.mass_ejector['Bolognium'] = 0;
+}
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Vitreloy']){
+    global.interstellar.mass_ejector['Vitreloy'] = 0;
+}
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Orichalcum']){
+    global.interstellar.mass_ejector['Orichalcum'] = 0;
+}
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Nanoweave']){
+    global.interstellar.mass_ejector['Nanoweave'] = 0;
 }
 
 if (!global.settings.space['alpha']){
@@ -580,6 +673,9 @@ if (!global.stats['tknow']){
 if (!global.stats['portals']){
     global.stats['portals'] = global.stats['achieve'] && global.stats.achieve['doomed'] ? 1 : 0;
 }
+if (!global.stats['dkills']){
+    global.stats['dkills'] = 0;
+}
 if (!global.stats['attacks']){
     global.stats['attacks'] = 0;
 }
@@ -591,6 +687,12 @@ if (!global.stats['bioseed']){
 }
 if (!global.stats['blackhole']){
     global.stats['blackhole'] = 0;
+}
+if (!global.stats['ascend']){
+    global.stats['ascend'] = 0;
+}
+if (!global.stats['harmony']){
+    global.stats['harmony'] = 0;
 }
 if (!global['lastMsg']){
     global['lastMsg'] = false;
@@ -609,6 +711,9 @@ if (!global.race['Phage']){
 }
 if (!global.race['Dark']){
     global.race['Dark'] = { count: 0 };
+}
+if (!global.race['Harmony']){
+    global.race['Harmony'] = { count: 0 };
 }
 if (!global.race['deterioration']){
     global.race['deterioration'] = 0;
@@ -640,6 +745,29 @@ if (!global.settings['affix']){
     global.settings['affix'] = 'si';
 }
 
+if (!global['special']){
+    global['special'] = {};
+}
+if (!global.special.hasOwnProperty('gift')){
+    global.special['gift'] = false;
+}
+if (!global.special.hasOwnProperty('egg')){
+    global.special['egg'] = {
+        egg1: false,
+        egg2: false,
+        egg3: false,
+        egg4: false,
+        egg5: false,
+        egg6: false,
+        egg7: false,
+        egg8: false,
+        egg9: false,
+        egg10: false,
+        egg11: false,
+        egg12: false
+    };
+}
+
 if (!global.civic['govern']){
     global.civic['govern'] = {
         type: 'oligarchy',
@@ -648,6 +776,10 @@ if (!global.civic['govern']){
     };
 }
 global.civic.govern.fr = 0;
+
+if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('cap')){
+    global.city.smelter['cap'] = 0;
+}
 
 if (!global.civic['foreign']){
     global.civic['foreign'] = {
@@ -661,7 +793,9 @@ if (!global.civic['foreign']){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         },
         gov1: {
             unrest: 0,
@@ -673,7 +807,9 @@ if (!global.civic['foreign']){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         },
         gov2: {
             unrest: 0,
@@ -685,7 +821,9 @@ if (!global.civic['foreign']){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         }
     };
 }
@@ -824,6 +962,10 @@ if (global.city['foundry'] && !global.city.foundry['Mythril']){
 
 if (global.city['foundry'] && !global.city.foundry['Aerogel']){
     global.city.foundry['Aerogel'] = 0;
+}
+
+if (global.city['foundry'] && !global.city.foundry['Nanoweave']){
+    global.city.foundry['Nanoweave'] = 0;
 }
 
 if (!global.settings['arpa']){
@@ -1048,41 +1190,44 @@ var affix_list = {
 };
 
 export function sizeApproximation(value,precision,fixed){
+    let result = 0;
+    let affix = '';
     if (value <= 9999){
-        return +value.toFixed(precision);
+        result = +value.toFixed(precision);
     }
     else if (value <= 1000000){
-        let affix = affix_list[global.settings.affix][0];
-        return fixed ? +(value / 1000).toFixed(1) + affix : (Math.floor(value / 100) / 10) + affix;
+        affix = affix_list[global.settings.affix][0];
+        result = fixed ? +(value / 1000).toFixed(1) : (Math.floor(value / 100) / 10);
     }
     else if (value <= 1000000000){
-        let affix = affix_list[global.settings.affix][1];
-        return fixed ? +(value / 1000000).toFixed(1) + affix : (Math.floor(value / 10000) / 100) + affix;
+        affix = affix_list[global.settings.affix][1];
+        result = fixed ? +(value / 1000000).toFixed(1) : (Math.floor(value / 10000) / 100);
     }
     else if (value <= 1000000000000){
-        let affix = affix_list[global.settings.affix][2];
-        return fixed ? +(value / 1000000000).toFixed(1) + affix : (Math.floor(value / 10000000) / 100) + affix;
+        affix = affix_list[global.settings.affix][2];
+        result = fixed ? +(value / 1000000000).toFixed(1) : (Math.floor(value / 10000000) / 100);
     }
     else if (value <= 1000000000000000){
-        let affix = affix_list[global.settings.affix][3];
-        return fixed ? +(value / 1000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000) / 100) + affix;
+        affix = affix_list[global.settings.affix][3];
+        result = fixed ? +(value / 1000000000000).toFixed(1) : (Math.floor(value / 10000000000) / 100);
     }
     else if (value <= 1000000000000000000){
-        let affix = affix_list[global.settings.affix][4];
-        return fixed ? +(value / 1000000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000000) / 100) + affix;
+        affix = affix_list[global.settings.affix][4];
+        result = fixed ? +(value / 1000000000000000).toFixed(1) : (Math.floor(value / 10000000000000) / 100);
     }
     else if (value <= 1000000000000000000000){
-        let affix = affix_list[global.settings.affix][5];
-        return fixed ? +(value / 1000000000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000000000) / 100) + affix;
+        affix = affix_list[global.settings.affix][5];
+        result = fixed ? +(value / 1000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000) / 100);
     }
     else if (value <= 1000000000000000000000000){
-        let affix = affix_list[global.settings.affix][6];
-        return fixed ? +(value / 1000000000000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000000000000) / 100) + affix;
+        affix = affix_list[global.settings.affix][6];
+        result = fixed ? +(value / 1000000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000000) / 100);
     }
     else {
-        let affix = affix_list[global.settings.affix][7];
-        return fixed ? +(value / 1000000000000000000000000).toFixed(1) + affix : (Math.floor(value / 10000000000000000000000) / 100) + affix;
+        affix = affix_list[global.settings.affix][7];
+        result = fixed ? +(value / 1000000000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000000000) / 100);
     }
+    return (result >= 100 ? +result.toFixed(1) : result) + affix;
 }
 
 $(window).resize(function(){
@@ -1106,13 +1251,6 @@ export function srSpeak(text, priority) {
     }, 1000);
 }
 
-// executes a hard reset
-window.reset = function reset(){
-    localStorage.removeItem('evolved');
-    global = null;
-    window.location.reload();
-}
-
 // executes a soft reset
 window.soft_reset = function reset(){
     let replace = {
@@ -1121,6 +1259,7 @@ window.soft_reset = function reset(){
         Plasmid: { count: global.race.Plasmid.count, anti: global.race.Plasmid.anti },
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
+        Harmony: { count: global.race.Harmony.count },
         universe: global.race.universe,
         seeded: global.race.seeded,
         probes: global.race.probes,
@@ -1186,11 +1325,13 @@ window.soft_reset = function reset(){
     window.location.reload();
 }
 
+export var webWorker = { w: false };
 export function clearStates(){
     global['queue'] = { display: false, queue: [] };
     global['r_queue'] = { display: false, queue: [] };
     global.space = {};
     global.interstellar = {};
+    global.galaxy = {};
     global.portal = {};
     global.starDock = {};
     global.civic = { free: 0, new: 0 };
@@ -1205,7 +1346,9 @@ export function clearStates(){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         },
         gov1: {
             unrest: 0,
@@ -1217,7 +1360,9 @@ export function clearStates(){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         },
         gov2: {
             unrest: 0,
@@ -1229,7 +1374,9 @@ export function clearStates(){
             trn: 0,
             sab: 0,
             act: 'none',
-            occ: false
+            occ: false,
+            anx: false,
+            buy: false
         }
     };
     global.resource = {};
@@ -1240,6 +1387,7 @@ export function clearStates(){
     global.stats.starved = 0;
     global.stats.died = 0;
     global.stats.attacks = 0;
+    global.stats.dkills = 0;
     
     global.settings.showEvolve = true;
     global.settings.showCity = false;
@@ -1253,6 +1401,7 @@ export function clearStates(){
     global.settings.showGenetics = false;
     global.settings.showSpace = false;
     global.settings.showDeep = false;
+    global.settings.showGalactic = false;
     global.settings.showPortal = false;
     global.settings.showEjector = false;
     global.settings.space.home = true;
@@ -1269,6 +1418,14 @@ export function clearStates(){
     global.settings.space.nebula = false;
     global.settings.space.neutron = false;
     global.settings.space.blackhole = false;
+    global.settings.space.sirius = false;
+    global.settings.space.stargate = false;
+    global.settings.space.gateway = false;
+    global.settings.space.gorddon = false;
+    global.settings.space.alien1 = false;
+    global.settings.space.alien1 = false;
+    global.settings.space.alien2 = false;
+    global.settings.space.chthonian = false;
     global.settings.portal.fortress = false;
     global.settings.portal.badlands = false;
     global.settings.portal.pit = false;
@@ -1281,4 +1438,17 @@ export function clearStates(){
     global.settings.statsTabs = 0
     global.settings.disableReset = false;
     global.arpa = {};
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+}
+
+// executes a hard reset
+window.reset = function reset(){
+    localStorage.removeItem('evolved');
+    global = null;
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    window.location.reload();
 }

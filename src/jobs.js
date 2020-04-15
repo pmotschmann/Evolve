@@ -1,6 +1,7 @@
 import { global, keyMultiplier, poppers } from './vars.js';
+import { clearElement, easterEgg } from './functions.js';
 import { loc } from './locale.js';
-import { racialTrait, races } from './races.js';
+import { racialTrait, races, traits } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
@@ -21,13 +22,13 @@ export const job_desc = {
         return desc;
     },
     lumberjack: function(){
-        if (global.race['evil'] && !global.race['soul_eater']){
+        if (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
             let multiplier = 1;
             multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
             let impact = global.civic.lumberjack.impact;
             let bone = +(impact * multiplier).toFixed(2);
             let flesh = +(impact / 4 * multiplier).toFixed(2);
-            let desc = loc('job_reclaimer_desc',[bone,flesh]);
+            let desc = global.race.species === 'wendigo' ? loc('job_reclaimer_desc2',[bone]) : loc('job_reclaimer_desc',[bone,flesh]);
             if (global.civic.d_job === 'lumberjack'){
                 desc = desc + ' ' + loc('job_default',[loc('job_reclaimer')]);
             }
@@ -90,7 +91,7 @@ export const job_desc = {
     },
     cement_worker: function(){
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
-        let cement_multiplier = racialTrait(global.civic.quarry_worker.workers,'factory');
+        let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
         gain = +(gain).toFixed(2);
         return loc('job_cement_worker_desc',[gain]);
@@ -101,7 +102,7 @@ export const job_desc = {
             interest += 2 * global.tech['stock_exchange'];
         }
         if (global.race['truthful']){
-            interest = interest / 2;
+            interest *= 1 - (traits.truthful.vars[0] / 100);
         }
         if (global.civic.govern.type === 'republic'){
             interest *= 1.25;
@@ -113,12 +114,15 @@ export const job_desc = {
         let morale = global.race['musical'] ? global.tech['theatre'] + 1: global.tech['theatre'];
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
     },
+    priest: function(){
+        return loc('job_priest_desc');
+    },
     professor: function(){
-        let impact = +(global.race['studious'] ? global.civic.professor.impact + 0.25 : global.civic.professor.impact).toFixed(2);
+        let impact = +(global.race['studious'] ? global.civic.professor.impact + traits.studious.vars[0] : global.civic.professor.impact).toFixed(2);
         if (global.tech['science'] && global.tech['science'] >= 3){
             impact += global.city.library.count * 0.01;
         }
-        impact *= global.race['pompous'] ? 0.25 : 1;
+        impact *= global.race['pompous'] ? (1 - traits.pompous.vars[0] / 100) : 1;
         impact *= racialTrait(global.civic.professor.workers,'science');
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
             impact *= 1 + (global.city.temple.count * 0.05);
@@ -152,6 +156,9 @@ export const job_desc = {
     },
     hell_surveyor(){
         return loc('job_hell_surveyor_desc');
+    },
+    crew(){
+        return loc('job_crew_desc');
     }
 }
 
@@ -168,12 +175,14 @@ export function defineJobs(){
     loadJob('craftsman',1,5,'advanced');
     loadJob('cement_worker',0.4,5,'advanced');
     loadJob('entertainer',1,10,'advanced');
+    loadJob('priest',1,3,'advanced');
     loadJob('professor',0.5,6,'advanced');
     loadJob('scientist',1,5,'advanced');
     loadJob('banker',0.1,6,'advanced');
     loadJob('colonist',1,5,'advanced');
     loadJob('space_miner',1,5,'advanced');
     loadJob('hell_surveyor',1,1,'advanced');
+    loadJob('crew',1,4,'alert');
     loadFoundry();
 }
 
@@ -182,7 +191,7 @@ function loadUnemployed(){
     
     let id = 'civ-free';
     let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault()">{{ 'job' | title }}{{ 'unemployed' | d_state }}</a></h3><span class="count">{{ free }}</span></div>`);
+    let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault()">{{ 'job' | title }}{{ 'unemployed' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(free)"></span></div>`);
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
@@ -200,6 +209,15 @@ function loadUnemployed(){
             },
             d_state(j){
                 return global.civic.d_job === j ? '*' : '';
+            },
+            event(c){
+                let egg = easterEgg(3,14);
+                if (c === 0 && egg.length > 0){
+                    return egg;
+                }
+                else {
+                    return c;
+                }
             }
         }
     });
@@ -217,7 +235,7 @@ function loadUnemployed(){
     $(`#${id} .job_label`).on('mouseout',function(){
             $(`#pop${id}`).hide();
             poppers[id].destroy();
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
 }
 
@@ -262,11 +280,12 @@ function loadJob(job, impact, stress, color){
     civ_container.append(controls);
     $('#jobs').append(civ_container);
     
-    var sub = $(`<span role="button" aria-label="remove ${job}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
-    var add = $(`<span role="button" aria-label="add ${job}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
-    
-    controls.append(sub);
-    controls.append(add);
+    if (job !== 'crew'){
+        var sub = $(`<span role="button" aria-label="remove ${job}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
+        var add = $(`<span role="button" aria-label="add ${job}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
+        controls.append(sub);
+        controls.append(add);
+    }
     
     new Vue({
         el: `#${id}`,
@@ -295,7 +314,12 @@ function loadJob(job, impact, stress, color){
                 for (let i=0; i<keyMult; i++){
                     if (global.civic[job].workers > 0){
                         global.civic[job].workers--;
-                        global.civic.free++;
+                        if (global.civic.d_job === 'unemployed' || job === global.civic.d_job){
+                            global.civic.free++;
+                        }
+                        else {
+                            global.civic[global.civic.d_job].workers++;
+                        }
                         global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
@@ -344,7 +368,7 @@ function loadJob(job, impact, stress, color){
     $(`#${id} .job_label`).on('mouseout',function(){
             $(`#pop${id}`).hide();
             poppers[id].destroy();
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
 }
 
@@ -353,12 +377,12 @@ export function loadFoundry(){
     if (v_foundry){
         v_foundry.$destroy();
     }
-    $('#foundry').empty();
+    clearElement($('#foundry'));
     if (global.city['foundry']){
         var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span :class="level()">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
-        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel'];
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave'];
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
@@ -412,7 +436,12 @@ export function loadFoundry(){
                             global.city.foundry[res]--;
                             global.civic.craftsman.workers--;
                             global.city.foundry.crafting--;
-                            global.civic.free++;
+                            if (global.civic.d_job === 'unemployed'){
+                                global.civic.free++;
+                            }
+                            else {
+                                global.civic[global.civic.d_job].workers++;
+                            }
                         }
                         else {
                             break;
@@ -423,16 +452,7 @@ export function loadFoundry(){
                     var popper = $(`<div id="popCraft${res}" class="popper has-background-light has-text-dark"></div>`);
                     $('#main').append(popper);
                     let name = global.resource[res].name;
-                    let multiplier = craftingRatio(res);
-                    if (global.tech['v_train']){
-                        multiplier *= 2;
-                    }
-                    if (global.genes['crafty']){
-                        multiplier *= 1 + ((global.genes.crafty - 1) * 0.5);
-                    }
-                    if (global.race['ambidextrous']){
-                        multiplier *= 1 + (global.race['ambidextrous'] * 0.02);
-                    }
+                    let multiplier = craftingRatio(res,true);
                     let speed = global.genes['crafty'] ? 2 : 1;
                     let final = +(global.city.foundry[res] * multiplier * speed / 140).toFixed(2);
                     let bonus = (multiplier * speed * 100).toFixed(0);
@@ -451,7 +471,7 @@ export function loadFoundry(){
                 unhover(res){
                     $(`#popCraft${res}`).hide();
                     poppers[`cr${res}`].destroy();
-                    $(`#popCraft${res}`).remove();
+                    clearElement($(`#popCraft${res}`),true);
                 },
                 level(){
                     if (global.civic.craftsman.workers === 0){
@@ -486,7 +506,7 @@ export function loadFoundry(){
         $(`#foundry .foundry`).on('mouseout',function(){
             $(`#popFoundry`).hide();
             poppers['popFoundry'].destroy();
-            $(`#popFoundry`).remove();
+            clearElement($(`#popFoundry`),true);
         });
     }
 }

@@ -1,13 +1,13 @@
-import { global, save, poppers, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, quantum_level } from './vars.js';
+import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, costMultiplier, genCivName, powerModifier, challenge_multiplier, adjustCosts, modRes, messageQueue, format_emblem } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
-import { races, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
-import { defineResources, loadMarket, spatialReasoning, resource_values, atomic_mass } from './resources.js';
+import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
+import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
 import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating, dragQueue } from './civics.js';
-import { spaceTech, interstellarTech, space, deepSpace } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
 
@@ -45,7 +45,7 @@ export const actions = {
             id: 'evo-membrane',
             title: loc('evo_membrane_title'),
             desc: loc('evo_membrane_desc'),
-            cost: { RNA(){ return (global.evolution['membrane'].count * 2) + 2; } },
+            cost: { RNA(){ return evolveCosts('membrane',2,2); } },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
                 return loc('evo_membrane_effect',[effect]);
@@ -64,15 +64,15 @@ export const actions = {
             title: loc('evo_organelles_title'),
             desc: loc('evo_organelles_desc'),
             cost: {
-                RNA(){ return (global.evolution['organelles'].count * 8) + 12; },
-                DNA(){ return (global.evolution['organelles'].count * 4) + 4; }
+                RNA(){ return evolveCosts('organelles',12,8); },
+                DNA(){ return evolveCosts('organelles',4,4); }
             },
             effect(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
                     rna++;
                 }
-                return loc('evo_organelles_effect',[rna]); 
+                return loc('evo_organelles_effect',[rna]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -87,8 +87,8 @@ export const actions = {
             title: loc('evo_nucleus_title'),
             desc: loc('evo_nucleus_desc'),
             cost: {
-                RNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 16 : 32)) + 38; },
-                DNA(){ return (global.evolution['nucleus'].count * (global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16)) + 18; }
+                RNA(){ return evolveCosts('nucleus',38, global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 16 : 32 ); },
+                DNA(){ return evolveCosts('nucleus',18, global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16 ); }
             },
             effect(){
                 let dna = (global.evolution['bilateral_symmetry'] && global.evolution['bilateral_symmetry'].count > 0) || (global.evolution['poikilohydric'] && global.evolution['poikilohydric'].count > 0) || (global.evolution['spores'] && global.evolution['spores'].count > 0) ? 2 : 1;
@@ -107,8 +107,8 @@ export const actions = {
             title: loc('evo_eukaryotic_title'),
             desc: loc('evo_eukaryotic_desc'),
             cost: {
-                RNA(){ return (global.evolution['eukaryotic_cell'].count * 20) + 20; },
-                DNA(){ return (global.evolution['eukaryotic_cell'].count * 12) + 40; }
+                RNA(){ return evolveCosts('eukaryotic_cell',20,20); },
+                DNA(){ return evolveCosts('eukaryotic_cell',40,12); }
             },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 10 + 10 : 10;
@@ -128,8 +128,8 @@ export const actions = {
             title: loc('evo_mitochondria_title'),
             desc: loc('evo_mitochondria_desc'),
             cost: {
-                RNA(){ return (global.evolution['mitochondria'].count * 50) + 75; },
-                DNA(){ return (global.evolution['mitochondria'].count * 35) + 65; }
+                RNA(){ return evolveCosts('mitochondria',75,50); },
+                DNA(){ return evolveCosts('mitochondria',65,35); }
             },
             effect: loc('evo_mitochondria_effect'),
             action(){
@@ -152,7 +152,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.evolution['sexual_reproduction'].count++;
                     removeAction(actions.evolution.sexual_reproduction.id);
-                    
+
                     global.evolution['phagocytosis'] = { count: 0 };
                     addAction('evolution','phagocytosis');
                     global.evolution['chloroplasts'] = { count: 0 };
@@ -251,7 +251,7 @@ export const actions = {
                     global.evolution['multicellular'].count++;
                     removeAction(actions.evolution.multicellular.id);
                     global.evolution['final'] = 60;
-                    
+
                     if (global.evolution['phagocytosis']){
                         global.evolution['bilateral_symmetry'] = { count: 0 };
                         addAction('evolution','bilateral_symmetry');
@@ -322,7 +322,7 @@ export const actions = {
                     global.evolution['bilateral_symmetry'].count++;
                     removeAction(actions.evolution.bilateral_symmetry.id);
                     global.evolution['final'] = 80;
-                    
+
                     global.evolution['athropods'] = { count: 0 };
                     addAction('evolution','athropods');
                     global.evolution['mammals'] = { count: 0 };
@@ -371,20 +371,22 @@ export const actions = {
                     global.evolution['final'] = 100;
                     global.evolution['sentience'] = { count: 0 };
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        if (global.evolution['chitin']){
-                            global.evolution['sporgar'] = { count: 0 };
-                            global.evolution['shroomi'] = { count: 0 };
-                            addAction('evolution','sporgar');
-                            addAction('evolution','shroomi');
-                        }
-                        else {
-                            global.evolution['entish'] = { count: 0 };
-                            global.evolution['cacti'] = { count: 0 };
-                            addAction('evolution','entish');
-                            addAction('evolution','cacti');
+
+                    if (global.evolution['chitin']){
+                        addRaces(['sporgar','shroomi']);
+                        if (races.custom.hasOwnProperty('type') && races.custom.type === 'fungi'){
+                            global.evolution['custom'] = { count: 0 };
+                            addAction('evolution','custom');
                         }
                     }
+                    else {
+                        addRaces(['entish','cacti']);
+                        if (races.custom.hasOwnProperty('type') && races.custom.type === 'plant'){
+                            global.evolution['custom'] = { count: 0 };
+                            addAction('evolution','custom');
+                        }
+                    }
+
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -433,13 +435,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['mantis'] = { count: 0 };
-                        global.evolution['scorpid'] = { count: 0 };
-                        global.evolution['antid'] = { count: 0 };
-                        addAction('evolution','mantis');
-                        addAction('evolution','scorpid');
-                        addAction('evolution','antid');
+                    addRaces(['mantis','scorpid','antid']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'insectoid'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -537,13 +536,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['human'] = { count: 0 };
-                        global.evolution['orc'] = { count: 0 };
-                        global.evolution['elven'] = { count: 0 };
-                        addAction('evolution','human');
-                        addAction('evolution','orc');
-                        addAction('evolution','elven');
+                    addRaces(['human','orc','elven']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'humanoid'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -583,13 +579,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['troll'] = { count: 0 };
-                        global.evolution['orge'] = { count: 0 };
-                        global.evolution['cyclops'] = { count: 0 };
-                        addAction('evolution','troll');
-                        addAction('evolution','orge');
-                        addAction('evolution','cyclops');
+                    addRaces(['troll','orge','cyclops']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'giant'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -629,13 +622,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['kobold'] = { count: 0 };
-                        global.evolution['goblin'] = { count: 0 };
-                        global.evolution['gnome'] = { count: 0 };
-                        addAction('evolution','kobold');
-                        addAction('evolution','goblin');
-                        addAction('evolution','gnome');
+                    addRaces(['kobold','goblin','gnome']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'small'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -675,13 +665,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['cath'] = { count: 0 };
-                        global.evolution['wolven'] = { count: 0 };
-                        global.evolution['centaur'] = { count: 0 };
-                        addAction('evolution','cath');
-                        addAction('evolution','wolven');
-                        addAction('evolution','centaur');
+                    addRaces(['cath','wolven','centaur']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'animal'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -715,11 +702,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['seraph'] = { count: 0 };
-                        global.evolution['unicorn'] = { count: 0 };
-                        addAction('evolution','seraph');
-                        addAction('evolution','unicorn');
+                    addRaces(['seraph','unicorn']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'angelic'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -753,11 +739,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['balorg'] = { count: 0 };
-                        global.evolution['imp'] = { count: 0 };
-                        addAction('evolution','balorg');
-                        addAction('evolution','imp');
+                    addRaces(['balorg','imp']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'demonic'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -789,11 +774,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['sharkin'] = { count: 0 };
-                        global.evolution['octigoran'] = { count: 0 };
-                        addAction('evolution','sharkin');
-                        addAction('evolution','octigoran');
+                    addRaces(['sharkin','octigoran']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'aquatic'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -825,11 +809,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['dryad'] = { count: 0 };
-                        global.evolution['satyr'] = { count: 0 };
-                        addAction('evolution','dryad');
-                        addAction('evolution','satyr');
+                    addRaces(['dryad','satyr']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'fey'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -861,11 +844,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['phoenix'] = { count: 0 };
-                        global.evolution['salamander'] = { count: 0 };
-                        addAction('evolution','phoenix');
-                        addAction('evolution','salamander');
+                    addRaces(['phoenix','salamander']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'heat'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -897,11 +879,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['yeti'] = { count: 0 };
-                        global.evolution['wendigo'] = { count: 0 };
-                        addAction('evolution','yeti');
-                        addAction('evolution','wendigo');
+                    addRaces(['yeti','wendigo']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'polar'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -933,11 +914,10 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['tuskin'] = { count: 0 };
-                        global.evolution['kamel'] = { count: 0 };
-                        addAction('evolution','tuskin');
-                        addAction('evolution','kamel');
+                    addRaces(['tuskin','kamel']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'sand'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
                     }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
@@ -1011,14 +991,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['arraak'] = { count: 0 };
-                        global.evolution['pterodacti'] = { count: 0 };
-                        global.evolution['dracnid'] = { count: 0 };
-                        addAction('evolution','arraak');
-                        addAction('evolution','pterodacti');
-                        addAction('evolution','dracnid');
-                    }
+                    addRaces(['arraak','pterodacti','dracnid']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -1045,14 +1018,7 @@ export const actions = {
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    if (global.race.seeded || (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1)){
-                        global.evolution['tortoisan'] = { count: 0 };
-                        global.evolution['gecko'] = { count: 0 };
-                        global.evolution['slitheryn'] = { count: 0 };
-                        addAction('evolution','tortoisan');
-                        addAction('evolution','gecko');
-                        addAction('evolution','slitheryn');
-                    }
+                    addRaces(['tortoisan','gecko','slitheryn']);
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -1075,163 +1041,138 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.evolution['sentience'].count++;
                     removeAction(actions.evolution.sentience.id);
-                    
+
                     // Trigger Next Phase of game
-                    var path = Math.floor(Math.seededRandom(0,100));
+                    let races = [];
                     if (global.evolution['humanoid']){
-                        if (path < 33){
-                            global.race.species = 'elven';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'orc';
-                        }
-                        else {
-                            global.race.species = 'human';
+                        races.push('elven');
+                        races.push('orc');
+                        races.push('human');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'humanoid'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['gigantism']){
-                        if (path < 33){
-                            global.race.species = 'troll';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'orge';
-                        }
-                        else {
-                            global.race.species = 'cyclops';
+                        races.push('troll');
+                        races.push('orge');
+                        races.push('cyclops');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'giant'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['dwarfism']){
-                        if (path < 33){
-                            global.race.species = 'kobold';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'goblin';
-                        }
-                        else {
-                            global.race.species = 'gnome';
+                        races.push('kobold');
+                        races.push('goblin');
+                        races.push('gnome');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'small'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['animalism']){
-                        if (path < 33){
-                            global.race.species = 'cath';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'wolven';
-                        }
-                        else {
-                            global.race.species = 'centaur';
+                        races.push('cath');
+                        races.push('wolven');
+                        races.push('centaur');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'animal'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['ectothermic']){
-                        if (path < 33){
-                            global.race.species = 'tortoisan';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'gecko';
-                        }
-                        else {
-                            global.race.species = 'slitheryn';
+                        races.push('tortoisan');
+                        races.push('gecko');
+                        races.push('slitheryn');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'reptilian'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['endothermic']){
-                        if (path < 33){
-                            global.race.species = 'arraak';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'pterodacti';
-                        }
-                        else {
-                            global.race.species = 'dracnid';
+                        races.push('arraak');
+                        races.push('pterodacti');
+                        races.push('dracnid');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'avian'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['chitin']){
-                        if (path < 50){
-                            global.race.species = 'sporgar';
-                        }
-                        else {
-                            global.race.species = 'shroomi';
+                        races.push('sporgar');
+                        races.push('shroomi');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fungi'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['athropods']){
-                        if (path < 33){
-                            global.race.species = 'mantis';
-                        }
-                        else if (path < 67){
-                            global.race.species = 'scorpid';
-                        }
-                        else {
-                            global.race.species = 'antid';
+                        races.push('mantis');
+                        races.push('scorpid');
+                        races.push('antid');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'insectoid'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['chloroplasts']){
-                        if (path < 50){
-                            global.race.species = 'entish';
-                        }
-                        else {
-                            global.race.species = 'cacti';
+                        races.push('entish');
+                        races.push('cacti');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'plant'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['aquatic']){
-                        if (path < 50){
-                            global.race.species = 'sharkin';
-                        }
-                        else {
-                            global.race.species = 'octigoran';
+                        races.push('sharkin');
+                        races.push('octigoran');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'aquatic'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['fey']){
-                        if (path < 50){
-                            global.race.species = 'dryad';
-                        }
-                        else {
-                            global.race.species = 'satyr';
+                        races.push('dryad');
+                        races.push('satyr');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fey'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['heat']){
-                        if (path < 50){
-                            global.race.species = 'phoenix';
-                        }
-                        else {
-                            global.race.species = 'salamander';
+                        races.push('phoenix');
+                        races.push('salamander');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'heat'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['polar']){
-                        if (path < 50){
-                            global.race.species = 'yeti';
-                        }
-                        else {
-                            global.race.species = 'wendigo';
+                        races.push('yeti');
+                        races.push('wendigo');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'polar'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['sand']){
-                        if (path < 50){
-                            global.race.species = 'tuskin';
-                        }
-                        else {
-                            global.race.species = 'kamel';
+                        races.push('tuskin');
+                        races.push('kamel');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'sand'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['demonic']){
-                        if (path < 50){
-                            global.race.species = 'balorg';
-                        }
-                        else {
-                            global.race.species = 'imp';
+                        races.push('balorg');
+                        races.push('imp');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'demonic'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['celestial']){
-                        if (path < 50){
-                            global.race.species = 'seraph';
-                        }
-                        else {
-                            global.race.species = 'unicorn';
+                        races.push('seraph');
+                        races.push('unicorn');
+                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'angelic'){
+                            races.push('custom');
                         }
                     }
                     else if (global.evolution['eggshell']){
-                        global.race.species = 'dracnid';
+                        races.push('dracnid');
                     }
                     else {
-                        global.race.species = 'human';
+                        races.push('human');
+                    }
+
+                    global.race.species = races[Math.floor(Math.seededRandom(0,races.length))];
+                    if (global.stats.achieve[`extinct_${global.race.species}`] && global.stats.achieve[`extinct_${global.race.species}`].l >= 1){
+                        global.race.species = races[Math.floor(Math.seededRandom(0,races.length))];
                     }
 
                     sentience();
@@ -1268,6 +1209,18 @@ export const actions = {
                 }
                 else if (global.evolution['aquatic']){
                     return format_emblem('genus_aquatic');
+                }
+                else if (global.evolution['fey']){
+                    return format_emblem('genus_fey');
+                }
+                else if (global.evolution['heat']){
+                    return format_emblem('genus_heat');
+                }
+                else if (global.evolution['polar']){
+                    return format_emblem('genus_polar');
+                }
+                else if (global.evolution['sand']){
+                    return format_emblem('genus_sand');
                 }
                 else if (global.evolution['demonic']){
                     return format_emblem('genus_demonic');
@@ -2060,6 +2013,26 @@ export const actions = {
             },
             emblem(){ return format_emblem('extinct_unicorn'); }
         },
+        custom: {
+            id: 'evo-custom',
+            title(){ return races.custom.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.custom.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.custom.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'custom';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_custom'); }
+        },
         bunker: {
             id: 'evo-bunker',
             title: loc('evo_bunker'),
@@ -2084,6 +2057,8 @@ export const actions = {
                     global.evolution['crispr'] = { count: 0 };
                     global.evolution['junker'] = { count: 0 };
                     global.evolution['joyless'] = { count: 0 };
+                    global.evolution['steelen'] = { count: 0 };
+                    global.evolution['emfield'] = { count: 0 };
                     if (global.stats.achieve['whitehole']){
                         global.evolution['decay'] = { count: 0 };
                     }
@@ -2100,8 +2075,12 @@ export const actions = {
                     challengeActionHeader();
                     addAction('evolution','junker');
                     addAction('evolution','joyless');
+                    addAction('evolution','steelen');
                     if (global.stats.achieve['whitehole']){
                         addAction('evolution','decay');
+                    }
+                    if (global.stats.achieve['ascended']){
+                        addAction('evolution','emfield');
                     }
                 }
                 return false;
@@ -2238,7 +2217,7 @@ export const actions = {
             cost: {
                 DNA(){ return 25; }
             },
-            effect(){ 
+            effect(){
                 let challengeType = global.race.universe === 'antimatter' ? loc('evo_challenge_mastery') : loc('evo_challenge_plasmid');
                 return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_challenge_junker_effect',[challengeType])}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect',[challengeType]); },
             action(){
@@ -2246,7 +2225,7 @@ export const actions = {
                     global.race.species = 'junker';
                     global.race['junker'] = 1;
                     if (global.race.universe === 'antimatter') {
-                        global.race['weak_mastery'] = 1; 
+                        global.race['weak_mastery'] = 1;
                     }
                     else {
                         global.race['no_plasmid'] = 1;
@@ -2289,6 +2268,34 @@ export const actions = {
             flair: loc('evo_challenge_joyless_flair'),
             highlight(){ return global.race['joyless'] ? true : false; }
         },
+        steelen: {
+            id: 'evo-steelen',
+            title: loc('evo_challenge_steelen'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_steelen_desc')}</div>` : loc('evo_challenge_steelen_desc'); },
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect: loc('evo_challenge_steelen_effect'),
+            action(){
+                if (payCosts(actions.evolution.steelen.cost)){
+                    if (payCosts($(this)[0].cost)){
+                        if (global.race['steelen']){
+                            delete global.race['steelen'];
+                            $(`#${$(this)[0].id}`).removeClass('hl');
+                        }
+                        else {
+                            global.race['steelen'] = 1;
+                            $(`#${$(this)[0].id}`).addClass('hl');
+                        }
+                        drawAchieve();
+                    }
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('steelen'); },
+            flair: loc('evo_challenge_steelen_flair'),
+            highlight(){ return global.race['steelen'] ? true : false; }
+        },
         decay: {
             id: 'evo-decay',
             title: loc('evo_challenge_decay'),
@@ -2317,12 +2324,41 @@ export const actions = {
             flair: loc('evo_challenge_decay_flair'),
             highlight(){ return global.race['decay'] ? true : false; }
         },
+        emfield: {
+            id: 'evo-emfield',
+            title: loc('evo_challenge_emfield'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_emfield_desc')}</div>` : loc('evo_challenge_emfield_desc'); },
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect: loc('evo_challenge_emfield_effect'),
+            action(){
+                if (payCosts(actions.evolution.decay.cost)){
+                    if (payCosts($(this)[0].cost)){
+                        if (global.race['emfield']){
+                            delete global.race['emfield'];
+                            $(`#${$(this)[0].id}`).removeClass('hl');
+                        }
+                        else {
+                            global.race['emfield'] = 1;
+                            $(`#${$(this)[0].id}`).addClass('hl');
+                        }
+                        drawAchieve();
+                    }
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('technophobe'); },
+            flair: loc('evo_challenge_emfield_flair'),
+            highlight(){ return global.race['emfield'] ? true : false; }
+        },
     },
     city: {
         gift: {
             id: 'city-gift',
             title: loc('city_gift'),
             desc: loc('city_gift_desc'),
+            wiki: false,
             category: 'outskirts',
             reqs: { primitive: 1 },
             no_queue(){ return true },
@@ -2342,12 +2378,12 @@ export const actions = {
                         if (global.race.universe === 'antimatter'){
                             global.race.Plasmid.anti += 100;
                             global.stats.antiplasmid += 100;
-                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'success');
+                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'info');
                         }
                         else {
                             global.race.Plasmid.count += 100;
                             global.stats.plasmid += 100;
-                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'success');
+                            messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info');
                         }
                         drawCity();
                     }
@@ -2381,7 +2417,7 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',global.race['strong'] ? 2 : 1);
+                    modRes('Food',global.race['strong'] ? traits.strong.vars[0] : 1);
                 }
                 return false;
             }
@@ -2412,7 +2448,7 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',global.race['strong'] ? 2 : 1);
+                    modRes('Lumber',global.race['strong'] ? traits.strong.vars[0] : 1);
                 }
                 return false;
             }
@@ -2426,7 +2462,7 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    modRes('Stone',global.race['strong'] ? 2 : 1);
+                    modRes('Stone',global.race['strong'] ? traits.strong.vars[0] : 1);
                 }
                 return false;
             }
@@ -2436,10 +2472,10 @@ export const actions = {
             title: loc('city_evil'),
             desc(){
                 if (global.race['soul_eater']){
-                    return global.tech['primitive'] ? (global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1');
+                    return global.tech['primitive'] ? (global.resource.hasOwnProperty('furs') && global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1');
                 }
                 else {
-                    return global.resource.Furs.display ? loc('city_evil_desc4') : loc('city_evil_desc1');
+                    return global.resource.hasOwnProperty('furs') && global.resource.Furs.display ? loc('city_evil_desc4') : loc('city_evil_desc1');
                 }
             },
             category: 'outskirts',
@@ -2449,13 +2485,13 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',1);
+                    modRes('Lumber',global.race['strong'] ? traits.strong.vars[0] : 1);
                 }
                 if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',1);
+                    modRes('Food',global.race['strong'] ? traits.strong.vars[0] : 1);
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
-                    modRes('Furs',1);
+                    modRes('Furs',global.race['strong'] ? traits.strong.vars[0] : 1);
                 }
                 return false;
             }
@@ -2497,29 +2533,30 @@ export const actions = {
             id: 'city-s_alter',
             title: loc('city_s_alter'),
             desc(){
-                return global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
+                return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
             },
             category: 'outskirts',
             reqs: { mining: 1 },
             trait: ['cannibalize'],
             cost: {
-                Stone(){ return global.city['s_alter'].count >= 1 ? 0 : 100; }
+                Stone(){ return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? 0 : 100; }
             },
             effect(){
-                let desc = '';
-                if (global.city.s_alter.rage > 0){
+                let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
+                let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.rage > 0){
                     desc = desc + `<div>${loc('city_s_alter_rage',[15,timeFormat(global.city.s_alter.rage)])}</div>`;
                 }
-                if (global.city.s_alter.regen > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.regen > 0){
                     desc = desc + `<div>${loc('city_s_alter_regen',[15,timeFormat(global.city.s_alter.regen)])}</div>`;
                 }
-                if (global.city.s_alter.mind > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mind > 0){
                     desc = desc + `<div>${loc('city_s_alter_mind',[15,timeFormat(global.city.s_alter.mind)])}</div>`;
                 }
-                if (global.city.s_alter.mine > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mine > 0){
                     desc = desc + `<div>${loc('city_s_alter_mine',[15,timeFormat(global.city.s_alter.mine)])}</div>`;
                 }
-                if (global.city.s_alter.harvest > 0){
+                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.harvest > 0){
                     let jobType = global.race['evil'] && !global.race['soul_eater'] ? loc('job_reclaimer') : loc('job_lumberjack');
                     desc = desc + `<div>${loc('city_s_alter_harvest',[15,timeFormat(global.city.s_alter.harvest),jobType])}</div>`;
                 }
@@ -2531,8 +2568,12 @@ export const actions = {
                         global.city['s_alter'].count++;
                     }
                     else {
-                        if (global['resource'][global.race.species].amount > 0){
+                        let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
+                        if (sacrifices > 0){
                             global['resource'][global.race.species].amount--;
+                            if (global.civic.d_job !== 'unemployed'){
+                                global.civic[global.civic.d_job].workers--;
+                            }
                             global['resource'].Food.amount += Math.rand(250,1000);
                             let low = 300;
                             let high = 600;
@@ -2552,7 +2593,7 @@ export const actions = {
                                         break;
                                 }
                             }
-                            switch (Math.rand(0,5)){
+                            switch (global.race['kindling_kindred'] ? Math.rand(0,4) : Math.rand(0,5)){
                                 case 0:
                                     global.city.s_alter.rage += Math.rand(low,high);
                                     break;
@@ -2584,14 +2625,14 @@ export const actions = {
             desc: loc('city_basic_housing_desc'),
             category: 'residential',
             reqs: { housing: 1 },
-            cost: { 
-                Money(offset){ 
-                    if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){ 
+            cost: {
+                Money(offset){
+                    if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){
                         return costMultiplier('basic_housing', offset, 20, 1.17);
-                    } 
-                    else { 
-                        return 0; 
-                    } 
+                    }
+                    else {
+                        return 0;
+                    }
                 },
                 Lumber(offset){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', offset, 10, 1.23); },
                 Stone(offset){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', offset, 10, 1.23) : 0; }
@@ -2616,7 +2657,7 @@ export const actions = {
             desc: loc('city_cottage_desc'),
             category: 'residential',
             reqs: { housing: 2 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('cottage', offset, 900, 1.15); },
                 Plywood(offset){ return costMultiplier('cottage', offset, 25, 1.25); },
                 Brick(offset){ return costMultiplier('cottage', offset, 20, 1.25); },
@@ -2648,7 +2689,7 @@ export const actions = {
             desc: `<div>${loc('city_apartment_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             category: 'residential',
             reqs: { housing: 3 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('apartment', offset, 1750, 1.26) - 500; },
                 Furs(offset){ return costMultiplier('apartment', offset, 725, 1.32) - 500; },
                 Copper(offset){ return costMultiplier('apartment', offset, 650, 1.32) - 500; },
@@ -2658,13 +2699,13 @@ export const actions = {
             effect(){
                 if (global.tech['home_safe']){
                     let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '10000' : '5000') : '2000');
-                    return `<div>${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}</div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
+                    return `<div>${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
-                    return `${loc('plus_max_citizens',[5])}. ${loc('minus_power',[1])}`;
+                    return `${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
                 }
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['apartment'].count++;
@@ -2684,9 +2725,9 @@ export const actions = {
             category: 'residential',
             reqs: { housing: 1, currency: 1 },
             condition(){
-                return (global.race['soul_eater'] && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false; 
+                return (global.race['soul_eater'] && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
             },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('lodge', offset, 50, 1.32); },
                 Lumber(offset){ return costMultiplier('lodge', offset, 20, 1.36); },
                 Stone(offset){ return costMultiplier('lodge', offset, 10, 1.36); }
@@ -2707,15 +2748,15 @@ export const actions = {
             desc: loc('city_food_storage'),
             category: 'trade',
             reqs: { hunting: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('smokehouse', offset, 85, 1.32); },
                 Lumber(offset){ return costMultiplier('smokehouse', offset, 65, 1.36) },
                 Stone(offset){ return costMultiplier('smokehouse', offset, 50, 1.36); }
             },
-            effect(){ 
+            effect(){
                 let food = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
-                return loc('plus_max_resource',[food, loc('resource_Food_name')]); 
+                return loc('plus_max_resource',[food, loc('resource_Food_name')]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2732,7 +2773,7 @@ export const actions = {
             desc: loc('city_soul_well_desc'),
             category: 'trade',
             reqs: { soul_eater: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ if (global.city['soul_well'] && global.city['soul_well'].count >= 3){ return costMultiplier('soul_well', offset, 50, 1.32);} else { return 0; } },
                 Lumber(offset){ return costMultiplier('soul_well', offset, 20, 1.36); },
                 Stone(offset){ return costMultiplier('soul_well', offset, 10, 1.36); }
@@ -2740,7 +2781,8 @@ export const actions = {
             effect(){
                 let souls = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ souls = Math.round(souls * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
-                return `<div>${loc('city_soul_well_effect',[global.race['ghostly'] ? 3.5 : 2])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`; 
+                let production = global.race['ghostly'] ? (2 + traits.ghostly.vars[1]) : 2;
+                return `<div>${loc('city_soul_well_effect',[production])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2756,15 +2798,16 @@ export const actions = {
             desc: loc('city_slave_pen'),
             category: 'commercial',
             reqs: { slaves: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('slave_pen', offset, 250, 1.32); },
                 Lumber(offset){ return costMultiplier('slave_pen', offset, 100, 1.36); },
                 Stone(offset){ return costMultiplier('slave_pen', offset, 75, 1.36); },
                 Copper(offset){ return costMultiplier('slave_pen', offset, 10, 1.36); }
             },
             effect(){
-                let max = global.city.slave_pen.count * 5;
-                return `<div>${loc('city_slave_pen_effect',[5])}</div><div>${loc('city_slave_pen_effect2',[global.city.slave_pen.slaves,max])}</div>`; 
+                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 5 : 5;
+                let slaves = global.city['slave_pen'] ? global.city.slave_pen.slaves * 5 : 0;
+                return `<div>${loc('city_slave_pen_effect',[5])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2783,7 +2826,7 @@ export const actions = {
             desc: loc('city_farm_desc'),
             category: 'residential',
             reqs: { agriculture: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', offset, 50, 1.32);} else { return 0; } },
                 Lumber(offset){ return costMultiplier('farm', offset, 20, 1.36); },
                 Stone(offset){ return costMultiplier('farm', offset, 10, 1.36); }
@@ -2795,7 +2838,7 @@ export const actions = {
                 farming *= global.city.biome === 'hellscape' ? 0.25 : 1;
                 farming *= global.city.ptrait === 'trashed' ? 0.75 : 1;
                 farming = +farming.toFixed(2);
-                return global.tech['farm'] ? `<div>${loc('city_farm_effect',[farming])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect',[farming]); 
+                return global.tech['farm'] ? `<div>${loc('city_farm_effect',[farming])}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect',[farming]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2815,7 +2858,7 @@ export const actions = {
             title(){
                 return global.tech['agriculture'] >= 5 ? loc('city_mill_title2') : loc('city_mill_title1');
             },
-            desc(){ 
+            desc(){
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
                     let power = global.race['environmentalist'] ? 1.5 : 1;
@@ -2828,13 +2871,13 @@ export const actions = {
             category: 'utility',
             reqs: { agriculture: 4 },
             not_tech: ['wind_plant'],
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('mill', offset, 1000, 1.31); },
                 Lumber(offset){ return costMultiplier('mill', offset, 600, 1.33); },
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
+            powered(){ return powerCostMod(global.race['environmentalist'] ? -1.5 : -1); },
             power_reqs: { agriculture: 6 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2861,9 +2904,10 @@ export const actions = {
                 let power = global.race['environmentalist'] ? 1.5 : 1;
                 return loc('city_windmill_desc',[power]);
             },
+            wiki: false,
             category: 'utility',
             reqs: { wind_plant: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('windmill', offset, 1000, 1.31); },
                 Lumber(offset){ return costMultiplier('windmill', offset, 600, 1.33); },
                 Iron(offset){ return costMultiplier('windmill', offset, 150, 1.33); },
@@ -2883,12 +2927,12 @@ export const actions = {
             desc: loc('city_food_storage'),
             category: 'trade',
             reqs: { agriculture: 3 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('silo', offset, 85, 1.32); },
                 Lumber(offset){ return costMultiplier('silo', offset, 65, 1.36) },
                 Stone(offset){ return costMultiplier('silo', offset, 50, 1.36); }
             },
-            effect(){ 
+            effect(){
                 let food = spatialReasoning(500);
                 if (global.stats.achieve['blackhole']){ food = Math.round(food * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 return loc('plus_max_resource',[food, loc('resource_Food_name')]);
@@ -2908,7 +2952,7 @@ export const actions = {
             desc: loc('city_garrison_desc'),
             category: 'military',
             reqs: { military: 1, housing: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('garrison', offset, 240, 1.5); },
                 Stone(offset){ return costMultiplier('garrison', offset, 260, 1.46); }
             },
@@ -2945,7 +2989,7 @@ export const actions = {
             desc: loc('city_hospital_desc'),
             category: 'military',
             reqs: { medic: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('hospital', offset, 22000, 1.32); },
                 Furs(offset){ return costMultiplier('hospital', offset, 4000, 1.32); },
                 Aluminium(offset){ return costMultiplier('hospital', offset, 10000, 1.32); }
@@ -2968,7 +3012,7 @@ export const actions = {
             desc: loc('city_boot_camp_desc'),
             category: 'military',
             reqs: { boot_camp: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('boot_camp', offset, 50000, 1.32); },
                 Lumber(offset){ return costMultiplier('boot_camp', offset, 21500, 1.32); },
                 Aluminium(offset){ return costMultiplier('boot_camp', offset, 12000, 1.32); },
@@ -2988,8 +3032,8 @@ export const actions = {
         },
         shed: {
             id: 'city-shed',
-            title(){ 
-                return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2')); 
+            title(){
+                return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
             },
             desc(){
                 let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
@@ -3000,19 +3044,19 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('shed', offset, 75, 1.22); },
                 Lumber(offset){
-                    if (global.tech['storage'] && global.tech['storage'] < 4){ 
+                    if (global.tech['storage'] && global.tech['storage'] < 4){
                         return costMultiplier('shed', offset, 55, 1.32);
                     }
-                    else { 
-                        return 0; 
+                    else {
+                        return 0;
                     }
                 },
                 Stone(offset){
-                    if (global.tech['storage'] && global.tech['storage'] < 3){ 
+                    if (global.tech['storage'] && global.tech['storage'] < 3){
                         return costMultiplier('shed', offset, 45, 1.32);
                     }
-                    else { 
-                        return 0; 
+                    else {
+                        return 0;
                     }
                 },
                 Iron(offset){
@@ -3020,15 +3064,15 @@ export const actions = {
                         return costMultiplier('shed', offset, 22, 1.32);
                     }
                     else {
-                        return 0; 
+                        return 0;
                     }
                 },
-                Cement(offset){ 
+                Cement(offset){
                     if (global.tech['storage'] && global.tech['storage'] >= 3){
                         return costMultiplier('shed', offset, 18, 1.32);
                     }
                     else {
-                        return 0; 
+                        return 0;
                     }
                 }
             },
@@ -3131,7 +3175,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.resource.Crates.display === false){
-                        messageQueue(loc('city_storage_yard_msg'),'success');
+                        messageQueue(loc('city_storage_yard_msg'),'info');
                     }
                     global.city['storage_yard'].count++;
                     global.settings.showResources = true;
@@ -3149,7 +3193,7 @@ export const actions = {
                     global.resource.Crates.max += cap;
                     if (!global.resource.Crates.display){
                         global.resource.Crates.display = true;
-                        $('#resources').empty();
+                        clearElement($('#resources'));
                         defineResources();
                     }
                     return true;
@@ -3181,7 +3225,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'success');
+                        messageQueue(loc('city_warehouse_msg'),'info');
                     }
                     global.city['warehouse'].count++;
                     global.settings.showResources = true;
@@ -3196,7 +3240,7 @@ export const actions = {
                     global.resource.Containers.max += cap;
                     if (!global.resource.Containers.display){
                         global.resource.Containers.display = true;
-                        $('#resources').empty();
+                        clearElement($('#resources'));
                         defineResources();
                     }
                     return true;
@@ -3213,19 +3257,19 @@ export const actions = {
             },
             category: 'commercial',
             reqs: { banking: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('bank', offset, 250, 1.35); },
                 Lumber(offset){ return costMultiplier('bank', offset, 75, 1.32); },
                 Stone(offset){ return costMultiplier('bank', offset, 100, 1.35); }
             },
-            effect(){ 
+            effect(){
                 let vault = bank_vault();
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
 
                 vault = '$'+vault;
                 if (global.tech['banking'] >= 2){
-                    return `<div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[1,loc('banker_name')])}</div>`; 
+                    return `<div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[1,loc('banker_name')])}</div>`;
                 }
                 else {
                     return loc('plus_max_resource',[vault,loc('resource_Money_name')]);
@@ -3247,7 +3291,7 @@ export const actions = {
             desc: loc('city_graveyard_desc'),
             category: 'industrial',
             reqs: { reclaimer: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ if (global.city['graveyard'] && global.city['graveyard'].count >= 5){ return costMultiplier('graveyard', offset, 5, 1.85);} else { return 0; } },
                 Lumber(offset){ return costMultiplier('graveyard', offset, 2, 1.95); },
                 Stone(offset){ return costMultiplier('graveyard', offset, 6, 1.9); }
@@ -3272,7 +3316,7 @@ export const actions = {
             desc: loc('city_lumber_yard_desc'),
             category: 'industrial',
             reqs: { axe: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', offset, 5, 1.85);} else { return 0; } },
                 Lumber(offset){ return costMultiplier('lumber_yard', offset, 6, 1.9); },
                 Stone(offset){ return costMultiplier('lumber_yard', offset, 2, 1.95); }
@@ -3298,7 +3342,7 @@ export const actions = {
             desc: loc('city_sawmill_desc'),
             category: 'industrial',
             reqs: { saw: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('sawmill', offset, 3000, 1.26); },
                 Iron(offset){ return costMultiplier('sawmill', offset, 400, 1.26); },
                 Cement(offset){ return costMultiplier('sawmill', offset, 420, 1.26); }
@@ -3309,14 +3353,14 @@ export const actions = {
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
-                    desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`; 
+                    desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`;
                 }
                 if (global.city.powered){
-                    desc = desc + `<div>${loc('city_sawmill_effect3',[4])}</div>`; 
+                    desc = desc + `<div class="has-text-caution">${loc('city_sawmill_effect3',[4,$(this)[0].powered()])}</div>`;
                 }
                 return desc;
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['sawmill'].count++;
@@ -3337,7 +3381,7 @@ export const actions = {
             desc: loc('city_rock_quarry_desc'),
             category: 'industrial',
             reqs: { mining: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', offset, 20, 1.45);} else { return 0; } },
                 Lumber(offset){ return costMultiplier('rock_quarry', offset, 50, 1.36); },
                 Stone(offset){ return costMultiplier('rock_quarry', offset, 10, 1.36); }
@@ -3346,13 +3390,13 @@ export const actions = {
                 let stone = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div><div>${loc('city_rock_quarry_effect2',[4])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div><div class="has-text-caution">${loc('city_rock_quarry_effect2',[4,$(this)[0].powered()])}</div>`;
                 }
                 else {
                     return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>`;
                 }
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3373,21 +3417,21 @@ export const actions = {
             desc: loc('city_cement_plant_desc'),
             category: 'industrial',
             reqs: { cement: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('cement_plant', offset, 3000, 1.5); },
                 Lumber(offset){ return costMultiplier('cement_plant', offset, 1800, 1.36); },
                 Stone(offset){ return costMultiplier('cement_plant', offset, 2000, 1.32); }
             },
-            effect(){ 
+            effect(){
                 if (global.tech['cement'] >= 5){
                     let screws = global.tech['cement'] >= 6 ? 8 : 5;
-                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div>${loc('city_cement_plant_effect2',[$(this)[0].powered(),screws])}</div>`;
+                    return `<div>${loc('city_cement_plant_effect1',[2])}</div><div class="has-text-caution">${loc('city_cement_plant_effect2',[$(this)[0].powered(),screws])}</div>`;
                 }
                 else {
                     return loc('city_cement_plant_effect1',[2]);
                 }
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             power_reqs: { cement: 5 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3427,6 +3471,14 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.city['foundry'].count === 0){
+                        if (global.race['no_craft']) {
+                            messageQueue(loc('city_foundry_msg2'),'info');
+                        }
+                        else {
+                            messageQueue(loc('city_foundry_msg1'),'info');
+                        }
+                    }
                     global.city['foundry'].count++;
                     global.civic.craftsman.max++;
                     global.civic.craftsman.display = true;
@@ -3449,23 +3501,23 @@ export const actions = {
         factory: {
             id: 'city-factory',
             title: loc('city_factory'),
-            desc: `<div>${loc('city_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`, 
+            desc: `<div>${loc('city_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             category: 'industrial',
             reqs: { high_tech: 3 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('factory', offset, 25000, 1.32); },
                 Cement(offset){ return costMultiplier('factory', offset, 1000, 1.32); },
                 Steel(offset){ return costMultiplier('factory', offset, 7500, 1.32); },
                 Titanium(offset){ return costMultiplier('factory', offset, 2500, 1.32); }
             },
             effect(){
-                let desc = `<div>${loc('city_factory_effect',[$(this)[0].powered()])}</div>`;
+                let desc = `<div>${loc('city_factory_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 if (global.tech['foundry'] >= 7){
                     desc = desc + `<div>${loc('city_crafted_mats',[5])}</div>`;
                 }
                 return desc;
             },
-            powered(){ return 3; },
+            powered(){ return powerCostMod(3); },
             special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3487,16 +3539,16 @@ export const actions = {
             desc: loc('city_smelter_desc'),
             category: 'industrial',
             reqs: { smelting: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('smelter', offset, 1000, 1.32); },
                 Iron(offset){ return costMultiplier('smelter', offset, 500, 1.33); }
             },
-            effect(){ 
+            effect(){
                 var iron_yield = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
                 if (global.race['pyrophobia']){
                     iron_yield *= 0.9;
                 }
-                if (global.tech['smelting'] >= 2){
+                if (global.tech['smelting'] >= 2 && !global.race['steelen']){
                     return loc('city_smelter_effect2',[iron_yield]);
                 }
                 else {
@@ -3508,7 +3560,12 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.city['smelter'].count++;
                     if (global.race['kindling_kindred']){
-                        global.city['smelter'].Coal++;
+                        if (global.race['evil']) {
+                            global.city['smelter'].Wood++;
+                        }
+                        else {
+                            global.city['smelter'].Coal++;
+                        }
                     }
                     else {
                         global.city['smelter'].Wood++;
@@ -3528,18 +3585,18 @@ export const actions = {
             desc: loc('city_metal_refinery_desc'),
             category: 'industrial',
             reqs: { alumina: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('metal_refinery', offset, 2500, 1.35); },
                 Steel(offset){ return costMultiplier('metal_refinery', offset, 350, 1.35); }
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             power_reqs: { alumina: 2 },
             effect() {
                 if (global.tech['alumina'] >= 2){
-                    return `<div>${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</div>`;
+                    return `<span>${loc('city_metal_refinery_effect',[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</span>`;
                 }
                 else {
-                    return `<div>${loc('city_metal_refinery_effect',[6])}</div>`;
+                    return loc('city_metal_refinery_effect',[6]);
                 }
             },
             action(){
@@ -3563,19 +3620,19 @@ export const actions = {
             desc: loc('city_mine_desc'),
             category: 'industrial',
             reqs: { mining: 2 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('mine', offset, 60, 1.6); },
                 Lumber(offset){ return costMultiplier('mine', offset, 175, 1.38); }
             },
-            effect() { 
+            effect() {
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_mine_effect1')}</div><div>${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
+                    return `<div>${loc('city_mine_effect1')}</div><div class="has-text-caution">${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
                     return loc('city_mine_effect1');
                 }
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3597,20 +3654,20 @@ export const actions = {
             desc: loc('city_coal_mine_desc'),
             category: 'industrial',
             reqs: { mining: 4 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('coal_mine', offset, 480, 1.4); },
                 Lumber(offset){ return costMultiplier('coal_mine', offset, 250, 1.36); },
                 Wrought_Iron(offset){ return costMultiplier('coal_mine', offset, 18, 1.36); }
             },
-            effect() { 
+            effect() {
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_coal_mine_effect1')}</div><div>${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
+                    return `<div>${loc('city_coal_mine_effect1')}</div><div class="has-text-caution">${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
                     return loc('city_coal_mine_effect1');
                 }
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3632,12 +3689,12 @@ export const actions = {
             desc: loc('city_oil_well_desc'),
             category: 'industrial',
             reqs: { oil: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('oil_well', offset, 5000, 1.5); },
                 Cement(offset){ return costMultiplier('oil_well', offset, 5250, 1.5); },
                 Steel(offset){ return costMultiplier('oil_well', offset, 6000, 1.5); }
             },
-            effect() { 
+            effect() {
                 let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;
                 if (global.tech['oil'] >= 7){
                     oil *= 2;
@@ -3669,12 +3726,12 @@ export const actions = {
             desc: loc('city_oil_depot_desc'),
             category: 'trade',
             reqs: { oil: 2 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('oil_depot', offset, 2500, 1.46); },
                 Cement(offset){ return costMultiplier('oil_depot', offset, 3750, 1.46); },
                 Sheet_Metal(offset){ return costMultiplier('oil_depot', offset, 100, 1.45); }
             },
-            effect() { 
+            effect() {
                 let oil = spatialReasoning(1000);
                 oil *= global.tech['world_control'] ? 1.5 : 1;
                 let effect = `<div>${loc('plus_max_resource',[oil,loc('resource_Oil_name')])}.</div>`;
@@ -3711,26 +3768,27 @@ export const actions = {
             desc: loc('city_trade_desc'),
             category: 'trade',
             reqs: { trade: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('trade', offset, 500, 1.36); },
                 Lumber(offset){ return costMultiplier('trade', offset, 125, 1.36); },
                 Stone(offset){ return costMultiplier('trade', offset, 50, 1.36); },
                 Furs(offset){ return costMultiplier('trade', offset, 65, 1.36); }
             },
             effect(){
-                let routes = global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+                let routes = global.race['xenophobic'] || global.race['nomadic'] ? global.tech.trade : global.tech.trade + 1;
                 if (global.tech['trade'] && global.tech['trade'] >= 3){
                     routes--;
                 }
-                return loc('city_trade_effect',[routes]); 
+                return loc('city_trade_effect',[routes]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['trade'].count++;
-                    global.city.market.mtrade += global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-                    if (global.race['resourceful']){
-                        global.city.market.mtrade++;
+                    let routes = global.race['xenophobic'] || global.race['nomadic'] ? global.tech.trade : global.tech.trade + 1;
+                    if (global.tech['trade'] && global.tech['trade'] >= 3){
+                        routes--;
                     }
+                    global.city.market.mtrade += routes;
                     return true;
                 }
                 return false;
@@ -3741,9 +3799,10 @@ export const actions = {
             title: loc('city_wharf'),
             desc: loc('city_wharf_desc'),
             category: 'trade',
+            era: 'industrialized',
             reqs: { wharf: 1 },
             not_trait: ['thalassophobia'],
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('wharf', offset, 62000, 1.32); },
                 Lumber(offset){ return costMultiplier('wharf', offset, 44000, 1.32); },
                 Cement(offset){ return costMultiplier('wharf', offset, 3000, 1.32); },
@@ -3755,10 +3814,16 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>${loc('city_trade_effect',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`; 
+                return `<div>${loc('city_trade_effect',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.resource.Containers.display === false){
+                        messageQueue(loc('city_warehouse_msg'),'info');
+                        global.resource.Containers.display = true;
+                        clearElement($('#resources'));
+                        defineResources();
+                    }
                     global.city['wharf'].count++;
                     global.city.market.mtrade += 2;
                     let vol = global.tech['world_control'] ? 15 : 10
@@ -3778,7 +3843,7 @@ export const actions = {
             desc: loc('city_tourist_center_desc'),
             category: 'commercial',
             reqs: { monument: 2 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('tourist_center', offset, 100000, 1.36); },
                 Stone(offset){ return costMultiplier('tourist_center', offset, 25000, 1.36); },
                 Furs(offset){ return costMultiplier('tourist_center', offset, 7500, 1.36); },
@@ -3788,9 +3853,9 @@ export const actions = {
                 let amp = global.civic.govern.type === 'corpocracy' ? 2 : 1;
                 let cas = global.civic.govern.type === 'corpocracy' ? 10 : 5;
                 let mon = global.civic.govern.type === 'corpocracy' ? 4 : 2;
-                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`; 
+                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`;
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['tourist_center'].count++;
@@ -3812,7 +3877,7 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('amphitheatre', offset, 50, 1.75); },
                 Stone(offset){ return costMultiplier('amphitheatre', offset, 200, 1.75); }
             },
-            effect: `<div>${loc('city_max_entertainer')}</div><div>${loc('city_max_morale')}</div>`,
+            effect: `<div>${loc('city_max_entertainer',[1])}</div><div>${loc('city_max_morale')}</div>`,
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['amphitheatre'].count++;
@@ -3846,18 +3911,18 @@ export const actions = {
                 }
                 money = Math.round(money);
                 money = '$'+money;
-                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer')}</div>`;
+                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
                 if (global.tech['gambling'] >= 2){
                     let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
                     if (global.civic.govern.type === 'corpocracy'){
                         cash = (cash * 3).toFixed(2);
                     }
-                    desc = desc + `<div>${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`
+                    desc = desc + `<div class="has-text-caution">${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`;
                 }
                 return desc;
             },
-            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 3 : 4; },
+            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 3 : 4); },
             power_reqs: { gambling: 2 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3876,7 +3941,7 @@ export const actions = {
             id: 'city-temple',
             title: loc('city_temple'),
             desc(){
-                let entity = races[global.race.gods.toLowerCase()].entity;
+                let entity = global.race.gods !== 'none' ? races[global.race.gods.toLowerCase()].entity : races[global.race.species].entity;
                 return loc('city_temple_desc',[entity]);
             },
             category: 'commercial',
@@ -3894,27 +3959,40 @@ export const actions = {
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         faith += global.civic.professor.workers * 0.02;
                     }
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+                        faith += priest_bonus * global.civic.priest.workers;
+                    }
                     if (global.race['spiritual']){
-                        faith *= 1.13;
+                        faith *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         faith *= 1.05;
                     }
-                    faith = +(faith).toFixed(2);
-                    desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[6])}</div>`;
+                    faith = +(faith).toFixed(3);
+                    let temple = 6;
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest = global.genes['ancients'] >= 4 ? 0.12 : 0.08;
+                        temple += priest * global.civic.priest.workers;
+                    }
+                    desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[temple])}</div>`;
                 }
                 else if (global.race['no_plasmid']){
                     let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         faith += +(global.civic.professor.workers * 0.04).toFixed(2);
                     }
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+                        faith += priest_bonus * global.civic.priest.workers;
+                    }
                     if (global.race['spiritual']){
-                        faith *= 1.13;
+                        faith *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         faith *= 1.05;
                     }
-                    faith = +(faith).toFixed(2);
+                    faith = +(faith).toFixed(3);
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
                 }
                 else {
@@ -3922,13 +4000,17 @@ export const actions = {
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
                     }
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+                        plasmid += priest_bonus * global.civic.priest.workers;
+                    }
                     if (global.race['spiritual']){
-                        plasmid *= 1.13;
+                        plasmid *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         plasmid *= 1.05;
                     }
-                    plasmid = +(plasmid).toFixed(2);
+                    plasmid = +(plasmid).toFixed(3);
                     desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
                 }
                 if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
@@ -3936,6 +4018,10 @@ export const actions = {
                 }
                 if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
                     desc = desc + `<div>${loc('city_temple_effect4')}</div>`;
+                }
+                if (global.genes['ancients'] && global.genes['ancients'] >= 2){
+                    global.civic.priest.display = true;
+                    desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
                 }
                 return desc;
             },
@@ -3964,19 +4050,19 @@ export const actions = {
             },
             effect(){
                 let desc = `<div class="has-text-special">${loc('city_shrine_effect')}</div>`;
-                if (global.city.shrine.morale > 0){
+                if (global.city['shrine'] && global.city.shrine.morale > 0){
                     let morale = global.city.shrine.morale;
                     desc = desc + `<div>${loc('city_shrine_morale',[morale])}</div>`;
                 }
-                if (global.city.shrine.metal > 0){
+                if (global.city['shrine'] && global.city.shrine.metal > 0){
                     let metal = global.city.shrine.metal;
                     desc = desc + `<div>${loc('city_shrine_metal',[metal])}</div>`;
                 }
-                if (global.city.shrine.know > 0){
-                    let know = global.city.shrine.know * 500;
-                    desc = desc + `<div>${loc('city_shrine_know',[know])}</div>`;
+                if (global.city['shrine'] && global.city.shrine.know > 0){
+                    desc = desc + `<div>${loc('city_shrine_know',[global.city.shrine.know * 400])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know2',[global.city.shrine.know * 3])}</div>`;
                 }
-                if (global.city.shrine.tax > 0){
+                if (global.city['shrine'] && global.city.shrine.tax > 0){
                     let tax = global.city.shrine.tax;
                     desc = desc + `<div>${loc('city_shrine_tax',[tax])}</div>`;
                 }
@@ -3985,19 +4071,33 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.shrine.count++;
-                    switch (Math.floor(Math.seededRandom(0,4))){
-                        case 0:
-                            global.city.shrine.morale++;
-                            break;
-                        case 1:
-                            global.city.shrine.metal++;
-                            break;
-                        case 2:
-                            global.city.shrine.know++;
-                            break;
-                        case 3:
-                            global.city.shrine.tax++;
-                            break;
+                    if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
+                        global.city.shrine.morale++;
+                    }
+                    else if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){
+                        global.city.shrine.metal++;
+                    }
+                    else if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){
+                        global.city.shrine.know++;
+                    }
+                    else if (global.city.calendar.moon > 21){
+                        global.city.shrine.tax++;
+                    }
+                    else {
+                        switch (Math.floor(Math.seededRandom(0,4))){
+                            case 0:
+                                global.city.shrine.morale++;
+                                break;
+                            case 1:
+                                global.city.shrine.metal++;
+                                break;
+                            case 2:
+                                global.city.shrine.know++;
+                                break;
+                            case 3:
+                                global.city.shrine.tax++;
+                                break;
+                        }
                     }
                     return true;
                 }
@@ -4031,12 +4131,20 @@ export const actions = {
                     multiplier += (p_on['sensor_drone'] * 0.02);
                 }
                 if (global.race['hard_of_hearing']){
-                    multiplier *= 0.95;
+                    multiplier *= 1 - (traits.hard_of_hearing.vars[0] / 100);
+                }
+                if (p_on['s_gate'] && gal_on['scavenger']){
+                    let uni = gal_on['scavenger'] * +(piracy('gxy_alien2') / 4).toFixed(1);
+                    multiplier *= 1 + uni;
                 }
                 gain *= multiplier;
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                    let shrine = 1 + (global.city.shrine.know * 0.03);
+                    gain *= shrine;
                 }
                 gain = gain.toFixed(0);
                 return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
@@ -4076,7 +4184,10 @@ export const actions = {
                 Brick(offset){ return costMultiplier('library', offset, 15, 1.20); }
             },
             effect(){
-                let gain = global.race['nearsighted'] ? 110 : 125;
+                let gain = 125;
+                if (global.race['nearsighted']){
+                    gain *= 1 - (traits.nearsighted.vars[0] / 100);
+                }
                 if (global.tech['science'] && global.tech['science'] >= 8){
                     gain *= 1.4;
                 }
@@ -4087,11 +4198,25 @@ export const actions = {
                     gain *= 1 + (global.civic.scientist.workers * 0.12);
                 }
                 gain = +(gain).toFixed(1);
-                return `<div>${loc('city_max_knowledge',[gain])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? 3 : 5])}</div>`; 
+                return `<div>${loc('city_max_knowledge',[gain])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : 5])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global['resource']['Knowledge'].max += global.race['nearsighted'] ? 110 : 125;
+                    let gain = 125;
+                    if (global.race['nearsighted']){
+                        gain *= 1 - (traits.nearsighted.vars[0] / 100);
+                    }
+                    if (global.tech['science'] && global.tech['science'] >= 8){
+                        gain *= 1.4;
+                    }
+                    if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
+                        gain *= 1 + (global.city.temple.count * 0.05);
+                    }
+                    if (global.tech['science'] && global.tech['science'] >= 5){
+                        gain *= 1 + (global.civic.scientist.workers * 0.12);
+                    }
+                    gain = +(gain).toFixed(1);
+                    global['resource']['Knowledge'].max += gain;
                     global.city.library.count++;
                     if (global.tech['science'] && global.tech['science'] >= 3){
                         global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
@@ -4108,7 +4233,7 @@ export const actions = {
             desc: loc('city_wardenclyffe_desc'),
             category: 'science',
             reqs: { high_tech: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('wardenclyffe', offset, 5000, 1.22); },
                 Knowledge(offset){ return costMultiplier('wardenclyffe', offset, 1000, 1.22); },
                 Copper(offset){ return costMultiplier('wardenclyffe', offset, 500, 1.22); },
@@ -4144,15 +4269,15 @@ export const actions = {
                     }
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div>${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain,morale])}</div>`
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain,morale])}</div>`
                     }
                     else {
-                        desc = desc + `<div>${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain])}</div>`;
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain])}</div>`;
                     }
                 }
                 return desc;
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     let gain = 1000;
@@ -4180,7 +4305,7 @@ export const actions = {
             desc: `<div>${loc('city_biolab_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             category: 'science',
             reqs: { genetics: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('biolab', offset, 25000, 1.3); },
                 Knowledge(offset){ return costMultiplier('biolab', offset, 5000, 1.3); },
                 Copper(offset){ return costMultiplier('biolab', offset, 1250, 1.3); },
@@ -4192,9 +4317,9 @@ export const actions = {
                     gain *= 1 + (p_on['sensor_drone'] * 0.02);
                     gain = +(gain).toFixed(0);
                 }
-                return `${loc('city_max_knowledge',[gain])}, -${$(this)[0].powered()}kW`;
+                return `<span>${loc('city_max_knowledge',[gain])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
-            powered(){ return 2; },
+            powered(){ return powerCostMod(2); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.biolab.count++;
@@ -4213,13 +4338,13 @@ export const actions = {
                 return global.race['environmentalist'] ? loc('city_hydro_power') : loc('city_coal_power');
             },
             desc(){
-                return global.race['environmentalist'] 
+                return global.race['environmentalist']
                     ? `<div>${loc('city_hydro_power_desc')}</div>`
                     : `<div>${loc('city_coal_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Coal_name')])}</div>`;
             },
             category: 'utility',
             reqs: { high_tech: 2 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('coal_power', offset, 10000, 1.22); },
                 Copper(offset){ return costMultiplier('coal_power', offset, 1800, 1.22) - 1000; },
                 Cement(offset){ return costMultiplier('coal_power', offset, 600, 1.22); },
@@ -4228,7 +4353,7 @@ export const actions = {
             effect(){
                 let consume = 0.35;
                 let power = -($(this)[0].powered());
-                return global.race['environmentalist'] ? `+${power}kW` : `+${power}kW. ${loc('city_coal_power_effect',[consume])}`;
+                return global.race['environmentalist'] ? `+${power}kW` : `<span>+${power}kW.</span> <span class="has-text-caution">${loc('city_coal_power_effect',[consume])}</span>`;
             },
             powered(){
                 return global.race['environmentalist']
@@ -4251,13 +4376,13 @@ export const actions = {
                 return global.race['environmentalist'] ? loc('city_wind_power') : loc('city_oil_power');
             },
             desc(){
-                return global.race['environmentalist'] 
+                return global.race['environmentalist']
                     ? `<div>${loc('city_wind_power_desc')}</div>`
                     : `<div>${loc('city_oil_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Oil_name')])}</div>`
             },
             category: 'utility',
             reqs: { oil: 3 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('oil_power', offset, 50000, 1.22); },
                 Copper(offset){ return costMultiplier('oil_power', offset, 6500, 1.22) + 1000; },
                 Aluminium(offset){ return costMultiplier('oil_power', offset, 12000, 1.22); },
@@ -4266,7 +4391,7 @@ export const actions = {
             effect(){
                 let consume = 0.65;
                 let power = -($(this)[0].powered());
-                return global.race['environmentalist'] ? `+${power}kW` : `+${power}kW. ${loc('city_oil_power_effect',[consume])}`;
+                return global.race['environmentalist'] ? `+${power}kW` : `<span>+${power}kW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
             },
             powered(){
                 if (global.race['environmentalist']){
@@ -4303,7 +4428,7 @@ export const actions = {
             desc: `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Uranium_name')])}</div>`,
             category: 'utility',
             reqs: { high_tech: 5 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('fission_power', offset, 250000, 1.36); },
                 Copper(offset){ return costMultiplier('fission_power', offset, 13500, 1.36); },
                 Cement(offset){ return costMultiplier('fission_power', offset, 10800, 1.36); },
@@ -4311,7 +4436,7 @@ export const actions = {
             },
             effect(){
                 let consume = 0.1;
-                return `+${-($(this)[0].powered())}kW. ${loc('city_fission_power_effect',[consume])}`;
+                return `<span>+${-($(this)[0].powered())}kW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[consume])}</span>`;
             },
             powered(){ return powerModifier(global.tech['uranium'] >= 4 ? -18 : -14); },
             action(){
@@ -4330,16 +4455,20 @@ export const actions = {
             desc: `<div>${loc('city_mass_driver_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             category: 'utility',
             reqs: { mass: 1 },
-            cost: { 
+            cost: {
                 Money(offset){ return costMultiplier('mass_driver', offset, 375000, 1.32); },
                 Copper(offset){ return costMultiplier('mass_driver', offset, 33000, 1.32); },
                 Iron(offset){ return costMultiplier('mass_driver', offset, 42500, 1.32); },
                 Iridium(offset){ return costMultiplier('mass_driver', offset, 2200, 1.32); }
             },
             effect(){
-                return loc('city_mass_driver_effect',[5,$(this)[0].powered(),races[global.race.species].name]);
+                let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[1])}</div>` : '';
+                return `${exo}<span>${loc('city_mass_driver_effect',[5,races[global.race.species].name])}</span> <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
-            powered(){ return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5; },
+            powered(){
+                let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5;
+                return powerCostMod(global.tech.mass >= 2 ? power - 1 : power);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city.mass_driver.count++;
@@ -4357,7 +4486,8 @@ export const actions = {
             id: 'tech-club',
             title: loc('tech_club'),
             desc: loc('tech_club_desc'),
-            category: 'research',
+            category: 'agriculture',
+            era: 'primitive',
             reqs: {},
             grant: ['primitive',1],
             cost: {
@@ -4376,11 +4506,12 @@ export const actions = {
             id: 'tech-bone_tools',
             title: loc('tech_bone_tools'),
             desc: loc('tech_bone_tools_desc'),
-            category: 'research',
+            category: 'stone_gathering',
+            era: 'primitive',
             reqs: { primitive: 1 },
             grant: ['primitive',2],
             condition(){
-                return global.race.species === 'wendigo' ? false : true; 
+                return global.race.species === 'wendigo' ? false : true;
             },
             cost: {
                 Food(){ return global.race['evil'] ? 0 : 10; },
@@ -4402,11 +4533,12 @@ export const actions = {
             desc() {
                 return global.race['evil'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc');
             },
-            category: 'research',
+            category: 'stone_gathering',
+            era: 'primitive',
             reqs: { primitive: 1 },
             grant: ['primitive',2],
             condition(){
-                return global.race.species === 'wendigo' ? true : false; 
+                return global.race.species === 'wendigo' ? true : false;
             },
             cost: {
                 Lumber(){ return 10; },
@@ -4423,7 +4555,8 @@ export const actions = {
             id: 'tech-sundial',
             title: loc('tech_sundial'),
             desc: loc('tech_sundial_desc'),
-            category: 'research',
+            category: 'science',
+            era: 'primitive',
             reqs: { primitive: 2 },
             grant: ['primitive',3],
             cost: {
@@ -4433,7 +4566,7 @@ export const actions = {
             effect: loc('tech_sundial_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('tech_sundial_msg'),'success');
+                    messageQueue(loc('tech_sundial_msg'),'info');
                     global.resource.Knowledge.display = true;
                     global.city.calendar.day++;
                     if (global.race['infectious']){
@@ -4450,10 +4583,11 @@ export const actions = {
             id: 'tech-housing',
             title: loc('tech_housing'),
             desc: loc('tech_housing_desc'),
-            category: 'research',
+            category: 'housing',
+            era: 'civilized',
             reqs: { primitive: 3 },
             grant: ['housing',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 10; }
             },
             effect: loc('tech_housing_effect'),
@@ -4471,10 +4605,11 @@ export const actions = {
                 return housingLabel('medium');
             },
             desc: loc('tech_cottage_desc'),
-            category: 'research',
+            category: 'housing',
+            era: 'civilized',
             reqs: { housing: 1, cement: 1, mining: 3 },
             grant: ['housing',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 3600; }
             },
             effect: loc('tech_cottage_effect'),
@@ -4494,10 +4629,11 @@ export const actions = {
             desc(){
                 return housingLabel('large');
             },
-            category: 'research',
+            category: 'housing',
+            era: 'discovery',
             reqs: { housing: 2, high_tech: 2 },
             grant: ['housing',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 15750; }
             },
             effect: loc('tech_apartment_effect'),
@@ -4516,10 +4652,11 @@ export const actions = {
             id: 'tech-steel_beams',
             title: loc('tech_steel_beams'),
             desc: loc('tech_housing_cost'),
-            category: 'upgrade',
+            category: 'housing',
+            era: 'discovery',
             reqs: { housing: 2, smelting: 2 },
             grant: ['housing_reduction',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 11250; },
                 Steel(){ return 2500; }
             },
@@ -4539,10 +4676,11 @@ export const actions = {
             id: 'tech-mythril_beams',
             title: loc('tech_mythril_beams'),
             desc: loc('tech_housing_cost'),
-            category: 'upgrade',
+            category: 'housing',
+            era: 'early_space',
             reqs: { housing_reduction: 1, space: 3 },
             grant: ['housing_reduction',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 175000; },
                 Mythril(){ return 1000; }
             },
@@ -4562,10 +4700,11 @@ export const actions = {
             id: 'tech-neutronium_walls',
             title: loc('tech_neutronium_walls'),
             desc: loc('tech_housing_cost'),
-            category: 'upgrade',
+            category: 'housing',
+            era: 'deep_space',
             reqs: { housing_reduction: 2, gas_moon: 1 },
             grant: ['housing_reduction',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 300000; },
                 Neutronium(){ return 850; }
             },
@@ -4581,14 +4720,40 @@ export const actions = {
                 return false;
             }
         },
+        bolognium_alloy_beams: {
+            id: 'tech-bolognium_alloy_beams',
+            title: loc('tech_bolognium_alloy_beams'),
+            desc: loc('tech_housing_cost'),
+            category: 'housing',
+            era: 'intergalactic',
+            reqs: { housing_reduction: 3, gateway: 3 },
+            grant: ['housing_reduction',4],
+            cost: {
+                Knowledge(){ return 3750000; },
+                Adamantite(){ return 2500000; },
+                Bolognium(){ return 100000; }
+            },
+            effect(){
+                let label = housingLabel('small');
+                let cLabel = housingLabel('medium');
+                return loc('tech_bolognium_alloy_beams_effect',[label,cLabel]);
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         aphrodisiac: {
             id: 'tech-aphrodisiac',
             title: loc('tech_aphrodisiac'),
             desc: loc('tech_aphrodisiac_desc'),
-            category: 'upgrade',
+            category: 'housing',
+            era: 'civilized',
             reqs: { housing: 2 },
             grant: ['reproduction',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 4500; }
             },
             effect: loc('tech_aphrodisiac_effect'),
@@ -4603,11 +4768,12 @@ export const actions = {
             id: 'tech-smokehouse',
             title: loc('tech_smokehouse'),
             desc: loc('tech_smokehouse_desc'),
-            category: 'research',
+            category: 'storage',
+            era: 'civilized',
             reqs: { primitive: 3, storage: 1 },
             trait: ['carnivore'],
             grant: ['hunting',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 80; }
             },
             effect: loc('tech_smokehouse_effect'),
@@ -4623,7 +4789,8 @@ export const actions = {
             id: 'tech-lodge',
             title: loc('tech_lodge'),
             desc: loc('tech_lodge'),
-            category: 'research',
+            category: 'agriculture',
+            era: 'civilized',
             reqs: { hunting: 1, housing: 1, currency: 1 },
             grant: ['hunting',2],
             not_trait: ['soul_eater'],
@@ -4643,12 +4810,14 @@ export const actions = {
             id: 'tech-soul_lodge',
             title: loc('tech_lodge'),
             desc: loc('tech_lodge'),
-            category: 'research',
+            wiki: false,
+            category: 'souls',
+            era: 'civilized',
             reqs: { housing: 1, currency: 1 },
             trait: ['soul_eater'],
             grant: ['s_lodge',1],
             condition(){
-                return global.race.species === 'wendigo' ? true : false; 
+                return global.race.species === 'wendigo' ? true : false;
             },
             cost: {
                 Knowledge(){ return 180; }
@@ -4666,11 +4835,12 @@ export const actions = {
             id: 'tech-soul_well',
             title: loc('tech_soul_well'),
             desc: loc('tech_soul_well'),
-            category: 'research',
+            category: 'souls',
+            era: 'civilized',
             reqs: { primitive: 3 },
             trait: ['soul_eater'],
             grant: ['soul_eater',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 10; }
             },
             effect: loc('tech_soul_well_effect'),
@@ -4686,11 +4856,12 @@ export const actions = {
             id: 'tech-agriculture',
             title: loc('tech_agriculture'),
             desc: loc('tech_agriculture_desc'),
-            category: 'research',
+            category: 'agriculture',
+            era: 'civilized',
             reqs: { primitive: 3 },
             not_trait: ['carnivore','soul_eater'],
             grant: ['agriculture',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 10; }
             },
             effect: loc('tech_agriculture_effect'),
@@ -4706,7 +4877,8 @@ export const actions = {
             id: 'tech-farm_house',
             title: loc('tech_farm_house'),
             desc: loc('tech_farm_house_desc'),
-            category: 'upgrade',
+            category: 'housing',
+            era: 'civilized',
             reqs: { agriculture: 1, housing: 1, currency: 1 },
             grant: ['farm',1],
             cost: {
@@ -4725,10 +4897,11 @@ export const actions = {
             id: 'tech-irrigation',
             title: loc('tech_irrigation'),
             desc: loc('tech_irrigation_desc'),
-            category: 'upgrade',
+            category: 'agriculture',
+            era: 'civilized',
             reqs: { agriculture: 1 },
             grant: ['agriculture',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 55; }
             },
             effect: loc('tech_irrigation_effect'),
@@ -4743,10 +4916,11 @@ export const actions = {
             id: 'tech-silo',
             title: loc('tech_silo'),
             desc: loc('tech_silo_desc'),
-            category: 'research',
+            category: 'storage',
+            era: 'civilized',
             reqs: { agriculture: 2, storage: 1 },
             grant: ['agriculture',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 80; }
             },
             effect: loc('tech_silo_effect'),
@@ -4762,10 +4936,11 @@ export const actions = {
             id: 'tech-mill',
             title: loc('tech_mill'),
             desc: loc('tech_mill_desc'),
-            category: 'research',
+            category: 'agriculture',
+            era: 'civilized',
             reqs: { agriculture: 3, mining: 3 },
             grant: ['agriculture',4],
-            cost: { 
+            cost: {
                 Knowledge(){ return 5400; }
             },
             effect: loc('tech_mill_effect'),
@@ -4784,10 +4959,11 @@ export const actions = {
             id: 'tech-windmill',
             title: loc('tech_windmill'),
             desc: loc('tech_windmill_desc'),
-            category: 'upgrade',
+            category: 'agriculture',
+            era: 'discovery',
             reqs: { agriculture: 4, high_tech: 1 },
             grant: ['agriculture',5],
-            cost: { 
+            cost: {
                 Knowledge(){ return 16200; }
             },
             effect: loc('tech_windmill_effect'),
@@ -4802,10 +4978,11 @@ export const actions = {
             id: 'tech-windturbine',
             title: loc('tech_windturbine'),
             desc: loc('tech_windturbine'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'globalized',
             reqs: { agriculture: 5, high_tech: 4 },
             grant: ['agriculture',6],
-            cost: { 
+            cost: {
                 Knowledge(){ return 66000; }
             },
             effect: loc('tech_windturbine_effect'),
@@ -4820,11 +4997,12 @@ export const actions = {
             id: 'tech-wind_plant',
             title: loc('tech_windmill'),
             desc: loc('tech_windmill'),
-            category: 'research',
+            category: 'agriculture',
+            era: 'globalized',
             reqs: { hunting: 2, high_tech: 4 },
             grant: ['wind_plant',1],
             not_trait: ['soul_eater'],
-            cost: { 
+            cost: {
                 Knowledge(){ return 66000; }
             },
             effect: loc('tech_wind_plant_effect'),
@@ -4840,11 +5018,12 @@ export const actions = {
             id: 'tech-evil_wind_plant',
             title: loc('tech_windmill'),
             desc: loc('tech_windmill'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'globalized',
             reqs: { high_tech: 4 },
             grant: ['wind_plant',1],
             trait: ['soul_eater'],
-            cost: { 
+            cost: {
                 Knowledge(){ return 66000; }
             },
             effect: loc('tech_wind_plant_effect'),
@@ -4860,10 +5039,11 @@ export const actions = {
             id: 'tech-gmfood',
             title: loc('tech_gmfood'),
             desc: loc('tech_gmfood_desc'),
-            category: 'upgrade',
+            category: 'agriculture',
+            era: 'globalized',
             reqs: { agriculture: 6, genetics: 1 },
             grant: ['agriculture',7],
-            cost: { 
+            cost: {
                 Knowledge(){ return 95000; }
             },
             effect: loc('tech_gmfood_effect'),
@@ -4878,7 +5058,8 @@ export const actions = {
             id: 'tech-foundry',
             title: loc('tech_foundry'),
             desc: loc('tech_foundry'),
-            category: 'research',
+            category: 'crafting',
+            era: 'civilized',
             reqs: { mining: 2 },
             grant: ['foundry',1],
             cost: {
@@ -4896,7 +5077,8 @@ export const actions = {
                         Wrought_Iron: 0,
                         Sheet_Metal: 0,
                         Mythril: 0,
-                        Aerogel: 0
+                        Aerogel: 0,
+                        Nanoweave: 0,
                     };
                     return true;
                 }
@@ -4907,7 +5089,8 @@ export const actions = {
             id: 'tech-artisans',
             title: loc('tech_artisans'),
             desc: loc('tech_artisans'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'civilized',
             reqs: { foundry: 1 },
             grant: ['foundry',2],
             cost: {
@@ -4925,7 +5108,8 @@ export const actions = {
             id: 'tech-apprentices',
             title: loc('tech_apprentices'),
             desc: loc('tech_apprentices'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'civilized',
             reqs: { foundry: 2 },
             grant: ['foundry',3],
             cost: {
@@ -4943,7 +5127,8 @@ export const actions = {
             id: 'tech-carpentry',
             title: loc('tech_carpentry'),
             desc: loc('tech_carpentry'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'civilized',
             reqs: { foundry: 3, saw: 1 },
             grant: ['foundry',4],
             not_trait: ['evil'],
@@ -4962,7 +5147,8 @@ export const actions = {
             id: 'tech-demonic_craftsman',
             title: loc('tech_master_craftsman'),
             desc: loc('tech_master_craftsman'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'discovery',
             reqs: { foundry: 3 },
             grant: ['foundry',5],
             trait: ['evil'],
@@ -4981,7 +5167,8 @@ export const actions = {
             id: 'tech-master_craftsman',
             title: loc('tech_master_craftsman'),
             desc: loc('tech_master_craftsman'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'discovery',
             reqs: { foundry: 4 },
             grant: ['foundry',5],
             not_trait: ['evil'],
@@ -5000,7 +5187,8 @@ export const actions = {
             id: 'tech-brickworks',
             title: loc('tech_brickworks'),
             desc: loc('tech_brickworks'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'discovery',
             reqs: { foundry: 5 },
             grant: ['foundry',6],
             cost: {
@@ -5018,7 +5206,8 @@ export const actions = {
             id: 'tech-machinery',
             title: loc('tech_machinery'),
             desc: loc('tech_machinery'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'globalized',
             reqs: { foundry: 6, high_tech: 4 },
             grant: ['foundry',7],
             cost: {
@@ -5036,7 +5225,8 @@ export const actions = {
             id: 'tech-cnc_machine',
             title: loc('tech_cnc_machine'),
             desc: loc('tech_cnc_machine'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'globalized',
             reqs: { foundry: 7, high_tech: 8 },
             grant: ['foundry',8],
             cost: {
@@ -5054,7 +5244,8 @@ export const actions = {
             id: 'tech-vocational_training',
             title: loc('tech_vocational_training'),
             desc: loc('tech_vocational_training'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'industrialized',
             reqs: { foundry: 1, high_tech: 3 },
             grant: ['v_train',1],
             cost: {
@@ -5068,11 +5259,50 @@ export const actions = {
                 return false;
             }
         },
+        stellar_forge: {
+            id: 'tech-stellar_forge',
+            title: loc('tech_stellar_forge'),
+            desc: loc('tech_stellar_forge'),
+            category: 'crafting',
+            reqs: { foundry: 8, high_tech: 15, gateway: 3, neutron: 1 },
+            grant: ['star_forge',1],
+            cost: {
+                Knowledge(){ return 4500000; }
+            },
+            effect: loc('tech_stellar_forge_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['stellar_forge'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        stellar_smelting: {
+            id: 'tech-stellar_smelting',
+            title: loc('tech_stellar_smelting'),
+            desc: loc('tech_stellar_smelting'),
+            category: 'crafting',
+            reqs: { star_forge: 1, xeno: 4 },
+            grant: ['star_forge',2],
+            cost: {
+                Knowledge(){ return 5000000; },
+                Vitreloy(){ return 10000; }
+            },
+            effect: loc('tech_stellar_smelting_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         assembly_line: {
             id: 'tech-assembly_line',
             title: loc('tech_assembly_line'),
             desc: loc('tech_assembly_line'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'globalized',
             reqs: { high_tech: 4 },
             grant: ['factory',1],
             cost: {
@@ -5091,7 +5321,8 @@ export const actions = {
             id: 'tech-automation',
             title: loc('tech_automation'),
             desc: loc('tech_automation'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'early_space',
             reqs: { high_tech: 8, factory: 1},
             grant: ['factory',2],
             cost: {
@@ -5109,7 +5340,8 @@ export const actions = {
             id: 'tech-laser_cutters',
             title: loc('tech_laser_cutters'),
             desc: loc('tech_laser_cutters'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'deep_space',
             reqs: { high_tech: 9, factory: 2 },
             grant: ['factory',3],
             cost: {
@@ -5124,11 +5356,33 @@ export const actions = {
                 return false;
             }
         },
+        high_tech_factories: {
+            id: 'tech-high_tech_factories',
+            title: loc('tech_high_tech_factories'),
+            desc: loc('tech_high_tech_factories'),
+            category: 'crafting',
+            era: 'intergalactic',
+            reqs: { high_tech: 17, alpha: 4, factory: 3 },
+            grant: ['factory',4],
+            cost: {
+                Knowledge(){ return 13500000; },
+                Vitreloy(){ return 500000; },
+                Orichalcum(){ return 300000; }
+            },
+            effect: `<span>${loc('tech_high_tech_factories_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         theatre: {
             id: 'tech-theatre',
             title: loc('tech_theatre'),
             desc: loc('tech_theatre'),
-            category: 'research',
+            category: 'entertainment',
+            era: 'civilized',
             reqs: { housing: 1, currency: 1, cement: 1 },
             grant: ['theatre',1],
             not_trait: ['joyless'],
@@ -5148,7 +5402,8 @@ export const actions = {
             id: 'tech-playwright',
             title: loc('tech_playwright'),
             desc: loc('tech_playwright'),
-            category: 'upgrade',
+            category: 'entertainment',
+            era: 'civilized',
             reqs: { theatre: 1, science: 2 },
             grant: ['theatre',2],
             cost: {
@@ -5166,7 +5421,8 @@ export const actions = {
             id: 'tech-magic',
             title: loc('tech_magic'),
             desc: loc('tech_magic'),
-            category: 'upgrade',
+            category: 'entertainment',
+            era: 'discovery',
             reqs: { theatre: 2, high_tech: 1 },
             grant: ['theatre',3],
             cost: {
@@ -5184,7 +5440,8 @@ export const actions = {
             id: 'tech-superstars',
             title: loc('tech_superstars'),
             desc: loc('tech_superstars'),
-            category: 'upgrade',
+            category: 'entertainment',
+            era: 'interstellar',
             reqs: { theatre: 3, high_tech: 12 },
             grant: ['superstar',1],
             cost: {
@@ -5202,7 +5459,8 @@ export const actions = {
             id: 'tech-radio',
             title: loc('tech_radio'),
             desc: loc('tech_radio'),
-            category: 'upgrade',
+            category: 'entertainment',
+            era: 'discovery',
             reqs: { theatre: 3, high_tech: 2 },
             grant: ['broadcast',1],
             cost: {
@@ -5220,7 +5478,8 @@ export const actions = {
             id: 'tech-tv',
             title: loc('tech_tv'),
             desc: loc('tech_tv'),
-            category: 'upgrade',
+            category: 'entertainment',
+            era: 'globalized',
             reqs: { broadcast: 1, high_tech: 4 },
             grant: ['broadcast',2],
             cost: {
@@ -5238,7 +5497,8 @@ export const actions = {
             id: 'tech-vr_center',
             title: loc('tech_vr_center'),
             desc: loc('tech_vr_center'),
-            category: 'research',
+            category: 'entertainment',
+            era: 'interstellar',
             reqs: { broadcast: 2, high_tech: 12, stanene: 1 },
             grant: ['broadcast',3],
             cost: {
@@ -5257,7 +5517,8 @@ export const actions = {
             id: 'tech-casino',
             title: loc('tech_casino'),
             desc: loc('tech_casino'),
-            category: 'research',
+            category: 'entertainment',
+            era: 'globalized',
             reqs: { high_tech: 4, currency: 5 },
             grant: ['gambling',1],
             cost: {
@@ -5276,7 +5537,8 @@ export const actions = {
             id: 'tech-dazzle',
             title: loc('tech_dazzle'),
             desc: loc('tech_dazzle'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'globalized',
             reqs: { gambling: 1 },
             grant: ['gambling',2],
             cost: {
@@ -5294,7 +5556,8 @@ export const actions = {
             id: 'tech-casino_vault',
             title: loc('tech_casino_vault'),
             desc: loc('tech_casino_vault'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'early_space',
             reqs: { gambling: 2, space: 3 },
             grant: ['gambling',3],
             cost: {
@@ -5313,18 +5576,19 @@ export const actions = {
             id: 'tech-mining',
             title: loc('tech_mining'),
             desc: loc('tech_mining_desc'),
-            category: 'research',
+            category: 'mining',
+            era: 'civilized',
             reqs: { primitive: 3 },
             grant: ['mining',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 45; }
             },
             effect: loc('tech_mining_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['rock_quarry'] = { 
-                        count: 0, 
-                        on: 0 
+                    global.city['rock_quarry'] = {
+                        count: 0,
+                        on: 0
                     };
                     if (global.race['cannibalize']){
                         global.city['s_alter'] = {
@@ -5345,10 +5609,11 @@ export const actions = {
             id: 'tech-bayer_process',
             title: loc('tech_bayer_process'),
             desc: loc('tech_bayer_process_desc'),
-            category: 'research',
+            category: 'mining',
+            era: 'civilized',
             reqs: { smelting: 2 },
             grant: ['alumina',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 4500; }
             },
             effect: loc('tech_bayer_process_effect'),
@@ -5366,10 +5631,11 @@ export const actions = {
             id: 'tech-elysis_process',
             title: loc('tech_elysis_process'),
             desc: loc('tech_elysis_process'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'interstellar',
             reqs: { alumina: 1, stanene: 1, graphene: 1 },
             grant: ['alumina',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 675000; },
                 Graphene(){ return 45000; },
                 Stanene(){ return 75000; },
@@ -5386,17 +5652,19 @@ export const actions = {
             id: 'tech-smelting',
             title: loc('tech_smelting'),
             desc: loc('tech_smelting_desc'),
-            category: 'research',
+            category: 'mining',
+            era: 'civilized',
             reqs: { mining: 3 },
             grant: ['smelting',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 4050; }
             },
             effect: loc('tech_smelting_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['smelter'] = { 
+                    global.city['smelter'] = {
                         count: 0,
+                        cap: 0,
                         Wood: 0,
                         Coal: 0,
                         Oil: 0,
@@ -5406,16 +5674,26 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.race['steelen']){
+                    global.tech['smelting'] = 2;
+                    drawTech();
+                }
             }
         },
         steel: {
             id: 'tech-steel',
             title: loc('tech_steel'),
             desc: loc('tech_steel_desc'),
-            category: 'research',
+            category: 'mining',
+            era: 'civilized',
             reqs: { smelting: 1, mining: 4 },
             grant: ['smelting',2],
-            cost: { 
+            condition() {
+                return global.race['steelen'] ? false : true;
+            },
+            cost: {
                 Knowledge(){ return 4950; },
                 Steel(){ return 25; }
             },
@@ -5435,10 +5713,11 @@ export const actions = {
             id: 'tech-blast_furnace',
             title: loc('tech_blast_furnace'),
             desc: loc('tech_blast_furnace'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'discovery',
             reqs: { smelting: 2 },
             grant: ['smelting',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 13500; },
                 Coal(){ return 2000; }
             },
@@ -5448,16 +5727,26 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.race['steelen']){
+                    global.tech['smelting'] = 6;
+                    drawTech();
+                }
             }
         },
         bessemer_process: {
             id: 'tech-bessemer_process',
             title: loc('tech_bessemer_process'),
             desc: loc('tech_bessemer_process'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'discovery',
             reqs: { smelting: 3 },
             grant: ['smelting',4],
-            cost: { 
+            condition() {
+                return global.race['steelen'] ? false : true;
+            },
+            cost: {
                 Knowledge(){ return 19800; },
                 Coal(){ return 5000; }
             },
@@ -5473,10 +5762,14 @@ export const actions = {
             id: 'tech-oxygen_converter',
             title: loc('tech_oxygen_converter'),
             desc: loc('tech_oxygen_converter'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'industrialized',
             reqs: { smelting: 4, high_tech: 3 },
             grant: ['smelting',5],
-            cost: { 
+            condition() {
+                return global.race['steelen'] ? false : true;
+            },
+            cost: {
                 Knowledge(){ return 46800; },
                 Coal(){ return 10000; }
             },
@@ -5492,10 +5785,14 @@ export const actions = {
             id: 'tech-electric_arc_furnace',
             title: loc('tech_electric_arc_furnace'),
             desc: loc('tech_electric_arc_furnace'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'globalized',
             reqs: { smelting: 5, high_tech: 4 },
             grant: ['smelting',6],
-            cost: { 
+            condition() {
+                return global.race['steelen'] ? false : true;
+            },
+            cost: {
                 Knowledge(){ return 85500; },
                 Copper(){ return 25000; }
             },
@@ -5511,10 +5808,11 @@ export const actions = {
             id: 'tech-hellfire_furnace',
             title: loc('tech_hellfire_furnace'),
             desc: loc('tech_hellfire_furnace'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'interstellar',
             reqs: { smelting: 6, infernite: 1 },
             grant: ['smelting',7],
-            cost: { 
+            cost: {
                 Knowledge(){ return 615000; },
                 Infernite(){ return 2000; },
                 Soul_Gem(){ return 2; }
@@ -5531,10 +5829,11 @@ export const actions = {
             id: 'tech-rotary_kiln',
             title: loc('tech_rotary_kiln'),
             desc: loc('tech_rotary_kiln'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'industrialized',
             reqs: { smelting: 3, high_tech: 3 },
             grant: ['copper',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 57600; },
                 Coal(){ return 8000; }
             },
@@ -5550,10 +5849,11 @@ export const actions = {
             id: 'tech-metal_working',
             title: loc('tech_metal_working'),
             desc: loc('tech_metal_working_desc'),
-            category: 'research',
+            category: 'mining',
+            era: 'civilized',
             reqs: { mining: 1 },
             grant: ['mining',2],
-            cost: { 
+            cost: {
                 Knowledge(){ return 350; }
             },
             effect: loc('tech_metal_working_effect'),
@@ -5572,10 +5872,11 @@ export const actions = {
             id: 'tech-iron_mining',
             title: loc('tech_iron_mining'),
             desc: loc('tech_iron_mining_desc'),
-            category: 'research',
+            category: 'mining',
+            era: 'civilized',
             reqs: { mining: 2 },
             grant: ['mining',3],
-            cost: { 
+            cost: {
                 Knowledge(){ return 2500; }
             },
             effect: loc('tech_iron_mining_effect'),
@@ -5595,7 +5896,8 @@ export const actions = {
             id: 'tech-coal_mining',
             title: loc('tech_coal_mining'),
             desc: loc('tech_coal_mining_desc'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'civilized',
             reqs: { mining: 3 },
             grant: ['mining',4],
             cost: {
@@ -5618,10 +5920,11 @@ export const actions = {
             id: 'tech-storage',
             title: loc('tech_storage'),
             desc: loc('tech_storage_desc'),
-            category: 'research',
+            category: 'storage',
+            era: 'civilized',
             reqs: { primitive: 3, currency: 1 },
             grant: ['storage',1],
-            cost: { 
+            cost: {
                 Knowledge(){ return 20; }
             },
             effect: loc('tech_storage_effect'),
@@ -5637,7 +5940,8 @@ export const actions = {
             id: 'tech-reinforced_shed',
             title: loc('tech_reinforced_shed'),
             desc: loc('tech_reinforced_shed_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'civilized',
             reqs: { storage: 1, cement: 1 },
             grant: ['storage',2],
             cost: {
@@ -5658,7 +5962,8 @@ export const actions = {
             id: 'tech-barns',
             title: loc('tech_barns'),
             desc: loc('tech_barns_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'discovery',
             reqs: { storage: 2, smelting: 2, alumina: 1 },
             grant: ['storage',3],
             cost: {
@@ -5678,7 +5983,8 @@ export const actions = {
             id: 'tech-warehouse',
             title: loc('tech_warehouse'),
             desc: loc('tech_warehouse_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'industrialized',
             reqs: { storage: 3, high_tech: 3, smelting: 2 },
             grant: ['storage',4],
             cost: {
@@ -5697,7 +6003,8 @@ export const actions = {
             id: 'tech-cameras',
             title: loc('tech_cameras'),
             desc: loc('tech_cameras_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'globalized',
             reqs: { storage: 4, high_tech: 4 },
             grant: ['storage',5],
             cost: {
@@ -5716,7 +6023,8 @@ export const actions = {
             id: 'tech-pocket_dimensions',
             title: loc('tech_pocket_dimensions'),
             desc: loc('tech_pocket_dimensions_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'early_space',
             reqs: { particles: 1, storage: 5 },
             grant: ['storage',6],
             cost: {
@@ -5734,7 +6042,8 @@ export const actions = {
             id: 'tech-ai_logistics',
             title: loc('tech_ai_logistics'),
             desc: loc('tech_ai_logistics'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'interstellar',
             reqs: { storage: 6, proxima: 2, science: 13 },
             grant: ['storage',7],
             cost: {
@@ -5752,7 +6061,8 @@ export const actions = {
             id: 'tech-containerization',
             title: loc('tech_containerization'),
             desc: loc('tech_containerization_desc'),
-            category: 'research',
+            category: 'storage',
+            era: 'civilized',
             reqs: { cement: 1 },
             grant: ['container',1],
             cost: {
@@ -5771,7 +6081,8 @@ export const actions = {
             id: 'tech-reinforced_crates',
             title: loc('tech_reinforced_crates'),
             desc: loc('tech_reinforced_crates'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'civilized',
             reqs: { container: 1, smelting: 2 },
             grant: ['container',2],
             cost: {
@@ -5783,6 +6094,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5792,7 +6104,8 @@ export const actions = {
             id: 'tech-cranes',
             title: loc('tech_cranes'),
             desc: loc('tech_cranes_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'discovery',
             reqs: { container: 2, high_tech: 2 },
             grant: ['container',3],
             cost: {
@@ -5812,7 +6125,8 @@ export const actions = {
             id: 'tech-titanium_crates',
             title: loc('tech_titanium_crates'),
             desc: loc('tech_titanium_crates'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'globalized',
             reqs: { container: 3, titanium: 1 },
             grant: ['container',4],
             cost: {
@@ -5822,6 +6136,7 @@ export const actions = {
             effect: loc('tech_titanium_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5831,7 +6146,8 @@ export const actions = {
             id: 'tech-mythril_crates',
             title: loc('tech_mythril_crates'),
             desc: loc('tech_mythril_crates'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'early_space',
             reqs: { container: 4, space: 3 },
             grant: ['container',5],
             cost: {
@@ -5841,6 +6157,7 @@ export const actions = {
             effect: loc('tech_mythril_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5850,7 +6167,8 @@ export const actions = {
             id: 'tech-infernite_crates',
             title: loc('tech_infernite_crates'),
             desc: loc('tech_infernite_crates_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'interstellar',
             reqs: { container: 5, infernite: 1 },
             grant: ['container',6],
             cost: {
@@ -5860,6 +6178,7 @@ export const actions = {
             effect: loc('tech_infernite_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5869,7 +6188,8 @@ export const actions = {
             id: 'tech-graphene_crates',
             title: loc('tech_graphene_crates'),
             desc: loc('tech_graphene_crates'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'interstellar',
             reqs: { container: 6, graphene: 1 },
             grant: ['container',7],
             cost: {
@@ -5877,6 +6197,27 @@ export const actions = {
                 Graphene(){ return 75000; }
             },
             effect: loc('tech_graphene_crates_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
+                    return true;
+                }
+                return false;
+            }
+        },
+        bolognium_crates: {
+            id: 'tech-bolognium_crates',
+            title: loc('tech_bolognium_crates'),
+            desc: loc('tech_bolognium_crates'),
+            category: 'storage',
+            era: 'intergalactic',
+            reqs: { container: 7, gateway: 3 },
+            grant: ['container',8],
+            cost: {
+                Knowledge(){ return 3420000; },
+                Bolognium(){ return 90000; }
+            },
+            effect: loc('tech_bolognium_crates_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5888,7 +6229,8 @@ export const actions = {
             id: 'tech-steel_containers',
             title: loc('tech_steel_containers'),
             desc: loc('tech_steel_containers_desc'),
-            category: 'research',
+            category: 'storage',
+            era: 'discovery',
             reqs: { smelting: 2, container: 1 },
             grant: ['steel_container',1],
             cost: {
@@ -5910,7 +6252,8 @@ export const actions = {
             id: 'tech-gantry_crane',
             title: loc('tech_gantry_crane'),
             desc: loc('tech_gantry_crane_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'discovery',
             reqs: { steel_container: 1, high_tech: 2 },
             grant: ['steel_container',2],
             cost: {
@@ -5929,7 +6272,8 @@ export const actions = {
             id: 'tech-alloy_containers',
             title: loc('tech_alloy_containers'),
             desc: loc('tech_alloy_containers_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'industrialized',
             reqs: { steel_container: 2, storage: 4 },
             grant: ['steel_container',3],
             cost: {
@@ -5939,6 +6283,7 @@ export const actions = {
             effect: loc('tech_alloy_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5948,7 +6293,8 @@ export const actions = {
             id: 'tech-mythril_containers',
             title: loc('tech_mythril_containers'),
             desc: loc('tech_mythril_containers_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'early_space',
             reqs: { steel_container: 3, space: 3 },
             grant: ['steel_container',4],
             cost: {
@@ -5958,6 +6304,7 @@ export const actions = {
             effect: loc('tech_mythril_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5967,7 +6314,8 @@ export const actions = {
             id: 'tech-adamantite_containers',
             title: loc('tech_adamantite_containers'),
             desc: loc('tech_adamantite_containers_desc'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'interstellar',
             reqs: { steel_container: 4, alpha: 2 },
             grant: ['steel_container',5],
             cost: {
@@ -5977,6 +6325,7 @@ export const actions = {
             effect: loc('tech_adamantite_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
                     return true;
                 }
                 return false;
@@ -5986,7 +6335,8 @@ export const actions = {
             id: 'tech-aerogel_containers',
             title: loc('tech_aerogel_containers'),
             desc: loc('tech_aerogel_containers'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'interstellar',
             reqs: { steel_container: 5, aerogel: 1 },
             grant: ['steel_container',6],
             cost: {
@@ -5994,6 +6344,47 @@ export const actions = {
                 Aerogel(){ return 500; }
             },
             effect: loc('tech_aerogel_containers_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    vBind({el: `#createHead`},'update');
+                    return true;
+                }
+                return false;
+            }
+        },
+        bolognium_containers: {
+            id: 'tech-bolognium_containers',
+            title: loc('tech_bolognium_containers'),
+            desc: loc('tech_bolognium_containers'),
+            category: 'storage',
+            era: 'intergalactic',
+            reqs: { steel_container: 6, gateway: 3 },
+            grant: ['steel_container',7],
+            cost: {
+                Knowledge(){ return 3500000; },
+                Bolognium(){ return 125000; }
+            },
+            effect: loc('tech_bolognium_containers_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        nanoweave_containers: {
+            id: 'tech-nanoweave_containers',
+            title: loc('tech_nanoweave_containers'),
+            desc: loc('tech_nanoweave_containers'),
+            category: 'storage',
+            era: 'intergalactic',
+            reqs: { steel_container: 7, nanoweave: 1 },
+            grant: ['steel_container',8],
+            cost: {
+                Knowledge(){ return 9000000; },
+                Nanoweave(){ return 50000; }
+            },
+            effect: loc('tech_nanoweave_containers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -6005,7 +6396,8 @@ export const actions = {
             id: 'tech-evil_planning',
             title: loc('tech_urban_planning'),
             desc: loc('tech_urban_planning'),
-            category: 'upgrade',
+            category: 'queues',
+            era: 'civilized',
             reqs: { banking: 2 },
             grant: ['queue',1],
             trait: ['terrifying'],
@@ -6025,7 +6417,8 @@ export const actions = {
             id: 'tech-urban_planning',
             title: loc('tech_urban_planning'),
             desc: loc('tech_urban_planning'),
-            category: 'upgrade',
+            category: 'queues',
+            era: 'civilized',
             reqs: { banking: 2, currency: 2 },
             grant: ['queue',1],
             not_trait: ['terrifying'],
@@ -6045,7 +6438,8 @@ export const actions = {
             id: 'tech-zoning_permits',
             title: loc('tech_zoning_permits'),
             desc: loc('tech_zoning_permits'),
-            category: 'upgrade',
+            category: 'queues',
+            era: 'industrialized',
             reqs: { queue: 1, high_tech: 3 },
             grant: ['queue',2],
             cost: {
@@ -6065,7 +6459,8 @@ export const actions = {
             id: 'tech-urbanization',
             title: loc('tech_urbanization'),
             desc: loc('tech_urbanization'),
-            category: 'upgrade',
+            category: 'queues',
+            era: 'globalized',
             reqs: { queue: 2, high_tech: 6 },
             grant: ['queue',3],
             cost: {
@@ -6085,7 +6480,8 @@ export const actions = {
             id: 'tech-assistant',
             title: loc('tech_assistant'),
             desc: loc('tech_assistant'),
-            category: 'upgrade',
+            category: 'queues',
+            era: 'civilized',
             reqs: { queue: 1, science: 4 },
             grant: ['r_queue',1],
             cost: {
@@ -6104,7 +6500,8 @@ export const actions = {
             id: 'tech-government',
             title: loc('tech_government'),
             desc: loc('tech_government_desc'),
-            category: 'research',
+            category: 'government',
+            era: 'civilized',
             reqs: { currency: 1 },
             grant: ['govern',1],
             cost: {
@@ -6124,7 +6521,8 @@ export const actions = {
             id: 'tech-theocracy',
             title: loc('govern_theocracy'),
             desc: loc('govern_theocracy'),
-            category: 'research',
+            category: 'government',
+            era: 'civilized',
             reqs: { govern: 1, theology: 2 },
             grant: ['gov_theo',1],
             cost: {
@@ -6142,7 +6540,8 @@ export const actions = {
             id: 'tech-republic',
             title: loc('govern_republic'),
             desc: loc('govern_republic'),
-            category: 'research',
+            category: 'government',
+            era: 'discovery',
             reqs: { govern: 1 },
             condition(){
                 return (global.tech['trade'] && global.tech['trade'] >= 2) || global.race['terrifying'] ? true : false;
@@ -6163,7 +6562,8 @@ export const actions = {
             id: 'tech-socialist',
             title: loc('govern_socialist'),
             desc: loc('govern_socialist'),
-            category: 'research',
+            category: 'government',
+            era: 'discovery',
             reqs: { govern: 1 },
             condition(){
                 return (global.tech['trade'] && global.tech['trade'] >= 2) || global.race['terrifying'] ? true : false;
@@ -6184,7 +6584,8 @@ export const actions = {
             id: 'tech-corpocracy',
             title: loc('govern_corpocracy'),
             desc: loc('govern_corpocracy'),
-            category: 'research',
+            category: 'government',
+            era: 'industrialized',
             reqs: { govern: 2, high_tech: 3 },
             grant: ['gov_corp',1],
             cost: {
@@ -6202,7 +6603,8 @@ export const actions = {
             id: 'tech-technocracy',
             title: loc('govern_technocracy'),
             desc: loc('govern_technocracy'),
-            category: 'research',
+            category: 'government',
+            era: 'industrialized',
             reqs: { govern: 2, high_tech: 3 },
             grant: ['govern',3],
             cost: {
@@ -6216,11 +6618,34 @@ export const actions = {
                 return false;
             }
         },
+        federation: {
+            id: 'tech-federation',
+            title: loc('govern_federation'),
+            desc: loc('govern_federation'),
+            category: 'government',
+            era: 'early_space',
+            reqs: { govern: 2 },
+            condition(){
+                return (global.tech['unify'] && global.tech['unify'] >= 2) || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy ? true : false;
+            },
+            grant: ['gov_fed',1],
+            cost: {
+                Knowledge(){ return 30000; }
+            },
+            effect: loc('tech_federation_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         spy: {
             id: 'tech-spy',
             title: loc('tech_spy'),
             desc: loc('tech_spy'),
-            category: 'research',
+            category: 'spies',
+            era: 'civilized',
             reqs: { govern: 1 },
             grant: ['spy',1],
             cost: {
@@ -6241,7 +6666,8 @@ export const actions = {
             id: 'tech-espionage',
             title: loc('tech_espionage'),
             desc: loc('tech_espionage'),
-            category: 'upgrade',
+            category: 'spies',
+            era: 'discovery',
             reqs: { spy: 1, high_tech: 1 },
             grant: ['spy',2],
             cost: {
@@ -6262,7 +6688,8 @@ export const actions = {
             id: 'tech-spy_training',
             title: loc('tech_spy_training'),
             desc: loc('tech_spy_training'),
-            category: 'upgrade',
+            category: 'spies',
+            era: 'discovery',
             reqs: { spy: 2, boot_camp: 1 },
             grant: ['spy',3],
             cost: {
@@ -6280,7 +6707,8 @@ export const actions = {
             id: 'tech-spy_gadgets',
             title: loc('tech_spy_gadgets'),
             desc: loc('tech_spy_gadgets'),
-            category: 'upgrade',
+            category: 'spies',
+            era: 'discovery',
             reqs: { spy: 3, high_tech: 2 },
             grant: ['spy',4],
             cost: {
@@ -6298,7 +6726,8 @@ export const actions = {
             id: 'tech-code_breakers',
             title: loc('tech_code_breakers'),
             desc: loc('tech_code_breakers'),
-            category: 'upgrade',
+            category: 'spies',
+            era: 'industrialized',
             reqs: { spy: 4, high_tech: 4 },
             grant: ['spy',5],
             cost: {
@@ -6316,12 +6745,13 @@ export const actions = {
             id: 'tech-currency',
             title: loc('tech_currency'),
             desc: loc('tech_currency_desc'),
-            category: 'research',
+            category: 'banking',
+            era: 'civilized',
             reqs: { housing: 1 },
             grant: ['currency',1],
             cost: {
                 Knowledge(){ return 22; },
-                Lumber(){ return 10; } 
+                Lumber(){ return 10; }
             },
             effect: loc('tech_currency_effect'),
             action(){
@@ -6336,7 +6766,8 @@ export const actions = {
             id: 'tech-market',
             title: loc('tech_market'),
             desc: loc('tech_market_desc'),
-            category: 'research',
+            category: 'banking',
+            era: 'civilized',
             reqs: { banking: 1, govern: 1 },
             not_trait: ['terrifying'],
             grant: ['currency',2],
@@ -6357,7 +6788,8 @@ export const actions = {
             id: 'tech-tax_rates',
             title: loc('tech_tax_rates'),
             desc: loc('tech_tax_rates_desc'),
-            category: 'research',
+            category: 'banking',
+            era: 'civilized',
             reqs: { banking: 2, currency: 2, queue: 1 },
             grant: ['currency',3],
             cost: {
@@ -6376,7 +6808,8 @@ export const actions = {
             id: 'tech-large_trades',
             title: loc('tech_large_trades'),
             desc: loc('tech_large_trades_desc'),
-            category: 'upgrade',
+            category: 'market',
+            era: 'civilized',
             reqs: { currency: 3 },
             grant: ['currency',4],
             cost: {
@@ -6403,7 +6836,8 @@ export const actions = {
             id: 'tech-corruption',
             title: loc('tech_corruption'),
             desc: loc('tech_corruption_desc'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'industrialized',
             reqs: { currency: 4, high_tech: 3 },
             grant: ['currency',5],
             not_trait: ['noble'],
@@ -6422,7 +6856,8 @@ export const actions = {
             id: 'tech-massive_trades',
             title: loc('tech_massive_trades'),
             desc: loc('tech_massive_trades_desc'),
-            category: 'upgrade',
+            category: 'market',
+            era: 'globalized',
             reqs: { currency: 5, high_tech: 4 },
             grant: ['currency',6],
             cost: {
@@ -6443,7 +6878,8 @@ export const actions = {
             id: 'tech-trade',
             title: loc('tech_trade'),
             desc: loc('tech_trade_desc'),
-            category: 'research',
+            category: 'market',
+            era: 'civilized',
             reqs: { currency: 2, military: 1 },
             grant: ['trade',1],
             cost: {
@@ -6463,7 +6899,8 @@ export const actions = {
             id: 'tech-diplomacy',
             title: loc('tech_diplomacy'),
             desc: loc('tech_diplomacy_desc'),
-            category: 'upgrade',
+            category: 'market',
+            era: 'discovery',
             reqs: { trade: 1, high_tech: 1 },
             grant: ['trade',2],
             cost: {
@@ -6481,7 +6918,8 @@ export const actions = {
             id: 'tech-freight',
             title: loc('tech_freight'),
             desc: loc('tech_freight_desc'),
-            category: 'upgrade',
+            category: 'market',
+            era: 'industrialized',
             reqs: { trade: 2, high_tech: 3 },
             grant: ['trade',3],
             cost: {
@@ -6491,6 +6929,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.tech['high_tech'] >= 6) {
+                        let tech = $(this)[0].grant[0];
+                        global.tech[tech] = $(this)[0].grant[1];
                         arpa('Physics');
                     }
                     return true;
@@ -6502,7 +6942,7 @@ export const actions = {
             id: 'tech-wharf',
             title: loc('tech_wharf'),
             desc: loc('tech_wharf_desc'),
-            category: 'research',
+            category: 'market',
             reqs: { trade: 1, high_tech: 3, oil: 1 },
             not_trait: ['thalassophobia'],
             grant: ['wharf',1],
@@ -6522,7 +6962,8 @@ export const actions = {
             id: 'tech-banking',
             title: loc('tech_banking'),
             desc: loc('tech_banking_desc'),
-            category: 'research',
+            category: 'banking',
+            era: 'civilized',
             reqs: { currency: 1 },
             grant: ['banking',1],
             cost: {
@@ -6541,7 +6982,8 @@ export const actions = {
             id: 'tech-investing',
             title: loc('tech_investing'),
             desc: loc('tech_investing_desc'),
-            category: 'research',
+            category: 'banking',
+            era: 'civilized',
             reqs: { banking: 1 },
             grant: ['banking',2],
             cost: {
@@ -6561,7 +7003,8 @@ export const actions = {
             id: 'tech-vault',
             title: loc('tech_vault'),
             desc: loc('tech_vault_desc'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'civilized',
             reqs: { banking: 2, cement: 1 },
             grant: ['banking',3],
             cost: {
@@ -6582,7 +7025,8 @@ export const actions = {
             id: 'tech-bonds',
             title: loc('tech_bonds'),
             desc: loc('tech_bonds'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'civilized',
             reqs: { banking: 3 },
             grant: ['banking',4],
             cost: {
@@ -6601,7 +7045,8 @@ export const actions = {
             id: 'tech-steel_vault',
             title: loc('tech_steel_vault'),
             desc: loc('tech_steel_vault'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'civilized',
             reqs: { banking: 4, smelting: 2 },
             grant: ['banking',5],
             cost: {
@@ -6621,7 +7066,8 @@ export const actions = {
             id: 'tech-eebonds',
             title: loc('tech_eebonds'),
             desc: loc('tech_eebonds'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'discovery',
             reqs: { banking: 5, high_tech: 1 },
             grant: ['banking',6],
             cost: {
@@ -6640,7 +7086,8 @@ export const actions = {
             id: 'tech-swiss_banking',
             title: loc('tech_swiss_banking'),
             desc: loc('tech_swiss_banking'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'industrialized',
             reqs: { banking: 6 },
             grant: ['banking',7],
             cost: {
@@ -6659,7 +7106,8 @@ export const actions = {
             id: 'tech-safety_deposit',
             title: loc('tech_safety_deposit'),
             desc: loc('tech_safety_deposit'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'globalized',
             reqs: { banking: 7, high_tech: 4 },
             grant: ['banking',8],
             cost: {
@@ -6678,7 +7126,8 @@ export const actions = {
             id: 'tech-stock_market',
             title: loc('tech_stock_market'),
             desc: loc('tech_stock_market'),
-            category: 'research',
+            category: 'arpa',
+            era: 'globalized',
             reqs: { banking: 8, high_tech: 6 },
             grant: ['banking',9],
             cost: {
@@ -6700,7 +7149,8 @@ export const actions = {
             id: 'tech-hedge_funds',
             title: loc('tech_hedge_funds'),
             desc: loc('tech_hedge_funds'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'early_space',
             reqs: { banking: 9, stock_exchange: 1 },
             grant: ['banking',10],
             cost: {
@@ -6719,7 +7169,8 @@ export const actions = {
             id: 'tech-four_oh_one',
             title: loc('tech_four_oh_one'),
             desc: loc('tech_four_oh_one'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'early_space',
             reqs: { banking: 10 },
             grant: ['banking',11],
             cost: {
@@ -6741,7 +7192,8 @@ export const actions = {
             id: 'tech-exchange',
             title: loc('tech_exchange'),
             desc: loc('tech_exchange'),
-            category: 'research',
+            category: 'banking',
+            era: 'interstellar',
             reqs: { banking: 11, alpha: 2, graphene: 1 },
             grant: ['banking',12],
             cost: {
@@ -6757,11 +7209,32 @@ export const actions = {
                 return false;
             }
         },
+        foreign_investment: {
+            id: 'tech-foreign_investment',
+            title: loc('tech_foreign_investment'),
+            desc: loc('tech_foreign_investment'),
+            category: 'banking',
+            era: 'intergalactic',
+            reqs: { banking: 12, xeno: 10 },
+            grant: ['banking',13],
+            cost: {
+                Money(){ return 100000000; },
+                Knowledge(){ return 8000000; }
+            },
+            effect: loc('tech_foreign_investment_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         mythril_vault: {
             id: 'tech-mythril_vault',
             title: loc('tech_mythril_vault'),
             desc: loc('tech_mythril_vault'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'early_space',
             reqs: { banking: 5, space: 3 },
             grant: ['vault',1],
             cost: {
@@ -6781,7 +7254,8 @@ export const actions = {
             id: 'tech-neutronium_vault',
             title: loc('tech_neutronium_vault'),
             desc: loc('tech_neutronium_vault'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'deep_space',
             reqs: { vault: 1, gas_moon: 1 },
             grant: ['vault',2],
             cost: {
@@ -6801,7 +7275,8 @@ export const actions = {
             id: 'tech-adamantite_vault',
             title: loc('tech_adamantite_vault'),
             desc: loc('tech_adamantite_vault'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'interstellar',
             reqs: { vault: 2, alpha: 2 },
             grant: ['vault',3],
             cost: {
@@ -6821,7 +7296,8 @@ export const actions = {
             id: 'tech-graphene_vault',
             title: loc('tech_graphene_vault'),
             desc: loc('tech_graphene_vault'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'interstellar',
             reqs: { vault: 3, graphene: 1 },
             grant: ['vault',4],
             cost: {
@@ -6841,7 +7317,8 @@ export const actions = {
             id: 'tech-home_safe',
             title: loc('tech_home_safe'),
             desc: loc('tech_home_safe'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'discovery',
             reqs: { banking: 5 },
             grant: ['home_safe',1],
             cost: {
@@ -6861,7 +7338,8 @@ export const actions = {
             id: 'tech-fire_proof_safe',
             title: loc('tech_fire_proof_safe'),
             desc: loc('tech_fire_proof_safe'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'early_space',
             reqs: { home_safe: 1, space: 3 },
             grant: ['home_safe',2],
             cost: {
@@ -6881,7 +7359,8 @@ export const actions = {
             id: 'tech-tamper_proof_safe',
             title: loc('tech_tamper_proof_safe'),
             desc: loc('tech_tamper_proof_safe'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'interstellar',
             reqs: { home_safe: 2, infernite: 1 },
             grant: ['home_safe',3],
             cost: {
@@ -6901,7 +7380,8 @@ export const actions = {
             id: 'tech-monument',
             title: loc('tech_monument'),
             desc: loc('tech_monument'),
-            category: 'research',
+            category: 'arpa',
+            era: 'globalized',
             reqs: { high_tech: 6 },
             grant: ['monument',1],
             cost: {
@@ -6923,7 +7403,8 @@ export const actions = {
             id: 'tech-tourism',
             title: loc('tech_tourism'),
             desc: loc('tech_tourism'),
-            category: 'research',
+            category: 'banking',
+            era: 'early_space',
             reqs: { monuments: 2 },
             grant: ['monument',2],
             cost: {
@@ -6942,7 +7423,8 @@ export const actions = {
             id: 'tech-science',
             title: loc('tech_science'),
             desc: loc('tech_science_desc'),
-            category: 'research',
+            category: 'science',
+            era: 'civilized',
             reqs: { housing: 1 },
             grant: ['science',1],
             cost: {
@@ -6961,7 +7443,8 @@ export const actions = {
             id: 'tech-library',
             title: loc('tech_library'),
             desc: loc('tech_library_desc'),
-            category: 'research',
+            category: 'science',
+            era: 'civilized',
             reqs: { science: 1, cement: 1 },
             grant: ['science',2],
             cost: {
@@ -6980,7 +7463,8 @@ export const actions = {
             id: 'tech-thesis',
             title: loc('tech_thesis'),
             desc: loc('tech_thesis_desc'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'civilized',
             reqs: { science: 2 },
             grant: ['science',3],
             cost: {
@@ -6998,7 +7482,8 @@ export const actions = {
             id: 'tech-research_grant',
             title: loc('tech_research_grant'),
             desc: loc('tech_research_grant_desc'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'civilized',
             reqs: { science: 3 },
             grant: ['science',4],
             cost: {
@@ -7016,7 +7501,8 @@ export const actions = {
             id: 'tech-scientific_journal',
             title: loc('tech_scientific_journal'),
             desc: loc('tech_scientific_journal_desc'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'industrialized',
             reqs: { science: 4, high_tech: 3 },
             grant: ['science',5],
             cost: {
@@ -7034,7 +7520,8 @@ export const actions = {
             id: 'tech-adjunct_professor',
             title: loc('tech_adjunct_professor'),
             desc: loc('tech_adjunct_professor'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'industrialized',
             reqs: { science: 5 },
             grant: ['science',6],
             cost: {
@@ -7052,7 +7539,8 @@ export const actions = {
             id: 'tech-tesla_coil',
             title: loc('tech_tesla_coil'),
             desc: loc('tech_tesla_coil_desc'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'industrialized',
             reqs: { science: 6, high_tech: 3 },
             grant: ['science',7],
             cost: {
@@ -7070,7 +7558,8 @@ export const actions = {
             id: 'tech-internet',
             title: loc('tech_internet'),
             desc: loc('tech_internet'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'globalized',
             reqs: { science: 7, high_tech: 4 },
             grant: ['science',8],
             cost: {
@@ -7091,7 +7580,8 @@ export const actions = {
             id: 'tech-observatory',
             title: loc('tech_observatory'),
             desc: loc('tech_observatory'),
-            category: 'research',
+            category: 'science',
+            era: 'early_space',
             reqs: { science: 8, space: 3, luna: 1 },
             grant: ['science',9],
             cost: {
@@ -7113,7 +7603,8 @@ export const actions = {
             id: 'tech-world_collider',
             title: loc('tech_world_collider'),
             desc: loc('tech_world_collider'),
-            category: 'research',
+            category: 'science',
+            era: 'deep_space',
             reqs: { science: 9, elerium: 2 },
             grant: ['science',10],
             cost: {
@@ -7139,7 +7630,8 @@ export const actions = {
             id: 'tech-laboratory',
             title: loc('tech_laboratory'),
             desc: loc('tech_laboratory_desc'),
-            category: 'research',
+            category: 'science',
+            era: 'interstellar',
             reqs: { science: 11, alpha: 2 },
             grant: ['science',12],
             cost: {
@@ -7162,7 +7654,8 @@ export const actions = {
             id: 'tech-virtual_assistant',
             title: loc('tech_virtual_assistant'),
             desc: loc('tech_virtual_assistant'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'interstellar',
             reqs: { science: 12, high_tech: 12 },
             grant: ['science',13],
             cost: {
@@ -7180,7 +7673,8 @@ export const actions = {
             id: 'tech-dimensional_readings',
             title: loc('tech_dimensional_readings'),
             desc: loc('tech_dimensional_readings'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'interstellar',
             reqs: { science: 13, infernite: 2 },
             grant: ['science',14],
             cost: {
@@ -7198,7 +7692,8 @@ export const actions = {
             id: 'tech-quantum_entanglement',
             title: loc('tech_quantum_entanglement'),
             desc: loc('tech_quantum_entanglement'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'interstellar',
             reqs: { science: 14, neutron: 1 },
             grant: ['science',15],
             cost: {
@@ -7214,11 +7709,89 @@ export const actions = {
                 return false;
             }
         },
+        expedition: {
+            id: 'tech-expedition',
+            title: loc('tech_expedition'),
+            desc: loc('tech_expedition'),
+            category: 'science',
+            era: 'intergalactic',
+            reqs: { science: 15, xeno: 4 },
+            grant: ['science',16],
+            cost: {
+                Knowledge(){ return 5350000; }
+            },
+            effect(){ return loc('tech_expedition_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        subspace_sensors: {
+            id: 'tech-subspace_sensors',
+            title: loc('tech_subspace_sensors'),
+            desc: loc('tech_subspace_sensors'),
+            category: 'science',
+            era: 'intergalactic',
+            reqs: { science: 16, high_tech: 16 },
+            grant: ['science',17],
+            cost: {
+                Knowledge(){ return 6000000; }
+            },
+            effect(){ return loc('tech_subspace_sensors_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        alien_database: {
+            id: 'tech-alien_database',
+            title: loc('tech_alien_database'),
+            desc: loc('tech_alien_database'),
+            category: 'progress',
+            era: 'intergalactic',
+            reqs: { science: 17, conflict: 5 },
+            grant: ['science',18],
+            cost: {
+                Knowledge(){ return 8250000; }
+            },
+            effect(){ return loc('tech_alien_database_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        orichalcum_capacitor: {
+            id: 'tech-orichalcum_capacitor',
+            title: loc('tech_orichalcum_capacitor'),
+            desc: loc('tech_orichalcum_capacitor'),
+            category: 'science',
+            era: 'intergalactic',
+            reqs: { science: 18, high_tech: 17 },
+            grant: ['science',19],
+            cost: {
+                Knowledge(){ return 12500000; },
+                Orichalcum(){ return 250000; }
+            },
+            effect(){ return loc('tech_orichalcum_capacitor_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         bioscience: {
             id: 'tech-bioscience',
             title: loc('tech_bioscience'),
             desc: loc('tech_bioscience_desc'),
-            category: 'research',
+            category: 'science',
+            era: 'globalized',
             reqs: { science: 8 },
             grant: ['genetics',1],
             cost: {
@@ -7237,7 +7810,8 @@ export const actions = {
             id: 'tech-genetics',
             title: loc('tech_genetics'),
             desc: loc('tech_genetics'),
-            category: 'research',
+            category: 'arpa',
+            era: 'globalized',
             reqs: { genetics: 1, high_tech: 6 },
             grant: ['genetics',2],
             cost: {
@@ -7259,7 +7833,8 @@ export const actions = {
             id: 'tech-crispr',
             title: loc('tech_crispr'),
             desc: loc('tech_crispr'),
-            category: 'research',
+            category: 'genes',
+            era: 'globalized',
             reqs: { genetics: 3 },
             grant: ['genetics',4],
             cost: {
@@ -7283,7 +7858,8 @@ export const actions = {
             id: 'tech-shotgun_sequencing',
             title: loc('tech_shotgun_sequencing'),
             desc: loc('tech_shotgun_sequencing_desc'),
-            category: 'upgrade',
+            category: 'genes',
+            era: 'early_space',
             reqs: { genetics: 4 },
             grant: ['genetics',5],
             cost: {
@@ -7305,7 +7881,8 @@ export const actions = {
             id: 'tech-de_novo_sequencing',
             title: loc('tech_de_novo_sequencing'),
             desc: loc('tech_de_novo_sequencing'),
-            category: 'research',
+            category: 'genes',
+            era: 'early_space',
             reqs: { genetics: 5 },
             grant: ['genetics',6],
             cost: {
@@ -7327,7 +7904,8 @@ export const actions = {
             id: 'tech-dna_sequencer',
             title: loc('tech_dna_sequencer'),
             desc: loc('tech_dna_sequencer'),
-            category: 'research',
+            category: 'genes',
+            era: 'deep_space',
             reqs: { genetics: 6 },
             grant: ['genetics',7],
             cost: {
@@ -7349,7 +7927,8 @@ export const actions = {
             id: 'tech-rapid_sequencing',
             title: loc('tech_rapid_sequencing'),
             desc: loc('tech_rapid_sequencing'),
-            category: 'upgrade',
+            category: 'genes',
+            era: 'interstellar',
             reqs: { genetics: 7, high_tech: 12 },
             grant: ['genetics',8],
             cost: {
@@ -7367,7 +7946,8 @@ export const actions = {
             id: 'tech-mad_science',
             title: loc('tech_mad_science'),
             desc: loc('tech_mad_science'),
-            category: 'research',
+            category: 'science',
+            era: 'discovery',
             reqs: { science: 2, smelting: 2 },
             grant: ['high_tech',1],
             cost: {
@@ -7394,7 +7974,8 @@ export const actions = {
             id: 'tech-electricity',
             title: loc('tech_electricity'),
             desc: loc('tech_electricity'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'discovery',
             reqs: { high_tech: 1 },
             grant: ['high_tech',2],
             cost: {
@@ -7404,7 +7985,7 @@ export const actions = {
             effect: loc('tech_electricity_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue('Electricity is a major advancement for your people, the future possibilities are endless.','success');
+                    messageQueue(loc('tech_electricity_msg'),'info');
                     global.city['power'] = 0;
                     global.city['powered'] = true;
                     global.city['coal_power'] = {
@@ -7420,7 +8001,8 @@ export const actions = {
             id: 'tech-industrialization',
             title: loc('tech_industrialization'),
             desc: loc('tech_industrialization'),
-            category: 'research',
+            category: 'progress',
+            era: 'industrialized',
             reqs: { high_tech: 2, cement: 2, steel_container: 1 },
             grant: ['high_tech',3],
             cost: {
@@ -7448,7 +8030,8 @@ export const actions = {
             id: 'tech-electronics',
             title: loc('tech_electronics'),
             desc: loc('tech_electronics'),
-            category: 'research',
+            category: 'progress',
+            era: 'industrialized',
             reqs: { high_tech: 3, titanium: 1 },
             grant: ['high_tech',4],
             cost: {
@@ -7470,7 +8053,8 @@ export const actions = {
             id: 'tech-fission',
             title: loc('tech_fission'),
             desc: loc('tech_fission'),
-            category: 'research',
+            category: 'progress',
+            era: 'globalized',
             reqs: { high_tech: 4, uranium: 1 },
             grant: ['high_tech',5],
             cost: {
@@ -7480,7 +8064,7 @@ export const actions = {
             effect: loc('tech_fission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('tech_fission_msg'),'success');
+                    messageQueue(loc('tech_fission_msg'),'info');
                     global.city['fission_power'] = {
                         count: 0,
                         on: 0
@@ -7494,7 +8078,8 @@ export const actions = {
             id: 'tech-arpa',
             title: loc('tech_arpa'),
             desc: loc('tech_arpa_desc'),
-            category: 'research',
+            category: 'arpa',
+            era: 'globalized',
             reqs: { high_tech: 5 },
             grant: ['high_tech',6],
             cost: {
@@ -7516,7 +8101,8 @@ export const actions = {
             id: 'tech-rocketry',
             title: loc('tech_rocketry'),
             desc: loc('tech_rocketry'),
-            category: 'research',
+            category: 'arpa',
+            era: 'globalized',
             reqs: { high_tech: 6 },
             grant: ['high_tech',7],
             cost: {
@@ -7538,7 +8124,8 @@ export const actions = {
             id: 'tech-robotics',
             title: loc('tech_robotics'),
             desc: loc('tech_robotics'),
-            category: 'research',
+            category: 'progress',
+            era: 'globalized',
             reqs: { high_tech: 7 },
             grant: ['high_tech',8],
             cost: {
@@ -7556,7 +8143,8 @@ export const actions = {
             id: 'tech-lasers',
             title: loc('tech_lasers'),
             desc: loc('tech_lasers_desc'),
-            category: 'research',
+            category: 'progress',
+            era: 'deep_space',
             reqs: { high_tech: 8, space: 3, supercollider: 1, elerium: 1 },
             grant: ['high_tech',9],
             cost: {
@@ -7575,7 +8163,8 @@ export const actions = {
             id: 'tech-artifical_intelligence',
             title: loc('tech_artificial_intelligence'),
             desc: loc('tech_artificial_intelligence'),
-            category: 'research',
+            category: 'progress',
+            era: 'deep_space',
             reqs: { high_tech: 9 },
             grant: ['high_tech',10],
             cost: {
@@ -7596,7 +8185,8 @@ export const actions = {
             id: 'tech-quantum_computing',
             title: loc('tech_quantum_computing'),
             desc: loc('tech_quantum_computing'),
-            category: 'research',
+            category: 'progress',
+            era: 'deep_space',
             reqs: { high_tech: 10, nano: 1 },
             grant: ['high_tech',11],
             cost: {
@@ -7619,7 +8209,8 @@ export const actions = {
             id: 'tech-virtual_reality',
             title: loc('tech_virtual_reality'),
             desc: loc('tech_virtual_reality'),
-            category: 'research',
+            category: 'progress',
+            era: 'interstellar',
             reqs: { high_tech: 11, alpha: 2, infernite: 1, stanene: 1 },
             grant: ['high_tech',12],
             cost: {
@@ -7642,7 +8233,8 @@ export const actions = {
             id: 'tech-plasma',
             title: loc('tech_plasma'),
             desc: loc('tech_plasma'),
-            category: 'research',
+            category: 'progress',
+            era: 'interstellar',
             reqs: { high_tech: 12 },
             grant: ['high_tech',13],
             cost: {
@@ -7662,7 +8254,8 @@ export const actions = {
             id: 'tech-shields',
             title: loc('tech_shields'),
             desc: loc('tech_shields'),
-            category: 'research',
+            category: 'stellar_engine',
+            era: 'interstellar',
             reqs: { high_tech: 13 },
             grant: ['high_tech',14],
             cost: {
@@ -7682,7 +8275,8 @@ export const actions = {
             id: 'tech-ai_core',
             title: loc('tech_ai_core'),
             desc: loc('tech_ai_core'),
-            category: 'research',
+            category: 'ai_core',
+            era: 'interstellar',
             reqs: { high_tech: 14, science: 15, blackhole: 3 },
             grant: ['high_tech',15],
             cost: {
@@ -7697,11 +8291,95 @@ export const actions = {
                 return false;
             }
         },
+        metaphysics: {
+            id: 'tech-metaphysics',
+            title: loc('tech_metaphysics'),
+            desc: loc('tech_metaphysics'),
+            category: 'progress',
+            era: 'intergalactic',
+            reqs: { high_tech: 15, xeno: 5 },
+            grant: ['high_tech',16],
+            cost: {
+                Knowledge(){ return 5000000; },
+                Vitreloy(){ return 10000; },
+                Soul_Gem(){ return 10; }
+            },
+            effect(){ return loc('tech_metaphysics_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        orichalcum_analysis: {
+            id: 'tech-orichalcum_analysis',
+            title: loc('tech_orichalcum_analysis'),
+            desc: loc('tech_orichalcum_analysis'),
+            category: 'progress',
+            era: 'intergalactic',
+            reqs: { high_tech: 16, chthonian: 3 },
+            grant: ['high_tech',17],
+            cost: {
+                Knowledge(){ return 12200000; },
+                Orichalcum(){ return 100000; }
+            },
+            effect(){ return loc('tech_orichalcum_analysis_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('tech_orichalcum_analysis_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+        incorporeal: {
+            id: 'tech-incorporeal',
+            title: loc('tech_incorporeal'),
+            desc: loc('tech_incorporeal'),
+            category: 'special',
+            era: 'intergalactic',
+            reqs: { science: 19 },
+            grant: ['ascension',1],
+            cost: {
+                Knowledge(){ return 17500000; },
+                Phage(){ return 25; }
+            },
+            effect(){ return loc('tech_incorporeal_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        tech_ascension: {
+            id: 'tech-tech_ascension',
+            title: loc('tech_ascension'),
+            desc: loc('tech_ascension'),
+            category: 'special',
+            era: 'intergalactic',
+            reqs: { ascension: 1 },
+            grant: ['ascension',2],
+            cost: {
+                Knowledge(){ return 18500000; },
+                Plasmid(){ return 100; }
+            },
+            effect(){ return loc('tech_ascension_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.settings.space.sirius = true;
+                    return true;
+                }
+                return false;
+            }
+        },
         cement_processing: {
             id: 'tech-cement_processing',
             title: loc('tech_cement_processing'),
             desc: loc('tech_cement_processing'),
-            category: 'research',
+            category: 'ai_core',
+            era: 'interstellar',
             reqs: { high_tech: 15 },
             grant: ['ai_core',1],
             cost: {
@@ -7719,7 +8397,8 @@ export const actions = {
             id: 'tech-adamantite_processing',
             title: loc('tech_adamantite_processing'),
             desc: loc('tech_adamantite_processing'),
-            category: 'research',
+            category: 'ai_core',
+            era: 'interstellar',
             reqs: { ai_core: 1 },
             grant: ['ai_core',2],
             cost: {
@@ -7737,7 +8416,8 @@ export const actions = {
             id: 'tech-graphene_processing',
             title: loc('tech_graphene_processing'),
             desc: loc('tech_graphene_processing'),
-            category: 'research',
+            category: 'ai_core',
+            era: 'intergalactic',
             reqs: { ai_core: 2 },
             grant: ['ai_core',3],
             cost: {
@@ -7755,7 +8435,8 @@ export const actions = {
             id: 'tech-fusion_power',
             title: loc('tech_fusion_power'),
             desc: loc('tech_fusion_power'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'interstellar',
             reqs: { ram_scoop: 1 },
             grant: ['fusion',1],
             cost: {
@@ -7774,7 +8455,8 @@ export const actions = {
             id: 'tech-thermomechanics',
             title: loc('tech_thermomechanics'),
             desc: loc('tech_thermomechanics_desc'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'industrialized',
             reqs: { high_tech: 4 },
             grant: ['alloy',1],
             cost: {
@@ -7792,7 +8474,8 @@ export const actions = {
             id: 'tech-quantum_manufacturing',
             title: loc('tech_quantum_manufacturing'),
             desc: loc('tech_quantum_manufacturing'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'deep_space',
             reqs: { high_tech: 11 },
             grant: ['q_factory',1],
             cost: {
@@ -7810,7 +8493,8 @@ export const actions = {
             id: 'tech-worker_drone',
             title: loc('tech_worker_drone'),
             desc: loc('tech_worker_drone'),
-            category: 'research',
+            category: 'mining',
+            era: 'deep_space',
             reqs: { nano: 1 },
             grant: ['drone',1],
             cost: {
@@ -7829,7 +8513,8 @@ export const actions = {
             id: 'tech-uranium',
             title: loc('tech_uranium'),
             desc: loc('tech_uranium'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'globalized',
             reqs: { high_tech: 4 },
             grant: ['uranium',1],
             cost: {
@@ -7848,7 +8533,8 @@ export const actions = {
             id: 'tech-uranium_storage',
             title: loc('tech_uranium_storage'),
             desc: loc('tech_uranium_storage'),
-            category: 'research',
+            category: 'storage',
+            era: 'globalized',
             reqs: { uranium: 1 },
             grant: ['uranium',2],
             cost: {
@@ -7867,7 +8553,8 @@ export const actions = {
             id: 'tech-uranium_ash',
             title: loc('tech_uranium_ash'),
             desc: loc('tech_uranium_ash'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'globalized',
             reqs: { uranium: 2 },
             grant: ['uranium',3],
             cost: {
@@ -7885,7 +8572,8 @@ export const actions = {
             id: 'tech-breeder_reactor',
             title: loc('tech_breeder_reactor'),
             desc: loc('tech_breeder_reactor'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'early_space',
             reqs: { high_tech: 5, uranium: 3, space: 3 },
             grant: ['uranium',4],
             cost: {
@@ -7905,7 +8593,8 @@ export const actions = {
             id: 'tech-mine_conveyor',
             title: loc('tech_mine_conveyor'),
             desc: loc('tech_mine_conveyor'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'discovery',
             reqs: { high_tech: 2 },
             grant: ['mine_conveyor',1],
             cost: {
@@ -7925,7 +8614,8 @@ export const actions = {
             id: 'tech-oil_well',
             title: loc('tech_oil_well'),
             desc: loc('tech_oil_well'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'industrialized',
             reqs: { high_tech: 3 },
             grant: ['oil',1],
             cost: {
@@ -7944,7 +8634,8 @@ export const actions = {
             id: 'tech-oil_depot',
             title: loc('tech_oil_depot'),
             desc: loc('tech_oil_depot'),
-            category: 'research',
+            category: 'storage',
+            era: 'industrialized',
             reqs: { oil: 1 },
             grant: ['oil',2],
             cost: {
@@ -7967,7 +8658,8 @@ export const actions = {
             desc(){
                 return global.race['environmentalist'] ? loc('city_wind_power') : loc('tech_oil_power');
             },
-            category: 'research',
+            category: 'power_generation',
+            era: 'industrialized',
             reqs: { oil: 2 },
             grant: ['oil',3],
             cost: {
@@ -7988,7 +8680,8 @@ export const actions = {
             id: 'tech-titanium_drills',
             title: loc('tech_titanium_drills'),
             desc: loc('tech_titanium_drills'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'industrialized',
             reqs: { oil: 3 },
             grant: ['oil',4],
             cost: {
@@ -8007,7 +8700,8 @@ export const actions = {
             id: 'tech-alloy_drills',
             title: loc('tech_alloy_drills'),
             desc: loc('tech_alloy_drills'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'globalized',
             reqs: { oil: 4 },
             grant: ['oil',5],
             cost: {
@@ -8026,7 +8720,8 @@ export const actions = {
             id: 'tech-fracking',
             title: loc('tech_fracking'),
             desc: loc('tech_fracking'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'globalized',
             reqs: { oil: 5, high_tech: 6 },
             grant: ['oil',6],
             cost: {
@@ -8044,7 +8739,8 @@ export const actions = {
             id: 'tech-mythril_drills',
             title: loc('tech_mythril_drills'),
             desc: loc('tech_mythril_drills'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'early_space',
             reqs: { oil: 6, space: 3 },
             grant: ['oil',7],
             cost: {
@@ -8063,7 +8759,8 @@ export const actions = {
             id: 'tech-mass_driver',
             title: loc('tech_mass_driver'),
             desc: loc('tech_mass_driver'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'early_space',
             reqs: { oil: 6, space: 3 },
             grant: ['mass',1],
             cost: {
@@ -8081,11 +8778,32 @@ export const actions = {
                 return false;
             }
         },
+        orichalcum_driver: {
+            id: 'tech-orichalcum_driver',
+            title: loc('tech_orichalcum_driver'),
+            desc: loc('tech_orichalcum_driver'),
+            category: 'science',
+            era: 'intergalactic',
+            reqs: { mass: 1, science: 19 },
+            grant: ['mass',2],
+            cost: {
+                Knowledge(){ return 14000000; },
+                Orichalcum(){ return 400000; }
+            },
+            effect(){ return loc('tech_orichalcum_driver_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         polymer: {
             id: 'tech-polymer',
             title: loc('tech_polymer'),
             desc: loc('tech_polymer'),
-            category: 'research',
+            category: 'crafting',
+            era: 'globalized',
             reqs: { genetics: 1 },
             grant: ['polymer',1],
             cost: {
@@ -8099,7 +8817,7 @@ export const actions = {
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Polymer.display = true;
-                    messageQueue(loc('tech_polymer_avail'));
+                    messageQueue(loc('tech_polymer_avail'),'info');
                     defineIndustry();
                     return true;
                 }
@@ -8110,7 +8828,8 @@ export const actions = {
             id: 'tech-fluidized_bed_reactor',
             title: loc('tech_fluidized_bed_reactor'),
             desc: loc('tech_fluidized_bed_reactor'),
-            category: 'upgrade',
+            category: 'crafting',
+            era: 'globalized',
             reqs: { polymer: 1, high_tech: 6 },
             grant: ['polymer',2],
             cost: {
@@ -8124,11 +8843,36 @@ export const actions = {
                 return false;
             }
         },
+        nanoweave: {
+            id: 'tech-nanoweave',
+            title: loc('tech_nanoweave'),
+            desc: loc('tech_nanoweave'),
+            category: 'crafting',
+            era: 'intergalactic',
+            reqs: { science: 18 },
+            grant: ['nanoweave',1],
+            cost: {
+                Knowledge(){ return 8500000; },
+                Nano_Tube(){ return 5000000; },
+                Vitreloy(){ return 250000; },
+            },
+            effect: loc('tech_nanoweave_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Nanoweave.display = true;
+                    messageQueue(loc('tech_nanoweave_avail'),'info');
+                    loadFoundry();
+                    return true;
+                }
+                return false;
+            }
+        },
         stanene: {
             id: 'tech-stanene',
             title: loc('tech_stanene'),
             desc: loc('tech_stanene'),
-            category: 'research',
+            category: 'crafting',
+            era: 'interstellar',
             reqs: { infernite: 1 },
             grant: ['stanene',1],
             cost: {
@@ -8142,7 +8886,7 @@ export const actions = {
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Stanene.display = true;
-                    messageQueue(loc('tech_stanene_avail'));
+                    messageQueue(loc('tech_stanene_avail'),'info');
                     defineIndustry();
                     return true;
                 }
@@ -8153,7 +8897,8 @@ export const actions = {
             id: 'tech-nano_tubes',
             title: loc('tech_nano_tubes'),
             desc: loc('tech_nano_tubes'),
-            category: 'research',
+            category: 'crafting',
+            era: 'deep_space',
             reqs: { high_tech: 10 },
             grant: ['nano',1],
             cost: {
@@ -8168,7 +8913,7 @@ export const actions = {
                     global.tech[tech] = $(this)[0].grant[1];
                     global.resource.Nano_Tube.display = true;
                     global.city.factory['Nano'] = 0;
-                    messageQueue('Nano Tubes are now available for manufacture');
+                    messageQueue(loc('tech_nano_tubes_msg'),'info');
                     defineIndustry();
                     return true;
                 }
@@ -8179,7 +8924,8 @@ export const actions = {
             id: 'tech-reclaimer',
             title: loc('tech_reclaimer'),
             desc: loc('tech_reclaimer_desc'),
-            category: 'research',
+            category: 'reclaimer',
+            era: 'civilized',
             reqs: { primitive: 3 },
             grant: ['reclaimer',1],
             trait: ['evil'],
@@ -8194,6 +8940,7 @@ export const actions = {
             effect: loc('tech_reclaimer_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.civic.lumberjack.name = loc('job_reclaimer');
                     global.civic.lumberjack.display = true;
                     global.city['graveyard'] = { count: 0 };
                     return true;
@@ -8205,7 +8952,8 @@ export const actions = {
             id: 'tech-shovel',
             title: loc('tech_shovel'),
             desc: loc('tech_shovel'),
-            category: 'upgrade',
+            category: 'reclaimer',
+            era: 'civilized',
             reqs: { reclaimer: 1, mining: 2 },
             grant: ['reclaimer',2],
             trait: ['evil'],
@@ -8228,7 +8976,8 @@ export const actions = {
             id: 'tech-iron_shovel',
             title: loc('tech_iron_shovel'),
             desc: loc('tech_iron_shovel'),
-            category: 'upgrade',
+            category: 'reclaimer',
+            era: 'civilized',
             reqs: { reclaimer: 2, mining: 3 },
             grant: ['reclaimer',3],
             trait: ['evil'],
@@ -8251,7 +9000,8 @@ export const actions = {
             id: 'tech-steel_shovel',
             title: loc('tech_steel_shovel'),
             desc: loc('tech_steel_shovel'),
-            category: 'upgrade',
+            category: 'reclaimer',
+            era: 'discovery',
             reqs: { reclaimer: 3, smelting: 2 },
             grant: ['reclaimer',4],
             trait: ['evil'],
@@ -8274,7 +9024,8 @@ export const actions = {
             id: 'tech-titanium_shovel',
             title: loc('tech_titanium_shovel'),
             desc: loc('tech_titanium_shovel'),
-            category: 'upgrade',
+            category: 'reclaimer',
+            era: 'industrialized',
             reqs: { reclaimer: 4, high_tech: 3 },
             grant: ['reclaimer',5],
             trait: ['evil'],
@@ -8297,7 +9048,8 @@ export const actions = {
             id: 'tech-alloy_shovel',
             title: loc('tech_alloy_shovel'),
             desc: loc('tech_alloy_shovel'),
-            category: 'upgrade',
+            category: 'reclaimer',
+            era: 'globalized',
             reqs: { reclaimer: 5, high_tech: 4 },
             grant: ['reclaimer',6],
             trait: ['evil'],
@@ -8320,7 +9072,8 @@ export const actions = {
             id: 'tech-mythril_shovel',
             title: loc('tech_mythril_shovel'),
             desc: loc('tech_mythril_shovel'),
-            category: 'upgrade',
+            category: 'reclaimer',
+            era: 'early_space',
             reqs: { reclaimer: 6, space: 3 },
             grant: ['reclaimer',7],
             trait: ['evil'],
@@ -8343,7 +9096,8 @@ export const actions = {
             id: 'tech-adamantite_shovel',
             title: loc('tech_adamantite_shovel'),
             desc: loc('tech_adamantite_shovel'),
-            category: 'upgrade',
+            category: 'reclaimer',
+            era: 'interstellar',
             reqs: { reclaimer: 7, alpha: 2 },
             grant: ['reclaimer',8],
             trait: ['evil'],
@@ -8366,8 +9120,9 @@ export const actions = {
             id: 'tech-stone_axe',
             title: loc('tech_stone_axe'),
             desc: loc('tech_stone_axe_desc'),
-            category: 'research',
+            category: 'lumber_gathering',
             reqs: { primitive: 3 },
+            era: 'civilized',
             grant: ['axe',1],
             not_trait: ['kindling_kindred','evil'],
             cost: {
@@ -8389,7 +9144,8 @@ export const actions = {
             id: 'tech-copper_axes',
             title: loc('tech_copper_axes'),
             desc: loc('tech_copper_axes_desc'),
-            category: 'upgrade',
+            category: 'lumber_gathering',
+            era: 'civilized',
             reqs: { axe: 1, mining: 2 },
             grant: ['axe',2],
             cost: {
@@ -8408,7 +9164,8 @@ export const actions = {
             id: 'tech-iron_saw',
             title: loc('tech_iron_saw'),
             desc: loc('tech_iron_saw_desc'),
-            category: 'upgrade',
+            category: 'lumber_gathering',
+            era: 'civilized',
             reqs: { axe: 1, mining: 3 },
             grant: ['saw',1],
             cost: {
@@ -8431,7 +9188,8 @@ export const actions = {
             id: 'tech-steel_saw',
             title: loc('tech_steel_saw'),
             desc: loc('tech_steel_saw_desc'),
-            category: 'upgrade',
+            category: 'lumber_gathering',
+            era: 'discovery',
             reqs: { smelting: 2, saw: 1 },
             grant: ['saw',2],
             cost: {
@@ -8450,7 +9208,8 @@ export const actions = {
             id: 'tech-iron_axes',
             title: loc('tech_iron_axes'),
             desc: loc('tech_iron_axes_desc'),
-            category: 'upgrade',
+            category: 'lumber_gathering',
+            era: 'civilized',
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
             cost: {
@@ -8469,7 +9228,8 @@ export const actions = {
             id: 'tech-steel_axes',
             title: loc('tech_steel_axes'),
             desc: loc('tech_steel_axes_desc'),
-            category: 'upgrade',
+            category: 'lumber_gathering',
+            era: 'discovery',
             reqs: { axe: 3, smelting: 2 },
             grant: ['axe',4],
             cost: {
@@ -8488,7 +9248,8 @@ export const actions = {
             id: 'tech-titanium_axes',
             title: loc('tech_titanium_axes'),
             desc: loc('tech_titanium_axes_desc'),
-            category: 'upgrade',
+            category: 'lumber_gathering',
+            era: 'industrialized',
             reqs: { axe: 4, high_tech: 3 },
             grant: ['axe',5],
             cost: {
@@ -8507,7 +9268,8 @@ export const actions = {
             id: 'tech-chainsaws',
             title: loc('tech_chainsaws'),
             desc: loc('tech_chainsaws_desc'),
-            category: 'upgrade',
+            category: 'lumber_gathering',
+            era: 'interstellar',
             reqs: { axe: 5, alpha: 2 },
             grant: ['axe',6],
             cost: {
@@ -8528,7 +9290,8 @@ export const actions = {
             id: 'tech-copper_sledgehammer',
             title: loc('tech_copper_sledgehammer'),
             desc: loc('tech_copper_sledgehammer_desc'),
-            category: 'upgrade',
+            category: 'stone_gathering',
+            era: 'civilized',
             reqs: { mining: 2 },
             grant: ['hammer',1],
             cost: {
@@ -8547,7 +9310,8 @@ export const actions = {
             id: 'tech-iron_sledgehammer',
             title: loc('tech_iron_sledgehammer'),
             desc: loc('tech_iron_sledgehammer_desc'),
-            category: 'upgrade',
+            category: 'stone_gathering',
+            era: 'civilized',
             reqs: { hammer: 1, mining: 3 },
             grant: ['hammer',2],
             cost: {
@@ -8566,7 +9330,8 @@ export const actions = {
             id: 'tech-steel_sledgehammer',
             title: loc('tech_steel_sledgehammer'),
             desc: loc('tech_steel_sledgehammer_desc'),
-            category: 'upgrade',
+            category: 'stone_gathering',
+            era: 'discovery',
             reqs: { hammer: 2, smelting: 2 },
             grant: ['hammer',3],
             cost: {
@@ -8585,7 +9350,8 @@ export const actions = {
             id: 'tech-titanium_sledgehammer',
             title: loc('tech_titanium_sledgehammer'),
             desc: loc('tech_titanium_sledgehammer_desc'),
-            category: 'upgrade',
+            category: 'stone_gathering',
+            era: 'industrialized',
             reqs: { hammer: 3, high_tech: 3 },
             grant: ['hammer',4],
             cost: {
@@ -8604,7 +9370,8 @@ export const actions = {
             id: 'tech-copper_pickaxe',
             title: loc('tech_copper_pickaxe'),
             desc: loc('tech_copper_pickaxe_desc'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'civilized',
             reqs: { mining: 2 },
             grant: ['pickaxe',1],
             cost: {
@@ -8623,7 +9390,8 @@ export const actions = {
             id: 'tech-iron_pickaxe',
             title: loc('tech_iron_pickaxe'),
             desc: loc('tech_iron_pickaxe_desc'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'civilized',
             reqs: { pickaxe: 1, mining: 3 },
             grant: ['pickaxe',2],
             cost: {
@@ -8642,7 +9410,8 @@ export const actions = {
             id: 'tech-steel_pickaxe',
             title: loc('tech_steel_pickaxe'),
             desc: loc('tech_steel_pickaxe_desc'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'discovery',
             reqs: { pickaxe: 2, smelting: 2},
             grant: ['pickaxe',3],
             cost: {
@@ -8661,7 +9430,8 @@ export const actions = {
             id: 'tech-jackhammer',
             title: loc('tech_jackhammer'),
             desc: loc('tech_jackhammer_desc'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'discovery',
             reqs: { pickaxe: 3, high_tech: 2},
             grant: ['pickaxe',4],
             cost: {
@@ -8680,7 +9450,8 @@ export const actions = {
             id: 'tech-jackhammer_mk2',
             title: loc('tech_jackhammer_mk2'),
             desc: loc('tech_jackhammer_mk2'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'globalized',
             reqs: { pickaxe: 4, high_tech: 4},
             grant: ['pickaxe',5],
             cost: {
@@ -8700,7 +9471,8 @@ export const actions = {
             id: 'tech-adamantite_hammer',
             title: loc('tech_adamantite_hammer'),
             desc: loc('tech_adamantite_hammer'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'interstellar',
             reqs: { pickaxe: 5, alpha: 2},
             grant: ['pickaxe',6],
             cost: {
@@ -8719,7 +9491,8 @@ export const actions = {
             id: 'tech-copper_hoe',
             title: loc('tech_copper_hoe'),
             desc: loc('tech_copper_hoe_desc'),
-            category: 'upgrade',
+            category: 'agriculture',
+            era: 'civilized',
             reqs: { mining: 2, agriculture: 1 },
             grant: ['hoe',1],
             cost: {
@@ -8738,7 +9511,8 @@ export const actions = {
             id: 'tech-iron_hoe',
             title: loc('tech_iron_hoe'),
             desc: loc('tech_iron_hoe_desc'),
-            category: 'upgrade',
+            category: 'agriculture',
+            era: 'civilized',
             reqs: { hoe: 1, mining: 3, agriculture: 1 },
             grant: ['hoe',2],
             cost: {
@@ -8757,7 +9531,8 @@ export const actions = {
             id: 'tech-steel_hoe',
             title: loc('tech_steel_hoe'),
             desc: loc('tech_steel_hoe_desc'),
-            category: 'upgrade',
+            category: 'agriculture',
+            era: 'discovery',
             reqs: { hoe: 2, smelting: 2, agriculture: 1 },
             grant: ['hoe',3],
             cost: {
@@ -8776,7 +9551,8 @@ export const actions = {
             id: 'tech-titanium_hoe',
             title: loc('tech_titanium_hoe'),
             desc: loc('tech_titanium_hoe_desc'),
-            category: 'upgrade',
+            category: 'agriculture',
+            era: 'industrialized',
             reqs: { hoe: 3, high_tech: 3, agriculture: 1 },
             grant: ['hoe',4],
             cost: {
@@ -8795,7 +9571,8 @@ export const actions = {
             id: 'tech-adamantite_hoe',
             title: loc('tech_adamantite_hoe'),
             desc: loc('tech_adamantite_hoe_desc'),
-            category: 'upgrade',
+            category: 'agriculture',
+            era: 'interstellar',
             reqs: { hoe: 4, alpha: 2 },
             grant: ['hoe',5],
             cost: {
@@ -8814,7 +9591,8 @@ export const actions = {
             id: 'tech-slave_pens',
             title: loc('tech_slave_pens'),
             desc: loc('tech_slave_pens'),
-            category: 'research',
+            category: 'slaves',
+            era: 'civilized',
             reqs: { military: 1, mining: 1 },
             grant: ['slaves',1],
             trait: ['slaver'],
@@ -8834,7 +9612,8 @@ export const actions = {
             id: 'tech-slave_market',
             title: loc('tech_slave_market'),
             desc: loc('tech_slave_market'),
-            category: 'research',
+            category: 'slaves',
+            era: 'discovery',
             reqs: { slaves: 1, high_tech: 1 },
             grant: ['slaves',2],
             trait: ['slaver'],
@@ -8853,11 +9632,12 @@ export const actions = {
             id: 'tech-ceremonial_dagger',
             title: loc('tech_ceremonial_dagger'),
             desc: loc('tech_ceremonial_dagger'),
-            category: 'upgrade',
+            category: 'sacrifice',
+            era: 'civilized',
             reqs: { mining: 1 },
             grant: ['sacrifice',1],
             trait: ['cannibalize'],
-            cost: { 
+            cost: {
                 Knowledge(){ return 60; }
             },
             effect: loc('tech_ceremonial_dagger_effect'),
@@ -8872,11 +9652,12 @@ export const actions = {
             id: 'tech-last_rites',
             title: loc('tech_last_rites'),
             desc: loc('tech_last_rites'),
-            category: 'upgrade',
+            category: 'sacrifice',
+            era: 'civilized',
             reqs: { sacrifice: 1, theology: 2 },
             grant: ['sacrifice',2],
             trait: ['cannibalize'],
-            cost: { 
+            cost: {
                 Knowledge(){ return 1000; }
             },
             effect: loc('tech_last_rites_effect'),
@@ -8891,11 +9672,12 @@ export const actions = {
             id: 'tech-ancient_infusion',
             title: loc('tech_ancient_infusion'),
             desc: loc('tech_ancient_infusion'),
-            category: 'upgrade',
+            category: 'sacrifice',
+            era: 'globalized',
             reqs: { sacrifice: 2, theology: 4 },
             grant: ['sacrifice',3],
             trait: ['cannibalize'],
-            cost: { 
+            cost: {
                 Knowledge(){ return 182000; }
             },
             effect: loc('tech_ancient_infusion_effect'),
@@ -8910,7 +9692,8 @@ export const actions = {
             id: 'tech-garrison',
             title: loc('tech_garrison'),
             desc: loc('tech_garrison_desc'),
-            category: 'research',
+            category: 'military',
+            era: 'civilized',
             reqs: { science: 1, housing: 1 },
             grant: ['military',1],
             cost: {
@@ -8929,7 +9712,8 @@ export const actions = {
             id: 'tech-mercs',
             title: loc('tech_mercs'),
             desc: loc('tech_mercs_desc'),
-            category: 'research',
+            category: 'military',
+            era: 'civilized',
             reqs: { military: 1 },
             grant: ['mercs',1],
             cost: {
@@ -8949,7 +9733,8 @@ export const actions = {
             id: 'tech-signing_bonus',
             title: loc('tech_signing_bonus'),
             desc: loc('tech_signing_bonus_desc'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'industrialized',
             reqs: { mercs: 1, high_tech: 3 },
             grant: ['mercs',2],
             cost: {
@@ -8968,7 +9753,8 @@ export const actions = {
             id: 'tech-hospital',
             title: loc('tech_hospital'),
             desc: loc('tech_hospital'),
-            category: 'research',
+            category: 'military',
+            era: 'civilized',
             reqs: { military: 1, alumina: 1 },
             grant: ['medic',1],
             cost: {
@@ -8987,7 +9773,8 @@ export const actions = {
             id: 'tech-bac_tanks',
             title: loc('tech_bac_tanks'),
             desc: loc('tech_bac_tanks_desc'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'interstellar',
             reqs: { medic: 1, infernite: 1 },
             grant: ['medic',2],
             cost: {
@@ -9006,7 +9793,8 @@ export const actions = {
             id: 'tech-boot_camp',
             title: loc('tech_boot_camp'),
             desc: loc('tech_boot_camp_desc'),
-            category: 'research',
+            category: 'military',
+            era: 'discovery',
             reqs: { high_tech: 1 },
             grant: ['boot_camp',1],
             cost: {
@@ -9025,7 +9813,8 @@ export const actions = {
             id: 'tech-vr_training',
             title: loc('tech_vr_training'),
             desc: loc('tech_vr_training'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'interstellar',
             reqs: { boot_camp: 1, high_tech: 12 },
             grant: ['boot_camp',2],
             cost: {
@@ -9043,7 +9832,8 @@ export const actions = {
             id: 'tech-bows',
             title: loc('tech_bows'),
             desc: loc('tech_bows_desc'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'civilized',
             reqs: { military: 1 },
             grant: ['military',2],
             cost: {
@@ -9066,7 +9856,8 @@ export const actions = {
             id: 'tech-flintlock_rifle',
             title: loc('tech_flintlock_rifle'),
             desc: loc('tech_flintlock_rifle'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'civilized',
             reqs: { military: 2, explosives: 1 },
             grant: ['military',3],
             cost: {
@@ -9089,7 +9880,8 @@ export const actions = {
             id: 'tech-machine_gun',
             title: loc('tech_machine_gun'),
             desc: loc('tech_machine_gun'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'industrialized',
             reqs: { military: 3, oil: 1 },
             grant: ['military',4],
             cost: {
@@ -9112,7 +9904,8 @@ export const actions = {
             id: 'tech-bunk_beds',
             title: loc('tech_bunk_beds'),
             desc: loc('tech_bunk_beds'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'globalized',
             reqs: { military: 4, high_tech: 4 },
             grant: ['military',5],
             cost: {
@@ -9132,7 +9925,8 @@ export const actions = {
             id: 'tech-rail_guns',
             title: loc('tech_rail_guns'),
             desc: loc('tech_rail_guns'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'early_space',
             reqs: { military: 5, mass: 1 },
             grant: ['military',6],
             cost: {
@@ -9155,7 +9949,8 @@ export const actions = {
             id: 'tech-laser_rifles',
             title: loc('tech_laser_rifles'),
             desc: loc('tech_laser_rifles'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'deep_space',
             reqs: { military: 6, high_tech: 9, elerium: 1 },
             grant: ['military',7],
             cost: {
@@ -9181,7 +9976,8 @@ export const actions = {
             id: 'tech-plasma_rifles',
             title: loc('tech_plasma_rifles'),
             desc: loc('tech_plasma_rifles'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'interstellar',
             reqs: { military: 7, high_tech: 13 },
             grant: ['military',8],
             cost: {
@@ -9204,7 +10000,8 @@ export const actions = {
             id: 'tech-disruptor_rifles',
             title: loc('tech_disruptor_rifles'),
             desc: loc('tech_disruptor_rifles'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'interstellar',
             reqs: { military: 8, high_tech: 14, science: 15, infernite: 1 },
             grant: ['military',9],
             cost: {
@@ -9223,11 +10020,36 @@ export const actions = {
                 return false;
             }
         },
+        gauss_rifles: {
+            id: 'tech-gauss_rifles',
+            title: loc('tech_gauss_rifles'),
+            desc: loc('tech_gauss_rifles'),
+            category: 'military',
+            era: 'intergalactic',
+            reqs: { military: 9, science: 18 },
+            grant: ['military',10],
+            cost: {
+                Knowledge(){ return 9500000; },
+                Bolognium(){ return 100000; }
+            },
+            effect: loc('tech_gauss_rifles_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    vBind({el: `#garrison`},'update');
+                    vBind({el: `#c_garrison`},'update');
+                    return true;
+                }
+                return false;
+            }
+        },
         space_marines: {
             id: 'tech-space_marines',
             title: loc('tech_space_marines'),
             desc: loc('tech_space_marines_desc'),
-            category: 'research',
+            category: 'military',
+            era: 'early_space',
             reqs: { space: 3, mars: 2 },
             grant: ['marines',1],
             cost: {
@@ -9243,11 +10065,32 @@ export const actions = {
             },
             flair: 'Outer space treaty be damned.'
         },
+        hammocks: {
+            id: 'tech-hammocks',
+            title: loc('tech_hammocks'),
+            desc: loc('tech_hammocks'),
+            category: 'military',
+            era: 'intergalactic',
+            reqs: { marines: 1, nanoweave: 1 },
+            grant: ['marines',2],
+            cost: {
+                Knowledge(){ return 8900000; },
+                Nanoweave(){ return 30000; },
+            },
+            effect(){ return loc('tech_hammocks_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         cruiser: {
             id: 'tech-cruiser',
             title: loc('tech_cruiser'),
             desc: loc('tech_cruiser'),
-            category: 'research',
+            category: 'military',
+            era: 'interstellar',
             reqs: { high_tech: 14, proxima: 2, aerogel: 1 },
             grant: ['cruiser',1],
             cost: {
@@ -9266,7 +10109,8 @@ export const actions = {
             id: 'tech-armor',
             title: loc('tech_armor'),
             desc: loc('tech_armor_desc'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'civilized',
             reqs: { military: 1 },
             not_trait: ['apex_predator'],
             grant: ['armor',1],
@@ -9287,7 +10131,8 @@ export const actions = {
             id: 'tech-plate_armor',
             title: loc('tech_plate_armor'),
             desc: loc('tech_plate_armor_desc'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'civilized',
             reqs: { armor: 1, mining: 3 },
             grant: ['armor',2],
             cost: {
@@ -9306,7 +10151,8 @@ export const actions = {
             id: 'tech-kevlar',
             title: loc('tech_kevlar'),
             desc: loc('tech_kevlar_desc'),
-            category: 'upgrade',
+            category: 'military',
+            era: 'globalized',
             reqs: { armor: 2, polymer: 1 },
             grant: ['armor',3],
             cost: {
@@ -9321,11 +10167,32 @@ export const actions = {
                 return false;
             }
         },
+        nanoweave_vest: {
+            id: 'tech-nanoweave_vest',
+            title: loc('tech_nanoweave_vest'),
+            desc: loc('tech_nanoweave_vest'),
+            category: 'military',
+            era: 'intergalactic',
+            reqs: { armor: 3, nanoweave: 1 },
+            grant: ['armor',4],
+            cost: {
+                Knowledge(){ return 9250000; },
+                Nanoweave(){ return 75000; },
+            },
+            effect: loc('tech_nanoweave_vest_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         laser_turret: {
             id: 'tech-laser_turret',
             title: loc('tech_laser_turret'),
             desc: loc('tech_laser_turret'),
-            category: 'upgrade',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { high_tech: 9, portal: 2 },
             grant: ['turret',1],
             cost: {
@@ -9347,7 +10214,8 @@ export const actions = {
             id: 'tech-plasma_turret',
             title: loc('tech_plasma_turret'),
             desc: loc('tech_plasma_turret'),
-            category: 'upgrade',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { high_tech: 13, turret: 1 },
             grant: ['turret',2],
             cost: {
@@ -9369,7 +10237,8 @@ export const actions = {
             id: 'tech-black_powder',
             title: loc('tech_black_powder'),
             desc: loc('tech_black_powder_desc'),
-            category: 'research',
+            category: 'progress',
+            era: 'civilized',
             reqs: { mining: 4 },
             grant: ['explosives',1],
             cost: {
@@ -9388,7 +10257,8 @@ export const actions = {
             id: 'tech-dynamite',
             title: loc('tech_dynamite'),
             desc: loc('tech_dynamite'),
-            category: 'research',
+            category: 'mining',
+            era: 'civilized',
             reqs: { explosives: 1 },
             grant: ['explosives',2],
             cost: {
@@ -9407,7 +10277,8 @@ export const actions = {
             id: 'tech-anfo',
             title: loc('tech_anfo'),
             desc: loc('tech_anfo'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'industrialized',
             reqs: { explosives: 2, oil: 1 },
             grant: ['explosives',3],
             cost: {
@@ -9426,7 +10297,8 @@ export const actions = {
             id: 'tech-mad',
             title: loc('tech_mad'),
             desc: loc('tech_mad_desc'),
-            category: 'research',
+            category: 'special',
+            era: 'globalized',
             reqs: { uranium: 1, explosives: 3, high_tech: 7 },
             grant: ['mad',1],
             cost: {
@@ -9447,7 +10319,8 @@ export const actions = {
             id: 'tech-cement',
             title: loc('tech_cement'),
             desc: loc('tech_cement_desc'),
-            category: 'research',
+            category: 'cement',
+            era: 'civilized',
             reqs: { mining: 1, storage: 1, science: 1 },
             grant: ['cement',1],
             cost: {
@@ -9469,7 +10342,8 @@ export const actions = {
             id: 'tech-rebar',
             title: loc('tech_rebar'),
             desc: loc('tech_rebar'),
-            category: 'upgrade',
+            category: 'cement',
+            era: 'civilized',
             reqs: { mining: 3, cement: 1 },
             grant: ['cement',2],
             cost: {
@@ -9488,7 +10362,8 @@ export const actions = {
             id: 'tech-steel_rebar',
             title: loc('tech_steel_rebar'),
             desc: loc('tech_steel_rebar'),
-            category: 'upgrade',
+            category: 'cement',
+            era: 'civilized',
             reqs: { smelting: 2, cement: 2 },
             grant: ['cement',3],
             cost: {
@@ -9507,7 +10382,8 @@ export const actions = {
             id: 'tech-portland_cement',
             title: loc('tech_portland_cement'),
             desc: loc('tech_portland_cement'),
-            category: 'upgrade',
+            category: 'cement',
+            era: 'industrialized',
             reqs: { cement: 3, high_tech: 3 },
             grant: ['cement',4],
             cost: {
@@ -9525,7 +10401,8 @@ export const actions = {
             id: 'tech-screw_conveyor',
             title: loc('tech_screw_conveyor'),
             desc: loc('tech_screw_conveyor'),
-            category: 'upgrade',
+            category: 'cement',
+            era: 'globalized',
             reqs: { cement: 4, high_tech: 4 },
             grant: ['cement',5],
             cost: {
@@ -9543,7 +10420,8 @@ export const actions = {
             id: 'tech-adamantite_screws',
             title: loc('tech_adamantite_screws'),
             desc: loc('tech_adamantite_screws'),
-            category: 'upgrade',
+            category: 'cement',
+            era: 'interstellar',
             reqs: { cement: 5, alpha: 2 },
             grant: ['cement',6],
             cost: {
@@ -9562,7 +10440,8 @@ export const actions = {
             id: 'tech-hunter_process',
             title: loc('tech_hunter_process'),
             desc: loc('tech_hunter_process'),
-            category: 'research',
+            category: 'mining',
+            era: 'industrialized',
             reqs: { high_tech: 3, smelting: 2 },
             grant: ['titanium',1],
             cost: {
@@ -9582,7 +10461,8 @@ export const actions = {
             id: 'tech-kroll_process',
             title: loc('tech_kroll_process'),
             desc: loc('tech_kroll_process'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'globalized',
             reqs: { titanium: 1, high_tech: 4 },
             grant: ['titanium',2],
             cost: {
@@ -9601,7 +10481,8 @@ export const actions = {
             id: 'tech-cambridge_process',
             title: loc('tech_cambridge_process'),
             desc: loc('tech_cambridge_process'),
-            category: 'upgrade',
+            category: 'mining',
+            era: 'early_space',
             reqs: { titanium: 2, supercollider: 1 },
             grant: ['titanium',3],
             cost: {
@@ -9620,7 +10501,8 @@ export const actions = {
             id: 'tech-pynn_partical',
             title: loc('tech_pynn_partical'),
             desc: loc('tech_pynn_partical'),
-            category: 'research',
+            category: 'progress',
+            era: 'early_space',
             reqs: { supercollider: 1 },
             grant: ['particles',1],
             cost: {
@@ -9638,7 +10520,8 @@ export const actions = {
             id: 'tech-matter_compression',
             title: loc('tech_matter_compression'),
             desc: loc('tech_matter_compression'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'early_space',
             reqs: { particles: 1 },
             grant: ['particles',2],
             cost: {
@@ -9656,7 +10539,8 @@ export const actions = {
             id: 'tech-higgs_boson',
             title: loc('tech_higgs_boson'),
             desc: loc('tech_higgs_boson'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'early_space',
             reqs: { particles: 2, supercollider: 2 },
             grant: ['particles',3],
             cost: {
@@ -9674,7 +10558,8 @@ export const actions = {
             id: 'tech-dimensional_compression',
             title: loc('tech_dimensional_compression'),
             desc: loc('tech_dimensional_compression'),
-            category: 'upgrade',
+            category: 'storage',
+            era: 'interstellar',
             reqs: { particles: 3, science: 11, supercollider: 3 },
             grant: ['particles',4],
             cost: {
@@ -9692,7 +10577,8 @@ export const actions = {
             id: 'tech-theology',
             title: loc('tech_theology'),
             desc: loc('tech_theology'),
-            category: 'research',
+            category: 'religion',
+            era: 'civilized',
             reqs: { theology: 1, housing: 1, cement: 1 },
             grant: ['theology',2],
             cost: {
@@ -9720,7 +10606,8 @@ export const actions = {
             id: 'tech-fanaticism',
             title: loc('tech_fanaticism'),
             desc: loc('tech_fanaticism'),
-            category: 'research',
+            category: 'religion',
+            era: 'civilized',
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
@@ -9744,7 +10631,8 @@ export const actions = {
             id: 'tech-alt_fanaticism',
             title: loc('tech_fanaticism'),
             desc: loc('tech_fanaticism'),
-            category: 'research',
+            category: 'religion',
+            era: 'civilized',
             reqs: { theology: 2 },
             grant: ['fanaticism',1],
             gene: ['transcendence'],
@@ -9770,13 +10658,18 @@ export const actions = {
             id: 'tech-ancient_theology',
             title: loc('tech_ancient_theology'),
             desc: loc('tech_ancient_theology'),
-            category: 'research',
+            category: 'religion',
+            era: 'early_space',
             reqs: { theology: 3, mars: 2 },
             grant: ['theology',4],
             cost: {
                 Knowledge(){ return 180000; }
             },
-            effect(){ return loc('tech_ancient_theology_effect',[races[global.race.old_gods.toLowerCase()].entity,races[global.race.gods.toLowerCase()].entity]); },
+            effect(){
+                let entityA = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+                let entityB = global.race.gods !== 'none' ? races[global.race.gods.toLowerCase()].entity : races[global.race.species].entity;
+                return loc('tech_ancient_theology_effect',[entityA,entityB]);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.space['ziggurat'] = { count: 0 };
@@ -9789,16 +10682,39 @@ export const actions = {
             id: 'tech-study',
             title: loc('tech_study'),
             desc: loc('tech_study_desc'),
-            category: 'research',
+            category: 'religion',
+            era: 'early_space',
             reqs: { theology: 4 },
             grant: ['theology',5],
             cost: {
                 Knowledge(){ return 195000; }
             },
-            effect(){ return `<div>${loc('tech_study_effect',[races[global.race.old_gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_study_warning')}</div>`; },
+            effect(){
+                let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+                return `<div>${loc('tech_study_effect',[entity])}</div><div class="has-text-special">${loc('tech_study_warning')}</div>`;
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.tech['ancient_study'] = 1;
+                    return true;
+                }
+                return false;
+            }
+        },
+        encoding: {
+            id: 'tech-encoding',
+            title: loc('tech_encoding'),
+            desc: loc('tech_encoding_desc'),
+            category: 'religion',
+            era: 'early_space',
+            reqs: { ancient_study: 1, mars: 5 },
+            grant: ['ancient_study',2],
+            cost: {
+                Knowledge(){ return 268000; }
+            },
+            effect(){ return `<div>${loc('tech_encoding_effect')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
@@ -9808,13 +10724,17 @@ export const actions = {
             id: 'tech-deify',
             title: loc('tech_deify'),
             desc: loc('tech_deify_desc'),
-            category: 'research',
+            category: 'religion',
+            era: 'early_space',
             reqs: { theology: 4 },
             grant: ['theology',5],
             cost: {
                 Knowledge(){ return 195000; }
             },
-            effect(){ return `<div>${loc('tech_deify_effect',[races[global.race.old_gods.toLowerCase()].entity])}</div><div class="has-text-special">${loc('tech_deify_warning')}</div>`; },
+            effect(){
+                let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+                return `<div>${loc('tech_deify_effect',[entity])}</div><div class="has-text-special">${loc('tech_deify_warning')}</div>`;
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.tech['ancient_deify'] = 1;
@@ -9824,11 +10744,31 @@ export const actions = {
                 return false;
             }
         },
+        infusion: {
+            id: 'tech-infusion',
+            title: loc('tech_infusion'),
+            desc: loc('tech_infusion_desc'),
+            category: 'religion',
+            era: 'early_space',
+            reqs: { ancient_deify: 1, mars: 5 },
+            grant: ['ancient_deify',2],
+            cost: {
+                Knowledge(){ return 268000; }
+            },
+            effect(){ return `<div>${loc('tech_infusion_effect')}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         indoctrination: {
             id: 'tech-indoctrination',
             title: loc('tech_indoctrination'),
             desc: loc('tech_indoctrination'),
-            category: 'upgrade',
+            category: 'religion',
+            era: 'civilized',
             reqs: { fanaticism: 1 },
             grant: ['fanaticism',2],
             cost: {
@@ -9846,7 +10786,8 @@ export const actions = {
             id: 'tech-missionary',
             title: loc('tech_missionary'),
             desc: loc('tech_missionary'),
-            category: 'upgrade',
+            category: 'religion',
+            era: 'discovery',
             reqs: { fanaticism: 2 },
             grant: ['fanaticism',3],
             cost: {
@@ -9864,7 +10805,8 @@ export const actions = {
             id: 'tech-zealotry',
             title: loc('tech_zealotry'),
             desc: loc('tech_zealotry'),
-            category: 'upgrade',
+            category: 'religion',
+            era: 'discovery',
             reqs: { fanaticism: 3 },
             grant: ['fanaticism',4],
             cost: {
@@ -9882,7 +10824,8 @@ export const actions = {
             id: 'tech-anthropology',
             title: loc('tech_anthropology'),
             desc: loc('tech_anthropology'),
-            category: 'research',
+            category: 'religion',
+            era: 'civilized',
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
@@ -9902,7 +10845,8 @@ export const actions = {
             id: 'tech-alt_anthropology',
             title: loc('tech_anthropology'),
             desc: loc('tech_anthropology'),
-            category: 'research',
+            category: 'religion',
+            era: 'civilized',
             reqs: { theology: 2 },
             grant: ['anthropology',1],
             gene: ['transcendence'],
@@ -9924,7 +10868,8 @@ export const actions = {
             id: 'tech-mythology',
             title: loc('tech_mythology'),
             desc: loc('tech_mythology'),
-            category: 'upgrade',
+            category: 'religion',
+            era: 'civilized',
             reqs: { anthropology: 1 },
             grant: ['anthropology',2],
             cost: {
@@ -9942,7 +10887,8 @@ export const actions = {
             id: 'tech-archaeology',
             title: loc('tech_archaeology'),
             desc: loc('tech_archaeology'),
-            category: 'upgrade',
+            category: 'science',
+            era: 'discovery',
             reqs: { anthropology: 2 },
             grant: ['anthropology',3],
             cost: {
@@ -9960,7 +10906,8 @@ export const actions = {
             id: 'tech-merchandising',
             title: loc('tech_merchandising'),
             desc: loc('tech_merchandising'),
-            category: 'upgrade',
+            category: 'banking',
+            era: 'discovery',
             reqs: { anthropology: 3 },
             grant: ['anthropology',4],
             cost: {
@@ -9978,7 +10925,8 @@ export const actions = {
             id: 'tech-astrophysics',
             title: loc('tech_astrophysics'),
             desc: loc('tech_astrophysics_desc'),
-            category: 'research',
+            category: 'storage',
+            era: 'early_space',
             reqs: { space: 2 },
             grant: ['space_explore',1],
             cost: {
@@ -9997,7 +10945,8 @@ export const actions = {
             id: 'tech-rover',
             title: loc('tech_rover'),
             desc: loc('tech_rover'),
-            category: 'research',
+            category: 'space_exploration',
+            era: 'early_space',
             reqs: { space_explore: 1 },
             grant: ['space_explore',2],
             cost: {
@@ -10025,7 +10974,8 @@ export const actions = {
             id: 'tech-probes',
             title: loc('tech_probes'),
             desc: loc('tech_probes'),
-            category: 'research',
+            category: 'space_exploration',
+            era: 'early_space',
             reqs: { space_explore: 2 },
             grant: ['space_explore',3],
             cost: {
@@ -10055,7 +11005,8 @@ export const actions = {
             id: 'tech-starcharts',
             title: loc('tech_starcharts'),
             desc: loc('tech_starcharts'),
-            category: 'research',
+            category: 'space_exploration',
+            era: 'early_space',
             reqs: { space_explore: 3, science: 9 },
             grant: ['space_explore',4],
             cost: {
@@ -10076,7 +11027,8 @@ export const actions = {
             id: 'tech-colonization',
             title: loc('tech_colonization'),
             desc(){ return loc('tech_colonization_desc',[races[global.race.species].solar.red]); },
-            category: 'research',
+            category: 'agriculture',
+            era: 'early_space',
             reqs: { space: 4, mars: 1 },
             grant: ['mars',2],
             cost: {
@@ -10095,7 +11047,8 @@ export const actions = {
             id: 'tech-red_tower',
             title(){ return loc('tech_red_tower',[races[global.race.species].solar.red]); },
             desc(){ return loc('tech_red_tower',[races[global.race.species].solar.red]); },
-            category: 'research',
+            category: 'space_exploration',
+            era: 'early_space',
             reqs: { mars: 2 },
             grant: ['mars',3],
             cost: {
@@ -10114,7 +11067,8 @@ export const actions = {
             id: 'tech-space_manufacturing',
             title: loc('tech_space_manufacturing'),
             desc: loc('tech_space_manufacturing_desc'),
-            category: 'research',
+            category: 'crafting',
+            era: 'early_space',
             reqs: { mars: 3 },
             grant: ['mars',4],
             cost: {
@@ -10133,7 +11087,8 @@ export const actions = {
             id: 'tech-energy_lab',
             title: loc('tech_exotic_lab'),
             desc: loc('tech_exotic_lab_desc'),
-            category: 'research',
+            category: 'science',
+            era: 'deep_space',
             reqs: { mars: 4, asteroid: 5 },
             grant: ['mars',5],
             cost: {
@@ -10148,11 +11103,32 @@ export const actions = {
                 return false;
             }
         },
+        hydroponics: {
+            id: 'tech-hydroponics',
+            title: loc('tech_hydroponics'),
+            desc(){ return loc('tech_hydroponics'); },
+            category: 'agriculture',
+            era: 'intergalactic',
+            reqs: { mars: 5, gateway: 3 },
+            grant: ['mars',6],
+            cost: {
+                Knowledge(){ return 3000000; },
+                Bolognium(){ return 500000; }
+            },
+            effect(){ return loc('tech_hydroponics_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson_sphere: {
             id: 'tech-dyson_sphere',
             title: loc('tech_dyson_sphere'),
             desc: loc('tech_dyson_sphere'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'early_space',
             reqs: { solar: 1 },
             grant: ['solar',2],
             cost: {
@@ -10170,7 +11146,8 @@ export const actions = {
             id: 'tech-dyson_swarm',
             title: loc('tech_dyson_swarm'),
             desc: loc('tech_dyson_swarm'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'early_space',
             reqs: { solar: 2 },
             grant: ['solar',3],
             cost: {
@@ -10189,7 +11166,8 @@ export const actions = {
             id: 'tech-swarm_plant',
             title: loc('tech_swarm_plant'),
             desc: loc('tech_swarm_plant'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'early_space',
             reqs: { solar: 3, hell: 1, gas_moon: 1 },
             grant: ['solar',4],
             cost: {
@@ -10208,7 +11186,8 @@ export const actions = {
             id: 'tech-space_sourced',
             title: loc('tech_space_sourced'),
             desc: loc('tech_space_sourced_desc'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'deep_space',
             reqs: { solar: 4, asteroid: 3 },
             grant: ['solar',5],
             cost: {
@@ -10226,7 +11205,8 @@ export const actions = {
             id: 'tech-swarm_plant_ai',
             title: loc('tech_swarm_plant_ai'),
             desc: loc('tech_swarm_plant_ai'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'deep_space',
             reqs: { solar: 4, high_tech: 10 },
             grant: ['swarm',1],
             cost: {
@@ -10244,7 +11224,8 @@ export const actions = {
             id: 'tech-swarm_control_ai',
             title: loc('tech_swarm_control_ai'),
             desc: loc('tech_swarm_control_ai'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'deep_space',
             reqs: { swarm: 1 },
             grant: ['swarm',2],
             cost: {
@@ -10262,7 +11243,8 @@ export const actions = {
             id: 'tech-quantum_swarm',
             title: loc('tech_quantum_swarm'),
             desc: loc('tech_quantum_swarm'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'deep_space',
             reqs: { swarm: 2, high_tech: 11 },
             grant: ['swarm',3],
             cost: {
@@ -10280,7 +11262,8 @@ export const actions = {
             id: 'tech-perovskite_cell',
             title: loc('tech_perovskite_cell'),
             desc: loc('tech_perovskite_cell'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'interstellar',
             reqs: { swarm: 3 },
             grant: ['swarm',4],
             cost: {
@@ -10299,7 +11282,8 @@ export const actions = {
             id: 'tech-swarm_convection',
             title: loc('tech_swarm_convection'),
             desc: loc('tech_swarm_convection'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'interstellar',
             reqs: { swarm: 4, stanene: 1 },
             grant: ['swarm',5],
             cost: {
@@ -10314,11 +11298,32 @@ export const actions = {
                 return false;
             }
         },
+        orichalcum_panels: {
+            id: 'tech-orichalcum_panels',
+            title: loc('tech_orichalcum_panels'),
+            desc: loc('tech_orichalcum_panels'),
+            category: 'power_generation',
+            era: 'intergalactic',
+            reqs: { high_tech: 17, swarm: 5 },
+            grant: ['swarm',6],
+            cost: {
+                Knowledge(){ return 14000000; },
+                Orichalcum(){ return 125000; }
+            },
+            effect(){ return loc('tech_orichalcum_panels_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         dyson_net: {
             id: 'tech-dyson_net',
             title: loc('tech_dyson_net'),
             desc: loc('tech_dyson_net'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'interstellar',
             reqs: { solar: 3, proxima: 2, stanene: 1 },
             grant: ['proxima',3],
             cost: {
@@ -10333,11 +11338,32 @@ export const actions = {
                 return false;
             }
         },
+        dyson_sphere2: {
+            id: 'tech-dyson_sphere2',
+            title: loc('tech_dyson_sphere'),
+            desc: loc('tech_dyson_sphere'),
+            category: 'power_generation',
+            era: 'intergalactic',
+            reqs: { proxima: 3, piracy: 1 },
+            grant: ['dyson',1],
+            cost: {
+                Knowledge(){ return 5000000; }
+            },
+            effect: loc('tech_dyson_sphere2_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['dyson_sphere'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         gps: {
             id: 'tech-gps',
             title: loc('tech_gps'),
             desc: loc('tech_gps'),
-            category: 'research',
+            category: 'market',
+            era: 'early_space',
             reqs: { space_explore: 1 },
             not_trait: ['terrifying'],
             grant: ['satellite',1],
@@ -10357,7 +11383,8 @@ export const actions = {
             id: 'tech-nav_beacon',
             title: loc('tech_nav_beacon'),
             desc: loc('tech_nav_beacon'),
-            category: 'research',
+            category: 'space_exploration',
+            era: 'early_space',
             reqs: { luna: 1 },
             grant: ['luna',2],
             cost: {
@@ -10379,7 +11406,8 @@ export const actions = {
             id: 'tech-subspace_signal',
             title: loc('tech_subspace_signal'),
             desc: loc('tech_subspace_signal'),
-            category: 'upgrade',
+            category: 'space_exploration',
+            era: 'interstellar',
             reqs: { science: 13, luna: 2, stanene: 1 },
             grant: ['luna',3],
             cost: {
@@ -10398,7 +11426,8 @@ export const actions = {
             id: 'tech-atmospheric_mining',
             title: loc('tech_atmospheric_mining'),
             desc: loc('tech_atmospheric_mining'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'early_space',
             reqs: { space: 5 },
             grant: ['gas_giant',1],
             cost: {
@@ -10418,7 +11447,8 @@ export const actions = {
             id: 'tech-helium_attractor',
             title: loc('tech_helium_attractor'),
             desc: loc('tech_helium_attractor'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'deep_space',
             reqs: { gas_giant: 1, elerium: 1 },
             grant: ['helium',1],
             cost: {
@@ -10437,7 +11467,8 @@ export const actions = {
             id: 'tech-ram_scoops',
             title: loc('tech_ram_scoops'),
             desc: loc('tech_ram_scoops'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'interstellar',
             reqs: { nebula: 2 },
             grant: ['ram_scoop',1],
             cost: {
@@ -10455,7 +11486,8 @@ export const actions = {
             id: 'tech-elerium_prospecting',
             title: loc('tech_elerium_prospecting'),
             desc: loc('tech_elerium_prospecting'),
-            category: 'research',
+            category: 'space_mining',
+            era: 'interstellar',
             reqs: { nebula: 2 },
             grant: ['nebula',3],
             cost: {
@@ -10474,7 +11506,8 @@ export const actions = {
             id: 'tech-zero_g_mining',
             title: loc('tech_zero_g_mining'),
             desc: loc('tech_zero_g_mining'),
-            category: 'research',
+            category: 'space_mining',
+            era: 'early_space',
             reqs: { asteroid: 1, high_tech: 8 },
             grant: ['asteroid',2],
             cost: {
@@ -10495,7 +11528,8 @@ export const actions = {
             id: 'tech-elerium_mining',
             title: loc('tech_elerium_mining'),
             desc: loc('tech_elerium_mining'),
-            category: 'research',
+            category: 'space_mining',
+            era: 'deep_space',
             reqs: { asteroid: 4 },
             grant: ['asteroid',5],
             cost: {
@@ -10515,7 +11549,8 @@ export const actions = {
             id: 'tech-laser_mining',
             title: loc('tech_laser_mining'),
             desc: loc('tech_laser_mining'),
-            category: 'upgrade',
+            category: 'space_mining',
+            era: 'deep_space',
             reqs: { asteroid: 5, elerium: 1, high_tech: 9 },
             grant: ['asteroid',6],
             cost: {
@@ -10533,7 +11568,8 @@ export const actions = {
             id: 'tech-plasma_mining',
             title: loc('tech_plasma_mining'),
             desc: loc('tech_plasma_mining'),
-            category: 'upgrade',
+            category: 'space_mining',
+            era: 'interstellar',
             reqs: { asteroid: 6, high_tech: 13 },
             grant: ['asteroid',7],
             cost: {
@@ -10551,7 +11587,8 @@ export const actions = {
             id: 'tech-elerium_tech',
             title: loc('tech_elerium_tech'),
             desc: loc('tech_elerium_tech'),
-            category: 'research',
+            category: 'space_mining',
+            era: 'deep_space',
             reqs: { asteroid: 5 },
             grant: ['elerium',1],
             cost: {
@@ -10570,7 +11607,8 @@ export const actions = {
             id: 'tech-elerium_reactor',
             title: loc('tech_elerium_reactor'),
             desc: loc('tech_elerium_reactor'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'deep_space',
             reqs: { dwarf: 1, elerium: 1 },
             grant: ['elerium',2],
             cost: {
@@ -10590,7 +11628,8 @@ export const actions = {
             id: 'tech-neutronium_housing',
             title: loc('tech_neutronium_housing'),
             desc: loc('tech_neutronium_housing'),
-            category: 'upgrade',
+            category: 'housing',
+            era: 'deep_space',
             reqs: { gas_moon: 1 },
             grant: ['space_housing',1],
             cost: {
@@ -10609,7 +11648,8 @@ export const actions = {
             id: 'tech-unification',
             title: loc('tech_unification'),
             desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
-            category: 'research',
+            category: 'special',
+            era: 'early_space',
             reqs: { mars: 2 },
             grant: ['unify',1],
             cost: {
@@ -10623,160 +11663,56 @@ export const actions = {
                 return false;
             }
         },
-        wc_conquest: {
-            id: 'tech-wc_conquest',
-            title: loc('tech_wc_conquest'),
-            desc(){
-                return `<div>${loc('tech_wc_conquest_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_conquest_desc_req')}</div>`;
-            },
-            category: 'research',
+        unification2: {
+            id: 'tech-unification2',
+            title: loc('tech_unification'),
+            desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
+            category: 'special',
+            era: 'early_space',
             reqs: { unify: 1 },
             grant: ['unify',2],
-            not_tech: ['m_boost'],
             cost: {
-                Army(){
-                    return global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ ? true : false;
-                }
-            },
-            effect(){ return `<div>${loc('tech_wc_conquest_effect')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
-            action(){
-                if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
-                    global.tech['world_control'] = 1;
-                    $('#garrison').empty();
-                    $('#c_garrison').empty();
-                    buildGarrison($('#garrison'),true);
-                    buildGarrison($('#c_garrison'),false);
-                    unlockAchieve(`world_domination`);
-                    if (global.stats.attacks === 0){
-                        unlockAchieve(`pacifist`);
-                    }
+                Bool(){
+                    let owned = 0;
                     for (let i=0; i<3; i++){
-                        if (global.civic.foreign[`gov${i}`].occ){
-                            global.civic['garrison'].max += 20;
-                            global.civic['garrison'].workers += 20;
-                            global.civic.foreign[`gov${i}`].occ = false;
+                        if (global.civic.foreign[`gov${i}`].occ || global.civic.foreign[`gov${i}`].buy || global.civic.foreign[`gov${i}`].anx){
+                            owned++;
                         }
-                        global.civic.foreign[`gov${i}`].sab = 0;
-                        global.civic.foreign[`gov${i}`].act = 'none';
                     }
-                    return true;
-                }
-                return false;
-            }
-        },
-        wc_morale: {
-            id: 'tech-wc_morale',
-            title: loc('tech_wc_morale'),
-            desc(){
-                let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
-                morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
-                morale = +(200 - morale).toFixed(1);
-                return `<div>${loc('tech_wc_morale_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_morale_desc_req',[morale])}</div>`;
-            },
-            category: 'research',
-            reqs: { unify: 1 },
-            grant: ['unify',2],
-            not_tech: ['m_boost'],
-            cost: {
-                Morale(){
-                    let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
-                    morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
-                    return +(200 - morale).toFixed(1);
+                    return owned === 3 ? true : false;
                 }
             },
-            effect(){
-                return `<div>${loc('tech_wc_morale_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`;
-            }, 
-            action(){
-                let morale = (global.civic.foreign.gov0.unrest + global.civic.foreign.gov1.unrest + global.civic.foreign.gov2.unrest) / 5;
-                morale += (300 - (global.civic.foreign.gov0.hstl + global.civic.foreign.gov1.hstl + global.civic.foreign.gov2.hstl)) / 7.5;
-                morale = +(200 - morale).toFixed(1);
-                if (global.city.morale.current >= morale){
-                    global.tech['world_control'] = 1;
-                    $('#garrison').empty();
-                    $('#c_garrison').empty();
-                    buildGarrison($('#garrison'),true);
-                    buildGarrison($('#c_garrison'),false);
-                    unlockAchieve(`illuminati`);
-                    if (global.stats.attacks === 0){
-                        unlockAchieve(`pacifist`);
-                    }
-                    for (let i=0; i<3; i++){
-                        if (global.civic.foreign[`gov${i}`].occ){
-                            global.civic['garrison'].max += 20;
-                            global.civic['garrison'].workers += 20;
-                            global.civic.foreign[`gov${i}`].occ = false;
-                        }
-                        global.civic.foreign[`gov${i}`].sab = 0;
-                        global.civic.foreign[`gov${i}`].act = 'none';
-                    }
-                    return true;
-                }
-                return false;
-            }
-        },
-        wc_money: {
-            id: 'tech-wc_money',
-            title: loc('tech_wc_money'),
-            desc(){
-                let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
-                price = sizeApproximation(price * 15384);
-                return `<div>${loc('tech_wc_money_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_wc_money_desc_req',[price])}</div>`;
-            },
-            category: 'research',
-            reqs: { unify: 1 },
-            grant: ['unify',2],
-            not_tech: ['m_boost'],
-            cost: {
-                Money(){
-                    let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
-                    price *= 15384;
-                    return price;
-                }
-            },
-            effect(){ return `<div>${loc('tech_wc_money_effect',[races[global.race.species].home])}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
-            action(){
-                let price = global.civic.foreign.gov0.eco + global.civic.foreign.gov1.eco + global.civic.foreign.gov2.eco;
-                price *= 15384;
-                if (global.resource.Money.amount >= price){
-                    global.resource.Money.amount -= price;
-                    global.tech['world_control'] = 1;
-                    $('#garrison').empty();
-                    $('#c_garrison').empty();
-                    buildGarrison($('#garrison'),true);
-                    buildGarrison($('#c_garrison'),false);
-                    unlockAchieve(`syndicate`);
-                    if (global.stats.attacks === 0){
-                        unlockAchieve(`pacifist`);
-                    }
-                    for (let i=0; i<3; i++){
-                        if (global.civic.foreign[`gov${i}`].occ){
-                            global.civic['garrison'].max += 20;
-                            global.civic['garrison'].workers += 20;
-                            global.civic.foreign[`gov${i}`].occ = false;
-                        }
-                        global.civic.foreign[`gov${i}`].sab = 0;
-                        global.civic.foreign[`gov${i}`].act = 'none';
-                    }
-                    return true;
-                }
-                return false;
-            }
-        },
-        wc_reject: {
-            id: 'tech-wc_reject',
-            title: loc('tech_wc_reject'),
-            desc: loc('tech_wc_reject'),
-            category: 'research',
-            reqs: { unify: 1 },
-            grant: ['unify',2],
-            not_tech: ['world_control'],
-            cost: {},
-            effect(){ return `<div>${loc('tech_wc_reject_effect')}</div><div class="has-text-special">${loc('tech_wc_reject_warning')}</div>`; },
+            effect(){ return `<div>${loc('tech_unification_effect2')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.tech['m_boost'] = 1;
-                    unlockAchieve(`cult_of_personality`);
+                    global.tech['world_control'] = 1;
+                    clearElement($('#garrison'));
+                    clearElement($('#c_garrison'));
+                    buildGarrison($('#garrison'),true);
+                    buildGarrison($('#c_garrison'),false);
+                    if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
+                        unlockAchieve(`world_domination`);
+                    }
+                    if (global.civic.foreign.gov0.anx && global.civic.foreign.gov1.anx && global.civic.foreign.gov2.anx){
+                        unlockAchieve(`illuminati`);
+                    }
+                    if (global.civic.foreign.gov0.buy && global.civic.foreign.gov1.buy && global.civic.foreign.gov2.buy){
+                        unlockAchieve(`syndicate`);
+                    }
+                    if (global.stats.attacks === 0){
+                        unlockAchieve(`pacifist`);
+                    }
+                    for (let i=0; i<3; i++){
+                        if (global.civic.foreign[`gov${i}`].occ){
+                            global.civic['garrison'].max += 20;
+                            global.civic['garrison'].workers += 20;
+                            global.civic.foreign[`gov${i}`].occ = false;
+                        }
+                        global.civic.foreign[`gov${i}`].buy = false;
+                        global.civic.foreign[`gov${i}`].anx = false;
+                        global.civic.foreign[`gov${i}`].sab = 0;
+                        global.civic.foreign[`gov${i}`].act = 'none';
+                    }
                     return true;
                 }
                 return false;
@@ -10786,7 +11722,8 @@ export const actions = {
             id: 'tech-genesis',
             title: loc('tech_genesis'),
             desc: loc('tech_genesis'),
-            category: 'research',
+            category: 'special',
+            era: 'deep_space',
             reqs: { genesis: 1 },
             grant: ['genesis',2],
             cost: {
@@ -10804,7 +11741,8 @@ export const actions = {
             id: 'tech-star_dock',
             title: loc('tech_star_dock'),
             desc: loc('tech_star_dock'),
-            category: 'research',
+            category: 'special',
+            era: 'deep_space',
             reqs: { genesis: 2, space: 5 },
             grant: ['genesis',3],
             cost: {
@@ -10828,7 +11766,8 @@ export const actions = {
             id: 'tech-interstellar',
             title: loc('tech_interstellar'),
             desc: loc('tech_interstellar'),
-            category: 'research',
+            category: 'space_exploration',
+            era: 'deep_space',
             reqs: { genesis: 3 },
             grant: ['genesis',4],
             cost: {
@@ -10847,7 +11786,8 @@ export const actions = {
             id: 'tech-genesis_ship',
             title: loc('tech_genesis_ship'),
             desc: loc('tech_genesis_ship'),
-            category: 'research',
+            category: 'special',
+            era: 'deep_space',
             reqs: { genesis: 4 },
             grant: ['genesis',5],
             cost: {
@@ -10866,7 +11806,8 @@ export const actions = {
             id: 'tech-genetic_decay',
             title: loc('tech_genetic_decay'),
             desc: loc('tech_genetic_decay'),
-            category: 'research',
+            category: 'genes',
+            era: 'early_space',
             reqs: { decay: 1 },
             grant: ['decay',2],
             cost: {
@@ -10884,7 +11825,8 @@ export const actions = {
             id: 'tech-tachyon',
             title: loc('tech_tachyon'),
             desc: loc('tech_tachyon'),
-            category: 'research',
+            category: 'progress',
+            era: 'deep_space',
             reqs: { wsc: 1 },
             grant: ['ftl',1],
             cost: {
@@ -10902,7 +11844,8 @@ export const actions = {
             id: 'tech-warp_drive',
             title: loc('tech_warp_drive'),
             desc: loc('tech_warp_drive'),
-            category: 'research',
+            category: 'space_exploration',
+            era: 'interstellar',
             reqs: { ftl: 1 },
             grant: ['ftl',2],
             cost: {
@@ -10928,7 +11871,8 @@ export const actions = {
             id: 'tech-habitat',
             title: loc('tech_habitat'),
             desc: loc('tech_habitat_desc'),
-            category: 'research',
+            category: 'housing',
+            era: 'interstellar',
             reqs: { alpha: 2, droids: 1 },
             grant: ['alpha',3],
             cost: {
@@ -10947,7 +11891,8 @@ export const actions = {
             id: 'tech-graphene',
             title: loc('tech_graphene'),
             desc: loc('tech_graphene'),
-            category: 'research',
+            category: 'crafting',
+            era: 'interstellar',
             reqs: { alpha: 3, infernite: 1 },
             grant: ['graphene',1],
             cost: {
@@ -10967,7 +11912,8 @@ export const actions = {
             id: 'tech-aerogel',
             title: loc('tech_aerogel'),
             desc: loc('tech_aerogel'),
-            category: 'research',
+            category: 'crafting',
+            era: 'interstellar',
             reqs: { graphene: 1, science: 13 },
             grant: ['aerogel',1],
             cost: {
@@ -10985,11 +11931,52 @@ export const actions = {
                 return false;
             }
         },
+        mega_manufacturing: {
+            id: 'tech-mega_manufacturing',
+            title: loc('tech_mega_manufacturing'),
+            desc: loc('tech_mega_manufacturing'),
+            category: 'crafting',
+            era: 'intergalactic',
+            reqs: { high_tech: 16, alpha: 3 },
+            grant: ['alpha',4],
+            cost: {
+                Knowledge(){ return 5650000; }
+            },
+            effect(){ return loc('tech_mega_manufacturing_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['int_factory'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        luxury_condo: {
+            id: 'tech-luxury_condo',
+            title: loc('tech_luxury_condo'),
+            desc: loc('tech_luxury_condo'),
+            category: 'housing',
+            era: 'intergalactic',
+            reqs: { high_tech: 17, alpha: 4 },
+            grant: ['alpha',5],
+            cost: {
+                Knowledge(){ return 15000000; }
+            },
+            effect(){ return loc('tech_luxury_condo_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['luxury_condo'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         stellar_engine: {
             id: 'tech-stellar_engine',
             title: loc('tech_stellar_engine'),
             desc: loc('tech_stellar_engine'),
-            category: 'research',
+            category: 'stellar_engine',
+            era: 'interstellar',
             reqs: { blackhole: 2 },
             grant: ['blackhole',3],
             cost: {
@@ -11008,7 +11995,8 @@ export const actions = {
             id: 'tech-mass_ejector',
             title: loc('tech_mass_ejector'),
             desc: loc('tech_mass_ejector'),
-            category: 'research',
+            category: 'stellar_engine',
+            era: 'interstellar',
             reqs: { blackhole: 4 },
             grant: ['blackhole',5],
             cost: {
@@ -11031,10 +12019,12 @@ export const actions = {
                         Neutronium: 0, Adamantite: 0,
                         Infernite: 0, Elerium: 0,
                         Nano_Tube: 0, Graphene: 0,
-                        Stanene: 0, Plywood: 0,
-                        Brick: 0, Wrought_Iron: 0,
-                        Sheet_Metal: 0, Mythril: 0,
-                        Aerogel: 0
+                        Stanene: 0, Bolognium: 0,
+                        Vitreloy: 0, Orichalcum: 0,
+                        Plywood: 0, Brick: 0,
+                        Wrought_Iron: 0, Sheet_Metal: 0,
+                        Mythril: 0, Aerogel: 0,
+                        Nanoweave: 0
                     };
                     return true;
                 }
@@ -11045,7 +12035,8 @@ export const actions = {
             id: 'tech-exotic_infusion',
             title: loc('tech_exotic_infusion'),
             desc: loc('tech_exotic_infusion'),
-            category: 'research',
+            category: 'stellar_engine',
+            era: 'interstellar',
             reqs: { whitehole: 1 },
             grant: ['whitehole',2],
             cost: {
@@ -11067,7 +12058,8 @@ export const actions = {
             id: 'tech-infusion_check',
             title: loc('tech_infusion_check'),
             desc: loc('tech_infusion_check'),
-            category: 'research',
+            category: 'stellar_engine',
+            era: 'interstellar',
             reqs: { whitehole: 2 },
             grant: ['whitehole',3],
             cost: {
@@ -11089,7 +12081,8 @@ export const actions = {
             id: 'tech-infusion_confirm',
             title: loc('tech_infusion_confirm'),
             desc: loc('tech_infusion_confirm'),
-            category: 'research',
+            category: 'stellar_engine',
+            era: 'interstellar',
             reqs: { whitehole: 3 },
             grant: ['whitehole',4],
             cost: {
@@ -11123,7 +12116,8 @@ export const actions = {
             id: 'tech-stabilize_blackhole',
             title: loc('tech_stabilize_blackhole'),
             desc(){ return `<div>${loc('tech_stabilize_blackhole')}</div><div class="has-text-danger">${loc('tech_stabilize_blackhole2')}</div>`; },
-            category: 'research',
+            category: 'stellar_engine',
+            era: 'interstellar',
             reqs: { whitehole: 1 },
             grant: ['stablized',1],
             cost: {
@@ -11146,7 +12140,8 @@ export const actions = {
             id: 'tech-gravitational_waves',
             title: loc('tech_gravitational_waves'),
             desc: loc('tech_gravitational_waves'),
-            category: 'research',
+            category: 'power_generation',
+            era: 'interstellar',
             reqs: { blackhole: 4 },
             grant: ['gravity',1],
             cost: {
@@ -11164,7 +12159,8 @@ export const actions = {
             id: 'tech-gravity_convection',
             title: loc('tech_gravity_convection'),
             desc: loc('tech_gravity_convection'),
-            category: 'upgrade',
+            category: 'power_generation',
+            era: 'interstellar',
             reqs: { gravity: 1 },
             grant: ['gravity',2],
             cost: {
@@ -11182,11 +12178,12 @@ export const actions = {
             id: 'tech-wormholes',
             title: loc('tech_wormholes'),
             desc: loc('tech_wormholes'),
-            category: 'research',
-            reqs: { gravity: 1, locked: 1 },
+            category: 'space_exploration',
+            era: 'intergalactic',
+            reqs: { gravity: 1, science: 15 },
             grant: ['stargate',1],
             cost: {
-                Knowledge(){ return 1500000; }
+                Knowledge(){ return 2250000; }
             },
             effect: loc('tech_wormholes_effect'),
             action(){
@@ -11200,7 +12197,8 @@ export const actions = {
             id: 'tech-portal',
             title: loc('tech_portal'),
             desc: loc('tech_portal_desc'),
-            category: 'research',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { wsc: 1 },
             grant: ['portal',1],
             cost: {
@@ -11218,7 +12216,8 @@ export const actions = {
             id: 'tech-fort',
             title: loc('tech_fort'),
             desc: loc('tech_fort_desc'),
-            category: 'research',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { portal: 1 },
             grant: ['portal',2],
             cost: {
@@ -11245,7 +12244,7 @@ export const actions = {
                     };
                     global.portal['turret'] = { count: 0, on: 0 };
                     global.portal['carport'] = { count: 0, damaged: 0, repair: 0 };
-                    if (global.race['evil']){
+                    if (races[global.race.species].type === 'demonic'){
                         unlockAchieve('blood_war');
                     }
                     else {
@@ -11260,7 +12259,8 @@ export const actions = {
             id: 'tech-war_drones',
             title: loc('tech_war_drones'),
             desc: loc('tech_war_drones'),
-            category: 'research',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { portal: 2, graphene: 1 },
             grant: ['portal',3],
             cost: {
@@ -11280,7 +12280,8 @@ export const actions = {
             id: 'tech-demon_attractor',
             title: loc('tech_demon_attractor'),
             desc: loc('tech_demon_attractor'),
-            category: 'research',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { portal: 3, stanene: 1 },
             grant: ['portal',4],
             cost: {
@@ -11299,7 +12300,8 @@ export const actions = {
             id: 'tech-combat_droids',
             title: loc('tech_combat_droids'),
             desc: loc('tech_combat_droids'),
-            category: 'research',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { portal: 4 },
             grant: ['portal',5],
             cost: {
@@ -11318,11 +12320,73 @@ export const actions = {
                 return loc('tech_combat_droids_flair');
             }
         },
+        repair_droids: {
+            id: 'tech-repair_droids',
+            title: loc('tech_repair_droids'),
+            desc: loc('tech_repair_droids'),
+            category: 'hell_dimension',
+            era: 'interstellar',
+            reqs: { portal: 5 },
+            grant: ['portal',6],
+            cost: {
+                Knowledge(){ return 794000; },
+                Soul_Gem(){ return 1; }
+            },
+            effect: loc('tech_repair_droids_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['repair_droid'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        advanced_predators: {
+            id: 'tech-advanced_predators',
+            title: loc('tech_advanced_predators'),
+            desc: loc('tech_advanced_predators'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { portal: 6, xeno: 4 },
+            grant: ['portal',7],
+            cost: {
+                Knowledge(){ return 5000000; },
+                Bolognium(){ return 500000; },
+                Vitreloy(){ return 250000; }
+            },
+            effect: loc('tech_advanced_predators_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        enhanced_droids: {
+            id: 'tech-enhanced_droids',
+            title: loc('tech_enhanced_droids'),
+            desc: loc('tech_enhanced_droids'),
+            category: 'hell_dimension',
+            era: 'interstellar',
+            reqs: { portal: 5, military: 9 },
+            grant: ['hdroid',1],
+            cost: {
+                Knowledge(){ return 1050000; },
+            },
+            effect: loc('tech_enhanced_droids_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         sensor_drone: {
             id: 'tech-sensor_drone',
             title: loc('tech_sensor_drone'),
             desc: loc('tech_sensor_drone'),
-            category: 'research',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { portal: 3, infernite: 1, stanene: 1, graphene: 1 },
             grant: ['infernite',2],
             cost: {
@@ -11341,7 +12405,8 @@ export const actions = {
             id: 'tech-map_terrain',
             title: loc('tech_map_terrain'),
             desc: loc('tech_map_terrain'),
-            category: 'upgrade',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { infernite: 2 },
             grant: ['infernite',3],
             cost: {
@@ -11359,7 +12424,8 @@ export const actions = {
             id: 'tech-calibrated_sensors',
             title: loc('tech_calibrated_sensors'),
             desc: loc('tech_calibrated_sensors'),
-            category: 'upgrade',
+            category: 'hell_dimension',
+            era: 'interstellar',
             reqs: { infernite: 3 },
             grant: ['infernite',4],
             cost: {
@@ -11374,10 +12440,571 @@ export const actions = {
                 return false;
             }
         },
+        shield_generator: {
+            id: 'tech-shield_generator',
+            title: loc('tech_shield_generator'),
+            desc: loc('tech_shield_generator'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { high_tech: 14, gateway: 3, infernite: 4 },
+            grant: ['infernite',5],
+            cost: {
+                Knowledge(){ return 2680000; },
+                Bolognium(){ return 75000; }
+            },
+            effect(){ return loc('tech_shield_generator_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        enhanced_sensors: {
+            id: 'tech-enhanced_sensors',
+            title: loc('tech_enhanced_sensors'),
+            desc: loc('tech_enhanced_sensors'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { infernite: 5, xeno: 4 },
+            grant: ['infernite',6],
+            cost: {
+                Knowledge(){ return 4750000; },
+                Vitreloy(){ return 25000; }
+            },
+            effect(){ return loc('tech_enhanced_sensors_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        xeno_linguistics: {
+            id: 'tech-xeno_linguistics',
+            title: loc('tech_xeno_linguistics'),
+            desc: loc('tech_xeno_linguistics'),
+            category: 'andromeda',
+            era: 'intergalactic',
+            reqs: { xeno: 1 },
+            grant: ['xeno',2],
+            cost: {
+                Knowledge(){ return 3000000; }
+            },
+            effect(){ return loc('tech_xeno_linguistics_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.settings.space['gorddon'] = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        xeno_culture: {
+            id: 'tech-xeno_culture',
+            title: loc('tech_xeno_culture'),
+            desc: loc('tech_xeno_culture'),
+            category: 'progress',
+            era: 'intergalactic',
+            reqs: { xeno: 3 },
+            grant: ['xeno',4],
+            cost: {
+                Knowledge(){ return 3400000; }
+            },
+            effect(){
+                let s1name = races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name;
+                let s1desc = races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].entity;
+                return loc('tech_xeno_culture_effect',[s1name,s1desc]);
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['embassy'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        cultural_exchange: {
+            id: 'tech-cultural_exchange',
+            title: loc('tech_cultural_exchange'),
+            desc: loc('tech_cultural_exchange'),
+            category: 'andromeda',
+            era: 'intergalactic',
+            reqs: { xeno: 5 },
+            grant: ['xeno',6],
+            cost: {
+                Knowledge(){ return 3550000; }
+            },
+            effect(){
+                let s1name = races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name;
+                return loc('tech_cultural_exchange_effect',[s1name]);
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['symposium'] = { count: 0, on: 0 };
+                    global.galaxy['dormitory'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        shore_leave: {
+            id: 'tech-shore_leave',
+            title: loc('tech_shore_leave'),
+            desc: loc('tech_shore_leave'),
+            category: 'science',
+            era: 'intergalactic',
+            reqs: { andromeda: 3, xeno: 6 },
+            grant: ['xeno',7],
+            cost: {
+                Knowledge(){ return 4600000; }
+            },
+            effect(){ return loc('tech_shore_leave_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        xeno_gift: {
+            id: 'tech-xeno_gift',
+            title: loc('tech_xeno_gift'),
+            desc: loc('tech_xeno_gift'),
+            category: 'andromeda',
+            era: 'intergalactic',
+            reqs: { high_tech: 16, xeno: 7 },
+            grant: ['xeno',8],
+            cost: {
+                Knowledge(){ return 6500000; },
+                Infernite(){ return 125000; }
+            },
+            effect(){ return loc('tech_xeno_gift_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['consulate'] = { count: 0 };
+                    global.settings.space.alien1 = true;
+                    messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+        industrial_partnership: {
+            id: 'tech-industrial_partnership',
+            title: loc('tech_industrial_partnership'),
+            desc(){ return loc('tech_industrial_partnership'); },
+            category: 'andromeda',
+            era: 'intergalactic',
+            reqs: { xeno: 9 },
+            grant: ['xeno',10],
+            cost: {
+                Knowledge(){ return 7250000; }
+            },
+            effect(){ return loc('tech_industrial_partnership_effect',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['vitreloy_plant'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        embassy_housing: {
+            id: 'tech-embassy_housing',
+            title: loc('tech_embassy_housing'),
+            desc(){ return loc('tech_embassy_housing'); },
+            category: 'andromeda',
+            era: 'intergalactic',
+            reqs: { xeno: 10, science: 18 },
+            grant: ['xeno',11],
+            cost: {
+                Knowledge(){ return 10750000; }
+            },
+            effect(){ return loc('tech_embassy_housing_effect',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        advanced_telemetry: {
+            id: 'tech-advanced_telemetry',
+            title: loc('tech_advanced_telemetry'),
+            desc: loc('tech_advanced_telemetry'),
+            category: 'science',
+            era: 'intergalactic',
+            reqs: { xeno: 5 },
+            grant: ['telemetry',1],
+            cost: {
+                Knowledge(){ return 4200000; },
+                Vitreloy(){ return 10000; }
+            },
+            effect(){
+                return loc('tech_advanced_telemetry_effect');
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        defense_platform: {
+            id: 'tech-defense_platform',
+            title: loc('galaxy_defense_platform'),
+            desc: loc('galaxy_defense_platform'),
+            category: 'andromeda',
+            era: 'intergalactic',
+            reqs: { stargate: 5, piracy: 1 },
+            grant: ['stargate',6],
+            cost: {
+                Knowledge(){ return 4850000; }
+            },
+            effect: loc('tech_defense_platform_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['defense_platform'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        scout_ship: {
+            id: 'tech-scout_ship',
+            title: loc('galaxy_scout_ship'),
+            desc: loc('galaxy_scout_ship'),
+            category: 'andromeda_ships',
+            era: 'intergalactic',
+            reqs: { gateway: 3 },
+            grant: ['andromeda',1],
+            cost: {
+                Knowledge(){ return 2600000; }
+            },
+            effect(){ return loc('tech_scout_ship_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['scout_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        corvette_ship: {
+            id: 'tech-corvette_ship',
+            title: loc('galaxy_corvette_ship'),
+            desc: loc('galaxy_corvette_ship'),
+            category: 'andromeda_ships',
+            era: 'intergalactic',
+            reqs: { andromeda: 1, xeno: 1 },
+            grant: ['andromeda',2],
+            cost: {
+                Knowledge(){ return 3200000; }
+            },
+            effect(){ return loc('tech_corvette_ship_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['corvette_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        frigate_ship: {
+            id: 'tech-frigate_ship',
+            title: loc('galaxy_frigate_ship'),
+            desc: loc('galaxy_frigate_ship'),
+            category: 'andromeda_ships',
+            era: 'intergalactic',
+            reqs: { andromeda: 2, xeno: 6 },
+            grant: ['andromeda',3],
+            cost: {
+                Knowledge(){ return 4000000; }
+            },
+            effect(){ return loc('tech_frigate_ship_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['frigate_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    renderSpace();
+                    return true;
+                }
+                return false;
+            }
+        },
+        cruiser_ship: {
+            id: 'tech-cruiser_ship',
+            title: loc('galaxy_cruiser_ship'),
+            desc: loc('galaxy_cruiser_ship'),
+            category: 'andromeda_ships',
+            era: 'intergalactic',
+            reqs: { andromeda: 3, xeno: 10 },
+            grant: ['andromeda',4],
+            cost: {
+                Knowledge(){ return 7500000; }
+            },
+            effect(){ return loc('tech_cruiser_ship_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['cruiser_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    global.galaxy['foothold'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                    global.settings.space.alien2 = true;
+                    renderSpace();
+                    return true;
+                }
+                return false;
+            }
+        },
+        dreadnought: {
+            id: 'tech-dreadnought',
+            title: loc('galaxy_dreadnought'),
+            desc: loc('galaxy_dreadnought'),
+            category: 'andromeda_ships',
+            era: 'intergalactic',
+            reqs: { andromeda: 4, science: 18 },
+            grant: ['andromeda',5],
+            cost: {
+                Knowledge(){ return 10000000; }
+            },
+            effect(){ return loc('tech_dreadnought_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['dreadnought'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    renderSpace();
+                    return true;
+                }
+                return false;
+            }
+        },
+        ship_dock: {
+            id: 'tech-ship_dock',
+            title: loc('galaxy_ship_dock'),
+            desc: loc('galaxy_ship_dock'),
+            category: 'andromeda_ships',
+            era: 'intergalactic',
+            reqs: { gateway: 3, xeno: 6 },
+            grant: ['gateway',4],
+            cost: {
+                Knowledge(){ return 3900000; }
+            },
+            effect(){ return loc('tech_ship_dock_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['ship_dock'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        ore_processor: {
+            id: 'tech-ore_processor',
+            title: loc('galaxy_ore_processor'),
+            desc: loc('galaxy_ore_processor'),
+            category: 'space_mining',
+            era: 'intergalactic',
+            reqs: { conflict: 2 },
+            grant: ['conflict',3],
+            cost: {
+                Knowledge(){ return 7500000; }
+            },
+            effect(){ return loc('tech_ore_processor_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['ore_processor'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        scavenger: {
+            id: 'tech-scavenger',
+            title: loc('galaxy_scavenger'),
+            desc: loc('galaxy_scavenger'),
+            category: 'science',
+            era: 'intergalactic',
+            reqs: { conflict: 3 },
+            grant: ['conflict',4],
+            cost: {
+                Knowledge(){ return 8000000; }
+            },
+            effect(){ return loc('tech_scavenger_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['scavenger'] = { count: 0, on: 0, crew: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        coordinates: {
+            id: 'tech-coordinates',
+            title: loc('tech_coordinates'),
+            desc: loc('tech_coordinates'),
+            category: 'andromeda',
+            era: 'intergalactic',
+            reqs: { science: 18, conflict: 5 },
+            grant: ['chthonian',1],
+            cost: {
+                Knowledge(){ return 10000000; }
+            },
+            effect(){ return loc('tech_coordinates_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['minelayer'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    global.settings.space.chthonian = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        chthonian_survey : {
+            id: 'tech-chthonian_survey',
+            title: loc('tech_chthonian_survey'),
+            desc: loc('tech_chthonian_survey'),
+            category: 'space_mining',
+            era: 'intergalactic',
+            reqs: { chthonian: 2 },
+            grant: ['chthonian',3],
+            cost: {
+                Knowledge(){ return 11800000; }
+            },
+            effect(){ return loc('tech_chthonian_survey_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Orichalcum.display = true;
+                    global.galaxy['excavator'] = { count: 0, on: 0 };
+                    global.galaxy['raider'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                    messageQueue(loc('tech_chthonian_survey_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+        gateway_depot: {
+            id: 'tech-gateway_depot',
+            title: loc('galaxy_gateway_depot'),
+            desc: loc('galaxy_gateway_depot'),
+            category: 'storage',
+            era: 'intergalactic',
+            reqs: { gateway: 4 },
+            grant: ['gateway',5],
+            cost: {
+                Knowledge(){ return 4350000; }
+            },
+            effect(){ return loc('tech_gateway_depot_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.galaxy['gateway_depot'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        soul_forge: {
+            id: 'tech-soul_forge',
+            title: loc('portal_soul_forge_title'),
+            desc: loc('portal_soul_forge_title'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { hell_pit: 3 },
+            grant: ['hell_pit',4],
+            cost: {
+                Knowledge(){ return 2750000; }
+            },
+            effect(){ return loc('tech_soul_forge_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['soul_forge'] = { count: 0, on: 0, kills: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        soul_attractor: {
+            id: 'tech-soul_attractor',
+            title: loc('portal_soul_attractor_title'),
+            desc: loc('portal_soul_attractor_title'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { hell_pit: 4, high_tech: 16 },
+            grant: ['hell_pit',5],
+            cost: {
+                Knowledge(){ return 5500000; }
+            },
+            effect(){ return loc('tech_soul_attractor_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['soul_attractor'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        soul_absorption: {
+            id: 'tech-soul_absorption',
+            title: loc('tech_soul_absorption'),
+            desc: loc('tech_soul_absorption'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { hell_pit: 5 },
+            grant: ['hell_pit',6],
+            cost: {
+                Knowledge(){ return 6000000; },
+                Infernite(){ return 250000; }
+            },
+            effect(){ return loc('tech_soul_absorption_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        gun_emplacement: {
+            id: 'tech-gun_emplacement',
+            title: loc('portal_gun_emplacement_title'),
+            desc: loc('portal_gun_emplacement_title'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { hell_pit: 4 },
+            grant: ['hell_gun',1],
+            cost: {
+                Knowledge(){ return 3000000; }
+            },
+            effect(){ return loc('tech_gun_emplacement_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['gun_emplacement'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        advanced_emplacement: {
+            id: 'tech-advanced_emplacement',
+            title: loc('tech_advanced_emplacement'),
+            desc: loc('tech_advanced_emplacement'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { hell_gun: 1, high_tech: 17 },
+            grant: ['hell_gun',2],
+            cost: {
+                Knowledge(){ return 12500000; },
+                Orichalcum(){ return 180000; }
+            },
+            effect(){ return loc('tech_advanced_emplacement_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
     interstellar: interstellarTech(),
+    galaxy: galaxyTech(),
     starDock: {
         probes: {
             id: 'spcdock-probes',
@@ -11435,8 +13062,8 @@ export const actions = {
                     global.starDock.seeder.count++;
                     if (global.starDock.seeder.count >= 100){
                         global.tech.genesis = 6;
-                        $('#popspcdock-seeder').remove();
-                        $('#modalBox').empty();
+                        clearElement($('#popspcdock-seeder'),true);
+                        clearElement($('#modalBox'));
                         let c_action = actions.space.spc_gas.star_dock;
                         drawModal(c_action,'star_dock');
                     }
@@ -11455,30 +13082,14 @@ export const actions = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
-                }
-                let pop = global['resource'][global.race.species].amount + garrisoned;
-                let plasmid = Math.round(pop / 3);
-                let k_base = global.stats.know;
-                let k_inc = 50000;
-                while (k_base > k_inc){
-                    plasmid++;
-                    k_base -= k_inc;
-                    k_inc *= 1.015;
-                }
+                let gains = calcPrestige('bioseed');
                 let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                plasmid = challenge_multiplier(plasmid,'bioseed');
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
-                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+                return `<div>${loc('star_dock_prep_effect')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){
                 global.tech['genesis'] = 7;
-                $('#popspcdock-seeder').remove();
-                $('#modalBox').empty();
+                clearElement($('#popspcdock-seeder'),true);
+                clearElement($('#modalBox'));
                 let c_action = actions.space.spc_gas.star_dock;
                 drawModal(c_action,'star_dock');
                 return true;
@@ -11494,25 +13105,9 @@ export const actions = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                let garrisoned = global.civic.garrison.workers;
-                for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        garrisoned += 20;
-                    }
-                }
-                let pop = global['resource'][global.race.species].amount + garrisoned;
-                let plasmid = Math.round(pop / 3);
-                let k_base = global.stats.know;
-                let k_inc = 50000;
-                while (k_base > k_inc){
-                    plasmid++;
-                    k_base -= k_inc;
-                    k_inc *= 1.015;
-                }
+                let gains = calcPrestige('bioseed');
                 let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                plasmid = challenge_multiplier(plasmid,'bioseed');
-                let phage = challenge_multiplier(Math.floor(Math.log2(plasmid) * Math.E),'bioseed');
-                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[phage])}</div>`;
+                return `<div>${loc('star_dock_genesis_effect1')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){
                 bioseed();
@@ -11523,13 +13118,33 @@ export const actions = {
     portal: fortressTech()
 };
 
+function evolveCosts(molecule,base,mult){
+    if (global.evolution.hasOwnProperty(molecule)){
+        return global.evolution[molecule].count * mult + base;
+    }
+    return base;
+}
+
+function addRaces(races){
+    let add_all = false;
+    if (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1)){
+        add_all = true;
+    }
+    for (let i=0; i<races.length; i++){
+        if (add_all || (global.stats.achieve[`extinct_${races[i]}`] && global.stats.achieve[`extinct_${races[i]}`].l >= 1)){
+            global.evolution[races[i]] = { count: 0 };
+            addAction('evolution',races[i]);
+        }
+    }
+}
+
 export function storageMultipler(){
-    var multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
+    let multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
     }
     if (global.race['pack_rat']){
-        multiplier *= 1.05;
+        multiplier *= 1 + (traits.pack_rat.vars[1] / 100);
     }
     if (global.tech['storage'] >= 6){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
@@ -11561,7 +13176,7 @@ export function checkCityRequirements(action){
 }
 
 export function checkTechRequirements(tech){
-    var isMet = true;
+    let isMet = true;
     Object.keys(actions.tech[tech].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
             isMet = false;
@@ -11573,16 +13188,75 @@ export function checkTechRequirements(tech){
     return false;
 }
 
-export function checkOldTech(tech){
+function checkTechQualifications(c_action,type){
+    if (c_action['condition'] && !c_action.condition()){
+        return false;
+    }
+    if (c_action['not_trait']){
+        for (let i=0; i<c_action.not_trait.length; i++){
+            if (global.race[c_action.not_trait[i]]){
+                return false;
+            }
+        }
+    }
+    if (c_action['trait']){
+        for (let i=0; i<c_action.trait.length; i++){
+            if (!global.race[c_action.trait[i]]){
+                return false;
+            }
+        }
+    }
+    if (c_action['not_gene']){
+        for (let i=0; i<c_action.not_gene.length; i++){
+            if (global.genes[c_action.not_gene[i]]){
+                return false;
+            }
+        }
+    }
+    if (c_action['gene']){
+        for (let i=0; i<c_action.gene.length; i++){
+            if (!global.genes[c_action.gene[i]]){
+                return false;
+            }
+        }
+    }
+    if (c_action['not_tech']){
+        for (let i=0; i<c_action.not_tech.length; i++){
+            if (global.tech[c_action.not_tech[i]]){
+                return false;
+            }
+        }
+    }
+    if (type === 'ancient_theology' && !global.genes['ancients']){
+        return false;
+    }
+    return true;
+}
+
+function checkOldTech(tech){
     let tch = actions.tech[tech].grant[0];
     if (global.tech[tch] && global.tech[tch] >= actions.tech[tech].grant[1]){
-        return true;
+        if (tech !== 'fanaticism' && tech !== 'anthropology' && tech !== 'deify' && tech !== 'study'){
+            return true;
+        }
+        else if (tech === 'fanaticism' && global.tech['fanaticism']){
+            return true;
+        }
+        else if (tech === 'anthropology' && global.tech['anthropology']){
+            return true;
+        }
+        else if (tech === 'deify' && global.tech['ancient_deify']){
+            return true;
+        }
+        else if (tech === 'study' && global.tech['ancient_study']){
+            return true;
+        }
     }
     return false;
 }
 
 function checkPowerRequirements(c_action){
-    var isMet = true;
+    let isMet = true;
     if (c_action['power_reqs']){
         Object.keys(c_action.power_reqs).forEach(function (req){
             if (!global.tech[req] || global.tech[req] < c_action.power_reqs[req]){
@@ -11594,7 +13268,7 @@ function checkPowerRequirements(c_action){
 }
 
 function registerTech(action){
-    var tech = actions.tech[action].grant[0];
+    let tech = actions.tech[action].grant[0];
     if (!global.tech[tech]){
         global.tech[tech] = 0;
     }
@@ -11602,12 +13276,11 @@ function registerTech(action){
 }
 
 export function gainTech(action){
-    var tech = actions.tech[action].grant[0];
+    let tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
     drawCity();
     drawTech();
-    space();
-    deepSpace();
+    renderSpace();
     renderFortress();
 }
 
@@ -11615,10 +13288,10 @@ export function drawCity(){
     let city_buildings = {};
     Object.keys(actions.city).forEach(function (city_name) {
         removeAction(actions.city[city_name].id);
-        
+
         if(!checkCityRequirements(city_name))
             return;
-        
+
         let action = actions.city[city_name];
         let category = 'category' in action ? action.category : 'utility';
 
@@ -11635,18 +13308,18 @@ export function drawCity(){
     });
 
     let city_categories =  [
-        'outskirts', 
-        'residential', 
-        'commercial', 
-        'science', 
-        'military', 
-        'trade', 
-        'industrial', 
+        'outskirts',
+        'residential',
+        'commercial',
+        'science',
+        'military',
+        'trade',
+        'industrial',
         'utility'
     ];
 
-    city_categories.forEach(function(category) {
-        $(`#city-dist-${category}`).remove();
+    city_categories.forEach(function(category){
+        clearElement($(`#city-dist-${category}`),true);
         if (global.settings['cLabels']){
             if(!(category in city_buildings))
                 return;
@@ -11664,50 +13337,69 @@ export function drawCity(){
 
 export function drawTech(){
     let techs = {};
-    Object.keys(actions.tech).forEach(function (tech_name) {
+    let old_techs = {};
+    let tech_categories = []
+    let old_categories = [];
+    let all_categories = [];
+    Object.keys(actions.tech).forEach(function (tech_name){
         removeAction(actions.tech[tech_name].id);
-        
-        if (checkOldTech(tech_name)){
-            oldTech(tech_name);
-        }
 
-        if (!checkTechRequirements(tech_name))
-            return;
-        
+        let isOld = checkOldTech(tech_name);
+
         let action = actions.tech[tech_name];
         let category = 'category' in action ? action.category : 'research';
 
-        if (!(category in techs)) {
-            techs[category] = [];
+        if (!isOld && tech_categories.indexOf(category) === -1) {
+            tech_categories.push(category);
+        }
+        if (isOld && old_categories.indexOf(category) === -1) {
+            old_categories.push(category);
+        }
+        if (all_categories.indexOf(category) === -1) {
+            all_categories.push(category);
         }
 
-        if (global.settings['tLabels']){
-            techs[category].push(tech_name);
+        if (isOld === true) {
+            if (!(category in old_techs)){
+                old_techs[category] = [];
+            }
+
+            old_techs[category].push(tech_name);
         }
         else {
+            if (!checkTechRequirements(tech_name)){
+                return;
+            }
+            let c_action = actions['tech'][tech_name];
+            if (!checkTechQualifications(c_action,tech_name)){
+                return;
+            }
+
+            if (!(category in techs)) {
+                techs[category] = [];
+            }
+
             addAction('tech', tech_name);
         }
     });
 
-    let tech_categories =  [
-        'research',
-        'upgrade'
-    ];
-
-    tech_categories.forEach(function(category) {
-        $(`#tech-dist-${category}`).remove();
-        if (global.settings['tLabels']){
-            if(!(category in techs))
-                return;
-
-            $(`<div id="tech-dist-${category}" class="tech"></div>`)
-                .appendTo('#tech')
-                .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
-
-            techs[category].forEach(function(tech_name) {
-                addAction('tech', tech_name);
-            });
+    all_categories.forEach(function(category){
+        clearElement($(`#tech-dist-${category}`),true);
+        clearElement($(`#tech-dist-old-${category}`),true);
+    });
+    
+    old_categories.forEach(function(category){
+        if(!(category in old_techs)){
+            return;
         }
+
+        $(`<div id="tech-dist-old-${category}" class="tech"></div>`)
+            .appendTo('#oldTech')
+            .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
+
+        old_techs[category].forEach(function(tech_name) {
+            addAction('tech', tech_name, true);
+        });
     });
 }
 
@@ -11728,69 +13420,13 @@ export function evalAffordable(){
     });
 }
 
-export function oldTech(tech){
-    if (tech !== 'fanaticism' && tech !== 'anthropology' && tech !== 'deify' && tech !== 'study'){
-        addAction('tech',tech,true);
-    }
-    else if (tech === 'fanaticism' && global.tech['fanaticism']){
-        addAction('tech',tech,true);
-    }
-    else if (tech === 'anthropology' && global.tech['anthropology']){
-        addAction('tech',tech,true);
-    }
-    else if (tech === 'deify' && global.tech['ancient_deify']){
-        addAction('tech',tech,true);
-    }
-    else if (tech === 'study' && global.tech['ancient_study']){
-        addAction('tech',tech,true);
-    }
-}
-
 export function addAction(action,type,old){
     let c_action = actions[action][type];
     setAction(c_action,action,type,old)
 }
 
 export function setAction(c_action,action,type,old){
-    if (c_action['condition'] && !c_action.condition()){
-        return;
-    }
-    if (c_action['not_trait']){
-        for (let i=0; i<c_action.not_trait.length; i++){
-            if (global.race[c_action.not_trait[i]]){
-                return;
-            }
-        }
-    }
-    if (c_action['trait']){
-        for (let i=0; i<c_action.trait.length; i++){
-            if (!global.race[c_action.trait[i]]){
-                return;
-            }
-        }
-    }
-    if (c_action['not_gene']){
-        for (let i=0; i<c_action.not_gene.length; i++){
-            if (global.genes[c_action.not_gene[i]]){
-                return;
-            }
-        }
-    }
-    if (c_action['gene']){
-        for (let i=0; i<c_action.gene.length; i++){
-            if (!global.genes[c_action.gene[i]]){
-                return;
-            }
-        }
-    }
-    if (c_action['not_tech']){
-        for (let i=0; i<c_action.not_tech.length; i++){
-            if (global.tech[c_action.not_tech[i]]){
-                return;
-            }
-        }
-    }
-    if (type === 'ancient_theology' && !global.genes['ancients']){
+    if (checkTechQualifications(c_action,type) === false) {
         return;
     }
     if (c_action['powered'] && !global[action][type]['on']){
@@ -11840,8 +13476,8 @@ export function setAction(c_action,action,type,old){
         parent.append(special);
     }
     if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)){
-        var powerOn = $('<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON">{{ act.on }}</span>');
-        var powerOff = $('<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF">{{ act.on | off }}</span>');
+        var powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
+        var powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
         parent.append(powerOn);
         parent.append(powerOff);
     }
@@ -11849,7 +13485,7 @@ export function setAction(c_action,action,type,old){
         element.append($('<span class="count">{{ act.count }}</span>'));
     }
     if (action !== 'tech' && global[action] && global[action][type] && typeof(global[action][type]['repair']) !== 'undefined'){
-        element.append($(`<div class="repair"><progress class="progress" :value="repair()" max="${c_action.repair}"></progress></div>`));
+        element.append($(`<div class="repair"><progress class="progress" :value="repair()" :max="repairMax()"></progress></div>`));
     }
     if (old){
         $('#oldTech').append(parent);
@@ -11890,7 +13526,9 @@ export function setAction(c_action,action,type,old){
                             if (!(global.settings.qKey && keyMap.q) && c_action.action()){
                                 gainTech(type);
                                 if (c_action['post']){
-                                    c_action.post();
+                                    setTimeout(function(){
+                                        c_action.post();
+                                    }, 250);
                                 }
                             }
                             else {
@@ -11922,7 +13560,9 @@ export function setAction(c_action,action,type,old){
                             if (c_action.action()){
                                 gainGene(type);
                                 if (c_action['post']){
-                                    c_action.post();
+                                    setTimeout(function(){
+                                        c_action.post();
+                                    }, 250);
                                 }
                             }
                             break;
@@ -11935,13 +13575,13 @@ export function setAction(c_action,action,type,old){
                                     }
                                     if (global[action][type]['count'] === 0){
                                         drawCity();
-                                        space();
+                                        renderSpace();
                                         var id = c_action.id;
                                         $(`#pop${id}`).hide();
                                         if (poppers[id]){
                                             poppers[id].destroy();
                                         }
-                                        $(`#pop${id}`).remove();
+                                        clearElement($(`#pop${id}`),true);
                                     }
                                     else {
                                         updateDesc(c_action,action,type);
@@ -11995,17 +13635,20 @@ export function setAction(c_action,action,type,old){
                                     removeAction(c_action.id);
                                     drawCity();
                                     drawTech();
-                                    space();
-                                    deepSpace();
+                                    renderSpace();
                                     renderFortress();
                                 }
                                 else if (c_action['refresh']){
                                     removeAction(c_action.id);
                                     drawCity();
                                     drawTech();
-                                    space();
-                                    deepSpace();
+                                    renderSpace();
                                     renderFortress();
+                                }
+                                if (c_action['post']){
+                                    setTimeout(function(){
+                                        c_action.post();
+                                    }, 250);
                                 }
                                 updateDesc(c_action,action,type);
                                 break;
@@ -12021,7 +13664,7 @@ export function setAction(c_action,action,type,old){
                     parent: this,
                     component: modal
                 });
-                
+
                 var checkExist = setInterval(function() {
                    if ($('#modalBox').length > 0) {
                       clearInterval(checkExist);
@@ -12046,7 +13689,9 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 if (c_action['postPower']){
-                    c_action.postPower();
+                    setTimeout(function(){
+                        c_action.postPower(true);
+                    }, 250);
                 }
             },
             power_off(){
@@ -12060,23 +13705,44 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 if (c_action['postPower']){
-                    c_action.postPower();
+                    setTimeout(function(){
+                        c_action.postPower(false);
+                    }, 250);
                 }
             },
             repair(){
                 return global[action][type].repair;
+            },
+            repairMax(){
+                return c_action.repair();
             }
         },
         filters: {
-            off: function(value){
-                return global[action][type].count - value;
+            p_off(p,id){
+                let value = global[action][type].count - p;
+                if (id === 'city-casino'){
+                    let egg = easterEgg(5,12);
+                    if (value === 0 && egg.length > 0){
+                        return egg;
+                    }
+                }
+                return value;
+            },
+            p_on(p,id){
+                if (id === 'city-biolab'){
+                    let egg = easterEgg(12,12);
+                    if (p === 0 && egg.length > 0){
+                        return egg;
+                    }
+                }
+                return p;
             }
         }
     });
     let pop_target = action === 'starDock' ? 'body .modal' : '#main';
     $('#'+id).on('mouseover',function(){
             let wide = c_action['wide'] ? ' wide' : '';
-            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark"><div id="popDesc"></div></div>`);
+            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
             $(pop_target).append(popper);
             actionDesc(popper,c_action,global[action][type],old);
             popper.show();
@@ -12088,7 +13754,7 @@ export function setAction(c_action,action,type,old){
             if (poppers[id]){
                 poppers[id].destroy();
             }
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
 }
 
@@ -12149,13 +13815,16 @@ export function setPlanet(hell){
             trait = 'none';
             break;
     }
-    
+
     let geology = {};
     let max = Math.floor(Math.seededRandom(0,3));
     let top = 30;
     if (global.stats.achieve['whitehole']){
         top += global.stats.achieve['whitehole'].l * 5;
         max += global.stats.achieve['whitehole'].l;
+    }
+    if (biome === 'eden'){
+        top += 5;
     }
 
     for (let i=0; i<max; i++){
@@ -12221,19 +13890,19 @@ export function setPlanet(hell){
         global.city.calendar.orbit = orbit;
         global.city.geology = geology;
         global.city.ptrait = trait;
-        $('#evolution').empty();
+        clearElement($('#evolution'));
         $(`#pop${id}`).hide();
         if (poppers[id]){
             poppers[id].destroy();
         }
-        $(`#pop${id}`).remove();
+        clearElement($(`#pop${id}`),true);
         addAction('evolution','rna');
     });
 
     $('#'+id).on('mouseover',function(){
             var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
-            
+
             popper.append($(`<div>${loc('set_planet',[title,biomes[biome].label,orbit])}</div>`));
             popper.append($(`<div>${biomes[biome].desc}</div>`));
             if (trait !== 'none'){
@@ -12289,7 +13958,7 @@ export function setPlanet(hell){
             if (poppers[id]){
                 poppers[id].destroy();
             }
-            $(`#pop${id}`).remove();
+            clearElement($(`#pop${id}`),true);
         });
     return biome === 'eden' ? 'hellscape' : biome;
 }
@@ -12306,16 +13975,54 @@ function srDesc(c_action,old){
         }
         desc = desc + 'Costs: ';
         var costs = adjustCosts(c_action.cost);
-        Object.keys(costs).forEach(function (res) {
-            var res_cost = costs[res]();
-            if (res_cost > 0){
-                let label = res === 'Money' ? '$' : global.resource[res].name+': ';
-                label = label.replace("_", " ");
-                
-                let display_cost = sizeApproximation(res_cost,1);
-                desc = desc + `${label}${display_cost}. `;
-                if (global.resource[res].amount < res_cost){
-                    desc = desc + `${loc('insufficient')} ${global.resource[res].name}. `;
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Structs'){
+                let structs = costs[res]();
+                Object.keys(structs).forEach(function (region){
+                    Object.keys(structs[region]).forEach(function (struct){
+                        let label = '';
+                        if (structs[region][struct].hasOwnProperty('s')){
+                            let sector = structs[region][struct].s;
+                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                        }
+                        else {
+                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                        }
+                        desc = desc + `${label}. `;
+
+                        if (!global[region][struct]){
+                            desc = desc + `${loc('insufficient')} ${label}. `;
+                        }
+                        else if (structs[region][struct].count > global[region][struct].count){
+                            desc = desc + `${loc('insufficient')} ${label}. `;
+                        }
+                        else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
+                            desc = desc + `${loc('insufficient')} ${label} enabled. `;
+                        }
+                    });
+                });
+            }
+            else if (res === 'Plasmid' || res === 'Phage'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc(`resource_${res}_name`);
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (global.race[res].count < res_cost){
+                        desc = desc + `${loc('insufficient')} ${label}. `;
+                    }
+                }
+            }
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                    label = label.replace("_", " ");
+
+                    let display_cost = sizeApproximation(res_cost,1);
+                    desc = desc + `${label}${display_cost}. `;
+                    if (global.resource[res].amount < res_cost){
+                        desc = desc + `${loc('insufficient')} ${global.resource[res].name}. `;
+                    }
                 }
             }
         });
@@ -12337,27 +14044,80 @@ function srDesc(c_action,old){
     return desc.replace("..",".");
 }
 
-function actionDesc(parent,c_action,obj,old){
-    parent.empty();
+export function actionDesc(parent,c_action,obj,old){
+    clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
-    parent.append($('<div>'+desc+'</div>'));
+    parent.append($(`<div>${desc}</div>`));
+
+    if (c_action['category'] && c_action.id.substring(0,4) === 'tech' && !old){
+        parent.append($(`<div class="has-text-flair">${loc('tech_dist_category')}: ${loc(`tech_dist_${c_action.category}`)}</div>`));
+    }
 
     let tc = timeCheck(c_action,false,true);
     if (c_action.cost && !old){
         var cost = $('<div></div>');
+        
         var costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'Army'){
+            if (res === 'Structs'){
+                let structs = costs[res]();
+                Object.keys(structs).forEach(function (region){
+                    Object.keys(structs[region]).forEach(function (struct){
+                        let res_cost = structs[region][struct].hasOwnProperty('on') ? structs[region][struct].on : structs[region][struct].count;
+                        let color = 'has-text-dark';
+                        if (!global[region][struct]){
+                            color = 'has-text-danger';
+                        }
+                        else if (structs[region][struct].count > global[region][struct].count){
+                            color = 'has-text-danger';
+                        }
+                        else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
+                            color = 'has-text-alert';
+                        }
+
+                        let label = '';
+                        if (structs[region][struct].hasOwnProperty('s')){
+                            let sector = structs[region][struct].s;
+                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                        }
+                        else {
+                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                        }
+                        cost.append($(`<div class="${color}">${label}: ${res_cost}</div>`));
+                    });
+                });
+            }
+            else if (res === 'Plasmid' || res === 'Phage'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
-                    let label = res === 'Money' ? '$' : global.resource[res].name+': ';
-                    label = label.replace("_", " ");
+                    let label = loc(`resource_${res}_name`);
                     let color = 'has-text-dark';
-                    if (global.resource[res].amount < res_cost){
-                        color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                    if (global.race[res].count < res_cost){
+                        color = 'has-text-danger';
                     }
-                    let display_cost = sizeApproximation(res_cost,1);
-                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
+                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                }
+            }
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    if (res === 'HellArmy'){
+                        let color = 'has-text-dark';
+                        if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
+                            color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                        }
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
+                    }
+                    else {
+                        let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                        label = label.replace("_", " ");
+                        let color = 'has-text-dark';
+                        if (global.resource[res].amount < res_cost){
+                            color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                        }
+                        let display_cost = sizeApproximation(res_cost,1);
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
+                    }
                 }
             }
         });
@@ -12395,8 +14155,8 @@ function actionDesc(parent,c_action,obj,old){
 }
 
 export function removeAction(id){
-    $('#'+id).remove();
-    $('#pop'+id).remove();
+    clearElement($(`#${id}`),true);
+    clearElement($(`#pop${id}`),true);
 }
 
 export function updateDesc(c_action,category,action){
@@ -12417,7 +14177,16 @@ export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'Army'){
+            if (res === 'Plasmid' || res === 'Phage'){
+                let cost = costs[res]();
+                if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                    global.race.Plasmid.anti -= cost;
+                }
+                else {
+                    global.race[res].count -= cost;
+                }
+            }
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool'){
                 let cost = costs[res]();
                 global['resource'][res].amount -= cost;
                 if (res === 'Knowledge'){
@@ -12440,25 +14209,59 @@ export function checkAffordable(c_action,max){
         }
     }
     return true;
-} 
+}
 
 function checkMaxCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res !== 'Morale' && res !== 'Army'){
-            var testCost = Number(costs[res]()) || 0;
-            if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1) {
+        if (res === 'Structs'){
+            if (!checkStructs(costs[res]())){
                 test = false;
-                return false;
+                return;
             }
         }
-        else if (res === 'Morale' && global.city.morale.current < Number(costs[res]())){
-            test = false;
-            return false;
+        else if (res === 'Plasmid' || res === 'Phage'){
+            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                if (global.race.Plasmid.anti < Number(costs[res]())){
+                    test = false;
+                    return;
+                }
+            }
+            else if (global.race[res].count < Number(costs[res]())){
+                test = false;
+                return;
+            }
         }
-        else if (res === 'Army' && armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
-            test = false;
-            return false;
+        else if (res === 'Bool'){
+            if (!costs[res]()){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Morale'){
+            if (global.city.morale.current < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Army'){
+            if (armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'HellArmy'){
+            if (typeof global.portal['fortress'] === 'undefined' || global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else {
+            var testCost = Number(costs[res]()) || 0;
+            if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1){
+                test = false;
+                return;
+            }
         }
     });
     return test;
@@ -12467,21 +14270,84 @@ function checkMaxCosts(costs){
 function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res !== 'Morale' && res !== 'Army'){
+        if (res === 'Structs'){
+            if (!checkStructs(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Plasmid' || res === 'Phage'){
+            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                if (global.race.Plasmid.anti < Number(costs[res]())){
+                    test = false;
+                    return;
+                }
+            }
+            else if (global.race[res].count < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Bool'){
+            if (!costs[res]()){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Morale'){
+            if (global.city.morale.current < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Army'){
+            if (costs[res]() === false){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'HellArmy'){
+            if (costs[res]() === false){
+                test = false;
+                return;
+            }
+        }
+        else {
             var testCost = Number(costs[res]()) || 0;
             let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
             if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
                 test = false;
-                return false;
+                return;
             }
         }
-        else if (res === 'Morale' && global.city.morale.current < Number(costs[res]())){
-            test = false;
-            return false;
+    });
+    return test;
+}
+
+function checkStructs(structs){
+    let test = true;
+    Object.keys(structs).forEach(function (region){
+        if (global.hasOwnProperty(region)){
+            Object.keys(structs[region]).forEach(function (struct){
+                if (global[region].hasOwnProperty(struct)){
+                    if (global[region][struct].count < structs[region][struct].count){
+                        test = false;
+                        return;
+                    }
+                    if (global[region][struct].hasOwnProperty('on') && global[region][struct].on < structs[region][struct].on){
+                        test = false;
+                        return;
+                    }
+                }
+                else {
+                    test = false;
+                    return;
+                }
+            });
         }
-        else if (res === 'Army' && costs[res]() === false){
+        else {
             test = false;
-            return false;
+            return;
         }
     });
     return test;
@@ -12505,18 +14371,21 @@ export function challengeActionHeader(){
 }
 
 function drawModal(c_action,type){
-    if (type === 'red_factory'){
+    if (type === 'red_factory' || type === 'int_factory'){
         type = 'factory';
     }
 
     let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}</p>`));
-    
+
     var body = $('<div id="specialModal" class="modalBody"></div>');
     $('#modalBox').append(body);
 
     switch(type){
         case 'smelter':
+            smelterModal(body);
+            break;
+        case 'stellar_forge':
             smelterModal(body);
             break;
         case 'factory':
@@ -12531,7 +14400,14 @@ function drawModal(c_action,type){
         case 'g_factory':
             grapheneModal(body);
             break;
+        case 'freighter':
+            freighterModal(body);
+            break;
     }
+}
+
+function freighterModal(modal){
+    galacticTrade(modal);
 }
 
 function starDockModal(modal){
@@ -12546,7 +14422,7 @@ function starDockModal(modal){
 
     let c_action = actions.starDock.probes;
     setAction(c_action,'starDock','probes');
-    
+
     if (global.tech['genesis'] >= 5){
         let c_action = actions.starDock.seeder;
         setAction(c_action,'starDock','seeder');
@@ -12580,7 +14456,7 @@ function grapheneModal(modal){
 }
 
 export function evoProgress(){
-    $('#evolution .evolving').remove();
+    clearElement($('#evolution .evolving'),true);
     let progress = $(`<div class="evolving"><progress class="progress" value="${global.evolution.final}" max="100">${global.evolution.final}%</progress></div>`);
     $('#evolution').append(progress);
 }
@@ -12670,8 +14546,8 @@ function sentience(){
     var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
     for (var i = 0; i < evolve_actions.length; i++) {
         if (global.race[evolve_actions[i]]){
-            $('#'+actions.evolution[evolve_actions[i]].id).remove();
-            $('#pop'+actions.evolution[evolve_actions[i]].id).remove();
+            clearElement($('#'+actions.evolution[evolve_actions[i]].id),true);
+            clearElement($('#pop'+actions.evolution[evolve_actions[i]].id),true);
         }
     }
 
@@ -12686,9 +14562,16 @@ function sentience(){
     if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
         global.race['slaver'] = 1;
     }
+    const easter = getEaster();
+    if (global.race.species === 'wolven' && easter.active){
+        global.race['hyper'] = 1;
+        global.race['fast_growth'] = 1;
+        global.race['rainbow'] = 1;
+        global.race['optimistic'] = 1;
+    }
 
     if (global.race['no_crispr']){
-        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic'];
+        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful'];
         for (let i=0; i<10; i++){
             let trait = bad[Math.rand(0,bad.length)];
             if ((global.race['carnivore'] && trait === 'herbivore') || (global.race['smart'] && trait === 'dumb')) {
@@ -12715,6 +14598,7 @@ function sentience(){
         global.tech['unify'] = 2;
     }
 
+    clearElement($('#resources'));
     defineResources();
     if (!global.race['kindling_kindred']){
         global.resource.Lumber.display = true;
@@ -12747,9 +14631,6 @@ function sentience(){
     global.civic.govern.rev = 0;
     global.civic.govern.fr = 0;
 
-    if (global.race.gods !== 'none'){
-        global.tech['religion'] = 1;
-    }
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.tech['r_queue'] = 1;
@@ -12758,7 +14639,7 @@ function sentience(){
     }
 
     Object.keys(global.genes.minor).forEach(function (trait){
-        global.race[trait] = global.genes.minor[trait];
+        global.race[trait] = trait === 'mastery' ? global.genes.minor[trait] : global.genes.minor[trait] * 2;
     });
 
     if (global.genes['evolve'] && global.genes['evolve'] >= 2){
@@ -12787,10 +14668,29 @@ function sentience(){
         s1: civ2name.s1
     };
 
-    messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]));
+    messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]),'info');
+
+    if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+        global.resource.Steel.display = true;
+        global.resource.Steel.amount = 25;
+        if (global.stats.achieve.technophobe.l >= 3){
+            global.resource.Soul_Gem.display = true;
+            let gems = 1;
+            let universes = ['h','a','e','m'];
+            for (let i=0; i<universes.length; i++){
+                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                    gems++;
+                }
+            }
+            global.resource.Soul_Gem.amount = gems;
+        }
+    }
 
     if (global.race['slow'] || global.race['hyper']){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
         window.location.reload();
     }
 
@@ -12800,17 +14700,8 @@ function sentience(){
 }
 
 function fanaticism(god){
-    switch (god){
-        case 'human':
-            fanaticTrait('creative');
-            break;
-        case 'elven':
-            fanaticTrait('studious');
-            break;
-        case 'orc':
-            fanaticTrait('brute');
-            break;
-        case 'cath':
+    switch (races[god].fanaticism){
+        case 'carnivore':
             if (global.race['herbivore']){
                 randomMinorTrait();
                 arpa('Genetics');
@@ -12822,19 +14713,7 @@ function fanaticism(god){
                 }
             }
             break;
-        case 'wolven':
-            fanaticTrait('tracker');
-            break;
-        case 'centaur':
-            fanaticTrait('beast_of_burden');
-            break;
-        case 'kobold':
-            fanaticTrait('pack_rat');
-            break;
-        case 'goblin':
-            fanaticTrait('merchant');
-            break;
-        case 'gnome':
+        case 'smart':
             if (global.race['dumb']){
                 randomMinorTrait();
                 arpa('Genetics');
@@ -12843,102 +14722,18 @@ function fanaticism(god){
                 fanaticTrait('smart');
             }
             break;
-        case 'orge':
-            fanaticTrait('tough');
-            break;
-        case 'cyclops':
-            fanaticTrait('intelligent');
-            break;
-        case 'troll':
-            fanaticTrait('regenerative');
-            break;
-        case 'tortoisan':
-            fanaticTrait('armored');
-            break;
-        case 'gecko':
-            fanaticTrait('optimistic');
-            break;
-        case 'slitheryn':
-            fanaticTrait('slow_digestion');
-            break;
-        case 'arraak':
-            fanaticTrait('resourceful');
-            break;
-        case 'pterodacti':
-            fanaticTrait('leathery');
-            break;
-        case 'dracnid':
-            fanaticTrait('hoarder');
-            break;
-        case 'entish':
-            fanaticTrait('kindling_kindred');
-            break;
-        case 'cacti':
-            fanaticTrait('hyper');
-            break;
-        case 'sporgar':
+        case 'infectious':
             fanaticTrait('infectious');
             if (global.race.species === 'human'){
                 unlockAchieve(`infested`);
             }
             break;
-        case 'shroomi':
-            fanaticTrait('toxic');
-            break;
-        case 'mantis':
-            fanaticTrait('cannibalize');
-            break;
-        case 'scorpid':
-            fanaticTrait('claws');
-            break;
-        case 'antid':
-            fanaticTrait('hivemind');
-            break;
-        case 'sharkin':
-            fanaticTrait('frenzy');
-            break;
-        case 'octigoran':
-            fanaticTrait('suction_grip');
-            break;
-        case 'dryad':
-            fanaticTrait('befuddle');
-            break;
-        case 'satyr':
-            fanaticTrait('musical');
-            break;
-        case 'phoenix':
-            fanaticTrait('revive');
-            break;
-        case 'salamander':
-            fanaticTrait('forge');
-            break;
-        case 'yeti':
-            fanaticTrait('blurry');
-            break;
-        case 'wendigo':
-            fanaticTrait('ghostly');
-            break;
-        case 'tuskin':
-            fanaticTrait('lawless');
-            break;
-        case 'kamel':
-            fanaticTrait('humpback');
-            break;
-        case 'balorg':
-            fanaticTrait('fiery');
-            break;
-        case 'imp':
-            fanaticTrait('conniving');
-            break;
-        case 'seraph':
-            fanaticTrait('spiritual');
-            break;
-        case 'unicorn':
-            fanaticTrait('magnificent');
+        case 'none':
+            randomMinorTrait();
+            arpa('Genetics')
             break;
         default:
-            randomMinorTrait();
-            arpa('Genetics');
+            fanaticTrait(races[god].fanaticism);
             break;
     }
 }
@@ -12955,13 +14750,13 @@ function fanaticTrait(trait){
 }
 
 export function resQueue(){
-    $('#resQueue').empty();
+    clearElement($('#resQueue'));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
     queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}</span>]</a></li>`));
-    
+
     try {
         vBind({
             el: '#resQueue .buildList',
@@ -13000,7 +14795,7 @@ export function bank_vault(){
     let vault = 1800;
     if (global.tech['vault'] >= 1){
         vault = (global.tech['vault'] + 1) * 7500;
-    } 
+    }
     else if (global.tech['banking'] >= 5){
         vault = 9000;
     }
@@ -13008,10 +14803,10 @@ export function bank_vault(){
         vault = 4000;
     }
     if (global.race['paranoid']){
-        vault *= 0.9;
+        vault *= 1 - (traits.paranoid.vars[0] / 100);
     }
     else if (global.race['hoarder']){
-        vault *= 1.2;
+        vault *= 1 + (traits.hoarder.vars[0] / 100);
     }
     if (global.tech['banking'] >= 7){
         vault *= 1 + (global.civic.banker.workers * 0.05);
@@ -13029,6 +14824,8 @@ export function bank_vault(){
 }
 
 function bioseed(){
+    global.lastMsg = false;
+
     let god = global.race.species;
     let old_god = global.race.gods;
     let genus = races[god].type;
@@ -13038,23 +14835,11 @@ function bioseed(){
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let pop = global['resource'][global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / 3);
-    let k_base = global.stats.know;
-    let k_inc = 50000;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.015;
-    }
-    new_plasmid = challenge_multiplier(new_plasmid,'bioseed');
-    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E),'bioseed');
+
+    let gains = calcPrestige('bioseed');
+    let new_plasmid = gains.plasmid;
+    let new_phage = gains.phage;
+
     phage += new_phage;
     global.stats.reset++;
     global.stats.bioseed++;
@@ -13076,19 +14861,22 @@ function bioseed(){
     }
     global.stats.phage += new_phage;
     unlockAchieve(`seeder`);
-    let new_biome = unlockAchieve(`biome_${biome}`);
+    unlockAchieve(`biome_${biome}`);
     if (atmo !== 'none'){
         unlockAchieve(`atmo_${atmo}`);
     }
-    let new_genus = unlockAchieve(`genus_${genus}`);
-    let new_achieve = false;
+    unlockAchieve(`genus_${genus}`);
 
     if (global.race.species === 'junker'){
-        new_achieve = unlockFeat('organ_harvester');
+        unlockFeat('organ_harvester');
     }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
-        if (unlockFeat('ill_advised')){ new_achieve = true; };
+        unlockFeat('ill_advised');
     }
+    if (typeof global.tech['world_control'] === 'undefined'){
+        unlockAchieve(`cult_of_personality`);
+    }
+
     let good_rocks = 0;
     let bad_rocks = 0;
     Object.keys(global.city.geology).forEach(function (g){
@@ -13100,25 +14888,26 @@ function bioseed(){
         }
     });
     if (good_rocks >= 4) {
-        if (unlockAchieve('miners_dream')){ new_achieve = true; };
+        unlockAchieve('miners_dream');
     }
     if (bad_rocks >= 3){
-        if (unlockFeat('rocky_road')){ new_achieve = true; };
+        unlockFeat('rocky_road');
+    }
+    if (global.race['steelen'] && global.race['steelen'] >= 1){
+        unlockAchieve(`steelen`);
     }
 
     switch (global.race.universe){
-        case 'heavy':
-            if (unlockFeat(`heavy_genus_${genus}`)){ new_achieve = true; };
+        case 'micro':
+            if (global.race['small'] || global.race['compact']){
+                unlockAchieve(`macro`,true);
+            }
+            else {
+                unlockAchieve(`marble`,true);
+            }
             break;
         default:
             break;
-    }
-
-    if (global.race['small'] || global.race['compact']){
-        if (unlockAchieve(`macro`,true)){ new_achieve = true; }
-    }
-    else {
-        if (unlockAchieve(`marble`,true)){ new_achieve = true; }
     }
 
     checkAchievements();
@@ -13127,13 +14916,14 @@ function bioseed(){
     if (global.stats.achieve['explorer']){
         probes += global.stats.achieve['explorer'].l;
     }
-    global['race'] = { 
-        species : 'protoplasm', 
+    global['race'] = {
+        species : 'protoplasm',
         gods: god,
         old_gods: old_god,
         Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: phage },
         Dark: { count: global.race.Dark.count },
+        Harmony: { count: global.race.Harmony.count },
         universe: global.race.universe,
         seeded: true,
         probes: probes,
@@ -13154,18 +14944,18 @@ function bioseed(){
     };
     global.tech = { theology: 1 };
     clearStates();
-    if (!new_biome && !new_genus && !new_achieve){
-        global.lastMsg = false;
-    }
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
-    
+
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
 }
 
 function big_bang(){
+    global.lastMsg = false;
+
+    unlockAchieve(`extinct_${global.race.species}`);
     switch (global.race.universe){
         case 'heavy':
             unlockAchieve(`heavy`);
@@ -13193,6 +14983,9 @@ function big_bang(){
     if (global.race['decay']){
         unlockAchieve(`dissipated`);
     }
+    if (global.race['steelen']){
+        unlockFeat('steelem');
+    }
 
     let god = global.race.species;
     let old_god = global.race.gods;
@@ -13203,26 +14996,11 @@ function big_bang(){
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
     let dark = global.race.Dark.count;
-    let garrisoned = global.civic.garrison.workers;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += 20;
-        }
-    }
-    let pop = global['resource'][global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / 2);
-    let k_base = global.stats.know;
-    let k_inc = 40000;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= 1.012;
-    }
-    new_plasmid = challenge_multiplier(new_plasmid,'bigbang');
-    let new_phage = challenge_multiplier(Math.floor(Math.log2(new_plasmid) * Math.E * 2.5),'bigbang');
-    let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
-    new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
-    new_dark = challenge_multiplier(new_dark,'bigbang',3);
+
+    let gains = calcPrestige('bigbang');
+    let new_plasmid = gains.plasmid;
+    let new_phage = gains.phage;
+    let new_dark = gains.dark;
 
     checkAchievements();
 
@@ -13247,13 +15025,14 @@ function big_bang(){
     }
     global.stats.phage += new_phage;
     global.stats.universes++;
-    global['race'] = { 
-        species : 'protoplasm', 
+    global['race'] = {
+        species : 'protoplasm',
         gods: god,
         old_gods: old_god,
         Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: phage },
         Dark: { count: +(dark + new_dark).toFixed(3) },
+        Harmony: { count: global.race.Harmony.count },
         universe: 'bigbang',
         seeded: true,
         bigbang: true,
@@ -13278,7 +15057,7 @@ function big_bang(){
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
-    
+
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
 }
