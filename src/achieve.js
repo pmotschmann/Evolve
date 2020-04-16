@@ -1534,6 +1534,7 @@ export function drawPerks(){
         if (global.stats.achieve.technophobe.l >= 5){
             perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe4",[10])}</span></div>`);
         }
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe5",[global.stats.achieve.technophobe.l])}</span></div>`);
     }
 
     if (unlocked > 0){

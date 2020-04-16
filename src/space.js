@@ -5443,8 +5443,13 @@ function ascendLab(){
         },
         filters: {
             cost(trait){
+                let bonus_complexity = 0;
                 let complex = genome.traitlist.includes(trait) ? genome.traitlist.length - 3 : genome.traitlist.length - 2;
-                let complexity = genome.traitlist.length >= 4 ? Math.floor(complex / 2) : 0;
+                if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+                    bonus_complexity = global.stats.achieve.technophobe.l;
+                    complex -= bonus_complexity;
+                }
+                let complexity = genome.traitlist.length >= 4 + bonus_complexity ? Math.floor(complex / 2) : 0;
                 return traits[trait].val + complexity;
             }
         }
@@ -5467,10 +5472,15 @@ function calcGenomeScore(genome){
         genes -= traits[t].val;
     });
 
+    let complexity = 4;
+    if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+        complexity += global.stats.achieve.technophobe.l;
+    }
+
     for (let i=0; i<genome.traitlist.length; i++){
         genes -= traits[genome.traitlist[i]].val;
-        if (i >= 4){
-            genes -= Math.floor((i - 2) / 2);
+        if (i >= complexity){
+            genes -= Math.floor((i - complexity + 2) / 2);
         }
     }
     return genes;

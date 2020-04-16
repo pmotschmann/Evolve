@@ -7,6 +7,7 @@ const changeList = [
         date: `4/16/2020`,
         changes: [
             `Ascension lab now has a complexity gene tax for adding more then 4 traits.`,
+            `Technophobe perk now applies an additional bonus to custom race complexity.`,
             `Paranoid and Hoarder can now be combined.`,
             `Over capped slaves will now be released.`,
         ]
