@@ -14,6 +14,7 @@ const changeList = [
         date: `4/13/2020`,
         changes: [
             `Added EM Field Challenge.`,
+            `Over capped slaves will now be released.`,
         ]
     },
     {

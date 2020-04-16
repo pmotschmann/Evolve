@@ -875,9 +875,6 @@ function fastLoop(){
             stress -= global.civic.garrison.max / 2;
         }
 
-        let money_bd = {};
-        breakdown.p.consume.Money[loc('trade')] = 0;
-
         // trade routes
         if (global.tech['trade']){
             let used_trade = 0;
@@ -4328,6 +4325,10 @@ function midLoop(){
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
             caps['Slave'] = global.city.slave_pen.count * 5;
             bd_Slave[loc('city_slave_pen')] = global.city.slave_pen.count * 5 + 'v';
+
+            if (caps['Slave'] < global.city.slave_pen.slaves){
+                global.city.slave_pen.slaves = caps['Slave'];
+            }
         }
         if (global.city['basic_housing']){
             caps[global.race.species] += global.city['basic_housing'].count;
