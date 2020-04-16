@@ -5450,7 +5450,11 @@ function ascendLab(){
                     complex -= bonus_complexity;
                 }
                 let complexity = genome.traitlist.length >= 4 + bonus_complexity ? Math.floor(complex / 2) : 0;
-                return traits[trait].val + complexity;
+                let cost = traits[trait].val + complexity;
+                if (traits[trait].val < 0 && cost >= 0){
+                    cost = -1;
+                }
+                return cost;
             }
         }
     });
@@ -5478,10 +5482,14 @@ function calcGenomeScore(genome){
     }
 
     for (let i=0; i<genome.traitlist.length; i++){
-        genes -= traits[genome.traitlist[i]].val;
+        let gene_cost = traits[genome.traitlist[i]].val;
         if (i >= complexity){
-            genes -= Math.floor((i - complexity + 2) / 2);
+            gene_cost += Math.floor((i - complexity + 2) / 2);
         }
+        if (traits[genome.traitlist[i]].val < 0 && gene_cost >= 0){
+            gene_cost = -1;
+        }
+        genes -= gene_cost;
     }
     return genes;
 }
