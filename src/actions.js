@@ -13153,6 +13153,9 @@ export function storageMultipler(){
         multiplier *= 1 + global.stats.achieve.blackhole.l * 0.05;
     }
     multiplier *= global.tech['world_control'] ? 3 : 1;
+    if (global.race['ascended']){
+        multiplier *= 1.1;
+    }
     if (global.tech['storage'] >= 7 && global.interstellar['cargo_yard']){
         multiplier *= 1 + ((global.interstellar['cargo_yard'].count * quantum_level) / 100);
     }
@@ -14928,6 +14931,7 @@ function bioseed(){
         seeded: true,
         probes: probes,
         seed: Math.floor(Math.seededRandom(10000)),
+        ascended: false,
     };
     global.city = {
         calendar: {
@@ -15038,6 +15042,7 @@ function big_bang(){
         bigbang: true,
         probes: 4,
         seed: Math.floor(Math.seededRandom(10000)),
+        ascended: false,
     };
     global.city = {
         calendar: {

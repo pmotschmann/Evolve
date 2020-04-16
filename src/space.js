@@ -5495,6 +5495,7 @@ function ascend(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
+    let geo = global.city.geology;
     let plasmid = global.race.Plasmid.count;
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
@@ -5563,10 +5564,15 @@ function ascend(){
         Dark: { count: global.race.Dark.count },
         Harmony: { count: harmony },
         universe: global.race.universe,
-        seeded: true,
-        probes: 4,
+        seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
+        ascended: true,
     };
+
+    Object.keys(geo).forEach(function (g){
+        geo[g] += 0.02;
+    });
+
     global.city = {
         calendar: {
             day: 0,
@@ -5578,7 +5584,8 @@ function ascend(){
             orbit: orbit
         },
         biome: biome,
-        ptrait: atmo
+        ptrait: atmo,
+        geology: geo
     };
     global.tech = { theology: 1 };
     clearStates();

@@ -1846,6 +1846,7 @@ function warhead(){
         Harmony: { count: global.race.Harmony.count },
         universe: global.race.universe,
         seeded: false,
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
     global.city = {
         calendar: {

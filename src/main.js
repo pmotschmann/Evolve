@@ -546,6 +546,10 @@ function fastLoop(){
             global_multiplier *= (1 + faith);
         }
     }
+    if (global.race['ascended']){
+        breakdown.p['Global'][loc('achieve_ascended_name')] = `5%`;
+        global_multiplier *= 1.05;
+    }
     if (global.race['rainbow'] && global.race['rainbow'] > 1){
         breakdown.p['Global'][loc('trait_rainbow_bd')] = `${traits.rainbow.vars[0]}%`;
         global_multiplier *= 1 + (traits.rainbow.vars[0] / 100);
@@ -2294,6 +2298,9 @@ function fastLoop(){
             }
             if (global.city.ptrait === 'magnetic'){
                 sundial_base++;
+            }
+            if (global.race['ascended']){
+                sundial_base += 2;
             }
 
             let professors_base = global.civic.professor.workers;
