@@ -5358,10 +5358,10 @@ function ascendLab(){
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             if (traits[trait].val >= 0){
-                trait_list = trait_list + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">${traits[trait].val}</span>)</b-checkbox></b-tooltip></div>`;
+                trait_list = trait_list + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></b-tooltip></div>`;
             }
             else {
-                negative = negative + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">${traits[trait].val}</span>)</b-checkbox></b-tooltip></div>`;
+                negative = negative + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></b-tooltip></div>`;
             }
         }
     });
@@ -5440,6 +5440,13 @@ function ascendLab(){
                     ascend();
                 }
             }
+        },
+        filters: {
+            cost(trait){
+                let complex = genome.traitlist.includes(trait) ? genome.traitlist.length - 3 : genome.traitlist.length - 2;
+                let complexity = genome.traitlist.length >= 4 ? Math.floor(complex / 2) : 0;
+                return traits[trait].val + complexity;
+            }
         }
     });
 }
@@ -5459,8 +5466,12 @@ function calcGenomeScore(genome){
     Object.keys(genus_traits[genome.genus]).forEach(function (t){
         genes -= traits[t].val;
     });
+
     for (let i=0; i<genome.traitlist.length; i++){
         genes -= traits[genome.traitlist[i]].val;
+        if (i >= 4){
+            genes -= Math.floor((i - 2) / 2);
+        }
     }
     return genes;
 }

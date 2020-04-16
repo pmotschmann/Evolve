@@ -6,7 +6,9 @@ const changeList = [
         version: `0.8.11`,
         date: `4/16/2020`,
         changes: [
+            `Ascension lab now has a complexity gene tax for adding more then 4 traits.`,
             `Paranoid and Hoarder can now be combined.`,
+            `Over capped slaves will now be released.`,
         ]
     },
     {
@@ -14,7 +16,6 @@ const changeList = [
         date: `4/13/2020`,
         changes: [
             `Added EM Field Challenge.`,
-            `Over capped slaves will now be released.`,
         ]
     },
     {

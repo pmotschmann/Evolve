@@ -875,6 +875,9 @@ function fastLoop(){
             stress -= global.civic.garrison.max / 2;
         }
 
+        let money_bd = {};
+        breakdown.p.consume.Money[loc('trade')] = 0;
+
         // trade routes
         if (global.tech['trade']){
             let used_trade = 0;
