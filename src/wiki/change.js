@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.11`,
+        date: `4/16/2020`,
+        changes: [
+            `Paranoid and Hoarder can now be combined.`,
+        ]
+    },
+    {
         version: `0.8.10`,
         date: `4/13/2020`,
         changes: [
