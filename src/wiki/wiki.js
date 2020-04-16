@@ -7,6 +7,7 @@ import { racesPage, traitsPage } from './species.js';
 import { renderStructurePage } from './structures.js';
 import { renderTechPage } from './tech.js';
 import { renderAchievePage } from './achieve.js';
+import { gamePlayPage } from './gameplay.js';
 import { changeLog } from './change.js';
 
 $('body').empty();
@@ -28,13 +29,14 @@ function initPage(){
         {
             key: 'faq',
         },
-        /*{
+        {
             key: 'gameplay',
             submenu: [
+                { key: 'basics' },
                 { key: 'mechanics' },
                 { key: 'prestige' },
             ]
-        },*/
+        },
         {
             key: 'species',
             submenu: [
@@ -123,6 +125,12 @@ function menuDispatch(main,sub){
             faqPage();
             window.location.hash = `#${main}`;
             break;
+
+        case 'gameplay':
+            gamePlayPage(sub);
+            window.location.hash = `#${sub}-${main}`;
+            break;
+
 
         case 'species':
             switch (sub){
