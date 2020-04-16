@@ -550,6 +550,12 @@ function fastLoop(){
         breakdown.p['Global'][loc('achieve_ascended_name')] = `5%`;
         global_multiplier *= 1.05;
     }
+    if (global.race['untapped']){
+        if (global.race['untapped'] > 0){
+            breakdown.p['Global'][loc('trait_untapped_bd')] = `${global.race.untapped / 2}%`;
+            global_multiplier *= 1 + (global.race.untapped / 200);
+        }
+    }
     if (global.race['rainbow'] && global.race['rainbow'] > 1){
         breakdown.p['Global'][loc('trait_rainbow_bd')] = `${traits.rainbow.vars[0]}%`;
         global_multiplier *= 1 + (traits.rainbow.vars[0] / 100);

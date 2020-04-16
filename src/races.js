@@ -858,12 +858,12 @@ export const traits = {
         type: 'special',
         val: 0,
     },
-    /*untapped: { // Untapped Potential
+    untapped: { // Untapped Potential
         name: loc('trait_untapped_name'),
         desc: loc('trait_untapped'),
         type: 'special',
         val: 0,
-    },*/
+    },
     emfield: { // Your body produces a natural electromagnetic field that disrupts electriciy
         name: loc('trait_emfield_name'),
         desc: loc('trait_emfield'),

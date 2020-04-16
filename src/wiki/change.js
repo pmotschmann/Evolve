@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Ascension reset no longer offers planet choices, instead your next race is created on the old planet with bonuses added to that planet.`,
             `Ascended planets now gain +2% to all geology deposits, +5% production, +10% storage, and +2 Sundial base Knowledge gain.`,
+            `Unspent gene points in the Ascension Lab will be converted into Untapped Potential.`,
             `Ascension lab now has a complexity gene tax for adding more then 4 traits.`,
             `Technophobe perk now applies an additional bonus to custom race complexity.`,
             `Paranoid and Hoarder can now be combined.`,

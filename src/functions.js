@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, achieve_level, universe_level } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits } from './races.js';
+import { races, traits, genus_traits } from './races.js';
 import { actions } from './actions.js';
 import { arpaAdjustCosts } from './arpa.js';
 
@@ -1055,6 +1055,40 @@ export function sLevel(level){
         default:
             return '';
     }
+}
+
+export function calcGenomeScore(genome){
+    let genes = 0;
+
+    if (global.stats.achieve[`ascended`]){
+        let types = ['l','a','h','e','m'];
+        for (let i=0; i<types.length; i++){
+            if (global.stats.achieve.ascended.hasOwnProperty(types[i])){
+                genes += global.stats.achieve.ascended[types[i]];
+            }
+        }
+    }
+
+    Object.keys(genus_traits[genome.genus]).forEach(function (t){
+        genes -= traits[t].val;
+    });
+
+    let complexity = 4;
+    if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+        complexity += global.stats.achieve.technophobe.l;
+    }
+
+    for (let i=0; i<genome.traitlist.length; i++){
+        let gene_cost = traits[genome.traitlist[i]].val;
+        if (i >= complexity){
+            gene_cost += Math.floor((i - complexity + 2) / 2);
+        }
+        if (traits[genome.traitlist[i]].val < 0 && gene_cost >= 0){
+            gene_cost = -1;
+        }
+        genes -= gene_cost;
+    }
+    return genes;
 }
 
 export function getEaster(){

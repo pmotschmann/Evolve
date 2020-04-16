@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem, calcGenomeScore, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -14624,6 +14624,23 @@ function sentience(){
         if (global.city[city_actions[i]]){
             addAction('city',city_actions[i]);
         }
+    }
+
+    if (global.race.species === 'custom'){
+        global.race['untapped'] = calcGenomeScore({
+            name: global.custom.race0.name,
+            desc: global.custom.race0.desc,
+            entity: global.custom.race0.entity,
+            home: global.custom.race0.home,
+            red: global.custom.race0.red,
+            hell: global.custom.race0.hell,
+            gas: global.custom.race0.gas,
+            gas_moon: global.custom.race0.gas_moon,
+            dwarf: global.custom.race0.dwarf,
+            genes: 0,
+            genus: global.custom.race0.genus,
+            traitlist: global.custom.race0.traits
+        });
     }
 
     global.settings.civTabs = 1;
