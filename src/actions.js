@@ -2806,7 +2806,7 @@ export const actions = {
             },
             effect(){
                 let max = global.city['slave_pen'] ? global.city.slave_pen.count * 5 : 5;
-                let slaves = global.city['slave_pen'] ? global.city.slave_pen.slaves * 5 : 0;
+                let slaves = global.city['slave_pen'] ? global.city.slave_pen.slaves : 0;
                 return `<div>${loc('city_slave_pen_effect',[5])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
             },
             action(){
