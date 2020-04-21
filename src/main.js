@@ -4679,17 +4679,17 @@ function midLoop(){
             let gain = (global.space['gas_storage'].count * spatialReasoning(3500));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Oil'] += gain;
-            bd_Oil[`${races[global.race.species].solar.gas}_${loc('depot')}`] = gain+'v';
+            bd_Oil[`${races[global.race.species].solar.gas} ${loc('depot')}`] = gain+'v';
 
             gain = (global.space['gas_storage'].count * spatialReasoning(2500));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Helium_3'] += gain;
-            bd_Helium[`${races[global.race.species].solar.gas}_${loc('depot')}`] = gain+'v';
+            bd_Helium[`${races[global.race.species].solar.gas} ${loc('depot')}`] = gain+'v';
 
             gain = (global.space['gas_storage'].count * spatialReasoning(1000));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Uranium'] += gain;
-            bd_Uranium[`${races[global.race.species].solar.gas}_${loc('depot')}`] = gain+'v';
+            bd_Uranium[`${races[global.race.species].solar.gas} ${loc('depot')}`] = gain+'v';
         }
         if (p_on['xfer_station']){
             let gain = (p_on['xfer_station'] * spatialReasoning(5000));

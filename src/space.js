@@ -5285,6 +5285,7 @@ function ascendLab(){
         webWorker.w.terminate();
     }
     unlockAchieve(`biome_${global.city.biome}`);
+    unlockAchieve(`genus_${races[global.race.species].type}`);
     unlockAchieve(`ascended`);
     if (global.race.species === 'junker'){
         unlockFeat('the_misery');
@@ -5465,7 +5466,6 @@ function ascend(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
@@ -5507,7 +5507,6 @@ function ascend(){
     if (atmo !== 'none'){
         unlockAchieve(`atmo_${atmo}`);
     }
-    unlockAchieve(`genus_${genus}`);
 
     if (typeof global.tech['world_control'] === 'undefined'){
         unlockAchieve(`cult_of_personality`);

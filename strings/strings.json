@@ -3795,7 +3795,7 @@
   "wiki_menu_traits": "Traits",
   "wiki_menu_structures": "Structures",
   "wiki_menu_prehistoric": "Evolution",
-  "wiki_menu_plantery": "Plantery",
+  "wiki_menu_planetary": "Planetary",
   "wiki_menu_space": "Space",
   "wiki_menu_interstellar": "Interstellar",
   "wiki_menu_intergalactic": "Intergalactic",
@@ -3999,7 +3999,7 @@
   "wiki_trait_effect_tracker": "+%0% hunting production.",
   "wiki_trait_effect_beast_of_burden": "+%0% combat loot gained.",
   "wiki_trait_effect_herbivore": "Soldiers do not produce food from hunting.",
-  "wiki_trait_effect_pack_rat": "+%0% Crate/Container Storage. =%1% General Storage.",
+  "wiki_trait_effect_pack_rat": "+%0% Crate/Container Storage. +%1% General Storage.",
   "wiki_trait_effect_paranoid": "-%0% bank storage.",
   "wiki_trait_effect_greedy": "-%0% tax income",
   "wiki_trait_effect_merchant": "+%0% trade selling prices.",
@@ -4053,7 +4053,7 @@
   "wiki_trait_effect_blurry": "Spy Missions are less likely to fail. Surveyors are %0% less likely to be killed.",
   "wiki_trait_effect_snowy": "Morale is lowered by %0 to %1 when it's not snowing.",
   "wiki_trait_effect_ravenous": "Food consumption increases with your Food stockpile.",
-  "wiki_trait_effect_ghostly": "+%0% Food from Hunting. +%1 base Food per Soul Well",
+  "wiki_trait_effect_ghostly": "+%0% Food from Hunting. +%1 base Food per Soul Well. +%2% Soul Gem drop rate.",
   "wiki_trait_effect_lawless": "Government lockout timer is reduced by %0%.",
   "wiki_trait_effect_mistrustful": "Hostilities grow quicker with forgein governments.",
   "wiki_trait_effect_humpback": "Starvation threshold increased by %0.",
@@ -4081,5 +4081,5 @@
   "wiki_tech_sundial2": "+1 more Knowledge production after a planet's first MAD.",
   "wiki_tech_sundial3": "+1 more Knowledge production with the Euthanasia perk.",
   "wiki_tech_sundial4": "+1 more Knowledge production on Magnetic planets.",
-  "wiki_structure_plantery_slaughter": "Basic gathering option for Evil races, this replaces the other standard gathering methods."
+  "wiki_structure_planetary_slaughter": "Basic gathering option for Evil races, this replaces the other standard gathering methods."
 }

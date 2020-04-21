@@ -745,7 +745,7 @@ export const traits = {
         desc: loc('trait_ghostly'),
         type: 'major',
         val: 5,
-        vars: [50,1.5]
+        vars: [50,1.5,15]
     },
     lawless: { // Government lockout timer is reduced by 90%
         name: loc('trait_lawless_name'),
@@ -1974,6 +1974,9 @@ export function cleanAddTrait(trait){
                 global.resource[res].trade = 0;
             });
             global.settings.showMarket = false;
+            if (global.settings.marketTabs === 0) {
+                global.settings.marketTabs = 1;
+            }
             break;
         case 'slaver':
             global.tech['slaves'] = 2;

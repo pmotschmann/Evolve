@@ -48,7 +48,7 @@ function initPage(){
             key: 'structures',
             submenu: [
                 { key: 'prehistoric' },
-                { key: 'plantery' },
+                { key: 'planetary' },
                 { key: 'space' },
                 { key: 'interstellar' },
                 { key: 'intergalactic' },

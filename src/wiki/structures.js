@@ -12,8 +12,8 @@ export function renderStructurePage(zone){
         case 'prehistoric':
             prehistoricPage(content);
             break;
-        case 'plantery':
-            planteryPage(content);
+        case 'planetary':
+            planetaryPage(content);
             break;
         case 'space':
             spacePage(content);
@@ -32,8 +32,8 @@ export function renderStructurePage(zone){
 
 const extraInformation = {
     prehistoric: {},
-    plantery: {
-        slaughter: [loc(`wiki_structure_plantery_slaughter`)],
+    planetary: {
+        slaughter: [loc(`wiki_structure_planetary_slaughter`)],
     },
     space: {},
     interstellar: {},
@@ -62,13 +62,13 @@ function prehistoricPage(content){
     });
 }
 
-function planteryPage(content){
+function planetaryPage(content){
     Object.keys(actions.city).forEach(function (action){
         if (!actions.city[action].hasOwnProperty('wiki') || actions.city[action].wiki){            
             let info = $(`<div class="infoBox"></div>`);
             content.append(info);
             actionDesc(info, actions.city[action]);
-            addInfomration(info,'plantery',action);
+            addInfomration(info,'planetary',action);
         }
     });
 }

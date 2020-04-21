@@ -870,7 +870,7 @@ export function bloodwar(){
         }
     }
     if (global.race['ghostly']){
-        gem_chance = Math.round(gem_chance * 0.85);
+        gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars[2]) / 100));
     }
 
     // Patrols

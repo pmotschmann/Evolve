@@ -1160,7 +1160,7 @@ export function checkAchievements(){
 
     // total achievements feat
     {
-        for (let t_level=a_level; t_level >= 0; t_level--){
+        for (let t_level=a_level; t_level >= 1; t_level--){
 
             let total = 0;
             const keys = Object.keys(achievements)
