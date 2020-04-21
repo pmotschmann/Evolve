@@ -1497,7 +1497,8 @@ function fastLoop(){
                     let operating = global.space[belt_structs[i]].on;
                     let id = actions.space.spc_belt[belt_structs[i]].id;
                     if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) > global.space.space_station.s_max){
-                        operating -= used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) - global.space.space_station.s_max;
+                        let excess = used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) - global.space.space_station.s_max;
+                        operating -= Math.ceil(excess / -(actions.space.spc_belt[belt_structs[i]].support()));
                         $(`#${id} .on`).addClass('warn');
                     }
                     else {
