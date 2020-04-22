@@ -5523,7 +5523,7 @@ function ascend(){
         unlockAchieve('miners_dream');
     }
 
-    if (global.galaxy.hasOwnProperty('dreadnought') && global.galaxy.dreadnought.count === 0){
+    if (!global.galaxy.hasOwnProperty('dreadnought') || global.galaxy.dreadnought.count === 0){
         unlockAchieve(`dreaded`);
     }
 
