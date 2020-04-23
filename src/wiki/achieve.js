@@ -29,7 +29,7 @@ function achievePage(){
         let color = global.stats.achieve[achievement] && global.stats.achieve[achievement].l > 0 ? 'warning' : 'fade';
         achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
 
-        let emblems = format_emblem(achievement,16,'star');
+        let emblems = format_emblem(achievement,16);
         achieve.append(`<span class="icons">${emblems}</span>`);
         
         popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>`));

@@ -57,18 +57,17 @@ export function renderTechPage(era){
     });
     if (otherTechs.length > 0) {
         for (let i=0; i<otherTechs.length; i++) {
-            if (otherTechs[i][0] === 'unification2') {
+            if (otherTechs[i][0].id === 'tech-unification2') {
                 let insertPos = -1;
                 for (let i=0; i<techList.length; i++) {
-                    if (techList[i][0] === 'unification') {
+                    if (techList[i][0].id === 'tech-unification') {
                         insertPos = i + 1;
                         break;
                     }
                 }
                 let tempArray = techList.slice(0, insertPos);
-                tempArray.push([action, info]);
-                tempArray.concat(techList.slice(insertPos));
-                techList = tempArray;
+                tempArray.push(otherTechs[i]);
+                techList = tempArray.concat(techList.slice(insertPos));
             }
             else {
                 techList.push(otherTechs[i]);

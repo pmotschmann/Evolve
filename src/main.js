@@ -3765,7 +3765,7 @@ function fastLoop(){
 
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 delta *= 0.5;
-                bolognium_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                orichalcum_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
 
             modRes('Orichalcum', delta * time_multiplier);

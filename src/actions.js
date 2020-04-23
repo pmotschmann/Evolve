@@ -992,6 +992,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['arraak','pterodacti','dracnid']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'avian'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -1019,6 +1023,10 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['tortoisan','gecko','slitheryn']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'reptilian'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
                     if (global.genes['challenge']){
                         global.evolution['bunker'] = { count: 0 };
                         addAction('evolution','bunker');
@@ -10706,7 +10714,7 @@ export const actions = {
             title: loc('tech_encoding'),
             desc: loc('tech_encoding_desc'),
             category: 'religion',
-            era: 'early_space',
+            era: 'deep_space',
             reqs: { ancient_study: 1, mars: 5 },
             grant: ['ancient_study',2],
             cost: {
@@ -10749,7 +10757,7 @@ export const actions = {
             title: loc('tech_infusion'),
             desc: loc('tech_infusion_desc'),
             category: 'religion',
-            era: 'early_space',
+            era: 'deep_space',
             reqs: { ancient_deify: 1, mars: 5 },
             grant: ['ancient_deify',2],
             cost: {
@@ -11167,7 +11175,7 @@ export const actions = {
             title: loc('tech_swarm_plant'),
             desc: loc('tech_swarm_plant'),
             category: 'power_generation',
-            era: 'early_space',
+            era: 'deep_space',
             reqs: { solar: 3, hell: 1, gas_moon: 1 },
             grant: ['solar',4],
             cost: {
@@ -11826,7 +11834,7 @@ export const actions = {
             title: loc('tech_tachyon'),
             desc: loc('tech_tachyon'),
             category: 'progress',
-            era: 'deep_space',
+            era: 'interstellar',
             reqs: { wsc: 1 },
             grant: ['ftl',1],
             cost: {

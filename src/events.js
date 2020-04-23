@@ -314,12 +314,17 @@ export const events = {
             if (global.race['elusive']){
                 return false;
             }
-            return (global.civic.foreign.gov0.spy > 0 && !global.civic.foreign.gov0.occ) || (global.civic.foreign.gov1.spy > 0  && !global.civic.foreign.gov1.occ) || (global.civic.foreign.gov2.spy > 0 && !global.civic.foreign.gov2.occ) ? true : false;
+            for (let i=0; i<3; i++){
+                if (global.civic.foreign[`gov${i}`].spy > 0 && !global.civic.foreign[`gov${i}`].occ && !global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy){
+                    return true;
+                }
+            }
+            return false;
         },
         effect: function(){
             let govs = [];
             for (let i=0; i<3; i++){
-                if (global.civic.foreign[`gov${i}`].spy > 0 && !global.civic.foreign[`gov${i}`].occ){
+                if (global.civic.foreign[`gov${i}`].spy > 0 && !global.civic.foreign[`gov${i}`].occ && !global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy){
                     govs.push(i);
                 }
             }
