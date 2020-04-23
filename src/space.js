@@ -4849,7 +4849,8 @@ function galaxySpace(){
                     },
                     threat(r){
                         if (global.galaxy.defense[r].scout_ship >= 2){
-                            let pirates = Math.round((1 - piracy(r,true)) * 100);
+                            let pirates = (1 - piracy(r,true)) * 100;
+                            pirates = (pirates < 1) ? Math.ceil(pirates) : Math.round(pirates);
                             if (pirates === 0){
                                 return "has-text-success";
                             }
@@ -4875,7 +4876,8 @@ function galaxySpace(){
                 filters: {
                     pirate(r){
                         if (global.galaxy.defense[r].scout_ship >= 2){
-                            let pirates = Math.round((1 - piracy(r,true)) * 100);
+                            let pirates = (1 - piracy(r,true)) * 100;
+                            pirates = (pirates < 1) ? Math.ceil(pirates) : Math.round(pirates);
                             if (global.galaxy.defense[r].scout_ship >= 4){
                                 return `${pirates}%`;
                             }
