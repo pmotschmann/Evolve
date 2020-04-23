@@ -308,7 +308,7 @@ export const traits = {
         desc: loc('trait_diverse'),
         type: 'major',
         val: -4,
-        vars: [20]
+        vars: [25]
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second
         name: loc('trait_studious_name'),

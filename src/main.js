@@ -3989,7 +3989,7 @@ function fastLoop(){
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
         let rate = 2.5;
         if (global.race['diverse']){
-            rate *= 1 - (traits.diverse.vars[0] / 100);
+            rate /= 1 + (traits.diverse.vars[0] / 100);
         }
         if (global.city['boot_camp']){
             rate *= 1 + (global.city['boot_camp'].count * (global.tech['boot_camp'] >= 2 ? 0.08 : 0.05));
