@@ -1074,16 +1074,15 @@ export function calcGenomeScore(genome){
     });
 
     let complexity = 4;
-    let complexTax = 0;
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
         complexity += global.stats.achieve.technophobe.l;
     }
-    if (genome.traitlist.length > complexity){
-        complexTax = Math.floor((genome.traitlist.length - complexity + 1) / 2);
-    }
-    
+
     for (let i=0; i<genome.traitlist.length; i++){
-        let gene_cost = traits[genome.traitlist[i]].val + complexTax;
+        let gene_cost = traits[genome.traitlist[i]].val;
+        if (i >= complexity){
+            gene_cost += Math.floor((i - complexity + 2) / 2);
+        }
         if (traits[genome.traitlist[i]].val < 0 && gene_cost >= 0){
             gene_cost = -1;
         }
