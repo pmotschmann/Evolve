@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.12`,
+        date: `4/22/2020`,
+        changes: [
+            `Dreaded Achievement will now unlock if you never researched dreadnoughts.`,
+            `Fixed issue with some feats spaming the log due to micro achievements.`,
+        ]
+    },
+    {
         version: `0.8.11`,
         date: `4/16/2020`,
         changes: [
