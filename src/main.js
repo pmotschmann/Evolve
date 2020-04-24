@@ -1989,8 +1989,10 @@ function fastLoop(){
                     food_bd[loc('job_farmer')] = (food) + 'v';
                     food_base = (food * weather_multiplier * mill_multiplier);
                     
-                    food_bd[`ᄂ${loc('city_mill_title1')}`] = ((mill_multiplier - 1) * 100) + '%';
-                    food_bd[`ᄂ${loc('morale_weather')}`] = ((weather_multiplier - 1) * 100) + '%';
+                    if (food > 0){
+                        food_bd[`ᄂ${loc('city_mill_title1')}`] = ((mill_multiplier - 1) * 100) + '%';
+                        food_bd[`ᄂ${loc('morale_weather')}`] = ((weather_multiplier - 1) * 100) + '%';
+                    }
                 }
             }
 

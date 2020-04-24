@@ -2840,7 +2840,7 @@ export const actions = {
                 Stone(offset){ return costMultiplier('farm', offset, 10, 1.36); }
             },
             effect(){
-                return global.tech['farm'] ? `<div>${loc('city_farm_effect')}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect',[farming]);
+                return global.tech['farm'] ? `<div>${loc('city_farm_effect')}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect');
             },
             action(){
                 if (payCosts($(this)[0].cost)){
