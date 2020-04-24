@@ -11,6 +11,7 @@ const changeList = [
             `Fixed issue with some feats spaming the log due to micro achievements.`,
             `Fixed base traiing rate of soldiers.`,
             `Fixed bug with diverse trait that made it do the opposite of what it was suppose to do.`,
+            `Kilowatts are now Megawatts.`,
         ]
     },
     {
