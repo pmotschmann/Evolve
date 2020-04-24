@@ -4,10 +4,12 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `0.8.12`,
-        date: `4/22/2020`,
+        date: `4/23/2020`,
         changes: [
             `Dreaded Achievement will now unlock if you never researched dreadnoughts.`,
             `Fixed issue with some feats spaming the log due to micro achievements.`,
+            `Fixed base traiing rate of soldiers.`,
+            `Fixed bug with diverse trait that made it do the opposite of what it was suppose to do.`,
         ]
     },
     {
