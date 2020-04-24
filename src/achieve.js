@@ -625,6 +625,11 @@ export const feats = {
         desc: loc("feat_the_misery_desc"),
         flair: loc("feat_the_misery_flair")
     },
+    energetic: {
+        name: loc("feat_energetic_name"),
+        desc: loc("feat_energetic_desc"),
+        flair: loc("feat_energetic_flair")
+    },
     garbage_pie: {
         name: loc("feat_garbage_pie_name"),
         desc: loc("feat_garbage_pie_desc"),

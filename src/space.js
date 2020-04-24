@@ -5292,6 +5292,9 @@ function ascendLab(){
     if (global.race.species === 'junker'){
         unlockFeat('the_misery');
     }
+    if (global.interstellar.thermal_collector.count === 0){
+        unlockFeat(`energetic`);
+    }
     if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
         unlockFeat(`garbage_pie`);
     }

@@ -209,20 +209,21 @@ export function index(){
 
     let iconlist = '';
     let icons = [
-        {i: 'nuclear',  f: 'steelem'},
-        {i: 'zombie',   f: 'the_misery'},
-        {i: 'fire',     f: 'ill_advised'},
-        {i: 'mask',     f: 'friday'},
-        {i: 'skull',    f: 'demon_slayer'},
-        {i: 'martini',  f: 'utopia'},
-        {i: 'trash',    f: 'garbage_pie'},
-        {i: 'heart',    f: 'valentine'},
-        {i: 'clover',   f: 'leprechaun'},
-        {i: 'bunny',    f: 'easter'},
-        {i: 'egg',      f: 'egghunt'},
-        {i: 'ghost',    f: 'halloween'},
-        {i: 'turkey',   f: 'thanksgiving'},
-        {i: 'present',  f: 'xmas'}
+        {i: 'nuclear',      f: 'steelem'},
+        {i: 'zombie',       f: 'the_misery'},
+        {i: 'fire',         f: 'ill_advised'},
+        {i: 'mask',         f: 'friday'},
+        {i: 'skull',        f: 'demon_slayer'},
+        {i: 'martini',      f: 'utopia'},
+        {i: 'lightbulb',    f: 'energetic'},
+        {i: 'trash',        f: 'garbage_pie'},
+        {i: 'heart',        f: 'valentine'},
+        {i: 'clover',       f: 'leprechaun'},
+        {i: 'bunny',        f: 'easter'},
+        {i: 'egg',          f: 'egghunt'},
+        {i: 'ghost',        f: 'halloween'},
+        {i: 'turkey',       f: 'thanksgiving'},
+        {i: 'present',      f: 'xmas'}
     ];
 
     for (let i=0; i<icons.length; i++){
