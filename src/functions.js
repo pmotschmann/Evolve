@@ -1073,18 +1073,19 @@ export function calcGenomeScore(genome){
         genes -= traits[t].val;
     });
 
-    let complexity = 4;
+    let max_complexity = 2;    
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
-        complexity += global.stats.achieve.technophobe.l;
+        max_complexity += global.stats.achieve.technophobe.l;
     }
 
+    let complexity = 0;
     for (let i=0; i<genome.traitlist.length; i++){
         let gene_cost = traits[genome.traitlist[i]].val;
-        if (i >= complexity){
-            gene_cost += Math.floor((i - complexity + 2) / 2);
-        }
-        if (traits[genome.traitlist[i]].val < 0 && gene_cost >= 0){
-            gene_cost = -1;
+        if (traits[genome.traitlist[i]].val >= 0){
+            if (complexity > max_complexity){
+                gene_cost -= max_complexity - complexity;
+            }
+            complexity++;
         }
         genes -= gene_cost;
     }

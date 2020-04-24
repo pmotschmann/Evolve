@@ -5446,18 +5446,34 @@ function ascendLab(){
         },
         filters: {
             cost(trait){
-                let bonus_complexity = 0;
-                let complex = genome.traitlist.includes(trait) ? genome.traitlist.length - 3 : genome.traitlist.length - 2;
-                if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
-                    bonus_complexity = global.stats.achieve.technophobe.l;
-                    complex -= bonus_complexity;
+                if (traits[trait].val >= 0){
+                    let max_complexity = 2;
+                    if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+                        max_complexity += global.stats.achieve.technophobe.l;
+                    }
+
+                    let cost = traits[trait].val;
+
+                    let complexity = 0;
+                    for (let i=0; i<genome.traitlist.length; i++){
+                        if (traits[genome.traitlist[i]].val >= 0){
+                            complexity++;
+                        }
+                    }
+
+                    if (genome.traitlist.includes(trait)){
+                        complexity--;
+                    }
+
+                    if (complexity > max_complexity){
+                        cost += complexity - max_complexity;
+                    }
+
+                    return cost;
                 }
-                let complexity = genome.traitlist.length >= 4 + bonus_complexity ? Math.floor(complex / 2) : 0;
-                let cost = traits[trait].val + complexity;
-                if (traits[trait].val < 0 && cost >= 0){
-                    cost = -1;
+                else {
+                    return traits[trait].val;
                 }
-                return cost;
             }
         }
     });

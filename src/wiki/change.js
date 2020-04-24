@@ -6,6 +6,7 @@ const changeList = [
         version: `0.8.12`,
         date: `4/23/2020`,
         changes: [
+            `Bad traits no longer count for Ascension Species Creator complexity.`,
             `Dreaded Achievement will now unlock if you never researched dreadnoughts.`,
             `Fixed issue with some feats spaming the log due to micro achievements.`,
             `Fixed base traiing rate of soldiers.`,
