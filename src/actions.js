@@ -4353,7 +4353,7 @@ export const actions = {
             effect(){
                 let consume = 0.35;
                 let power = -($(this)[0].powered());
-                return global.race['environmentalist'] ? `+${power}kW` : `<span>+${power}kW.</span> <span class="has-text-caution">${loc('city_coal_power_effect',[consume])}</span>`;
+                return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_coal_power_effect',[consume])}</span>`;
             },
             powered(){
                 return global.race['environmentalist']
@@ -4391,7 +4391,7 @@ export const actions = {
             effect(){
                 let consume = 0.65;
                 let power = -($(this)[0].powered());
-                return global.race['environmentalist'] ? `+${power}kW` : `<span>+${power}kW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
+                return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
             },
             powered(){
                 if (global.race['environmentalist']){
@@ -4436,7 +4436,7 @@ export const actions = {
             },
             effect(){
                 let consume = 0.1;
-                return `<span>+${-($(this)[0].powered())}kW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[consume])}</span>`;
+                return `<span>+${-($(this)[0].powered())}MW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[consume])}</span>`;
             },
             powered(){ return powerModifier(global.tech['uranium'] >= 4 ? -18 : -14); },
             action(){

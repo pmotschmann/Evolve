@@ -32,7 +32,7 @@ export function index(){
             <h2 class="is-sr-only">Race Info</h2>
             <div class="column is-one-quarter"><b-tooltip :label="desc()" position="is-right" size="is-large" multilined animated>{{ name() }}</b-tooltip></div>
             <div class="column is-half morale-contain"><span id="morale" v-show="city.morale.current" class="morale">Morale <span class="has-text-warning">{{ city.morale.current | mRound }}%</span></div>
-            <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>kW</span> <span id="powerMeter" class="meter">{{ city.power | approx }}</span></span></div>
+            <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | approx }}</span></span></div>
         </div>
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
