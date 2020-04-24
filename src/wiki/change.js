@@ -7,6 +7,7 @@ const changeList = [
         date: `4/24/2020`,
         changes: [
             `Farming has been redesigned. Farms no longer directly generate food, Farmers now generate food in combination with Farms.`,
+            `Added Energizer Feat for ascending without building any Thermal Collectors.`,
             `Bad traits no longer count for Ascension Species Creator complexity.`,
             `Dreaded Achievement will now unlock if you never researched dreadnoughts.`,
             `Fixed issue with some feats spamming the log due to micro achievements.`,
