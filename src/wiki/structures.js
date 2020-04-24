@@ -99,7 +99,7 @@ function interstellarPage(content){
             if (struct !== 'info' && (!actions.interstellar[region][struct].hasOwnProperty('wiki') || actions.interstellar[region][struct].wiki)){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.interstellar[region][struct],name);
+                actionDesc(info, actions.interstellar[region][struct],`<span id="pop${actions.interstellar[region][struct].id}">${name}</span>`);
                 addInfomration(info,'interstellar',struct);
                 popover(`pop${actions.interstellar[region][struct].id}`,$(`<div>${desc}</div>`));
             }
@@ -116,7 +116,7 @@ function intergalacticPage(content){
             if (struct !== 'info' && (!actions.galaxy[region][struct].hasOwnProperty('wiki') || actions.galaxy[region][struct].wiki)){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.galaxy[region][struct],name);
+                actionDesc(info, actions.galaxy[region][struct],`<span id="pop${actions.galaxy[region][struct].id}">${name}</span>`);
                 addInfomration(info,'intergalactic',struct);
                 popover(`pop${actions.galaxy[region][struct].id}`,$(`<div>${desc}</div>`));
             }
@@ -133,7 +133,7 @@ function hellPage(content){
             if (struct !== 'info' && (!actions.portal[region][struct].hasOwnProperty('wiki') || actions.portal[region][struct].wiki)){
                 let info = $(`<div class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.portal[region][struct],name);
+                actionDesc(info, actions.portal[region][struct],`<span id="pop${actions.portal[region][struct].id}">${name}</span>`);
                 addInfomration(info,'hell',struct);
                 popover(`pop${actions.portal[region][struct].id}`,$(`<div>${desc}</div>`));
             }
