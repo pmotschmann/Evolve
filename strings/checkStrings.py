@@ -5,6 +5,7 @@ import re
 
 print()
 
+check_tags = True
 check_tokens = True
 check_leading_space = True
 check_periods = True
@@ -50,6 +51,12 @@ else:
                 continue
             else:
                 defline = defstr[line['key']]
+
+            if check_tags:
+                if line['value'][0:6] == "TRANS:":
+                    print("key '{}' is marked with tag 'TRANS:', from line {}".format(line['key'], nl))
+                if line['value'][0:7] == "CHANGE:":
+                    print("key '{}' is marked with tag 'CHANGE:', from line {}".format(line['key'], nl))
             
             if check_tokens:
                 tcdef = len(tokens_regex.findall(defline))
