@@ -9,6 +9,7 @@
 
     .mainContent {
         margin-left: 1rem;
+        flex: 1;
     }
 
     .paragraph {
@@ -97,14 +98,18 @@
     }
 
     .achievement {
+        display: flex;
+        justify-content: space-between;
+        max-width: 50rem;
         span {
             display: inline-block;
         }
         span.achieve {
             display: inline-block;
-            max-width: 35rem;
+            width: 100%;
         }
         span.icons {
+            display: flex;
             text-align: right;
         }
         p.flair {
