@@ -4,7 +4,7 @@ import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './ach
 import { vBind, mainVue, popover, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
-import { defineJobs, job_desc, loadFoundry } from './jobs.js';
+import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault } from './actions.js';
@@ -1954,15 +1954,6 @@ function fastLoop(){
                 }
             }
             else {
-                let farmers_base = global.civic.farmer.workers * global.civic.farmer.impact;
-                farmers_base *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
-                farmers_base *= global.city.biome === 'grassland' ? 1.1 : 1;
-                farmers_base *= global.city.biome === 'hellscape' ? 0.25 : 1;
-                farmers_base *= global.city.ptrait === 'trashed' ? 0.75 : 1;
-                farmers_base *= racialTrait(global.civic.farmer.workers,'farmer');
-                farmers_base *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
-                farmers_base *= global.race['low_light'] ? (1 - traits.low_light.vars[0] / 100) : 1;
-
                 let weather_multiplier = 1;
                 if (!global.race['submerged']){
                     if (global.city.calendar.temp === 0){
@@ -1978,30 +1969,29 @@ function fastLoop(){
                     }
                 }
 
-                let mill_multiplier = 1;
-                if (global.city['mill']){
-                    let mill_bonus = global.tech['agriculture'] >= 5 ? 0.05 : 0.03;
-                    let working = global.city['mill'].count - global.city['mill'].on;
-                    mill_multiplier += (working * mill_bonus);
-                }
-
-                let farm = 0;
                 if (global.city['farm']){
-                    farm = global.city['farm'].count * (global.tech['agriculture'] >= 2 ? 1.25 : 0.75);
-                    farm *= global.city.biome === 'grassland' ? 1.1 : 1;
-                    farm *= global.city.biome === 'hellscape' ? 0.25 : 1;
-                    farm *= global.city.ptrait === 'trashed' ? 0.75 : 1;
-                    farm *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
-                    farm *= global.race['low_light'] ? (1 - traits.low_light.vars[0] / 100) : 1;
+                    let farmers = global.civic.farmer.workers;
+                    let farmhands = 0;
+                    if (farmers > global.city.farm.count){
+                        farmhands = farmers - global.city.farm.count;
+                        farmers = global.city.farm.count;
+                    }
+
+                    let mill_multiplier = 1;
+                    if (global.city['mill']){
+                        let mill_bonus = global.tech['agriculture'] >= 5 ? 0.05 : 0.03;
+                        let working = global.city['mill'].count - global.city['mill'].on;
+                        mill_multiplier += (working * mill_bonus);
+                    }
+
+                    let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false)); 
+
+                    food_bd[loc('job_farmer')] = (food) + 'v';
+                    food_base = (food * weather_multiplier * mill_multiplier);
+                    
+                    food_bd[`ᄂ${loc('city_mill_title1')}`] = ((mill_multiplier - 1) * 100) + '%';
+                    food_bd[`ᄂ${loc('morale_weather')}`] = ((weather_multiplier - 1) * 100) + '%';
                 }
-
-                food_bd[loc('city_farm')] = (farm) + 'v';
-                food_bd[loc('job_farmer')] = (farmers_base) + 'v';
-
-                food_base = ((farm + farmers_base) * weather_multiplier * mill_multiplier);
-
-                food_bd[loc('morale_weather')] = ((weather_multiplier - 1) * 100) + '%';
-                food_bd[loc('city_mill_title1')] = ((mill_multiplier - 1) * 100) + '%';
             }
 
             let hunting = 0;

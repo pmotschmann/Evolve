@@ -6,16 +6,9 @@ import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
     farmer: function(){
-        let multiplier = (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
-        if (global.tech.agriculture >= 7){
-            multiplier *= 1.1;
-        }
-        multiplier *= racialTrait(global.civic.farmer.workers,'farmer');
-        let impact = global.city.biome === 'grassland' ? (global.civic.farmer.impact * 1.1) : global.civic.farmer.impact;
-        impact *= global.city.biome === 'hellscape' ? 0.25 : 1;
-        impact *= global.city.ptrait === 'trashed' ? 0.75 : 1;
-        let gain = +(impact * multiplier).toFixed(2);
-        let desc = loc('job_farmer_desc',[gain,global.resource.Food.name]);
+        let farmer = +farmerValue(true).toFixed(2);
+        let farmhand = +farmerValue(false).toFixed(2);
+        let desc = loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm.count,farmhand]);
         if (global.civic.d_job === 'farmer'){
             desc = desc + ' ' + loc('job_default',[loc('job_farmer')]);
         }
@@ -166,7 +159,7 @@ export const job_desc = {
 export function defineJobs(){
     $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
     loadUnemployed();
-    loadJob('farmer',1.35,5);
+    loadJob('farmer',0.82,5);
     loadJob('lumberjack',1,5);
     loadJob('quarry_worker',1,5);
     loadJob('scavenger',0.12,5);
@@ -370,6 +363,21 @@ function loadJob(job, impact, stress, color){
             poppers[id].destroy();
             clearElement($(`#pop${id}`),true);
         });
+}
+
+export function farmerValue(farm){
+    let farming = global.civic.farmer.impact;
+    if (farm){
+        farming += global.tech['agriculture'] >= 2 ? 1.15 : 0.65;
+    }
+    farming *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
+    farming *= global.city.biome === 'grassland' ? 1.1 : 1;
+    farming *= global.city.biome === 'hellscape' ? 0.25 : 1;
+    farming *= global.city.ptrait === 'trashed' ? 0.75 : 1;
+    farming *= racialTrait(global.civic.farmer.workers,'farmer');
+    farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
+    farming *= global.race['low_light'] ? (1 - traits.low_light.vars[0] / 100) : 1;
+    return farming;
 }
 
 var v_foundry;

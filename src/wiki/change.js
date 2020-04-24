@@ -4,8 +4,9 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `0.8.12`,
-        date: `4/23/2020`,
+        date: `4/24/2020`,
         changes: [
+            `Farming has been redesigned. Farms no longer directly generate food, Farmers now generate food in combination with Farms.`,
             `Bad traits no longer count for Ascension Species Creator complexity.`,
             `Dreaded Achievement will now unlock if you never researched dreadnoughts.`,
             `Fixed issue with some feats spaming the log due to micro achievements.`,
