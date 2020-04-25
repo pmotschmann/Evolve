@@ -193,6 +193,10 @@ a {
     }
 }
 
+#egg4 {
+    right: 0 !important;
+}
+
 .main {
     margin: 1rem 1rem 1.25rem;
 
@@ -436,12 +440,24 @@ a {
                 bottom: 0;
                 right: .5rem;
                 border-radius: .4375rem 0 .25rem 0;
+                
+                .flair {
+                    position: relative;
+                    left: .25rem;
+                    top: 0;
+                }
             }
 
             span.off {
                 bottom: 0;
                 left: 0;
                 border-radius: 0 .4375rem 0 .25rem;
+
+                .flair {
+                    position: relative;
+                    left: .125rem;
+                    top: 0;
+                }
             }
 
             div.repair {
@@ -532,6 +548,15 @@ a {
             :nth-child(2) {
                 min-width: 4rem;
                 text-align: center;
+            }
+            .count {
+                > span {
+                    margin-left: 1rem;
+                    width: 1rem;
+                }
+                svg {
+                    width: 1rem;
+                }
             }
         }
     }
@@ -1120,6 +1145,40 @@ body .modal > div.popper {
     }
     &.flair {
         padding-bottom: .25rem;
+    }
+}
+
+.infoBox {
+    max-width: 50rem;
+    margin-bottom: .5rem;
+    margin-right: .5rem;
+    padding: .25rem .5rem;
+
+    h2 {
+        margin-bottom: .25rem;
+        border-bottom: .0625rem solid;
+    }
+
+    div {
+        margin-bottom: .5rem;
+        clear: both;
+    }
+
+    .type {
+        display: flex;
+        justify-content: space-between;
+        > span:nth-child(1) {
+            display: block;
+            text-align: left;
+        }
+        > span:nth-child(2) {
+            display: block;
+            text-align: right;
+        }
+    }
+
+    .desc {
+        text-align: left;
     }
 }
 
@@ -2262,7 +2321,7 @@ html.light {
 html.night {
     .darkTheme();
     .has-text-special {
-        color: #c50094 !important;
+        color: #e500b4 !important;
     }
     .has-text-caution {
         color: #ffa500 !important;
@@ -2273,6 +2332,9 @@ html.night {
     .popper {
         .has-text-success {
             color: #23d160 !important;
+        }
+        .has-text-warning {
+            color: #ffdd57 !important;
         }
     }
     .fool {

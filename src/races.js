@@ -1,9 +1,10 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
-import { clearElement, removeFromQueue, removeFromRQueue } from './functions.js';
+import { clearElement, removeFromQueue, removeFromRQueue, getEaster } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 
 const date = new Date();
+const easter = getEaster();
 
 export const genus_traits = {
     humanoid: {
@@ -148,7 +149,7 @@ export const traits = {
         desc: loc('trait_scales'),
         type: 'genus',
         val: 5,
-        vars: [2,1]
+        vars: [2,1,1]
     },
     hollow_bones: { // Less Crafted Materials Needed
         name: loc('trait_hollow_bones_name'),
@@ -189,6 +190,7 @@ export const traits = {
         desc: loc('trait_asymmetrical'),
         type: 'genus',
         val: -3,
+        vars: [20]
     },
     spores: { // Birthrate increased when it's windy
         name: loc('trait_spores_name'),
@@ -213,6 +215,7 @@ export const traits = {
         desc: loc('trait_low_light'),
         type: 'genus',
         val: -2,
+        vars: [10]
     },
     elusive: { // Spies are never caught
         name: loc('trait_elusive_name'),
@@ -225,36 +228,42 @@ export const traits = {
         desc: loc('trait_iron_allergy'),
         type: 'genus',
         val: -4,
+        vars: [25]
     },
     smoldering: { // Hot weather is a bonus
         name: loc('trait_smoldering_name'),
         desc: loc('trait_smoldering'),
         type: 'genus',
         val: 7,
+        vars: [5,0.35,0.2]
     },
     cold_intolerance: { // Cold weather is a detriment
         name: loc('trait_cold_intolerance_name'),
         desc: loc('trait_cold_intolerance'),
         type: 'genus',
         val: -4,
+        vars: [0.25]
     },
     chilled: { // Cold weather is a bonus
         name: loc('trait_chilled_name'),
         desc: loc('trait_chilled'),
         type: 'genus',
         val: 7,
+        vars: [5,0.35,0.2,20,10,15]
     },
     heat_intolerance: { // Hot weather is a detriment
         name: loc('trait_heat_intolerance_name'),
         desc: loc('trait_heat_intolerance'),
         type: 'genus',
         val: -4,
+        vars: [0.25]
     },
     scavenger: { // scavenger job is always available
         name: loc('trait_scavenger_name'),
         desc: loc('trait_scavenger'),
         type: 'genus',
         val: 3,
+        vars: [25]
     },
     nomadic: { // -1 Trade route from trade post
         name: loc('trait_nomadic_name'),
@@ -285,48 +294,56 @@ export const traits = {
         desc: loc('trait_pompous'),
         type: 'genus',
         val: -6,
+        vars: [75]
     },
     creative: { // A.R.P.A. Projects are cheaper
         name: loc('trait_creative_name'),
         desc: loc('trait_creative'),
         type: 'major',
         val: 8,
+        vars: [0.005,20]
     },
     diverse: { // Training soldiers takes longer
         name: loc('trait_diverse_name'),
         desc: loc('trait_diverse'),
         type: 'major',
         val: -4,
+        vars: [25]
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second
         name: loc('trait_studious_name'),
         desc: loc('trait_studious'),
         type: 'major',
         val: 2,
+        vars: [0.25]
     },
     arrogant: { // Market prices are higher
         name: loc('trait_arrogant_name'),
         desc: loc('trait_arrogant'),
         type: 'major',
         val: -2,
+        vars: [10]
     },
     brute: { // Recruitment costs are 1/2 price
         name: loc('trait_brute_name'),
         desc: loc('trait_brute'),
         type: 'major',
         val: 7,
+        vars: [50,2.5]
     },
     angry: { // When hungry you get hangry, low food penalty is more severe
         name: loc('trait_angry_name'),
         desc: loc('trait_angry'),
         type: 'major',
         val: -1,
+        vars: [25]
     },
     lazy: { // All production is lowered when the temperature is hot
         name: loc('trait_lazy_name'),
         desc: loc('trait_lazy'),
         type: 'major',
         val: -4,
+        vars: [10]
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
         name: loc('trait_carnivore_name'),
@@ -339,18 +356,21 @@ export const traits = {
         desc: loc('trait_pack_mentality'),
         type: 'major',
         val: 4,
+        vars: [0.03,0.02]
     },
     tracker: { // 10% increased gains from hunting
         name: loc('trait_tracker_name'),
         desc: loc('trait_tracker'),
         type: 'major',
         val: 2,
+        vars: [10]
     },
     beast_of_burden: { // Gains more loot during raids
         name: loc('trait_beast_of_burden_name'),
         desc: loc('trait_beast_of_burden'),
         type: 'major',
         val: 3,
+        vars: [10]
     },
     herbivore: { // No food is gained from hunting
         name: loc('trait_herbivore_name'),
@@ -363,30 +383,35 @@ export const traits = {
         desc: loc('trait_pack_rat'),
         type: 'major',
         val: 3,
+        vars: [10,5]
     },
     paranoid: { // Bank capacity reduced by 10%
         name: loc('trait_paranoid_name'),
         desc: loc('trait_paranoid'),
         type: 'major',
         val: -3,
+        vars: [10]
     },
     greedy: { // Lowers income from taxes
         name: loc('trait_greedy_name'),
         desc: loc('trait_greedy'),
         type: 'major',
         val: -5,
+        vars: [12.5]
     },
     merchant: { // Better commodity selling prices
         name: loc('trait_merchant_name'),
         desc: loc('trait_merchant'),
         type: 'major',
         val: 3,
+        vars: [25]
     },
     smart: { // Knowledge costs reduced by 10%
         name: loc('trait_smart_name'),
         desc: loc('trait_smart'),
         type: 'major',
         val: 6,
+        vars: [10]
     },
     puny: { // Lowers minium bound for army score roll
         name: loc('trait_puny_name'),
@@ -399,36 +424,42 @@ export const traits = {
         desc: loc('trait_dumb'),
         type: 'major',
         val: -5,
+        vars: [5]
     },
     tough: { // Mining output increased by 25%
         name: loc('trait_tough_name'),
         desc: loc('trait_tough'),
         type: 'major',
         val: 4,
+        vars: [25]
     },
     nearsighted: { // Libraries are less effective
         name: loc('trait_nearsighted_name'),
         desc: loc('trait_nearsighted'),
         type: 'major',
         val: -4,
+        vars: [12]
     },
     intelligent: { // Professors and Scientists add a global production bonus
         name: loc('trait_intelligent_name'),
         desc: loc('trait_intelligent'),
         type: 'major',
         val: 7,
+        vars: [0.125,0.25]
     },
     regenerative: { // Wounded soldiers heal 4x as fast
         name: loc('trait_regenerative_name'),
         desc: loc('trait_regenerative'),
         type: 'major',
         val: 8,
+        vars: [4]
     },
     gluttony: { // Eats 25% more food per rank
         name: loc('trait_gluttony_name'),
         desc: loc('trait_gluttony'),
         type: 'major',
         val: -2,
+        vars: [10]
     },
     slow: { // The game moves at a 10% slower pace
         name: loc('trait_slow_name'),
@@ -441,36 +472,42 @@ export const traits = {
         desc: loc('trait_armored'),
         type: 'major',
         val: 4,
+        vars: [25,2]
     },
     optimistic: { // Minor reduction to stress
         name: loc('trait_optimistic_name'),
         desc: loc('trait_optimistic'),
         type: 'major',
         val: 5,
+        vars: [10]
     },
     chameleon: { // Barracks have less soldiers
         name: loc('trait_chameleon_name'),
         desc: loc('trait_chameleon'),
         type: 'major',
         val: 6,
+        vars: [20]
     },
     slow_digestion: { // Your race is more resilient to starvation
         name: loc('trait_slow_digestion_name'),
         desc: loc('trait_slow_digestion'),
         type: 'major',
         val: 1,
+        vars: [0.75]
     },
     hard_of_hearing: { // University science cap gain reduced by 5%
         name: loc('trait_hard_of_hearing_name'),
         desc: loc('trait_hard_of_hearing'),
         type: 'major',
         val: -3,
+        vars: [5]
     },
     resourceful: { // Crafting costs are reduced slightly
         name: loc('trait_resourceful_name'),
         desc: loc('trait_resourceful'),
         type: 'major',
         val: 4,
+        vars: [10]
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
         name: loc('trait_selenophobia_name'),
@@ -489,30 +526,35 @@ export const traits = {
         desc: loc('trait_pessimistic'),
         type: 'major',
         val: -1,
+        vars: [2]
     },
     hoarder: { // Banks can store 20% more money
         name: loc('trait_hoarder_name'),
         desc: loc('trait_hoarder'),
         type: 'major',
         val: 4,
+        vars: [20]
     },
     solitary: { // Cabins are cheaper however cottages cost more
         name: loc('trait_solitary_name'),
         desc: loc('trait_solitary'),
         type: 'major',
         val: -1,
+        vars: [0.02]
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
         name: loc('trait_kindling_kindred_name'),
         desc: loc('trait_kindling_kindred'),
         type: 'major',
         val: 8,
+        vars: [5]
     },
     pyrophobia: { // Smelter productivity is reduced
         name: loc('trait_pyrophobia_name'),
         desc: loc('trait_pyrophobia'),
         type: 'major',
         val: -4,
+        vars: [10]
     },
     hyper: { // The game moves at a 5% faster pace
         name: loc('trait_hyper_name'),
@@ -525,6 +567,7 @@ export const traits = {
         desc: loc('trait_skittish'),
         type: 'major',
         val: -4,
+        vars: [12]
     },
     infectious: { // Attacking has a chance to infect other creatures and grow your population
         name: loc('trait_infectious_name'),
@@ -543,12 +586,14 @@ export const traits = {
         desc: loc('trait_toxic'),
         type: 'major',
         val: 5,
+        vars: [20,8,30]
     },
     nyctophilia: { // Productivity is lost when it is sunny
         name: loc('trait_nyctophilia_name'),
         desc: loc('trait_nyctophilia'),
         type: 'major',
         val: -3,
+        vars: [5,2]
     },
     cannibalize: { // Eat your own for buffs
         name: loc('trait_cannibalize_name'),
@@ -567,18 +612,21 @@ export const traits = {
         desc: loc('trait_malnutrition'),
         type: 'major',
         val: 1,
+        vars: [25]
     },
     claws: { // Raises maximum bound for army score roll
         name: loc('trait_claws_name'),
         desc: loc('trait_claws'),
         type: 'major',
         val: 5,
+        vars: [20]
     },
     atrophy: { // More prone to starvation
         name: loc('trait_atrophy_name'),
         desc: loc('trait_atrophy'),
         type: 'major',
         val: -1,
+        vars: [0.15]
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
         name: loc('trait_hivemind_name'),
@@ -591,6 +639,7 @@ export const traits = {
         desc: loc('trait_tunneler'),
         type: 'major',
         val: 2,
+        vars: [0.01]
     },
     frenzy: { // Combat causes a temporary increase in morale
         name: loc('trait_frenzy_name'),
@@ -603,18 +652,21 @@ export const traits = {
         desc: loc('trait_apex_predator'),
         type: 'major',
         val: 6,
+        vars: [25,50]
     },
     invertebrate: { // You have no bones
         name: loc('trait_invertebrate_name'),
         desc: loc('trait_invertebrate'),
         type: 'major',
         val: -2,
+        vars: [10]
     },
     suction_grip: { // Global productivity boost
         name: loc('trait_suction_grip_name'),
         desc: loc('trait_suction_grip'),
         type: 'major',
         val: 4,
+        vars: [8]
     },
     befuddle: { // Spy actions complete in 1/2 time
         name: loc('trait_befuddle_name'),
@@ -633,6 +685,7 @@ export const traits = {
         desc: loc('trait_unorganized'),
         type: 'major',
         val: -2,
+        vars: [50]
     },
     musical: { // Entertainers are more effective
         name: loc('trait_musical_name'),
@@ -651,30 +704,35 @@ export const traits = {
         desc: loc('trait_slow_regen'),
         type: 'major',
         val: -4,
+        vars: [25]
     },
     forge: { // Smelters do not require fuel
         name: loc('trait_forge_name'),
         desc: loc('trait_forge'),
         type: 'major',
         val: 4,
+        vars: [1]
     },
     autoignition: { // Library knowledge bonus reduced
         name: loc('trait_autoignition_name'),
         desc: loc('trait_autoignition'),
         type: 'major',
         val: -4,
+        vars: [3]
     },
     blurry: { // Increased success chance of spies
         name: loc('trait_blurry_name'),
         desc: loc('trait_blurry'),
         type: 'major',
         val: 5,
+        vars: [25]
     },
     snowy: { // You lose morale if it's not snowing
         name: loc('trait_snowy_name'),
         desc: loc('trait_snowy'),
         type: 'major',
         val: -3,
+        vars: [2,5]
     },
     ravenous: { // Drastically increases food consumption
         name: loc('trait_ravenous_name'),
@@ -687,12 +745,14 @@ export const traits = {
         desc: loc('trait_ghostly'),
         type: 'major',
         val: 5,
+        vars: [50,1.5,15]
     },
     lawless: { // Government lockout timer is reduced by 90%
         name: loc('trait_lawless_name'),
         desc: loc('trait_lawless'),
         type: 'major',
         val: 3,
+        vars: [90]
     },
     mistrustful: { // Lose standing with rival cities quicker
         name: loc('trait_mistrustful_name'),
@@ -705,6 +765,7 @@ export const traits = {
         desc: loc('trait_humpback'),
         type: 'major',
         val: 4,
+        vars: [0.5]
     },
     thalassophobia: { // Wharves are unavailable
         name: loc('trait_thalassophobia_name'),
@@ -717,6 +778,7 @@ export const traits = {
         desc: loc('trait_fiery'),
         type: 'major',
         val: 10,
+        vars: [65,25]
     },
     terrifying: { // No one will trade with you
         name: loc('trait_terrifying_name'),
@@ -742,24 +804,28 @@ export const traits = {
         desc: loc('trait_conniving'),
         type: 'major',
         val: 4,
+        vars: [5,15]
     },
     pathetic: { // You suck at combat
         name: loc('trait_pathetic_name'),
         desc: loc('trait_pathetic'),
         type: 'major',
         val: -5,
+        vars: [25]
     },
     spiritual: { // Temples are 13% more effective
         name: loc('trait_spiritual_name'),
         desc: loc('trait_spiritual'),
         type: 'major',
         val: 4,
+        vars: [13]
     },
     truthful: { // Bankers are less effective
         name: loc('trait_truthful_name'),
         desc: loc('trait_truthful'),
         type: 'major',
         val: -7,
+        vars: [50]
     },
     unified: { // Start with unification
         name: loc('trait_unified_name'),
@@ -772,6 +838,7 @@ export const traits = {
         desc: loc('trait_rainbow'),
         type: 'major',
         val: 3,
+        vars: [50]
     },
     magnificent: { // construct shrines to receive boons
         name: loc('trait_magnificent_name'),
@@ -885,7 +952,17 @@ export const races = {
         name: loc('race_protoplasm'),
         desc: loc('race_protoplasm_desc'),
         type: 'organism',
-        home: loc('race_prehistoric')
+        home: loc('race_prehistoric'),
+        entity: 'ooze',
+        traits: {},
+        solar: {
+            red: loc('race_human_solar_red'),
+            hell: loc('race_human_solar_hell'),
+            gas: loc('race_human_solar_gas'),
+            gas_moon: loc('race_human_solar_gas_moon'),
+            dwarf: loc('race_human_solar_dwarf'),
+        },
+        fanaticism: 'none'
     },
     human: {
         name: loc('race_human'),
@@ -964,21 +1041,21 @@ export const races = {
         fanaticism: 'carnivore'
     },
     wolven: {
-        name: loc('race_wolven'),
-        desc: loc('race_wolven_desc'),
+        name: easter.active ? loc('race_rabbit') : loc('race_wolven'),
+        desc: easter.active ? loc('race_rabbit_desc') : loc('race_wolven_desc'),
         type: 'animal',
-        home: loc('race_wolven_home'),
-        entity: loc('race_wolven_entity'),
+        home: easter.active ? loc('race_rabbit_home') : loc('race_wolven_home'),
+        entity: easter.active ? loc('race_rabbit_entity') : loc('race_wolven_entity'),
         traits: { 
             pack_mentality: 1,
             tracker: 1
         },
         solar: {
-            red: loc('race_wolven_solar_red'),
-            hell: loc('race_wolven_solar_hell'),
-            gas: loc('race_wolven_solar_gas'),
-            gas_moon: loc('race_wolven_solar_gas_moon'),
-            dwarf: loc('race_wolven_solar_dwarf'),
+            red: easter.active ? loc('race_rabbit_solar_red') : loc('race_wolven_solar_red'),
+            hell: easter.active ? loc('race_rabbit_solar_hell') : loc('race_wolven_solar_hell'),
+            gas: easter.active ? loc('race_rabbit_solar_gas') : loc('race_wolven_solar_gas'),
+            gas_moon: easter.active ? loc('race_rabbit_solar_gas_moon') : loc('race_wolven_solar_gas_moon'),
+            dwarf: easter.active ? loc('race_rabbit_solar_dwarf') : loc('race_wolven_solar_dwarf'),
         },
         fanaticism: 'tracker'
     },
@@ -1780,7 +1857,7 @@ export function racialTrait(workers,type){
         modifier *= 0.75;
     }
     if (global.race['toxic'] && type === 'factory'){
-        modifier *= 1.3;
+        modifier *= 1 + (traits.toxic.vars[2] / 100);
     }
     if (global.race['hardy'] && type === 'factory'){
         modifier *= 1 + (global.race['hardy'] / 100);
@@ -1897,6 +1974,9 @@ export function cleanAddTrait(trait){
                 global.resource[res].trade = 0;
             });
             global.settings.showMarket = false;
+            if (global.settings.marketTabs === 0) {
+                global.settings.marketTabs = 1;
+            }
             break;
         case 'slaver':
             global.tech['slaves'] = 2;

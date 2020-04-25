@@ -139,7 +139,7 @@ export const arpaProjects = {
     },
 };
 
-const genePool = {
+export const genePool = {
     genetic_memory: {
         id: 'genes-genetic_memory',
         title: loc('arpa_genepool_genetic_memory_title'),
@@ -872,7 +872,7 @@ function checkCosts(costs){
     return test;
 }
 
-function arpaAdjustCosts(costs){
+export function arpaAdjustCosts(costs){
     costs = creativeAdjust(costs);
     return adjustCosts(costs);
 }
@@ -881,7 +881,7 @@ function creativeAdjust(costs){
     if (global.race['creative']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            newCosts[res] = function(){ return costs[res]() * 0.8; }
+            newCosts[res] = function(){ return costs[res]() * (1 - traits.creative.vars[1] / 100); }
         });
         return newCosts;
     }
@@ -891,7 +891,7 @@ function creativeAdjust(costs){
 function costMultiplier(project,offset,base,mutiplier){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
     if (global.race['creative']){
-        mutiplier -= 0.005;
+        mutiplier -= traits.creative.vars[0];
     }
     if (offset){
         rank += offset;

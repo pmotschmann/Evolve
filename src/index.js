@@ -1,5 +1,6 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
+import { easterEgg } from './functions.js';
 
 export function index(){
     $('body').empty();
@@ -17,7 +18,7 @@ export function index(){
             <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
             </span>
         </span>
-        <span class="version"><a href="https://github.com/${global.beta ? 'evolvebeta' : 'pmotschmann'}/Evolve/blob/master/changelog.md" target="_blank"></a></span>
+        <span class="version" id="versionLog"><a href="wiki.html#changelog" target="_blank"></a></span>
     </div>`);
 
     let main = $(`<div id="main" class="main"></div>`);
@@ -31,7 +32,7 @@ export function index(){
             <h2 class="is-sr-only">Race Info</h2>
             <div class="column is-one-quarter"><b-tooltip :label="desc()" position="is-right" size="is-large" multilined animated>{{ name() }}</b-tooltip></div>
             <div class="column is-half morale-contain"><span id="morale" v-show="city.morale.current" class="morale">Morale <span class="has-text-warning">{{ city.morale.current | mRound }}%</span></div>
-            <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>kW</span> <span id="powerMeter" class="meter">{{ city.power | approx }}</span></span></div>
+            <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | approx }}</span></span></div>
         </div>
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
@@ -208,18 +209,21 @@ export function index(){
 
     let iconlist = '';
     let icons = [
-        {i: 'nuclear',  f: 'steelem'},
-        {i: 'zombie',   f: 'the_misery'},
-        {i: 'fire',     f: 'ill_advised'},
-        {i: 'mask',     f: 'friday'},
-        {i: 'skull',    f: 'demon_slayer'},
-        {i: 'martini',  f: 'utopia'},
-        {i: 'trash',    f: 'garbage_pie'},
-        {i: 'heart',    f: 'valentine'},
-        {i: 'clover',   f: 'leprechaun'},
-        {i: 'ghost',    f: 'halloween'},
-        {i: 'turkey',   f: 'thanksgiving'},
-        {i: 'present',  f: 'xmas'}
+        {i: 'nuclear',      f: 'steelem'},
+        {i: 'zombie',       f: 'the_misery'},
+        {i: 'fire',         f: 'ill_advised'},
+        {i: 'mask',         f: 'friday'},
+        {i: 'skull',        f: 'demon_slayer'},
+        {i: 'martini',      f: 'utopia'},
+        {i: 'lightbulb',    f: 'energetic'},
+        {i: 'trash',        f: 'garbage_pie'},
+        {i: 'heart',        f: 'valentine'},
+        {i: 'clover',       f: 'leprechaun'},
+        {i: 'bunny',        f: 'easter'},
+        {i: 'egg',          f: 'egghunt'},
+        {i: 'ghost',        f: 'halloween'},
+        {i: 'turkey',       f: 'thanksgiving'},
+        {i: 'present',      f: 'xmas'}
     ];
 
     for (let i=0; i<icons.length; i++){
@@ -229,6 +233,12 @@ export function index(){
         else if (global.settings.icon === icons[i]['i']){
             global.settings.icon = 'star';
         }
+    }
+
+    let egg = easterEgg(9,14);
+    let hideEgg = '';
+    if (egg.length > 0){
+        hideEgg = `<b-dropdown-item>${egg}</b-dropdown-item>`;
     }
 
     // Settings Tab
@@ -247,6 +257,7 @@ export function index(){
                 <b-dropdown-item v-on:click="light">{{ 'theme_light' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="night">{{ 'theme_night' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="redgreen">{{ 'theme_redgreen' | label }}</b-dropdown-item>
+                ${hideEgg}
             </b-dropdown>
             <span>{{ 'units' | label }} </span>
             <b-dropdown hoverable>
@@ -306,11 +317,12 @@ export function index(){
             </b-collapse>
         </div>
     </b-tab-item>`);
+
     tabs.append(settings);
     
     // Right Column
     columns.append(`<div id="queueColumn" class="queueCol column"></div>`);
 
     // Bottom Bar
-    $('body').append(`<div class="promoBar"><span class="left"><h1 class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</h1></span><span class="right"><h2 class="is-sr-only">External Links</h2><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a> | <a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a> | <a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a> | <a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a> | <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></span></div>`);
+    $('body').append(`<div class="promoBar"><span class="left"><h1 class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</h1></span><span class="right"><h2 class="is-sr-only">External Links</h2><a href="wiki.html" target="_blank">Wiki</a> | <a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a> | <a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a> | <a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a> | <a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a> | <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></span></div>`);
 }

@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue } from './functions.js';
+import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
 import { piracy } from './space.js';
 import { loc } from './locale.js'
 
@@ -11,7 +11,7 @@ if (!global.stats['feat']){
     global.stats['feat'] = {};
 }
 
-var achievements = {
+export const achievements = {
     apocalypse: {
         name: loc("achieve_apocalypse_name"),
         desc: loc("achieve_apocalypse_desc"),
@@ -21,6 +21,11 @@ var achievements = {
         name: loc("achieve_ascended_name"),
         desc: loc("achieve_ascended_desc"),
         flair: loc("achieve_ascended_flair")
+    },
+    technophobe: {
+        name: loc("achieve_technophobe_name"),
+        desc: loc("achieve_technophobe_desc"),
+        flair: loc("achieve_technophobe_flair")
     },
     dreaded: {
         name: loc("achieve_dreaded_name"),
@@ -594,7 +599,7 @@ var achievements = {
     }
 };
 
-const feats = {
+export const feats = {
     utopia: {
         name: loc("feat_utopia_name"),
         desc: loc("feat_utopia_desc"),
@@ -619,6 +624,11 @@ const feats = {
         name: loc("feat_the_misery_name"),
         desc: loc("feat_the_misery_desc"),
         flair: loc("feat_the_misery_flair")
+    },
+    energetic: {
+        name: loc("feat_energetic_name"),
+        desc: loc("feat_energetic_desc"),
+        flair: loc("feat_energetic_flair")
     },
     garbage_pie: {
         name: loc("feat_garbage_pie_name"),
@@ -694,6 +704,16 @@ const feats = {
         name: loc("feat_leprechaun_name"),
         desc: loc("feat_leprechaun_desc"),
         flair: loc("feat_leprechaun_flair")
+    },
+    easter: {
+        name: loc("feat_easter_name"),
+        desc: loc("feat_easter_desc"),
+        flair: loc("feat_easter_flair")
+    },
+    egghunt: {
+        name: loc("feat_egghunt_name"),
+        desc: loc("feat_egghunt_desc"),
+        flair: loc("feat_egghunt_flair")
     },
     halloween: {
         name: loc("feat_boo_name"),
@@ -921,6 +941,12 @@ export function drawAchieve(args){
             let baseIcon = getBaseIcon(feat,'feat');
             if (global.stats.feat[feat]){
                 let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
+                if (feat === 'easter'){
+                    let egg = easterEgg(4,14);
+                    if (egg.length > 0){
+                        star = egg;
+                    }
+                }
                 achieve.append($(`<b-tooltip :label="feat('${feat}')" position="is-bottom" size="is-small" animated><div class="achievement"><span class="has-text-danger">${feats[feat].name}</span><span>${feats[feat].desc}</span>${star}</div></b-tooltip>`));
             }
         });
@@ -953,10 +979,16 @@ export function drawAchieve(args){
     if ($('#topBar span.flair')){
         clearElement($('#topBar span.flair'),true);
     }
+    let egg = easterEgg(1,14);
+    if (egg.length > 0){
+        $('#topBar .planet').after($(egg));
+    }
     if (a_level > 1 && $('#topBar .planet .flair').length === 0){
-    let bIcon = getBaseIcon('topbar','challenge');
-    $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(bIcon)}" xml:space="preserve">${svgIcons(bIcon)}</svg></span>`);
-    
+        if (egg.length === 0){
+            let bIcon = getBaseIcon('topbar','challenge');
+            $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(bIcon)}" xml:space="preserve">${svgIcons(bIcon)}</svg></span>`);
+        }
+
         $('#topBar .planetWrap .flair').on('mouseover',function(){
             var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
             $('#main').append(popper);
@@ -1048,6 +1080,7 @@ export function checkAchievements(){
     }
 
     const date = new Date();
+    let easter = getEaster();
     if (date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
         let murder = false;
         if (global.race.universe === 'micro'){
@@ -1074,6 +1107,31 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('leprechaun');
+        }
+    }
+    else if (easter.active){
+        if (global.race.universe === 'micro'){
+            unlockFeat('easter',true);
+        }
+        else {
+            unlockFeat('easter');
+        }
+
+        let checkAll = true;
+        for (let i=1; i<13; i++){
+            if (!global.special.egg[`egg${i}`]){
+                checkAll = false;
+            }
+        }
+
+        if (checkAll){
+            if (global.race.universe === 'micro'){
+                unlockFeat('egghunt',true);
+            }
+            else {
+                unlockFeat('egghunt');
+            }
+    
         }
     }
     else if (date.getMonth() === 9 && date.getDate() === 31){
@@ -1107,7 +1165,7 @@ export function checkAchievements(){
 
     // total achievements feat
     {
-        for (let t_level=a_level; t_level >= 0; t_level--){
+        for (let t_level=a_level; t_level >= 1; t_level--){
 
             let total = 0;
             const keys = Object.keys(achievements)
@@ -1453,6 +1511,35 @@ export function drawPerks(){
                 perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_astral_awareness_desc")}</span></div>`); 
             } 
         } 
+    }
+
+    if (global.stats.achieve['technophobe'] && global.stats.achieve['technophobe'].l >= 1){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe1",[25])}</span></div>`);
+        if (global.stats.achieve.technophobe.l >= 2){
+            let bonus = global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
+            let universes = ['h','a','e','m'];
+            for (let i=0; i<universes.length; i++){
+                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                    bonus += 5;
+                }
+            }
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe2",[bonus])}</span></div>`);
+        }
+        if (global.stats.achieve.technophobe.l >= 3){
+            let gems = 1;
+            let universes = ['h','a','e','m'];
+            for (let i=0; i<universes.length; i++){
+                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                    gems += 1;
+                }
+            }
+            perks.append(`<div><span class="has-text-warning">${gems > 1 ? loc("achieve_perks_technophobe3a",[gems]) : loc("achieve_perks_technophobe3",[gems])}</span></div>`);
+        }
+        if (global.stats.achieve.technophobe.l >= 5){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe4",[10])}</span></div>`);
+        }
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe5",[global.stats.achieve.technophobe.l])}</span></div>`);
     }
 
     if (unlocked > 0){

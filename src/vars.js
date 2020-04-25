@@ -423,7 +423,7 @@ if (convertVersion(global['version']) < 8003){
     }
 }
 
-global['version'] = '0.8.4';
+global['version'] = '0.8.12';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -743,6 +743,29 @@ if (!global.settings.hasOwnProperty('showMil')){
 }
 if (!global.settings['affix']){
     global.settings['affix'] = 'si';
+}
+
+if (!global['special']){
+    global['special'] = {};
+}
+if (!global.special.hasOwnProperty('gift')){
+    global.special['gift'] = false;
+}
+if (!global.special.hasOwnProperty('egg')){
+    global.special['egg'] = {
+        egg1: false,
+        egg2: false,
+        egg3: false,
+        egg4: false,
+        egg5: false,
+        egg6: false,
+        egg7: false,
+        egg8: false,
+        egg9: false,
+        egg10: false,
+        egg11: false,
+        egg12: false
+    };
 }
 
 if (!global.civic['govern']){

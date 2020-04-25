@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, clearElement, modRes, calc_mastery } from './functions.js';
+import { vBind, clearElement, modRes, calc_mastery, easterEgg } from './functions.js';
 import { races, traits } from './races.js';
 import { loc } from './locale.js';
 
@@ -217,49 +217,53 @@ export function defineResources(){
         initMarket();
         initStorage();
         initEjector();
-        loadResource('Money',1000,1,false,false,'success');
-        loadResource(global.race.species,0,0,false,false,'warning');
-        loadResource('Slave',0,0,false,false,'warning');
-        loadResource('Knowledge',100,1,false,false,'warning');
-        loadResource('Crates',0,0,false,false,'warning');
-        loadResource('Containers',0,0,false,false,'warning');
-        loadResource('Food',250,1,true,true);
-        loadResource('Lumber',200,1,true,true);
-        loadResource('Stone',200,1,true,true);
-        loadResource('Furs',100,1,true,true);
-        loadResource('Copper',100,1,true,true);
-        loadResource('Iron',100,1,true,true);
-        loadResource('Aluminium',50,1,true,true);
-        loadResource('Cement',100,1,true,true);
-        loadResource('Coal',50,1,true,true);
-        loadResource('Oil',0,1,true,false);
-        loadResource('Uranium',10,1,true,false);
-        loadResource('Steel',50,1,true,true);
-        loadResource('Titanium',50,1,true,true);
-        loadResource('Alloy',50,1,true,true);
-        loadResource('Polymer',50,1,true,true);
-        loadResource('Iridium',0,1,true,true);
-        loadResource('Helium_3',0,1,true,false);
-        loadResource('Deuterium',0,1,false,false,'advanced');
-        loadResource('Neutronium',0,1,false,false,'advanced');
-        loadResource('Adamantite',0,1,false,true,'advanced');
-        loadResource('Infernite',0,1,false,false,'advanced');
-        loadResource('Elerium',1,1,false,false,'advanced');
-        loadResource('Nano_Tube',0,1,false,false,'advanced');
-        loadResource('Graphene',0,1,false,true,'advanced');
-        loadResource('Stanene',0,1,false,true,'advanced');
-        loadResource('Bolognium',0,1,false,true,'advanced');
-        loadResource('Vitreloy',0,1,false,true,'advanced');
-        loadResource('Orichalcum',0,1,false,true,'advanced');
-        loadResource('Genes',-2,0,false,false,'advanced');
-        loadResource('Soul_Gem',-2,0,false,false,'advanced');
-        loadResource('Plywood',-1,0,false,false,'danger');
-        loadResource('Brick',-1,0,false,false,'danger');
-        loadResource('Wrought_Iron',-1,0,false,false,'danger');
-        loadResource('Sheet_Metal',-1,0,false,false,'danger');
-        loadResource('Mythril',-1,0,false,false,'danger');
-        loadResource('Aerogel',-1,0,false,false,'danger');
-        loadResource('Nanoweave',-1,0,false,false,'danger');
+    }
+    
+    loadResource('Money',1000,1,false,false,'success');
+    loadResource(global.race.species,0,0,false,false,'warning');
+    loadResource('Slave',0,0,false,false,'warning');
+    loadResource('Knowledge',100,1,false,false,'warning');
+    loadResource('Crates',0,0,false,false,'warning');
+    loadResource('Containers',0,0,false,false,'warning');
+    loadResource('Food',250,1,true,true);
+    loadResource('Lumber',200,1,true,true);
+    loadResource('Stone',200,1,true,true);
+    loadResource('Furs',100,1,true,true);
+    loadResource('Copper',100,1,true,true);
+    loadResource('Iron',100,1,true,true);
+    loadResource('Aluminium',50,1,true,true);
+    loadResource('Cement',100,1,true,true);
+    loadResource('Coal',50,1,true,true);
+    loadResource('Oil',0,1,true,false);
+    loadResource('Uranium',10,1,true,false);
+    loadResource('Steel',50,1,true,true);
+    loadResource('Titanium',50,1,true,true);
+    loadResource('Alloy',50,1,true,true);
+    loadResource('Polymer',50,1,true,true);
+    loadResource('Iridium',0,1,true,true);
+    loadResource('Helium_3',0,1,true,false);
+    loadResource('Deuterium',0,1,false,false,'advanced');
+    loadResource('Neutronium',0,1,false,false,'advanced');
+    loadResource('Adamantite',0,1,false,true,'advanced');
+    loadResource('Infernite',0,1,false,false,'advanced');
+    loadResource('Elerium',1,1,false,false,'advanced');
+    loadResource('Nano_Tube',0,1,false,false,'advanced');
+    loadResource('Graphene',0,1,false,true,'advanced');
+    loadResource('Stanene',0,1,false,true,'advanced');
+    loadResource('Bolognium',0,1,false,true,'advanced');
+    loadResource('Vitreloy',0,1,false,true,'advanced');
+    loadResource('Orichalcum',0,1,false,true,'advanced');
+    loadResource('Genes',-2,0,false,false,'advanced');
+    loadResource('Soul_Gem',-2,0,false,false,'advanced');
+    loadResource('Plywood',-1,0,false,false,'danger');
+    loadResource('Brick',-1,0,false,false,'danger');
+    loadResource('Wrought_Iron',-1,0,false,false,'danger');
+    loadResource('Sheet_Metal',-1,0,false,false,'danger');
+    loadResource('Mythril',-1,0,false,false,'danger');
+    loadResource('Aerogel',-1,0,false,false,'danger');
+    loadResource('Nanoweave',-1,0,false,false,'danger');
+
+    if (global.race.species !== 'protoplasm'){
         loadRouteCounter();
         loadContainerCounter();
         initGalaxyTrade();
@@ -640,9 +644,12 @@ function marketItem(mount,market_item,name,color,full){
             purchase(res){
                 if (!global.race['no_trade']){
                     let qty = global.city.market.qty;
-                    let value = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+                    let value = global.resource[res].value;
+                    if (global.race['arrogant']){
+                        value *= 1 + (traits.arrogant.vars[0] / 100);
+                    }
                     if (global.race['conniving']){
-                        value *= 0.95;
+                        value *= 1 - (traits.conniving.vars[0] / 100);
                     }
                     var price = Math.round(value * qty);
                     if (global.resource.Money.amount >= price){
@@ -657,9 +664,15 @@ function marketItem(mount,market_item,name,color,full){
                 if (!global.race['no_trade']){
                     var qty = global.city.market.qty;
                     if (global.resource[res].amount >= qty){
-                        let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                        let divide = 4;
+                        if (global.race['merchant']){
+                            divide *= 1 - (traits.merchant.vars[0] / 100);
+                        }
+                        if (global.race['asymmetrical']){
+                            divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+                        }
                         if (global.race['conniving']){
-                            divide -= 0.5;
+                            divide *= 1 - (traits.conniving.vars[1] / 100);
                         } 
                         let price = Math.round(global.resource[res].value * qty / divide);
                         global.resource[res].amount -= Number(qty);
@@ -719,12 +732,18 @@ function marketItem(mount,market_item,name,color,full){
         filters: {
             buy(value){
                 if (global.race['arrogant']){
-                    value = Math.round(value * 1.1);
+                    value *= 1 + (traits.arrogant.vars[0] / 100);
                 }
                 return sizeApproximation(value * global.city.market.qty,0);
             },
             sell(value){
-                let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+                let divide = 4;
+                if (global.race['merchant']){
+                    divide *= 1 - (traits.merchant.vars[0] / 100);
+                }
+                if (global.race['asymmetrical']){
+                    divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+                }
                 return sizeApproximation(value * global.city.market.qty / divide,0);
             },
             trade(val){
@@ -967,7 +986,13 @@ function containerItem(mount,market_item,name,color){
 }
 
 export function tradeSellPrice(res){
-    let divide = global.race['merchant'] ? 3 : (global.race['asymmetrical'] ? 5 : 4);
+    let divide = 4;
+    if (global.race['merchant']){
+        divide *= 1 - (traits.merchant.vars[0] / 100);
+    }
+    if (global.race['asymmetrical']){
+        divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+    }
     if (global.race['conniving']){
         divide--;
     }
@@ -986,10 +1011,13 @@ export function tradeSellPrice(res){
 }
 
 export function tradeBuyPrice(res){
-    let rate = global.race['arrogant'] ? Math.round(global.resource[res].value * 1.1) : global.resource[res].value;
+    let rate = global.resource[res].value;
+    if (global.race['arrogant']){
+        rate *= 1 + (traits.arrogant.vars[0] / 100);
+    }
     if (global.race['conniving']){
-        rate *= 0.9;
-    }    
+        rate *= 1 - (traits.conniving.vars[0] / 100);
+    }
     let price = rate * tradeRatio[res];
     if (global.city['wharf']){
         price = price * (0.99 ** global.city['wharf'].count);
@@ -1220,6 +1248,13 @@ function drawModal(name,color){
     
     let body = $('<div class="modalBody crateModal"></div>');
     $('#modalBox').append(body);
+
+    if (name === 'Food'){
+        let egg = easterEgg(7,10);
+        if (egg.length > 0){
+            $('#modalBoxTitle').prepend(egg);
+        }
+    }
     
     let crates = $('<div id="modalCrates" class="crates"></div>');
     body.append(crates);
@@ -1327,9 +1362,6 @@ function drawModal(name,color){
 
 export function crateValue(){
     let create_value = global.tech['container'] && global.tech['container'] >= 2 ? 500 : 350;
-    if (global.race['pack_rat']){
-        create_value += global.tech.container >= 2 ? 50 : 25;
-    }
     if (global.tech['container'] && global.tech['container'] >= 4){
         create_value += global.tech['container'] >= 5 ? 500 : 250;
     }
@@ -1339,15 +1371,15 @@ export function crateValue(){
     if (global.tech['container'] && global.tech['container'] >= 8){
         create_value += 4000;
     }
+    if (global.race['pack_rat']){
+        create_value *= 1 + (traits.pack_rat.vars[0] / 100);
+    }
     create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(create_value));
 }
 
 export function containerValue(){
     let container_value = global.tech['steel_container'] && global.tech['steel_container'] >= 3 ? 1200 : 800;
-    if (global.race['pack_rat']){
-        container_value += global.tech.steel_container >= 3 ? 100 : 50;
-    }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 4){
         container_value += global.tech['steel_container'] >= 5 ? 1000 : 400;
     }
@@ -1356,6 +1388,9 @@ export function containerValue(){
     }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 8){
         container_value += 8000;
+    }
+    if (global.race['pack_rat']){
+        container_value *= 1 + (traits.pack_rat.vars[0] / 100);
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(container_value));
@@ -1588,7 +1623,7 @@ export function plasmidBonus(type){
                 temple_bonus += priest_bonus * global.civic.priest.workers;
             }
             if (global.race['spiritual']){
-                temple_bonus *= 1.13;
+                temple_bonus *= 1 + (traits.spiritual.vars[0] / 100);
             }
             if (global.civic.govern.type === 'theocracy'){
                 temple_bonus *= 1.12;

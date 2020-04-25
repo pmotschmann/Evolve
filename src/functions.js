@@ -1,7 +1,8 @@
-import { global, save, webWorker, achieve_level, universe_level } from './vars.js';
+import { global, save, poppers, webWorker, achieve_level, universe_level } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits } from './races.js';
+import { races, traits, genus_traits } from './races.js';
 import { actions } from './actions.js';
+import { arpaAdjustCosts } from './arpa.js';
 
 export function mainVue(){
     vBind({
@@ -150,6 +151,24 @@ export function mainVue(){
     });
 }
 
+export function popover(id,content,is_wide){
+    $('#'+id).on('mouseover',function(){
+        let wide = is_wide ? ' wide' : '';
+        var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
+        $(`#main`).append(popper);
+        popper.append(content);
+        popper.show();
+        poppers[id] = new Popper($('#'+id),popper);
+    });
+    $('#'+id).on('mouseout',function(){
+        $(`#pop${id}`).hide();
+        if (poppers[id]){
+            poppers[id].destroy();
+        }
+        clearElement($(`#pop${id}`),true);
+    });
+}
+
 window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return 'Export is not available during Race Creation';
@@ -280,29 +299,29 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     if (global.race['small']){ mutiplier -= traits.small.vars[0]; }
     else if (global.race['large']){ mutiplier += traits.large.vars[0]; }
     if (global.race['compact']){ mutiplier -= traits.compact.vars[0]; }
-    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= 0.01; }
+    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= traits.tunneler.vars[0]; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
         mutiplier -= global.tech['housing_reduction'] * 0.02;
     }
     if (structure === 'basic_housing'){
         if (global.race['solitary']){
-            mutiplier -= 0.02;
+            mutiplier -= traits.solitary.vars[0];
         }
         if (global.race['pack_mentality']){
-            mutiplier += 0.03;
+            mutiplier += traits.pack_mentality.vars[0];
         }
     }
     if (structure === 'cottage'){
         if (global.race['solitary']){
-            mutiplier += 0.02;
+            mutiplier += traits.solitary.vars[0];
         }
         if (global.race['pack_mentality']){
-            mutiplier -= 0.02;
+            mutiplier -= traits.pack_mentality.vars[1];
         }
     }
     if (structure === 'apartment'){
         if (global.race['pack_mentality']){
-            mutiplier -= 0.02;
+            mutiplier -= traits.pack_mentality.vars[1];
         }
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
@@ -442,6 +461,27 @@ export function timeCheck(c_action,track,detailed){
     }
 }
 
+export function arpaSegmentTimeCheck(project){
+    let costs = arpaAdjustCosts(project.cost);
+    let time = 0;
+    Object.keys(costs).forEach(function (res){
+        let testCost = Number(costs[res]()) / 100;
+        let res_have = Number(global.resource[res].amount);
+        if (testCost > res_have){
+            if (global.resource[res].diff > 0){
+                let r_time = (testCost - res_have) / global.resource[res].diff;
+                if (r_time > time){
+                    time = r_time;
+                }
+            }
+            else {
+                time = -9999999;
+            }
+        }
+    });
+    return time;
+}
+
 export function clearElement(elm,remove){
     elm.find('.vb').each(function(){
         try {
@@ -517,6 +557,13 @@ export function powerModifier(energy){
         }
         energy *= 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
         energy = +energy.toFixed(2);
+    }
+    return energy;
+}
+
+export function powerCostMod(energy){
+    if (global.race['emfield']){
+        return +(energy * 1.5).toFixed(2);
     }
     return energy;
 }
@@ -599,7 +646,7 @@ export function calcPrestige(type){
         harmony: 0
     };
 
-    let garrisoned = global.civic.garrison.workers;
+    let garrisoned = global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0;
     for (let i=0; i<3; i++){
         if (global.civic.foreign[`gov${i}`].occ){
             garrisoned += global.civic.govern.type === 'federation' ? 15 : 20;
@@ -647,7 +694,7 @@ export function calcPrestige(type){
     }
 
     gains.plasmid = challenge_multiplier(new_plasmid,type);
-    gains.phage = challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type);
+    gains.phage = gains.plasmid > 0 ? challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type) : 0;
 
     if (type === 'bigbang'){
         let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
@@ -729,10 +776,10 @@ function scienceAdjust(costs){
                 newCosts[res] = function(){
                     let cost = costs[res]();
                     if (global.race['smart']){
-                        cost *= 0.9;
+                        cost *= 1 - (traits.smart.vars[0] / 100);
                     }
                     if (global.race['dumb']){
-                        cost *= 1.05;
+                        cost *= 1 + (traits.dumb.vars[0] / 100);
                     }
                     return Math.round(cost);
                 }
@@ -749,9 +796,10 @@ function scienceAdjust(costs){
 function kindlingAdjust(costs){
     if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
+        let adjustRate = 1 + (traits.kindling_kindred.vars[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 1.05) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res]() * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
                 newCosts[res] = function(){ return costs[res](); }
@@ -837,6 +885,12 @@ export function svgIcons(icon){
             return `<path style="stroke:#3e3e3e;stroke-width:11.759;fill:#ffffff" d="m348.09 109.89c-85.21-11.765-133.86-61.49-150.45-144.52l52.461-31.674c8.8349 68.313 24.711 132.98 108.88 162.33z"/><path d="m353.56 91.864c-61.98-62.164-70.82-132.61-33.05-210.32l62.186 6.6459c-35 60.969-62.02 123.32-11.73 199.13z" style="stroke:#3e3e3e;stroke-width:12"/><path d="m392.11 86.165c52.8-63.262 117.89-77.562 193.76-48.91l-0.88537 58.696c-59.98-27.485-120.58-47.403-187.14 6.089z" style="stroke:#3e3e3e;stroke-width:11.264"/><path d="m400.56 103.66c70.409-8.8186 119.79 20.415 150.74 83.029l-35.039 36.44c-21.63-52.55-48.08-100.69-121.42-106.11z" style="stroke:#3e3e3e;stroke-width:9.7;fill:#ffffff"/><path style="stroke:#3e3e3e;stroke-width:10.038" d="m359.07 126.89c-60.038 42.278-119.37 39.574-178.07-2.5897l14.3-50.321c45.296 37.496 92.867 68.618 162.5 37.92z"/><path style="stroke:#3e3e3e;stroke-width:12;fill:#ffffff" d="m125.26 755.38 248.5-719.23 266.68 711.15c-107.4 137.09-420.62 139.89-515.18 8.08z"/><path style="stroke-linejoin:round;stroke:#3e3e3e;stroke-width:8.9074" d="m420.09 159.69c-47.61 62.416-98.161 122.79-151.62 181.16l-49.688 143.88c81.848-80.243 157.06-166.67 226.12-258.78l-24.812-66.25zm58.29 155.4c-90.42 120.29-193.6 232.5-315.94 332.63l-34.91 101.03c153.16-104.45 278.75-224.33 379.06-358.37l-28.21-75.29zm58.188 155.19c-100.47 122.36-214.26 236.88-348.91 339.13 20.15 11.4 42.82 20.53 67.09 27.37 122.94-86.67 221.84-187.56 308.31-295.78l-26.5-70.719zm49.75 132.66c-75.124 86.484-154.65 170.39-244.41 248.34 32.775 2.0765 66.335 0.70943 98.969-4.0938 0.006-0.005 0.0255 0.005 0.0312 0 61.02-55.53 117.11-115.25 170.56-177.19l-25.16-67.06z"/><path style="fill:#00b02d;fill-opacity:.11947" d="m484.59 333.63c9.5858 273.53-172.12 419.02-355.12 427.33 99.306 126.12 405.11 121.44 510.97-13.688z"/><path d="m125.26 755.38 248.5-719.23 266.68 711.15c-107.4 137.09-420.62 139.89-515.18 8.08z" style="stroke:#3e3e3e;stroke-width:12;fill:none"/><path style="stroke:#3e3e3e;stroke-width:12;fill:#ffffff" d="m363.57 78.567c-5.57-87.607 42.03-144.26 121.69-177.74l42.351 46.018c-66.518 22.736-127.96 51.772-140.18 141.92z"/>`;
         case 'martini':
             return `<path d="M7.5,1c-2,0-7,0.25-6.5,0.75L7,8v4 c0,1-3,0.5-3,2h7c0-1.5-3-1-3-2V8l6-6.25C14.5,1.25,9.5,1,7.5,1z M7.5,2c2.5,0,4.75,0.25,4.75,0.25L11.5,3h-8L2.75,2.25 C2.75,2.25,5,2,7.5,2z"/>`;
+        case 'lightbulb':
+            return `<path d="m0 48c0-27 23-48 50-48s50 21 50 48c0 19-22 37-22 54 0 5-1 9-6 14v4c0 2-4 2-4 4s4 2 4 4-4 2-4 4 4 2 4 4-4 2-4 4 3 2 3 4-7 6-10 12h-22c-3-6-10-10-10-12s3-2 3-4-4-2-4-4 4-2 4-4-4-2-4-4 4-2 4-4-4-2-4-4v-4c-5-5-6-9-6-14 0-17-22-35-22-54zm5 0c0 17 21 36 21 54 0 4 1 8 4 10h40c3-2 4-6 4-10 0-18 21-37 21-54 0-23-20-41-45-41s-45 18-45 41zm17-4 2.4-1.2 17.6 33.2 1.4 32h-4.4l-1-30zm5 0 2-8h2l3 8.4 3-8.4h2l3 8.4 3-8.4h2l3 8.4 3-8.4h2l3 8.4 3-8.4h2l3 8.4 3-8.4h2l2 8-3-4.4-3 8.4h-2l-3-8.4-3 8.4h-2l-3-8.4-3 8.4h-2l-3-8.4-3 8.4h-2l-3-8.4-3 8.4h-2l-3-8.4zm29.6 64 1.4-32 17.6-33.2 2.4 1.2-16 34-1 30h-4.4z"/>`;
+        case 'bunny':
+            return `<path style="stroke-linejoin:round;fill-rule:evenodd;stroke:#000000;stroke-linecap:round;stroke-width:6" d="m64.188 5.3125c-5.397 0.0813-10.898 1.0389-16.594 3.5313-9.817 4.2952-13.554 9.5252-16.282 14.968-6.538-0.307-13.468 2.455-18.218 7.938-7.3948 8.534-6.7113 20.389 1.531 26.438 2.24 1.644 4.798 2.641 7.5 3.124-1.063 4.28-0.91 8.757 0.187 13.219-0.158 0.044-0.31 0.076-0.468 0.125-6.958 2.178-10.97 9.256-8.938 15.75 0.747 2.386 2.204 4.346 4.094 5.782 1.73 1.79 4.454 2.466 7.125 1.5 3.388-1.226 5.531-4.662 5.25-8.063 4.838 7.044 11.348 13.245 17.969 17.565-3.132 2.04-5.007 4.69-4.938 7.56 0.045 1.87 0.5 4.28 2.406 5.16 5.356 2.46 12.173 2.75 18.907 2.68 6.644-0.07 13.36-0.49 18.562-3.03 1.833-0.89 2.139-3.3 2.094-5.15-0.013-0.55-0.101-1.1-0.25-1.63 3.256-0.79 6.06-1.98 8.344-3.53 4.213 3.86 10.941 4.27 16.151 0.66 6-4.15 7.72-12.064 3.85-17.66-3.11-4.492-8.87-6.111-14.126-4.438-1.317-4.594-3.729-9.761-7.406-15.5-8.605-13.428-28.229-23.563-43.969-25.531 0.719-2.053 1.093-4.161 1.093-6.219 10.581 1.08 21.879 1.693 38.594-0.906 5.763-0.896 7.759-2.691 2-7.031-7.125-5.37-15.153-9.126-25.437-8.906 5.516-2.421 10.784-5.283 15.25-8.375 5.825-4.034 7.757-7.3146-1.844-8.9378-4.128-0.6978-8.24-1.157-12.437-1.0937z"/><path d="m64.188 5.3125c-5.397 0.0813-10.898 1.0389-16.594 3.5313-9.817 4.2952-13.554 9.5252-16.282 14.968-6.538-0.307-13.468 2.455-18.218 7.938-7.3948 8.534-6.7113 20.389 1.531 26.438 2.24 1.644 4.798 2.641 7.5 3.124-1.063 4.28-0.91 8.757 0.187 13.219-0.158 0.044-0.31 0.076-0.468 0.125-6.958 2.178-10.97 9.256-8.938 15.75 0.747 2.386 2.204 4.346 4.094 5.782 1.73 1.79 4.454 2.466 7.125 1.5 3.388-1.226 5.531-4.662 5.25-8.063 4.838 7.044 11.348 13.245 17.969 17.565-3.132 2.04-5.007 4.69-4.938 7.56 0.045 1.87 0.5 4.28 2.406 5.16 5.356 2.46 12.173 2.75 18.907 2.68 6.644-0.07 13.36-0.49 18.562-3.03 1.833-0.89 2.139-3.3 2.094-5.15-0.013-0.55-0.101-1.1-0.25-1.63 3.256-0.79 6.06-1.98 8.344-3.53 4.213 3.86 10.941 4.27 16.151 0.66 6-4.15 7.72-12.064 3.85-17.66-3.11-4.492-8.87-6.111-14.126-4.438-1.317-4.594-3.729-9.761-7.406-15.5-8.605-13.428-28.229-23.563-43.969-25.531 0.719-2.053 1.093-4.161 1.093-6.219 10.581 1.08 21.879 1.693 38.594-0.906 5.763-0.896 7.759-2.691 2-7.031-7.125-5.37-15.153-9.126-25.437-8.906 5.516-2.421 10.784-5.283 15.25-8.375 5.825-4.034 7.757-7.3146-1.844-8.9378-4.128-0.6978-8.24-1.157-12.437-1.0937z"/><path style="fill-rule:evenodd;fill:#000000" d="m27.875 37.154a1.6792 1.5113 0 1 1 -3.358 0 1.6792 1.5113 0 1 1 3.358 0z" transform="matrix(2 0 0 2 -28.211 -37.658)"/><path style="stroke-linejoin:round;stroke:#000000;stroke-linecap:round;stroke-width:3;fill:none" d="m41.309 112.22c2.741-8.74 11.136-8.26 19.479-7.06-2.847-3.98-4.653-7.182-4.366-14.439 0.397-10.047 12.123-15.813 19.478-11.418"/>`;
+        case 'egg':
+            return `<g transform="translate(-23.4 -39.669)"><g fill-rule="evenodd"><path d="m209.88 233.69c-59.35 13.38-111.11 50.07-104.08 76.11 7.24 26.79 68.03 33.82 140.43 11.87 72.59-22.02 136.8-67.49 117.21-88.66-19.96-21.57-94.36-12.67-153.56 0.68z" fill="#555753" fill-opacity=".25098"/><path stroke-linejoin="round" d="m237.39 219.85c0.63 59.72-38.42 111.12-103.87 111.12-65.458 0-109.14-33.88-108.71-115.95 0.425-82.26 54.548-172.74 103.87-173.93 52.62-1.302 107.77 87.89 108.71 178.76z" stroke="#000" stroke-linecap="round" stroke-width="2.8183"/><path d="m200.27 107.27c-4.58 4.32 2.48 11.42 2.87 16.88 11.18 34.97 15.59 72.86 7.97 109.05-8.88 35.66-36.04 67.41-71.85 77.78-14 4.35-28.78 5.33-43.361 5.3-4.701 6.19 8.951 5.84 12.621 7.35 31.12 6.05 66.19 0.87 90.45-20.77 22.64-20.08 33.83-50.84 33.2-80.74 0.18-35.03-8.95-69.68-23.29-101.47-2.63-4.42-4.34-10.71-8.61-13.38z" fill="#c6c6ba" fill-opacity=".25098"/><path stroke-linejoin="round" d="m110.75 105.79c-3.2 12.98-4.72 17.62-14.901 19.36-7.019 1.2-14.096-5.45-11.68-18.55 1.937-10.513 9.93-21.123 18.931-22.584 9.92-1.61 10.24 11.283 7.65 21.774z" stroke-opacity=".2809" fill-opacity=".9382" stroke="#000" stroke-linecap="round" stroke-width="1.1273" fill="#fff"/></g></g>`;
     }
 }
 
@@ -882,6 +936,12 @@ export function svgViewBox(icon){
             return `0 0 528.69 983.1`;
         case 'martini':
             return `0 0 15 15`;
+        case 'lightbulb':
+            return `0 0 100 156`;
+        case 'bunny':
+            return `0 0 128 128`;
+        case 'egg':
+            return `0 0 273.61 295.02`;
     }
 }
 
@@ -900,12 +960,18 @@ export function getBaseIcon(name,type){
                 return 'skull';
             case 'utopia':
                 return 'martini';
+            case 'energetic':
+                return 'lightbulb';
             case 'friday':
                 return 'mask';
             case 'valentine':
                 return 'heart';
             case 'leprechaun':
                 return 'clover';
+            case 'easter':
+                return 'bunny';
+            case 'egghunt':
+                return 'egg';
             case 'halloween':
                 return 'ghost';
             case 'thanksgiving':
@@ -917,6 +983,49 @@ export function getBaseIcon(name,type){
         }
     }
     return global.settings.icon;
+}
+
+export function drawIcon(icon,size,shade,id){
+    let select = '';
+    if (id){
+        select = `id="${id}" `;
+    }
+    return `<span ${select}class="flair drawnIcon"><svg class="star${shade}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></span>`;
+}
+
+export function easterEgg(num,size){
+    let easter = getEaster();
+    if (easter.active && !global.special.egg[`egg${num}`]){
+        return drawIcon('egg', size ? size : 16, 2, `egg${num}`);
+    }
+    return '';
+}
+
+export function easterEggBind(id){
+    $(`#egg${id}`).click(function(){
+        if (!global.special.egg[`egg${id}`]){
+            global.special.egg[`egg${id}`] = true;
+            if (id <= 10){
+                if (global.race.universe === 'antimatter'){
+                    global.race.Plasmid.anti += 10;
+                    global.stats.antiplasmid += 10;
+                    messageQueue(loc('city_egg_msg',[10,loc('resource_AntiPlasmid_plural_name')]),'success');
+                }
+                else {
+                    global.race.Plasmid.count += 10;
+                    global.stats.plasmid += 10;
+                    messageQueue(loc('city_egg_msg',[10,loc('resource_Plasmid_plural_name')]),'success');
+                }
+            }
+            else {
+                global.race.Phage.count += 5;
+                global.stats.phage += 5;
+                messageQueue(loc('city_egg_msg',[5,loc('resource_Phage_name')]),'success');
+            }
+            $(`#egg${id}`).remove();
+            $('.popper').hide();
+        }
+    });
 }
 
 export function format_emblem(achieve,size,baseIcon,fool){
@@ -952,4 +1061,77 @@ export function sLevel(level){
         default:
             return '';
     }
+}
+
+export function calcGenomeScore(genome){
+    let genes = 0;
+
+    if (global.stats.achieve[`ascended`]){
+        let types = ['l','a','h','e','m'];
+        for (let i=0; i<types.length; i++){
+            if (global.stats.achieve.ascended.hasOwnProperty(types[i])){
+                genes += global.stats.achieve.ascended[types[i]];
+            }
+        }
+    }
+
+    Object.keys(genus_traits[genome.genus]).forEach(function (t){
+        genes -= traits[t].val;
+    });
+
+    let max_complexity = 2;    
+    if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+        max_complexity += global.stats.achieve.technophobe.l;
+    }
+
+    let complexity = 0;
+    for (let i=0; i<genome.traitlist.length; i++){
+        let gene_cost = traits[genome.traitlist[i]].val;
+        if (traits[genome.traitlist[i]].val >= 0){
+            if (complexity > max_complexity){
+                gene_cost -= max_complexity - complexity;
+            }
+            complexity++;
+        }
+        genes -= gene_cost;
+    }
+    return genes;
+}
+
+export function getEaster(){
+    const date = new Date();
+    let year = date.getFullYear();
+
+	let f = Math.floor,
+		// Golden Number - 1
+		G = year % 19,
+		C = f(year / 100),
+		// related to Epact
+		H = (C - f(C / 4) - f((8 * C + 13)/25) + 19 * G + 15) % 30,
+		// number of days from 21 March to the Paschal full moon
+		I = H - f(H/28) * (1 - f(29/(H + 1)) * f((21-G)/11)),
+		// weekday for the Paschal full moon
+		J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7,
+		// number of days from 21 March to the Sunday on or before the Paschal full moon
+		L = I - J,
+		month = 3 + f((L + 40)/44),
+        day = L + 28 - 31 * f(month / 4);
+    
+    let easter = {
+        date: [month-1,day],
+        active: false,
+        endDate: [month-1,day]
+    };
+
+    easter.endDate[1] += 10;
+    if ((easter.endDate[0] === 2 && easter.endDate[1] > 31) || (easter.endDate[0] === 3 && easter.endDate[1] > 30)){
+        easter.endDate[1] -= easter.endDate[0] === 2 ? 31 : 30;
+        easter.endDate[0]++;
+    }
+    if (date.getMonth() >= easter.date[0] && date.getDate() >= easter.date[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+        easter.active = true;
+    }
+
+    return easter;
+    
 }

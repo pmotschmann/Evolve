@@ -51,6 +51,78 @@
                 margin-right: 1rem;
             }
         }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            border-top: .0625rem solid;
+            margin-top: .5rem;
+            padding-top: .5rem;
+    
+            .effect {
+                width: 70%;
+            }
+
+            .cost {
+                width: 30%;
+            }
+
+            .right {
+                margin-left: .5rem;
+                padding-left: .5rem;
+                border-left: .0625rem solid;
+            }
+        }
+
+        .extra {
+            border-top: .0625rem solid;
+            margin-top: .5rem;
+            padding-top: .5rem;
+        }
+
+        div.aTable {
+            columns: 2;
+            span {
+                display: flex;
+            }
+        }
+    }
+
+    .question {
+        h2 {
+            margin-bottom: .25rem;
+            text-decoration: underline;
+        }
+        margin-bottom: .75rem;
+    }
+
+    .achievement {
+        span {
+            display: inline-block;
+        }
+        span.achieve {
+            display: inline-block;
+            width: 15rem;
+        }
+        span.icons {
+            text-align: right;
+        }
+        p.flair {
+            display: inline;
+            position: initial;
+            line-height: 1rem;
+        }
+    }
+
+    .flexed {
+        display: flex;
+        flex-wrap: wrap;
+        > span {
+            width: 4rem;
+            display: block;
+            margin: 0 .5rem;
+            padding: 0 .5rem;
+        }
     }
 }
 
