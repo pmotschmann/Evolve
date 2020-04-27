@@ -133,7 +133,7 @@ $('#morale').on('mouseover',function(){
         moralePopper.append(`<p class="modal_bd"><span>${loc('morale_entertainment')}</span> <span class="has-text-${type}"> ${+(global.city.morale.entertain).toFixed(1)}%</span></p>`);
     }
     if (global.city.morale.season !== 0){
-        let season = global.city.calendar.season === 0 ? loc('morale_spring') : loc('morale_winter');
+        let season = global.city.calendar.season === 0 ? loc('morale_spring') : global.city.calendar.season === 1 ? loc('morale_summer') : loc('morale_winter');
         let type = global.city.morale.season > 0 ? 'success' : 'danger';
         moralePopper.append(`<p class="modal_bd"><span>${season}</span> <span class="has-text-${type}"> ${+(global.city.morale.season).toFixed(1)}%</span></p>`);
     }
@@ -2414,8 +2414,7 @@ function fastLoop(){
                     delta *= 0.8;
                 }
 
-                delta *= hunger;
-                FactoryMoney = delta + 'v'; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
+                FactoryMoney = delta * hunger; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
 
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
@@ -2736,7 +2735,7 @@ function fastLoop(){
             cement_bd[loc('city_cement_plant_bd')] = factory_output + 'v';
             cement_bd[loc('power')] = ((powered_mult - 1) * 100) + '%';
 
-            if (global.race['discharge'] && global.race['discharge'] > 0){
+            if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['cement_plant'] > 0){
                 powered_mult = (powered_mult - 1) * 0.5 + 1;
                 cement_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
@@ -3005,13 +3004,13 @@ function fastLoop(){
 
             let graphene_bd = {};
             let delta = graphene_production * ai * zigguratBonus() * hunger * global_multiplier;
-
+            graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
+            
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 delta *= 0.5;
                 graphene_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
             
-            graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
             if (p_on['citadel'] > 0){
                 graphene_bd[loc('interstellar_citadel_effect_bd')] = ((ai - 1) * 100) + '%';
             }
@@ -3144,7 +3143,7 @@ function fastLoop(){
                 lumber_bd[loc('job_lumberjack')] = lumber_base + 'v';
                 lumber_bd[loc('city_lumber_yard')] = ((lumber_yard - 1) * 100) + '%';
                 lumber_bd[loc('city_sawmill')] = ((power_mult - 1) * 100) + '%';
-                if (global.race['discharge'] && global.race['discharge'] > 0){
+                if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['sawmill'] > 0){
                     power_mult = (power_mult - 1) * 0.5 + 1;
                     lumber_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 }
@@ -3182,7 +3181,7 @@ function fastLoop(){
             stone_bd[loc('city_rock_quarry')] = ((rock_quarry - 1) * 100) + '%';
             stone_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
 
-            if (global.race['discharge'] && global.race['discharge'] > 0){
+            if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['rock_quarry'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
                 stone_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
@@ -3283,7 +3282,7 @@ function fastLoop(){
                 copper_bd[loc('job_miner')] = (copper_base) + 'v';
                 copper_bd[loc('power')] = ((copper_power - 1) * 100) + '%';
 
-                if (global.race['discharge'] && global.race['discharge'] > 0){
+                if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                     copper_power = (copper_power - 1) * 0.5 + 1;
                     copper_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 }
@@ -3324,7 +3323,7 @@ function fastLoop(){
                 iron_bd[loc('job_miner')] = (iron_base) + 'v';
                 iron_bd[loc('power')] = ((iron_power - 1) * 100) + '%';
 
-                if (global.race['discharge'] && global.race['discharge'] > 0){
+                if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                     iron_power = (iron_power - 1) * 0.5 + 1;
                     iron_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 }
@@ -3414,7 +3413,7 @@ function fastLoop(){
             coal_bd[loc('job_coal_miner')] = coal_base + 'v';
             coal_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
 
-            if (global.race['discharge'] && global.race['discharge'] > 0){
+            if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['coal_mine'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
                 coal_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
@@ -3830,7 +3829,7 @@ function fastLoop(){
             money_bd[loc('city_temple')] = ((temple_mult - 1) * 100) + '%';
             money_bd[loc('city_shrine')] = ((shrine_mult - 1) * 100) + '%';
             money_bd[loc('city_factory')] = FactoryMoney + 'v';
-            if (global.race['discharge'] && global.race['discharge'] > 0){
+            if (global.race['discharge'] && global.race['discharge'] > 0 && FactoryMoney > 0){
                 money_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
             modRes('Money', +(delta * time_multiplier).toFixed(2));

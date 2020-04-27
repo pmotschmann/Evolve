@@ -2066,9 +2066,11 @@ export const actions = {
                     global.evolution['junker'] = { count: 0 };
                     global.evolution['joyless'] = { count: 0 };
                     global.evolution['steelen'] = { count: 0 };
-                    global.evolution['emfield'] = { count: 0 };
                     if (global.stats.achieve['whitehole']){
                         global.evolution['decay'] = { count: 0 };
+                    }
+                    if (global.stats.achieve['ascended']){
+                        global.evolution['emfield'] = { count: 0 };
                     }
                     challengeGeneHeader();
                     if (global.race.universe === 'antimatter'){
