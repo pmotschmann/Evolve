@@ -13391,7 +13391,14 @@ export function drawTech(){
         }
     });
 
-    new_techs.sort((a, b) => (actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge()) ? 1 : -1);
+    new_techs.sort((a, b) => {
+        if (!actions.tech[a].cost.hasOwnProperty('Knowledge')) {
+            return -1;
+        } else if (!actions.tech[b].cost.hasOwnProperty('Knowledge')) {
+            return 1;
+        }
+        return actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge() ? 1 : -1;
+    });
     new_techs.forEach(function(tech_name) {
         addAction('tech', tech_name);
     });
