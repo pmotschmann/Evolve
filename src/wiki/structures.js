@@ -1,4 +1,4 @@
-import {} from './../vars.js';
+import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement } from './../functions.js';
 import { actions } from './../actions.js';
@@ -53,7 +53,7 @@ function addInfomration(parent,section,key){
 
 function prehistoricPage(content){
     Object.keys(actions.evolution).forEach(function (action){
-        if (actions.evolution[action].hasOwnProperty('title') && typeof actions.evolution[action].title !== 'undefined' && (!actions.evolution[action].hasOwnProperty('wiki') || actions.evolution[action].wiki)){
+        if (actions.evolution[action].hasOwnProperty('title') && (action !== 'custom' || global.hasOwnProperty('custom')) && (!actions.evolution[action].hasOwnProperty('wiki') || actions.evolution[action].wiki)){
             let info = $(`<div class="infoBox"></div>`);
             content.append(info);
             actionDesc(info, actions.evolution[action]);

@@ -139,7 +139,7 @@ const spaceProjects = {
             powered(){ return powerCostMod(2); },
             effect(){
                 let effect3 = global.tech['luna'] >=3 ? `<div>${loc('space_red_tower_effect1',[races[global.race.species].solar.red])}</div>` : '';
-                return `<div>${loc('space_home_nav_beacon_effect1')}</div>${effect3}<div class="has-text-caution">${loc('space_home_nav_beacon_effect2')}</div>`;
+                return `<div>${loc('space_home_nav_beacon_effect1')}</div>${effect3}<div class="has-text-caution">${loc('space_home_nav_beacon_effect2',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2506,7 +2506,7 @@ const interstellarProjects = {
                         desc = desc + `<div>${loc('interstellar_citadel_effect4',[graph])}</div>`;
                     }
                 }
-                return `${desc}<div class="has-text-caution">${loc('interstellar_citadel_power',[$(this)[0].powered(),2.5])}</div>`;
+                return `${desc}<div class="has-text-caution">${loc('interstellar_citadel_power',[$(this)[0].powered(),powerCostMod(2.5)])}</div>`;
             },
             powered(){
                 if (p_on['citadel'] && p_on['citadel'] > 1){
