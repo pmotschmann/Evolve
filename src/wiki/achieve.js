@@ -22,9 +22,12 @@ function achievePage(){
     let content = $(`#content`);
     clearElement(content);
 
+    let list = $(`<div class="achieveList"></div>`);
+    content.append(list);
+
     Object.keys(achievements).forEach(function (achievement){
         let achieve = $(`<div class="achievement"></div>`);
-        content.append(achieve);
+        list.append(achieve);
 
         let color = global.stats.achieve[achievement] && global.stats.achieve[achievement].l > 0 ? 'warning' : 'fade';
         achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
@@ -40,9 +43,12 @@ function featPage(){
     let content = $(`#content`);
     clearElement(content);
 
+    let list = $(`<div class="achieveList"></div>`);
+    content.append(list);
+
     Object.keys(feats).forEach(function (feat){
         let achieve = $(`<div class="achievement"></div>`);
-        content.append(achieve);
+        list.append(achieve);
 
         let color = global.stats.feat[feat] && global.stats.feat[feat] > 0 ? 'warning' : 'fade';
         let baseIcon = getBaseIcon(feat,'feat');

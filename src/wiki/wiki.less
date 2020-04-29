@@ -97,25 +97,26 @@
         margin-bottom: .75rem;
     }
 
-    .achievement {
+    .achieveList {
         display: flex;
-        justify-content: space-between;
-        max-width: 50rem;
-        span {
-            display: inline-block;
-        }
-        span.achieve {
-            display: inline-block;
-            width: 100%;
-        }
-        span.icons {
-            display: flex;
-            text-align: right;
-        }
-        p.flair {
-            display: inline;
-            position: initial;
-            line-height: 1rem;
+        flex-wrap: wrap;
+        .achievement {
+            width: 20rem;
+            margin-right: 1rem;
+            span {
+                display: inline-block;
+            }
+            span.achieve {
+                display: inline-block;
+            }
+            span.icons {
+                display: flex;
+                text-align: right;
+            }
+            p.flair {
+                display: inline;
+                line-height: 1rem;
+            }
         }
     }
 
