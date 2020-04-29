@@ -1,6 +1,6 @@
 import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName, easterEgg } from './functions.js';
+import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait, traits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -1612,11 +1612,7 @@ function lootModify(val,gov){
         loot *= 1 - (traits.invertebrate.vars[0] / 100);
     }
     if (global.race.universe === 'evil'){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.01);
-        }
-        loot = loot * (1 + ((Math.log2(10 + de) - 3.321928094887362) / 5));
+        loot *= darkEffect('evil');
     }
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }

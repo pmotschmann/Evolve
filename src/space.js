@@ -1,5 +1,5 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, calcGenomeScore, randomKey } from './functions.js';
+import { vBind, messageQueue, clearElement, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
@@ -5154,11 +5154,7 @@ export function swarm_adjust(res){
 
 export function fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.01);
-        }
-        fuel *= 1.25 + (0.5 * 0.995 ** de);
+        fuel *= 1.25 + (0.5 * darkEffect('heavy'));
     }
     if (global.city['mass_driver'] && p_on['mass_driver']){
         fuel *= 0.95 ** p_on['mass_driver'];
@@ -5171,11 +5167,7 @@ export function fuel_adjust(fuel){
 
 export function int_fuel_adjust(fuel){
     if (global.race.universe === 'heavy'){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.01);
-        }
-        fuel *= 1.2 + (0.3 * 0.995 ** de);
+        fuel *= 1.2 + (0.3 * darkEffect('heavy'));
     }
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;

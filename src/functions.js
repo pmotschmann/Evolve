@@ -285,15 +285,7 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
         cat = 'city';
     }
     if (global.race.universe === 'micro'){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.01);
-        }
-        let dark = 0.02 + (Math.log(100 + de) - 4.605170185988092) / 20;
-        if (dark > 0.06){
-            dark = 0.06;
-        }
-        mutiplier -= +(dark).toFixed(5);
+        mutiplier -= darkEffect('micro',false);
     }
 
     if (global.race['small']){ mutiplier -= traits.small.vars[0]; }
@@ -345,15 +337,7 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
         sector = 'space';
     }
     if (global.race.universe === 'micro'){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.01);
-        }
-        let dark = 0.01 + (Math.log(100 + de) - 4.605170185988092) / 35;
-        if (dark > 0.04){
-            dark = 0.04;
-        }
-        mutiplier -= +(dark).toFixed(5);
+        mutiplier -= darkEffect('micro',true);
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.01;
@@ -363,6 +347,20 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     }
     if (global.race['small']){ mutiplier -= traits.small.vars[1]; }
     if (global.race['compact']){ mutiplier -= traits.compact.vars[1]; }
+    if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
+        mutiplier -= harmonyEffect();
+    }
+    if (mutiplier < 0.01){
+        mutiplier = 0.01;
+    }
+    var count = global[sector][action] ? global[sector][action].count : 0;
+    if (offset){
+        count += offset;
+    }
+    return Math.round((mutiplier ** count) * base);
+}
+
+export function harmonyEffect(){
     if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         let boost = 0;
         switch (global.race.universe){
@@ -394,17 +392,10 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
         }
         if (boost > 0){
             boost = (Math.log(50 + boost) - 3.912023005428146) * 0.01;
-            mutiplier -= +(boost).toFixed(5);
+            return +(boost).toFixed(5);
         }
     }
-    if (mutiplier < 0.01){
-        mutiplier = 0.01;
-    }
-    var count = global[sector][action] ? global[sector][action].count : 0;
-    if (offset){
-        count += offset;
-    }
-    return Math.round((mutiplier ** count) * base);
+    return 0;
 }
 
 export function timeCheck(c_action,track,detailed){
@@ -551,11 +542,7 @@ export function timeFormat(time){
 
 export function powerModifier(energy){
     if (global.race.universe === 'antimatter'){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.01);
-        }
-        energy *= 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
+        energy *= darkEffect('antimatter');
         energy = +energy.toFixed(2);
     }
     return energy;
@@ -566,6 +553,79 @@ export function powerCostMod(energy){
         return +(energy * 1.5).toFixed(2);
     }
     return energy;
+}
+
+export function darkEffect(universe, flag){
+    switch (universe){
+        case 'standard':
+            if (global.race.universe === 'standard'){
+                let de = global.race.Dark.count;
+                if (global.race.Harmony.count > 0){
+                    de *= 1 + (global.race.Harmony.count * 0.001);
+                }
+                return 1 + (de / 200);
+            }
+            return 0;
+
+        case 'evil':
+            if (global.race.universe === 'evil'){
+                let de = global.race.Dark.count;
+                if (global.race.Harmony.count > 0){
+                    de *= 1 + (global.race.Harmony.count * 0.01);
+                }
+                return (1 + ((Math.log2(10 + de) - 3.321928094887362) / 5));
+            }
+            return 1;
+
+        case 'micro':
+            if (global.race.universe === 'micro'){
+                if (flag){
+                    let de = global.race.Dark.count;
+                    if (global.race.Harmony.count > 0){
+                        de *= 1 + (global.race.Harmony.count * 0.01);
+                    }
+                    let dark = 0.01 + (Math.log(100 + de) - 4.605170185988092) / 35;
+                    if (dark > 0.04){
+                        dark = 0.04;
+                    }
+                    return +(dark).toFixed(5);
+                }
+                else {
+                    let de = global.race.Dark.count;
+                    if (global.race.Harmony.count > 0){
+                        de *= 1 + (global.race.Harmony.count * 0.01);
+                    }
+                    let dark = 0.02 + (Math.log(100 + de) - 4.605170185988092) / 20;
+                    if (dark > 0.06){
+                        dark = 0.06;
+                    }
+                    return +(dark).toFixed(5);
+                }
+            }
+            return 0;
+
+        case 'heavy':
+            if (global.race.universe === 'heavy'){
+                let de = global.race.Dark.count;
+                if (global.race.Harmony.count > 0){
+                    de *= 1 + (global.race.Harmony.count * 0.01);
+                }
+                return 0.995 ** de;
+            }
+            return 1;
+
+        case 'antimatter':
+            if (global.race.universe === 'antimatter'){
+                let de = global.race.Dark.count;
+                if (global.race.Harmony.count > 0){
+                    de *= 1 + (global.race.Harmony.count * 0.01);
+                }
+                return 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
+            }
+            return 0;
+    }
+
+    return 0;
 }
 
 export function calc_mastery(){

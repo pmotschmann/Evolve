@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, clearElement, modRes, calc_mastery, easterEgg } from './functions.js';
+import { vBind, clearElement, modRes, calc_mastery, easterEgg, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { loc } from './locale.js';
 
@@ -590,6 +590,66 @@ function loadSpecialResource(name,color) {
         el: `#res${name}`,
         data: global.race[bind]
     });
+
+    let desc = $(`<div></div>`);
+    switch (name){
+        case 'Plasmid':
+            let active = global.race['no_plasmid'] ? (global.race.p_mutation > global.race[bind].count ? global.race[bind].count : global.race.p_mutation) : global.race[bind].count;
+            desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
+            let plasmidSpatial = spatialReasoning(1,'plasmid');
+            if (plasmidSpatial > 1){
+                desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
+            }   
+            break;
+
+        case 'AntiPlasmid':
+            desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race[bind].anti, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
+            let antiSpatial = spatialReasoning(1,'anti');
+            if (antiSpatial > 1){
+                desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+            }
+            break;
+
+        case 'Phage':
+            desc.append($(`<span>${loc(global.race.Plasmid.anti > 0 ? `resource_${name}_desc2` : `resource_${name}_desc`,[250 + global.race[bind].count])}</span>`));
+            let phageSpatial = spatialReasoning(1,'phage');
+            if (phageSpatial > 1){
+                desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+            }
+            break;
+
+        case 'Dark':
+            switch (global.race.universe){
+                case 'standard':
+                    desc.append($(`<span>${loc(`resource_${name}_desc_s`,[+((darkEffect('standard') - 1) * 100).toFixed(2)])}</span>`));
+                    break;
+
+                case 'evil':
+                    desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2)])}</span>`));
+                    break;
+
+                case 'micro':
+                    desc.append($(`<span>${loc(`resource_${name}_desc_m`,[darkEffect('micro',false),darkEffect('micro',true)])}</span>`));
+                    break;
+
+                case 'heavy':
+                    let hDE = darkEffect('heavy');
+                    let space = +(0.25 + (0.5 * hDE)).toFixed(4);
+                    let int = +(0.2 + (0.3 * hDE)).toFixed(4);
+                    desc.append($(`<span>${loc(`resource_${name}_desc_h`,[space * 100,int * 100])}</span>`));
+                    break;
+
+                case 'antimatter':
+                    desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
+                    break;
+            }
+            break;
+
+        case 'Harmony':
+            desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race.universe === 'standard' ? 0.1 : 1, harmonyEffect()])}</span>`));
+            break;
+    }
+    popover(`res${name}`, desc);
 }
 
 function marketItem(mount,market_item,name,color,full){
@@ -1552,13 +1612,18 @@ function loadEjector(name,color){
     }
 }
 
-export function spatialReasoning(value){
-    let plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
-    if (global.race['no_plasmid']){
-        plasmids = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
+export function spatialReasoning(value,type){
+    let plasmids = 0;
+    if (!type || (type && ((type === 'plasmid' && global.race.universe !== 'antimatter') || (type === 'anti' && global.race.universe === 'antimatter')))){
+        plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
+        if (global.race['no_plasmid']){
+            plasmids = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
+        }
     }
-    if (global.genes['store'] && global.genes['store'] >= 4){
-        plasmids += global.race.Phage.count;
+    if (!type || (type && type === 'phage')){
+        if (global.genes['store'] && global.genes['store'] >= 4){
+            plasmids += global.race.Phage.count;
+        }
     }
     if (global.genes['store']){
         let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
@@ -1566,16 +1631,14 @@ export function spatialReasoning(value){
             divisor *= 2;
         }
         if (global.genes['bleed'] && global.genes['bleed'] >= 3){
-            plasmids += global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
+            if (!type || (type && ((type === 'plasmid' && global.race.universe === 'antimatter') || (type === 'anti' && global.race.universe !== 'antimatter')))){
+                plasmids += global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
+            }
         }
         value *= 1 + (plasmids / divisor);
     }
     if (global.race.universe === 'standard'){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.0001);
-        }
-        value *= 1 + (de / 200);
+        value *= darkEffect('standard');
     }
     if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
         let temple = 0.06;
@@ -1585,7 +1648,7 @@ export function spatialReasoning(value){
         }
         value *= 1 + (global.city.temple.count * temple);
     }
-    return Math.round(value);
+    return type ? value : Math.round(value);
 }
 
 export function plasmidBonus(type){
