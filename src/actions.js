@@ -13345,7 +13345,8 @@ export function drawCity(){
 export function drawTech(){
     let techs = {};
     let old_techs = {};
-    let tech_categories = []
+    let new_techs = [];
+    let tech_categories = [];
     let old_categories = [];
     let all_categories = [];
     Object.keys(actions.tech).forEach(function (tech_name){
@@ -13385,10 +13386,16 @@ export function drawTech(){
             if (!(category in techs)) {
                 techs[category] = [];
             }
-
-            addAction('tech', tech_name);
+            
+            new_techs.push(tech_name);
         }
     });
+
+    new_techs.sort((a, b) => (actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge()) ? 1 : -1);
+    new_techs.forEach(function(tech_name) {
+        addAction('tech', tech_name);
+    });
+
 
     all_categories.forEach(function(category){
         clearElement($(`#tech-dist-${category}`),true);
