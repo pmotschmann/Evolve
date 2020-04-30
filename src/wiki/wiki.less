@@ -101,20 +101,23 @@
         display: flex;
         flex-wrap: wrap;
         .achievement {
-            width: 20rem;
+            display: inline-flex;
+            justify-content: space-between;
+            width: 23rem;
             margin-right: 1rem;
-            span {
-                display: inline-block;
+            :first-child {
+                width: initial;
             }
             span.achieve {
-                display: inline-block;
+                display: block;
             }
             span.icons {
-                display: flex;
+                display: block;
                 text-align: right;
             }
             p.flair {
                 display: inline;
+                position: initial;
                 line-height: 1rem;
             }
         }
