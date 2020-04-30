@@ -3,6 +3,26 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.14`,
+        date: `4/30/2020`,
+        changes: [
+            `Post unification Federation now gives a 32% bonus (raised from 30%).`,
+            `Federation now increases morale by 10%.`,
+            `Socialist factory bonus is now 10% (raised from 5%).`,
+            `Socialist crafting bonus is now 35% (raised from 25%).`,
+            `Corpocracy factory bonus is now 30% (raised from 20%).`,
+            `Corpocracy factory bonus now applies to Cement, Graphene, and Vitreloy.`,
+            `Republic now increases morale by 20%.`,
+            `Oligarchy tax revenue penalty is now 5% (lowered from 10%).`,
+            `Oligarchy can now set taxes 20% higher then other governments (raised from 10%).`,
+            `Technocracy now adds a 10% Knowledge gain bonus.`,
+            `Autocracy governments are now immune to the warmonger penalty.`,
+            `Priests now apply a bonus to Ziggurats under Theocracy.`,
+            `Fixed display of Theocracy effect on temples. This gives a 12% bonus but was only displaying as a 5% increase.`,
+            `Nobile Oligarchy can now set their taxes as high as 40%.`,
+        ]
+    },
+    {
         version: `0.8.13`,
         date: `4/29/2020`,
         changes: [

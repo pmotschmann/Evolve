@@ -108,6 +108,9 @@ export const job_desc = {
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
     },
     priest: function(){
+        if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            return loc('job_priest_desc2');
+        }
         return loc('job_priest_desc');
     },
     professor: function(){

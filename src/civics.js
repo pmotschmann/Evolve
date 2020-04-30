@@ -127,14 +127,15 @@ const government_desc = {
     anarchy: loc('govern_anarchy_effect'),
     autocracy: loc('govern_autocracy_effect',[25,35]),
     democracy: loc('govern_democracy_effect',[20,5]),
-    oligarchy: loc('govern_oligarchy_effect',[10,10]),
+    oligarchy: loc('govern_oligarchy_effect',[5,20]),
     theocracy: loc('govern_theocracy_effect',[12,25,50]),
-    republic: loc('govern_republic_effect',[25]),
-    socialist: loc('govern_socialist_effect',[25,5,10,20]),
-    corpocracy: loc('govern_corpocracy_effect',[200,150,100,10,20]),
-    technocracy: loc('govern_technocracy_effect',[8,2]),
-    federation: loc('govern_federation_effect',[3]),
-    federation_alt: loc('govern_federation_effect_alt',[5]),
+    theocracy_alt: loc('govern_theocracy_effect_alt',[12,25,50]),
+    republic: loc('govern_republic_effect',[25,20]),
+    socialist: loc('govern_socialist_effect',[35,10,10,20]),
+    corpocracy: loc('govern_corpocracy_effect',[200,150,100,10,30]),
+    technocracy: loc('govern_technocracy_effect',[8,2,10]),
+    federation: loc('govern_federation_effect',[3,10]),
+    federation_alt: loc('govern_federation_effect_alt',[25,32,10]),
 };
 
 function government(govern){
@@ -197,6 +198,9 @@ function government(govern){
 
     $('#govLabel').on('mouseover',function(){
         let effect_type = global.tech['unify'] && global.tech['unify'] >= 2 && global.civic.govern.type === 'federation' ? 'federation_alt' : global.civic.govern.type;
+        if (effect_type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            effect_type = 'theocracy_alt';
+        }
         let popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc[effect_type]}</div></div>`);
         $('#main').append(popper);
         popper.show();
@@ -711,14 +715,14 @@ function taxRates(govern){
             add(){
                 let inc = keyMultiplier();
                 let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
-                let cap = global.civic.govern.type === 'oligarchy' ? 40 : 30;
+                let cap = global.civic.govern.type === 'oligarchy' ? 50 : 30;
                 if (extreme || global.race['terrifying']){
                     cap += 20;
                 }
                 if (global.race['noble']){
                     global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > 20){
-                        global.civic.taxes.tax_rate = 20;
+                    if (global.civic.taxes.tax_rate > global.civic.govern.type === 'oligarchy' ? 40 : 20){
+                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? 40 : 20;
                     }
                 }
                 else if (global.civic.taxes.tax_rate < cap){

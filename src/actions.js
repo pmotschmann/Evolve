@@ -3920,7 +3920,7 @@ export const actions = {
                 if (global.tech['gambling'] >= 2){
                     let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
                     if (global.civic.govern.type === 'corpocracy'){
-                        cash = (cash * 3).toFixed(2);
+                        cash = (cash * 5).toFixed(2);
                     }
                     desc = desc + `<div class="has-text-caution">${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`;
                 }
@@ -3971,7 +3971,7 @@ export const actions = {
                         faith *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
-                        faith *= 1.05;
+                        faith *= 1.12;
                     }
                     faith = +(faith).toFixed(3);
                     let temple = 6;
@@ -3994,7 +3994,7 @@ export const actions = {
                         faith *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
-                        faith *= 1.05;
+                        faith *= 1.12;
                     }
                     faith = +(faith).toFixed(3);
                     desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
@@ -4012,7 +4012,7 @@ export const actions = {
                         plasmid *= 1 + (traits.spiritual.vars[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
-                        plasmid *= 1.05;
+                        plasmid *= 1.12;
                     }
                     plasmid = +(plasmid).toFixed(3);
                     desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;

@@ -167,7 +167,7 @@ export function craftingRatio(res,auto){
         multiplier -= traits.rigid.vars[0] / 100;
     }
     if (global.civic.govern.type === 'socialist'){
-        multiplier *= 1.25;
+        multiplier *= 1.35;
     }
     if (auto){
         if (global.tech['v_train']){
