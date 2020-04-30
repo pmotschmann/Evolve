@@ -3920,7 +3920,7 @@ export const actions = {
                 if (global.tech['gambling'] >= 2){
                     let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
                     if (global.civic.govern.type === 'corpocracy'){
-                        cash = (cash * 5).toFixed(2);
+                        cash = (cash * 3).toFixed(2);
                     }
                     desc = desc + `<div class="has-text-caution">${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`;
                 }

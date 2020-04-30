@@ -5185,9 +5185,6 @@ export function zigguratBonus(){
         if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
             zig += 0.0001 * red_on['exotic_lab'];
         }
-        if (global.civic.govern.type === 'theocracy'){
-            zig += 0.0001 * red_on['exotic_lab'];
-        }
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             zig += 0.00002 * global.civic.priest.workers;
         }
