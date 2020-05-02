@@ -50,9 +50,9 @@ export const arpaProjects = {
             Knowledge(offset){ return costMultiplier('lhc', offset, 500000, 1.05); },
             Copper(offset){ return costMultiplier('lhc', offset, 125000, 1.05); },
             Cement(offset){ return costMultiplier('lhc', offset, 250000, 1.05); },
-            Aluminium(offset){ return costMultiplier('lhc', offset, 300000, 1.05); },
+            Aluminium(offset){ return costMultiplier('lhc', offset, 350000, 1.05); },
             Titanium(offset){ return costMultiplier('lhc', offset, 50000, 1.05); },
-            Polymer(offset){ return costMultiplier('lhc', offset, 8000, 1.05); }
+            Polymer(offset){ return costMultiplier('lhc', offset, 12000, 1.05); }
         }
     },
     stock_exchange: {
