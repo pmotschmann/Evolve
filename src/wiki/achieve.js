@@ -2,6 +2,7 @@ import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
 import { achievements, feats } from './../achieve.js';
+import { races, biomes, genus_traits } from './../races.js';
 import { popover } from './functions.js';
 
 export function renderAchievePage(zone){
@@ -25,7 +26,7 @@ function achievePage(){
     let list = $(`<div class="achieveList"></div>`);
     content.append(list);
 
-    Object.keys(achievements).forEach(function (achievement){
+    Object.keys(achievements).sort((a,b) => achievements[a].name.localeCompare(achievements[b].name)).forEach(function (achievement){
         let achieve = $(`<div class="achievement"></div>`);
         list.append(achieve);
 
@@ -35,7 +36,7 @@ function achievePage(){
         let emblems = format_emblem(achievement,16);
         achieve.append(`<span class="icons">${emblems}</span>`);
         
-        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>`));
+        achieveDesc(achievement);
     });
 }
 
@@ -57,6 +58,78 @@ function featPage(){
         
         popover(`f-${feat}`,featDesc(feat));
     });
+}
+
+function achieveDesc(achievement){
+    if (achievement === 'mass_extinction'){
+        let killed = `<div class="flexed">`;
+        Object.keys(races).sort(function(a,b){
+            if (races[a].hasOwnProperty('name') && races[b].hasOwnProperty('name')){
+                return races[a].name.localeCompare(races[b].name);
+            }
+            else {
+                return 0;
+            }            
+        }).forEach(function (key){
+            if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
+                if (global.stats.achieve[`extinct_${key}`] && global.stats.achieve[`extinct_${key}`].l >= 0){
+                    killed = killed + `<span class="has-text-success">${races[key].name}</span>`;
+                }
+                else {
+                    killed = killed + `<span class="has-text-danger">${races[key].name}</span>`;
+                }
+            }
+        });
+        killed = killed + `<div>`;
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${killed}`));
+    }
+    else if (achievement === 'explorer'){
+        let biome_list = `<div class="flexed">`;
+        Object.keys(biomes).sort((a,b) => biomes[a].label.localeCompare(biomes[b].label)).forEach(function (key){
+            if (global.stats.achieve[`biome_${key}`] && global.stats.achieve[`biome_${key}`].l >= 0){
+                biome_list = biome_list + `<span class="has-text-success">${biomes[key].label}</span>`;
+            }
+            else {
+                biome_list = biome_list + `<span class="has-text-danger">${biomes[key].label}</span>`;
+            }
+        });
+        biome_list = biome_list + `<div>`;
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${biome_list}`));
+    }
+    else if (achievement === 'creator' || achievement === 'heavyweight'){
+        let genus = `<div class="flexed">`;
+        const custom_map = {
+            humanoid: 'humanoid',
+            animal: 'animalism',
+            small: 'dwarfism',
+            giant : 'gigantism',
+            reptilian: 'ectothermic',
+            avian: 'endothermic',
+            insectoid: 'athropods',
+            plant: 'chloroplasts',
+            fungi: 'chitin',
+            aquatic: 'aquatic',
+            fey: 'fey',
+            heat: 'heat',
+            polar: 'polar',
+            sand: 'sand',
+            demonic: 'demonic',
+            angelic: 'celestial'
+        };        
+        Object.keys(genus_traits).sort((a,b) => custom_map[a].localeCompare(custom_map[b])).forEach(function (key){
+            if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].l >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
+                genus = genus + `<span class="wide has-text-success">${loc(`evo_${custom_map[key]}_title`)}</span>`;
+            }
+            else {
+                genus = genus + `<span class="wide has-text-danger">${loc(`evo_${custom_map[key]}_title`)}</span>`;
+            }
+        });
+        genus = genus + `<div>`;
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${genus}`));
+    }
+    else {
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>`));
+    }
 }
 
 function featDesc(feat){

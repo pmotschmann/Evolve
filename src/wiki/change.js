@@ -6,7 +6,15 @@ const changeList = [
         version: `0.8.15`,
         date: `5/2/2020`,
         changes: [
+            `Grassland biome Food bonus raised to 20%.`,
+            `Forest biome Lumber bonus raised to 15%.`,
+            `Desert biome now applies a 25% Lumber penalty.`,
+            `Desert biome now gives a 20% stone bonus and a 10% Oil bonus.`,
+            `Volcanic biome now applies a 10% Food penalty.`,
+            `Volcanic biome now gives an 8% Iron and 12% Copper bonus.`,
             `Added partial Korean translation.`,
+            `Achievements in the wiki are now sorted Alphabetically.`,
+            `Some achievements now show completion progress in the wiki.`,
         ]
     },
     {
@@ -26,7 +34,7 @@ const changeList = [
             `Autocracy governments are now immune to the warmonger penalty.`,
             `Priests now apply a bonus to Ziggurats under Theocracy.`,
             `Fixed display of Theocracy effect on temples. This gives a 12% bonus but was only displaying as a 5% increase.`,
-            `Nobile Oligarchy can now set their taxes as high as 40%.`,
+            `Noble Oligarchy can now set their taxes as high as 40%.`,
         ]
     },
     {
