@@ -97,31 +97,13 @@ function achieveDesc(achievement){
         popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${biome_list}`));
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
-        let genus = `<div class="flexed">`;
-        const custom_map = {
-            humanoid: 'humanoid',
-            animal: 'animalism',
-            small: 'dwarfism',
-            giant : 'gigantism',
-            reptilian: 'ectothermic',
-            avian: 'endothermic',
-            insectoid: 'athropods',
-            plant: 'chloroplasts',
-            fungi: 'chitin',
-            aquatic: 'aquatic',
-            fey: 'fey',
-            heat: 'heat',
-            polar: 'polar',
-            sand: 'sand',
-            demonic: 'demonic',
-            angelic: 'celestial'
-        };        
-        Object.keys(genus_traits).sort((a,b) => custom_map[a].localeCompare(custom_map[b])).forEach(function (key){
+        let genus = `<div class="flexed">`;    
+        Object.keys(genus_traits).sort().forEach(function (key){
             if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].l >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
-                genus = genus + `<span class="wide has-text-success">${loc(`evo_${custom_map[key]}_title`)}</span>`;
+                genus = genus + `<span class="wide has-text-success">${loc(`genelab_genus_${key}`)}</span>`;
             }
             else {
-                genus = genus + `<span class="wide has-text-danger">${loc(`evo_${custom_map[key]}_title`)}</span>`;
+                genus = genus + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
             }
         });
         genus = genus + `<div>`;
