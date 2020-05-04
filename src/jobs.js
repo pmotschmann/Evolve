@@ -30,7 +30,10 @@ export const job_desc = {
         else {
             let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
             multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-            let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.1) : global.civic.lumberjack.impact;
+            let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * 1.15) : global.civic.lumberjack.impact;
+            if (global.city.biome === 'desert'){
+                impact *= 0.75;
+            }
             let gain = +(impact * multiplier).toFixed(1);
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
             if (global.civic.d_job === 'lumberjack'){
@@ -42,6 +45,9 @@ export const job_desc = {
     quarry_worker: function(){
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
         multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
+        if (global.city.biome === 'desert'){
+            multiplier *= 1.2;
+        }
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
@@ -374,7 +380,8 @@ export function farmerValue(farm){
         farming += global.tech['agriculture'] >= 2 ? 1.15 : 0.65;
     }
     farming *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
-    farming *= global.city.biome === 'grassland' ? 1.1 : 1;
+    farming *= global.city.biome === 'grassland' ? 1.2 : 1;
+    farming *= global.city.biome === 'volcanic' ? 0.9 : 1;
     farming *= global.city.biome === 'hellscape' ? 0.25 : 1;
     farming *= global.city.ptrait === 'trashed' ? 0.75 : 1;
     farming *= racialTrait(global.civic.farmer.workers,'farmer');

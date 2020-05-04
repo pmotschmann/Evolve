@@ -3153,7 +3153,7 @@ function fastLoop(){
             }
             else {
                 let lumber_base = global.civic.lumberjack.workers;
-                lumber_base *= global.city.biome === 'forest' ? 1.1 : 1;
+                lumber_base *= global.city.biome === 'forest' ? 1.15 : 1;
                 lumber_base *= global.civic.lumberjack.impact;
                 lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
                 lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
@@ -3191,6 +3191,9 @@ function fastLoop(){
             stone_base *= global.civic.quarry_worker.impact;
             stone_base *= racialTrait(global.civic.quarry_worker.workers,'miner');
             stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
+            if (global.city.biome === 'desert'){
+                stone_base *= 1.2;
+            }
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 stone_base *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
             }
@@ -3301,6 +3304,10 @@ function fastLoop(){
                     copper_base *= global.city.geology['Copper'] + 1;
                 }
 
+                if (global.city.biome === 'volcanic'){
+                    copper_base *= 1.12;
+                }
+
                 let copper_shrine = 1;
                 if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                     copper_shrine = 1 + (global.city.shrine.metal / 100);
@@ -3334,6 +3341,10 @@ function fastLoop(){
 
                 if (global.city.geology['Iron']){
                     iron_base *= global.city.geology['Iron'] + 1;
+                }
+
+                if (global.city.biome === 'volcanic'){
+                    iron_base *= 1.08;
                 }
 
                 let space_iron = 0;
@@ -3497,6 +3508,9 @@ function fastLoop(){
                 oil_base *= global.city.geology['Oil'] + 1;
             }
             let oil_well = oil_base * global.city.oil_well.count;
+            if (global.city.biome === 'desert'){
+                oil_well *= 1.1;
+            }
 
             let delta = oil_well + oil_extractor;
             delta *= hunger * global_multiplier;

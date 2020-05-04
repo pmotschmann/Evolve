@@ -3,23 +3,38 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.15`,
+        date: `5/2/2020`,
+        changes: [
+            `Grassland biome Food bonus raised to 20%.`,
+            `Forest biome Lumber bonus raised to 15%.`,
+            `Desert biome now applies a 25% Lumber penalty.`,
+            `Desert biome now gives a 20% stone bonus and a 10% Oil bonus.`,
+            `Volcanic biome now applies a 10% Food penalty.`,
+            `Volcanic biome now gives an 8% Iron and 12% Copper bonus.`,
+            `Added partial Korean translation.`,
+            `Achievements in the wiki are now sorted Alphabetically.`,
+            `Some achievements now show completion progress in the wiki.`,
+        ]
+    },
+    {
         version: `0.8.14`,
         date: `4/30/2020`,
         changes: [
-            `통일 후 연방은 32%의 보너스를 받습니다. (기존 30%).`,
-            `연방은 행복도를 10% 상승시킵니다.`,
-            `공산주의 공장 보너스가 10%입니다. (기존 5%).`,
-            `공산주의 제작 보너스가 35%입니다. (기존 25%).`,
-            `기업 정치 공장 보너스가 30%입니다. (기존 20%).`,
-            `기업 정치 보너스는 시멘트, 그래핀, 비트르로이에도 적용됩니다.`,
-            `공화국은 행복도를 20% 상승시킵니다.`,
-            `과두제의 세금 페널티는 5%입니다. (기존 10%).`,
-            `과두제는 세율을 20% 더 높게 정할 수 있습니다. (기존 10%).`,
-            `기술주의에서는 10%의 지식 보너스를 받습니다.`,
-            `전제정치에서는 전쟁광 페널티를 받지 않습니다.`,
-            `신권 정치에서는 사제가 지구라트를 부스트합니다.`,
-            `신권 정치 사원 효과 표시 버그 수정`,
-            `고귀함 특성에서 과두제를 선택하면 세율을 최대 40%로 정할 수 있습니다.`,
+            `Post unification Federation now gives a 32% bonus (raised from 30%).`,
+            `Federation now increases morale by 10%.`,
+            `Socialist factory bonus is now 10% (raised from 5%).`,
+            `Socialist crafting bonus is now 35% (raised from 25%).`,
+            `Corpocracy factory bonus is now 30% (raised from 20%).`,
+            `Corpocracy factory bonus now applies to Cement, Graphene, and Vitreloy.`,
+            `Republic now increases morale by 20%.`,
+            `Oligarchy tax revenue penalty is now 5% (lowered from 10%).`,
+            `Oligarchy can now set taxes 20% higher then other governments (raised from 10%).`,
+            `Technocracy now adds a 10% Knowledge gain bonus.`,
+            `Autocracy governments are now immune to the warmonger penalty.`,
+            `Priests now apply a bonus to Ziggurats under Theocracy.`,
+            `Fixed display of Theocracy effect on temples. This gives a 12% bonus but was only displaying as a 5% increase.`,
+            `Noble Oligarchy can now set their taxes as high as 40%.`,
         ]
     },
     {
