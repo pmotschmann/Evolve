@@ -968,8 +968,9 @@ export function bloodwar(){
     if (global.civic.garrison.wounded > global.civic.garrison.workers){
         global.civic.garrison.wounded = global.civic.garrison.workers;
     }
-    if (global.civic.garrison.workers < global.portal.fortress.garrison){
-        global.portal.fortress.garrison = global.civic.garrison.workers;
+    let home_garrison = global.civic.garrison.workers - global.civic.garrison.crew;
+    if (home_garrison < global.portal.fortress.garrison){
+        global.portal.fortress.garrison = home_garrison;
     }
     if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
         global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
