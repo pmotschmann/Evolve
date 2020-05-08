@@ -663,6 +663,11 @@ function fastLoop(){
         breakdown.p['Global'][loc('event_protest')] = `-${30}%`;
         global_multiplier *= 0.7;
     }
+    if (global.city['firestorm'] && global.city.firestorm > 0){
+        global.city.firestorm--;
+        breakdown.p['Global'][loc('event_flare_bd')] = `-${20}%`;
+        global_multiplier *= 0.8;
+    }
 
     breakdown.p['consume'] = {
         Money: {},
@@ -1763,6 +1768,9 @@ function fastLoop(){
                     let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
                     stress_level += global.race['content'] * effectiveness;
                 }
+                if (global.city.ptrait === 'dense' && job === 'miner'){
+                    stress_level -= 1;
+                }
 
                 stress -= global.civic[job].workers / stress_level;
             }
@@ -2289,6 +2297,9 @@ function fastLoop(){
             }
 
             let hunting = armyRating(garrisonSize(),'hunting') / 10;
+            if (global.city.biome === 'oceanic'){
+                hunting *= 0.95;
+            }
             fur_bd[loc('soldiers')] = hunting  + 'v';
             fur_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -2958,6 +2969,9 @@ function fastLoop(){
                     if (global.city.geology['Titanium']){
                         delta *= global.city.geology['Titanium'] + 1;
                     }
+                    if (global.city.biome === 'oceanic'){
+                        delta *= 1.06;
+                    }
                     if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                         delta *= 1 + (global.city.shrine.metal / 100);
                     }
@@ -3282,6 +3296,9 @@ function fastLoop(){
                 let bonus = 1 + (global.race['industrious'] / 50);
                 miner_base *= bonus;
             }
+            if (global.city.ptrait === 'dense'){
+                miner_base *= 1.2;
+            }
             miner_base *= (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.15 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 miner_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
@@ -3384,6 +3401,9 @@ function fastLoop(){
                     delta = iron * global_multiplier;
                     if (global.city.geology['Titanium']){
                         delta *= global.city.geology['Titanium'] + 1;
+                    }
+                    if (global.city.biome === 'oceanic'){
+                        delta *= 1.12;
                     }
                     if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                         delta *= 1 + (global.city.shrine.metal / 100);
@@ -5892,14 +5912,34 @@ function longLoop(){
                 global.city.calendar.year++;
             }
 
-            let season_length = Math.round(global.city.calendar.orbit / 4);
+            let s_segments = global.city.ptrait === 'elliptical' ? 6 : 4;
+            let season_length = Math.round(global.city.calendar.orbit / s_segments);
             let days = global.city.calendar.day;
             let season = 0;
             while (days > season_length){
                 days -= season_length;
                 season++;
             }
-            global.city.calendar.season = season;
+            if (global.city.ptrait === 'elliptical'){
+                switch (season){
+                    case 0:
+                        global.city.calendar.season = 0;
+                        break;
+                    case 1:
+                    case 2:
+                        global.city.calendar.season = 1;
+                        break;
+                    case 3:
+                        global.city.calendar.season = 2;
+                        break;
+                    default:
+                        global.city.calendar.season = 3;
+                        break;
+                }
+            }
+            else {
+                global.city.calendar.season = season;
+            }            
 
             // Weather
             if (Math.rand(0,5) === 0){

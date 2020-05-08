@@ -3086,11 +3086,11 @@ const interstellarProjects = {
                         }
                     }
                 }
-                let power = Math.round(10000 - (heatsink * (global.interstellar.hasOwnProperty('thermal_collector') ? global.interstellar.thermal_collector.count : 0)));
+                let power = Math.round(powerCostMod(10000) - (heatsink * (global.interstellar.hasOwnProperty('thermal_collector') ? global.interstellar.thermal_collector.count : 0)));
                 if (power < 0){
                     power = 0;
                 }
-                return powerCostMod(power);
+                return power;
             },
             postPower(o){
                 if (o){
@@ -5164,6 +5164,9 @@ export function fuel_adjust(fuel){
     }
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
+    }
+    if (global.city.ptrait === 'dense'){
+        fuel *= 1.2;
     }
     return fuel;
 }

@@ -2165,5 +2165,21 @@ export const planetTraits = {
     trashed: {
         label: loc('planet_trashed'),
         desc: loc('planet_trashed_desc')
+    },
+    elliptical: {
+        label: loc('planet_elliptical'),
+        desc: loc('planet_elliptical_desc')
+    },
+    flare: {
+        label: loc('planet_flare'),
+        desc: loc('planet_flare_desc')
+    },
+    dense: {
+        label: loc('planet_dense'),
+        desc: loc('planet_dense_desc')
+    },
+    unstable: {
+        label: loc('planet_unstable'),
+        desc: loc('planet_unstable_desc')
     }
 };
