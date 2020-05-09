@@ -28,8 +28,5 @@
   "devDependencies": {
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"
-  },
-  "dependencies": {
-    "vue": "^2.6.10"
   }
 }

@@ -9,6 +9,8 @@ const changeList = [
             `Oceanic biome now applies a 6% bonus to Titanium from Steel smelting.`,
             `Oceanic biome now applies a 12% bonus to Titanium from Iron smelting.`,
             `Oceanic biome now applies a 5% penalty to Fur generation.`,
+            `Tundra biome now applies a 25% bonus to Fur generation.`,
+            `Tundra biome now applies a 10% penalty to Oil generation.`,
             `New plantery modifiers: Elliptical, Flare, Dense, and Unstable.`,
             `Oligarchy tax riot immunity raised from 35% to 45%.`,
         ]

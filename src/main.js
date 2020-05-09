@@ -2300,6 +2300,9 @@ function fastLoop(){
             if (global.city.biome === 'oceanic'){
                 hunting *= 0.95;
             }
+            else if (global.city.biome === 'tundra'){
+                hunting *= 1.25;
+            }
             fur_bd[loc('soldiers')] = hunting  + 'v';
             fur_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -3530,6 +3533,9 @@ function fastLoop(){
             let oil_well = oil_base * global.city.oil_well.count;
             if (global.city.biome === 'desert'){
                 oil_well *= 1.1;
+            }
+            else if (global.city.biome === 'tundra'){
+                hunting *= 0.9;
             }
 
             let delta = oil_well + oil_extractor;
