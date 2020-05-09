@@ -3535,7 +3535,7 @@ function fastLoop(){
                 oil_well *= 1.1;
             }
             else if (global.city.biome === 'tundra'){
-                hunting *= 0.9;
+                oil_well *= 0.9;
             }
 
             let delta = oil_well + oil_extractor;
