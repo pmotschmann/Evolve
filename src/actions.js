@@ -9242,7 +9242,7 @@ export const actions = {
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
             cost: {
-                Knowledge(){ return 2700; },
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 1350 : 2700; },
                 Iron(){ return 250; }
             },
             effect: loc('tech_iron_axes_effect'),
@@ -9344,7 +9344,7 @@ export const actions = {
             reqs: { hammer: 1, mining: 3 },
             grant: ['hammer',2],
             cost: {
-                Knowledge(){ return 2700; },
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 1350 : 2700; },
                 Iron(){ return 250; }
             },
             effect: loc('tech_iron_sledgehammer_effect'),
@@ -9424,7 +9424,7 @@ export const actions = {
             reqs: { pickaxe: 1, mining: 3 },
             grant: ['pickaxe',2],
             cost: {
-                Knowledge(){ return 3200; },
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 1600 : 3200; },
                 Iron(){ return 250; }
             },
             effect: loc('tech_iron_pickaxe_effect'),
@@ -9545,7 +9545,7 @@ export const actions = {
             reqs: { hoe: 1, mining: 3, agriculture: 1 },
             grant: ['hoe',2],
             cost: {
-                Knowledge(){ return 3600; },
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 1800 : 3600; },
                 Iron(){ return 500; }
             },
             effect: loc('tech_iron_hoe_effect'),
