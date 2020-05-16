@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.17`,
+        date: `5/??/2020`,
+        changes: [
+            `Added 3rd race options for Plant and Fungus genus. Moldling and Pinguicula.`,
+        ]
+    },
+    {
         version: `0.8.16`,
         date: `5/8/2020`,
         changes: [

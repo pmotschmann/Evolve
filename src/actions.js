@@ -373,14 +373,14 @@ export const actions = {
                     addAction('evolution','sentience');
 
                     if (global.evolution['chitin']){
-                        addRaces(['sporgar','shroomi']);
+                        addRaces(['sporgar','shroomi','moldling']);
                         if (races.custom.hasOwnProperty('type') && races.custom.type === 'fungi'){
                             global.evolution['custom'] = { count: 0 };
                             addAction('evolution','custom');
                         }
                     }
                     else {
-                        addRaces(['entish','cacti']);
+                        addRaces(['entish','cacti','pinguicula']);
                         if (races.custom.hasOwnProperty('type') && races.custom.type === 'plant'){
                             global.evolution['custom'] = { count: 0 };
                             addAction('evolution','custom');
@@ -1103,6 +1103,7 @@ export const actions = {
                     else if (global.evolution['chitin']){
                         races.push('sporgar');
                         races.push('shroomi');
+                        races.push('moldling');
                         if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fungi'){
                             races.push('custom');
                         }
@@ -1118,6 +1119,7 @@ export const actions = {
                     else if (global.evolution['chloroplasts']){
                         races.push('entish');
                         races.push('cacti');
+                        races.push('pinguicula');
                         if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'plant'){
                             races.push('custom');
                         }
@@ -1641,6 +1643,26 @@ export const actions = {
             },
             emblem(){ return format_emblem('extinct_shroomi'); }
         },
+        moldling: {
+            id: 'evo-moldling',
+            title(){ return races.moldling.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.moldling.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.moldling.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'moldling';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_moldling'); }
+        },
         mantis: {
             id: 'evo-mantis',
             title(){ return races.mantis.name; },
@@ -1740,6 +1762,26 @@ export const actions = {
                 return false;
             },
             emblem(){ return format_emblem('extinct_cacti'); }
+        },
+        pinguicula: {
+            id: 'evo-pinguicula',
+            title(){ return races.pinguicula.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.pinguicula.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.pinguicula.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'pinguicula';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_pinguicula'); }
         },
         sharkin: {
             id: 'evo-sharkin',

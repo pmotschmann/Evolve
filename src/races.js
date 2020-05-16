@@ -1344,6 +1344,24 @@ export const races = {
         },
         fanaticism: 'hyper'
     },
+    pinguicula: {
+        name: loc('race_pinguicula'),
+        desc: loc('race_pinguicula_desc'),
+        type: 'plant',
+        home: loc('race_pinguicula_home'),
+        entity: loc('race_pinguicula_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_pinguicula_solar_red'),
+            hell: loc('race_pinguicula_solar_hell'),
+            gas: loc('race_pinguicula_solar_gas'),
+            gas_moon: loc('race_pinguicula_solar_gas_moon'),
+            dwarf: loc('race_pinguicula_solar_dwarf'),
+        },
+        fanaticism: 'none'
+    },
     sporgar: {
         name: loc('race_sporgar'),
         desc: loc('race_sporgar_desc'),
@@ -1381,6 +1399,24 @@ export const races = {
             dwarf: loc('race_shroomi_solar_dwarf'),
         },
         fanaticism: 'toxic'
+    },
+    moldling: {
+        name: loc('race_moldling'),
+        desc: loc('race_moldling_desc'),
+        type: 'fungi',
+        home: loc('race_moldling_home'),
+        entity: loc('race_moldling_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_moldling_solar_red'),
+            hell: loc('race_moldling_solar_hell'),
+            gas: loc('race_moldling_solar_gas'),
+            gas_moon: loc('race_moldling_solar_gas_moon'),
+            dwarf: loc('race_moldling_solar_dwarf'),
+        },
+        fanaticism: 'none'
     },
     mantis: {
         name: loc('race_mantis'),
