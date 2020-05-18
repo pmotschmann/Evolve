@@ -4923,6 +4923,27 @@ export const actions = {
                 return false;
             }
         },
+        compost: {
+            id: 'tech-compost',
+            title: loc('tech_compost'),
+            desc: loc('tech_compost_desc'),
+            category: 'compost',
+            era: 'civilized',
+            reqs: { primitive: 3 },
+            trait: ['detritivore'],
+            grant: ['compost',1],
+            cost: {
+                Knowledge(){ return 10; }
+            },
+            effect: loc('tech_compost_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['compost'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         agriculture: {
             id: 'tech-agriculture',
             title: loc('tech_agriculture'),
@@ -4930,7 +4951,7 @@ export const actions = {
             category: 'agriculture',
             era: 'civilized',
             reqs: { primitive: 3 },
-            not_trait: ['carnivore','soul_eater'],
+            not_trait: ['carnivore','soul_eater','detritivore'],
             grant: ['agriculture',1],
             cost: {
                 Knowledge(){ return 10; }

@@ -7,6 +7,8 @@ const changeList = [
         date: `5/??/2020`,
         changes: [
             `Added 3rd race options for Plant and Fungus genus. Moldling and Pinguicula.`,
+            `Slaver trait rating raised to 12.`,
+            `Fungi genus spore trait replaced with Detritivore.`
         ]
     },
     {

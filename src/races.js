@@ -40,7 +40,7 @@ export const genus_traits = {
         asymmetrical: 1
     },
     fungi: {
-        spores: 1,
+        detritivore: 1,
         spongy: 1
     },
     aquatic: {
@@ -191,6 +191,12 @@ export const traits = {
         type: 'genus',
         val: -3,
         vars: [20]
+    },
+    detritivore: { // You eat dead matter
+        name: loc('trait_detritivore_name'),
+        desc: loc('trait_detritivore'),
+        type: 'genus',
+        val: 2,
     },
     spores: { // Birthrate increased when it's windy
         name: loc('trait_spores_name'),
@@ -595,6 +601,19 @@ export const traits = {
         val: -3,
         vars: [5,2]
     },
+    infiltrator: { // Cheap spies and sometimes steal tech from rivals
+        name: loc('trait_infiltrator_name'),
+        desc: loc('trait_infiltrator'),
+        type: 'major',
+        val: 4,
+    },
+    hibernator: { // Lower activity during winter
+        name: loc('trait_hibernator_name'),
+        desc: loc('trait_hibernator'),
+        type: 'major',
+        val: -3,
+        vars: [25,8]
+    },
     cannibalize: { // Eat your own for buffs
         name: loc('trait_cannibalize_name'),
         desc: loc('trait_cannibalize'),
@@ -790,7 +809,7 @@ export const traits = {
         name: loc('trait_slaver_name'),
         desc: loc('trait_slaver'),
         type: 'major',
-        val: 10,
+        val: 12,
     },
     compact: { // You hardly take up any space at all
         name: loc('trait_compact_name'),
@@ -1407,7 +1426,8 @@ export const races = {
         home: loc('race_moldling_home'),
         entity: loc('race_moldling_entity'),
         traits: {
-
+            infiltrator: 1,
+            hibernator: 1
         },
         solar: {
             red: loc('race_moldling_solar_red'),
@@ -1776,6 +1796,7 @@ export const races = {
             atrophy: 1,
             invertebrate: 1,
             pathetic: 1,
+            hibernator: 1
         },
         solar: {
             red: loc('race_junker_solar_red'),

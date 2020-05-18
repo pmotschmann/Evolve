@@ -4851,7 +4851,8 @@ function galaxySpace(){
                         return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
                     },
                     threat(r){
-                        if (global.galaxy.defense[r].scout_ship >= 2){
+                        let scouts_req = global.race['infiltrator'] ? 1 : 2;
+                        if (global.galaxy.defense[r].scout_ship >= scouts_req){
                             let pirates = (1 - piracy(r,true)) * 100;
                             pirates = (pirates < 1) ? Math.ceil(pirates) : Math.round(pirates);
                             if (pirates === 0){
@@ -4878,10 +4879,12 @@ function galaxySpace(){
                 },
                 filters: {
                     pirate(r){
-                        if (global.galaxy.defense[r].scout_ship >= 2){
+                        let scouts_req = global.race['infiltrator'] ? 1 : 2;
+                        if (global.galaxy.defense[r].scout_ship >= scouts_req){
                             let pirates = (1 - piracy(r,true)) * 100;
                             pirates = (pirates < 1) ? Math.ceil(pirates) : Math.round(pirates);
-                            if (global.galaxy.defense[r].scout_ship >= 4){
+                            let adv_req = global.race['infiltrator'] ? 3 : 4;
+                            if (global.galaxy.defense[r].scout_ship >= adv_req){
                                 return `${pirates}%`;
                             }
                             else {

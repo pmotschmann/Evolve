@@ -478,10 +478,13 @@ export function foreignGov(){
                         global.resource.Money.amount -= cost;
                         let time = 300;
                         if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                            time -= global.city['boot_camp'].count * 10;
+                            time -= global.city['boot_camp'].count * 10;                            
                             if (time < 10){
                                 time = 10;
-                            }
+                            }                            
+                        }
+                        if (global.race['infiltrator']){
+                            time = Math.round(time / 2);
                         }
                         global.civic.foreign[`gov${i}`].trn = time;
                     }
@@ -508,6 +511,9 @@ function spyCost(i){
     let base = Math.round((global.civic.foreign[`gov${i}`].mil / 2) + (global.civic.foreign[`gov${i}`].hstl / 2) - global.civic.foreign[`gov${i}`].unrest) + 10;
     if (base < 50){
         base = 50;
+    }
+    if (global.race['infiltrator']){
+        base /= 3;
     }
     return Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
 }
