@@ -800,7 +800,7 @@
   "tech_vr_center_effect": "Cutting edge virtual reality simulations can be used for entertainment.",
   "tech_casino": "Casino",
   "tech_casino_effect": "Casinos not only offer entertainment for your populace but a new revenue source for you.",
-  "tech_casino_effect2": "If powered consumes %0MW but generates $%1 revenue.",
+  "tech_casino_effect2": "+$%0 revenue",
   "tech_dazzle": "Extreme Dazzle",
   "tech_dazzle_effect": "Sucker in more customers to your casinos by electrifying them with extreme dazzle.",
   "tech_casino_vault": "Casino Vault",

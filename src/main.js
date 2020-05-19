@@ -1859,7 +1859,7 @@ function fastLoop(){
         }
 
         let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
-        mBaseCap += global.city['casino'] ? global.city['casino'].count : 0;
+        mBaseCap += global.city['casino'] ? p_on['casino'] : 0;
         if (red_on['vr_center']){
             mBaseCap += red_on['vr_center'] * 2;
         }
@@ -3910,19 +3910,20 @@ function fastLoop(){
             modRes('Money', +(delta * time_multiplier).toFixed(2));
         }
 
-        if (p_on['casino']){
-            if (global.tech['gambling'] >= 2){
-                let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
-                if (global.civic.govern.type === 'corpocracy'){
-                    cash *= 3;
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    cash *= 0.8;
-                }
-                cash *= p_on['casino'];
-                money_bd[loc('city_casino')] = cash + 'v';
-                modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
+        if (global.tech['gambling'] && p_on['casino']){
+            let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+            if (global.tech.gambling >= 2){
+                cash *= 1.5;
             }
+            if (global.civic.govern.type === 'corpocracy'){
+                cash *= 3;
+            }
+            if (global.civic.govern.type === 'socialist'){
+                cash *= 0.8;
+            }
+            cash *= p_on['casino'];
+            money_bd[loc('city_casino')] = cash + 'v';
+            modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
         }
 
         if (global.city['tourist_center']){

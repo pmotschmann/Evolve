@@ -8,7 +8,11 @@ const changeList = [
         changes: [
             `Added 3rd race options for Plant and Fungus genus. Moldling and Pinguicula.`,
             `Slaver trait rating raised to 12.`,
-            `Fungi genus Spore trait replaced with Detritivore.`
+            `Fungi genus Spore trait replaced with Detritivore.`,
+            `Casinos now start powered and generated money immediately.`,
+            `Extreme Dazzle upgrade now boosts Casino income by 50%.`,
+            `Reduced power requirement of Casino by 1.`,
+            `Casino Max Morale boost no longer works unless casino is powered.`
         ]
     },
     {

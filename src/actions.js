@@ -3914,7 +3914,7 @@ export const actions = {
                 let amp = global.civic.govern.type === 'corpocracy' ? 2 : 1;
                 let cas = global.civic.govern.type === 'corpocracy' ? 10 : 5;
                 let mon = global.civic.govern.type === 'corpocracy' ? 4 : 2;
-                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`;
+                return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`;
             },
             powered(){ return powerCostMod(1); },
             action(){
@@ -3976,23 +3976,31 @@ export const actions = {
                 money = '$'+money;
                 let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
-                if (global.tech['gambling'] >= 2){
-                    let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
-                    if (global.civic.govern.type === 'corpocracy'){
-                        cash = (cash * 3).toFixed(2);
-                    }
-                    desc = desc + `<div class="has-text-caution">${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`;
+                let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+                if (global.tech['gambling'] && global.tech['gambling'] >= 2){
+                    cash *= 1.5;
                 }
+                if (global.civic.govern.type === 'corpocracy'){
+                    cash *= 3;
+                }
+                if (global.civic.govern.type === 'socialist'){
+                    cash *= 0.8;
+                }
+                cash = +(cash).toFixed(2);
+                desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 3 : 4); },
-            power_reqs: { gambling: 2 },
+            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['casino'].count++;
+                    global.city.casino.count++;
                     if (!global.race['joyless']){
                         global.civic.entertainer.max++;
                         global.civic.entertainer.display = true;
+                    }
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.city.casino.on++;
                     }
                     return true;
                 }
