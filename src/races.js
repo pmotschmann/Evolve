@@ -1436,7 +1436,7 @@ export const races = {
             gas_moon: loc('race_moldling_solar_gas_moon'),
             dwarf: loc('race_moldling_solar_dwarf'),
         },
-        fanaticism: 'none'
+        fanaticism: 'infiltrator'
     },
     mantis: {
         name: loc('race_mantis'),
