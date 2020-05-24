@@ -6726,7 +6726,7 @@ export const actions = {
             era: 'early_space',
             reqs: { govern: 2 },
             condition(){
-                return (global.tech['unify'] && global.tech['unify'] >= 2) || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy ? true : false;
+                return (global.tech['unify'] && global.tech['unify'] >= 2) || global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy ? true : false;
             },
             grant: ['gov_fed',1],
             cost: {

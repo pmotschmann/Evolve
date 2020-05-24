@@ -127,6 +127,11 @@ export const achievements = {
         desc: loc("achieve_cult_of_personality_desc"),
         flair: loc("achieve_cult_of_personality_flair")
     },
+    density_name: {
+        name: loc("achieve_double_density_name"),
+        desc: loc("achieve_double_density_desc"),
+        flair: loc("achieve_double_density_flair")
+    },
     doomed: {
         name: loc("achieve_doomed_name"),
         desc: loc("achieve_doomed_desc"),

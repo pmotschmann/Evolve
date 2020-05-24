@@ -12,7 +12,9 @@ const changeList = [
             `Casinos now start powered and generated money immediately.`,
             `Extreme Dazzle upgrade now boosts Casino income by 50%.`,
             `Reduced power requirement of Casino by 1.`,
-            `Casino Max Morale boost no longer works unless casino is powered.`
+            `Casino Max Morale boost no longer works unless casino is powered.`,
+            `Occupation will now unlock Federation research.`,
+            `Added Double Density achievement in heavyverse.`
         ]
     },
     {
