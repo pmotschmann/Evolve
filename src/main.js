@@ -612,8 +612,8 @@ function fastLoop(){
         global_multiplier *= 1 + (bonus / 100);
     }
     if (global.city.ptrait === 'mellow'){
-        breakdown.p['Global'][loc('planet_mellow_bd')] = '-2%';
-        global_multiplier *= 0.98;
+        breakdown.p['Global'][loc('planet_mellow_bd')] = '-10%';
+        global_multiplier *= 0.9;
     }
     if (global.city.ptrait === 'ozone' && global.city['sun']){
         let uv = global.city['sun'] * 0.25;
@@ -888,11 +888,13 @@ function fastLoop(){
 
         let stress = 0;
         if (!global.race['carnivore'] && !global.race['soul_eater']){
-            morale -= global.civic.free;
-            global.city.morale.unemployed = -(global.civic.free);
+            if (global.city.ptrait !== 'mellow'){
+                morale -= global.civic.free;
+                global.city.morale.unemployed = -(global.civic.free);
+            }
         }
         else {
-            stress -= global.civic.free / (global.city.ptrait === 'mellow' ? 5.5 : 5);
+            stress -= global.civic.free / (global.city.ptrait === 'mellow' ? 7.5 : 5);
             global.city.morale.unemployed = 0;
         }
 
@@ -905,7 +907,12 @@ function fastLoop(){
         }
 
         if (global.civic['garrison']){
-            stress -= global.civic.garrison.max / 2;
+            if (global.city.ptrait === 'mellow'){
+                stress -= global.civic.garrison.max / 3;
+            }
+            else {
+                stress -= global.civic.garrison.max / 2;
+            }
         }
 
         let money_bd = {};
@@ -1766,7 +1773,7 @@ function fastLoop(){
 
                 let stress_level = global.civic[job].stress;
                 if (global.city.ptrait === 'mellow'){
-                    stress_level += 1;
+                    stress_level += 2;
                 }
                 if (global.race['content']){
                     let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
@@ -1780,9 +1787,6 @@ function fastLoop(){
             }
         });
         global.civic.free = global.resource[global.race.species].amount - total;
-        if (global.civic.free < 0){
-            //global.civic.free = 0;
-        }
 
         Object.keys(job_desc).forEach(function (job){
             if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){

@@ -7,14 +7,17 @@ const changeList = [
         date: `5/??/2020`,
         changes: [
             `Added 3rd race options for Plant and Fungus genus. Moldling and Pinguicula.`,
-            `Slaver trait rating raised to 12.`,
             `Fungi genus Spore trait replaced with Detritivore.`,
             `Casinos now start powered and generated money immediately.`,
             `Extreme Dazzle upgrade now boosts Casino income by 50%.`,
             `Reduced power requirement of Casino by 1.`,
             `Casino Max Morale boost no longer works unless casino is powered.`,
             `Occupation will now unlock Federation research.`,
-            `Added Double Density achievement in heavyverse.`
+            `Added Double Density achievement in heavyverse.`,
+            `Stoned penalty on mellow planets raised to 10%.`,
+            `Unemployed citizens on mellow planets no longer generate any stress (note: hunters are NOT unemployed).`,
+            `Life on mellow planets is now overall less stressful.`,
+            `Slaver trait rating raised to 12.`
         ]
     },
     {
