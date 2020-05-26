@@ -17,7 +17,8 @@ const changeList = [
             `Stoned penalty on mellow planets raised to 10%.`,
             `Unemployed citizens on mellow planets no longer generate any stress (note: hunters are NOT unemployed).`,
             `Life on mellow planets is now overall less stressful.`,
-            `Slaver trait rating raised to 12.`
+            `Slaver trait rating raised to 12.`,
+            `Barracks can now be switched off.`
         ]
     },
     {

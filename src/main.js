@@ -1966,10 +1966,29 @@ function fastLoop(){
 
         // Consumption
         fed = true;
-        if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['tourist_center']){
+        if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['compost'] || global.city['tourist_center']){
             let food_bd = {};
             let food_base = 0;
-            if (global.race['carnivore'] || global.race['soul_eater']){
+            if (global.race['detritivore']){
+                if (global.city['compost']){
+                    let operating = global.city.compost.on;
+                    if (!global.race['kindling_kindred']){
+                        let lumberIncrement = 0.5;                        
+                        let lumber_cost = operating * lumberIncrement;
+
+                        while (lumber_cost * time_multiplier > global.resource.Lumber.amount && lumber_cost > 0){
+                            lumber_cost -= lumberIncrement;
+                            operating--;
+                        }
+
+                        breakdown.p.consume.Lumber[loc('city_compost_heap')] = -(lumber_cost);
+                        modRes('Lumber', -(lumber_cost * time_multiplier));
+                    }
+                    food_base = operating * 2;
+                    food_bd[loc('city_compost_heap')] = food_base + 'v';
+                }
+            }
+            else if (global.race['carnivore'] || global.race['soul_eater']){
                 let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 0.5);
                 if (global.race['ghostly']){
@@ -4383,9 +4402,9 @@ function midLoop(){
             lCaps['garrison'] += 2;
         }
         if (global.city['garrison']){
-            lCaps['garrison'] += global.city.garrison.count * (global.tech['military'] >= 5 ? 3 : 2);
+            lCaps['garrison'] += global.city.garrison.on * (global.tech['military'] >= 5 ? 3 : 2);
             if (global.race['chameleon']){
-                lCaps['garrison'] -= global.city.garrison.count;
+                lCaps['garrison'] -= global.city.garrison.on;
             }
         }
         if (global.space['space_barracks']){

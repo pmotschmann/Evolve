@@ -2900,6 +2900,37 @@ export const actions = {
             },
             flair(){ return global.tech.agriculture >= 7 ? loc('city_farm_flair2') : loc('city_farm_flair1'); }
         },
+        compost: {
+            id: 'city-compost_heap',
+            title: loc('city_compost_heap'),
+            desc: loc('city_compost_heap_desc'),
+            category: 'residential',
+            reqs: { compost: 1 },
+            cost: {
+                Money(offset){ if (global.city['compost'] && global.city['compost'].count >= 3){ return costMultiplier('compost', offset, 50, 1.32);} else { return 0; } },
+                Lumber(offset){ return costMultiplier('compost', offset, 12, 1.36); },
+                Stone(offset){ return costMultiplier('compost', offset, 12, 1.36); }
+            },
+            effect(){
+                let generated = 2;
+                let decayed = 0.5;
+                if (global.race['kindling_kindred']){
+                    return `<div>${loc('city_compost_heap_effect',[generated])}</div>`;
+                }
+                else {
+                    return `<div>${loc('city_compost_heap_effect',[generated])}</div><div class="has-text-caution">${loc('city_compost_heap_effect2',[decayed,global.resource.Lumber.name])}</div>`;
+                }
+            },
+            switchable(){ return true; },            
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['compost'].count++;
+                    global.city['compost'].on++;
+                    return true;
+                }
+                return false;
+            }
+        },
         mill: {
             id: 'city-mill',
             title(){
@@ -3012,6 +3043,7 @@ export const actions = {
                 }
                 return loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')]);
             },
+            switchable(){ return true; }, 
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.settings['showMil'] = true;
@@ -3026,6 +3058,7 @@ export const actions = {
                     }
                     global.civic['garrison'].max += gain;
                     global.city['garrison'].count++;
+                    global.city['garrison'].on++;
                     global.resource.Furs.display = true;
                     return true;
                 }
@@ -4651,7 +4684,7 @@ export const actions = {
                     if (global.race['infectious']){
                         global.civic.garrison.display = true;
                         global.settings.showCivic = true;
-                        global.city['garrison'] = { count: 0 };
+                        global.city['garrison'] = { count: 0, on: 0 };
                     }
                     return true;
                 }
@@ -4946,7 +4979,7 @@ export const actions = {
             effect: loc('tech_compost_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['compost'] = { count: 0 };
+                    global.city['compost'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -9802,7 +9835,7 @@ export const actions = {
             effect: loc('tech_garrison_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['garrison'] = { count: 0 };
+                    global.city['garrison'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -13593,7 +13626,7 @@ export function setAction(c_action,action,type,old){
             </svg></div>`);
         parent.append(special);
     }
-    if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)){
+    if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
         var powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
         var powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
         parent.append(powerOn);

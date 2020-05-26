@@ -423,8 +423,14 @@ if (convertVersion(global['version']) < 8003){
     }
 }
 
+if (convertVersion(global['version']) < 8017){
+    if (global.city['garrison']){
+        global.city.garrison['on'] = global.city['garrison'].count;
+    }
+}
+
 global['version'] = '0.8.17';
-delete global['beta'];
+global['beta'] = 1;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
