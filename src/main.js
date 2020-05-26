@@ -1984,7 +1984,7 @@ function fastLoop(){
                         breakdown.p.consume.Lumber[loc('city_compost_heap')] = -(lumber_cost);
                         modRes('Lumber', -(lumber_cost * time_multiplier));
                     }
-                    food_base = operating * 2;
+                    food_base = operating * (global.tech['compost'] >= 2 ? 3 : 2);
                     food_bd[loc('city_compost_heap')] = food_base + 'v';
                 }
             }

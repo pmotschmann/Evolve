@@ -2774,11 +2774,11 @@ export const actions = {
         lodge: {
             id: 'city-lodge',
             title: loc('city_lodge'),
-            desc: loc('city_lodge_desc'),
+            desc(){ return global.race['detritivore'] ? loc('city_lodge_desc_alt') : loc('city_lodge_desc'); },
             category: 'residential',
             reqs: { housing: 1, currency: 1 },
             condition(){
-                return (global.race['soul_eater'] && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
+                return ((global.race['soul_eater'] || global.race['detritivore']) && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
             },
             cost: {
                 Money(offset){ return costMultiplier('lodge', offset, 50, 1.32); },
@@ -2912,7 +2912,7 @@ export const actions = {
                 Stone(offset){ return costMultiplier('compost', offset, 12, 1.36); }
             },
             effect(){
-                let generated = 2;
+                let generated = global.tech['compost'] >= 2 ? 3 : 2;
                 let decayed = 0.5;
                 if (global.race['kindling_kindred']){
                     return `<div>${loc('city_compost_heap_effect',[generated])}</div>`;
@@ -4918,23 +4918,22 @@ export const actions = {
                 return false;
             }
         },
-        soul_lodge: {
-            id: 'tech-soul_lodge',
-            title: loc('tech_lodge'),
-            desc: loc('tech_lodge'),
+        alt_lodge: {
+            id: 'tech-alt_lodge',
+            title(){ return global.race['detritivore'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
+            desc(){ return global.race['detritivore'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
             wiki: false,
-            category: 'souls',
+            category: 'housing',
             era: 'civilized',
             reqs: { housing: 1, currency: 1 },
-            trait: ['soul_eater'],
             grant: ['s_lodge',1],
             condition(){
-                return global.race.species === 'wendigo' ? true : false;
+                return global.race.species === 'wendigo' || global.race['detritivore'] ? true : false;
             },
             cost: {
                 Knowledge(){ return 180; }
             },
-            effect: loc('tech_lodge_effect'),
+            effect(){ return global.race['detritivore'] ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['lodge'] = { count: 0 };
@@ -4980,6 +4979,26 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['compost'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        hot_compost: {
+            id: 'tech-hot_compost',
+            title: loc('tech_hot_compost'),
+            desc: loc('tech_hot_compost'),
+            category: 'compost',
+            era: 'civilized',
+            reqs: { compost: 1 },
+            trait: ['detritivore'],
+            grant: ['compost',2],
+            cost: {
+                Knowledge(){ return 100; }
+            },
+            effect: loc('tech_hot_compost_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;
