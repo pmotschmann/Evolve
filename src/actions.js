@@ -5034,7 +5034,7 @@ export const actions = {
             trait: ['detritivore'],
             grant: ['compost',4],
             cost: {
-                Knowledge(){ return 3200; }
+                Knowledge(){ return 16000; }
             },
             effect: loc('tech_adv_mulching_effect'),
             action(){
