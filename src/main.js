@@ -6,7 +6,7 @@ import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } fr
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate } from './industry.js';
-import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
+import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, buildQueue, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
@@ -1166,7 +1166,7 @@ function fastLoop(){
             let power = global.space.e_reactor.on * output;
             let consume = (global.space.e_reactor.on * increment);
             while (consume * time_multiplier > global.resource['Elerium'].amount && consume > 0){
-                power += output;
+                power -= output;
                 consume -= increment;
             }
             breakdown.p.consume.Elerium[loc('reactor')] = -(consume);
@@ -4419,14 +4419,17 @@ function midLoop(){
             lCaps['garrison'] += p_on['starbase'] * soldiers;
         }
         if (!global.tech['world_control']){
-            if (global.civic.foreign.gov0.occ){
-                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
-            }
-            if (global.civic.foreign.gov1.occ){
-                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
-            }
-            if (global.civic.foreign.gov2.occ){
-                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
+            let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20
+            for (let i=2; i>=0; i--){
+                if (global.civic.foreign[`gov${i}`].occ){
+                    lCaps['garrison'] -= occ_amount;
+                    if (lCaps['garrison'] < 0){
+                        global.civic.foreign[`gov${i}`].occ = false;
+                        lCaps['garrison'] += occ_amount;
+                        global.civic.garrison.workers += occ_amount;
+                        messageQueue(loc('civics_garrison_autodeoccupy_desc',[govTitle(i)]),'danger');
+                    }
+                }
             }
         }
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
@@ -5299,12 +5302,20 @@ function midLoop(){
                             }
                             break;
                         case 'annex':
+                            let drawTechs = !global.tech['gov_fed'] && !checkControlling();
                             global.civic.foreign[`gov${i}`].anx = true;
                             messageQueue(loc('civics_spy_annex_success',[govTitle(i)]),'success');
+                            if (drawTechs){
+                                drawTech();
+                            }
                             break;
                         case 'purchase':
+                            let drawTechsAlt = !global.tech['gov_fed'] && !checkControlling();
                             global.civic.foreign[`gov${i}`].buy = true;
                             messageQueue(loc('civics_spy_purchase_success',[govTitle(i)]),'success');
+                            if (drawTechsAlt){
+                                drawTech();
+                            }
                             break;
                     }
                 }

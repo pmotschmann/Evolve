@@ -1270,6 +1270,7 @@ window.soft_reset = function reset(){
         seeded: global.race.seeded,
         probes: global.race.probes,
         seed: global.race.seed,
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     }
     if (global.race['bigbang']){
         replace['bigbang'] = true;

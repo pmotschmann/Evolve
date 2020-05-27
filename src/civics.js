@@ -4,6 +4,7 @@ import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, ge
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait, traits } from './races.js';
 import { loadIndustry } from './industry.js';
+import { drawTech } from  './actions.js';
 
 // Sets up government in civics tab
 export function defineGovernment(){
@@ -523,6 +524,10 @@ function govPrice(gov){
     price *= 1 + global.civic.foreign[`gov${gov}`].hstl * 1.6 / 100;
     price *= 1 - global.civic.foreign[`gov${gov}`].unrest * 0.25 / 100;
     return +price.toFixed(0);
+}
+    
+export function checkControlling() {
+    return global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy;
 }
 
 function drawEspModal(gov){
@@ -1497,10 +1502,14 @@ function war_campaign(gov){
 
         let occCost = global.civic.govern.type === 'federation' ? 15 : 20;
         if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= occCost){
+            let drawTechs = !global.tech['gov_fed'] && !checkControlling();
             global.civic.garrison.workers -= occCost;
             global.civic.foreign[`gov${gov}`].occ = true;
             global.civic.foreign[`gov${gov}`].sab = 0;
             global.civic.foreign[`gov${gov}`].act = 'none';
+            if (drawTechs){
+                drawTech();
+            }
         }
     }
     else {

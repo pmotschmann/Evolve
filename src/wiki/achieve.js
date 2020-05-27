@@ -103,7 +103,9 @@ function achieveDesc(achievement){
                 genus = genus + `<span class="wide has-text-success">${loc(`genelab_genus_${key}`)}</span>`;
             }
             else {
-                genus = genus + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
+                if (key !== 'angelic' && achievement !== 'heavyweight') {
+                    genus = genus + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
+                }
             }
         });
         genus = genus + `<div>`;

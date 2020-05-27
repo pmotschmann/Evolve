@@ -853,7 +853,7 @@ export const galaxyOffers = [
     },
     {
         buy: { res: 'Graphene', vol: 25 },
-        sell: { res: 'Lumber', vol: 1000 }
+        sell: { res: global.race['kindling_kindred'] ? 'Stone' : 'Lumber', vol: 1000 }
     },
     {
         buy: { res: 'Stanene', vol: 40 },

@@ -1906,7 +1906,12 @@ const interstellarProjects = {
                     global.resource.Graphene.display = true;
                     if (global.interstellar.starport.support < global.interstellar.starport.s_max){
                         global.interstellar.g_factory.on++;
-                        global.interstellar.g_factory.Lumber++;
+                        if (global.race['kindling_kindred']){
+                            global.interstellar.g_factory.Oil++;
+                        }
+                        else {
+                            global.interstellar.g_factory.Lumber++;
+                        }
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
@@ -2746,13 +2751,13 @@ const interstellarProjects = {
             grant: ['stargate',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Money(){ return +int_fuel_adjust(20000000).toFixed(0); },
-                Copper(){ return +int_fuel_adjust(2400000).toFixed(0); },
-                Aluminium(){ return +int_fuel_adjust(4000000).toFixed(0); },
-                Titanium(){ return +int_fuel_adjust(1250000).toFixed(0); },
-                Adamantite(){ return +int_fuel_adjust(750000).toFixed(0); },
-                Stanene(){ return +int_fuel_adjust(900000).toFixed(0); },
-                Aerogel(){ return +int_fuel_adjust(100000).toFixed(0); }
+                Money(){ return 20000000; },
+                Copper(){ return 2400000; },
+                Aluminium(){ return 4000000; },
+                Titanium(){ return 1250000; },
+                Adamantite(){ return 750000; },
+                Stanene(){ return 900000; },
+                Aerogel(){ return 100000; }
             },
             effect: loc('interstellar_jump_ship_effect'),
             action(){
@@ -5507,6 +5512,7 @@ function ascend(){
 
     phage += new_phage;
     harmony += new_harmony;
+    harmony = parseFloat(harmony.toFixed(2));
 
     global.stats.reset++;
     global.stats.ascend++;
@@ -5528,6 +5534,7 @@ function ascend(){
     }
     global.stats.phage += new_phage;
     global.stats.harmony += new_harmony;
+    global.stats.harmony = parseFloat(global.stats.harmony.toFixed(2));
 
     if (atmo !== 'none'){
         unlockAchieve(`atmo_${atmo}`);
