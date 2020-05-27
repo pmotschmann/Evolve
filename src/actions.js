@@ -2912,14 +2912,11 @@ export const actions = {
                 Stone(offset){ return costMultiplier('compost', offset, 12, 1.36); }
             },
             effect(){
-                let generated = global.tech['compost'] >= 2 ? 3 : 2;
-                let decayed = 0.5;
-                if (global.race['kindling_kindred']){
-                    return `<div>${loc('city_compost_heap_effect',[generated])}</div>`;
-                }
-                else {
-                    return `<div>${loc('city_compost_heap_effect',[generated])}</div><div class="has-text-caution">${loc('city_compost_heap_effect2',[decayed,global.resource.Lumber.name])}</div>`;
-                }
+                let generated = global.tech['compost'] + 1;
+                let store = spatialReasoning(200);
+                if (global.stats.achieve['blackhole']){ store = Math.round(store * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+                let wood = global.race['kindling_kindred'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
+                return `<div>${loc('city_compost_heap_effect',[generated])}</div><div>${loc('city_compost_heap_effect3',[store])}</div>${wood}`;
             },
             switchable(){ return true; },            
             action(){
@@ -4997,6 +4994,46 @@ export const actions = {
                 Knowledge(){ return 100; }
             },
             effect: loc('tech_hot_compost_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mulching: {
+            id: 'tech-mulching',
+            title: loc('tech_mulching'),
+            desc: loc('tech_mulching'),
+            category: 'compost',
+            era: 'civilized',
+            reqs: { compost: 2, mining: 3 },
+            trait: ['detritivore'],
+            grant: ['compost',3],
+            cost: {
+                Knowledge(){ return 3200; }
+            },
+            effect: loc('tech_mulching_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        adv_mulching: {
+            id: 'tech-adv_mulching',
+            title: loc('tech_adv_mulching'),
+            desc: loc('tech_adv_mulching'),
+            category: 'compost',
+            era: 'civilized',
+            reqs: { compost: 3, high_tech: 2 },
+            trait: ['detritivore'],
+            grant: ['compost',4],
+            cost: {
+                Knowledge(){ return 3200; }
+            },
+            effect: loc('tech_adv_mulching_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;

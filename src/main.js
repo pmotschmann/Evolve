@@ -1984,7 +1984,7 @@ function fastLoop(){
                         breakdown.p.consume.Lumber[loc('city_compost_heap')] = -(lumber_cost);
                         modRes('Lumber', -(lumber_cost * time_multiplier));
                     }
-                    food_base = operating * (global.tech['compost'] >= 2 ? 3 : 2);
+                    food_base = operating * (global.tech['compost'] + 1);
                     food_bd[loc('city_compost_heap')] = food_base + 'v';
                 }
             }
@@ -4718,6 +4718,12 @@ function midLoop(){
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Food'] += gain;
             bd_Food[loc('city_silo')] = gain+'v';
+        }
+        if (global.city['compost']){
+            let gain = (global.city['compost'].count * spatialReasoning(200));
+            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            caps['Food'] += gain;
+            bd_Food[loc('city_compost_heap')] = gain+'v';
         }
         if (global.city['soul_well']){
             let gain = (global.city['soul_well'].count * spatialReasoning(500));
