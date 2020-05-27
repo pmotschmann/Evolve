@@ -6,7 +6,7 @@ import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, p
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
-import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating, dragQueue } from './civics.js';
+import { defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, armyRating, dragQueue } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
@@ -2939,7 +2939,7 @@ export const actions = {
             desc(){
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
-                    let power = global.race['environmentalist'] ? 1.5 : 1;
+                    let power = powerModifier(global.race['environmentalist'] ? 1.5 : 1);
                     return loc('city_mill_desc2',[bonus,power]);
                 }
                 else {
@@ -2955,7 +2955,7 @@ export const actions = {
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return powerCostMod(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
             power_reqs: { agriculture: 6 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2979,7 +2979,7 @@ export const actions = {
                 return loc('city_mill_title2');
             },
             desc(){
-                let power = global.race['environmentalist'] ? 1.5 : 1;
+                let power = powerModifier(global.race['environmentalist'] ? 1.5 : 1);
                 return loc('city_windmill_desc',[power]);
             },
             wiki: false,
@@ -3802,8 +3802,11 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['oil_well'].count++;
-                    global.resource.Oil.display = true;
                     global['resource']['Oil'].max += spatialReasoning(500);
+                    if (global.city['oil_well'].count === 1) {
+                        global.resource.Oil.display = true;
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -6778,7 +6781,7 @@ export const actions = {
             era: 'early_space',
             reqs: { govern: 2 },
             condition(){
-                return (global.tech['unify'] && global.tech['unify'] >= 2) || global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy ? true : false;
+                return (global.tech['unify'] && global.tech['unify'] >= 2) || checkControlling();
             },
             grant: ['gov_fed',1],
             cost: {
@@ -10760,6 +10763,7 @@ export const actions = {
             desc: loc('tech_fanaticism'),
             category: 'religion',
             era: 'civilized',
+            wiki: global.genes['transcendence'] ? false : true,
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
@@ -10785,6 +10789,7 @@ export const actions = {
             desc: loc('tech_fanaticism'),
             category: 'religion',
             era: 'civilized',
+            wiki: global.genes['transcendence'] ? true : false,
             reqs: { theology: 2 },
             grant: ['fanaticism',1],
             gene: ['transcendence'],
@@ -10978,6 +10983,7 @@ export const actions = {
             desc: loc('tech_anthropology'),
             category: 'religion',
             era: 'civilized',
+            wiki: global.genes['transcendence'] ? false : true,
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
@@ -10999,6 +11005,7 @@ export const actions = {
             desc: loc('tech_anthropology'),
             category: 'religion',
             era: 'civilized',
+            wiki: global.genes['transcendence'] ? true : false,
             reqs: { theology: 2 },
             grant: ['anthropology',1],
             gene: ['transcendence'],
@@ -11856,8 +11863,9 @@ export const actions = {
                     }
                     for (let i=0; i<3; i++){
                         if (global.civic.foreign[`gov${i}`].occ){
-                            global.civic['garrison'].max += 20;
-                            global.civic['garrison'].workers += 20;
+                            let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
+                            global.civic['garrison'].max += occ_amount;
+                            global.civic['garrison'].workers += occ_amount;
                             global.civic.foreign[`gov${i}`].occ = false;
                         }
                         global.civic.foreign[`gov${i}`].buy = false;

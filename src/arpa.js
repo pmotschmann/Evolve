@@ -1237,7 +1237,7 @@ function genetics(){
 
                         let count = 0;
                         Object.keys(global.race).forEach(function (trait){
-                            if (traits[trait] && (traits[trait].type == 'major' || traits[trait].type == 'genus')){
+                            if ((traits[trait] && (traits[trait].type == 'major' || traits[trait].type == 'genus')) && trait !== 'evil'){
                                 count++;
                             }
                         });

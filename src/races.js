@@ -1,4 +1,4 @@
-import { global } from './vars.js';
+import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { clearElement, removeFromQueue, removeFromRQueue, getEaster } from './functions.js';
 import { unlockAchieve } from './achieve.js';
@@ -2067,10 +2067,13 @@ export function cleanAddTrait(trait){
             buildGarrison($('#c_garrison'),false);
             for (let i=0; i<3; i++){
                 if (global.civic.foreign[`gov${i}`].occ){
-                    global.civic['garrison'].max += 20;
-                    global.civic['garrison'].workers += 20;
+                    let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
+                    global.civic['garrison'].max += occ_amount;
+                    global.civic['garrison'].workers += occ_amount;
                     global.civic.foreign[`gov${i}`].occ = false;
                 }
+                global.civic.foreign[`gov${i}`].buy = false;
+                global.civic.foreign[`gov${i}`].anx = false;
                 global.civic.foreign[`gov${i}`].sab = 0;
                 global.civic.foreign[`gov${i}`].act = 'none';
             }
@@ -2093,6 +2096,18 @@ export function cleanAddTrait(trait){
             removeFromRQueue(['wharf']);
             delete global.city['wharf'];
             break;
+        case 'slow':
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            window.location.reload();
+        case 'hyper':
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            window.location.reload();
         default:
             break;
     }
@@ -2154,6 +2169,18 @@ export function cleanRemoveTrait(trait){
                 global.city['wharf'] = { count: 0 };
             }
             break;
+        case 'slow':
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            window.location.reload();
+        case 'hyper':
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            window.location.reload();
         default:
             break;
     }
