@@ -3144,6 +3144,7 @@
   "civics_garrison_unoccupy": "Unoccupy",
   "civics_garrison_deoccupy": "Unoccupy City",
   "civics_garrison_deoccupy_desc": "Unoccupy the city. Lose the occupation bonus for this city but regain your troops.",
+  "civics_garrison_autodeoccupy_desc": "Your city has a deficiency of soldiers guarding it. You relinquish control over the %0 and your soldiers come back.",
   "civics_garrison_secede_desc": "Secede this city from your empire. Lose bonus for this city but stop paying upkeep costs.",
   "civics_garrison_occupy": "Occupied",
   "civics_garrison_annex": "Annexed",

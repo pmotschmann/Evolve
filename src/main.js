@@ -4419,14 +4419,17 @@ function midLoop(){
             lCaps['garrison'] += p_on['starbase'] * soldiers;
         }
         if (!global.tech['world_control']){
-            if (global.civic.foreign.gov0.occ){
-                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
-            }
-            if (global.civic.foreign.gov1.occ){
-                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
-            }
-            if (global.civic.foreign.gov2.occ){
-                lCaps['garrison'] -= global.civic.govern.type === 'federation' ? 15 : 20;
+            let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20
+            for (let i=2; i>=0; i--){
+                if (global.civic.foreign[`gov${i}`].occ){
+                    lCaps['garrison'] -= occ_amount;
+                    if (lCaps['garrison'] < 0){
+                        global.civic.foreign[`gov${i}`].occ = false;
+                        lCaps['garrison'] += occ_amount;
+                        global.civic.garrison.workers += occ_amount;
+                        messageQueue(loc('civics_garrison_autodeoccupy_desc',[govTitle(i)]),'danger');
+                    }
+                }
             }
         }
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
