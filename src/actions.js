@@ -4014,7 +4014,7 @@ export const actions = {
                 money = '$'+money;
                 let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
-                let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+                let cash = Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
                 if (global.tech['gambling'] && global.tech['gambling'] >= 2){
                     cash *= 1.5;
                 }
