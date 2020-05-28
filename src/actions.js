@@ -2912,7 +2912,12 @@ export const actions = {
                 Stone(offset){ return costMultiplier('compost', offset, 12, 1.36); }
             },
             effect(){
-                let generated = global.tech['compost'] + 1;
+                let generated = 1.2 + (global.tech['compost'] * 0.8);
+                generated *= global.city.biome === 'grassland' ? 1.2 : 1;
+                generated *= global.city.biome === 'volcanic' ? 0.9 : 1;
+                generated *= global.city.biome === 'hellscape' ? 0.25 : 1;
+                generated *= global.city.ptrait === 'trashed' ? 0.75 : 1;
+                generated = +(generated).toFixed(2);
                 let store = spatialReasoning(200);
                 if (global.stats.achieve['blackhole']){ store = Math.round(store * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 let wood = global.race['kindling_kindred'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
