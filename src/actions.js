@@ -3610,10 +3610,11 @@ export const actions = {
             special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['factory'].count++;
+                    global.city.factory.count++;
                     global.resource.Alloy.display = true;
                     if (global.city.power >= $(this)[0].powered()){
-                        global.city['factory'].on++;
+                        global.city.factory.on++;
+                        global.city.factory.Alloy++;
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();

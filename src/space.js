@@ -637,9 +637,10 @@ const spaceProjects = {
             special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.space['red_factory'].count++;
-                    if (global.city.power > 2){
-                        global.space['red_factory'].on++;
+                    global.space.red_factory.count++;
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.space.red_factory.on++;
+                        global.city.factory.Alloy++;
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
@@ -1942,6 +1943,7 @@ const interstellarProjects = {
                     incrementStruct('int_factory','interstellar');
                     if (global.city.power >= $(this)[0].powered()){
                         global.interstellar.int_factory.on++;
+                        global.city.factory.Alloy += 2;
                     }
                     return true;
                 }
