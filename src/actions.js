@@ -1,12 +1,12 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem, calcGenomeScore, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, dragQueue, format_emblem, calcGenomeScore, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
-import { defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, armyRating, dragQueue } from './civics.js';
+import { defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';

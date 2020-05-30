@@ -1,7 +1,7 @@
 import { global, save, poppers, webWorker, achieve_level, universe_level } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
-import { actions } from './actions.js';
+import { actions, actionDesc } from './actions.js';
 import { arpaAdjustCosts } from './arpa.js';
 
 export function mainVue(){
@@ -211,6 +211,59 @@ export function removeFromRQueue(tech_trees){
         if (tech_trees.includes(actions.tech[global.r_queue.queue[i].type].grant[0])){
             global.r_queue.queue.splice(i, 1);
         }
+    }
+}
+
+export function dragQueue(){
+    let el = $('#buildQueue .buildList')[0];
+    Sortable.create(el,{
+        onEnd(e){
+            let order = global.queue.queue;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+            global.queue.queue = order;
+            buildQueue();
+            resizeGame();
+        }
+    });
+    //attachQueuePopovers();
+}
+
+// Very glitchy
+function attachQueuePopovers(){
+    for (let i=0; i<global.queue.queue.length; i++){
+        let pop_target = '#main';
+        
+        let id = `q${global.queue.queue[i].id}${i}`;
+
+        let c_action;
+        let segments = global.queue.queue[i].id.split("-");
+        if (segments[0] === 'city' || segments[0] === 'starDock'){
+            c_action = actions[segments[0]][segments[1]];
+        }
+        else {
+            Object.keys(actions[segments[0]]).forEach(function (region){
+                if (actions[segments[0]][region].hasOwnProperty(segments[1])){
+                    c_action = actions[segments[0]][region][segments[1]];
+                }
+            });
+        }
+
+        $('#'+id).on('mouseover',function(){
+                let wide = c_action['wide'] ? ' wide' : '';
+                var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
+                $(pop_target).append(popper);
+                actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+                popper.show();
+                poppers[id] = new Popper($('#'+id),popper);
+            });
+        $('#'+id).on('mouseout',function(){
+                $(`#pop${id}`).hide();
+                vBind({el: `#popTimer`},'destroy');
+                if (poppers[id]){
+                    poppers[id].destroy();
+                }
+                clearElement($(`#pop${id}`),true);
+            });
     }
 }
 

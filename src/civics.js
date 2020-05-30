@@ -1,6 +1,6 @@
 import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg } from './functions.js';
+import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, dragQueue, genCivName, darkEffect, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait, traits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -74,7 +74,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue" v-bind:id="setID(index)"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -91,6 +91,9 @@ export function buildQueue(){
                     else {
                         global.queue.queue.splice(index,1);
                     }
+                },
+                setID(index){
+                    return `q${global.queue.queue[index].id}${index}`;
                 }
             },
             filters: {
@@ -1789,19 +1792,6 @@ function defineMad(){
                 let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
                 return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
             }
-        }
-    });
-}
-
-export function dragQueue(){
-    let el = $('#buildQueue .buildList')[0];
-    Sortable.create(el,{
-        onEnd(e){
-            let order = global.queue.queue;
-            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
-            global.queue.queue = order;
-            buildQueue();
-            resizeGame();
         }
     });
 }

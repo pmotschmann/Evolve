@@ -1,6 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue } from './functions.js';
-import { dragQueue } from './civics.js';
+import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, dragQueue } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
