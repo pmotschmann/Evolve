@@ -15116,6 +15116,9 @@ function bioseed(){
     }
     unlockAchieve(`genus_${genus}`);
 
+    if (atmo === 'dense' && global.race.universe === 'heavy'){
+        unlockAchieve(`double_density`);        
+    }
     if (global.race.species === 'junker'){
         unlockFeat('organ_harvester');
     }
