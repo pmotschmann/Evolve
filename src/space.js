@@ -1337,6 +1337,19 @@ const spaceProjects = {
                     }
                     if (global.city.power >= $(this)[0].powered()){
                         global.space.space_station.on++;
+
+                        if (global.civic.d_job === 'unemployed'){
+                            if (global.civic.free > 0){
+                                let hired = global.civic.free - 3 < 0 ? (global.civic.free - 2 < 0 ? 1 : 2) : 3;
+                                global.civic.free -= hired;
+                                global.civic.space_miner.workers += hired;
+                            }
+                        }
+                        else if (global.civic[global.civic.d_job].workers > 0){
+                            let hired = global.civic[global.civic.d_job].workers - 3 < 0 ? (global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2) : 3;
+                            global.civic[global.civic.d_job].workers -= hired;
+                            global.civic.space_miner.workers += hired;
+                        }
                     }
                     return true;
                 }
