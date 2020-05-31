@@ -1,6 +1,6 @@
-import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
+import { global, poppers, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, dragQueue, genCivName, darkEffect, easterEgg } from './functions.js';
+import { calcPrestige, clearElement, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait, traits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -65,54 +65,6 @@ export function defineGarrison(){
     
     buildGarrison(garrison,true);
     defineMad();
-}
-
-export function buildQueue(){
-    clearElement($('#buildQueue'));
-    $('#buildQueue').append($('<h2 class="has-text-success is-sr-only">Building Queue</h2>'));
-
-    let queue = $(`<ul class="buildList"></ul>`);
-    $('#buildQueue').append(queue);
-
-    queue.append($(`<li v-for="(item, index) in queue" v-bind:id="setID(index)"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
-
-    try {
-        vBind({
-            el: '#buildQueue',
-            data: global.queue,
-            methods: {
-                remove(index){
-                    if (global.queue.queue[index].q > 1){
-                        global.queue.queue[index].q -= global.queue.queue[index].qs;
-                        if (global.queue.queue[index].q <= 0){
-                            global.queue.queue.splice(index,1);
-                        }
-                    }
-                    else {
-                        global.queue.queue.splice(index,1);
-                    }
-                },
-                setID(index){
-                    return `q${global.queue.queue[index].id}${index}`;
-                }
-            },
-            filters: {
-                time(time){
-                    return timeFormat(time);
-                },
-                count(q){
-                    return q > 1 ? ` (${q})`: '';
-                },
-                max_t(max,time){
-                    return time === max || time < 0 ? '' : ` / ${timeFormat(max)}`;
-                }
-            }
-        });
-        dragQueue();
-    }
-    catch {
-        global.queue.queue = [];
-    }
 }
 
 export function govTitle(id){
