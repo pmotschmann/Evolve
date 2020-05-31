@@ -968,7 +968,7 @@
   "tech_vault_effect": "콘크리트 금고로 $ 용량 증가",
   "tech_bonds": "적금",
   "tech_bonds_effect": "시민당 $ 최대치 +250",
-  "tech_steel_vault": 강철 금고",
+  "tech_steel_vault": "강철 금고",
   "tech_steel_vault_effect": "강철 금고로 $ 용량 증가",
   "tech_eebonds": "시리즈 EE 적금",
   "tech_eebonds_effect": "시민당 $ 최대치 +600",
