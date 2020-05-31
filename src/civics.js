@@ -1,9 +1,10 @@
-import { global, poppers, clearStates, save, keyMultiplier, resizeGame, sizeApproximation } from './vars.js';
+import { global, poppers, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, timeFormat, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg } from './functions.js';
+import { calcPrestige, clearElement, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait, traits } from './races.js';
 import { loadIndustry } from './industry.js';
+import { drawTech } from  './actions.js';
 
 // Sets up government in civics tab
 export function defineGovernment(){
@@ -64,51 +65,6 @@ export function defineGarrison(){
     
     buildGarrison(garrison,true);
     defineMad();
-}
-
-export function buildQueue(){
-    clearElement($('#buildQueue'));
-    $('#buildQueue').append($('<h2 class="has-text-success is-sr-only">Building Queue</h2>'));
-
-    let queue = $(`<ul class="buildList"></ul>`);
-    $('#buildQueue').append(queue);
-
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
-
-    try {
-        vBind({
-            el: '#buildQueue',
-            data: global.queue,
-            methods: {
-                remove(index){
-                    if (global.queue.queue[index].q > 1){
-                        global.queue.queue[index].q -= global.queue.queue[index].qs;
-                        if (global.queue.queue[index].q <= 0){
-                            global.queue.queue.splice(index,1);
-                        }
-                    }
-                    else {
-                        global.queue.queue.splice(index,1);
-                    }
-                }
-            },
-            filters: {
-                time(time){
-                    return timeFormat(time);
-                },
-                count(q){
-                    return q > 1 ? ` (${q})`: '';
-                },
-                max_t(max,time){
-                    return time === max || time < 0 ? '' : ` / ${timeFormat(max)}`;
-                }
-            }
-        });
-        dragQueue();
-    }
-    catch {
-        global.queue.queue = [];
-    }
 }
 
 export function govTitle(id){
@@ -478,10 +434,13 @@ export function foreignGov(){
                         global.resource.Money.amount -= cost;
                         let time = 300;
                         if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                            time -= global.city['boot_camp'].count * 10;
+                            time -= global.city['boot_camp'].count * 10;                            
                             if (time < 10){
                                 time = 10;
-                            }
+                            }                            
+                        }
+                        if (global.race['infiltrator']){
+                            time = Math.round(time / 2);
                         }
                         global.civic.foreign[`gov${i}`].trn = time;
                     }
@@ -509,6 +468,9 @@ function spyCost(i){
     if (base < 50){
         base = 50;
     }
+    if (global.race['infiltrator']){
+        base /= 3;
+    }
     return Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
 }
 
@@ -517,6 +479,10 @@ function govPrice(gov){
     price *= 1 + global.civic.foreign[`gov${gov}`].hstl * 1.6 / 100;
     price *= 1 - global.civic.foreign[`gov${gov}`].unrest * 0.25 / 100;
     return +price.toFixed(0);
+}
+    
+export function checkControlling() {
+    return global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy;
 }
 
 function drawEspModal(gov){
@@ -1491,10 +1457,14 @@ function war_campaign(gov){
 
         let occCost = global.civic.govern.type === 'federation' ? 15 : 20;
         if (global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= occCost){
+            let drawTechs = !global.tech['gov_fed'] && !checkControlling();
             global.civic.garrison.workers -= occCost;
             global.civic.foreign[`gov${gov}`].occ = true;
             global.civic.foreign[`gov${gov}`].sab = 0;
             global.civic.foreign[`gov${gov}`].act = 'none';
+            if (drawTechs){
+                drawTech();
+            }
         }
     }
     else {
@@ -1774,19 +1744,6 @@ function defineMad(){
                 let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
                 return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
             }
-        }
-    });
-}
-
-export function dragQueue(){
-    let el = $('#buildQueue .buildList')[0];
-    Sortable.create(el,{
-        onEnd(e){
-            let order = global.queue.queue;
-            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
-            global.queue.queue = order;
-            buildQueue();
-            resizeGame();
         }
     });
 }

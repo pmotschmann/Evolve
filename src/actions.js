@@ -1,12 +1,12 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, format_emblem, calcGenomeScore, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, dragQueue, format_emblem, calcGenomeScore, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
-import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating, dragQueue } from './civics.js';
+import { defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene } from './arpa.js';
@@ -373,13 +373,14 @@ export const actions = {
                     addAction('evolution','sentience');
 
                     if (global.evolution['chitin']){
-                        addRaces(['sporgar','shroomi']);
+                        addRaces(['sporgar','shroomi','moldling']);
                         if (races.custom.hasOwnProperty('type') && races.custom.type === 'fungi'){
                             global.evolution['custom'] = { count: 0 };
                             addAction('evolution','custom');
                         }
                     }
                     else {
+                        //addRaces(['entish','cacti','pinguicula']);
                         addRaces(['entish','cacti']);
                         if (races.custom.hasOwnProperty('type') && races.custom.type === 'plant'){
                             global.evolution['custom'] = { count: 0 };
@@ -1103,6 +1104,7 @@ export const actions = {
                     else if (global.evolution['chitin']){
                         races.push('sporgar');
                         races.push('shroomi');
+                        races.push('moldling');
                         if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fungi'){
                             races.push('custom');
                         }
@@ -1118,6 +1120,7 @@ export const actions = {
                     else if (global.evolution['chloroplasts']){
                         races.push('entish');
                         races.push('cacti');
+                        //races.push('pinguicula');
                         if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'plant'){
                             races.push('custom');
                         }
@@ -1641,6 +1644,26 @@ export const actions = {
             },
             emblem(){ return format_emblem('extinct_shroomi'); }
         },
+        moldling: {
+            id: 'evo-moldling',
+            title(){ return races.moldling.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.moldling.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.moldling.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'moldling';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_moldling'); }
+        },
         mantis: {
             id: 'evo-mantis',
             title(){ return races.mantis.name; },
@@ -1741,6 +1764,26 @@ export const actions = {
             },
             emblem(){ return format_emblem('extinct_cacti'); }
         },
+        /*pinguicula: {
+            id: 'evo-pinguicula',
+            title(){ return races.pinguicula.name; },
+            desc(){ return `${loc("evo_evolve")} ${races.pinguicula.name}`; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            effect(){ return loc('evo_pick_race',[races.pinguicula.name]); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.evolution['sentience'].count++;
+                    removeAction(actions.evolution.sentience.id);
+                    global.race.species = 'pinguicula';
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_pinguicula'); }
+        },*/
         sharkin: {
             id: 'evo-sharkin',
             title(){ return races.sharkin.name; },
@@ -2732,11 +2775,11 @@ export const actions = {
         lodge: {
             id: 'city-lodge',
             title: loc('city_lodge'),
-            desc: loc('city_lodge_desc'),
+            desc(){ return global.race['detritivore'] ? loc('city_lodge_desc_alt') : loc('city_lodge_desc'); },
             category: 'residential',
             reqs: { housing: 1, currency: 1 },
             condition(){
-                return (global.race['soul_eater'] && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
+                return ((global.race['soul_eater'] || global.race['detritivore']) && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
             },
             cost: {
                 Money(offset){ return costMultiplier('lodge', offset, 50, 1.32); },
@@ -2858,6 +2901,39 @@ export const actions = {
             },
             flair(){ return global.tech.agriculture >= 7 ? loc('city_farm_flair2') : loc('city_farm_flair1'); }
         },
+        compost: {
+            id: 'city-compost_heap',
+            title: loc('city_compost_heap'),
+            desc: loc('city_compost_heap_desc'),
+            category: 'residential',
+            reqs: { compost: 1 },
+            cost: {
+                Money(offset){ if (global.city['compost'] && global.city['compost'].count >= 3){ return costMultiplier('compost', offset, 50, 1.32);} else { return 0; } },
+                Lumber(offset){ return costMultiplier('compost', offset, 12, 1.36); },
+                Stone(offset){ return costMultiplier('compost', offset, 12, 1.36); }
+            },
+            effect(){
+                let generated = 1.2 + (global.tech['compost'] * 0.8);
+                generated *= global.city.biome === 'grassland' ? 1.2 : 1;
+                generated *= global.city.biome === 'volcanic' ? 0.9 : 1;
+                generated *= global.city.biome === 'hellscape' ? 0.25 : 1;
+                generated *= global.city.ptrait === 'trashed' ? 0.75 : 1;
+                generated = +(generated).toFixed(2);
+                let store = spatialReasoning(200);
+                if (global.stats.achieve['blackhole']){ store = Math.round(store * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+                let wood = global.race['kindling_kindred'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
+                return `<div>${loc('city_compost_heap_effect',[generated])}</div><div>${loc('city_compost_heap_effect3',[store])}</div>${wood}`;
+            },
+            switchable(){ return true; },            
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['compost'].count++;
+                    global.city['compost'].on++;
+                    return true;
+                }
+                return false;
+            }
+        },
         mill: {
             id: 'city-mill',
             title(){
@@ -2866,7 +2942,7 @@ export const actions = {
             desc(){
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
-                    let power = global.race['environmentalist'] ? 1.5 : 1;
+                    let power = powerModifier(global.race['environmentalist'] ? 1.5 : 1);
                     return loc('city_mill_desc2',[bonus,power]);
                 }
                 else {
@@ -2882,7 +2958,7 @@ export const actions = {
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return powerCostMod(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
             power_reqs: { agriculture: 6 },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2906,7 +2982,7 @@ export const actions = {
                 return loc('city_mill_title2');
             },
             desc(){
-                let power = global.race['environmentalist'] ? 1.5 : 1;
+                let power = powerModifier(global.race['environmentalist'] ? 1.5 : 1);
                 return loc('city_windmill_desc',[power]);
             },
             wiki: false,
@@ -2970,6 +3046,7 @@ export const actions = {
                 }
                 return loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')]);
             },
+            switchable(){ return true; }, 
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.settings['showMil'] = true;
@@ -2984,6 +3061,7 @@ export const actions = {
                     }
                     global.civic['garrison'].max += gain;
                     global.city['garrison'].count++;
+                    global.city['garrison'].on++;
                     global.resource.Furs.display = true;
                     return true;
                 }
@@ -3533,10 +3611,11 @@ export const actions = {
             special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['factory'].count++;
+                    global.city.factory.count++;
                     global.resource.Alloy.display = true;
                     if (global.city.power >= $(this)[0].powered()){
-                        global.city['factory'].on++;
+                        global.city.factory.on++;
+                        global.city.factory.Alloy++;
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
@@ -3727,8 +3806,11 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['oil_well'].count++;
-                    global.resource.Oil.display = true;
                     global['resource']['Oil'].max += spatialReasoning(500);
+                    if (global.city['oil_well'].count === 1) {
+                        global.resource.Oil.display = true;
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -3872,7 +3954,7 @@ export const actions = {
                 let amp = global.civic.govern.type === 'corpocracy' ? 2 : 1;
                 let cas = global.civic.govern.type === 'corpocracy' ? 10 : 5;
                 let mon = global.civic.govern.type === 'corpocracy' ? 4 : 2;
-                return `<div>${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`;
+                return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`;
             },
             powered(){ return powerCostMod(1); },
             action(){
@@ -3934,23 +4016,31 @@ export const actions = {
                 money = '$'+money;
                 let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
-                if (global.tech['gambling'] >= 2){
-                    let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
-                    if (global.civic.govern.type === 'corpocracy'){
-                        cash = (cash * 3).toFixed(2);
-                    }
-                    desc = desc + `<div class="has-text-caution">${loc('tech_casino_effect2',[$(this)[0].powered(),cash])}</div>`;
+                let cash = Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
+                if (global.tech['gambling'] && global.tech['gambling'] >= 2){
+                    cash *= 1.5;
                 }
+                if (global.civic.govern.type === 'corpocracy'){
+                    cash *= 3;
+                }
+                if (global.civic.govern.type === 'socialist'){
+                    cash *= 0.8;
+                }
+                cash = +(cash).toFixed(2);
+                desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 3 : 4); },
-            power_reqs: { gambling: 2 },
+            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['casino'].count++;
+                    global.city.casino.count++;
                     if (!global.race['joyless']){
                         global.civic.entertainer.max++;
                         global.civic.entertainer.display = true;
+                    }
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.city.casino.on++;
                     }
                     return true;
                 }
@@ -4601,7 +4691,7 @@ export const actions = {
                     if (global.race['infectious']){
                         global.civic.garrison.display = true;
                         global.settings.showCivic = true;
-                        global.city['garrison'] = { count: 0 };
+                        global.city['garrison'] = { count: 0, on: 0 };
                     }
                     return true;
                 }
@@ -4835,23 +4925,22 @@ export const actions = {
                 return false;
             }
         },
-        soul_lodge: {
-            id: 'tech-soul_lodge',
-            title: loc('tech_lodge'),
-            desc: loc('tech_lodge'),
+        alt_lodge: {
+            id: 'tech-alt_lodge',
+            title(){ return global.race['detritivore'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
+            desc(){ return global.race['detritivore'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
             wiki: false,
-            category: 'souls',
+            category: 'housing',
             era: 'civilized',
             reqs: { housing: 1, currency: 1 },
-            trait: ['soul_eater'],
             grant: ['s_lodge',1],
             condition(){
-                return global.race.species === 'wendigo' ? true : false;
+                return global.race.species === 'wendigo' || global.race['detritivore'] ? true : false;
             },
             cost: {
                 Knowledge(){ return 180; }
             },
-            effect: loc('tech_lodge_effect'),
+            effect(){ return global.race['detritivore'] ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['lodge'] = { count: 0 };
@@ -4881,6 +4970,87 @@ export const actions = {
                 return false;
             }
         },
+        compost: {
+            id: 'tech-compost',
+            title: loc('tech_compost'),
+            desc: loc('tech_compost_desc'),
+            category: 'compost',
+            era: 'civilized',
+            reqs: { primitive: 3 },
+            trait: ['detritivore'],
+            grant: ['compost',1],
+            cost: {
+                Knowledge(){ return 10; }
+            },
+            effect: loc('tech_compost_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['compost'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        hot_compost: {
+            id: 'tech-hot_compost',
+            title: loc('tech_hot_compost'),
+            desc: loc('tech_hot_compost'),
+            category: 'compost',
+            era: 'civilized',
+            reqs: { compost: 1 },
+            trait: ['detritivore'],
+            grant: ['compost',2],
+            cost: {
+                Knowledge(){ return 100; }
+            },
+            effect: loc('tech_hot_compost_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mulching: {
+            id: 'tech-mulching',
+            title: loc('tech_mulching'),
+            desc: loc('tech_mulching'),
+            category: 'compost',
+            era: 'civilized',
+            reqs: { compost: 2, mining: 3 },
+            trait: ['detritivore'],
+            grant: ['compost',3],
+            cost: {
+                Knowledge(){ return 3200; }
+            },
+            effect: loc('tech_mulching_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        adv_mulching: {
+            id: 'tech-adv_mulching',
+            title: loc('tech_adv_mulching'),
+            desc: loc('tech_adv_mulching'),
+            category: 'compost',
+            era: 'civilized',
+            reqs: { compost: 3, high_tech: 2 },
+            trait: ['detritivore'],
+            grant: ['compost',4],
+            cost: {
+                Knowledge(){ return 16000; }
+            },
+            effect: loc('tech_adv_mulching_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         agriculture: {
             id: 'tech-agriculture',
             title: loc('tech_agriculture'),
@@ -4888,7 +5058,7 @@ export const actions = {
             category: 'agriculture',
             era: 'civilized',
             reqs: { primitive: 3 },
-            not_trait: ['carnivore','soul_eater'],
+            not_trait: ['carnivore','soul_eater','detritivore'],
             grant: ['agriculture',1],
             cost: {
                 Knowledge(){ return 10; }
@@ -6655,7 +6825,7 @@ export const actions = {
             era: 'early_space',
             reqs: { govern: 2 },
             condition(){
-                return (global.tech['unify'] && global.tech['unify'] >= 2) || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy ? true : false;
+                return (global.tech['unify'] && global.tech['unify'] >= 2) || checkControlling();
             },
             grant: ['gov_fed',1],
             cost: {
@@ -9731,7 +9901,7 @@ export const actions = {
             effect: loc('tech_garrison_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.city['garrison'] = { count: 0 };
+                    global.city['garrison'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -10637,6 +10807,7 @@ export const actions = {
             desc: loc('tech_fanaticism'),
             category: 'religion',
             era: 'civilized',
+            wiki: global.genes['transcendence'] ? false : true,
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
@@ -10662,6 +10833,7 @@ export const actions = {
             desc: loc('tech_fanaticism'),
             category: 'religion',
             era: 'civilized',
+            wiki: global.genes['transcendence'] ? true : false,
             reqs: { theology: 2 },
             grant: ['fanaticism',1],
             gene: ['transcendence'],
@@ -10855,6 +11027,7 @@ export const actions = {
             desc: loc('tech_anthropology'),
             category: 'religion',
             era: 'civilized',
+            wiki: global.genes['transcendence'] ? false : true,
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
@@ -10876,6 +11049,7 @@ export const actions = {
             desc: loc('tech_anthropology'),
             category: 'religion',
             era: 'civilized',
+            wiki: global.genes['transcendence'] ? true : false,
             reqs: { theology: 2 },
             grant: ['anthropology',1],
             gene: ['transcendence'],
@@ -11733,8 +11907,9 @@ export const actions = {
                     }
                     for (let i=0; i<3; i++){
                         if (global.civic.foreign[`gov${i}`].occ){
-                            global.civic['garrison'].max += 20;
-                            global.civic['garrison'].workers += 20;
+                            let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
+                            global.civic['garrison'].max += occ_amount;
+                            global.civic['garrison'].workers += occ_amount;
                             global.civic.foreign[`gov${i}`].occ = false;
                         }
                         global.civic.foreign[`gov${i}`].buy = false;
@@ -13522,7 +13697,7 @@ export function setAction(c_action,action,type,old){
             </svg></div>`);
         parent.append(special);
     }
-    if (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)){
+    if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
         var powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
         var powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
         parent.append(powerOn);
@@ -14943,6 +15118,9 @@ function bioseed(){
     }
     unlockAchieve(`genus_${genus}`);
 
+    if (atmo === 'dense' && global.race.universe === 'heavy'){
+        unlockAchieve(`double_density`);        
+    }
     if (global.race.species === 'junker'){
         unlockFeat('organ_harvester');
     }

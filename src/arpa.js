@@ -1,6 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue } from './functions.js';
-import { dragQueue } from './civics.js';
+import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, dragQueue } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
@@ -1237,7 +1236,7 @@ function genetics(){
 
                         let count = 0;
                         Object.keys(global.race).forEach(function (trait){
-                            if (traits[trait] && (traits[trait].type == 'major' || traits[trait].type == 'genus')){
+                            if ((traits[trait] && (traits[trait].type == 'major' || traits[trait].type == 'genus')) && trait !== 'evil'){
                                 count++;
                             }
                         });

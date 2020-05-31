@@ -127,6 +127,11 @@ export const achievements = {
         desc: loc("achieve_cult_of_personality_desc"),
         flair: loc("achieve_cult_of_personality_flair")
     },
+    double_density: {
+        name: loc("achieve_double_density_name"),
+        desc: loc("achieve_double_density_desc"),
+        flair: loc("achieve_double_density_flair")
+    },
     doomed: {
         name: loc("achieve_doomed_name"),
         desc: loc("achieve_doomed_desc"),
@@ -512,6 +517,11 @@ export const achievements = {
         desc: loc("achieve_extinct_cacti_desc"),
         flair: loc("achieve_extinct_cacti_flair")
     },
+    /*extinct_pinguicula: {
+        name: loc("achieve_extinct_pinguicula_name"),
+        desc: loc("achieve_extinct_pinguicula_desc"),
+        flair: loc("achieve_extinct_pinguicula_flair")
+    },*/
     extinct_sporgar: {
         name: loc("achieve_extinct_sporgar_name"),
         desc: loc("achieve_extinct_sporgar_desc"),
@@ -521,6 +531,11 @@ export const achievements = {
         name: loc("achieve_extinct_shroomi_name"),
         desc: loc("achieve_extinct_shroomi_desc"),
         flair: loc("achieve_extinct_shroomi_flair")
+    },
+    extinct_moldling: {
+        name: loc("achieve_extinct_moldling_name"),
+        desc: loc("achieve_extinct_moldling_desc"),
+        flair: loc("achieve_extinct_moldling_flair")
     },
     extinct_mantis: {
         name: loc("achieve_extinct_mantis_name"),

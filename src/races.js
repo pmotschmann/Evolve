@@ -1,4 +1,4 @@
-import { global } from './vars.js';
+import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { clearElement, removeFromQueue, removeFromRQueue, getEaster } from './functions.js';
 import { unlockAchieve } from './achieve.js';
@@ -40,7 +40,7 @@ export const genus_traits = {
         asymmetrical: 1
     },
     fungi: {
-        spores: 1,
+        detritivore: 1,
         spongy: 1
     },
     aquatic: {
@@ -191,6 +191,12 @@ export const traits = {
         type: 'genus',
         val: -3,
         vars: [20]
+    },
+    detritivore: { // You eat dead matter
+        name: loc('trait_detritivore_name'),
+        desc: loc('trait_detritivore'),
+        type: 'genus',
+        val: 2,
     },
     spores: { // Birthrate increased when it's windy
         name: loc('trait_spores_name'),
@@ -595,6 +601,19 @@ export const traits = {
         val: -3,
         vars: [5,2]
     },
+    infiltrator: { // Cheap spies and sometimes steal tech from rivals
+        name: loc('trait_infiltrator_name'),
+        desc: loc('trait_infiltrator'),
+        type: 'major',
+        val: 4,
+    },
+    hibernator: { // Lower activity during winter
+        name: loc('trait_hibernator_name'),
+        desc: loc('trait_hibernator'),
+        type: 'major',
+        val: -3,
+        vars: [25,8]
+    },
     cannibalize: { // Eat your own for buffs
         name: loc('trait_cannibalize_name'),
         desc: loc('trait_cannibalize'),
@@ -790,7 +809,7 @@ export const traits = {
         name: loc('trait_slaver_name'),
         desc: loc('trait_slaver'),
         type: 'major',
-        val: 10,
+        val: 12,
     },
     compact: { // You hardly take up any space at all
         name: loc('trait_compact_name'),
@@ -1344,6 +1363,25 @@ export const races = {
         },
         fanaticism: 'hyper'
     },
+    /*pinguicula: {
+        name: loc('race_pinguicula'),
+        desc: loc('race_pinguicula_desc'),
+        type: 'plant',
+        home: loc('race_pinguicula_home'),
+        entity: loc('race_pinguicula_entity'),
+        traits: {
+            devourer: 1,
+            sticky: 1
+        },
+        solar: {
+            red: loc('race_pinguicula_solar_red'),
+            hell: loc('race_pinguicula_solar_hell'),
+            gas: loc('race_pinguicula_solar_gas'),
+            gas_moon: loc('race_pinguicula_solar_gas_moon'),
+            dwarf: loc('race_pinguicula_solar_dwarf'),
+        },
+        fanaticism: 'none'
+    },*/
     sporgar: {
         name: loc('race_sporgar'),
         desc: loc('race_sporgar_desc'),
@@ -1381,6 +1419,25 @@ export const races = {
             dwarf: loc('race_shroomi_solar_dwarf'),
         },
         fanaticism: 'toxic'
+    },
+    moldling: {
+        name: loc('race_moldling'),
+        desc: loc('race_moldling_desc'),
+        type: 'fungi',
+        home: loc('race_moldling_home'),
+        entity: loc('race_moldling_entity'),
+        traits: {
+            infiltrator: 1,
+            hibernator: 1
+        },
+        solar: {
+            red: loc('race_moldling_solar_red'),
+            hell: loc('race_moldling_solar_hell'),
+            gas: loc('race_moldling_solar_gas'),
+            gas_moon: loc('race_moldling_solar_gas_moon'),
+            dwarf: loc('race_moldling_solar_dwarf'),
+        },
+        fanaticism: 'infiltrator'
     },
     mantis: {
         name: loc('race_mantis'),
@@ -1740,6 +1797,7 @@ export const races = {
             atrophy: 1,
             invertebrate: 1,
             pathetic: 1,
+            hibernator: 1
         },
         solar: {
             red: loc('race_junker_solar_red'),
@@ -2010,10 +2068,13 @@ export function cleanAddTrait(trait){
             buildGarrison($('#c_garrison'),false);
             for (let i=0; i<3; i++){
                 if (global.civic.foreign[`gov${i}`].occ){
-                    global.civic['garrison'].max += 20;
-                    global.civic['garrison'].workers += 20;
+                    let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
+                    global.civic['garrison'].max += occ_amount;
+                    global.civic['garrison'].workers += occ_amount;
                     global.civic.foreign[`gov${i}`].occ = false;
                 }
+                global.civic.foreign[`gov${i}`].buy = false;
+                global.civic.foreign[`gov${i}`].anx = false;
                 global.civic.foreign[`gov${i}`].sab = 0;
                 global.civic.foreign[`gov${i}`].act = 'none';
             }
@@ -2036,6 +2097,18 @@ export function cleanAddTrait(trait){
             removeFromRQueue(['wharf']);
             delete global.city['wharf'];
             break;
+        case 'slow':
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            window.location.reload();
+        case 'hyper':
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            window.location.reload();
         default:
             break;
     }
@@ -2097,6 +2170,18 @@ export function cleanRemoveTrait(trait){
                 global.city['wharf'] = { count: 0 };
             }
             break;
+        case 'slow':
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            window.location.reload();
+        case 'hyper':
+            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            window.location.reload();
         default:
             break;
     }

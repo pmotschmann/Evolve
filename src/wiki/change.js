@@ -3,6 +3,27 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.17`,
+        date: `5/30/2020`,
+        changes: [
+            `Added 3rd race option for Fungus genus: Moldling.`,
+            `Fungi genus Spore trait replaced with Detritivore.`,
+            `Casinos now start powered and generated money immediately.`,
+            `Extreme Dazzle upgrade now boosts Casino income by 50%.`,
+            `Reduced power requirement of Casino by 1.`,
+            `Casino Max Morale boost no longer works unless casino is powered.`,
+            `Occupation will now unlock Federation research.`,
+            `Added Double Density achievement in heavyverse.`,
+            `Stoned penalty on mellow planets raised to 10%.`,
+            `Unemployed citizens on mellow planets no longer generate any stress (note: hunters are NOT unemployed).`,
+            `Life on mellow planets is now overall less stressful.`,
+            `Slaver trait rating raised to 12.`,
+            `Barracks can now be switched off.`,
+            `Space Stations will now automatically staff Space Miners from the default job when constructed.`,
+            `Factories now default to producing Alloy instead of Nothing.`
+        ]
+    },
+    {
         version: `0.8.16`,
         date: `5/8/2020`,
         changes: [
