@@ -382,6 +382,26 @@ export const achievements = {
         desc: loc("achieve_atmo_trashed_desc"),
         flair: loc("achieve_atmo_trashed_flair")
     },
+    atmo_elliptical: {
+        name: loc("achieve_atmo_elliptical_name"),
+        desc: loc("achieve_atmo_elliptical_desc"),
+        flair: loc("achieve_atmo_elliptical_flair")
+    },
+    atmo_flare: {
+        name: loc("achieve_atmo_flare_name"),
+        desc: loc("achieve_atmo_flare_desc"),
+        flair: loc("achieve_atmo_flare_flair")
+    },
+    atmo_dense: {
+        name: loc("achieve_atmo_dense_name"),
+        desc: loc("achieve_atmo_dense_desc"),
+        flair: loc("achieve_atmo_dense_flair")
+    },
+    atmo_unstable: {
+        name: loc("achieve_atmo_unstable_name"),
+        desc: loc("achieve_atmo_unstable_desc"),
+        flair: loc("achieve_atmo_unstable_flair")
+    },
     mass_extinction: {
         name: loc("achieve_mass_extinction_name"),
         desc: loc("achieve_mass_extinction_desc"),

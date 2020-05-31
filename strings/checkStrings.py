@@ -44,6 +44,7 @@ else:
 
             if line == None:
                 print('failed parse line {}'.format(nl+1))
+                continue
             line = line.groupdict()
 
             if not line['key'] in defstr:

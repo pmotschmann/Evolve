@@ -1,4 +1,4 @@
-import { global } from './vars.js';
+import { global, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
 import { govTitle } from './civics.js';
@@ -53,6 +53,49 @@ export const events = {
             if (res < 0){ res = 0; }
             global.resource.Lumber.amount = res;
             return loc('event_fire',[loss]);
+        }
+    },
+    flare: {
+        reqs: {},
+        condition(){
+            return global.city.ptrait === 'flare' ? true : false;
+        },
+        effect: function(){
+            let at_risk = 0;
+            if (global.city.hasOwnProperty('basic_housing')){
+                at_risk += global.city.basic_housing.count;
+            }
+            if (global.city.hasOwnProperty('cottage')){
+                at_risk += global.city.cottage.count * 2;
+            }
+            if (global.city.hasOwnProperty('apartment')){
+                at_risk += p_on['apartment'] * 5;
+            }
+            if (at_risk > global.resource[global.race.species].amount){
+                at_risk = global.resource[global.race.species].amount;
+            }
+            at_risk = Math.floor(at_risk * 0.1);
+
+            let loss = Math.rand(0,at_risk);
+            global.resource[global.race.species].amount -= loss;
+            if (global.civic.d_job === 'unemployed'){
+                global.civic.free -= loss;
+                if (global.civic.free < 0){
+                    global.civic.free = 0;
+                }
+            }
+            else {
+                global.civic[global.civic.d_job].workers -= loss;
+                if (global.civic[global.civic.d_job].workers < 0){
+                    global.civic[global.civic.d_job].workers = 0;
+                }
+            }
+
+            if (global.city.biome !== 'oceanic'){
+                global.city['firestorm'] = Math.rand(400,4000);
+            }
+
+            return loc(global.city.biome === 'oceanic' ? 'event_flare2' : 'event_flare',[races[global.race.species].home, loss]);
         }
     },
     raid: {
@@ -342,7 +385,7 @@ export const events = {
 
 function tax_revolt(){
     global.city.morale.current - 100;
-    let ramp = global.civic.govern.type === 'oligarchy' ? 35 : 25;
+    let ramp = global.civic.govern.type === 'oligarchy' ? 45 : 25;
     let risk = (global.civic.taxes.tax_rate - ramp) * 0.04;
     Object.keys(global.resource).forEach(function (res) {
         let loss = Math.rand(1,Math.round(global.resource[res].amount * risk));

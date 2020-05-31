@@ -3,6 +3,19 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.8.16`,
+        date: `5/8/2020`,
+        changes: [
+            `Oceanic biome now applies a 6% bonus to Titanium from Steel smelting.`,
+            `Oceanic biome now applies a 12% bonus to Titanium from Iron smelting.`,
+            `Oceanic biome now applies a 5% penalty to Fur generation.`,
+            `Tundra biome now applies a 25% bonus to Fur generation.`,
+            `Tundra biome now applies a 10% penalty to Oil generation.`,
+            `New plantery modifiers: Elliptical, Flare, Dense, and Unstable.`,
+            `Oligarchy tax riot immunity raised from 35% to 45%.`,
+        ]
+    },
+    {
         version: `0.8.15`,
         date: `5/2/2020`,
         changes: [

@@ -2671,7 +2671,8 @@ export const actions = {
                 Money(offset){ return costMultiplier('cottage', offset, 900, 1.15); },
                 Plywood(offset){ return costMultiplier('cottage', offset, 25, 1.25); },
                 Brick(offset){ return costMultiplier('cottage', offset, 20, 1.25); },
-                Wrought_Iron(offset){ return costMultiplier('cottage', offset, 15, 1.25); }
+                Wrought_Iron(offset){ return costMultiplier('cottage', offset, 15, 1.25); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('cottage', offset, 5, 1.25) : 0; }
             },
             effect(){
                 if (global.tech['home_safe']){
@@ -2934,7 +2935,8 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('silo', offset, 85, 1.32); },
                 Lumber(offset){ return costMultiplier('silo', offset, 65, 1.36) },
-                Stone(offset){ return costMultiplier('silo', offset, 50, 1.36); }
+                Stone(offset){ return costMultiplier('silo', offset, 50, 1.36); },
+                Iron(offset){ return global.city.silo.count >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('silo', offset, 10, 1.36) : 0; }
             },
             effect(){
                 let food = spatialReasoning(500);
@@ -2958,7 +2960,8 @@ export const actions = {
             reqs: { military: 1, housing: 1 },
             cost: {
                 Money(offset){ return costMultiplier('garrison', offset, 240, 1.5); },
-                Stone(offset){ return costMultiplier('garrison', offset, 260, 1.46); }
+                Stone(offset){ return costMultiplier('garrison', offset, 260, 1.46); },
+                Iron(offset){ return global.city.garrison.count >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('garrison', offset, 50, 1.4) : 0; }
             },
             effect(){
                 let bunks = global.tech['military'] >= 5 ? 3 : 2;
@@ -2996,7 +2999,8 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('hospital', offset, 22000, 1.32); },
                 Furs(offset){ return costMultiplier('hospital', offset, 4000, 1.32); },
-                Aluminium(offset){ return costMultiplier('hospital', offset, 10000, 1.32); }
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('hospital', offset, 500, 1.32) : 0; },
+                Aluminium(offset){ return costMultiplier('hospital', offset, 10000, 1.32); },
             },
             effect(){
                 let healing = global.tech['medic'] >= 2 ? 10 : 5;
@@ -3019,8 +3023,9 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('boot_camp', offset, 50000, 1.32); },
                 Lumber(offset){ return costMultiplier('boot_camp', offset, 21500, 1.32); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('boot_camp', offset, 300, 1.32) : 0; },
                 Aluminium(offset){ return costMultiplier('boot_camp', offset, 12000, 1.32); },
-                Brick(offset){ return costMultiplier('boot_camp', offset, 1400, 1.32); }
+                Brick(offset){ return costMultiplier('boot_camp', offset, 1400, 1.32); },                
             },
             effect(){
                 let rate = global.tech['boot_camp'] >= 2 ? 8 : 5;
@@ -3264,7 +3269,8 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('bank', offset, 250, 1.35); },
                 Lumber(offset){ return costMultiplier('bank', offset, 75, 1.32); },
-                Stone(offset){ return costMultiplier('bank', offset, 100, 1.35); }
+                Stone(offset){ return costMultiplier('bank', offset, 100, 1.35); },
+                Iron(offset){ return global.city.bank.count >= 2 && global.city.ptrait === 'unstable' ? costMultiplier('bank', offset, 30, 1.3) : 0; }
             },
             effect(){
                 let vault = bank_vault();
@@ -3424,7 +3430,8 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('cement_plant', offset, 3000, 1.5); },
                 Lumber(offset){ return costMultiplier('cement_plant', offset, 1800, 1.36); },
-                Stone(offset){ return costMultiplier('cement_plant', offset, 2000, 1.32); }
+                Stone(offset){ return costMultiplier('cement_plant', offset, 2000, 1.32); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('cement_plant', offset, 275, 1.32) : 0; }
             },
             effect(){
                 if (global.tech['cement'] >= 5){
@@ -3459,8 +3466,9 @@ export const actions = {
             reqs: { foundry: 1 },
             cost: {
                 Money(offset){ return costMultiplier('foundry', offset, 750, 1.36); },
+                Stone(offset){ return costMultiplier('foundry', offset, 100, 1.36); },
                 Copper(offset){ return costMultiplier('foundry', offset, 250, 1.36); },
-                Stone(offset){ return costMultiplier('foundry', offset, 100, 1.36); }
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('foundry', offset, 40, 1.36) : 0; },                
             },
             effect(){
                 let desc = `<div>${loc('city_foundry_effect1',[1])}</div>`;
@@ -3591,6 +3599,7 @@ export const actions = {
             reqs: { alumina: 1 },
             cost: {
                 Money(offset){ return costMultiplier('metal_refinery', offset, 2500, 1.35); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('metal_refinery', offset, 125, 1.35) : 0; },
                 Steel(offset){ return costMultiplier('metal_refinery', offset, 350, 1.35); }
             },
             powered(){ return powerCostMod(2); },
@@ -3661,6 +3670,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('coal_mine', offset, 480, 1.4); },
                 Lumber(offset){ return costMultiplier('coal_mine', offset, 250, 1.36); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('coal_mine', offset, 28, 1.36) : 0; },
                 Wrought_Iron(offset){ return costMultiplier('coal_mine', offset, 18, 1.36); }
             },
             effect() {
@@ -3695,6 +3705,7 @@ export const actions = {
             reqs: { oil: 1 },
             cost: {
                 Money(offset){ return costMultiplier('oil_well', offset, 5000, 1.5); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('oil_well', offset, 450, 1.5) : 0; },
                 Cement(offset){ return costMultiplier('oil_well', offset, 5250, 1.5); },
                 Steel(offset){ return costMultiplier('oil_well', offset, 6000, 1.5); }
             },
@@ -3732,6 +3743,7 @@ export const actions = {
             reqs: { oil: 2 },
             cost: {
                 Money(offset){ return costMultiplier('oil_depot', offset, 2500, 1.46); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('oil_depot', offset, 325, 1.36) : 0; },
                 Cement(offset){ return costMultiplier('oil_depot', offset, 3750, 1.46); },
                 Sheet_Metal(offset){ return costMultiplier('oil_depot', offset, 100, 1.45); }
             },
@@ -3776,6 +3788,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('trade', offset, 500, 1.36); },
                 Lumber(offset){ return costMultiplier('trade', offset, 125, 1.36); },
                 Stone(offset){ return costMultiplier('trade', offset, 50, 1.36); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('trade', offset, 15, 1.36) : 0; },
                 Furs(offset){ return costMultiplier('trade', offset, 65, 1.36); }
             },
             effect(){
@@ -3809,6 +3822,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('wharf', offset, 62000, 1.32); },
                 Lumber(offset){ return costMultiplier('wharf', offset, 44000, 1.32); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('trade', offset, 200, 1.32) : 0; },
                 Cement(offset){ return costMultiplier('wharf', offset, 3000, 1.32); },
                 Oil(offset){ return costMultiplier('wharf', offset, 750, 1.32); }
             },
@@ -3850,6 +3864,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('tourist_center', offset, 100000, 1.36); },
                 Stone(offset){ return costMultiplier('tourist_center', offset, 25000, 1.36); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('tourist_center', offset, 1000, 1.36) : 0; },
                 Furs(offset){ return costMultiplier('tourist_center', offset, 7500, 1.36); },
                 Plywood(offset){ return costMultiplier('tourist_center', offset, 5000, 1.36); },
             },
@@ -3879,7 +3894,8 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('amphitheatre', offset, 500, 1.55); },
                 Lumber(offset){ return costMultiplier('amphitheatre', offset, 50, 1.75); },
-                Stone(offset){ return costMultiplier('amphitheatre', offset, 200, 1.75); }
+                Stone(offset){ return costMultiplier('amphitheatre', offset, 200, 1.75); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('amphitheatre', offset, 18, 1.36) : 0; },
             },
             effect: `<div>${loc('city_max_entertainer',[1])}</div><div>${loc('city_max_morale')}</div>`,
             action(){
@@ -3901,6 +3917,7 @@ export const actions = {
             reqs: { gambling: 1 },
             cost: {
                 Money(offset){ return costMultiplier('casino', offset, 350000, 1.35); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('amphitheatre', offset, 2000, 1.35) : 0; },
                 Furs(offset){ return costMultiplier('casino', offset, 60000, 1.35); },
                 Plywood(offset){ return costMultiplier('casino', offset, 10000, 1.35); },
                 Brick(offset){ return costMultiplier('casino', offset, 6000, 1.35); }
@@ -3953,6 +3970,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('temple', offset, 50, 1.36); },
                 Lumber(offset){ return costMultiplier('temple', offset, 25, 1.36); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('temple', offset, 6, 1.36) : 0; },
                 Furs(offset){ return costMultiplier('temple', offset, 15, 1.36); },
                 Cement(offset){ return costMultiplier('temple', offset, 10, 1.36); }
             },
@@ -4120,7 +4138,8 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('university', offset, 900, 1.5) - 500; },
                 Lumber(offset){ return costMultiplier('university', offset, 500, 1.36) - 200; },
-                Stone(offset){ return costMultiplier('university', offset, 750, 1.36) - 350; }
+                Stone(offset){ return costMultiplier('university', offset, 750, 1.36) - 350; },
+                Iron(offset){ return global.city.university.count >= 3 && global.city.ptrait === 'unstable' ? costMultiplier('university', offset, 25, 1.36) : 0; }
             },
             effect(){
                 let multiplier = 1;
@@ -4183,9 +4202,10 @@ export const actions = {
             reqs: { science: 2 },
             cost: {
                 Money(offset){ return costMultiplier('library', offset, 45, 1.2); },
-                Furs(offset){ return costMultiplier('library', offset, 22, 1.20); },
-                Plywood(offset){ return costMultiplier('library', offset, 20, 1.20); },
-                Brick(offset){ return costMultiplier('library', offset, 15, 1.20); }
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('library', offset, 4, 1.2) : 0; },
+                Furs(offset){ return costMultiplier('library', offset, 22, 1.2); },
+                Plywood(offset){ return costMultiplier('library', offset, 20, 1.2); },
+                Brick(offset){ return costMultiplier('library', offset, 15, 1.2); }
             },
             effect(){
                 let gain = 125;
@@ -4241,6 +4261,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('wardenclyffe', offset, 5000, 1.22); },
                 Knowledge(offset){ return costMultiplier('wardenclyffe', offset, 1000, 1.22); },
                 Copper(offset){ return costMultiplier('wardenclyffe', offset, 500, 1.22); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('wardenclyffe', offset, 75, 1.22) : 0; },
                 Cement(offset){ return costMultiplier('wardenclyffe', offset, 350, 1.22); },
                 Sheet_Metal(offset){ return costMultiplier('wardenclyffe', offset, 125, 1.2); }
             },
@@ -4313,6 +4334,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('biolab', offset, 25000, 1.3); },
                 Knowledge(offset){ return costMultiplier('biolab', offset, 5000, 1.3); },
                 Copper(offset){ return costMultiplier('biolab', offset, 1250, 1.3); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('biolab', offset, 160, 1.3) : 0; },
                 Alloy(offset){ return costMultiplier('biolab', offset, 350, 1.3); }
             },
             effect(){
@@ -4351,6 +4373,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('coal_power', offset, 10000, 1.22); },
                 Copper(offset){ return costMultiplier('coal_power', offset, 1800, 1.22) - 1000; },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('coal_power', offset, 175, 1.22) : 0; },
                 Cement(offset){ return costMultiplier('coal_power', offset, 600, 1.22); },
                 Steel(offset){ return costMultiplier('coal_power', offset, 2000, 1.22) - 1000; }
             },
@@ -4389,6 +4412,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('oil_power', offset, 50000, 1.22); },
                 Copper(offset){ return costMultiplier('oil_power', offset, 6500, 1.22) + 1000; },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('oil_power', offset, 180, 1.22) : 0; },
                 Aluminium(offset){ return costMultiplier('oil_power', offset, 12000, 1.22); },
                 Cement(offset){ return costMultiplier('oil_power', offset, 5600, 1.22) + 1000; }
             },
@@ -4435,6 +4459,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('fission_power', offset, 250000, 1.36); },
                 Copper(offset){ return costMultiplier('fission_power', offset, 13500, 1.36); },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('fission_power', offset, 1750, 1.36) : 0; },
                 Cement(offset){ return costMultiplier('fission_power', offset, 10800, 1.36); },
                 Titanium(offset){ return costMultiplier('fission_power', offset, 7500, 1.36); }
             },
@@ -5881,7 +5906,7 @@ export const actions = {
             reqs: { mining: 2 },
             grant: ['mining',3],
             cost: {
-                Knowledge(){ return 2500; }
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 500 : 2500; }
             },
             effect: loc('tech_iron_mining_effect'),
             action(){
@@ -8111,7 +8136,7 @@ export const actions = {
             grant: ['high_tech',7],
             cost: {
                 Knowledge(){ return 112500; },
-                Oil(){ return 6800; }
+                Oil(){ return global.city.ptrait === 'dense' ? 8000 : 6800; }
             },
             effect: loc('tech_rocketry_effect'),
             action(){
@@ -9217,7 +9242,7 @@ export const actions = {
             reqs: { axe: 2, mining: 3 },
             grant: ['axe',3],
             cost: {
-                Knowledge(){ return 2700; },
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 1350 : 2700; },
                 Iron(){ return 250; }
             },
             effect: loc('tech_iron_axes_effect'),
@@ -9319,7 +9344,7 @@ export const actions = {
             reqs: { hammer: 1, mining: 3 },
             grant: ['hammer',2],
             cost: {
-                Knowledge(){ return 2700; },
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 1350 : 2700; },
                 Iron(){ return 250; }
             },
             effect: loc('tech_iron_sledgehammer_effect'),
@@ -9399,7 +9424,7 @@ export const actions = {
             reqs: { pickaxe: 1, mining: 3 },
             grant: ['pickaxe',2],
             cost: {
-                Knowledge(){ return 3200; },
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 1600 : 3200; },
                 Iron(){ return 250; }
             },
             effect: loc('tech_iron_pickaxe_effect'),
@@ -9520,7 +9545,7 @@ export const actions = {
             reqs: { hoe: 1, mining: 3, agriculture: 1 },
             grant: ['hoe',2],
             cost: {
-                Knowledge(){ return 3600; },
+                Knowledge(){ return global.city.ptrait === 'unstable' ? 1800 : 3600; },
                 Iron(){ return 500; }
             },
             effect: loc('tech_iron_hoe_effect'),
@@ -10307,7 +10332,7 @@ export const actions = {
             grant: ['mad',1],
             cost: {
                 Knowledge(){ return 120000; },
-                Oil(){ return 8500; },
+                Oil(){ return global.city.ptrait === 'dense' ? 10000 : 8500; },
                 Uranium(){ return 1250; }
             },
             effect: loc('tech_mad_effect'),
@@ -13811,7 +13836,7 @@ export function setPlanet(hell){
     }
 
     let trait = 'none';
-    switch (Math.floor(Math.seededRandom(0,12))){
+    switch (Math.floor(Math.seededRandom(0,16))){
         case 0:
             trait = 'toxic';
             break;
@@ -13832,6 +13857,18 @@ export function setPlanet(hell){
             break;
         case 6:
             trait = 'trashed';
+            break;
+        case 7:
+            trait = 'elliptical';
+            break;
+        case 8:
+            trait = 'flare';
+            break;
+        case 9:
+            trait = 'dense';
+            break;
+        case 10:
+            trait = 'unstable';
             break;
         default:
             trait = 'none';
@@ -13895,7 +13932,7 @@ export function setPlanet(hell){
             orbit = 777;
             break;
         default:
-            orbit = Math.floor(Math.seededRandom(200,600));
+            orbit = Math.floor(Math.seededRandom(200,trait === 'elliptical' ? 800 : 600));
             break;
     }
 

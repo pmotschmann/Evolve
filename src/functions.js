@@ -322,8 +322,8 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     else if (global.genes['creep'] && global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.002;
     }
-    if (mutiplier < 0.01){
-        mutiplier = 0.01;
+    if (mutiplier < 1.005){
+        mutiplier = 1.005;
     }
     var count = global[cat][structure] ? global[cat][structure].count : 0;
     if (offset){
@@ -350,8 +350,8 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         mutiplier -= harmonyEffect();
     }
-    if (mutiplier < 0.01){
-        mutiplier = 0.01;
+    if (mutiplier < 1.005){
+        mutiplier = 1.005;
     }
     var count = global[sector][action] ? global[sector][action].count : 0;
     if (offset){

@@ -1,6 +1,6 @@
 {
   "name": "evolveidle",
-  "version": "0.8.15",
+  "version": "0.8.16",
   "description": "Evolve Idle",
   "private": true,
   "scripts": {
@@ -28,8 +28,5 @@
   "devDependencies": {
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"
-  },
-  "dependencies": {
-    "vue": "^2.6.10"
   }
 }
