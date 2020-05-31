@@ -1363,14 +1363,15 @@ export const races = {
         },
         fanaticism: 'hyper'
     },
-    pinguicula: {
+    /*pinguicula: {
         name: loc('race_pinguicula'),
         desc: loc('race_pinguicula_desc'),
         type: 'plant',
         home: loc('race_pinguicula_home'),
         entity: loc('race_pinguicula_entity'),
         traits: {
-
+            devourer: 1,
+            sticky: 1
         },
         solar: {
             red: loc('race_pinguicula_solar_red'),
@@ -1380,7 +1381,7 @@ export const races = {
             dwarf: loc('race_pinguicula_solar_dwarf'),
         },
         fanaticism: 'none'
-    },
+    },*/
     sporgar: {
         name: loc('race_sporgar'),
         desc: loc('race_sporgar_desc'),
