@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.?.??`,
+        date: `6/??/2020`,
+        changes: [
+            `Added 3rd race option for Plant genus: Pinguicula.`,
+        ]
+    },
+    {
         version: `0.8.17`,
         date: `5/30/2020`,
         changes: [

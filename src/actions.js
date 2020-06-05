@@ -380,8 +380,7 @@ export const actions = {
                         }
                     }
                     else {
-                        //addRaces(['entish','cacti','pinguicula']);
-                        addRaces(['entish','cacti']);
+                        addRaces(['entish','cacti','pinguicula']);
                         if (races.custom.hasOwnProperty('type') && races.custom.type === 'plant'){
                             global.evolution['custom'] = { count: 0 };
                             addAction('evolution','custom');
@@ -1120,7 +1119,7 @@ export const actions = {
                     else if (global.evolution['chloroplasts']){
                         races.push('entish');
                         races.push('cacti');
-                        //races.push('pinguicula');
+                        races.push('pinguicula');
                         if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'plant'){
                             races.push('custom');
                         }
@@ -1764,7 +1763,7 @@ export const actions = {
             },
             emblem(){ return format_emblem('extinct_cacti'); }
         },
-        /*pinguicula: {
+        pinguicula: {
             id: 'evo-pinguicula',
             title(){ return races.pinguicula.name; },
             desc(){ return `${loc("evo_evolve")} ${races.pinguicula.name}`; },
@@ -1783,7 +1782,7 @@ export const actions = {
                 return false;
             },
             emblem(){ return format_emblem('extinct_pinguicula'); }
-        },*/
+        },
         sharkin: {
             id: 'evo-sharkin',
             title(){ return races.sharkin.name; },

@@ -1363,7 +1363,7 @@ export const races = {
         },
         fanaticism: 'hyper'
     },
-    /*pinguicula: {
+    pinguicula: {
         name: loc('race_pinguicula'),
         desc: loc('race_pinguicula_desc'),
         type: 'plant',
@@ -1380,8 +1380,8 @@ export const races = {
             gas_moon: loc('race_pinguicula_solar_gas_moon'),
             dwarf: loc('race_pinguicula_solar_dwarf'),
         },
-        fanaticism: 'none'
-    },*/
+        fanaticism: 'devourer'
+    },
     sporgar: {
         name: loc('race_sporgar'),
         desc: loc('race_sporgar_desc'),
