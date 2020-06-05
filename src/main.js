@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
@@ -321,6 +321,9 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         if (global.race['emfield']){
             challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
         }
+        if (global.race['cataclysm']){
+            challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div>`;
+        }
         popper.append($(`<div>${loc('home',[planet,race,planet_label,orbit])}</div>${challenges}`));
     }
     popper.show();
@@ -437,8 +440,16 @@ if (global.race.species === 'protoplasm'){
             }
         }
 
-        challengeActionHeader()
-        var challenge_actions = ['junker','joyless','steelen','decay','emfield'];
+        challengeActionHeader();
+        var challenge_actions = ['joyless','steelen','decay','emfield'];
+        for (var i = 0; i < challenge_actions.length; i++){
+            if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
+                addAction('evolution',challenge_actions[i]);
+            }
+        }
+
+        scenarioActionHeader();
+        var challenge_actions = ['junker','cataclysm'];
         for (var i = 0; i < challenge_actions.length; i++){
             if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
                 addAction('evolution',challenge_actions[i]);

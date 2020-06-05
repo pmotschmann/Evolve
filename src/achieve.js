@@ -272,6 +272,11 @@ export const achievements = {
         desc: loc("achieve_dissipated_desc"),
         flair: loc("achieve_dissipated_flair")
     },
+    shaken: {
+        name: loc("achieve_shaken_name"),
+        desc: loc("achieve_shaken_desc"),
+        flair: loc("achieve_shaken_flair")
+    },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
         desc: loc("achieve_genus_humanoid_desc"),

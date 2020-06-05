@@ -2113,6 +2113,9 @@ export const actions = {
                     }
                     if (global.stats.achieve['ascended']){
                         global.evolution['emfield'] = { count: 0 };
+                        if (global.stats.achieve['atmo_unstable']){
+                            global.evolution['cataclysm'] = { count: 0 };
+                        }
                     }
                     challengeGeneHeader();
                     if (global.race.universe === 'antimatter'){
@@ -2124,8 +2127,7 @@ export const actions = {
                     addAction('evolution','trade');
                     addAction('evolution','craft');
                     addAction('evolution','crispr');
-                    challengeActionHeader();
-                    addAction('evolution','junker');
+                    challengeActionHeader();                    
                     addAction('evolution','joyless');
                     addAction('evolution','steelen');
                     if (global.stats.achieve['whitehole']){
@@ -2133,6 +2135,11 @@ export const actions = {
                     }
                     if (global.stats.achieve['ascended']){
                         addAction('evolution','emfield');
+                    }
+                    scenarioActionHeader();
+                    addAction('evolution','junker');
+                    if (global.stats.achieve['ascended'] && global.stats.achieve['atmo_unstable']){
+                        addAction('evolution','cataclysm');
                     }
                 }
                 return false;
@@ -2152,6 +2159,8 @@ export const actions = {
                     if (global.race['no_plasmid']){
                         delete global.race['no_plasmid'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
+                        delete global.race['cataclysm'];
+                        $(`#evo-cataclysm`).removeClass('hl');
                     }
                     else {
                         global.race['no_plasmid'] = 1;
@@ -2176,6 +2185,8 @@ export const actions = {
                     if (global.race['weak_mastery']){
                         delete global.race['weak_mastery'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
+                        delete global.race['cataclysm'];
+                        $(`#evo-cataclysm`).removeClass('hl');
                     }
                     else {
                         global.race['weak_mastery'] = 1;
@@ -2200,6 +2211,8 @@ export const actions = {
                     if (global.race['no_trade']){
                         delete global.race['no_trade'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
+                        delete global.race['cataclysm'];
+                        $(`#evo-cataclysm`).removeClass('hl');
                     }
                     else {
                         global.race['no_trade'] = 1;
@@ -2224,6 +2237,8 @@ export const actions = {
                     if (global.race['no_craft']){
                         delete global.race['no_craft'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
+                        delete global.race['cataclysm'];
+                        $(`#evo-cataclysm`).removeClass('hl');
                     }
                     else {
                         global.race['no_craft'] = 1;
@@ -2249,6 +2264,8 @@ export const actions = {
                         if (global.race['no_crispr']){
                             delete global.race['no_crispr'];
                             $(`#${$(this)[0].id}`).removeClass('hl');
+                            delete global.race['cataclysm'];
+                            $(`#evo-cataclysm`).removeClass('hl');
                         }
                         else {
                             global.race['no_crispr'] = 1;
@@ -2261,36 +2278,6 @@ export const actions = {
                 return false;
             },
             highlight(){ return global.race['no_crispr'] ? true : false; }
-        },
-        junker: {
-            id: 'evo-junker',
-            title: loc('evo_challenge_junker'),
-            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>` : `<div>${loc('evo_challenge_junker_desc')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>`; },
-            cost: {
-                DNA(){ return 25; }
-            },
-            effect(){
-                let challengeType = global.race.universe === 'antimatter' ? loc('evo_challenge_mastery') : loc('evo_challenge_plasmid');
-                return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_challenge_junker_effect',[challengeType])}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect',[challengeType]); },
-            action(){
-                if (payCosts(actions.evolution.junker.cost)){
-                    global.race.species = 'junker';
-                    global.race['junker'] = 1;
-                    if (global.race.universe === 'antimatter') {
-                        global.race['weak_mastery'] = 1;
-                    }
-                    else {
-                        global.race['no_plasmid'] = 1;
-                    }
-                    global.race['no_trade'] = 1;
-                    global.race['no_craft'] = 1;
-                    global.race['no_crispr'] = 1;
-                    sentience();
-                }
-                return false;
-            },
-            emblem(){ return format_emblem('extinct_junker'); },
-            flair: loc('evo_challenge_junker_flair')
         },
         joyless: {
             id: 'evo-joyless',
@@ -2403,6 +2390,84 @@ export const actions = {
             emblem(){ return format_emblem('technophobe'); },
             flair: loc('evo_challenge_emfield_flair'),
             highlight(){ return global.race['emfield'] ? true : false; }
+        },
+        junker: {
+            id: 'evo-junker',
+            title: loc('evo_challenge_junker'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>` : `<div>${loc('evo_challenge_junker_desc')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>`; },
+            cost: {
+                DNA(){ return 50; }
+            },
+            effect(){
+                return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_challenge_junker_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect'); },
+            action(){
+                if (payCosts(actions.evolution.junker.cost)){
+                    global.race.species = 'junker';
+                    global.race['junker'] = 1;
+                    delete global.race['cataclysm'];
+                    if (global.race.universe === 'antimatter') {
+                        global.race['weak_mastery'] = 1;
+                    }
+                    else {
+                        global.race['no_plasmid'] = 1;
+                    }
+                    global.race['no_trade'] = 1;
+                    global.race['no_craft'] = 1;
+                    global.race['no_crispr'] = 1;
+                    sentience();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_junker'); },
+            flair: loc('evo_challenge_junker_flair')
+        },
+        cataclysm: {
+            id: 'evo-cataclysm',
+            title: loc('evo_challenge_cataclysm'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div>` : `<div>${loc('evo_challenge_cataclysm_desc')}</div>`; },
+            cost: {
+                DNA(){ return 50; }
+            },
+            effect(){
+                return loc('evo_challenge_cataclysm_effect'); },
+            action(){
+                if (payCosts(actions.evolution.cataclysm.cost)){
+                    if (global.race['cataclysm']){
+                        delete global.race['cataclysm'];
+                        $(`#${$(this)[0].id}`).removeClass('hl');
+                    }
+                    else {
+                        global.race['cataclysm'] = 1;
+                        $(`#${$(this)[0].id}`).addClass('hl');
+
+                        if (global.race.universe === 'antimatter') {
+                            global.race['weak_mastery'] = 1;
+                            if (!$(`#evo-mastery`).hasClass('hl')){
+                                $(`#evo-mastery`).addClass('hl');
+                            }
+                        }
+                        else {
+                            global.race['no_plasmid'] = 1;
+                            if (!$(`#evo-plasmid`).hasClass('hl')){
+                                $(`#evo-plasmid`).addClass('hl');
+                            }
+                        }
+
+                        let genes = ['crispr','trade','craft'];
+                        for (let i=0; i<genes.length; i++){
+                            global.race[`no_${genes[i]}`] = 1;
+                            if (!$(`#evo-${genes[i]}`).hasClass('hl')){
+                                $(`#evo-${genes[i]}`).addClass('hl');
+                            }                        
+                        }
+                    }                    
+                    drawAchieve();
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('extinct_junker'); },
+            flair: loc('evo_challenge_cataclysm_flair'),
+            highlight(){ return global.race['cataclysm'] ? true : false; }
         },
     },
     city: {
@@ -14601,6 +14666,13 @@ export function challengeActionHeader(){
     $('#evolution').append(challenge);
     challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_run')}</h2></div>`));
     challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_run_desc')}</div>`));
+}
+
+export function scenarioActionHeader(){
+    let challenge = $(`<div class="challenge"></div>`);
+    $('#evolution').append(challenge);
+    challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_scenario')}</h2></div>`));
+    challenge.append($(`<div class="has-text-advanced">${loc('evo_scenario_desc')}</div>`));
 }
 
 function drawModal(c_action,type){

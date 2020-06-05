@@ -6,7 +6,10 @@ const changeList = [
         version: `0.?.??`,
         date: `6/??/2020`,
         changes: [
-            `Added 3rd race option for Plant genus: Pinguicula.`,
+            `Added Scenarios Section to Evolution Challenges.`,
+            `Added Cataclysm Scenario for eligible players.`,
+            `Genetic Dead End is now classified as a Scenario.`,
+            `Added 3rd race option for Plant genus: Pinguicula.`
         ]
     },
     {
