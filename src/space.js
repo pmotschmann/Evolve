@@ -365,7 +365,7 @@ const spaceProjects = {
             },
             effect(){
                 let helium = +(fuel_adjust(1.25)).toFixed(2);
-                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red])}</div><div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('space_red_spaceport_effect3',[global.resource.Food.name])}</div>`;
+                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red])}</div><div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
             },
             support(){ return 3; },
             powered(){ return powerCostMod(5); },
@@ -425,7 +425,7 @@ const spaceProjects = {
                 Polymer(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(9500), 1.28); }
             },
             effect(){
-                let gain = 1;
+                let gain = global.race['cataclysm'] ? 2 : 1;
                 if (red_on['biodome']){
                     let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                     gain += pop * red_on['biodome'];
@@ -568,7 +568,8 @@ const spaceProjects = {
             effect(){
                 let copper = +(0.25 * zigguratBonus()).toFixed(3);
                 let titanium = +(0.02 * zigguratBonus()).toFixed(3);
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>`;
+                let cat_stone = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(0.75 * zigguratBonus()).toFixed(2),global.resource.Stone.name])}</div>` : ``;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${cat_stone}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -675,19 +676,23 @@ const spaceProjects = {
             },
             effect(){
                 let food = +(0.25 * zigguratBonus()).toFixed(2);
+                let cat_fd = global.race['cataclysm'] ? `<div>${loc('city_compost_heap_effect',[+(2 * zigguratBonus()).toFixed(2)])}</div>` : ``;
+                let cat_wd = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(1 * zigguratBonus()).toFixed(2),global.resource.Lumber.name])}</div>` : ``;
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[pop])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[pop])}</div>${cat_wd}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('biodome');
-                    unlockAchieve('colonist');
-                    if (global.race['joyless']){
-                        unlockAchieve('joyless');
-                        delete global.race['joyless'];
-                        drawTech();
+                    if (!global.race['cataclysm']){
+                        unlockAchieve('colonist');
+                        if (global.race['joyless']){
+                            unlockAchieve('joyless');
+                            delete global.race['joyless'];
+                            drawTech();
+                        }
                     }
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['biodome'].on++;
@@ -1320,7 +1325,7 @@ const spaceProjects = {
             },
             effect(){
                 let helium = +(fuel_adjust(2.5)).toFixed(2);
-                let food = 10;
+                let food = global.race['cataclysm'] ? 1 : 10;
                 let elerium_cap = spatialReasoning(5);
                 let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('plus_max_resource',[elerium_cap, loc('resource_Elerium_name')])}</div>` : '';
                 return `<div>${loc('plus_max_space_miners',[3])}</div>${elerium}<div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div><div class="has-text-caution">${loc('space_belt_station_effect4',[food,$(this)[0].powered(),global.resource.Food.name])}</div>`;
@@ -5190,6 +5195,9 @@ export function fuel_adjust(fuel){
     }
     if (global.city.ptrait === 'dense'){
         fuel *= 1.2;
+    }
+    if (global.race['cataclysm']){
+        fuel *= 0.2;
     }
     return fuel;
 }

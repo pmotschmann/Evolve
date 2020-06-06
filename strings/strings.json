@@ -3386,7 +3386,6 @@
   "space_red_spaceport_desc": "Build a Spaceport",
   "space_red_spaceport_effect1": "+3 %0 Support",
   "space_red_spaceport_effect2": "-%0 Helium-3/s, -%1MW",
-  "space_red_spaceport_effect3": "-25 %0/s",
   "space_red_tower_title": "Space Control",
   "space_red_tower_desc": "Space traffic control",
   "space_red_tower_effect1": "+1 %0 Support",

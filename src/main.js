@@ -2068,6 +2068,9 @@ function fastLoop(){
             let biodome = 0;
             if (global.tech['mars']){
                 biodome = red_on['biodome'] * 0.25 * global.civic.colonist.workers * zigguratBonus();
+                if (global.race['cataclysm']){
+                    biodome += red_on['biodome'] * 2 * zigguratBonus();
+                }
             }
 
             let generated = food_base + hunting + biodome;
@@ -2116,7 +2119,7 @@ function fastLoop(){
 
             let spaceport = 0;
             if (global.space['spaceport']){
-                spaceport = p_on['spaceport'] * 25;
+                spaceport = p_on['spaceport'] * (global.race['cataclysm'] ? 2 : 25);
                 breakdown.p.consume.Food[loc('space_red_spaceport_title')] = -(spaceport);
             }
 
@@ -2134,7 +2137,7 @@ function fastLoop(){
 
             let space_station = 0;
             if (global.space['space_station']){
-                space_station = p_on['space_station'] * 10;
+                space_station = p_on['space_station'] * (global.race['cataclysm'] ? 1 : 10);
                 breakdown.p.consume.Food[loc('space_belt_station_title')] = -(space_station);
             }
 
@@ -3179,7 +3182,19 @@ function fastLoop(){
 
         // Lumber
         { //block scope
-            if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
+            if (global.race['cataclysm']){
+                if (global.tech['mars'] && red_on['biodome']){
+                    let lumber_bd = {};
+                    let lumber = red_on['biodome'] * global.civic.colonist.workers * zigguratBonus();
+
+                    lumber_bd[loc('space_red_biodome_title')] = lumber  + 'v';
+                    lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+                    breakdown.p['Lumber'] = lumber_bd;
+
+                    modRes('Lumber', lumber * hunger * global_multiplier * time_multiplier);
+                }
+            }
+            else if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
                 let lumber_bd = {};
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.free * weapons / 2;
@@ -3279,6 +3294,15 @@ function fastLoop(){
                 stone_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
 
+            if (global.race['cataclysm']){
+                if (global.tech['mars'] && red_on['red_mine']){
+                    stone_base = red_on['red_mine'] * 0.75 * global.civic.colonist.workers * zigguratBonus();
+                    stone_bd[loc('space_red_mine_title')] = stone_base + 'v';
+                }
+                power_mult = 1;
+                rock_quarry = 1;
+            }
+
             let delta = stone_base * power_mult * rock_quarry;
             delta *= hunger * global_multiplier;
             
@@ -3289,7 +3313,7 @@ function fastLoop(){
             // Aluminium
             let alumina_bd = {};
             let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
-            if (global.city['metal_refinery'] && global.city['metal_refinery'].count > 0){
+            if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm']){
                 let base = stone_base * rock_quarry * power_mult * 0.08;
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
@@ -3308,7 +3332,7 @@ function fastLoop(){
 
                 delta *= 1 + (refinery / 100);
 
-                alumina_bd[loc('workers')] = base + 'v';
+                alumina_bd[global.race['cataclysm'] ? loc('space_red_mine_title') : loc('workers')] = base + 'v';
                 alumina_bd[loc('city_shrine')] = ((shrine_bonus - 1) * 100) + '%';
                 alumina_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -4267,6 +4291,20 @@ function midLoop(){
             crew: 0
         };
 
+        if (global.race['cataclysm']){
+            caps['Knowledge'] += 100000;
+            caps['Lumber'] += 100000;
+            caps['Stone'] += 100000;
+            caps['Furs'] += 100000;
+            caps['Aluminium'] += 100000;
+            caps['Steel'] += 100000;
+            caps['Copper'] += 100000;
+            caps['Iron'] += 100000;
+            caps['Coal'] += 100000;
+            caps['Cement'] += 100000;
+            caps['Uranium'] += 1000;
+        }
+
         var bd_Money = { Base: caps['Money']+'v' };
         var bd_Citizen = {};
         var bd_Slave = {};
@@ -4490,7 +4528,7 @@ function midLoop(){
             bd_Citizen[loc('galaxy_dormitory')] = (p_on['dormitory'] * 3)+'v';
         }
         if (global.space['living_quarters']){
-            let base = 1;
+            let base = global.race['cataclysm'] ? 2 : 1;
             if (red_on['biodome']){
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                 base += pop * red_on['biodome'];
