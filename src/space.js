@@ -235,7 +235,8 @@ const spaceProjects = {
                     iridium *= global.city.geology['Iridium'] + 1;
                 }
                 iridium = +(iridium * zigguratBonus()).toFixed(3);
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>`;
+                let cat_coal = global.race['cataclysm'] ? `<div>${loc('produce',[+(0.55 * zigguratBonus()).toFixed(2),global.resource.Coal.name])}</div>` : ``;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>${cat_coal}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -297,7 +298,11 @@ const spaceProjects = {
                 Iridium(offset){ return spaceCostMultiplier('observatory', offset, 1250, 1.28); }
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect',[5])}</div>`;
+                let prof = '';
+                if (global.race['cataclysm']){
+                    prof = `<div>${loc('city_university_effect')}</div>`;
+                }
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div>${prof}<div>${loc('plus_max_resource',[5000,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect',[5])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -431,7 +436,12 @@ const spaceProjects = {
                     gain += pop * red_on['biodome'];
                 }
                 gain = +(gain).toFixed(1);
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('plus_max_resource',[1,loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
+                let safe = ``;
+                if (global.race['cataclysm']){
+                    let vault = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '100000' : '50000') : '25000');
+                    safe = `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
+                }
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${safe}<div>${loc('plus_max_resource',[1,loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -516,20 +526,45 @@ const spaceProjects = {
                 let titanium = sizeApproximation(+(spatialReasoning(3500) * multiplier).toFixed(0),1);
                 let alloy = sizeApproximation(+(spatialReasoning(2500) * multiplier).toFixed(0),1);
                 
+                let crate = global.race['cataclysm'] ? `<span>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</span>` : ``;
+
                 let desc = '<div class="aTable">';
-                desc = desc + `<span>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</span><span>${loc('plus_max_resource',[copper,global.resource.Copper.name])}</span><span>${loc('plus_max_resource',[iron,global.resource.Iron.name])}</span><span>${loc('plus_max_resource',[cement,global.resource.Cement.name])}</span><span>${loc('plus_max_resource',[steel,global.resource.Steel.name])}</span><span>${loc('plus_max_resource',[titanium,global.resource.Titanium.name])}</span><span>${loc('plus_max_resource',[alloy,global.resource.Alloy.name])}</span>`;
+                desc = desc + `<span>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</span>${crate}<span>${loc('plus_max_resource',[copper,global.resource.Copper.name])}</span><span>${loc('plus_max_resource',[iron,global.resource.Iron.name])}</span><span>${loc('plus_max_resource',[cement,global.resource.Cement.name])}</span><span>${loc('plus_max_resource',[steel,global.resource.Steel.name])}</span><span>${loc('plus_max_resource',[titanium,global.resource.Titanium.name])}</span><span>${loc('plus_max_resource',[alloy,global.resource.Alloy.name])}</span>`;
                 if (global.resource.Nano_Tube.display){
                     let nano = sizeApproximation(+(spatialReasoning(25000) * multiplier).toFixed(0),1);
-                    desc = desc + `<span>${loc('plus_max_resource',[nano,global.resource.Nano_Tube.name])}</span>`
+                    desc = desc + `<span>${loc('plus_max_resource',[nano,global.resource.Nano_Tube.name])}</span>`;
                 }
                 if (global.resource.Neutronium.display){
                     let neutronium = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    desc = desc + `<span>${loc('plus_max_resource',[neutronium,global.resource.Neutronium.name])}</span>`
+                    desc = desc + `<span>${loc('plus_max_resource',[neutronium,global.resource.Neutronium.name])}</span>`;
                 }
                 if (global.resource.Infernite.display){
                     let infernite = sizeApproximation(+(spatialReasoning(75) * multiplier).toFixed(0),1);
-                    desc = desc + `<span>${loc('plus_max_resource',[infernite,global.resource.Infernite.name])}</span>`
+                    desc = desc + `<span>${loc('plus_max_resource',[infernite,global.resource.Infernite.name])}</span>`;
                 }
+
+                if (global.race['cataclysm']){
+                    let polymer = sizeApproximation(+(spatialReasoning(2500) * multiplier).toFixed(0),1);
+                    desc = desc + `<span>${loc('plus_max_resource',[polymer,global.resource.Polymer.name])}</span>`;
+
+                    let coal = sizeApproximation(+(spatialReasoning(1500) * multiplier).toFixed(0),1);
+                    desc = desc + `<span>${loc('plus_max_resource',[coal,global.resource.Coal.name])}</span>`;
+
+                    if (!global.race['kindling_kindred']){
+                        let lumber = sizeApproximation(+(spatialReasoning(7500) * multiplier).toFixed(0),1);
+                        desc = desc + `<span>${loc('plus_max_resource',[lumber,global.resource.Lumber.name])}</span>`;
+                    }
+
+                    let stone = sizeApproximation(+(spatialReasoning(7500) * multiplier).toFixed(0),1);
+                    desc = desc + `<span>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</span>`;
+
+                    let cement = sizeApproximation(+(spatialReasoning(4500) * multiplier).toFixed(0),1);
+                    desc = desc + `<span>${loc('plus_max_resource',[cement,global.resource.Cement.name])}</span>`;
+
+                    let furs = sizeApproximation(+(spatialReasoning(2200) * multiplier).toFixed(0),1);
+                    desc = desc + `<span>${loc('plus_max_resource',[furs,global.resource.Furs.name])}</span>`;
+                }
+
                 desc = desc + '</div>';
                 return desc;
             },
@@ -730,7 +765,12 @@ const spaceProjects = {
                     sci += p_on['mass_driver'] * global.civic.scientist.workers;
                 }
                 let elerium = spatialReasoning(10);
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
+
+                let scientist = '';
+                if (global.race['cataclysm']){
+                    scientist = `<div>${loc('city_wardenclyffe_effect1')}</div>`;
+                }
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${scientist}<div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },

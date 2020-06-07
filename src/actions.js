@@ -5835,6 +5835,7 @@ export const actions = {
             category: 'entertainment',
             era: 'globalized',
             reqs: { high_tech: 4, currency: 5 },
+            not_trait: ['cataclysm'],
             grant: ['gambling',1],
             cost: {
                 Knowledge(){ return 95000; }
@@ -10621,6 +10622,7 @@ export const actions = {
             category: 'special',
             era: 'globalized',
             reqs: { uranium: 1, explosives: 3, high_tech: 7 },
+            not_trait: ['cataclysm'],
             grant: ['mad',1],
             cost: {
                 Knowledge(){ return 120000; },
@@ -15102,7 +15104,7 @@ function cataclysm(){
         global.tech['housing'] = 3;
         global.tech['smelting'] = 3;
         global.tech['copper'] = 1;
-        global.tech['storage'] = 4;
+        global.tech['storage'] = 5;
         global.tech['container'] = 4;
         global.tech['steel_container'] = 3;
         global.tech['mining'] = 4;
@@ -15117,7 +15119,7 @@ function cataclysm(){
         global.tech['factory'] = 1;
         global.tech['theatre'] = 3;
         global.tech['broadcast'] = 2;
-        global.tech['gambling'] = 1;
+        global.tech['mine_conveyor'] = 1;
         global.tech['science'] = 9;
         global.tech['high_tech'] = 7;
         global.tech['genetics'] = 1;
@@ -15184,7 +15186,10 @@ function cataclysm(){
         global.resource.Crates.display = true;
         global.resource.Containers.display = true;
 
+        global.resource.Crates.amount = 20;
         global.resource.Containers.amount = 20;
+        global.resource.Money.max = 225000;
+        global.resource.Money.amount = 225000;
         global.resource.Food.max = 1000;
         global.resource.Food.amount = 1000;
         global.resource.Oil.max = 1000;
@@ -15193,17 +15198,39 @@ function cataclysm(){
         global.resource.Helium_3.amount = 1000;
         global.resource.Uranium.max = 1000;
         global.resource.Uranium.amount = 1000;
-        global.resource.Copper.max = 1000;
-        global.resource.Copper.amount = 1000;
-        global.resource.Iron.max = 1000;
-        global.resource.Iron.amount = 1000;
-        global.resource.Steel.max = 1000;
-        global.resource.Steel.amount = 1000;
-        global.resource.Cement.max = 1000;
-        global.resource.Cement.amount = 1000;
-        global.resource.Titanium.max = 1000;
-        global.resource.Titanium.amount = 1000;
+        global.resource.Lumber.max = 90000;
+        global.resource.Lumber.amount = 90000;
+        global.resource.Stone.max = 90000;
+        global.resource.Stone.amount = 90000;
+        global.resource.Furs.max = 40000;
+        global.resource.Furs.amount = 40000;
+        global.resource.Copper.max = 75000;
+        global.resource.Copper.amount = 75000;
+        global.resource.Iron.max = 75000;
+        global.resource.Iron.amount = 75000;
+        global.resource.Steel.max = 75000;
+        global.resource.Steel.amount = 75000;
+        global.resource.Aluminium.max = 75000;
+        global.resource.Aluminium.amount = 75000;
+        global.resource.Cement.max = 75000;
+        global.resource.Cement.amount = 75000;
+        global.resource.Titanium.max = 75000;
+        global.resource.Titanium.amount = 75000;
+        global.resource.Coal.max = 10000;
+        global.resource.Coal.amount = 10000;
+        global.resource.Alloy.max = 20000;
+        global.resource.Alloy.amount = 20000;
+        global.resource.Polymer.max = 20000;
+        global.resource.Polymer.amount = 20000;
+        global.resource.Iridium.max = 1000;
+        global.resource.Iridium.amount = 1000;
 
+        global.resource.Plywood.amount = 50000;
+        global.resource.Brick.amount = 50000;
+        global.resource.Wrought_Iron.amount = 50000;
+        global.resource.Sheet_Metal.amount = 50000;
+
+        global.civic.professor.display = true;
         global.civic.scientist.display = true;
         global.civic.entertainer.display = true;
         global.civic.colonist.display = true;
@@ -15219,7 +15246,7 @@ function cataclysm(){
         global.city['power'] = 0;
         global.city['powered'] = true;
         
-        global.city['factory'] = { count: 0, on: 0, Lux: 0, Alloy: 0, Polymer: 0, Nano: 0, Stanene: 0 };
+        global.city['factory'] = { count: 0, on: 0, Lux: 0, Alloy: 1, Polymer: 0, Nano: 0, Stanene: 0 };
         global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0 };
         global.city['smelter'] = { count: 0, cap: 0, Wood: 0, Coal: 0, Oil: 0, Iron: 0, Steel: 0 };
         global.city['fission_power'] = { count: 0, on: 0 };
@@ -15268,7 +15295,7 @@ function cataclysm(){
         global.space['garage'] = { count: 1 };
         global.space['red_mine'] = { count: 1, on: 1 };
         global.space['fabrication'] = { count: 1, on: 1 };
-        global.space['red_factory'] = { count: 0, on: 0 };
+        global.space['red_factory'] = { count: 1, on: 1 };
         global.space['exotic_lab'] = { count: 0, on: 0 };
         global.space['ziggurat'] = { count: 0 };
         global.space['space_barracks'] = { count: 0, on: 0 };
