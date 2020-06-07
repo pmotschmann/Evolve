@@ -77,6 +77,11 @@ export const achievements = {
         desc: loc("achieve_paradise_desc"),
         flair: loc("achieve_paradise_flair")
     },
+    scrooge: {
+        name: loc("achieve_scrooge_name"),
+        desc: loc("achieve_scrooge_desc"),
+        flair: loc("achieve_scrooge_flair")
+    },
     madagascar_tree: {
         name: loc("achieve_madagascar_tree_name"),
         desc: loc("achieve_madagascar_tree_desc"),
@@ -1117,6 +1122,10 @@ export function checkAchievements(){
         if (global.city.morale.current >= 500){
             unlockFeat('utopia');
         }
+    }
+
+    if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
+        unlockAchieve('scrooge');
     }
 
     const date = new Date();
