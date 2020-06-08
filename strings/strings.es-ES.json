@@ -2804,7 +2804,7 @@
   "space_home_test_launch_action": "Has lanzado con éxito tu primer cohete al espacio",
   "space_home_satellite_title": "Satélite",
   "space_home_satellite_desc": "Lanzar un satélite científico",
-  "space_home_satellite_effect2": "Conocimiento máximo de %0 +4%.",
+  "space_home_satellite_effect2": "Conocimiento máximo de %0 +%1%.",
   "space_home_satellite_effect3": "+1% de eficiencia científica.",
   "space_home_gps_title": "Satélite GPS",
   "space_home_gps_desc": "Lanzar un satélite GPS",

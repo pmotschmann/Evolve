@@ -176,7 +176,7 @@
     "city_temple_effect4": "+2.5% 税收",
     "arpa_genepool_hardened_genes_title": "硬化基因",
     "event_slave_none": "你的部下正在密谋推翻你，你太弱了。证明你的价值。",
-    "space_home_satellite_effect2": "+4% %0 沃登克里弗塔知识上限",
+    "space_home_satellite_effect2": "+%1% %0 沃登克里弗塔知识上限",
     "tech_cement_effect": "学习如何用石头制作水泥。",
     "tech_farm_house": "农舍",
     "tech_world_collider_flair2": "但是这不会把现实的世界撞在一起。",

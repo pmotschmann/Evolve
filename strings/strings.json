@@ -3351,7 +3351,7 @@
   "space_home_test_launch_action": "You have successfully launched your first rocket into space",
   "space_home_satellite_title": "Satellite",
   "space_home_satellite_desc": "Launch a scientific satellite",
-  "space_home_satellite_effect2": "+4% %0 Max Knowledge",
+  "space_home_satellite_effect2": "+%1% %0 Max Knowledge",
   "space_home_satellite_effect3": "+1% Scientist Efficiency",
   "space_home_gps_title": "GPS Satellite",
   "space_home_gps_desc": "Launch a GPS satellite",

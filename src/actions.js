@@ -15158,10 +15158,11 @@ function cataclysm(){
         global.settings.spaceTabs = 1;
 
         //global.civic.garrison.display = true;
+        global.resource[global.race.species].display = true;
         global.resource.Knowledge.display = true;
         global.resource.Money.display = true;
         global.resource.Food.display = true;
-        global.resource.Lumber.display = true;
+        
         global.resource.Stone.display = true;
         global.resource.Furs.display = true;
         global.resource.Copper.display = true;
@@ -15176,16 +15177,24 @@ function cataclysm(){
         global.resource.Alloy.display = true;
         global.resource.Polymer.display = true;
         global.resource.Iridium.display = true;
-        global.resource.Helium_3.display = true;
-        global.resource.Plywood.display = true;
+        global.resource.Helium_3.display = true;        
         global.resource.Brick.display = true;
         global.resource.Wrought_Iron.display = true;
         global.resource.Sheet_Metal.display = true;
         global.resource.Mythril.display = true;
-        global.resource[global.race.species].display = true;
         global.resource.Crates.display = true;
         global.resource.Containers.display = true;
 
+        if (!global.race['kindling_kindred']){
+            global.resource.Lumber.display = true;
+            global.resource.Plywood.display = true;
+            global.resource.Lumber.max = 90000;
+            global.resource.Lumber.amount = 90000;
+            global.resource.Plywood.amount = 50000;
+        }
+
+        global.resource[global.race.species].max = 6;
+        global.resource[global.race.species].amount = 6;
         global.resource.Crates.amount = 20;
         global.resource.Containers.amount = 20;
         global.resource.Money.max = 225000;
@@ -15198,8 +15207,6 @@ function cataclysm(){
         global.resource.Helium_3.amount = 1000;
         global.resource.Uranium.max = 1000;
         global.resource.Uranium.amount = 1000;
-        global.resource.Lumber.max = 90000;
-        global.resource.Lumber.amount = 90000;
         global.resource.Stone.max = 90000;
         global.resource.Stone.amount = 90000;
         global.resource.Furs.max = 40000;
@@ -15224,29 +15231,30 @@ function cataclysm(){
         global.resource.Polymer.amount = 20000;
         global.resource.Iridium.max = 1000;
         global.resource.Iridium.amount = 1000;
-
-        global.resource.Plywood.amount = 50000;
         global.resource.Brick.amount = 50000;
         global.resource.Wrought_Iron.amount = 50000;
         global.resource.Sheet_Metal.amount = 50000;
 
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
+        global.civic.cement_worker.display = true;
         global.civic.entertainer.display = true;
         global.civic.colonist.display = true;
         global.civic.space_miner.display = true;
         
-        global.civic.colonist.max = 2;
-        global.civic.colonist.workers = 2;        
+        global.civic.colonist.max = 3;
+        global.civic.colonist.workers = 3;        
         global.civic.space_miner.max = 3;
         global.civic.space_miner.workers = 2;
+        global.civic.professor.max = 1;
+        global.civic.professor.workers = 1;
 
         global.city.calendar.day++;
         global.city.market.active = true;
         global.city['power'] = 0;
         global.city['powered'] = true;
         
-        global.city['factory'] = { count: 0, on: 0, Lux: 0, Alloy: 1, Polymer: 0, Nano: 0, Stanene: 0 };
+        global.city['factory'] = { count: 0, on: 0, Lux: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
         global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0 };
         global.city['smelter'] = { count: 0, cap: 0, Wood: 0, Coal: 0, Oil: 0, Iron: 0, Steel: 0 };
         global.city['fission_power'] = { count: 0, on: 0 };
@@ -15283,14 +15291,14 @@ function cataclysm(){
         global.space['satellite'] = { count: 1 };
         global.space['propellant_depot'] = { count: 1 };
         global.space['gps'] = { count: 4 };
-        global.space['nav_beacon'] = { count: 0, on: 0 };
-        global.space['moon_base'] = { count: 2, on: 2, support: 4, s_max: 4 };
+        global.space['nav_beacon'] = { count: 1, on: 1 };
+        global.space['moon_base'] = { count: 1, on: 1, support: 3, s_max: 3 };
         global.space['iridium_mine'] = { count: 1, on: 1 };
         global.space['helium_mine'] = { count: 1, on: 1 };
         global.space['observatory'] = { count: 1, on: 1 };
-        global.space['spaceport'] = { count: 2, on: 2, support: 6, s_max: 6 };
-        global.space['red_tower'] = { count: 0, on: 0 };
-        global.space['living_quarters'] = { count: 2, on: 2 };
+        global.space['spaceport'] = { count: 2, on: 2, support: 7, s_max: 7 };
+        global.space['red_tower'] = { count: 1, on: 1 };
+        global.space['living_quarters'] = { count: 3, on: 3 };
         global.space['vr_center'] = { count: 0, on: 0 };
         global.space['garage'] = { count: 1 };
         global.space['red_mine'] = { count: 1, on: 1 };
@@ -15316,6 +15324,10 @@ function cataclysm(){
         global.space['elerium_prospector'] = { count: 0, on: 0 };
         global.space['iron_ship'] = { count: 1, on: 1 };
         global.space['elerium_contain'] = { count: 0, on: 0 };
+
+        drawCity();
+        drawTech();
+        renderSpace();
 
         //global.civic.garrison.display = true;
     }

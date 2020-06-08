@@ -3257,7 +3257,7 @@
   "space_home_test_launch_action": "당신은 성공적으로 첫 로켓을 우주에 보냈습니다.",
   "space_home_satellite_title": "위성",
   "space_home_satellite_desc": "과학 위성 발사",
-  "space_home_satellite_effect2": "%0 최대 지식 +4%",
+  "space_home_satellite_effect2": "%0 최대 지식 +%1%",
   "space_home_satellite_effect3": "과학자 효율 +1%",
   "space_home_gps_title": "GPS 위성",
   "space_home_gps_desc": "GPS 위성 발사",

@@ -5007,6 +5007,10 @@ function midLoop(){
         }
         if (global.space['observatory'] && global.space.observatory.count > 0){
             let gain = (moon_on['observatory'] * 5000);
+            if (global.race['cataclysm'] && global.space['satellite'] && global.space.satellite.count > 0){
+                gain *= 1 + (global.space.satellite.count * 0.25);
+            }
+
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('space_moon_observatory_title')] = gain+'v';
 
@@ -5147,6 +5151,9 @@ function midLoop(){
         }
         if (red_on['fabrication']){
             lCaps['craftsman'] += red_on['fabrication'];
+            if (global.race['cataclysm']){
+                lCaps['cement_worker'] += red_on['fabrication'];
+            }
         }
         if (p_on['stellar_forge']){
             lCaps['craftsman'] += p_on['stellar_forge'] * 2;

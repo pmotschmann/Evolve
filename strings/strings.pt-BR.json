@@ -3282,7 +3282,7 @@
   "space_home_test_launch_action": "Você lançou com sucesso seu primeiro foguete ao espaço",
   "space_home_satellite_title": "Satélite",
   "space_home_satellite_desc": "Lança um satélite científico",
-  "space_home_satellite_effect2": "+4% %0 Conhecimento Máximo",
+  "space_home_satellite_effect2": "+%1% %0 Conhecimento Máximo",
   "space_home_satellite_effect3": "+1% Eficiência do Cientista",
   "space_home_gps_title": "Satélite GPS",
   "space_home_gps_desc": "Lança um Satélite GPS",
