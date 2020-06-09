@@ -6316,7 +6316,7 @@ function longLoop(){
         }
     }
 
-    if (global.tech['xeno'] && global.tech['xeno'] >= 4 && !global.tech['piracy']){
+    if (global.tech['xeno'] && global.tech['xeno'] >= 5 && !global.tech['piracy']){
         if (Math.rand(0,5) === 0){
             global.tech['piracy'] = 1;
             messageQueue(loc('galaxy_piracy_msg',[races[global.galaxy.alien2.id].name]),'info');

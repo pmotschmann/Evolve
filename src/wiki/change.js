@@ -11,7 +11,9 @@ const changeList = [
             `Genetic Dead End is now classified as a Scenario.`,
             `Added 3rd race option for Plant genus: Pinguicula.`,
             `Added Scrooge achievement.`,
-            `Significantly reduced Bolognium cost of Freighters.`
+            `Reduced Bolognium cost of Freighters.`,
+            `Reduced Bolognium cost of Corvette Ships.`,
+            `Piracy will no longer start until after you construct the Embassy.`
         ]
     },
     {
