@@ -282,6 +282,16 @@ export const achievements = {
         desc: loc("achieve_shaken_desc"),
         flair: loc("achieve_shaken_flair")
     },
+    iron_will: {
+        name: loc("achieve_iron_will_name"),
+        desc: loc("achieve_iron_will_desc"),
+        flair: loc("achieve_iron_will_flair")
+    },
+    retard_loop: {
+        name: loc("achieve_retard_loop_name"),
+        desc: loc("achieve_retard_loop_desc"),
+        flair: loc("achieve_retard_loop_flair")
+    },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
         desc: loc("achieve_genus_humanoid_desc"),
@@ -1624,6 +1634,9 @@ export function drawStats(){
     }
     if (global.stats.bioseed > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_bioseed_resets")}</span> {{ bioseed }}</div>`);
+    }
+    if (global.stats.cataclysm > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_cataclysm_resets")}</span> {{ cataclysm }}</div>`);
     }
     if (global.stats.blackhole > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blackhole_resets")}</span> {{ blackhole }}</div>`);

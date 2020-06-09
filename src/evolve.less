@@ -1596,6 +1596,23 @@ div.bigbang {
     }
 }
 
+.earthquake {
+    animation: 3.8s shake infinite alternate;
+}
+  
+@keyframes shake {
+    0% { transform: skewX(-1deg); }
+    5% { transform: skewX(1deg); }
+    10% { transform: skewX(-1deg); }
+    15% { transform: skewX(1deg); }
+    20% { transform: skewX(0deg); }
+    100% { transform: skewX(0deg); }  
+    10%, 90% { transform: translate3d(-1px, 0, 0); }      
+    20%, 80% { transform: translate3d(2px, 0, 0); }    
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }    
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
 .celestialLab {
 
     .fields {

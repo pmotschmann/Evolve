@@ -7,7 +7,7 @@ const changeList = [
         date: `6/??/2020`,
         changes: [
             `Added Scenarios Section to Evolution Challenges.`,
-            `Added Cataclysm Scenario for eligible players.`,
+            `Added Cataclysm Scenario for those whose value science over caution.`,
             `Genetic Dead End is now classified as a Scenario.`,
             `Added 3rd race option for Plant genus: Pinguicula.`,
             `Added Scrooge achievement.`,

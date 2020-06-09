@@ -210,6 +210,19 @@ export const events = {
             }
         }
     },
+    quake: {
+        reqs: {
+            tech: 'wsc',
+            notech: 'quaked'
+        },
+        condition(){
+            return global.city.ptrait === 'unstable' ? true : false;
+        },
+        effect: function(){
+            global.tech['quaked'] = 1;
+            return loc('event_quake',[races[global.race.species].home]);
+        }
+    },
     doom: {
         reqs: {
             tech: 'wsc',

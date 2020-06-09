@@ -272,195 +272,197 @@ function drawGovModal(){
 }
 
 export function foreignGov(){
-    let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
-    foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
-    $('#r_civics').append(foreign);
+    if ($('#foreign').length === 0){
+        let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
+        foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
+        $('#r_civics').append(foreign);
 
-    var modal = {
-        template: '<div id="modalBox" class="modalBox"></div>'
-    };
+        var modal = {
+            template: '<div id="modalBox" class="modalBox"></div>'
+        };
 
-    for (let i=0;i<3;i++){
-        let gov = $(`<div id="gov${i}" class="foreign"><span class="has-text-caution">{{ '${i}' | gov }}</span><span v-if="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span><span v-else-if="f${i}.anx" class="has-text-advanced"> - ${loc('civics_garrison_annex')}</span></span><span v-else-if="f${i}.buy" class="has-text-advanced"> - ${loc('civics_garrison_purchase')}</span></div>`);
-        foreign.append(gov);
+        for (let i=0;i<3;i++){
+            let gov = $(`<div id="gov${i}" class="foreign"><span class="has-text-caution">{{ '${i}' | gov }}</span><span v-if="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span><span v-else-if="f${i}.anx" class="has-text-advanced"> - ${loc('civics_garrison_annex')}</span></span><span v-else-if="f${i}.buy" class="has-text-advanced"> - ${loc('civics_garrison_purchase')}</span></div>`);
+            foreign.append(gov);
 
-        let actions = $(`<div></div>`);
-        actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ || f${i}.anx || f${i}.buy">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
-        actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
-        actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
-        gov.append(actions);
+            let actions = $(`<div></div>`);
+            actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ || f${i}.anx || f${i}.buy">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
+            actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
+            actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
+            gov.append(actions);
 
-        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
-        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f${i}.hstl | relation }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ f${i}.hstl | hate }})</span></span></div>`));
-        gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f${i}.eco | eco(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
-        gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f${i}.unrest | discontent(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ f${i}.unrest | turmoil }})</span></span></div>`));
-    }
-
-    vBind({
-        el: `#foreign`,
-        data: {
-            f0: global.civic.foreign[`gov0`],
-            f1: global.civic.foreign[`gov1`],
-            f2: global.civic.foreign[`gov2`],
-            t: global.tech
-        },
-        filters: {
-            military(m,i){
-                if (global.civic.foreign[`gov${i}`].spy >= 1){
-                    if (m < 50){
-                        return loc('civics_gov_v_weak');
-                    }
-                    else if (m < 75){
-                        return loc('civics_gov_weak');
-                    }
-                    else if (m > 200){
-                        return loc('civics_gov_superpower');
-                    }
-                    else if (m > 160){
-                        return loc('civics_gov_v_strong');
-                    }
-                    else if (m > 125){
-                        return loc('civics_gov_strong');
-                    }
-                    else {
-                        return loc('civics_gov_average');
-                    }
-                }
-                else {
-                    return '???';
-                }
-            },
-            relation(r){
-                if (r > 80){
-                    return loc('civics_gov_hated');
-                }
-                else if (r > 60){
-                    return loc('civics_gov_hostile');
-                }
-                else if (r > 40){
-                    return loc('civics_gov_poor');
-                }
-                else if (r > 25){
-                    return loc('civics_gov_neutral');
-                }
-                else if (r > 10){
-                    return loc('civics_gov_liked');
-                }
-                else {
-                    return loc('civics_gov_good');
-                }
-            },
-            eco(e,i){
-                if (global.civic.foreign[`gov${i}`].spy >= 2){
-                    if (e < 60){
-                        return loc('civics_gov_weak');
-                    }
-                    else if (e < 80){
-                        return loc('civics_gov_recession');
-                    }
-                    else if (e > 120){
-                        return loc('civics_gov_strong');
-                    }
-                    else {
-                        return loc('civics_gov_average');
-                    }
-                }
-                else {
-                    return '???';
-                }
-            },
-            discontent(r,i){
-                if (global.civic.foreign[`gov${i}`].spy >= 3){
-                    if (r <= 0){
-                        return loc('civics_gov_none');
-                    }
-                    else if (r < 30){
-                        return loc('civics_gov_low');
-                    }
-                    else if (r < 60){
-                        return loc('civics_gov_medium');
-                    }
-                    else if (r < 90){
-                        return loc('civics_gov_high');
-                    }
-                    else {
-                        return loc('civics_gov_extreme');
-                    }
-                }
-                else {
-                    return '???';
-                }
-            },
-            gov(id){
-                return govTitle(id);
-            },
-            sab(s){
-                return s === 'none' ? '' : loc(`civics_spy_${s}`);
-            },
-            hate(h){
-                return `${100 - h}%`;
-            },
-            turmoil(u){
-                return `${u}%`;
-            }
-        },
-        methods: {
-            campaign(gov){
-                war_campaign(gov);
-            },
-            battleAssessment(gov){
-                return battleAssessment(gov);
-            },
-            trigModal(i){
-                this.$buefy.modal.open({
-                    parent: this,
-                    component: modal
-                });
-
-                var checkExist = setInterval(function() {
-                   if ($('#modalBox').length > 0) {
-                      clearInterval(checkExist);
-                      drawEspModal(i);
-                   }
-                }, 50);
-            },
-            spy_disabled(i){
-                return global.civic.foreign[`gov${i}`].trn > 0 || spyCost(i) > global.resource.Money.amount ? true : false;
-            },
-            spy(i){
-                if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
-                    let cost = spyCost(i)
-                    if (global.resource.Money.amount >= cost){
-                        global.resource.Money.amount -= cost;
-                        let time = 300;
-                        if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                            time -= global.city['boot_camp'].count * 10;                            
-                            if (time < 10){
-                                time = 10;
-                            }                            
-                        }
-                        if (global.race['infiltrator']){
-                            time = Math.round(time / 2);
-                        }
-                        global.civic.foreign[`gov${i}`].trn = time;
-                    }
-                }
-            },
-            spyDesc(i){
-                if (global.civic.foreign[`gov${i}`].trn > 0){
-                    return loc('civics_progress');
-                }
-                let cost = sizeApproximation(spyCost(i));
-                return loc('civics_gov_spy_desc',[cost]);
-            },
-            espDesc(){
-                return loc('civics_gov_esp_desc');
-            },
-            vis(){
-                return global.civic.garrison.display && !global.tech['world_control'] ? true : false;
-            }
+            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
+            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f${i}.hstl | relation }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ f${i}.hstl | hate }})</span></span></div>`));
+            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f${i}.eco | eco(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
+            gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f${i}.unrest | discontent(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ f${i}.unrest | turmoil }})</span></span></div>`));
         }
-    });
+
+        vBind({
+            el: `#foreign`,
+            data: {
+                f0: global.civic.foreign[`gov0`],
+                f1: global.civic.foreign[`gov1`],
+                f2: global.civic.foreign[`gov2`],
+                t: global.tech
+            },
+            filters: {
+                military(m,i){
+                    if (global.civic.foreign[`gov${i}`].spy >= 1){
+                        if (m < 50){
+                            return loc('civics_gov_v_weak');
+                        }
+                        else if (m < 75){
+                            return loc('civics_gov_weak');
+                        }
+                        else if (m > 200){
+                            return loc('civics_gov_superpower');
+                        }
+                        else if (m > 160){
+                            return loc('civics_gov_v_strong');
+                        }
+                        else if (m > 125){
+                            return loc('civics_gov_strong');
+                        }
+                        else {
+                            return loc('civics_gov_average');
+                        }
+                    }
+                    else {
+                        return '???';
+                    }
+                },
+                relation(r){
+                    if (r > 80){
+                        return loc('civics_gov_hated');
+                    }
+                    else if (r > 60){
+                        return loc('civics_gov_hostile');
+                    }
+                    else if (r > 40){
+                        return loc('civics_gov_poor');
+                    }
+                    else if (r > 25){
+                        return loc('civics_gov_neutral');
+                    }
+                    else if (r > 10){
+                        return loc('civics_gov_liked');
+                    }
+                    else {
+                        return loc('civics_gov_good');
+                    }
+                },
+                eco(e,i){
+                    if (global.civic.foreign[`gov${i}`].spy >= 2){
+                        if (e < 60){
+                            return loc('civics_gov_weak');
+                        }
+                        else if (e < 80){
+                            return loc('civics_gov_recession');
+                        }
+                        else if (e > 120){
+                            return loc('civics_gov_strong');
+                        }
+                        else {
+                            return loc('civics_gov_average');
+                        }
+                    }
+                    else {
+                        return '???';
+                    }
+                },
+                discontent(r,i){
+                    if (global.civic.foreign[`gov${i}`].spy >= 3){
+                        if (r <= 0){
+                            return loc('civics_gov_none');
+                        }
+                        else if (r < 30){
+                            return loc('civics_gov_low');
+                        }
+                        else if (r < 60){
+                            return loc('civics_gov_medium');
+                        }
+                        else if (r < 90){
+                            return loc('civics_gov_high');
+                        }
+                        else {
+                            return loc('civics_gov_extreme');
+                        }
+                    }
+                    else {
+                        return '???';
+                    }
+                },
+                gov(id){
+                    return govTitle(id);
+                },
+                sab(s){
+                    return s === 'none' ? '' : loc(`civics_spy_${s}`);
+                },
+                hate(h){
+                    return `${100 - h}%`;
+                },
+                turmoil(u){
+                    return `${u}%`;
+                }
+            },
+            methods: {
+                campaign(gov){
+                    war_campaign(gov);
+                },
+                battleAssessment(gov){
+                    return battleAssessment(gov);
+                },
+                trigModal(i){
+                    this.$buefy.modal.open({
+                        parent: this,
+                        component: modal
+                    });
+
+                    var checkExist = setInterval(function() {
+                    if ($('#modalBox').length > 0) {
+                        clearInterval(checkExist);
+                        drawEspModal(i);
+                    }
+                    }, 50);
+                },
+                spy_disabled(i){
+                    return global.civic.foreign[`gov${i}`].trn > 0 || spyCost(i) > global.resource.Money.amount ? true : false;
+                },
+                spy(i){
+                    if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
+                        let cost = spyCost(i)
+                        if (global.resource.Money.amount >= cost){
+                            global.resource.Money.amount -= cost;
+                            let time = 300;
+                            if (global.tech['spy'] >= 3 && global.city['boot_camp']){
+                                time -= global.city['boot_camp'].count * 10;                            
+                                if (time < 10){
+                                    time = 10;
+                                }                            
+                            }
+                            if (global.race['infiltrator']){
+                                time = Math.round(time / 2);
+                            }
+                            global.civic.foreign[`gov${i}`].trn = time;
+                        }
+                    }
+                },
+                spyDesc(i){
+                    if (global.civic.foreign[`gov${i}`].trn > 0){
+                        return loc('civics_progress');
+                    }
+                    let cost = sizeApproximation(spyCost(i));
+                    return loc('civics_gov_spy_desc',[cost]);
+                },
+                espDesc(){
+                    return loc('civics_gov_esp_desc');
+                },
+                vis(){
+                    return global.civic.garrison.display && !global.tech['world_control'] ? true : false;
+                }
+            }
+        });
+    }
 }
 
 function spyCost(i){
@@ -737,6 +739,7 @@ function taxRates(govern){
 }
 
 export function buildGarrison(garrison,full){
+    garrison.empty();
     if (global.tech['world_control']){
         garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ g.workers | hell | rating }}</b-tooltip></div>`));
     }
@@ -1688,64 +1691,66 @@ function defineMad(){
             armed: true
         };
     }
-    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-    var mad_command = $('<div id="mad" v-show="display" class="tile is-child"></div>');
-    $('#military').append(mad_command);
-    var mad = $('<div class="mad"></div>');
-    mad_command.append(mad);
+    if ($(`#mad`).length === 0){
+        let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+        var mad_command = $('<div id="mad" v-show="display" class="tile is-child"></div>');
+        $('#military').append(mad_command);
+        var mad = $('<div class="mad"></div>');
+        mad_command.append(mad);
 
-    mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
+        mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
-    mad.append($(`<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button arm" @click="arm">${loc('civics_mad_arm_missiles')}</button></b-tooltip></div>`));
-    mad.append($(`<div class="defcon"><b-tooltip :label="warning()" position="is-bottom" multilined animated><button class="button" @click="launch" :disabled="armed">${loc('civics_mad_launch_missiles')}</button></b-tooltip></div>`));
+        mad.append($(`<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button arm" @click="arm">${loc('civics_mad_arm_missiles')}</button></b-tooltip></div>`));
+        mad.append($(`<div class="defcon"><b-tooltip :label="warning()" position="is-bottom" multilined animated><button class="button" @click="launch" :disabled="armed">${loc('civics_mad_launch_missiles')}</button></b-tooltip></div>`));
 
-    if (!global.civic.mad.armed){
-        $('#mad').addClass('armed');
-        $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
-    }
-
-    vBind({
-        el: '#mad',
-        data: global.civic['mad'],
-        methods: {
-            launch(){
-                $('body').addClass('nuke');
-                let nuke = $('<div class="nuke"></div>');
-                $('body').append(nuke);
-                setTimeout(function(){
-                    nuke.addClass('burn');
-                }, 500);
-                setTimeout(function(){
-                    nuke.addClass('b');
-                }, 600);
-                setTimeout(function(){
-                    warhead();
-                }, 4000);
-            },
-            arm(){
-                if (global.civic.mad.armed){
-                    $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
-                    global.civic.mad.armed = false;
-                    $('#mad').addClass('armed');
-                }
-                else {
-                    $('#mad .arm').html(loc('civics_mad_arm_missiles'));
-                    global.civic.mad.armed = true;
-                    $('#mad').removeClass('armed');
-                }
-            },
-            defcon(){
-                return global.tech['world_control']
-                    ? loc('civics_mad_missiles_world_control_desc')
-                    : loc('civics_mad_missiles_desc');
-            },
-            warning(){
-                let gains = calcPrestige('mad');
-                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
-            }
+        if (!global.civic.mad.armed){
+            $('#mad').addClass('armed');
+            $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
         }
-    });
+
+        vBind({
+            el: '#mad',
+            data: global.civic['mad'],
+            methods: {
+                launch(){
+                    $('body').addClass('nuke');
+                    let nuke = $('<div class="nuke"></div>');
+                    $('body').append(nuke);
+                    setTimeout(function(){
+                        nuke.addClass('burn');
+                    }, 500);
+                    setTimeout(function(){
+                        nuke.addClass('b');
+                    }, 600);
+                    setTimeout(function(){
+                        warhead();
+                    }, 4000);
+                },
+                arm(){
+                    if (global.civic.mad.armed){
+                        $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
+                        global.civic.mad.armed = false;
+                        $('#mad').addClass('armed');
+                    }
+                    else {
+                        $('#mad .arm').html(loc('civics_mad_arm_missiles'));
+                        global.civic.mad.armed = true;
+                        $('#mad').removeClass('armed');
+                    }
+                },
+                defcon(){
+                    return global.tech['world_control']
+                        ? loc('civics_mad_missiles_world_control_desc')
+                        : loc('civics_mad_missiles_desc');
+                },
+                warning(){
+                    let gains = calcPrestige('mad');
+                    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+                    return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
+                }
+            }
+        });
+    }
 }
 
 function warhead(){

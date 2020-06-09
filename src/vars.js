@@ -691,6 +691,9 @@ if (!global.stats['mad']){
 if (!global.stats['bioseed']){
     global.stats['bioseed'] = 0;
 }
+if (!global.stats['cataclysm']){
+    global.stats['cataclysm'] = 0;
+}
 if (!global.stats['blackhole']){
     global.stats['blackhole'] = 0;
 }

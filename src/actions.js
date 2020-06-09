@@ -2112,10 +2112,10 @@ export const actions = {
                         global.evolution['decay'] = { count: 0 };
                     }
                     if (global.stats.achieve['ascended']){
-                        global.evolution['emfield'] = { count: 0 };
-                        if (global.stats.achieve['atmo_unstable']){
-                            global.evolution['cataclysm'] = { count: 0 };
-                        }
+                        global.evolution['emfield'] = { count: 0 };                        
+                    }
+                    if (global.stats.achieve['shaken']){
+                        global.evolution['cataclysm'] = { count: 0 };
                     }
                     challengeGeneHeader();
                     if (global.race.universe === 'antimatter'){
@@ -2138,7 +2138,7 @@ export const actions = {
                     }
                     scenarioActionHeader();
                     addAction('evolution','junker');
-                    if (global.stats.achieve['ascended'] && global.stats.achieve['atmo_unstable']){
+                    if (global.stats.achieve['shaken']){
                         addAction('evolution','cataclysm');
                     }
                 }
@@ -2465,7 +2465,7 @@ export const actions = {
                 }
                 return false;
             },
-            emblem(){ return format_emblem('shaken'); },
+            emblem(){ return format_emblem('iron_will'); },
             flair: loc('evo_challenge_cataclysm_flair'),
             highlight(){ return global.race['cataclysm'] ? true : false; }
         },
@@ -13328,6 +13328,55 @@ export const actions = {
                 return false;
             }
         },
+        dial_it_to_11: {
+            id: 'tech-dial_it_to_11',
+            title: loc('tech_dial_it_to_11'),
+            desc: loc('tech_dial_it_to_11'),
+            category: 'science',
+            wiki: false,
+            era: 'deep_space',
+            reqs: { quaked: 1 },
+            grant: ['quaked',2],
+            cost: {
+                Knowledge(){ return 500000; }
+            },
+            effect(){
+                let gains = calcPrestige('bioseed');
+                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+                return `<div>${loc('tech_dial_it_to_11_effect',[races[global.race.species].solar.dwarf,races[global.race.species].home])}</div><div class="has-text-danger">${loc('tech_dial_it_to_11_effect2')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`; },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    $('#main').addClass('earthquake');
+                    setTimeout(function(){
+                        $('#main').removeClass('earthquake');
+                        cataclysm_end();
+                    }, 4000);
+                    return true;
+                }
+                return false;
+            },
+            flair(){ return loc('tech_dial_it_to_11_flair'); }
+        },
+        limit_collider: {
+            id: 'tech-limit_collider',
+            title: loc('tech_limit_collider'),
+            desc: loc('tech_limit_collider'),
+            category: 'science',
+            wiki: false,
+            era: 'deep_space',
+            reqs: { quaked: 1 },
+            grant: ['quaked',2],
+            cost: {
+                Knowledge(){ return 500000; }
+            },
+            effect(){ return loc('tech_limit_collider_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        }
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
@@ -14905,8 +14954,12 @@ export function housingLabel(type){
 }
 
 function sentience(){
-    global.resource.RNA.display = false;
-    global.resource.DNA.display = false;
+    if (global.resource.hasOwnProperty('RNA')){
+        global.resource.RNA.display = false;
+    }
+    if (global.resource.hasOwnProperty('DNA')){
+        global.resource.DNA.display = false;
+    }
 
     var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
     for (var i = 0; i < evolve_actions.length; i++) {
@@ -15332,6 +15385,7 @@ function cataclysm(){
         drawTech();
         renderSpace();
         arpa('Physics');
+        loadFoundry();
 
         //global.civic.garrison.display = true;
     }
@@ -15594,6 +15648,112 @@ function bioseed(){
     window.location.reload();
 }
 
+function cataclysm_end(){
+    if (global.city.ptrait === 'unstable' && global.tech['quaked']){
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
+
+        global.lastMsg = false;
+
+        let plasmid = global.race.Plasmid.count;
+        let antiplasmid = global.race.Plasmid.anti;
+        let phage = global.race.Phage.count;
+
+        let gains = calcPrestige('bioseed');
+        let new_plasmid = gains.plasmid;        
+        let new_phage = gains.phage;
+        
+        global.stats.reset++;
+        global.stats.cataclysm++;
+        global.stats.tdays += global.stats.days;
+        global.stats.days = 0;
+        global.stats.tknow += global.stats.know;
+        global.stats.know = 0;
+        global.stats.tstarved += global.stats.starved;
+        global.stats.starved = 0;
+        global.stats.tdied += global.stats.died;
+        global.stats.died = 0;
+
+        phage += new_phage;
+        if (global.race.universe === 'antimatter'){
+            antiplasmid += new_plasmid;
+            global.stats.antiplasmid += new_plasmid;
+        }
+        else {
+            plasmid += new_plasmid;
+            global.stats.plasmid += new_plasmid;
+        }
+        global.stats.phage += new_phage;
+
+        unlockAchieve(`apocalypse`);
+        unlockAchieve(`squished`,true);
+        unlockAchieve(`extinct_${global.race.species}`);
+        if (global.civic.govern.type === 'anarchy'){
+            unlockAchieve(`anarchist`);
+        }
+        if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
+            unlockFeat('take_no_advice');
+        }
+        checkAchievements();
+        unlockAchieve('shaken');
+        if (global.race['cataclysm']){
+            unlockAchieve('retard_loop');
+        }
+
+        global['race'] = { 
+            species : global.race.species, 
+            gods: global.race.gods,
+            old_gods: global.race.old_gods,
+            rapid_mutation: 1,
+            ancient_ruins: 1,
+            Plasmid: { count: plasmid, anti: antiplasmid },
+            Phage: { count: phage },
+            Dark: { count: global.race.Dark.count },
+            Harmony: { count: global.race.Harmony.count },
+            universe: global.race.universe,
+            seeded: false,
+            ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+        };
+        global.city = {
+            calendar: {
+                day: 0,
+                year: 0,
+                weather: 2,
+                temp: 1,
+                moon: 0,
+                wind: 0,
+                orbit: global.city.calendar.orbit
+            },
+            biome: global.city.biome,
+            ptrait: global.city.ptrait,
+            geology: global.city.geology
+        };
+        global.tech = { theology: 1 };
+        clearStates();
+        global.new = true;
+        Math.seed = Math.rand(0,10000);
+        global.seed = Math.seed;
+
+        if (global.race.universe === 'antimatter') {
+            global.race['weak_mastery'] = 1;
+        }
+        else {
+            global.race['no_plasmid'] = 1;
+        }
+
+        let genes = ['crispr','trade','craft'];
+        for (let i=0; i<genes.length; i++){
+            global.race[`no_${genes[i]}`] = 1;                    
+        }
+
+        global.race['start_cataclysm'] = 1;
+        global.race['cataclysm'] = 1;
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        window.location.reload();
+    }
+}
+
 function big_bang(){
     global.lastMsg = false;
 
@@ -15703,4 +15863,11 @@ function big_bang(){
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
+}
+
+export function start_cataclysm(){
+    if (global.race['start_cataclysm']){
+        delete global.race['start_cataclysm'];
+        sentience();
+    }
 }

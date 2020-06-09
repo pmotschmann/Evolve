@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault, start_cataclysm } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
@@ -64,7 +64,7 @@ $('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
 defineJobs();
 $('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent civics"></div>'));
 defineGovernment();
-if (global.race.species !== 'protoplasm'){
+if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
     defineGarrison();
     buildGarrison($('#c_garrison'),false);
     foreignGov();
@@ -6931,3 +6931,7 @@ intervals['version_check'] = setInterval(function(){
 
 let changeLog = $(`<div class="infoBox"></div>`);
 popover('versionLog',getTopChange(changeLog),true);
+
+if (global.race['start_cataclysm']){
+    start_cataclysm();
+}
