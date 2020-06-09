@@ -15156,6 +15156,7 @@ function cataclysm(){
         global.settings.showStorage = true;
         global.settings.civTabs = 1;
         global.settings.spaceTabs = 1;
+        global.settings.showGenetics = true;
 
         //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;
@@ -15234,6 +15235,8 @@ function cataclysm(){
         global.resource.Brick.amount = 50000;
         global.resource.Wrought_Iron.amount = 50000;
         global.resource.Sheet_Metal.amount = 50000;
+
+        global.civic.taxes.display = true;
 
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
@@ -15328,6 +15331,7 @@ function cataclysm(){
         drawCity();
         drawTech();
         renderSpace();
+        arpa('Physics');
 
         //global.civic.garrison.display = true;
     }

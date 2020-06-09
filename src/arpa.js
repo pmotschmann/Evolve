@@ -78,7 +78,10 @@ export const arpaProjects = {
         id: 'arpalaunch_facility',
         title: loc('arpa_projects_launch_facility_title'),
         desc: loc('arpa_projects_launch_facility_desc'),
-        reqs: { high_tech: 7 },
+        reqs: { high_tech: 7 },        
+        condition(){
+            return global.race['cataclysm'] ? false : true;
+        },
         grant: 'launch_facility',
         rank: 1,
         no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
@@ -839,6 +842,9 @@ function monument_costs(res,offset){
 }
 
 function checkRequirements(tech){
+    if (arpaProjects[tech]['condition'] && !arpaProjects[tech].condition()){
+        return false;
+    }
     var isMet = true;
     Object.keys(arpaProjects[tech].reqs).forEach(function (req) {
         if (!global.tech[req] || global.tech[req] < arpaProjects[tech].reqs[req]){

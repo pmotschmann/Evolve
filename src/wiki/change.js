@@ -10,7 +10,8 @@ const changeList = [
             `Added Cataclysm Scenario for eligible players.`,
             `Genetic Dead End is now classified as a Scenario.`,
             `Added 3rd race option for Plant genus: Pinguicula.`,
-            `Added Scrooge achievement.`
+            `Added Scrooge achievement.`,
+            `Significantly reduced Bolognium cost of Freighters.`
         ]
     },
     {
