@@ -3484,7 +3484,7 @@ const galaxyProjects = {
                 civ: 2,
                 mil: 3,
                 helium: 10,
-                rating: 25
+                rating: 30
             },
             powered(){ return powerCostMod(1); },
             action(){

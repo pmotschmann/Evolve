@@ -3163,8 +3163,9 @@ export const actions = {
                 Aluminium(offset){ return costMultiplier('hospital', offset, 10000, 1.32); },
             },
             effect(){
+                let clinic = global.tech['reproduction'] && global.tech.reproduction >= 2 ? `<div>${loc('city_hospital_effect2')}</div>` : ``;
                 let healing = global.tech['medic'] >= 2 ? 10 : 5;
-                return loc('city_hospital_effect',[healing]);
+                return `<div>${loc('city_hospital_effect',[healing])}</div>${clinic}`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -4053,9 +4054,10 @@ export const actions = {
                 Plywood(offset){ return costMultiplier('tourist_center', offset, 5000, 1.36); },
             },
             effect(){
-                let amp = global.civic.govern.type === 'corpocracy' ? 2 : 1;
-                let cas = global.civic.govern.type === 'corpocracy' ? 10 : 5;
-                let mon = global.civic.govern.type === 'corpocracy' ? 4 : 2;
+                let xeno = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
+                let amp = (global.civic.govern.type === 'corpocracy' ? 2 : 1) * xeno;
+                let cas = (global.civic.govern.type === 'corpocracy' ? 10 : 5) * xeno;
+                let mon = (global.civic.govern.type === 'corpocracy' ? 4 : 2) * xeno;
                 return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`;
             },
             powered(){ return powerCostMod(1); },
@@ -4996,6 +4998,25 @@ export const actions = {
                 return false;
             }
         },
+        fertility_clinic: {
+            id: 'tech-fertility_clinic',
+            title: loc('tech_fertility_clinic'),
+            desc: loc('tech_fertility_clinic'),
+            category: 'housing',
+            era: 'intergalactic',
+            reqs: { reproduction: 1, xeno: 6 },
+            grant: ['reproduction',2],
+            cost: {
+                Knowledge(){ return 4500000; }
+            },
+            effect: loc('tech_fertility_clinic_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         smokehouse: {
             id: 'tech-smokehouse',
             title: loc('tech_smokehouse'),
@@ -5579,6 +5600,7 @@ export const actions = {
             title: loc('tech_stellar_forge'),
             desc: loc('tech_stellar_forge'),
             category: 'crafting',
+            era: 'intergalactic',
             reqs: { foundry: 8, high_tech: 15, gateway: 3, neutron: 1 },
             grant: ['star_forge',1],
             cost: {
@@ -5598,6 +5620,7 @@ export const actions = {
             title: loc('tech_stellar_smelting'),
             desc: loc('tech_stellar_smelting'),
             category: 'crafting',
+            era: 'intergalactic',
             reqs: { star_forge: 1, xeno: 4 },
             grant: ['star_forge',2],
             cost: {
@@ -7730,6 +7753,25 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['tourist_center'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        xeno_tourism: {
+            id: 'tech-xeno_tourism',
+            title: loc('tech_xeno_tourism'),
+            desc: loc('tech_xeno_tourism'),
+            category: 'banking',
+            era: 'intergalactic',
+            reqs: { monuments: 2, xeno: 10 },
+            grant: ['monument',3],
+            cost: {
+                Knowledge(){ return 8000000; }
+            },
+            effect: loc('tech_xeno_tourism_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
                     return true;
                 }
                 return false;

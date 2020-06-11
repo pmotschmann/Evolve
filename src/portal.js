@@ -314,7 +314,7 @@ const fortressModules = {
             reqs: { hell_pit: 4 },
             no_queue(){ return global.portal.soul_forge.count < 1 ? false : true },
             queue_complete(){ return global.portal.soul_forge.count >= 1 ? true : false; },
-            powered(){ return powerCostMod(60); },
+            powered(){ return powerCostMod(30); },
             postPower(o){
                 vBind({el: `#fort`},'update');
             },
@@ -385,7 +385,7 @@ const fortressModules = {
                 return `<div>${loc('portal_soul_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_pit: 5 },
-            powered(){ return powerCostMod(8); },
+            powered(){ return powerCostMod(4); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('soul_attractor', offset, 12000000, 1.25, 'portal'); },
                 Stone(offset){ return spaceCostMultiplier('soul_attractor', offset, 23000000, 1.25, 'portal'); },

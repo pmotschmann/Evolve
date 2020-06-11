@@ -10,10 +10,14 @@ const changeList = [
             `Added Cataclysm Scenario for those whose value science over caution.`,
             `Genetic Dead End is now classified as a Scenario.`,
             `Added 3rd race option for Plant genus: Pinguicula.`,
+            `Added Xeno Tourism upgrade.`,
+            `Added Fertility Clinic upgrade.`,
             `Added Scrooge achievement.`,
             `Reduced Bolognium cost of Freighters.`,
             `Reduced Bolognium cost of Corvette Ships.`,
-            `Piracy will no longer start until after you construct the Embassy.`
+            `Increased rating of Corvette Ships to 30.`,
+            `Piracy will no longer start until after you construct the Embassy.`,
+            `Reduced power requirement of Soul Forge and Soul Attractor`
         ]
     },
     {

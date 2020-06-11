@@ -2221,6 +2221,9 @@ function fastLoop(){
                         lowerBound *= 2;
                     }
                 }
+                if (global.tech['reproduction'] && global.tech.reproduction >= 2 && global.city['hospital']){
+                    lowerBound += global.city.hospital.count;
+                }
                 if (global.genes['birth']){
                     lowerBound += global.genes['birth'];
                 }
@@ -3996,14 +3999,15 @@ function fastLoop(){
 
         if (global.city['tourist_center']){
             let tourism = 0;
+            let amp = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
             if (global.city['amphitheatre']){
-                tourism += global.city['tourist_center'].on * global.city['amphitheatre'].count;
+                tourism += global.city['tourist_center'].on * global.city['amphitheatre'].count * amp;
             }
             if (global.city['casino']){
-                tourism += global.city['tourist_center'].on * global.city['casino'].count * 5;
+                tourism += global.city['tourist_center'].on * global.city['casino'].count * 5 * amp;
             }
             if (global.tech['monuments']){
-                tourism += global.city['tourist_center'].on * global.tech['monuments'] * 2;
+                tourism += global.city['tourist_center'].on * global.tech['monuments'] * 2 * amp;
             }
             if (global.civic.govern.type === 'corpocracy'){
                 tourism *= 2;
