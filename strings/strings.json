@@ -832,6 +832,12 @@
   "tech_dazzle_effect": "Sucker in more customers to your casinos by electrifying them with extreme dazzle.",
   "tech_casino_vault": "Casino Vault",
   "tech_casino_vault_effect": "Upgrade your casino vaults to store 50% more money.",
+
+  "tech_online_gambling": "Online Gambling",
+  "tech_online_gambling_effect": "This new market will increase the income from your Casinos as well as expand their vault capacity.",
+  "tech_bolognium_vaults": "Bolognium Vault",
+  "tech_bolognium_vaults_effect": "Upgrade your Casino vaults with bolognium to store a lot more money.",
+
   "tech_mining": "Mining",
   "tech_mining_desc": "Learn the basics of mining",
   "tech_mining_effect": "Learn how to dig up stone slabs from a quarry.",

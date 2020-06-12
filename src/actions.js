@@ -4111,6 +4111,9 @@ export const actions = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['gambling'] >= 3 ? 60000 : 40000);
+                if (global.tech['gambling'] >= 4){
+                    money += global.tech['gambling'] >= 5 ? 240000 : 60000;
+                }
                 if (global.race['gambler']){
                     money *= 1 + (global.race['gambler'] * 0.04);
                 }
@@ -4123,7 +4126,7 @@ export const actions = {
                 let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
                 let cash = Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
                 if (global.tech['gambling'] && global.tech['gambling'] >= 2){
-                    cash *= 1.5;
+                    cash *= global.tech.gambling >= 4 ? 2 : 1.5;
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     cash *= 3;
@@ -5904,6 +5907,45 @@ export const actions = {
                 Iridium(){ return 2500; }
             },
             effect: loc('tech_casino_vault_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        online_gambling: {
+            id: 'tech-online_gambling',
+            title: loc('tech_online_gambling'),
+            desc: loc('tech_online_gambling'),
+            category: 'banking',
+            era: 'interstellar',
+            reqs: { gambling: 3, banking: 12 },
+            grant: ['gambling',4],
+            cost: {
+                Knowledge(){ return 800000; }
+            },
+            effect: loc('tech_online_gambling_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        bolognium_vaults: {
+            id: 'tech-bolognium_vaults',
+            title: loc('tech_bolognium_vaults'),
+            desc: loc('tech_bolognium_vaults'),
+            category: 'banking',
+            era: 'intergalactic',
+            reqs: { gambling: 4, gateway: 3 },
+            grant: ['gambling',5],
+            cost: {
+                Knowledge(){ return 3900000; },
+                Bolognium(){ return 180000; }
+            },
+            effect: loc('tech_bolognium_vaults_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;

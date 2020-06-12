@@ -3984,7 +3984,7 @@ function fastLoop(){
         if (global.tech['gambling'] && p_on['casino']){
             let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
             if (global.tech.gambling >= 2){
-                cash *= 1.5;
+                cash *= global.tech.gambling >= 4 ? 2 : 1.5;
             }
             if (global.civic.govern.type === 'corpocracy'){
                 cash *= 3;
@@ -5083,7 +5083,11 @@ function midLoop(){
             }
         }
         if (global.city['casino']){
-            let vault = global.city['casino'].count * spatialReasoning(global.tech['gambling'] >= 3 ? 60000 : 40000);
+            let casino_capacity = global.tech['gambling'] >= 3 ? 60000 : 40000;
+            if (global.tech['gambling'] >= 4){
+                casino_capacity += global.tech['gambling'] >= 5 ? 240000 : 60000;
+            }
+            let vault = global.city['casino'].count * spatialReasoning(casino_capacity);
             if (global.race['gambler']){
                 vault *= 1 + (global.race['gambler'] * 0.04);
             }
