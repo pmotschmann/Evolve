@@ -2573,8 +2573,8 @@ export const actions = {
         },
         stone: {
             id: 'city-stone',
-            title: loc('city_stone'),
-            desc: loc('city_stone_desc'),
+            title(){ return global.race['sappy'] ? loc('city_amber') : loc('city_stone'); },
+            desc(){ return global.race['sappy'] ? loc('city_amber_desc') : loc('city_stone_desc'); },
             category: 'outskirts',
             reqs: { primitive: 2 },
             not_trait: ['cataclysm'],
@@ -2759,7 +2759,9 @@ export const actions = {
                 Lumber(offset){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', offset, 10, 1.23); },
                 Stone(offset){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', offset, 10, 1.23) : 0; }
             },
-            effect: loc('plus_max_resource',[1,loc('citizen')]),
+            effect(){
+                return global.race['sappy'] ? `<div>${loc('plus_max_resource',[1,loc('citizen')])}</div><div>${loc('city_grove_effect',[2.5])}</div>` : loc('plus_max_resource',[1,loc('citizen')]);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global['resource'][global.race.species].display = true;
@@ -3560,7 +3562,7 @@ export const actions = {
             desc: loc('city_rock_quarry_desc'),
             category: 'industrial',
             reqs: { mining: 1 },
-            not_trait: ['cataclysm'],
+            not_trait: ['cataclysm','sappy'],
             cost: {
                 Money(offset){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', offset, 20, 1.45);} else { return 0; } },
                 Lumber(offset){ return costMultiplier('rock_quarry', offset, 50, 1.36); },
@@ -5980,8 +5982,8 @@ export const actions = {
         },
         mining: {
             id: 'tech-mining',
-            title: loc('tech_mining'),
-            desc: loc('tech_mining_desc'),
+            title(){ return global.race['sappy'] ? loc('tech_amber') : loc('tech_mining'); },
+            desc(){ return global.race['sappy'] ? loc('tech_amber') : loc('tech_mining_desc'); },
             category: 'mining',
             era: 'civilized',
             reqs: { primitive: 3 },
@@ -5989,7 +5991,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 45; }
             },
-            effect: loc('tech_mining_effect'),
+            effect(){ return global.race['sappy'] ? loc('tech_amber_effect') : loc('tech_mining_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['rock_quarry'] = {
@@ -9718,7 +9720,7 @@ export const actions = {
             category: 'stone_gathering',
             era: 'civilized',
             reqs: { mining: 2 },
-            not_trait: ['cataclysm'],
+            not_trait: ['cataclysm','sappy'],
             grant: ['hammer',1],
             cost: {
                 Knowledge(){ return 540; },
@@ -9739,6 +9741,7 @@ export const actions = {
             category: 'stone_gathering',
             era: 'civilized',
             reqs: { hammer: 1, mining: 3 },
+            not_trait: ['cataclysm','sappy'],
             grant: ['hammer',2],
             cost: {
                 Knowledge(){ return global.city.ptrait === 'unstable' ? 1350 : 2700; },
@@ -9759,6 +9762,7 @@ export const actions = {
             category: 'stone_gathering',
             era: 'discovery',
             reqs: { hammer: 2, smelting: 2 },
+            not_trait: ['cataclysm','sappy'],
             grant: ['hammer',3],
             cost: {
                 Knowledge(){ return 7200; },
@@ -9779,6 +9783,7 @@ export const actions = {
             category: 'stone_gathering',
             era: 'industrialized',
             reqs: { hammer: 3, high_tech: 3 },
+            not_trait: ['cataclysm','sappy'],
             grant: ['hammer',4],
             cost: {
                 Knowledge(){ return 40000; },
@@ -15034,7 +15039,11 @@ function basicHousingLabel(){
             return loc('city_basic_housing_orc_title');
         case 'wolven':
             return loc('city_basic_housing_wolven_title');
+        case 'cacti':
+            return loc('city_basic_housing_entish_title');
         case 'entish':
+            return loc('city_basic_housing_entish_title');
+        case 'pinguicula':
             return loc('city_basic_housing_entish_title');
         case 'arraak':
             return loc('city_basic_housing_nest_title');

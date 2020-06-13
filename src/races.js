@@ -36,7 +36,7 @@ export const genus_traits = {
         high_metabolism: 1
     },
     plant: {
-        photosynth: 1,
+        sappy: 1,
         asymmetrical: 1
     },
     fungi: {
@@ -184,6 +184,12 @@ export const traits = {
         type: 'genus',
         val: 3,
         vars: [40,20,10]
+    },
+    sappy: { // Stone is replaced with Amber.
+        name: loc('trait_sappy_name'),
+        desc: loc('trait_sappy',[loc('resource_Amber_name')]),
+        type: 'genus',
+        val: 5,
     },
     asymmetrical: { // Trade selling prices are slightly worse then normal
         name: loc('trait_asymmetrical_name'),

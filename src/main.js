@@ -3284,8 +3284,33 @@ function fastLoop(){
             }
         }
 
-        // Stone
-        { //block scope
+        // Stone / Amber
+        if (global.race['sappy']){
+            if (global.tech['mining'] && global.resource[global.race.species].amount > 0){
+                let stone_bd = {};
+
+                let stone_base = global.resource[global.race.species].amount * 0.6;
+                stone_bd[races[global.race.species].name] = stone_base + 'v';
+                if (global.city.hasOwnProperty('basic_housing')){
+                    let grove = global.city.basic_housing.count * 0.025;
+                    stone_base *= 1 + grove;
+                    stone_bd[`ᄂ${housingLabel('small')}`] = (grove * 100) + '%';
+                }                
+
+                let soldiers = 0;
+                if (global.civic.hasOwnProperty('garrison')){
+                    soldiers = global.civic.garrison.workers * 0.6;
+                    stone_bd[loc('soldiers')] = soldiers + 'v';
+                }
+    
+                let delta = (stone_base + soldiers) * hunger * global_multiplier;                
+                stone_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+
+                breakdown.p['Stone'] = stone_bd;
+                modRes('Stone', delta * time_multiplier);
+            }
+        }
+        else {
             let stone_base = global.civic.quarry_worker.workers;
             stone_base *= global.civic.quarry_worker.impact;
             stone_base *= racialTrait(global.civic.quarry_worker.workers,'miner');
@@ -3505,6 +3530,44 @@ function fastLoop(){
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
                     titanium_bd[loc('resource_Iron_name')] = (iron / divisor) + 'v';
+                }
+            }
+
+            if (global.race['sappy']){
+                // Alt Aluminium
+                let alumina_bd = {};
+                let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
+                if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm']){
+                    if (global.race['cataclysm']){
+                        if (global.tech['mars'] && red_on['red_mine']){
+                            miner_base = red_on['red_mine'] * 0.75 * global.civic.colonist.workers * zigguratBonus();
+                        }
+                        power_mult = 1;
+                    }
+
+                    let base = miner_base * power_mult * 0.08;
+                    if (global.city.geology['Aluminium']){
+                        base *= global.city.geology['Aluminium'] + 1;
+                    }
+
+                    let shrine_bonus = 1;
+                    if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
+                        shrine_bonus = 1 + (global.city.shrine.metal / 100);
+                    }
+
+                    let delta = base * shrine_bonus * hunger * global_multiplier;
+
+                    if (global.tech['alumina'] >= 2){
+                        refinery += p_on['metal_refinery'] * 6;
+                    }
+
+                    delta *= 1 + (refinery / 100);
+
+                    alumina_bd[global.race['cataclysm'] ? loc('space_red_mine_title') : loc('job_miner')] = base + 'v';
+                    alumina_bd[loc('city_shrine')] = ((shrine_bonus - 1) * 100) + '%';
+                    alumina_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+
+                    modRes('Aluminium', delta * time_multiplier);
                 }
             }
         }

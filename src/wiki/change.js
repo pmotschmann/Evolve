@@ -9,6 +9,7 @@ const changeList = [
             `Added Scenarios Section to Evolution Challenges.`,
             `Added Cataclysm Scenario for those whose value science over caution.`,
             `Genetic Dead End is now classified as a Scenario.`,
+            `Plant genus redesign. Photosynth trait replaced with Sappy.`,
             `Added 3rd race option for Plant genus: Pinguicula.`,
             `Dyson Net now provides partial power as it is constructed.`,
             `Added Orichalcum upgrade for Dyson Sphere.`,
