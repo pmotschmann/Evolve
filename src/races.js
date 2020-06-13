@@ -581,14 +581,14 @@ export const traits = {
         val: -4,
         vars: [12]
     },
-    fragrant: { // Food req lowered, 
-        name: loc('trait_sticky_name'),
-        desc: loc('trait_sticky'),
+    fragrant: { // 
+        name: loc('trait_fragrant_name'),
+        desc: loc('trait_fragrant'),
         type: 'major',
         val: -3,
         vars: [20]
     },
-    sticky: { // Food req lowered, 
+    sticky: { // Food req lowered, Incrsa
         name: loc('trait_sticky_name'),
         desc: loc('trait_sticky'),
         type: 'major',
