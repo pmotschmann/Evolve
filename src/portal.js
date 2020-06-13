@@ -363,8 +363,8 @@ const fortressModules = {
             },
             effect(){
                 let soldiers = global.tech.hell_gun >= 2 ? 2 : 1;
-                let min = global.tech.hell_gun >= 2 ? 20 : 10;
-                let max = global.tech.hell_gun >= 2 ? 45 : 25;
+                let min = global.tech.hell_gun >= 2 ? 35 : 20;
+                let max = global.tech.hell_gun >= 2 ? 75 : 40;
                 return `<div>${loc('portal_gun_emplacement_effect',[soldiers])}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
@@ -394,7 +394,7 @@ const fortressModules = {
                 Aerogel(offset){ return spaceCostMultiplier('soul_attractor', offset, 180000, 1.25, 'portal'); },
             },
             effect(){
-                return `<div>${loc('portal_soul_attractor_effect',[25,75])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_soul_attractor_effect',[40,120])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1090,13 +1090,13 @@ export function bloodwar(){
 
     if (global.tech['hell_pit']){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
-            global.portal.soul_forge.kills += p_on['soul_attractor'] * Math.rand(25,75);
+            global.portal.soul_forge.kills += p_on['soul_attractor'] * Math.rand(40,120);
         }
 
         if (forgeOperating && global.tech['hell_gun'] && p_on['gun_emplacement']){
             let gunKills = 0;
             for (let i=0; i<p_on['gun_emplacement']; i++){
-                gunKills += global.tech.hell_gun >= 2 ? Math.rand(20,45) : Math.rand(10,25);
+                gunKills += global.tech.hell_gun >= 2 ? Math.rand(35,75) : Math.rand(20,40);
             }
             global.portal.soul_forge.kills += gunKills;
             global.stats.dkills += gunKills;

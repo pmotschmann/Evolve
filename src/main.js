@@ -1056,7 +1056,20 @@ function fastLoop(){
         let power_grid = 0;
         let max_power = 0;
 
-        if (global.interstellar['dyson_sphere'] && global.interstellar.dyson_sphere.count > 0){
+        if (global.interstellar['orichalcum_sphere'] && global.interstellar.orichalcum_sphere.count > 0){
+            let output = 0;
+            if (global.interstellar.orichalcum_sphere.count >= 100){
+                output = powerModifier(1750);
+            }
+            else {
+                output = powerModifier(750 + (global.interstellar.orichalcum_sphere.count * 8));
+            }
+            max_power -= output;
+            power_grid += output;
+            power_generated[loc('interstellar_dyson_sphere_title')] = output;
+            delete power_generated[loc('tech_dyson_net')];
+        }
+        else if (global.interstellar['dyson_sphere'] && global.interstellar.dyson_sphere.count > 0){
             let output = 0;
             if (global.interstellar.dyson_sphere.count >= 100){
                 output = powerModifier(750);
@@ -1070,7 +1083,13 @@ function fastLoop(){
             delete power_generated[loc('tech_dyson_net')];
         }
         else if (global.interstellar['dyson'] && global.interstellar.dyson.count >= 100){
-            let output = powerModifier(175);
+            let output = 0;
+            if (global.interstellar.dyson.count >= 100){
+                output = powerModifier(175);
+            }
+            else {
+                output = powerModifier(global.interstellar.dyson_sphere.count * 1.25);
+            }
             max_power -= output;
             power_grid += output;
             power_generated[loc('tech_dyson_net')] = output;

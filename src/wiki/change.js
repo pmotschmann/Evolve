@@ -10,15 +10,17 @@ const changeList = [
             `Added Cataclysm Scenario for those whose value science over caution.`,
             `Genetic Dead End is now classified as a Scenario.`,
             `Added 3rd race option for Plant genus: Pinguicula.`,
+            `Dyson Net now provides partial power as it is constructed.`,
+            `Added Orichalcum upgrade for Dyson Sphere.`,
             `Added Xeno Tourism upgrade.`,
             `Added Fertility Clinic upgrade for Hospitals.`,
             `Added Online Gambling and Bolognium Vault upgrade for Casinos.`,
             `Added Scrooge achievement.`,
-            `Reduced Bolognium cost of Freighters.`,
-            `Reduced Bolognium cost of Corvette Ships.`,
+            `Reduced Bolognium cost of Freighters & Corvette Ships.`,
             `Increased rating of Corvette Ships to 30.`,
             `Piracy will no longer start until after you construct the Embassy.`,
-            `Reduced power requirement of Soul Forge and Soul Attractor`
+            `Reduced power requirement of Soul Forge and Soul Attractor.`,
+            `Gun Emplacements and Soul Attractors are now more potent.`
         ]
     },
     {

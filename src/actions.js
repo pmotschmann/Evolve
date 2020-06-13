@@ -11769,6 +11769,30 @@ export const actions = {
                 return false;
             }
         },
+        orichalcum_sphere: {
+            id: 'tech-orichalcum_sphere',
+            title: loc('tech_orichalcum_sphere'),
+            desc: loc('tech_orichalcum_sphere'),
+            category: 'power_generation',
+            era: 'intergalactic',
+            reqs: { dyson: 1, science: 19 },
+            condition(){
+                return global.interstellar['dyson_sphere'] && global.interstellar.dyson_sphere.count >= 100 ? true : false;
+            },
+            grant: ['dyson',2],
+            cost: {
+                Knowledge(){ return 17500000; },
+                Orichalcum(){ return 250000; }
+            },
+            effect: loc('tech_orichalcum_sphere_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['orichalcum_sphere'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         gps: {
             id: 'tech-gps',
             title: loc('tech_gps'),
@@ -15782,7 +15806,7 @@ function cataclysm_end(){
         checkAchievements();
         unlockAchieve('shaken');
         if (global.race['cataclysm']){
-            unlockAchieve('retard_loop');
+            unlockAchieve('failed_history');
         }
 
         global['race'] = { 

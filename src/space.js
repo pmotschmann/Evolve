@@ -2314,8 +2314,9 @@ const interstellarProjects = {
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100){
+                    let power = global.interstellar.dyson.count > 0 ? `<div>${loc('space_dwarf_reactor_effect1',[powerModifier(global.interstellar.dyson.count * 1.25)])}</div>` : ``;
                     let remain = global.interstellar.hasOwnProperty('dyson') ? 100 - global.interstellar.dyson.count : 100;
-                    return `<div>${loc('interstellar_dyson_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    return `<div>${loc('interstellar_dyson_effect')}</div>${power}<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
                     return loc('interstellar_dyson_complete',[powerModifier(175)]);
@@ -2342,7 +2343,7 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return global.interstellar.dyson_sphere.count >= 100 ? true : false; },
             condition(){
-                return global.interstellar.dyson.count >= 100 && global.tech['dyson'] ? true : false;
+                return global.interstellar.dyson.count >= 100 && global.tech['dyson'] && global.tech.dyson === 1 ? true : false;
             },
             cost: {
                 Money(){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 ? 5000000 : 0; },
@@ -2364,6 +2365,46 @@ const interstellarProjects = {
                 if (payCosts($(this)[0].cost)){
                     if (global.interstellar.dyson_sphere.count < 100){
                         incrementStruct('dyson_sphere','interstellar');
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        orichalcum_sphere: {
+            id: 'interstellar-orichalcum_sphere',
+            title: loc('interstellar_dyson_sphere_title'),
+            desc(){
+                return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div>`;
+            },
+            reqs: { proxima: 3, dyson: 2 },
+            no_queue(){ return global.interstellar.orichalcum_sphere.count < 100 ? false : true },
+            queue_size: 10,
+            queue_complete(){ return global.interstellar.orichalcum_sphere.count >= 100 ? true : false; },
+            condition(){
+                return global.interstellar.dyson_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 2 ? true : false;
+            },
+            cost: {
+                Money(){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 ? 25000000 : 0; },
+                Orichalcum(){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 ? 75000 : 0; }
+            },
+            effect(){
+                if (!global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100){
+                    let power = global.interstellar.hasOwnProperty('orichalcum_sphere') ? 750 + (global.interstellar.orichalcum_sphere.count * 8) : 750;
+                    let remain = global.interstellar.hasOwnProperty('orichalcum_sphere') ? 100 - global.interstellar.orichalcum_sphere.count : 100;
+                    return `<div>${loc('interstellar_dyson_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return loc('interstellar_dyson_sphere_complete',[powerModifier(1750)]);
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.interstellar.orichalcum_sphere.count < 100){
+                        incrementStruct('orichalcum_sphere','interstellar');
+                        if (global.interstellar.orichalcum_sphere.count >= 100){
+                            unlockAchieve('blacken_the_sun');
+                        }
                     }
                     return true;
                 }
@@ -3535,7 +3576,8 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            flair: loc('tech_frigate_ship_flair')
         },
         cruiser_ship: {
             id: 'galaxy-cruiser_ship',

@@ -287,10 +287,15 @@ export const achievements = {
         desc: loc("achieve_iron_will_desc"),
         flair: loc("achieve_iron_will_flair")
     },
-    retard_loop: {
-        name: loc("achieve_retard_loop_name"),
-        desc: loc("achieve_retard_loop_desc"),
-        flair: loc("achieve_retard_loop_flair")
+    failed_history: {
+        name: loc("achieve_failed_history_name"),
+        desc: loc("achieve_failed_history_desc"),
+        flair: loc("achieve_failed_history_flair")
+    },
+    blacken_the_sun: {
+        name: loc("achieve_blacken_the_sun_name"),
+        desc: loc("achieve_blacken_the_sun_desc"),
+        flair: loc("achieve_blacken_the_sun_flair")
     },
     genus_humanoid: {
         name: loc("achieve_genus_humanoid_name"),
