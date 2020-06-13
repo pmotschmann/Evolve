@@ -5931,7 +5931,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 390000; }
             },
-            effect: loc('tech_casino_vault_effect'),
+            effect: loc('tech_otb_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;

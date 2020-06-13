@@ -14,7 +14,7 @@ const changeList = [
             `Added Orichalcum upgrade for Dyson Sphere.`,
             `Added Xeno Tourism upgrade.`,
             `Added Fertility Clinic upgrade for Hospitals.`,
-            `Added Online Gambling and Bolognium Vault upgrade for Casinos.`,
+            `Added OTB, Online Gambling, & Bolognium Vault upgrade for Casinos.`,
             `Added Scrooge achievement.`,
             `Reduced Bolognium cost of Freighters & Corvette Ships.`,
             `Increased rating of Corvette Ships to 30.`,
