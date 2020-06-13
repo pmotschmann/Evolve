@@ -1628,6 +1628,9 @@ export function armyRating(val,type,wound){
         if (global.race['fiery']){
             army *= 1 + (traits.fiery.vars[0] / 100);
         }
+        if (global.race['sticky']){
+            army *= 1 + (traits.sticky.vars[1] / 100);
+        }
         if (global.race['pathetic']){
             army *= 1 - (traits.pathetic.vars[0] / 100);
         }
@@ -1661,6 +1664,9 @@ export function armyRating(val,type,wound){
         }
         if (global.race['fiery']){
             army *= 1 + (traits.fiery.vars[1] / 100);
+        }
+        if (global.race['fragrant']){
+            army *= 1 - (traits.fragrant.vars[0] / 100);
         }
         if (global.city.ptrait === 'rage'){
             army *= 1.02;

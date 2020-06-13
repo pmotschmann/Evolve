@@ -2108,6 +2108,9 @@ function fastLoop(){
             if (global.race['high_metabolism']){
                 consume *= 1 + (traits.high_metabolism.vars[0] / 100);
             }
+            if (global.race['sticky']){
+                consume *= 1 - (traits.sticky.vars[0] / 100);
+            }
             if (global.race['photosynth']){
                 switch(global.city.calendar.weather){
                     case 0:

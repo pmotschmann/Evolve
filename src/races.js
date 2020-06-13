@@ -189,7 +189,7 @@ export const traits = {
         name: loc('trait_sappy_name'),
         desc: loc('trait_sappy',[loc('resource_Amber_name')]),
         type: 'genus',
-        val: 5,
+        val: 4,
     },
     asymmetrical: { // Trade selling prices are slightly worse then normal
         name: loc('trait_asymmetrical_name'),
@@ -580,6 +580,20 @@ export const traits = {
         type: 'major',
         val: -4,
         vars: [12]
+    },
+    fragrant: { // Food req lowered, 
+        name: loc('trait_sticky_name'),
+        desc: loc('trait_sticky'),
+        type: 'major',
+        val: -3,
+        vars: [20]
+    },
+    sticky: { // Food req lowered, 
+        name: loc('trait_sticky_name'),
+        desc: loc('trait_sticky'),
+        type: 'major',
+        val: 3,
+        vars: [20,15]
     },
     infectious: { // Attacking has a chance to infect other creatures and grow your population
         name: loc('trait_infectious_name'),
@@ -1376,7 +1390,7 @@ export const races = {
         home: loc('race_pinguicula_home'),
         entity: loc('race_pinguicula_entity'),
         traits: {
-            devourer: 1,
+            fragrant: 1,
             sticky: 1
         },
         solar: {
@@ -1386,7 +1400,7 @@ export const races = {
             gas_moon: loc('race_pinguicula_solar_gas_moon'),
             dwarf: loc('race_pinguicula_solar_dwarf'),
         },
-        fanaticism: 'devourer'
+        fanaticism: 'sticky'
     },
     sporgar: {
         name: loc('race_sporgar'),
