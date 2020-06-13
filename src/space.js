@@ -2365,6 +2365,9 @@ const interstellarProjects = {
                 if (payCosts($(this)[0].cost)){
                     if (global.interstellar.dyson_sphere.count < 100){
                         incrementStruct('dyson_sphere','interstellar');
+                        if (global.interstellar.dyson_sphere.count >= 100){
+                            drawTech();
+                        }                        
                     }
                     return true;
                 }
@@ -2392,7 +2395,7 @@ const interstellarProjects = {
                 if (!global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100){
                     let power = global.interstellar.hasOwnProperty('orichalcum_sphere') ? 750 + (global.interstellar.orichalcum_sphere.count * 8) : 750;
                     let remain = global.interstellar.hasOwnProperty('orichalcum_sphere') ? 100 - global.interstellar.orichalcum_sphere.count : 100;
-                    return `<div>${loc('interstellar_dyson_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    return `<div>${loc('interstellar_orichalcum_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
                     return loc('interstellar_dyson_sphere_complete',[powerModifier(1750)]);

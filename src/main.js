@@ -4003,7 +4003,10 @@ function fastLoop(){
         if (global.tech['gambling'] && p_on['casino']){
             let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
             if (global.tech.gambling >= 2){
-                cash *= global.tech.gambling >= 4 ? 2 : 1.5;
+                cash *= global.tech.gambling >= 5 ? 2 : 1.5;
+            }
+            if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
+                cash *= 1 + (global.tech['stock_exchange'] * 0.01);
             }
             if (global.civic.govern.type === 'corpocracy'){
                 cash *= 3;
@@ -5104,7 +5107,7 @@ function midLoop(){
         if (global.city['casino']){
             let casino_capacity = global.tech['gambling'] >= 3 ? 60000 : 40000;
             if (global.tech['gambling'] >= 4){
-                casino_capacity += global.tech['gambling'] >= 5 ? 240000 : 60000;
+                casino_capacity += global.tech['gambling'] >= 6 ? 240000 : 60000;
             }
             let vault = global.city['casino'].count * spatialReasoning(casino_capacity);
             if (global.race['gambler']){
@@ -5112,6 +5115,9 @@ function midLoop(){
             }
             if (global.tech['world_control']){
                 vault = Math.round(vault * 1.25);
+            }
+            if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
+                vault *= 1 + (global.tech['stock_exchange'] * 0.05);
             }
             caps['Money'] += vault;
             bd_Money[loc('city_casino')] = vault+'v';

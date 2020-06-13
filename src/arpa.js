@@ -61,7 +61,7 @@ export const arpaProjects = {
         grant: 'stock_exchange',
         effect(){
             if (global.tech['banking'] >= 10){
-                return loc('arpa_projects_stock_exchange_effect2');
+                return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_effect3') : loc('arpa_projects_stock_exchange_effect2');
             }
             else {
                 return loc('arpa_projects_stock_exchange_effect1');
