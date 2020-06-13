@@ -1570,6 +1570,9 @@ function initEjector(){
 
 function loadEjector(name,color){
     if (atomic_mass[name] && global.interstellar['mass_ejector']){
+        if (name === 'Elerium' || name === 'Infernite'){
+            color = 'caution';
+        }
         let ejector = $(`<div id="eject${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
         $('#resEjector').append(ejector);
 
