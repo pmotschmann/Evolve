@@ -16,6 +16,7 @@ const changeList = [
             `Added Fertility Clinic upgrade for Hospitals.`,
             `Added OTB, Online Gambling, & Bolognium Vault upgrade for Casinos.`,
             `Added Scrooge achievement.`,
+            `Added Soul Link upgrade for Soul Forge/Soul Attractors.`,
             `Reduced Bolognium cost of Freighters & Corvette Ships.`,
             `Increased rating of Corvette Ships to 30.`,
             `Piracy will no longer start until after you construct the Embassy.`,

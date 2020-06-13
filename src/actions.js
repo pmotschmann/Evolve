@@ -13421,6 +13421,26 @@ export const actions = {
                 return false;
             }
         },
+        soul_link: {
+            id: 'tech-soul_link',
+            title: loc('tech_soul_link'),
+            desc: loc('tech_soul_link'),
+            category: 'hell_dimension',
+            era: 'intergalactic',
+            reqs: { hell_pit: 6 },
+            grant: ['hell_pit',7],
+            cost: {
+                Knowledge(){ return 7500000; },
+                Vitreloy(){ return 250000; }
+            },
+            effect(){ return loc('tech_soul_link_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         gun_emplacement: {
             id: 'tech-gun_emplacement',
             title: loc('portal_gun_emplacement_title'),

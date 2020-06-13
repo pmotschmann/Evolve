@@ -328,9 +328,11 @@ const fortressModules = {
                 let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
                 if (global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1){
                     let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
-                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,cap])}</div>`;
+                    if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
+                        cap *= 0.97 ** p_on['soul_attractor'];
+                    }
+                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills,Math.round(cap)])}</div>`;
                 }
-
                 let soldiers = soulForgeSoldiers();
                 return `${desc}<div><span class="has-text-caution">${loc('portal_soul_forge_soldiers',[soldiers])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
             },
@@ -394,7 +396,8 @@ const fortressModules = {
                 Aerogel(offset){ return spaceCostMultiplier('soul_attractor', offset, 180000, 1.25, 'portal'); },
             },
             effect(){
-                return `<div>${loc('portal_soul_attractor_effect',[40,120])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let link = global.tech.hell_pit >= 7 ? `<div>${loc('portal_soul_attractor_effect2',[3])}</div>` : ``;
+                return `<div>${loc('portal_soul_attractor_effect',[40,120])}</div>${link}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1101,8 +1104,11 @@ export function bloodwar(){
             global.portal.soul_forge.kills += gunKills;
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 6750 : 7500;
+            if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
+                gun_base *= 0.94 ** p_on['soul_attractor'];
+            }
             for (let i=0; i<p_on['gun_emplacement']; i++){
-                if (Math.rand(0,gun_base) === 0){
+                if (Math.rand(0,Math.round(gun_base)) === 0){
                     global.resource.Soul_Gem.amount++;
                 }
             }
@@ -1119,7 +1125,10 @@ export function bloodwar(){
         }
 
         let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
-        if (forgeOperating && global.portal.soul_forge.kills >= cap){
+        if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
+            cap *= 0.97 ** p_on['soul_attractor'];
+        }
+        if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
             global.portal.soul_forge.kills = 0;
             global.resource.Soul_Gem.amount++;
         }
