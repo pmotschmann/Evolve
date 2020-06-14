@@ -3287,6 +3287,9 @@ function fastLoop(){
             }
         }
 
+        let alumina_bd = {};
+        let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
+
         // Stone / Amber
         if (global.race['sappy']){
             if (global.tech['mining'] && global.resource[global.race.species].amount > 0){
@@ -3388,21 +3391,6 @@ function fastLoop(){
 
                 modRes('Aluminium', delta * time_multiplier);
             }
-
-            if (global.interstellar['mining_droid'] && miner_droids['alum'] > 0){
-                let base = miner_droids['alum'] * 2.75 * zigguratBonus();
-                let delta = base * global_multiplier;
-                delta *= 1 + (refinery / 100);
-
-                alumina_bd[loc('interstellar_mining_droid_title')] = base + 'v';
-
-                modRes('Aluminium', delta * time_multiplier);
-            }
-
-            if (refinery > 0){
-                alumina_bd[loc('city_metal_refinery')] = refinery + '%';
-            }
-            breakdown.p['Aluminium'] = alumina_bd;
         }
 
         // Miners
@@ -3538,8 +3526,6 @@ function fastLoop(){
 
             if (global.race['sappy']){
                 // Alt Aluminium
-                let alumina_bd = {};
-                let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
                 if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm']){
                     if (global.race['cataclysm']){
                         if (global.tech['mars'] && red_on['red_mine']){
@@ -3573,6 +3559,24 @@ function fastLoop(){
                     modRes('Aluminium', delta * time_multiplier);
                 }
             }
+        }
+
+        {
+            // Aluminium Mining Droids
+            if (global.interstellar['mining_droid'] && miner_droids['alum'] > 0){
+                let base = miner_droids['alum'] * 2.75 * zigguratBonus();
+                let delta = base * global_multiplier;
+                delta *= 1 + (refinery / 100);
+
+                alumina_bd[loc('interstellar_mining_droid_title')] = base + 'v';
+
+                modRes('Aluminium', delta * time_multiplier);
+            }
+
+            if (refinery > 0){
+                alumina_bd[loc('city_metal_refinery')] = refinery + '%';
+            }
+            breakdown.p['Aluminium'] = alumina_bd;
         }
 
         // Mars Mining

@@ -3784,7 +3784,8 @@ export const actions = {
             power_reqs: { alumina: 2 },
             effect() {
                 if (global.tech['alumina'] >= 2){
-                    return `<span>${loc('city_metal_refinery_effect',[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</span>`;
+                    let label = global.race['sappy'] ?'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
+                    return `<span>${loc(label,[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</span>`;
                 }
                 else {
                     return loc('city_metal_refinery_effect',[6]);
@@ -9557,7 +9558,7 @@ export const actions = {
                 Lumber(){ return 20; },
                 Stone(){ return 20; }
             },
-            effect: loc('tech_stone_axe_effect'),
+            effect(){ return global.race['sappy'] ? loc('tech_amber_axe_effect') : loc('tech_stone_axe_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.civic.lumberjack.display = true;
