@@ -3784,7 +3784,7 @@ export const actions = {
             power_reqs: { alumina: 2 },
             effect() {
                 if (global.tech['alumina'] >= 2){
-                    let label = global.race['sappy'] ?'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
+                    let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
                     return `<span>${loc(label,[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</span>`;
                 }
                 else {
@@ -4901,6 +4901,7 @@ export const actions = {
             category: 'housing',
             era: 'discovery',
             reqs: { housing: 2, smelting: 2 },
+            not_trait: ['cataclysm'],
             grant: ['housing_reduction',1],
             cost: {
                 Knowledge(){ return 11250; },
@@ -14017,7 +14018,7 @@ export function setAction(c_action,action,type,old){
         parent.append(element);
     }
 
-    if (c_action['special']){
+    if (c_action['special'] && (type !== 'geothermal' || global.race['cataclysm'])){
         var special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
@@ -14961,6 +14962,9 @@ function drawModal(c_action,type){
         case 'stellar_forge':
             smelterModal(body);
             break;
+        case 'geothermal':
+            smelterModal(body);
+            break;
         case 'factory':
             factoryModal(body);
             break;
@@ -15223,6 +15227,7 @@ function sentience(){
 
     global.settings.civTabs = 1;
     global.settings.showEvolve = false;
+    global.settings.showCiv = true;
     global.settings.showCity = true;
 
     global.civic.govern.type = 'anarchy';
@@ -15266,7 +15271,12 @@ function sentience(){
         s1: civ2name.s1
     };
 
-    messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]),'info');
+    if (global.race['cataclysm']){
+        messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,races[global.race.species].name]),'info');
+    }
+    else {
+        messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,races[global.race.species].name]),'info');
+    }
 
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
         global.resource.Steel.display = true;
@@ -15312,6 +15322,7 @@ function cataclysm(){
         global.tech['boot_camp'] = 1;
         global.tech['medic'] = 1;
         global.tech['military'] = 5;
+        global.tech['marines'] = 1;
         global.tech['explosives'] = 3;
         global.tech['trade'] = 3;
         global.tech['wharf'] = 1;
@@ -15362,7 +15373,7 @@ function cataclysm(){
         global.settings.space.belt = true;
         global.settings.space.dwarf = true;
 
-        //global.settings.showCity = false;
+        global.settings.showCity = false;
         global.settings.showIndustry = true;
         global.settings.showResearch = true;
         global.settings.showCivic = true;
@@ -15451,6 +15462,7 @@ function cataclysm(){
         global.resource.Brick.amount = 50000;
         global.resource.Wrought_Iron.amount = 50000;
         global.resource.Sheet_Metal.amount = 50000;
+        global.resource.Mythril.amount = 8000;
 
         global.civic.taxes.display = true;
 
@@ -15525,12 +15537,12 @@ function cataclysm(){
         global.space['red_factory'] = { count: 1, on: 1 };
         global.space['exotic_lab'] = { count: 0, on: 0 };
         global.space['ziggurat'] = { count: 0 };
-        global.space['space_barracks'] = { count: 0, on: 0 };
+        global.space['space_barracks'] = { count: 1, on: 1 };
         global.space['biodome'] = { count: 2, on: 2 };
         global.space['laboratory'] = { count: 0, on: 0 };
         global.space['geothermal'] = { count: 2, on: 2 };
         global.space['swarm_plant'] = { count: 0 };
-        global.space['swarm_control'] = { count: 4, support: 40, s_max: 40 };
+        global.space['swarm_control'] = { count: 5, support: 40, s_max: 50 };
         global.space['swarm_satellite'] = { count: 40 };
         global.space['gas_mining'] = { count: 2, on: 2 };
         global.space['gas_storage'] = { count: 1 };
@@ -15544,13 +15556,22 @@ function cataclysm(){
         global.space['iron_ship'] = { count: 1, on: 1 };
         global.space['elerium_contain'] = { count: 0, on: 0 };
 
+        global.civic['garrison'] = {
+            display: true,
+            disabled: false,
+            progress: 0,
+            tactic: 0,
+            workers: 0,
+            wounded: 0,
+            raid: 0,
+            max: 0
+        };
+
         drawCity();
         drawTech();
         renderSpace();
         arpa('Physics');
         loadFoundry();
-
-        //global.civic.garrison.display = true;
     }
 }
 

@@ -440,6 +440,7 @@ if (!global['settings']){
     global['settings'] = {
         civTabs: 0,
         showEvolve: true,
+        showCiv: false,
         showCity: false,
         showIndustry: false,
         showResearch: false,
@@ -458,6 +459,10 @@ if (!global['settings']){
         locale: 'en-US',
         icon: 'star'
     };
+}
+
+if (!global.settings.hasOwnProperty('showCiv')){
+    global.settings['showCiv'] = global.settings['showCity'];
 }
 
 if (!global.settings['icon']){
@@ -1400,6 +1405,7 @@ export function clearStates(){
     global.stats.dkills = 0;
     
     global.settings.showEvolve = true;
+    global.settings.showCiv = false;
     global.settings.showCity = false;
     global.settings.showIndustry = false;
     global.settings.showResearch = false;

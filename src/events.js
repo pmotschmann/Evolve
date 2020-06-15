@@ -2,7 +2,7 @@ import { global, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
 import { govTitle } from './civics.js';
-import { housingLabel } from './actions.js';
+import { housingLabel, drawTech } from './actions.js';
 import { unlockAchieve } from './achieve.js';
 
 export const events = {
@@ -220,6 +220,7 @@ export const events = {
         },
         effect: function(){
             global.tech['quaked'] = 1;
+            drawTech();
             return loc('event_quake',[races[global.race.species].home]);
         }
     },

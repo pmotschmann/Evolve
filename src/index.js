@@ -61,7 +61,7 @@ export function index(){
     tabs.append(evolution);
 
     // City Tab
-    let city = $(`<b-tab-item :visible="s.showCity">
+    let city = $(`<b-tab-item :visible="s.showCiv">
         <template slot="header">
             {{ 'tab_civil' | label }}
         </template>

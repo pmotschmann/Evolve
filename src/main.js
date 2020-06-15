@@ -2164,7 +2164,7 @@ function fastLoop(){
             }
 
             let space_marines = 0;
-            if (global.space['space_barracks']){
+            if (global.space['space_barracks'] && !global.race['cataclysm']){
                 space_marines = global.space.space_barracks.on * 10;
                 breakdown.p.consume.Food[loc('tech_space_marines_bd')] = -(space_marines);
             }
@@ -2863,10 +2863,13 @@ function fastLoop(){
         // Smelters
         let iron_smelter = 0;
         let titanium_bd = {};
-        if (global.city['smelter'] && global.city.smelter.count > 0){
+        if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'])){
             let capacity = global.city.smelter.count;
             if (p_on['stellar_forge'] && global.tech['star_forge'] && global.tech['star_forge'] >= 2){
                 capacity += p_on['stellar_forge'] * 2;
+            }
+            if (global.race['cataclysm']){
+                capacity += global.space.geothermal.on;
             }
             global.city.smelter.cap = capacity;
 
@@ -3603,7 +3606,7 @@ function fastLoop(){
         breakdown.p['Copper'] = copper_bd;
         breakdown.p['Titanium'] = titanium_bd;
 
-        if (uranium_bd[loc('city_coal_ash')]){
+        if (uranium_bd.hasOwnProperty(loc('city_coal_ash'))){
             uranium_bd[loc('city_coal_ash')] = uranium_bd[loc('city_coal_ash')] + 'v';
         }
 
@@ -3664,12 +3667,12 @@ function fastLoop(){
 
             // Uranium
             if (global.resource.Uranium.display){
-                let uranium = delta / 115;
+                let uranium = delta / (global.race['cataclysm'] ? 48 : 115);
                 if (global.city.geology['Uranium']){
                     uranium *= global.city.geology['Uranium'] + 1;
                 }
                 modRes('Uranium', uranium * time_multiplier);
-                uranium_bd[loc('job_coal_miner')] = uranium / global_multiplier + 'v';
+                uranium_bd[global.race['cataclysm'] ? loc('space_moon_iridium_mine_title') : loc('job_coal_miner')] = uranium / global_multiplier + 'v';
             }
         }
 
@@ -5097,7 +5100,7 @@ function midLoop(){
             bd_Knowledge[loc('portal_sensor_drone_title')] = gain+'v';
         }
         if (global.space['satellite']){
-            let gain = (global.space.satellite.count * 750);
+            let gain = (global.space.satellite.count * (global.race['cataclysm'] ? 2000 : 750));
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('space_home_satellite_title')] = gain+'v';
         }

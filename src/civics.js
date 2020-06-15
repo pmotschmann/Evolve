@@ -35,12 +35,12 @@ export function defineGovernment(){
 export function defineIndustry(){
     clearElement($('#industry'));
 
-    if (global.city['smelter'] && global.city.smelter.count > 0){
+    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'])){
         var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
         $(`#industry`).append(smelter);
         loadIndustry('smelter',smelter,'#iSmelter');
     }
-    if (global.city['factory'] && global.city.factory.count > 0){
+    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0)){
         var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
         $(`#industry`).append(factory);
         loadIndustry('factory',factory,'#iFactory');
@@ -272,7 +272,7 @@ function drawGovModal(){
 }
 
 export function foreignGov(){
-    if ($('#foreign').length === 0){
+    if ($('#foreign').length === 0 && !global.race['cataclysm'] && !global.tech['world_control']){
         let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
         foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
         $('#r_civics').append(foreign);
@@ -458,7 +458,7 @@ export function foreignGov(){
                     return loc('civics_gov_esp_desc');
                 },
                 vis(){
-                    return global.civic.garrison.display && !global.tech['world_control'] ? true : false;
+                    return global.civic.garrison.display && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
                 }
             }
         });
@@ -770,7 +770,7 @@ export function buildGarrison(garrison,full){
     var wrap = $('<div class="war"></div>');
     campaign.append(wrap);
 
-    if (!global.tech['world_control']){
+    if (!global.tech['world_control'] && !global.race['cataclysm']){
         var tactics = $(`<div id="${full ? 'tactics' : 'c_tactics'}" v-show="g.display" class="tactics"><span>${loc('civics_garrison_campaign')}</span></div>`);
         wrap.append(tactics);
             

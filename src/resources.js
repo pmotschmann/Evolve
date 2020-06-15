@@ -1367,7 +1367,7 @@ function drawModal(name,color){
         }
     });
     
-    if (global.city['warehouse'] && global.city['warehouse'].count > 0){
+    if ((global.city['warehouse'] && global.city['warehouse'].count > 0) || global.race['cataclysm']){
         let containers = $('<div id="modalContainers" class="crates divide"></div>');
         body.append(containers);
         

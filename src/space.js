@@ -49,8 +49,9 @@ const spaceProjects = {
                 Alloy(offset){ return spaceCostMultiplier('satellite', offset, 8000, 1.22); }
             },
             effect(){
+                let knowledge = global.race['cataclysm'] ? 2000 : 750;
                 let synergy = global.race['cataclysm'] ? `<div>${loc('space_home_satellite_effect2',[loc('space_moon_observatory_title'),25])}</div>` : `<div>${loc('space_home_satellite_effect2',[global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe'), 4])}</div>`;
-                return `<div>${loc('plus_max_resource',[750,loc('resource_Knowledge_name')])}</div>${synergy}<div>${loc('space_home_satellite_effect3')}</div>`
+                return `<div>${loc('plus_max_resource',[knowledge,loc('resource_Knowledge_name')])}</div>${synergy}<div>${loc('space_home_satellite_effect3')}</div>`
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -641,7 +642,7 @@ const spaceProjects = {
             },
             effect(){
                 let c_worker = global.race['cataclysm'] ? `<div>${loc('city_cement_plant_effect1',[1])}</div>` : ``;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1')}</div><div>${loc('space_red_fabrication_effect2')}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1')}</div>${c_worker}<div>${loc('space_red_fabrication_effect2')}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -852,7 +853,8 @@ const spaceProjects = {
             effect(){
                 let oil = +fuel_adjust(2).toFixed(2);
                 let soldiers = global.tech.marines >= 2 ? 4 : 2;
-                return `<div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
+                let food = global.race['catacylsm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
+                return `<div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
             },
             powered(){ return powerCostMod(1); },
             action(){
@@ -914,8 +916,10 @@ const spaceProjects = {
             },
             effect(){
                 let helium = +(fuel_adjust(0.5)).toFixed(2);
-                return `<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</span>`;
+                let smelter = global.race['cataclysm'] ? `<div>${loc('interstellar_stellar_forge_effect3',[1])}</div>` : ``;
+                return `${smelter}<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</span>`;
             },
+            special: true,
             powered(){
                 let power = -8;
                 if (global.race['forge']){
