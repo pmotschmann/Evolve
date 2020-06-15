@@ -378,9 +378,14 @@ const spaceProjects = {
             },
             effect(){
                 let helium = +(fuel_adjust(1.25)).toFixed(2);
-                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red])}</div><div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
+                let bank = ``;
+                if (global.race['cataclysm']){
+                    let vault = spatialReasoning(bank_vault() * 4);
+                    bank = `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
+                }
+                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red,$(this)[0].support()])}</div>${bank}<div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
             },
-            support(){ return 3; },
+            support(){ return global.race['cataclysm'] ? 4 : 3; },
             powered(){ return powerCostMod(5); },
             refresh: true,
             action(){
@@ -411,7 +416,7 @@ const spaceProjects = {
                 Alloy(offset){ return spaceCostMultiplier('red_tower', offset, 8000, 1.28); },
             },
             effect(){
-                return `<div>${loc('space_red_tower_effect1',[races[global.race.species].solar.red])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red, global.race['cataclysm'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(2); },
             action(){

@@ -15421,8 +15421,8 @@ function cataclysm(){
             global.resource.Plywood.amount = 50000;
         }
 
-        global.resource[global.race.species].max = 6;
-        global.resource[global.race.species].amount = 6;
+        global.resource[global.race.species].max = 8;
+        global.resource[global.race.species].amount = 8;
         global.resource.Crates.amount = 20;
         global.resource.Containers.amount = 20;
         global.resource.Money.max = 225000;
@@ -15473,12 +15473,14 @@ function cataclysm(){
         global.civic.colonist.display = true;
         global.civic.space_miner.display = true;
         
-        global.civic.colonist.max = 3;
-        global.civic.colonist.workers = 3;        
+        global.civic.colonist.max = 4;
+        global.civic.colonist.workers = 4;
         global.civic.space_miner.max = 3;
         global.civic.space_miner.workers = 2;
         global.civic.professor.max = 1;
         global.civic.professor.workers = 1;
+        global.civic.cement_worker.max = 1;
+        global.civic.cement_worker.workers = 1;
 
         global.city.calendar.day++;
         global.city.market.active = true;
@@ -15527,9 +15529,9 @@ function cataclysm(){
         global.space['iridium_mine'] = { count: 1, on: 1 };
         global.space['helium_mine'] = { count: 1, on: 1 };
         global.space['observatory'] = { count: 1, on: 1 };
-        global.space['spaceport'] = { count: 2, on: 2, support: 7, s_max: 7 };
+        global.space['spaceport'] = { count: 2, on: 2, support: 8, s_max: 10 };
         global.space['red_tower'] = { count: 1, on: 1 };
-        global.space['living_quarters'] = { count: 3, on: 3 };
+        global.space['living_quarters'] = { count: 4, on: 4 };
         global.space['vr_center'] = { count: 0, on: 0 };
         global.space['garage'] = { count: 1 };
         global.space['red_mine'] = { count: 1, on: 1 };

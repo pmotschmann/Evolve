@@ -2842,7 +2842,7 @@
   "space_red_mission_action": "%0 no ofrece muchos recursos raros, pero sus científicos lo consideran la mejor perspectiva para una colonia fuera del mundo",
   "space_red_spaceport_title": "Puerto espacial",
   "space_red_spaceport_desc": "Construir un puerto espacial",
-  "space_red_spaceport_effect1": "Soporte %0 +3.",
+  "space_red_spaceport_effect1": "Soporte %0 %1.",
   "space_red_spaceport_effect2": "-%0 helio-3/s, -%1MW.",
   "space_red_spaceport_effect3": "-25 %0/s",
   "space_red_tower_title": "Control de espacio",

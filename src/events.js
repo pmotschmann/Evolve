@@ -104,7 +104,7 @@ export const events = {
             notech: 'world_control'
         },
         condition(){
-            return global.civic.foreign.gov0.hstl > 60 || global.civic.foreign.gov1.hstl > 60 || global.civic.foreign.gov2.hstl > 60 ? true : false;
+            return !global.race['cataclysm'] && (global.civic.foreign.gov0.hstl > 60 || global.civic.foreign.gov1.hstl > 60 || global.civic.foreign.gov2.hstl > 60) ? true : false;
         },
         effect: function(){
             let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;

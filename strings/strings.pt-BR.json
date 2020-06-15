@@ -3320,7 +3320,7 @@
   "space_red_mission_action": "%0 não oferece muito recursos raros, mas os seus cientistas consideram isso ser a melhor perspectiva para uma colônia de outro mundo.",
   "space_red_spaceport_title": "Espaçoporto",
   "space_red_spaceport_desc": "Constrói um Espaçoporto",
-  "space_red_spaceport_effect1": "+3 Suporte a %0",
+  "space_red_spaceport_effect1": "+%1 Suporte a %0",
   "space_red_spaceport_effect2": "-%0 Hélio-3/s, -%1MW",
   "space_red_spaceport_effect3": "-25 %0/s",
   "space_red_tower_title": "Controle Espacial",

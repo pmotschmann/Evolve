@@ -2408,7 +2408,7 @@
     "space_hell_geothermal_title": "地热发电厂",
     "tech_casino_effect": "赌场不仅为你的民众提供娱乐，而且为你提供新的收入来源。",
     "arpa_genepool_genetic_repository_title": "基因库",
-    "space_red_spaceport_effect1": "+3 %0 支持",
+    "space_red_spaceport_effect1": "+%1 %0 支持",
     "achieve_extinct_shroomi_desc": "导致了蘑菇人文明的毁灭",
     "achieve_marble_name": "阿奎尔星系",
     "achieve_extinct_junker_name": "安乐死",

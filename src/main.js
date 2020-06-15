@@ -1368,7 +1368,7 @@ function fastLoop(){
                 }
             }
             global.space.spaceport.s_max = p_on['spaceport'] * actions.space.spc_red.spaceport.support();
-            global.space.spaceport.s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? p_on['red_tower'] : 0;
+            global.space.spaceport.s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? (global.race['cataclysm'] ? p_on['red_tower'] * 2 : p_on['red_tower']) : 0;
             global.space.spaceport.s_max += global.tech['luna'] && global.tech['luna'] >= 3 ? p_on['nav_beacon'] : 0;
         }
 
@@ -5156,6 +5156,13 @@ function midLoop(){
             caps['Knowledge'] += know;
             bd_Knowledge[loc('galaxy_symposium')] = know +'v';
         }
+
+        if (global.race['cataclysm'] && p_on['spaceport']){
+            let vault = p_on['spaceport'] * spatialReasoning(bank_vault() * 4);
+            caps['Money'] += vault;
+            bd_Money[loc('space_red_spaceport_title')] = vault+'v';
+        }
+
         if (global.city['bank']){
             let vault = bank_vault();
             let gain = (global.city['bank'].count * spatialReasoning(vault));
