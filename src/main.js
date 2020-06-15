@@ -3367,10 +3367,8 @@ function fastLoop(){
             modRes('Stone', delta * time_multiplier);
 
             // Aluminium
-            let alumina_bd = {};
-            let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
             if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm']){
-                let base = stone_base * rock_quarry * power_mult * 0.08;
+                let base = stone_base * rock_quarry * power_mult * (global.race['cataclysm'] ? 0.16 : 0.08);
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
                 }

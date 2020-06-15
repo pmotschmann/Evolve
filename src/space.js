@@ -240,7 +240,8 @@ const spaceProjects = {
                 }
                 iridium = +(iridium * zigguratBonus()).toFixed(3);
                 let cat_coal = global.race['cataclysm'] ? `<div>${loc('produce',[+(0.55 * zigguratBonus()).toFixed(2),global.resource.Coal.name])}</div>` : ``;
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>${cat_coal}`;
+                let cat_uran = global.race['cataclysm'] ? `<div>${loc('produce',[+(0.011 * zigguratBonus()).toFixed(3),global.resource.Uranium.name])}</div>` : ``;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>${cat_coal}${cat_uran}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -617,7 +618,8 @@ const spaceProjects = {
                 let copper = +(0.25 * zigguratBonus()).toFixed(3);
                 let titanium = +(0.02 * zigguratBonus()).toFixed(3);
                 let cat_stone = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(0.75 * zigguratBonus()).toFixed(2),global.resource.Stone.name])}</div>` : ``;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${cat_stone}`;
+                let cat_alum = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(0.12 * zigguratBonus()).toFixed(2),global.resource.Aluminium.name])}</div>` : ``;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${cat_stone}${cat_alum}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
