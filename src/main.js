@@ -5848,7 +5848,7 @@ function midLoop(){
                 }
 
                 if (struct.type === 'arpa'){
-                    let base_time = global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action);
+                    let base_time = timeCheck(t_action);
                     let remain = (100 - global.arpa[global.queue.queue[i].action].complete - 1) / 100;
                     let s_time = global.settings.qAny ? arpaSegmentTimeCheck(t_action) : arpaSegmentTimeCheck(t_action, remain, spent);
                     console.log(remain);
