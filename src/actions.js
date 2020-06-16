@@ -15464,6 +15464,9 @@ function cataclysm(){
         global.resource.Sheet_Metal.amount = 50000;
         global.resource.Mythril.amount = 8000;
 
+        global.resource.Iridium.crates = 5;
+        global.resource.Iridium.containers = 5;
+
         global.civic.taxes.display = true;
 
         global.civic.professor.display = true;
@@ -15489,7 +15492,7 @@ function cataclysm(){
         
         global.city['factory'] = { count: 0, on: 0, Lux: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
         global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0 };
-        global.city['smelter'] = { count: 0, cap: 0, Wood: 0, Coal: 0, Oil: 0, Iron: 0, Steel: 0 };
+        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Iron: 1, Steel: 1 };
         global.city['fission_power'] = { count: 0, on: 0 };
         global.city['oil_power'] = { count: 0, on: 0 };
         global.city['coal_power'] = { count: 0, on: 0 };
@@ -15537,7 +15540,7 @@ function cataclysm(){
         global.space['red_mine'] = { count: 1, on: 1 };
         global.space['fabrication'] = { count: 1, on: 1 };
         global.space['red_factory'] = { count: 1, on: 1 };
-        global.space['exotic_lab'] = { count: 0, on: 0 };
+        global.space['exotic_lab'] = { count: 1, on: 1 };
         global.space['ziggurat'] = { count: 0 };
         global.space['space_barracks'] = { count: 1, on: 1 };
         global.space['biodome'] = { count: 2, on: 2 };
@@ -15563,10 +15566,10 @@ function cataclysm(){
             disabled: false,
             progress: 0,
             tactic: 0,
-            workers: 0,
+            workers: 2,
             wounded: 0,
             raid: 0,
-            max: 0
+            max: 2
         };
 
         drawCity();

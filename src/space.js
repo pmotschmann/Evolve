@@ -728,7 +728,7 @@ const spaceProjects = {
             effect(){
                 let food = +(0.25 * zigguratBonus()).toFixed(2);
                 let cat_fd = global.race['cataclysm'] ? `<div>${loc('produce',[+(2 * zigguratBonus()).toFixed(2),global.resource.Food.name])}</div>` : ``;
-                let cat_wd = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(1 * zigguratBonus()).toFixed(2),global.resource.Lumber.name])}</div>` : ``;
+                let cat_wd = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(1.5 * zigguratBonus()).toFixed(2),global.resource.Lumber.name])}</div>` : ``;
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[pop])}</div>${cat_wd}`;
             },

@@ -3213,7 +3213,7 @@ function fastLoop(){
             if (global.race['cataclysm']){
                 if (global.tech['mars'] && red_on['biodome']){
                     let lumber_bd = {};
-                    let lumber = red_on['biodome'] * global.civic.colonist.workers * zigguratBonus();
+                    let lumber = red_on['biodome'] * 1.5 * global.civic.colonist.workers * zigguratBonus();
 
                     lumber_bd[loc('space_red_biodome_title')] = lumber  + 'v';
                     lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -5848,9 +5848,11 @@ function midLoop(){
                 }
 
                 if (struct.type === 'arpa'){
-                    let base_time = global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                    let base_time = global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action);
                     let remain = (100 - global.arpa[global.queue.queue[i].action].complete - 1) / 100;
-                    let s_time = arpaSegmentTimeCheck(t_action);
+                    let s_time = global.settings.qAny ? arpaSegmentTimeCheck(t_action) : arpaSegmentTimeCheck(t_action, remain, spent);
+                    console.log(remain);
+                    console.log(s_time);
                     time += base_time * remain + s_time;
                     global.queue.queue[i]['time'] = time;
                     if (global.queue.queue[i].q > 1){
