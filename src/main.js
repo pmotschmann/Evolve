@@ -3211,7 +3211,7 @@ function fastLoop(){
         // Lumber
         { //block scope
             if (global.race['cataclysm']){
-                if (global.tech['mars'] && red_on['biodome']){
+                if (global.tech['mars'] && red_on['biodome'] && !global.race['kindling_kindred']){
                     let lumber_bd = {};
                     let lumber = red_on['biodome'] * 1.5 * global.civic.colonist.workers * zigguratBonus();
 
@@ -5243,6 +5243,9 @@ function midLoop(){
             }
             if (global.tech.mass >= 2){
                 sci += p_on['mass_driver'] * global.civic.scientist.workers;
+            }
+            if (global.race['cataclysm'] && moon_on['observatory']){
+                sci *= 1 + (moon_on['observatory'] * 0.25)
             }
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;

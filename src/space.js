@@ -311,7 +311,8 @@ const spaceProjects = {
                 if (global.race['cataclysm'] && global.space['satellite'] && global.space.satellite.count > 0){
                     gain *= 1 + (global.space.satellite.count * 0.25);
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div>${prof}<div>${loc('plus_max_resource',[gain,loc('resource_Knowledge_name')])}</div><div>${loc('space_moon_observatory_effect',[5])}</div>`;
+                let synergy = global.race['cataclysm'] ? `<div>${loc('space_moon_observatory_cata_effect',[25])}</div>` : `<div>${loc('space_moon_observatory_effect',[5])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div>${prof}<div>${loc('plus_max_resource',[gain,loc('resource_Knowledge_name')])}</div>${synergy}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -728,7 +729,7 @@ const spaceProjects = {
             effect(){
                 let food = +(0.25 * zigguratBonus()).toFixed(2);
                 let cat_fd = global.race['cataclysm'] ? `<div>${loc('produce',[+(2 * zigguratBonus()).toFixed(2),global.resource.Food.name])}</div>` : ``;
-                let cat_wd = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(1.5 * zigguratBonus()).toFixed(2),global.resource.Lumber.name])}</div>` : ``;
+                let cat_wd = global.race['cataclysm'] && !global.race['kindling_kindred'] ? `<div>${loc('space_red_mine_effect',[+(1.5 * zigguratBonus()).toFixed(2),global.resource.Lumber.name])}</div>` : ``;
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[pop])}</div>${cat_wd}`;
             },
@@ -785,6 +786,7 @@ const spaceProjects = {
                 let scientist = '';
                 if (global.race['cataclysm']){
                     scientist = `<div>${loc('city_wardenclyffe_effect1')}</div>`;
+                    sci *= 1.25;
                 }
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${scientist}<div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
