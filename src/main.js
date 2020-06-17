@@ -4493,7 +4493,7 @@ function midLoop(){
         }
         if (global.space['garage']){
             let g_vol = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
-            if (global.tech['world_control']){
+            if (global.tech['world_control'] || global.race['cataclysm']){
                 g_vol += 10;
             }
             caps['Containers'] += (global.space['garage'].count * g_vol);
@@ -4840,7 +4840,7 @@ function midLoop(){
         }
         if (global.space['garage']){
             let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
-            multiplier *= global.tech['world_control'] ? 2 : 1;
+            multiplier *= global.tech['world_control'] || global.race['cataclysm'] ? 2 : 1;
             multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
 
             let gain = (global.space.garage.count * (spatialReasoning(6500 * multiplier)));
@@ -5245,7 +5245,7 @@ function midLoop(){
                 sci += p_on['mass_driver'] * global.civic.scientist.workers;
             }
             if (global.race['cataclysm'] && moon_on['observatory']){
-                sci *= 1 + (moon_on['observatory'] * 0.25)
+                sci *= 1 + (moon_on['observatory'] * 0.25);
             }
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;

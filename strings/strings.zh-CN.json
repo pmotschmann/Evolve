@@ -2691,7 +2691,7 @@
     "resource_modal_container_assign_desc": "将集装箱分配给该资源 (+%0 上限)",
     "feat_heavy_genus_plant_desc": "引领一个高重力植物文明走向伟大",
     "resource_Graphene_name": "石墨烯",
-    "space_red_fabrication_effect2": "+2%制作的材料每个殖民者",
+    "space_red_fabrication_effect2": "+%0%制作的材料每个殖民者",
     "evo_spores_desc": "进化孢子",
     "q_any": "无序队列",
     "evo_animalism_desc": "进化兽性",

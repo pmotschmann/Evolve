@@ -149,7 +149,7 @@ export function craftingRatio(res,auto){
         }
     }
     if (global.space['fabrication']){
-        multiplier += red_on['fabrication'] * global.civic.colonist.workers * 0.02;
+        multiplier += red_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02);
     }
     if (res === 'Mythril' && p_on['stellar_forge']){
         multiplier += p_on['stellar_forge'] * 0.05;

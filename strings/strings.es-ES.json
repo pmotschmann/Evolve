@@ -2863,7 +2863,7 @@
   "space_red_fabrication_title": "Fabricación",
   "space_red_fabrication_desc": "Planta de fabricación",
   "space_red_fabrication_effect1": "+1 Artesano.",
-  "space_red_fabrication_effect2": "+2% Materiales creados por colono.",
+  "space_red_fabrication_effect2": "+%0% Materiales creados por colono.",
   "space_red_factory_title": "Fábrica",
   "space_red_factory_desc": "Produce productos manufacturados",
   "space_red_factory_effect1": "Las fábricas se pueden usar para producir cualquier cantidad de productos manufacturados. Utiliza 3MW por fábrica.",

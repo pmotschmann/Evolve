@@ -3316,7 +3316,7 @@
   "space_red_fabrication_title": "Fabrication",
   "space_red_fabrication_desc": "Fabrication Plant",
   "space_red_fabrication_effect1": "+1 Craftsman",
-  "space_red_fabrication_effect2": "+2% Crafted Materials per colonist",
+  "space_red_fabrication_effect2": "+%0% Crafted Materials per colonist",
   "space_red_factory_title": "Factory",
   "space_red_factory_desc": "Produces manufactured goods",
   "space_red_factory_effect1": "Factories can be used to produce any number of manufactured goods.",

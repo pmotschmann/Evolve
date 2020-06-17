@@ -1,4 +1,4 @@
-import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
+import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat } from './achieve.js';
 import { races, traits, genus_traits } from './races.js';
@@ -529,8 +529,8 @@ const spaceProjects = {
             effect(){
                 let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
                 let containers = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
-                if (global.tech['world_control']){
-                    multiplier *= global.tech['world_control'] ? 2 : 1;
+                if (global.tech['world_control'] || global.race['cataclysm']){
+                    multiplier *= 2;
                     containers += 10;
                 }
                 multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
@@ -650,7 +650,8 @@ const spaceProjects = {
             },
             effect(){
                 let c_worker = global.race['cataclysm'] ? `<div>${loc('city_cement_plant_effect1',[1])}</div>` : ``;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1')}</div>${c_worker}<div>${loc('space_red_fabrication_effect2')}</div>`;
+                let fab = global.race['cataclysm'] ? 5 : 2;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1')}</div>${c_worker}<div>${loc('space_red_fabrication_effect2',[fab])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -786,7 +787,7 @@ const spaceProjects = {
                 let scientist = '';
                 if (global.race['cataclysm']){
                     scientist = `<div>${loc('city_wardenclyffe_effect1')}</div>`;
-                    sci *= 1.25;
+                    sci *= 1 + (moon_on['observatory'] * 0.25);
                 }
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${scientist}<div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
