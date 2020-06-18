@@ -1,4 +1,4 @@
-import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { global, poppers, keyMultiplier, sizeApproximation, srSpeak, p_on, red_on } from './vars.js';
 import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, dragQueue } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
@@ -1044,8 +1044,11 @@ function genetics(){
             },
             filters: {
                 timer(val){
-                    if (global.city.biolab.on > 0){
-                        let labs = global.city.ptrait === 'toxic' ? global.city.biolab.on + 1 : global.city.biolab.on;
+                    let labs = global.race['cataclysm'] ? red_on['exotic_lab'] : p_on['biolab'];
+                    if (labs > 0){
+                        if (global.city.ptrait === 'toxic'){
+                            labs++;
+                        }
                         if (global.arpa.sequence.boost){
                             return timeFormat(val / (labs * 2));
                         }
