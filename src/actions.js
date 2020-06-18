@@ -10501,7 +10501,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: 'Outer space treaty be damned.'
+            flair: loc('tech_space_marines_flair')
         },
         hammocks: {
             id: 'tech-hammocks',
