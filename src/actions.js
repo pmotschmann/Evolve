@@ -5186,7 +5186,7 @@ export const actions = {
             title: loc('tech_adv_mulching'),
             desc: loc('tech_adv_mulching'),
             category: 'compost',
-            era: 'civilized',
+            era: 'discovery',
             reqs: { compost: 3, high_tech: 2 },
             trait: ['detritivore'],
             grant: ['compost',4],
@@ -10493,7 +10493,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 210000; }
             },
-            effect(){ return `<div>${loc('tech_space_marines_effect1')}</div><div>${loc('tech_space_marines_effect2',[races[global.race.species].solar.red])}</div>` },
+            effect(){ return `<div>${loc('tech_space_marines_effect',[races[global.race.species].solar.red])}</div>` },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.space['space_barracks'] = { count: 0, on: 0 };
