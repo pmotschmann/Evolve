@@ -1139,7 +1139,7 @@ export function checkAchievements(){
         }
     }
 
-    if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
+    if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 800000000){
         unlockAchieve('scrooge');
     }
 
@@ -1223,7 +1223,7 @@ export function checkAchievements(){
         }
     }
 
-    if (global.stats.dkills >= 1000000000){
+    if (global.stats.dkills >= 500000000){
         unlockFeat('demon_slayer');
     }
 

@@ -581,7 +581,7 @@ export const traits = {
         val: -4,
         vars: [12]
     },
-    fragrant: { // 
+    fragrant: { // Reduced Hunting effectiveness
         name: loc('trait_fragrant_name'),
         desc: loc('trait_fragrant'),
         type: 'major',
