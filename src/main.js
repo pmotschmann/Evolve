@@ -6388,33 +6388,35 @@ function longLoop(){
             setWeather();
         }
 
-        let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
-        if (global.race.deterioration === 0 && deterioration < 40000000){
-            global.race.deterioration = 1;
-            let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-            messageQueue(loc('deterioration1',[races[global.race.species].name,death_clock]),'danger');
-        }
-        else if (global.race.deterioration === 1 && deterioration < 20000000){
-            global.race.deterioration = 2;
-            let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-            messageQueue(loc('deterioration2',[races[global.race.species].name,death_clock]),'danger');
-        }
-        else if (global.race.deterioration === 2 && deterioration < 5000000){
-            global.race.deterioration = 3;
-            let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-            messageQueue(loc('deterioration3',[races[global.race.species].name,death_clock]),'danger');
-        }
-        else if (global.race.deterioration === 3 && deterioration < 1000000){
-            global.race.deterioration = 4;
-            let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-            messageQueue(loc('deterioration4',[races[global.race.species].name,death_clock]),'danger');
-        }
-        else if (global.race.deterioration === 4 && deterioration <= 0){
-            global.race.deterioration = 5;
-            global.race['decayed'] = global.stats.days;
-            global.tech['decay'] = 1;
-            messageQueue(loc('deterioration5',[races[global.race.species].name]),'danger');
-            drawTech();
+        if (!global.race['catacylsm']){
+            let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
+            if (global.race.deterioration === 0 && deterioration < 40000000){
+                global.race.deterioration = 1;
+                let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+                messageQueue(loc('deterioration1',[races[global.race.species].name,death_clock]),'danger');
+            }
+            else if (global.race.deterioration === 1 && deterioration < 20000000){
+                global.race.deterioration = 2;
+                let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+                messageQueue(loc('deterioration2',[races[global.race.species].name,death_clock]),'danger');
+            }
+            else if (global.race.deterioration === 2 && deterioration < 5000000){
+                global.race.deterioration = 3;
+                let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+                messageQueue(loc('deterioration3',[races[global.race.species].name,death_clock]),'danger');
+            }
+            else if (global.race.deterioration === 3 && deterioration < 1000000){
+                global.race.deterioration = 4;
+                let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+                messageQueue(loc('deterioration4',[races[global.race.species].name,death_clock]),'danger');
+            }
+            else if (global.race.deterioration === 4 && deterioration <= 0){
+                global.race.deterioration = 5;
+                global.race['decayed'] = global.stats.days;
+                global.tech['decay'] = 1;
+                messageQueue(loc('deterioration5',[races[global.race.species].name]),'danger');
+                drawTech();
+            }
         }
 
         if (global.tech['decay'] && global.tech['decay'] >= 2){

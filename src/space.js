@@ -850,6 +850,9 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('ziggurat');
+                    if (global.race['cataclysm']){
+                        unlockAchieve('iron_will',false,1);
+                    }
                     return true;
                 }
                 return false;

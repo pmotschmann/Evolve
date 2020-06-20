@@ -8519,6 +8519,9 @@ export const actions = {
             effect: loc('tech_lasers_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.race['cataclysm']){
+                        unlockAchieve('iron_will',false,3);
+                    }
                     return true;
                 }
                 return false;
@@ -11943,6 +11946,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.space['elerium_ship'] = { count: 0, on: 0 };
+                    if (global.race['cataclysm']){
+                        unlockAchieve('iron_will',false,2);
+                    }
                     return true;
                 }
                 return false;
@@ -12147,7 +12153,7 @@ export const actions = {
             desc: loc('tech_star_dock'),
             category: 'special',
             era: 'deep_space',
-            reqs: { genesis: 2, space: 5 },
+            reqs: { genesis: 2, space: 5, high_tech: 10 },
             grant: ['genesis',3],
             cost: {
                 Knowledge(){ return 380000; },
@@ -12188,8 +12194,8 @@ export const actions = {
         },
         genesis_ship: {
             id: 'tech-genesis_ship',
-            title: loc('tech_genesis_ship'),
-            desc: loc('tech_genesis_ship'),
+            title(){ return global.race['cataclysm'] ? loc('tech_generational_ship') : loc('tech_genesis_ship'); },
+            desc(){ return global.race['cataclysm'] ? loc('tech_generational_ship') : loc('tech_genesis_ship'); },
             category: 'special',
             era: 'deep_space',
             reqs: { genesis: 4 },
@@ -12197,10 +12203,13 @@ export const actions = {
             cost: {
                 Knowledge(){ return 425000; },
             },
-            effect: loc('tech_genesis_ship_effect'),
+            effect(){ return global.race['cataclysm'] ? loc('tech_generational_effect') : loc('tech_genesis_ship_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.starDock['seeder'] = { count: 0 };
+                    if (global.race['cataclysm']){
+                        unlockAchieve('iron_will',false,4);
+                    }
                     return true;
                 }
                 return false;
@@ -15367,6 +15376,7 @@ function cataclysm(){
         global.tech['asteroid'] = 3;
         global.tech['satellite'] = 1;
         global.tech['space_explore'] = 4;
+        global.tech['genesis'] = 2;
 
         global.settings.showSpace = true;
         global.settings.space.home = true;
@@ -15765,6 +15775,10 @@ function bioseed(){
     }
     if (typeof global.tech['world_control'] === 'undefined'){
         unlockAchieve(`cult_of_personality`);
+    }
+
+    if (global.race['cataclysm']){
+        unlockAchieve('iron_will',false,5);
     }
 
     let good_rocks = 0;

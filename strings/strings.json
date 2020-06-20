@@ -1563,6 +1563,8 @@
   "tech_interstellar_effect": "Scouting outside the solar system will require much more advanced probe designs than what is currently employed.",
   "tech_genesis_ship": "Genesis Ship",
   "tech_genesis_ship_effect": "Design the genesis ship which will be used to bioseed a faraway planet.",
+  "tech_generational_ship": "Generational Ship",
+  "tech_generational_effect": "Design a generational ship which will be used to transport your species to a new home in a faraway star system.",
   "tech_genetic_decay": "Gene Therapy",
   "tech_genetic_decay_effect": "Research the genetic decay problem and try to find a solution.",
   "tech_tachyon": "Tachyon Particles",
