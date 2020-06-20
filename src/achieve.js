@@ -1223,7 +1223,7 @@ export function checkAchievements(){
         }
     }
 
-    if (global.stats.dkills >= 500000000){
+    if (global.stats.dkills >= 666000000){
         unlockFeat('demon_slayer');
     }
 
