@@ -31,17 +31,17 @@ export const arpaProjects = {
         reqs: { high_tech: 6 },
         grant: 'supercollider',
         effect(){
-            let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? 8 : 4;
+            let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? (global.race['cataclysm'] ? 20 : 8) : (global.race['cataclysm'] ? 10 : 4);
             if (global.tech['storage'] >= 6){
                 if (global.tech['particles'] && global.tech['particles'] >= 4){
-                    return loc('arpa_projects_lhc_effect3',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
+                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
                 }
                 else {
-                    return loc('arpa_projects_lhc_effect2',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
+                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm2',[sc]) : loc('arpa_projects_lhc_effect2',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
                 }
             }
             else {
-                return loc('arpa_projects_lhc_effect1',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
+                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : loc('arpa_projects_lhc_effect1',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
             }
         },
         cost: {
@@ -61,7 +61,12 @@ export const arpaProjects = {
         grant: 'stock_exchange',
         effect(){
             if (global.tech['banking'] >= 10){
-                return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_effect3') : loc('arpa_projects_stock_exchange_effect2');
+                if (global.race['cataclysm']){
+                    return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_cataclysm2') : loc('arpa_projects_stock_exchange_cataclysm1');
+                }
+                else {
+                    return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_effect3') : loc('arpa_projects_stock_exchange_effect2');
+                }                
             }
             else {
                 return loc('arpa_projects_stock_exchange_effect1');
@@ -129,8 +134,14 @@ export const arpaProjects = {
         reqs: { high_tech: 6, trade: 3 },
         grant: 'railway',
         effect(){
-            let routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
-            return loc('arpa_projects_railway_effect1',[routes,2,6,1]);
+            if (global.race['cataclysm']){
+                let routes = global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
+                return loc('arpa_projects_railway_cataclysm1',[routes,2,3,1]);
+            }
+            else {
+                let routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
+                return loc('arpa_projects_railway_effect1',[routes,2,6,1]);
+            }
         },
         cost: {
             Money(offset){ return costMultiplier('railway', offset, 2500000, 1.08); },

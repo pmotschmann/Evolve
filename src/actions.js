@@ -4183,72 +4183,7 @@ export const actions = {
                 Cement(offset){ return costMultiplier('temple', offset, 10, 1.36); }
             },
             effect(){
-                let desc;
-                if (global.race.universe === 'antimatter'){
-                    let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.8 : 0.5;
-                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                        faith += global.civic.professor.workers * 0.02;
-                    }
-                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
-                        faith += priest_bonus * global.civic.priest.workers;
-                    }
-                    if (global.race['spiritual']){
-                        faith *= 1 + (traits.spiritual.vars[0] / 100);
-                    }
-                    if (global.civic.govern.type === 'theocracy'){
-                        faith *= 1.12;
-                    }
-                    faith = +(faith).toFixed(3);
-                    let temple = 6;
-                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                        let priest = global.genes['ancients'] >= 4 ? 0.12 : 0.08;
-                        temple += priest * global.civic.priest.workers;
-                    }
-                    desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[temple])}</div>`;
-                }
-                else if (global.race['no_plasmid']){
-                    let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
-                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                        faith += +(global.civic.professor.workers * 0.04).toFixed(2);
-                    }
-                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
-                        faith += priest_bonus * global.civic.priest.workers;
-                    }
-                    if (global.race['spiritual']){
-                        faith *= 1 + (traits.spiritual.vars[0] / 100);
-                    }
-                    if (global.civic.govern.type === 'theocracy'){
-                        faith *= 1.12;
-                    }
-                    faith = +(faith).toFixed(3);
-                    desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
-                }
-                else {
-                    let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
-                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                        plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
-                    }
-                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                        let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
-                        plasmid += priest_bonus * global.civic.priest.workers;
-                    }
-                    if (global.race['spiritual']){
-                        plasmid *= 1 + (traits.spiritual.vars[0] / 100);
-                    }
-                    if (global.civic.govern.type === 'theocracy'){
-                        plasmid *= 1.12;
-                    }
-                    plasmid = +(plasmid).toFixed(3);
-                    desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
-                }
-                if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-                    desc = desc + `<div>${loc('city_temple_effect3')}</div>`;
-                }
-                if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
-                    desc = desc + `<div>${loc('city_temple_effect4')}</div>`;
-                }
+                let desc = templeEffect();
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){
                     global.civic.priest.display = true;
                     desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
@@ -7816,6 +7751,7 @@ export const actions = {
             category: 'banking',
             era: 'early_space',
             reqs: { monuments: 2 },
+            not_trait: ['cataclysm'],
             grant: ['monument',2],
             cost: {
                 Knowledge(){ return 150000; }
@@ -13654,6 +13590,76 @@ export const actions = {
     },
     portal: fortressTech()
 };
+
+export function templeEffect(){
+    let desc;
+    if (global.race.universe === 'antimatter'){
+        let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.8 : 0.5;
+        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+            faith += global.civic.professor.workers * 0.02;
+        }
+        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            faith += priest_bonus * global.civic.priest.workers;
+        }
+        if (global.race['spiritual']){
+            faith *= 1 + (traits.spiritual.vars[0] / 100);
+        }
+        if (global.civic.govern.type === 'theocracy'){
+            faith *= 1.12;
+        }
+        faith = +(faith).toFixed(3);
+        let temple = 6;
+        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            let priest = global.genes['ancients'] >= 4 ? 0.12 : 0.08;
+            temple += priest * global.civic.priest.workers;
+        }
+        desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[temple])}</div>`;
+    }
+    else if (global.race['no_plasmid']){
+        let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
+        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+            faith += +(global.civic.professor.workers * 0.04).toFixed(2);
+        }
+        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            faith += priest_bonus * global.civic.priest.workers;
+        }
+        if (global.race['spiritual']){
+            faith *= 1 + (traits.spiritual.vars[0] / 100);
+        }
+        if (global.civic.govern.type === 'theocracy'){
+            faith *= 1.12;
+        }
+        faith = +(faith).toFixed(3);
+        desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
+    }
+    else {
+        let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
+        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+            plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
+        }
+        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            plasmid += priest_bonus * global.civic.priest.workers;
+        }
+        if (global.race['spiritual']){
+            plasmid *= 1 + (traits.spiritual.vars[0] / 100);
+        }
+        if (global.civic.govern.type === 'theocracy'){
+            plasmid *= 1.12;
+        }
+        plasmid = +(plasmid).toFixed(3);
+        desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
+    }
+    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
+        desc = desc + `<div>${loc('city_temple_effect3')}</div>`;
+    }
+    if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
+        desc = desc + `<div>${loc('city_temple_effect4')}</div>`;
+    }    
+    return desc;
+}
 
 function evolveCosts(molecule,base,mult){
     if (global.evolution.hasOwnProperty(molecule)){

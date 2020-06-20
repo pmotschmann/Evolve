@@ -5,7 +5,7 @@ import { races, traits, genus_traits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc } from './actions.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect } from './actions.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -50,6 +50,10 @@ const spaceProjects = {
             },
             effect(){
                 let knowledge = global.race['cataclysm'] ? 2000 : 750;
+                if (global.race['cataclysm'] && global.tech['supercollider']){
+                    let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 5 : 10;
+                    knowledge *= (global.tech['supercollider'] / ratio) + 1;
+                }
                 let synergy = global.race['cataclysm'] ? `<div>${loc('space_home_satellite_effect2',[loc('space_moon_observatory_title'),25])}</div>` : `<div>${loc('space_home_satellite_effect2',[global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe'), 4])}</div>`;
                 return `<div>${loc('plus_max_resource',[knowledge,loc('resource_Knowledge_name')])}</div>${synergy}<div>${loc('space_home_satellite_effect3')}</div>`
             },
@@ -833,8 +837,12 @@ const spaceProjects = {
                 let desc = `<div>${loc('space_red_ziggurat_effect',[bonus])}</div>`;
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
                     desc = desc + `<div>${loc('interstellar_laboratory_effect',[3])}</div>`;
+                }                
+                if (global.race['cataclysm']){
+                    desc = desc + templeEffect();
                 }
                 if (global.genes['ancients'] && global.genes['ancients'] >= 3){
+                    global.civic.priest.display = true;
                     desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
                 }
                 return desc;
