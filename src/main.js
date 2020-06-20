@@ -1218,6 +1218,7 @@ function fastLoop(){
             if (global.tech.swarm >= 4){
                 solar += 0.15 * (global.tech.swarm - 3);
             }
+            if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){ solar += 0.15; }
             solar = +(solar).toFixed(2);
             let output = powerModifier(active * solar);
             max_power -= output;
@@ -2519,6 +2520,9 @@ function fastLoop(){
                 if (global.civic.govern.type === 'socialist'){
                     delta *= 0.8;
                 }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
+                    delta *= 1.1;
+                }
 
                 FactoryMoney = delta * hunger; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
 
@@ -2571,6 +2575,9 @@ function fastLoop(){
                     factory_output *= 1.3;
                 }
                 if (global.civic.govern.type === 'socialist'){
+                    factory_output *= 1.1;
+                }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
                     factory_output *= 1.1;
                 }
 
@@ -2639,6 +2646,9 @@ function fastLoop(){
                     factory_output *= 1.3;
                 }
                 if (global.civic.govern.type === 'socialist'){
+                    factory_output *= 1.1;
+                }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
                     factory_output *= 1.1;
                 }
 
@@ -2714,6 +2724,9 @@ function fastLoop(){
                 if (global.civic.govern.type === 'socialist'){
                     factory_output *= 1.1;
                 }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
+                    factory_output *= 1.1;
+                }
 
                 let delta = factory_output;
                 delta *= hunger * global_multiplier;
@@ -2776,6 +2789,9 @@ function fastLoop(){
                     factory_output *= 1.3;
                 }
                 if (global.civic.govern.type === 'socialist'){
+                    factory_output *= 1.1;
+                }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
                     factory_output *= 1.1;
                 }
 
@@ -3818,11 +3834,15 @@ function fastLoop(){
         let neutronium_bd = {};
         if (p_on['outpost']){
             let n_base = p_on['outpost'] * 0.025 * zigguratBonus();
+            neutronium_bd[loc('space_gas_moon_outpost_bd')] = n_base + 'v';
+
             if (global.tech['drone']){
-                n_base *= 1 + (global.space.drone.count * 0.06);
+                let rate = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 4 ? 0.12 : 0.06;
+                let drones = global.space.drone.count * rate;
+                n_base *= 1 + (drones);
+                neutronium_bd[`ᄂ${loc('tech_worker_drone')}`] = (drones * 100) + '%';
             }
             let delta = n_base * hunger * global_multiplier;
-            neutronium_bd[loc('space_gas_moon_outpost_bd')] = n_base + 'v';
 
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 delta *= 0.5;

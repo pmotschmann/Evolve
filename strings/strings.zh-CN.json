@@ -2414,7 +2414,7 @@
     "achieve_extinct_junker_name": "安乐死",
     "interstellar_far_reach_desc": "远端站",
     "tech_iron_axes_desc": "用铁做一把结实的斧子",
-    "space_gas_moon_drone_effect1": "矿山前哨产量提高6%",
+    "space_gas_moon_drone_effect1": "矿山前哨产量提高%0%",
     "event_rna": "流星撞击了地球，带来了新的遗传物质，获得了%0 RNA。",
     "achieve_illuminati_desc": "通过有影响力的支配夺取了世界的控制权",
     "tech_currency_effect": "开放货币，是社会发展的重要一步。还创造了税收，但不那么受公众欢迎。",

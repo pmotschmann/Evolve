@@ -243,6 +243,7 @@ const spaceProjects = {
                     iridium *= global.city.geology['Iridium'] + 1;
                 }
                 iridium = +(iridium * zigguratBonus()).toFixed(3);
+
                 let cat_coal = global.race['cataclysm'] ? `<div>${loc('produce',[+(0.55 * zigguratBonus()).toFixed(2),global.resource.Coal.name])}</div>` : ``;
                 let cat_uran = global.race['cataclysm'] ? `<div>${loc('produce',[+(0.011 * zigguratBonus()).toFixed(3),global.resource.Uranium.name])}</div>` : ``;
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>${cat_coal}${cat_uran}`;
@@ -391,7 +392,11 @@ const spaceProjects = {
                 }
                 return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red,$(this)[0].support()])}</div>${bank}<div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
             },
-            support(){ return global.race['cataclysm'] ? 4 : 3; },
+            support(){
+                let support = global.race['cataclysm'] ? 4 : 3;
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 5){ support++; }
+                return support;
+            },
             powered(){ return powerCostMod(5); },
             refresh: true,
             action(){
@@ -946,6 +951,7 @@ const spaceProjects = {
                 if (global.race['forge']){
                     power -= traits.forge.vars[0];
                 }
+                if (global.stats.achieve['failed_history'] && global.stats.achieve.failed_history.l >= 5){ power--; }
                 return powerModifier(power);
             },
             action(){
@@ -1071,6 +1077,7 @@ const spaceProjects = {
                 if (global.tech.swarm >= 4){
                     solar += 0.15 * (global.tech.swarm - 3);
                 }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){ solar += 0.15; }
                 solar = +(solar).toFixed(2);
                 return `<span>${loc('space_dwarf_reactor_effect1',[powerModifier(solar)])}</span>, <span class="has-text-caution">${loc('space_sun_swarm_satellite_effect1',[1])}</span>`;
             },
@@ -1295,7 +1302,8 @@ const spaceProjects = {
                 Nano_Tube(offset){ return spaceCostMultiplier('drone', offset, 45000, 1.3); }
             },
             effect(){
-                return `<div>${loc('space_gas_moon_drone_effect1')}</div>`;
+                let value = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 4 ? 12 : 6;
+                return `<div>${loc('space_gas_moon_drone_effect1',[value])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

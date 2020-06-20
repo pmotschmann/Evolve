@@ -3470,7 +3470,7 @@
   "space_gas_moon_outpost_bd": "Posto Avançado",
   "space_gas_moon_drone_title": "Drone de Mineração",
   "space_gas_moon_drone_desc": "Drone de Mineração de Neutrônio",
-  "space_gas_moon_drone_effect1": "Aumentar a produção de postos avançados de mineração em 6%",
+  "space_gas_moon_drone_effect1": "Aumentar a produção de postos avançados de mineração em %0%",
   "space_gas_moon_oil_extractor_title": "Extrator de Petróleo",
   "space_gas_moon_oil_extractor_effect1": "+%0 Petróleo/s",
   "space_belt_info_name": "Cinturão de Asteróides",

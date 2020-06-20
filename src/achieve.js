@@ -1606,6 +1606,28 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe5",[global.stats.achieve.technophobe.l])}</span></div>`);
     }
 
+    if (global.stats.achieve['iron_will'] && global.stats.achieve['iron_will'].l >= 1){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will1",['??'])}</span></div>`);
+        if (global.stats.achieve.iron_will.l >= 2){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will2",[0.15])}</span></div>`);
+        }
+        if (global.stats.achieve.iron_will.l >= 3){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will3",[10])}</span></div>`);
+        }
+        if (global.stats.achieve.iron_will.l >= 4){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will4",[6])}</span></div>`);
+        }
+        if (global.stats.achieve.iron_will.l >= 5){
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will5",[1])}</span></div>`);
+        }
+    }
+
+    if (global.stats.achieve['failed_history'] && global.stats.achieve['failed_history'].l >= 5){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("failed_history",[1])}</span></div>`);
+    }
+
     if (unlocked > 0){
         perks.prepend(`<div class="cstat"><span class="has-text-success">${loc("achieve_perks")}</span></div>`);
     }
