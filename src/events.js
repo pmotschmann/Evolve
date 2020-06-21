@@ -221,7 +221,7 @@ export const events = {
         effect: function(){
             global.tech['quaked'] = 1;
             drawTech();
-            return loc('event_quake',[races[global.race.species].home]);
+            return loc('event_quake',[global.race['cataclysm'] ? races[global.race.species].solar.red : races[global.race.species].home]);
         }
     },
     doom: {
