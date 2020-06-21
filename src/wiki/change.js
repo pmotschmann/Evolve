@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `0.9.0`,
-        date: `6/??/2020`,
+        date: `6/21/2020`,
         changes: [
             `Added Scenarios Section to Evolution Challenges.`,
             `Added Cataclysm Scenario for those whose value science over caution.`,

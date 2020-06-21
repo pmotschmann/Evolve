@@ -5220,10 +5220,10 @@ function midLoop(){
         }
         if (global.city['casino'] || global.space['spc_casino']){
             let casinos = 0;
-            if (global.city['casino'] || global.city.casino.count > 0){
+            if (global.city['casino'] && global.city.casino.count > 0){
                 casinos += global.city.casino.count;
             }
-            if (global.space['spc_casino'] || global.space.spc_casino.count > 0){
+            if (global.space['spc_casino'] && global.space.spc_casino.count > 0){
                 casinos += global.space.spc_casino.count;
             }
             let casino_capacity = global.tech['gambling'] >= 3 ? 60000 : 40000;
