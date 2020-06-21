@@ -322,7 +322,12 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
             challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
         }
         if (global.race['cataclysm']){
-            challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div>`;
+            if (calc_mastery() >= 50){
+                challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
+            }
+            else {
+                challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
+            }
         }
         popper.append($(`<div>${loc(global.race['cataclysm'] ? 'no_home' : 'home',[planet,race,planet_label,orbit])}</div>${challenges}`));
     }
