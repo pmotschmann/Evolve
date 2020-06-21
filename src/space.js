@@ -5,7 +5,7 @@ import { races, traits, genus_traits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect } from './actions.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect } from './actions.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -394,7 +394,7 @@ const spaceProjects = {
             },
             support(){
                 let support = global.race['cataclysm'] ? 4 : 3;
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 5){ support++; }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 4){ support++; }
                 return support;
             },
             powered(){ return powerCostMod(5); },
@@ -963,6 +963,43 @@ const spaceProjects = {
                 return false;
             }
         },
+        spc_casino: {
+            id: 'space-spc_casino',
+            title: loc('city_casino'),
+            desc: loc('city_casino'),
+            category: 'commercial',
+            reqs: { hell: 1, gambling: 1 },
+            condition(){
+                return global.race['cataclysm'] || (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 5) ? true : false;
+            },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('spc_casino', offset, 400000, 1.35); },
+                Furs(offset){ return spaceCostMultiplier('spc_casino', offset, 75000, 1.35); },
+                Cement(offset){ return spaceCostMultiplier('spc_casino', offset, 100000, 1.35); },
+                Plywood(offset){ return spaceCostMultiplier('spc_casino', offset, 20000, 1.35); }
+            },
+            effect(){
+                let desc = casinoEffect();
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.space.spc_casino.count++;
+                    if (!global.race['joyless']){
+                        global.civic.entertainer.max++;
+                        global.civic.entertainer.display = true;
+                    }
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.space.spc_casino.on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('city_casino_flair')
+        },
         swarm_plant: {
             id: 'space-swarm_plant',
             title: loc('space_hell_swarm_plant_title'),
@@ -1077,7 +1114,7 @@ const spaceProjects = {
                 if (global.tech.swarm >= 4){
                     solar += 0.15 * (global.tech.swarm - 3);
                 }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){ solar += 0.15; }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 1){ solar += 0.15; }
                 solar = +(solar).toFixed(2);
                 return `<span>${loc('space_dwarf_reactor_effect1',[powerModifier(solar)])}</span>, <span class="has-text-caution">${loc('space_sun_swarm_satellite_effect1',[1])}</span>`;
             },
@@ -1302,7 +1339,7 @@ const spaceProjects = {
                 Nano_Tube(offset){ return spaceCostMultiplier('drone', offset, 45000, 1.3); }
             },
             effect(){
-                let value = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 4 ? 12 : 6;
+                let value = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3 ? 12 : 6;
                 return `<div>${loc('space_gas_moon_drone_effect1',[value])}</div>`;
             },
             action(){

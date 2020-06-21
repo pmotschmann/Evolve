@@ -4101,50 +4101,19 @@ export const actions = {
         casino: {
             id: 'city-casino',
             title: loc('city_casino'),
-            desc: loc('city_casino_desc'),
+            desc: loc('city_casino'),
             category: 'commercial',
             reqs: { gambling: 1 },
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('casino', offset, 350000, 1.35); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('amphitheatre', offset, 2000, 1.35) : 0; },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('casino', offset, 2000, 1.35) : 0; },
                 Furs(offset){ return costMultiplier('casino', offset, 60000, 1.35); },
                 Plywood(offset){ return costMultiplier('casino', offset, 10000, 1.35); },
                 Brick(offset){ return costMultiplier('casino', offset, 6000, 1.35); }
             },
             effect(){
-                let money = spatialReasoning(global.tech['gambling'] >= 3 ? 60000 : 40000);
-                if (global.tech['gambling'] >= 5){
-                    money += global.tech['gambling'] >= 6 ? 240000 : 60000;
-                }
-                if (global.race['gambler']){
-                    money *= 1 + (global.race['gambler'] * 0.04);
-                }
-                if (global.tech['world_control']){
-                    money = money * 1.25;
-                }
-                if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
-                    money *= 1 + (global.tech['stock_exchange'] * 0.05);
-                }
-                money = Math.round(money);
-                money = '$'+money;
-                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
-                let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
-                let cash = Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
-                if (global.tech['gambling'] && global.tech['gambling'] >= 2){
-                    cash *= global.tech.gambling >= 5 ? 2 : 1.5;
-                }
-                if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
-                    cash *= 1 + (global.tech['stock_exchange'] * 0.01);
-                }
-                if (global.civic.govern.type === 'corpocracy'){
-                    cash *= 3;
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    cash *= 0.8;
-                }
-                cash = +(cash).toFixed(2);
-                desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
+                let desc = casinoEffect();
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -5806,7 +5775,6 @@ export const actions = {
             category: 'entertainment',
             era: 'globalized',
             reqs: { high_tech: 4, currency: 5 },
-            not_trait: ['cataclysm'],
             grant: ['gambling',1],
             cost: {
                 Knowledge(){ return 95000; }
@@ -5815,6 +5783,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['casino'] = { count: 0, on: 0 };
+                    global.space['spc_casino'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -13675,6 +13644,42 @@ export function templeEffect(){
     return desc;
 }
 
+export function casinoEffect(){
+    let money = spatialReasoning(global.tech['gambling'] >= 3 ? 60000 : 40000);
+    if (global.tech['gambling'] >= 5){
+        money += global.tech['gambling'] >= 6 ? 240000 : 60000;
+    }
+    if (global.race['gambler']){
+        money *= 1 + (global.race['gambler'] * 0.04);
+    }
+    if (global.tech['world_control']){
+        money = money * 1.25;
+    }
+    if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
+        money *= 1 + (global.tech['stock_exchange'] * 0.05);
+    }
+    money = Math.round(money);
+    money = '$'+money;
+    let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
+    let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
+    let cash = Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
+    if (global.tech['gambling'] && global.tech['gambling'] >= 2){
+        cash *= global.tech.gambling >= 5 ? 2 : 1.5;
+    }
+    if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
+        cash *= 1 + (global.tech['stock_exchange'] * 0.01);
+    }
+    if (global.civic.govern.type === 'corpocracy'){
+        cash *= 3;
+    }
+    if (global.civic.govern.type === 'socialist'){
+        cash *= 0.8;
+    }
+    cash = +(cash).toFixed(2);
+    desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
+    return desc;
+}
+
 function evolveCosts(molecule,base,mult){
     if (global.evolution.hasOwnProperty(molecule)){
         return global.evolution[molecule].count * mult + base;
@@ -15347,6 +15352,7 @@ function cataclysm(){
         global.tech['trade'] = 3;
         global.tech['wharf'] = 1;
         global.tech['banking'] = 6;
+        global.tech['gambling'] = 1;
         global.tech['home_safe'] = 1;
         global.tech['housing'] = 3;
         global.tech['smelting'] = 3;
@@ -15493,7 +15499,6 @@ function cataclysm(){
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
         global.civic.cement_worker.display = true;
-        global.civic.entertainer.display = true;
         global.civic.colonist.display = true;
         global.civic.space_miner.display = true;
         
@@ -15567,6 +15572,7 @@ function cataclysm(){
         global.space['biodome'] = { count: 2, on: 2 };
         global.space['laboratory'] = { count: 0, on: 0 };
         global.space['geothermal'] = { count: 2, on: 2 };
+        global.space['spc_casino'] = { count: 0, on: 0 };
         global.space['swarm_plant'] = { count: 0 };
         global.space['swarm_control'] = { count: 5, support: 40, s_max: 50 };
         global.space['swarm_satellite'] = { count: 40 };

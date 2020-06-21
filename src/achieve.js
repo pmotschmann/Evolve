@@ -1608,18 +1608,18 @@ export function drawPerks(){
 
     if (global.stats.achieve['iron_will'] && global.stats.achieve['iron_will'].l >= 1){
         unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will1",['??'])}</span></div>`);
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will1",[0.15])}</span></div>`);
         if (global.stats.achieve.iron_will.l >= 2){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will2",[0.15])}</span></div>`);
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will2",[10])}</span></div>`);
         }
         if (global.stats.achieve.iron_will.l >= 3){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will3",[10])}</span></div>`);
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will3",[6])}</span></div>`);
         }
         if (global.stats.achieve.iron_will.l >= 4){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will4",[6])}</span></div>`);
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will4",[1])}</span></div>`);
         }
         if (global.stats.achieve.iron_will.l >= 5){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will5",[1])}</span></div>`);
+            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will5")}</span></div>`);
         }
     }
 

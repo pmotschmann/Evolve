@@ -1218,7 +1218,7 @@ function fastLoop(){
             if (global.tech.swarm >= 4){
                 solar += 0.15 * (global.tech.swarm - 3);
             }
-            if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){ solar += 0.15; }
+            if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 1){ solar += 0.15; }
             solar = +(solar).toFixed(2);
             let output = powerModifier(active * solar);
             max_power -= output;
@@ -1249,7 +1249,7 @@ function fastLoop(){
             'prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver',
             'int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','int_blackhole:far_reach','prtl_badlands:sensor_drone',
             'prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold','gxy_gorddon:symposium',
-            'int_blackhole:mass_ejector','city:casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_pit:gun_emplacement','prtl_pit:soul_attractor','int_sirius:ascension_trigger'];
+            'int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_pit:gun_emplacement','prtl_pit:soul_attractor','int_sirius:ascension_trigger'];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
@@ -1895,6 +1895,8 @@ function fastLoop(){
 
         let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
         mBaseCap += global.city['casino'] ? p_on['casino'] : 0;
+        mBaseCap += global.space['spc_casino'] ? p_on['spc_casino'] : 0;        
+        
         if (red_on['vr_center']){
             mBaseCap += red_on['vr_center'] * 2;
         }
@@ -2520,7 +2522,7 @@ function fastLoop(){
                 if (global.civic.govern.type === 'socialist'){
                     delta *= 0.8;
                 }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     delta *= 1.1;
                 }
 
@@ -2577,7 +2579,7 @@ function fastLoop(){
                 if (global.civic.govern.type === 'socialist'){
                     factory_output *= 1.1;
                 }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
                 }
 
@@ -2648,7 +2650,7 @@ function fastLoop(){
                 if (global.civic.govern.type === 'socialist'){
                     factory_output *= 1.1;
                 }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
                 }
 
@@ -2724,7 +2726,7 @@ function fastLoop(){
                 if (global.civic.govern.type === 'socialist'){
                     factory_output *= 1.1;
                 }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
                 }
 
@@ -2791,7 +2793,7 @@ function fastLoop(){
                 if (global.civic.govern.type === 'socialist'){
                     factory_output *= 1.1;
                 }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3){
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
                 }
 
@@ -3837,7 +3839,7 @@ function fastLoop(){
             neutronium_bd[loc('space_gas_moon_outpost_bd')] = n_base + 'v';
 
             if (global.tech['drone']){
-                let rate = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 4 ? 0.12 : 0.06;
+                let rate = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3 ? 0.12 : 0.06;
                 let drones = global.space.drone.count * rate;
                 n_base *= 1 + (drones);
                 neutronium_bd[`ᄂ${loc('tech_worker_drone')}`] = (drones * 100) + '%';
@@ -4091,7 +4093,11 @@ function fastLoop(){
             modRes('Money', +(delta * time_multiplier).toFixed(2));
         }
 
-        if (global.tech['gambling'] && p_on['casino']){
+        if (global.tech['gambling'] && (p_on['casino'] || p_on['spc_casino'])){
+            let casinos = 0;
+            if (p_on['casino']){ casinos += p_on['casino']; }
+            if (p_on['spc_casino']){ casinos += p_on['spc_casino']; }
+            
             let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
             if (global.tech.gambling >= 2){
                 cash *= global.tech.gambling >= 5 ? 2 : 1.5;
@@ -4105,7 +4111,7 @@ function fastLoop(){
             if (global.civic.govern.type === 'socialist'){
                 cash *= 0.8;
             }
-            cash *= p_on['casino'];
+            cash *= casinos;
             money_bd[loc('city_casino')] = cash + 'v';
             modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
         }
@@ -4118,6 +4124,9 @@ function fastLoop(){
             }
             if (global.city['casino']){
                 tourism += global.city['tourist_center'].on * global.city['casino'].count * 5 * amp;
+            }
+            if (global.space['spc_casino']){
+                tourism += global.city['tourist_center'].on * global.space['spc_casino'].count * 5 * amp;
             }
             if (global.tech['monuments']){
                 tourism += global.city['tourist_center'].on * global.tech['monuments'] * 2 * amp;
@@ -4574,6 +4583,9 @@ function midLoop(){
         }
         if (global.city['casino']){
             lCaps['entertainer'] += global.city['casino'].count;
+        }
+        if (global.space['spc_casino']){
+            lCaps['entertainer'] += global.space['spc_casino'].count;
         }
         if (global.galaxy['resort']){
             lCaps['entertainer'] += p_on['resort'] * 2;
@@ -5206,12 +5218,19 @@ function midLoop(){
                 bd_Money[loc('interstellar_exchange_bd')] = g_vault+'v';
             }
         }
-        if (global.city['casino']){
+        if (global.city['casino'] || global.space['spc_casino']){
+            let casinos = 0;
+            if (global.city['casino'] || global.city.casino.count > 0){
+                casinos += global.city.casino.count;
+            }
+            if (global.space['spc_casino'] || global.space.spc_casino.count > 0){
+                casinos += global.space.spc_casino.count;
+            }
             let casino_capacity = global.tech['gambling'] >= 3 ? 60000 : 40000;
             if (global.tech['gambling'] >= 4){
                 casino_capacity += global.tech['gambling'] >= 6 ? 240000 : 60000;
             }
-            let vault = global.city['casino'].count * spatialReasoning(casino_capacity);
+            let vault = casinos * spatialReasoning(casino_capacity);
             if (global.race['gambler']){
                 vault *= 1 + (global.race['gambler'] * 0.04);
             }
@@ -6513,6 +6532,7 @@ function longLoop(){
             if (global.race['terrifying']){
                 global.tech['gambling'] = 1;
                 global.city['casino'] = { count: 0 };
+                global.space['spc_casino'] = { count: 0 };
             }
             drawTech();
             drawCity();
