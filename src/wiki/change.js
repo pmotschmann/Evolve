@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.1`,
+        date: `6/21/2020`,
+        changes: [
+            `Fixed Dyson Net.`
+        ]
+    },
+    {
         version: `0.9.0`,
         date: `6/21/2020`,
         changes: [

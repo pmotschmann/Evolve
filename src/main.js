@@ -1087,13 +1087,13 @@ function fastLoop(){
             power_generated[loc('interstellar_dyson_sphere_title')] = output;
             delete power_generated[loc('tech_dyson_net')];
         }
-        else if (global.interstellar['dyson'] && global.interstellar.dyson.count >= 100){
+        else if (global.interstellar['dyson'] && global.interstellar.dyson.count >= 1){
             let output = 0;
             if (global.interstellar.dyson.count >= 100){
                 output = powerModifier(175);
             }
             else {
-                output = powerModifier(global.interstellar.dyson_sphere.count * 1.25);
+                output = powerModifier(global.interstellar.dyson.count * 1.25);
             }
             max_power -= output;
             power_grid += output;
