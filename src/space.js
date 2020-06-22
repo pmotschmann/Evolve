@@ -1,6 +1,6 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, calcGenomeScore, randomKey } from './functions.js';
-import { unlockAchieve, checkAchievements } from './achieve.js';
+import { unlockAchieve, checkAchievements, unlockFeat } from './achieve.js';
 import { races, traits, genus_traits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -637,9 +637,10 @@ const spaceProjects = {
             special: true,
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.space['red_factory'].count++;
-                    if (global.city.power > 2){
-                        global.space['red_factory'].on++;
+                    global.space.red_factory.count++;
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.space.red_factory.on++;
+                        global.city.factory.Alloy++;
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
@@ -1336,6 +1337,19 @@ const spaceProjects = {
                     }
                     if (global.city.power >= $(this)[0].powered()){
                         global.space.space_station.on++;
+
+                        if (global.civic.d_job === 'unemployed'){
+                            if (global.civic.free > 0){
+                                let hired = global.civic.free - 3 < 0 ? (global.civic.free - 2 < 0 ? 1 : 2) : 3;
+                                global.civic.free -= hired;
+                                global.civic.space_miner.workers += hired;
+                            }
+                        }
+                        else if (global.civic[global.civic.d_job].workers > 0){
+                            let hired = global.civic[global.civic.d_job].workers - 3 < 0 ? (global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2) : 3;
+                            global.civic[global.civic.d_job].workers -= hired;
+                            global.civic.space_miner.workers += hired;
+                        }
                     }
                     return true;
                 }
@@ -1906,7 +1920,12 @@ const interstellarProjects = {
                     global.resource.Graphene.display = true;
                     if (global.interstellar.starport.support < global.interstellar.starport.s_max){
                         global.interstellar.g_factory.on++;
-                        global.interstellar.g_factory.Lumber++;
+                        if (global.race['kindling_kindred']){
+                            global.interstellar.g_factory.Oil++;
+                        }
+                        else {
+                            global.interstellar.g_factory.Lumber++;
+                        }
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
@@ -1937,6 +1956,7 @@ const interstellarProjects = {
                     incrementStruct('int_factory','interstellar');
                     if (global.city.power >= $(this)[0].powered()){
                         global.interstellar.int_factory.on++;
+                        global.city.factory.Alloy += 2;
                     }
                     return true;
                 }
@@ -2746,13 +2766,13 @@ const interstellarProjects = {
             grant: ['stargate',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Money(){ return +int_fuel_adjust(20000000).toFixed(0); },
-                Copper(){ return +int_fuel_adjust(2400000).toFixed(0); },
-                Aluminium(){ return +int_fuel_adjust(4000000).toFixed(0); },
-                Titanium(){ return +int_fuel_adjust(1250000).toFixed(0); },
-                Adamantite(){ return +int_fuel_adjust(750000).toFixed(0); },
-                Stanene(){ return +int_fuel_adjust(900000).toFixed(0); },
-                Aerogel(){ return +int_fuel_adjust(100000).toFixed(0); }
+                Money(){ return 20000000; },
+                Copper(){ return 2400000; },
+                Aluminium(){ return 4000000; },
+                Titanium(){ return 1250000; },
+                Adamantite(){ return 750000; },
+                Stanene(){ return 900000; },
+                Aerogel(){ return 100000; }
             },
             effect: loc('interstellar_jump_ship_effect'),
             action(){
@@ -4851,7 +4871,8 @@ function galaxySpace(){
                         return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
                     },
                     threat(r){
-                        if (global.galaxy.defense[r].scout_ship >= 2){
+                        let scouts_req = global.race['infiltrator'] ? 1 : 2;
+                        if (global.galaxy.defense[r].scout_ship >= scouts_req){
                             let pirates = (1 - piracy(r,true)) * 100;
                             pirates = (pirates < 1) ? Math.ceil(pirates) : Math.round(pirates);
                             if (pirates === 0){
@@ -4878,10 +4899,12 @@ function galaxySpace(){
                 },
                 filters: {
                     pirate(r){
-                        if (global.galaxy.defense[r].scout_ship >= 2){
+                        let scouts_req = global.race['infiltrator'] ? 1 : 2;
+                        if (global.galaxy.defense[r].scout_ship >= scouts_req){
                             let pirates = (1 - piracy(r,true)) * 100;
                             pirates = (pirates < 1) ? Math.ceil(pirates) : Math.round(pirates);
-                            if (global.galaxy.defense[r].scout_ship >= 4){
+                            let adv_req = global.race['infiltrator'] ? 3 : 4;
+                            if (global.galaxy.defense[r].scout_ship >= adv_req){
                                 return `${pirates}%`;
                             }
                             else {
@@ -5504,6 +5527,7 @@ function ascend(){
 
     phage += new_phage;
     harmony += new_harmony;
+    harmony = parseFloat(harmony.toFixed(2));
 
     global.stats.reset++;
     global.stats.ascend++;
@@ -5525,6 +5549,7 @@ function ascend(){
     }
     global.stats.phage += new_phage;
     global.stats.harmony += new_harmony;
+    global.stats.harmony = parseFloat(global.stats.harmony.toFixed(2));
 
     if (atmo !== 'none'){
         unlockAchieve(`atmo_${atmo}`);
