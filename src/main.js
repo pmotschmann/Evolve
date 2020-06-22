@@ -5911,8 +5911,6 @@ function midLoop(){
                     let base_time = timeCheck(t_action);
                     let remain = (100 - global.arpa[global.queue.queue[i].action].complete - 1) / 100;
                     let s_time = global.settings.qAny ? arpaSegmentTimeCheck(t_action) : arpaSegmentTimeCheck(t_action, remain, spent);
-                    console.log(remain);
-                    console.log(s_time);
                     time += base_time * remain + s_time;
                     global.queue.queue[i]['time'] = time;
                     if (global.queue.queue[i].q > 1){
