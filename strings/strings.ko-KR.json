@@ -208,7 +208,7 @@
   "job_entertainer_desc2": "엔터테이너는 행복을 %0% 증가시키고, 최대치도 %1% 증가시킵니다.",
   "job_priest": "사제",
   "job_priest_desc": "사제는 사원의 효과를 증가시킵니다.",
-  "job_priest_desc2": "TRANS:Priests boost the effectiveness of temples and Ziggurats.",
+  "job_priest_desc2": "사제는 사원과 지구라트의 효과를 증가시킵니다.",
   "job_professor": "교수",
   "job_professor_desc": "교수는 시민들을 교육시키기 위해 노력합니다. 1초당 %0 지식을 생산합니다.",
   "job_scientist": "과학자",
