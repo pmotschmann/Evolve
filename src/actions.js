@@ -15276,8 +15276,12 @@ function sentience(){
         global.race[trait] = trait === 'mastery' ? global.genes.minor[trait] : global.genes.minor[trait] * 2;
     });
 
-    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
-        randomMinorTrait();
+    if (global.genes['evolve'] && global.genes['evolve'] >= 2){        
+        for (let i=1; i<8; i++){
+            if (global.genes['evolve'] >= i+1){
+                randomMinorTrait(i);
+            }
+        }
     }
 
     let civ0name = genCivName();
@@ -15617,7 +15621,7 @@ function fanaticism(god){
     switch (races[god].fanaticism){
         case 'carnivore':
             if (global.race['herbivore']){
-                randomMinorTrait();
+                randomMinorTrait(5);
                 arpa('Genetics');
             }
             else {
@@ -15629,7 +15633,7 @@ function fanaticism(god){
             break;
         case 'smart':
             if (global.race['dumb']){
-                randomMinorTrait();
+                randomMinorTrait(5);
                 arpa('Genetics');
             }
             else {
@@ -15643,7 +15647,7 @@ function fanaticism(god){
             }
             break;
         case 'none':
-            randomMinorTrait();
+            randomMinorTrait(5);
             arpa('Genetics')
             break;
         default:
@@ -15654,7 +15658,7 @@ function fanaticism(god){
 
 function fanaticTrait(trait){
     if (global.race[trait]){
-        randomMinorTrait();
+        randomMinorTrait(5);
         arpa('Genetics');
     }
     else {

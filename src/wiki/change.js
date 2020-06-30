@@ -4,9 +4,11 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `0.9.2`,
-        date: `6/29/2020`,
+        date: `6/30/2020`,
         changes: [
-            `Added Restore Backup option, restores game to just before your last prestige reset.`
+            `Added Restore Backup option, restores game to just before your last prestige reset.`,
+            `Extended Recombination CRISPR line.`,
+            `When gaining a random minor trait from Fanaticism, you will now gain 5 ranks of it.`
         ]
     },
     {

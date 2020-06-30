@@ -5481,6 +5481,8 @@ function ascendLab(){
     if (webWorker.w){
         webWorker.w.terminate();
     }
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    
     unlockAchieve(`biome_${global.city.biome}`);
     unlockAchieve(`genus_${races[global.race.species].type}`);
     unlockAchieve(`ascended`);

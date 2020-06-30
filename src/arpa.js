@@ -318,6 +318,96 @@ export const genePool = {
             return false;
         }
     },
+    homologous_recombination: {
+        id: 'genes-homologous_recombination',
+        title: loc('arpa_genepool_homologous_recombination_title'),
+        desc: loc('arpa_genepool_homologous_recombination_desc'),
+        reqs: { evolve: 2 },
+        grant: ['evolve',3],
+        cost: 70,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('homologous_recombination')){
+                return true;
+            }
+            return false;
+        }
+    },
+    genetic_reshuffling: {
+        id: 'genes-genetic_reshuffling',
+        title: loc('arpa_genepool_genetic_reshuffling_title'),
+        desc: loc('arpa_genepool_genetic_reshuffling_desc'),
+        reqs: { evolve: 3 },
+        grant: ['evolve',4],
+        cost: 175,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('genetic_reshuffling')){
+                return true;
+            }
+            return false;
+        }
+    },
+    recombinant_dna: {
+        id: 'genes-recombinant_dna',
+        title: loc('arpa_genepool_recombinant_dna_title'),
+        desc: loc('arpa_genepool_recombinant_dna_desc'),
+        reqs: { evolve: 4 },
+        grant: ['evolve',5],
+        cost: 440,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('recombinant_dna')){
+                return true;
+            }
+            return false;
+        }
+    },
+    chimeric_dna: {
+        id: 'genes-chimeric_dna',
+        title: loc('arpa_genepool_chimeric_dna_title'),
+        desc: loc('arpa_genepool_chimeric_dna_desc'),
+        reqs: { evolve: 5 },
+        grant: ['evolve',6],
+        cost: 1100,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('chimeric_dna')){
+                return true;
+            }
+            return false;
+        }
+    },
+    molecular_cloning: {
+        id: 'genes-molecular_cloning',
+        title: loc('arpa_genepool_molecular_cloning_title'),
+        desc: loc('arpa_genepool_molecular_cloning_desc'),
+        reqs: { evolve: 6 },
+        grant: ['evolve',7],
+        cost: 2750,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('molecular_cloning')){
+                return true;
+            }
+            return false;
+        }
+    },
+    transgenes: {
+        id: 'genes-transgenes',
+        title: loc('arpa_genepool_transgenes_title'),
+        desc: loc('arpa_genepool_transgenes_desc'),
+        reqs: { evolve: 7 },
+        grant: ['evolve',8],
+        cost: 6875,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('transgenes')){
+                return true;
+            }
+            return false;
+        }
+    },
     synthesis: {
         id: 'genes-synthesis',
         title: loc('arpa_genepool_synthesis_title'),

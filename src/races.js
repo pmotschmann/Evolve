@@ -1949,7 +1949,7 @@ export function racialTrait(workers,type){
     return modifier;
 }
 
-export function randomMinorTrait(){
+export function randomMinorTrait(ranks){
     let trait_list = [];
     Object.keys(traits).forEach(function (t){
         if (traits[t].type === 'minor' && !global.race[t]){
@@ -1965,10 +1965,10 @@ export function randomMinorTrait(){
     }
     let trait = trait_list[Math.floor(Math.seededRandom(0,trait_list.length))];
     if (global.race[trait]){
-        global.race[trait]++;
+        global.race[trait] += ranks;
     }
     else {
-        global.race[trait] = 1;
+        global.race[trait] = ranks;
     }
     return trait;
 }
