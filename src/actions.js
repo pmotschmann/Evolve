@@ -15738,6 +15738,7 @@ export function bank_vault(){
 }
 
 function bioseed(){
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
     global.lastMsg = false;
 
     let god = global.race.species;
@@ -15879,6 +15880,7 @@ function cataclysm_end(){
         if (webWorker.w){
             webWorker.w.terminate();
         }
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
 
         global.lastMsg = false;
 
@@ -15975,12 +15977,13 @@ function cataclysm_end(){
 
         global.race['start_cataclysm'] = 1;
         global.race['cataclysm'] = 1;
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));        
         window.location.reload();
     }
 }
 
 function big_bang(){
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
     global.lastMsg = false;
 
     unlockAchieve(`extinct_${global.race.species}`);

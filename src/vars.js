@@ -429,7 +429,7 @@ if (convertVersion(global['version']) < 8017){
     }
 }
 
-global['version'] = '0.9.1';
+global['version'] = '0.9.2';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -1060,6 +1060,10 @@ global.settings.disableReset = false;
 
 if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facility.rank > 0 && !global.tech['space']){
     global.tech['space'] = 1;
+}
+
+if (!(save.getItem('evolveBak'))){
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
 }
 
 function newGameData(){

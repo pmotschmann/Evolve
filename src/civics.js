@@ -1760,6 +1760,7 @@ function defineMad(){
 }
 
 function warhead(){
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
     global.lastMsg = false;
 
     let god = global.race.species;

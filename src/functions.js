@@ -22,6 +22,12 @@ export function mainVue(){
                 $('#importExport').select();
                 document.execCommand('copy');
             },
+            restoreGame(){
+                let restore_data = save.getItem('evolveBak') || false;
+                if (restore_data){
+                    importGame(restore_data,true);
+                }
+            },
             lChange(){
                 global.settings.locale = $('#localization select').children("option:selected").val();
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -90,6 +96,9 @@ export function mainVue(){
             },
             expose(){
                 return loc('settings8');
+            },
+            restoreData(){
+                return loc('settings9');
             },
             remove(index){
                 global.r_queue.queue.splice(index,1);
@@ -176,8 +185,9 @@ window.exportGame = function exportGame(){
     return LZString.compressToBase64(JSON.stringify(global));
 }
 
-window.importGame = function importGame(data){
-    let saveState = JSON.parse(LZString.decompressFromBase64(data));
+window.importGame = function importGame(data,utf16){
+    let saveState = JSON.parse(utf16 ? LZString.decompressFromUTF16(data) : LZString.decompressFromBase64(data));
+    console.log(saveState);
     if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
         global = saveState;
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

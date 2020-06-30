@@ -299,6 +299,7 @@ export function index(){
             </b-field>
             <button class="button" @click="saveImport">{{ 'import' | label }}</button>
             <button class="button" @click="saveExport">{{ 'export' | label }}</button>
+            <button class="button right" @click="restoreGame"><b-tooltip :label="restoreData()" position="is-top" size="is-large" multilined animated>{{ 'restore' | label }}</b-tooltip></button>
         </div>
         <div class="reset">
             <b-collapse :open="false">
@@ -309,8 +310,8 @@ export function index(){
                             {{ 'reset_warn' | label }}
                         </h4>
                         <p>
-                            <button class="button" :disabled="!s.disableReset" @click="soft_reset()"><b-tooltip :label="soft()" position="is-top" size="is-small" multilined animated>{{ 'reset_soft' | label }}</b-tooltip></button>
-                            <button class="button" :disabled="!s.disableReset" @click="reset()"><b-tooltip :label="hard()" position="is-top" size="is-small" multilined animated>{{ 'reset_hard' | label }}</b-tooltip></button>
+                            <button class="button" :disabled="!s.disableReset" @click="soft_reset()"><b-tooltip :label="soft()" position="is-top" size="is-large" multilined animated>{{ 'reset_soft' | label }}</b-tooltip></button>
+                            <button class="button right" :disabled="!s.disableReset" @click="reset()"><b-tooltip :label="hard()" position="is-top" size="is-small" multilined animated>{{ 'reset_hard' | label }}</b-tooltip></button>
                         </p>
                     </div>
                 </div>

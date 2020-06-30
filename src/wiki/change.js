@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.2`,
+        date: `6/29/2020`,
+        changes: [
+            `Added Restore Backup option, restores game to just before your last prestige reset.`
+        ]
+    },
+    {
         version: `0.9.1`,
         date: `6/21/2020`,
         changes: [
