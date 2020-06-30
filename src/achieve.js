@@ -1466,6 +1466,24 @@ export function drawPerks(){
         if (global.genes.evolve >= 2){
             perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_recombination_desc")}</span></div>`);
         }
+        if (global.genes.evolve >= 3){
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_homologous_recombination_desc")}</span></div>`);
+        }
+        if (global.genes.evolve >= 4){
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_genetic_reshuffling_desc")}</span></div>`);
+        }
+        if (global.genes.evolve >= 5){
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_recombinant_dna_desc")}</span></div>`);
+        }
+        if (global.genes.evolve >= 6){
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_chimeric_dna_desc")}</span></div>`);
+        }
+        if (global.genes.evolve >= 7){
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_molecular_cloning_desc")}</span></div>`);
+        }
+        if (global.genes.evolve >= 8){
+            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_transgenes_desc")}</span></div>`);
+        }
     }
 
     if (global.genes['birth']){

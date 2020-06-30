@@ -35,6 +35,7 @@ function initPage(){
                 { key: 'basics' },
                 { key: 'mechanics' },
                 { key: 'prestige' },
+                { key: 'crispr' },
             ]
         },
         {
