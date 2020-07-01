@@ -1,7 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { genePool } from './../arpa.js';
-import { popover } from './functions.js';
 
 export function crisprPage(content){
     content.append(`<div class="header has-text-warning">${loc('wiki_arpa_crispr')}</div>`);
@@ -14,7 +13,7 @@ export function crisprPage(content){
 }
 
 export function geneDesc(info,gene){
-    info.append(`<div class="type"><h2 class="has-text-warning">${genePool[gene].title}</h2><span class="has-text-caution">${loc(`wiki_arpa_crispr_${genePool[gene].grant[0]}`)} - ${genePool[gene].grant[1]}</span></div>`);
+    info.append(`<div class="type"><h2 class="has-text-warning">${genePool[gene].title}</h2><span class="has-text-caution">${loc(`wiki_arpa_crispr_${genePool[gene].grant[0]}`)}: ${genePool[gene].grant[1]}</span></div>`);
 
     let stats = $(`<div class="stats"></div>`);
     info.append(stats);
@@ -26,9 +25,11 @@ export function geneDesc(info,gene){
         let reqs = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_arpa_crispr_req')}</span></div>`);
         info.append(reqs);
 
+        let comma = false;
         Object.keys(genePool[gene].reqs).forEach(function (req){
             let color = global.genes[req] && global.genes[req] >= genePool[gene].reqs[req] ? 'success' : 'danger';
-            reqs.append(`<span class="has-text-${color}">${loc(`wiki_arpa_crispr_${req}`)} - ${genePool[gene].reqs[req]}</span>`);
+            reqs.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${loc(`wiki_arpa_crispr_${req}`)} ${genePool[gene].reqs[req]}</span>`);
+            comma = true;
         });
     }
 }

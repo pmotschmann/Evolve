@@ -889,6 +889,10 @@ export function calcPrestige(type){
         k_inc *= k_mult;
     }
 
+    if (global.race['catacylsm']){
+        new_plasmid += 300;
+    }
+
     gains.plasmid = challenge_multiplier(new_plasmid,type);
     gains.phage = gains.plasmid > 0 ? challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type) : 0;
 

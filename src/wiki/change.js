@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.3`,
+        date: `7/1/2020`,
+        changes: [
+            `Increased base number of Plasmids earned in Catacylsm mode.`
+        ]
+    },
+    {
         version: `0.9.2`,
         date: `6/30/2020`,
         changes: [
