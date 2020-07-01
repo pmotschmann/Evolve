@@ -6,7 +6,7 @@ const changeList = [
         version: `0.9.3`,
         date: `7/1/2020`,
         changes: [
-            `Increased base number of Plasmids earned in Catacylsm mode.`
+            `Increased base number of Plasmids earned in Cataclysm mode.`
         ]
     },
     {
