@@ -1719,7 +1719,7 @@ function defineMad(){
             data: global.civic['mad'],
             methods: {
                 launch(){
-                    if (!global.civic.mad.armed && !global.race['catacylsm']){
+                    if (!global.civic.mad.armed && !global.race['cataclysm']){
                         $('body').addClass('nuke');
                         let nuke = $('<div class="nuke"></div>');
                         $('body').append(nuke);
@@ -1762,7 +1762,7 @@ function defineMad(){
 }
 
 function warhead(){
-    if (!global.civic.mad.armed && !global.race['catacylsm']){
+    if (!global.civic.mad.armed && !global.race['cataclysm']){
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         global.lastMsg = false;
 

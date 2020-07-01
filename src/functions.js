@@ -889,7 +889,7 @@ export function calcPrestige(type){
         k_inc *= k_mult;
     }
 
-    if (global.race['catacylsm']){
+    if (global.race['cataclysm']){
         new_plasmid += 300;
     }
 
