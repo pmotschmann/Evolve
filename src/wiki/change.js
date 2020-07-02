@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.4`,
+        date: `7/2/2020`,
+        changes: [
+            `Failed History perk raised from +1 Geothermal to +2 Geothermal energy.`
+        ]
+    },
+    {
         version: `0.9.3`,
         date: `7/1/2020`,
         changes: [

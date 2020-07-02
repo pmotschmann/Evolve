@@ -459,7 +459,7 @@ const spaceProjects = {
                     let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                     gain += pop * red_on['biodome'];
                 }
-                gain = +(gain).toFixed(1);
+                gain = +(gain).toFixed(2);
                 let safe = ``;
                 if (global.race['cataclysm']){
                     let vault = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '100000' : '50000') : '25000');
@@ -951,7 +951,7 @@ const spaceProjects = {
                 if (global.race['forge']){
                     power -= traits.forge.vars[0];
                 }
-                if (global.stats.achieve['failed_history'] && global.stats.achieve.failed_history.l >= 5){ power--; }
+                if (global.stats.achieve['failed_history'] && global.stats.achieve.failed_history.l >= 5){ power -= 2; }
                 return powerModifier(power);
             },
             action(){
