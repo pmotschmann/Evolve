@@ -11,7 +11,7 @@ export function hellPage(content){
     let soul = infoBoxBuilder(content,'soul_gem',4);
     let soul_extra = $(`<div></div>`);
     soul.append(soul_extra);
-    soul_extra.append(`<div>${loc('wiki_hell_sim',[`<a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">Hell Simulator</a>`,'Zarakon'])}</div>`);
+    soul_extra.append(`<div>${loc('wiki_hell_sim',[`<a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_hell_sim2`)}</a>`,'Zarakon'])}</div>`);
 
     infoBoxBuilder(content,'infernite',4);
 }
