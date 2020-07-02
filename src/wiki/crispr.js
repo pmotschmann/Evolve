@@ -6,13 +6,14 @@ export function crisprPage(content){
     content.append(`<div class="header has-text-warning">${loc('wiki_arpa_crispr')}</div>`);
 
     Object.keys(genePool).forEach(function (gene){
-        let info = $(`<div class="infoBox"></div>`);
+        let id = genePool[gene].id.split('-');
+        let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
         content.append(info);
         geneDesc(info,gene);
     });
 }
 
-export function geneDesc(info,gene){
+function geneDesc(info,gene){
     info.append(`<div class="type"><h2 class="has-text-warning">${genePool[gene].title}</h2><span class="has-text-caution">${loc(`wiki_arpa_crispr_${genePool[gene].grant[0]}`)}: ${genePool[gene].grant[1]}</span></div>`);
 
     let stats = $(`<div class="stats"></div>`);

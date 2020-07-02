@@ -1,9 +1,5 @@
-import { global } from './../vars.js';
-import { loc } from './../locale.js';
 import { clearElement } from './../functions.js';
-import { popover } from './functions.js';
-import { prestigePage } from './prestige.js';
-import { crisprPage } from './crispr.js';
+import { hellPage } from './hell.js';
 
 export function gamePlayPage(zone){
     let content = $(`#content`);
@@ -16,11 +12,8 @@ export function gamePlayPage(zone){
         case 'mechanics':
             mechanicsPage(content);
             break;
-        case 'prestige':
-            prestigePage(content);
-            break;
-        case 'crispr':
-            crisprPage(content);
+        case 'hell':
+            hellPage(content);
             break;
     }
 }

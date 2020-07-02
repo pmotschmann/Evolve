@@ -8,6 +8,7 @@ import { renderStructurePage } from './structures.js';
 import { renderTechPage } from './tech.js';
 import { renderAchievePage } from './achieve.js';
 import { gamePlayPage } from './gameplay.js';
+import { prestigePage } from './prestige.js';
 import { changeLog } from './change.js';
 
 $('body').empty();
@@ -34,7 +35,12 @@ function initPage(){
             submenu: [
                 { key: 'basics' },
                 { key: 'mechanics' },
-                { key: 'prestige' },
+                { key: 'hell' },
+            ]
+        },
+        {
+            key: 'prestige',
+            submenu: [
                 { key: 'crispr' },
             ]
         },
@@ -104,7 +110,7 @@ function initPage(){
     if (window.location.hash){
         let hash = window.location.hash.substring(1).split('-');
         if (hash.length > 1){
-            menuDispatch(hash[1],hash[0]);
+            hash.length > 2 ? menuDispatch(hash[1],hash[0],hash[2]) : menuDispatch(hash[1],hash[0]);
         }
         else {
             menuDispatch(hash[0]);
@@ -115,7 +121,7 @@ function initPage(){
     }
 }
 
-function menuDispatch(main,sub){
+function menuDispatch(main,sub,frag){
     switch (main){
         case 'intro':
             mainPage();
@@ -129,9 +135,13 @@ function menuDispatch(main,sub){
 
         case 'gameplay':
             gamePlayPage(sub);
-            window.location.hash = `#${sub}-${main}`;
+            setWindowHash(main,sub,frag);
             break;
 
+        case 'prestige':
+            prestigePage(sub);
+            setWindowHash(main,sub,frag);
+            break;
 
         case 'species':
             switch (sub){
@@ -142,17 +152,17 @@ function menuDispatch(main,sub){
                     traitsPage();
                     break;
                 }
-            window.location.hash = `#${sub}-${main}`;
+                setWindowHash(main,sub,frag);
             break;
 
         case 'structures':
             renderStructurePage(sub);
-            window.location.hash = `#${sub}-${main}`;
+            setWindowHash(main,sub,frag);
             break;
 
         case 'tech':
             renderTechPage(sub);
-            window.location.hash = `#${sub}-${main}`;
+            setWindowHash(main,sub,frag);
             break;
 
         case 'achievements':
@@ -164,13 +174,26 @@ function menuDispatch(main,sub){
                     renderAchievePage(sub);
                     break;
                 }
-            window.location.hash = `#${sub}-${main}`;
+                setWindowHash(main,sub,frag);
             break;
 
         case 'changelog':
             changeLog();
-            window.location.hash = `#${main}`;
+            setWindowHash(main,sub,frag);
             break;
+    }
+}
+
+function setWindowHash(main,sub,frag){
+    if (typeof frag === 'undefined'){
+        window.location.hash = `#${sub}-${main}`;
+    }
+    else {
+        window.location.hash = `#${sub}-${main}-${frag}`;
+        document.getElementById(frag).scrollIntoView({
+            block: 'start',
+            behavior: 'smooth'
+        });
     }
 }
 

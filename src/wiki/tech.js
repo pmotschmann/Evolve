@@ -1295,7 +1295,8 @@ export function renderTechPage(era){
     Object.keys(actions.tech).forEach(function (actionName){
         let action = actions.tech[actionName];
         if (action.hasOwnProperty('era') && action.era === era && (!action.hasOwnProperty('wiki') || action.wiki)){
-            let info = $(`<div class="infoBox"></div>`);
+            let id = actions.tech[actionName].id.split('-');
+            let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action);
             addInformation(info, actionName);
             if (action.cost['Knowledge']){

@@ -13,7 +13,7 @@ export function racesPage(){
             return;
         }
 
-        let info = $(`<div class="infoBox"></div>`);
+        let info = $(`<div id="${race}" class="infoBox"></div>`);
         content.append(info);
 
         info.append(`<div class="type"><h2 class="has-text-warning">${races[race].name}</h2><span class="has-text-caution">${loc(`genelab_genus_${races[race].type}`)}</span></div>`);
@@ -73,7 +73,7 @@ export function traitsPage(){
     for (let i=0; i<types.length; i++){
         Object.keys(traits).sort().forEach(function (trait){
             if (traits[trait].type === types[i]){
-                let info = $(`<div class="infoBox"></div>`);
+                let info = $(`<div id="${trait}" class="infoBox"></div>`);
                 content.append(info);
                 traitDesc(info,trait);
             }
