@@ -41,6 +41,7 @@ function initPage(){
         {
             key: 'prestige',
             submenu: [
+                { key: 'resources' },
                 { key: 'crispr' },
             ]
         },

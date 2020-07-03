@@ -3,9 +3,12 @@ import { loc } from './../locale.js';
 import { clearElement, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 
-export function infoBoxBuilder(parent,name,template,paragraphs){
+export function infoBoxBuilder(parent,name,template,paragraphs,h_level){
+    if (!h_level){
+        h_level = 3;
+    }
     let info = $(`<div class="infoBox"></div>`);
-    info.append(`<h3 id="${name}" class="header has-text-warning">${loc(`wiki_${template}_${name}`)}</h3>`);
+    info.append(`<h${h_level} id="${name}" class="header has-text-warning">${loc(`wiki_${template}_${name}`)}</h${h_level}>`);
     let para = $(`<div class="para"></div>`);
     for (let i=1; i<=paragraphs; i++){
         para.append(`<span>${loc(`wiki_${template}_${name}_para${i}`)}</span>`);
