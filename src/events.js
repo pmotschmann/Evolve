@@ -276,7 +276,7 @@ export const events = {
             notrait: 'blissful'
         },
         condition(){
-            return global.civic.govern.type === 'oligarchy' ? global.civic.taxes.tax_rate > 35 : global.civic.taxes.tax_rate > 25;
+            return global.civic.govern.type === 'oligarchy' ? global.civic.taxes.tax_rate > 45 : global.civic.taxes.tax_rate > 25;
         },
         effect: function(){
             return tax_revolt();
