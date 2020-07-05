@@ -41,6 +41,14 @@
             clear: both;
         }
 
+        li {
+            list-style-position: inside;
+        }
+
+        li:before {
+            content: "\1102";
+        }
+
         .type {
             display: flex;
             justify-content: space-between;
@@ -67,7 +75,7 @@
             border-top: .0625rem solid;
             margin-top: .5rem;
             padding-top: .5rem;
-    
+
             .effect {
                 width: 70%;
             }
@@ -107,6 +115,15 @@
                 margin-right: .25rem;
             }
         }
+
+        .infoSummary {
+            display: inline-grid;
+            text-align: left;
+            max-width: 18rem;
+            border-radius: .25rem;
+            line-height: 1.3125rem;
+            margin-right: 1rem;
+        }
     }
 
     .question {
@@ -141,6 +158,28 @@
                 line-height: 1rem;
             }
         }
+    }
+
+    .planetList {
+        display: table;
+        column-count: 2;
+        .itemlist {
+            display: flex;
+        }
+        .featureList {
+            display: table-cell;
+            border: .0625rem solid;
+            text-align: center;
+
+            .infoBox {
+                list-style: none;
+                text-align: left;
+                margin: 0.5rem;
+            }
+        }
+    }
+
+    .planetList:first-child {
     }
 
     .flexed {
