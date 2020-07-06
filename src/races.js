@@ -2213,9 +2213,7 @@ export const biomes = {
         desc: loc('biome_grassland'),
         bonuses:
         {
-            city: {
-                compost_heap: 1.2
-            }
+            compost: 1.2
         }
     },
     oceanic: {
@@ -2225,12 +2223,10 @@ export const biomes = {
             soldiers: {
                 Furs: 0.95
             },
-            city: {
-                smelter: {
-                    Titanium: {
-                        Iron: 1.12,
-                        Steel: 1.06
-                    }
+            smelter: {
+                Titanium: {
+                    Iron: 1.12,
+                    Steel: 1.06
                 }
             }
         }
@@ -2239,36 +2235,26 @@ export const biomes = {
         label: loc('biome_forest_name'),
         desc: loc('biome_forest'),
         bonuses: {
-            job: {
-                lumberjack: 1.15
-            }
+            lumberjack: 1.15
         }
     },
     desert: {
         label: loc('biome_desert_name'),
         desc: loc('biome_desert'),
         bonuses: {
-            job: {
-                quarry_worker: 1.2
-            },
-            city: {
-                oil_well: 1.1
-            }
+            quarry_worker: 1.2,
+            oil_well: 1.1
         }
     },
     volcanic: {
         label: loc('biome_volcanic_name'),
         desc: loc('biome_volcanic'),
         bonuses: {
-            job: {
-                miner: {
-                    Copper: 1.12,
-                    Iron: 1.08
-                }
+            miner: {
+                Copper: 1.12,
+                Iron: 1.08
             },
-            city: {
-                compost_heap: .9
-            }
+            compost: .9
         },
         weather: {
             season: {
@@ -2287,9 +2273,7 @@ export const biomes = {
             soldiers: {
                 Furs: 1.25
             },
-            city: {
-                oil_well: 0.9
-            }
+            oil_well: 0.9
         },
         weather: {
             season: {
@@ -2305,9 +2289,7 @@ export const biomes = {
         label: loc('biome_hellscape_name'),
         desc: loc('biome_hellscape'),
         bonuses: {
-            city: {
-                compost_heap: .25
-            }
+            compost: .25
         },
         weather: {
             min_tempature: 1
@@ -2341,7 +2323,7 @@ export const planetTraits = {
         desc: loc('planet_toxic_desc'),
         bonuses: {
             compost: 0.75,
-            birth_frequency: 1.25
+            birth_rate: 1.25
         }
     },
     mellow: {
@@ -2385,7 +2367,7 @@ export const planetTraits = {
         label: loc('planet_trashed'),
         desc: loc('planet_trashed_desc'),
         bonuses: {
-            compost_heap: .75,
+            compost: .75,
             scavenger: 1 + (traits.scavenger.vars[0] / 100),
         },
         bonuses_base: {
@@ -2418,10 +2400,8 @@ export const planetTraits = {
             miner: 1.2
         },
         bonuses_base: {
-            job: {
-                miner: {
-                    stress_level: -1
-                }
+            miner: {
+                stress_level: -1
             }
         }
     },
