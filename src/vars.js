@@ -429,7 +429,13 @@ if (convertVersion(global['version']) < 8017){
     }
 }
 
-global['version'] = '0.9.4';
+if (convertVersion(global['version']) < 9005){
+    if (global.race.hasOwnProperty('terrifying') && global.tech.hasOwnProperty('gambling') && !global.space.hasOwnProperty('spc_casino')){
+        global.space['spc_casino'] = { count: 0, on: 0 };
+    }
+}
+
+global['version'] = '0.9.5';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){

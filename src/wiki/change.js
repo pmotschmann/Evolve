@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.5`,
+        date: `7/6/2020`,
+        changes: [
+            `Fixed a bug that occured when combining the Terrifying trait with the gold star Iron Will perk.`
+        ]
+    },
+    {
         version: `0.9.4`,
         date: `7/3/2020`,
         changes: [

@@ -6579,7 +6579,7 @@ function longLoop(){
             messageQueue(loc(tech_source,[loc('tech_shields')]),'info');
             global.tech.high_tech = 14;
             global.settings.space.neutron = true;
-                    global.settings.space.blackhole = true;
+            global.settings.space.blackhole = true;
             drawTech();
             drawCity();
         }
