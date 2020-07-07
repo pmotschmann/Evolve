@@ -1045,6 +1045,11 @@ if (global.tech['unify']){
     }
 }
 
+if (global.city.hasOwnProperty('spc_casino')){
+    global.space['spc_casino'] = { count: 0, on: 0 };
+    delete global.city['spc_casino'];
+}
+
 if (!global.civic['new']){
     global.civic['new'] = 0;
 }
