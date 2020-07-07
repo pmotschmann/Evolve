@@ -1643,7 +1643,7 @@ export function drawPerks(){
 
     if (global.stats.achieve['failed_history'] && global.stats.achieve['failed_history'].l >= 5){
         unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("failed_history",[2])}</span></div>`);
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_failed_history",[2])}</span></div>`);
     }
 
     if (unlocked > 0){
