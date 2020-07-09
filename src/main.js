@@ -6598,6 +6598,7 @@ function longLoop(){
         if (global.resource.Knowledge.max >= 8075000 && global.tech['science'] && global.tech.science >= 18 && !global.tech['nanoweave']){
             messageQueue(loc(tech_source,[loc('tech_nanoweave')]),'info');
             global.tech['nanoweave'] = 1;
+            global.resource.Nanoweave.display = true;
             drawTech();
         }
         if (global.resource.Knowledge.max >= 11590000 && global.tech['high_tech'] && global.tech.high_tech === 16 && global.tech['chthonian'] && global.tech['chthonian'] >= 3){

@@ -1050,6 +1050,10 @@ if (global.city.hasOwnProperty('spc_casino')){
     delete global.city['spc_casino'];
 }
 
+if (global.tech.hasOwnProperty('nanoweave')){
+    global.resource.Nanoweave.display = true;
+}
+
 if (!global.civic['new']){
     global.civic['new'] = 0;
 }
