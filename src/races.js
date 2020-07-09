@@ -2210,46 +2210,135 @@ export function cleanRemoveTrait(trait){
 export const biomes = {
     grassland: {
         label: loc('biome_grassland_name'),
-        desc: loc('biome_grassland')
+        desc: loc('biome_grassland'),
+        bonuses:
+        {
+            compost: 1.2
+        }
     },
     oceanic: {
         label: loc('biome_oceanic_name'),
-        desc: loc('biome_oceanic')
+        desc: loc('biome_oceanic'),
+        bonuses: {
+            soldiers: {
+                Furs: 0.95
+            },
+            smelter: {
+                Titanium: {
+                    Iron: 1.12,
+                    Steel: 1.06
+                }
+            }
+        }
     },
     forest: {
         label: loc('biome_forest_name'),
-        desc: loc('biome_forest')
+        desc: loc('biome_forest'),
+        bonuses: {
+            lumberjack: 1.15
+        }
     },
     desert: {
         label: loc('biome_desert_name'),
-        desc: loc('biome_desert')
+        desc: loc('biome_desert'),
+        bonuses: {
+            quarry_worker: 1.2,
+            oil_well: 1.1
+        }
     },
     volcanic: {
         label: loc('biome_volcanic_name'),
-        desc: loc('biome_volcanic')
+        desc: loc('biome_volcanic'),
+        bonuses: {
+            miner: {
+                Copper: 1.12,
+                Iron: 1.08
+            },
+            compost: .9
+        },
+        weather: {
+            season: {
+                min_tempature: {
+                    summer: 1
+                }
+            },
+            cold_days: 0.5,
+            hot_days: 1.5
+        }
     },
     tundra: {
         label: loc('biome_tundra_name'),
-        desc: loc('biome_tundra')
+        desc: loc('biome_tundra'),
+        bonuses: {
+            soldiers: {
+                Furs: 1.25
+            },
+            oil_well: 0.9
+        },
+        weather: {
+            season: {
+                max_tempature: {
+                    winter: 0
+                }
+            },
+            cold_days: 1.5,
+            hot_days: 0.5
+        }
     },
     hellscape: {
         label: loc('biome_hellscape_name'),
-        desc: loc('biome_hellscape')
+        desc: loc('biome_hellscape'),
+        bonuses: {
+            compost: .25
+        },
+        weather: {
+            min_tempature: 1
+        }
     },
     eden: {
         label: loc('biome_eden_name'),
-        desc: loc('biome_eden')
+        desc: loc('biome_eden'),
+        weather:
+        {
+            season: {
+                min_tempature: {
+                    spring: 1,
+                    summer: 1,
+                    fall: 1
+                },
+                max_tempature: {
+                    spring: 2,
+                    summer: 1,
+                    fall: 2,
+                    winter: 2
+                }
+            }
+        }
     }
 };
 
 export const planetTraits = {
     toxic: {
         label: loc('planet_toxic'),
-        desc: loc('planet_toxic_desc')
+        desc: loc('planet_toxic_desc'),
+        bonuses: {
+            compost: 0.75,
+            birth_rate: 1.25
+        }
     },
     mellow: {
         label: loc('planet_mellow'),
-        desc: loc('planet_mellow_desc')
+        desc: loc('planet_mellow_desc'),
+        bonuses: {
+            production: 0.9
+        },
+        bonuses_base: {
+            stress_level: {
+                default: 2,
+                hunter: 0.5,
+                soldiers: -1
+            }
+        }
     },
     rage: {
         label: loc('planet_rage'),
@@ -2257,7 +2346,10 @@ export const planetTraits = {
     },
     stormy: {
         label: loc('planet_stormy'),
-        desc: loc('planet_stormy_desc')
+        desc: loc('planet_stormy_desc'),
+        weather: {
+            windy_days: 1.5
+        }
     },
     ozone: {
         label: loc('planet_ozone'),
@@ -2265,15 +2357,37 @@ export const planetTraits = {
     },
     magnetic: {
         label: loc('planet_magnetic'),
-        desc: loc('planet_magnetic_desc')
+        desc: loc('planet_magnetic_desc'),
+        bonuses_base: {
+            sundial: 1,
+            wardenclyffe: 100
+        }
     },
     trashed: {
         label: loc('planet_trashed'),
-        desc: loc('planet_trashed_desc')
+        desc: loc('planet_trashed_desc'),
+        bonuses: {
+            compost: .75,
+            scavenger: 1 + (traits.scavenger.vars[0] / 100),
+        },
+        bonuses_base: {
+            genome_sequence: 1
+        },
+        features: {
+            scavenger: true
+        }
     },
     elliptical: {
         label: loc('planet_elliptical'),
-        desc: loc('planet_elliptical_desc')
+        desc: loc('planet_elliptical_desc'),
+        weather: {
+            season: {
+                duration: {
+                    summer: 2,
+                    winter: 2
+                }
+            }
+        }
     },
     flare: {
         label: loc('planet_flare'),
@@ -2281,7 +2395,15 @@ export const planetTraits = {
     },
     dense: {
         label: loc('planet_dense'),
-        desc: loc('planet_dense_desc')
+        desc: loc('planet_dense_desc'),
+        bonuses: {
+            miner: 1.2
+        },
+        bonuses_base: {
+            miner: {
+                stress_level: -1
+            }
+        }
     },
     unstable: {
         label: loc('planet_unstable'),
