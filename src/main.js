@@ -5388,7 +5388,7 @@ function midLoop(){
         }
         if (global.tech['railway']){
             let routes = 0;
-            if (global.race['catacylsm']){
+            if (global.race['cataclysm']){
                 routes = global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
             }
             else {
@@ -6430,7 +6430,7 @@ function longLoop(){
             setWeather();
         }
 
-        if (!global.race['catacylsm']){
+        if (!global.race['cataclysm']){
             let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
             if (global.race.deterioration === 0 && deterioration < 40000000){
                 global.race.deterioration = 1;

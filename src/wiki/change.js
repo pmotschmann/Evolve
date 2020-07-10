@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.6`,
+        date: `7/10/2020`,
+        changes: [
+            `Fixed bug with Infiltrator not unlocking Nanoweave.`,
+            `Fixed bug with Railways not adding traderoutes correctly in Cataclysm mode.`
+        ]
+    },
+    {
         version: `0.9.5`,
         date: `7/6/2020`,
         changes: [

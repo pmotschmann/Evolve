@@ -879,7 +879,7 @@ const spaceProjects = {
             effect(){
                 let oil = +fuel_adjust(2).toFixed(2);
                 let soldiers = global.tech.marines >= 2 ? 4 : 2;
-                let food = global.race['catacylsm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
+                let food = global.race['cataclysm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
                 return `<div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
             },
             powered(){ return powerCostMod(1); },
@@ -890,6 +890,9 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            flair(){
+                return ``;
             }
         },
     },
