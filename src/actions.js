@@ -3538,7 +3538,7 @@ export const actions = {
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = spatialReasoning(200);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
-                let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('city_sawmill_effect1',[impact])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('city_lumber_yard_effect',[impact])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
                     desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`;
                 }

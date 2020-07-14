@@ -3290,6 +3290,11 @@ function fastLoop(){
                 lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
                 lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
 
+                let sawmills = 1;
+                if (global.city['sawmill']){
+                    let saw = global.tech['saw'] >= 2 ? 0.08 : 0.05;
+                    sawmills *= (global.city.sawmill.count * saw) + 1;
+                }
                 let power_mult = 1;
                 if (global.city.powered && global.city.sawmill && p_on['sawmill']){
                     power_mult += (p_on['sawmill'] * 0.04);
@@ -3301,14 +3306,17 @@ function fastLoop(){
 
                 let lumber_bd = {};
                 lumber_bd[loc('job_lumberjack')] = lumber_base + 'v';
-                lumber_bd[loc('city_lumber_yard')] = ((lumber_yard - 1) * 100) + '%';
-                lumber_bd[loc('city_sawmill')] = ((power_mult - 1) * 100) + '%';
+                if (lumber_base > 0){
+                    lumber_bd[`ᄂ${loc('city_lumber_yard')}`] = ((lumber_yard - 1) * 100) + '%';
+                    lumber_bd[`ᄂ${loc('city_sawmill')}`] = ((sawmills - 1) * 100) + '%';                    
+                    lumber_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+                }
                 if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['sawmill'] > 0){
                     power_mult = (power_mult - 1) * 0.5 + 1;
                     lumber_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 }
 
-                let delta = lumber_base * power_mult * lumber_yard;
+                let delta = lumber_base * sawmills * power_mult * lumber_yard;
                 delta *= hunger * global_multiplier;
 
                 lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -3369,8 +3377,10 @@ function fastLoop(){
 
             let stone_bd = {};
             stone_bd[loc('workers')] = stone_base + 'v';
-            stone_bd[loc('city_rock_quarry')] = ((rock_quarry - 1) * 100) + '%';
-            stone_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
+            if (stone_base > 0){
+                stone_bd[`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
+                stone_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+            }
 
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['rock_quarry'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
@@ -3470,7 +3480,9 @@ function fastLoop(){
 
                 let copper_power = power_mult;
                 copper_bd[loc('job_miner')] = (copper_base) + 'v';
-                copper_bd[loc('power')] = ((copper_power - 1) * 100) + '%';
+                if (copper_base > 0){
+                    copper_bd[`ᄂ${loc('power')}`] = ((copper_power - 1) * 100) + '%';
+                }
 
                 if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                     copper_power = (copper_power - 1) * 0.5 + 1;
@@ -3515,7 +3527,9 @@ function fastLoop(){
 
                 let iron_power = power_mult;
                 iron_bd[loc('job_miner')] = (iron_base) + 'v';
-                iron_bd[loc('power')] = ((iron_power - 1) * 100) + '%';
+                if (iron_base > 0){
+                    iron_bd[`ᄂ${loc('power')}`] = ((iron_power - 1) * 100) + '%';
+                }
 
                 if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                     iron_power = (iron_power - 1) * 0.5 + 1;
@@ -3661,8 +3675,10 @@ function fastLoop(){
             }
 
             let coal_bd = {};
-            coal_bd[loc('job_coal_miner')] = coal_base + 'v';
-            coal_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
+            coal_bd[loc('job_coal_miner')] = coal_base + 'v';            
+            if (coal_base > 0){
+                coal_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+            }
 
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['coal_mine'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
@@ -4575,8 +4591,6 @@ function midLoop(){
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_sawmill')] = gain+'v';
-            let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
-            global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
         }
         if (global.city['mine']){
             lCaps['miner'] += global.city['mine'].count;
