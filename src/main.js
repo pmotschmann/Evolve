@@ -4722,7 +4722,9 @@ function midLoop(){
             bd_Money[loc('tech_luxury_condo')] = gain+'v';
         }
         if (global.city['lodge']){
-            caps[global.race.species] += global.city['lodge'].count;
+            let cit = global.city['lodge'].count;
+            caps[global.race.species] += cit;
+            bd_Citizen[loc('city_lodge')] = cit + 'v';
         }
         if (global.space['outpost']){
             let gain = global.space['outpost'].count * spatialReasoning(500);
