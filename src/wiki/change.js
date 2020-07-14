@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Seasons no longer exist in Cataclysm mode.`,
             `It is no longer Sunny in Cataclysm mode.`,
-            `Parasites are no longer unable to grow population in Cataclysm mode, but they do take a growth penalty.`
+            `Parasites are no longer unable to grow population in Cataclysm mode, but they do take a growth penalty.`,
+            `Base Sawmill effect is now seperated from lumberjack in production breakdown.`
         ]
     },
     {
