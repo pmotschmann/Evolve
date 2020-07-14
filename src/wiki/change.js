@@ -7,7 +7,8 @@ const changeList = [
         date: `7/13/2020`,
         changes: [
             `Seasons no longer exist in Cataclysm mode.`,
-            `It is no longer Sunny in Cataclysm mode.`
+            `It is no longer Sunny in Cataclysm mode.`,
+            `Parasites are no longer unable to grow population in Cataclysm mode, but they do take a growth penalty.`
         ]
     },
     {

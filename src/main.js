@@ -2230,7 +2230,7 @@ function fastLoop(){
             if (global.race['spongy'] && global.city.calendar.weather === 0){
                 // Do Nothing
             }
-            else if (global.race['parasite'] && global.city.calendar.wind === 0){
+            else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm']){
                 // Do Nothing
             }
             else {
@@ -2261,6 +2261,10 @@ function fastLoop(){
                     lowerBound += global.race['promiscuous'];
                 }
                 let base = global.city.ptrait === 'toxic' ? global['resource'][global.race.species].amount * 1.25 : global['resource'][global.race.species].amount;
+                if (global.race['parasite'] && global.race['cataclysm']){
+                    lowerBound = Math.round(lowerBound / 5);
+                    base *= 3;
+                }
                 if(Math.rand(0, base * (3 - (2 ** time_multiplier))) <= lowerBound){
                     global['resource'][global.race.species].amount++;
                     if (global.civic['hell_surveyor'].workers + global.civic.free >= global.civic['hell_surveyor'].assigned){
