@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.7`,
+        date: `7/13/2020`,
+        changes: [
+            `Seasons no longer exist in Cataclysm mode.`,
+            `It is no longer Sunny in Cataclysm mode.`
+        ]
+    },
+    {
         version: `0.9.6`,
         date: `7/10/2020`,
         changes: [

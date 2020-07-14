@@ -435,7 +435,7 @@ if (convertVersion(global['version']) < 9005){
     }
 }
 
-global['version'] = '0.9.6';
+global['version'] = '0.9.7';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){

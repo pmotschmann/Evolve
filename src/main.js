@@ -322,7 +322,7 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
             challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
         }
         if (global.race['cataclysm']){
-            if (calc_mastery() >= 50){
+            if (calc_mastery() >= 50 && global.race.universe !== 'antimatter'){
                 challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
             }
             else {
@@ -6252,40 +6252,45 @@ function longLoop(){
                 global.city.calendar.year++;
             }
 
-            let s_segments = global.city.ptrait === 'elliptical' ? 6 : 4;
-            let season_length = Math.round(global.city.calendar.orbit / s_segments);
-            let days = global.city.calendar.day;
-            let season = 0;
-            while (days > season_length){
-                days -= season_length;
-                season++;
-            }
-            if (global.city.ptrait === 'elliptical'){
-                switch (season){
-                    case 0:
-                        global.city.calendar.season = 0;
-                        break;
-                    case 1:
-                    case 2:
-                        global.city.calendar.season = 1;
-                        break;
-                    case 3:
-                        global.city.calendar.season = 2;
-                        break;
-                    default:
-                        global.city.calendar.season = 3;
-                        break;
-                }
+            if (global.race['cataclysm']){
+                global.city.calendar.season = -1;
             }
             else {
-                global.city.calendar.season = season;
-            }            
+                let s_segments = global.city.ptrait === 'elliptical' ? 6 : 4;
+                let season_length = Math.round(global.city.calendar.orbit / s_segments);
+                let days = global.city.calendar.day;
+                let season = 0;
+                while (days > season_length){
+                    days -= season_length;
+                    season++;
+                }
+                if (global.city.ptrait === 'elliptical'){
+                    switch (season){
+                        case 0:
+                            global.city.calendar.season = 0;
+                            break;
+                        case 1:
+                        case 2:
+                            global.city.calendar.season = 1;
+                            break;
+                        case 3:
+                            global.city.calendar.season = 2;
+                            break;
+                        default:
+                            global.city.calendar.season = 3;
+                            break;
+                    }
+                }
+                else {
+                    global.city.calendar.season = season;
+                }
+            }
 
             // Weather
             if (global.race['cataclysm']){
                 global.city.calendar.wind = 0;
                 global.city.calendar.temp = 1;
-                global.city.calendar.sky = 1;
+                global.city.calendar.weather = -1;
             }
             else if (Math.rand(0,5) === 0){
                 let temp = Math.rand(0,3);
