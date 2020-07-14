@@ -322,7 +322,7 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
             challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
         }
         if (global.race['cataclysm']){
-            if (calc_mastery() >= 50){
+            if (calc_mastery() >= 50 && global.race.universe !== 'antimatter'){
                 challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
             }
             else {
@@ -2230,7 +2230,7 @@ function fastLoop(){
             if (global.race['spongy'] && global.city.calendar.weather === 0){
                 // Do Nothing
             }
-            else if (global.race['parasite'] && global.city.calendar.wind === 0){
+            else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm']){
                 // Do Nothing
             }
             else {
@@ -2261,6 +2261,10 @@ function fastLoop(){
                     lowerBound += global.race['promiscuous'];
                 }
                 let base = global.city.ptrait === 'toxic' ? global['resource'][global.race.species].amount * 1.25 : global['resource'][global.race.species].amount;
+                if (global.race['parasite'] && global.race['cataclysm']){
+                    lowerBound = Math.round(lowerBound / 5);
+                    base *= 3;
+                }
                 if(Math.rand(0, base * (3 - (2 ** time_multiplier))) <= lowerBound){
                     global['resource'][global.race.species].amount++;
                     if (global.civic['hell_surveyor'].workers + global.civic.free >= global.civic['hell_surveyor'].assigned){
@@ -3286,6 +3290,11 @@ function fastLoop(){
                 lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
                 lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
 
+                let sawmills = 1;
+                if (global.city['sawmill']){
+                    let saw = global.tech['saw'] >= 2 ? 0.08 : 0.05;
+                    sawmills *= (global.city.sawmill.count * saw) + 1;
+                }
                 let power_mult = 1;
                 if (global.city.powered && global.city.sawmill && p_on['sawmill']){
                     power_mult += (p_on['sawmill'] * 0.04);
@@ -3297,14 +3306,17 @@ function fastLoop(){
 
                 let lumber_bd = {};
                 lumber_bd[loc('job_lumberjack')] = lumber_base + 'v';
-                lumber_bd[loc('city_lumber_yard')] = ((lumber_yard - 1) * 100) + '%';
-                lumber_bd[loc('city_sawmill')] = ((power_mult - 1) * 100) + '%';
+                if (lumber_base > 0){
+                    lumber_bd[`ᄂ${loc('city_lumber_yard')}`] = ((lumber_yard - 1) * 100) + '%';
+                    lumber_bd[`ᄂ${loc('city_sawmill')}`] = ((sawmills - 1) * 100) + '%';                    
+                    lumber_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+                }
                 if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['sawmill'] > 0){
                     power_mult = (power_mult - 1) * 0.5 + 1;
                     lumber_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 }
 
-                let delta = lumber_base * power_mult * lumber_yard;
+                let delta = lumber_base * sawmills * power_mult * lumber_yard;
                 delta *= hunger * global_multiplier;
 
                 lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -3365,8 +3377,10 @@ function fastLoop(){
 
             let stone_bd = {};
             stone_bd[loc('workers')] = stone_base + 'v';
-            stone_bd[loc('city_rock_quarry')] = ((rock_quarry - 1) * 100) + '%';
-            stone_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
+            if (stone_base > 0){
+                stone_bd[`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
+                stone_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+            }
 
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['rock_quarry'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
@@ -3466,7 +3480,9 @@ function fastLoop(){
 
                 let copper_power = power_mult;
                 copper_bd[loc('job_miner')] = (copper_base) + 'v';
-                copper_bd[loc('power')] = ((copper_power - 1) * 100) + '%';
+                if (copper_base > 0){
+                    copper_bd[`ᄂ${loc('power')}`] = ((copper_power - 1) * 100) + '%';
+                }
 
                 if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                     copper_power = (copper_power - 1) * 0.5 + 1;
@@ -3511,7 +3527,9 @@ function fastLoop(){
 
                 let iron_power = power_mult;
                 iron_bd[loc('job_miner')] = (iron_base) + 'v';
-                iron_bd[loc('power')] = ((iron_power - 1) * 100) + '%';
+                if (iron_base > 0){
+                    iron_bd[`ᄂ${loc('power')}`] = ((iron_power - 1) * 100) + '%';
+                }
 
                 if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                     iron_power = (iron_power - 1) * 0.5 + 1;
@@ -3657,8 +3675,10 @@ function fastLoop(){
             }
 
             let coal_bd = {};
-            coal_bd[loc('job_coal_miner')] = coal_base + 'v';
-            coal_bd[loc('power')] = ((power_mult - 1) * 100) + '%';
+            coal_bd[loc('job_coal_miner')] = coal_base + 'v';            
+            if (coal_base > 0){
+                coal_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+            }
 
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['coal_mine'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
@@ -4571,8 +4591,6 @@ function midLoop(){
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_sawmill')] = gain+'v';
-            let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
-            global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
         }
         if (global.city['mine']){
             lCaps['miner'] += global.city['mine'].count;
@@ -4704,7 +4722,9 @@ function midLoop(){
             bd_Money[loc('tech_luxury_condo')] = gain+'v';
         }
         if (global.city['lodge']){
-            caps[global.race.species] += global.city['lodge'].count;
+            let cit = global.city['lodge'].count;
+            caps[global.race.species] += cit;
+            bd_Citizen[loc('city_lodge')] = cit + 'v';
         }
         if (global.space['outpost']){
             let gain = global.space['outpost'].count * spatialReasoning(500);
@@ -5388,7 +5408,7 @@ function midLoop(){
         }
         if (global.tech['railway']){
             let routes = 0;
-            if (global.race['catacylsm']){
+            if (global.race['cataclysm']){
                 routes = global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
             }
             else {
@@ -6252,40 +6272,45 @@ function longLoop(){
                 global.city.calendar.year++;
             }
 
-            let s_segments = global.city.ptrait === 'elliptical' ? 6 : 4;
-            let season_length = Math.round(global.city.calendar.orbit / s_segments);
-            let days = global.city.calendar.day;
-            let season = 0;
-            while (days > season_length){
-                days -= season_length;
-                season++;
-            }
-            if (global.city.ptrait === 'elliptical'){
-                switch (season){
-                    case 0:
-                        global.city.calendar.season = 0;
-                        break;
-                    case 1:
-                    case 2:
-                        global.city.calendar.season = 1;
-                        break;
-                    case 3:
-                        global.city.calendar.season = 2;
-                        break;
-                    default:
-                        global.city.calendar.season = 3;
-                        break;
-                }
+            if (global.race['cataclysm']){
+                global.city.calendar.season = -1;
             }
             else {
-                global.city.calendar.season = season;
-            }            
+                let s_segments = global.city.ptrait === 'elliptical' ? 6 : 4;
+                let season_length = Math.round(global.city.calendar.orbit / s_segments);
+                let days = global.city.calendar.day;
+                let season = 0;
+                while (days > season_length){
+                    days -= season_length;
+                    season++;
+                }
+                if (global.city.ptrait === 'elliptical'){
+                    switch (season){
+                        case 0:
+                            global.city.calendar.season = 0;
+                            break;
+                        case 1:
+                        case 2:
+                            global.city.calendar.season = 1;
+                            break;
+                        case 3:
+                            global.city.calendar.season = 2;
+                            break;
+                        default:
+                            global.city.calendar.season = 3;
+                            break;
+                    }
+                }
+                else {
+                    global.city.calendar.season = season;
+                }
+            }
 
             // Weather
             if (global.race['cataclysm']){
                 global.city.calendar.wind = 0;
                 global.city.calendar.temp = 1;
-                global.city.calendar.sky = 1;
+                global.city.calendar.weather = -1;
             }
             else if (Math.rand(0,5) === 0){
                 let temp = Math.rand(0,3);
@@ -6430,7 +6455,7 @@ function longLoop(){
             setWeather();
         }
 
-        if (!global.race['catacylsm']){
+        if (!global.race['cataclysm']){
             let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
             if (global.race.deterioration === 0 && deterioration < 40000000){
                 global.race.deterioration = 1;

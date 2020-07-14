@@ -879,7 +879,7 @@ const spaceProjects = {
             effect(){
                 let oil = +fuel_adjust(2).toFixed(2);
                 let soldiers = global.tech.marines >= 2 ? 4 : 2;
-                let food = global.race['catacylsm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
+                let food = global.race['cataclysm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
                 return `<div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
             },
             powered(){ return powerCostMod(1); },
@@ -890,6 +890,9 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            flair(){
+                return ``;
             }
         },
     },
@@ -1230,7 +1233,7 @@ const spaceProjects = {
                 return `<div>${loc('space_gas_star_dock_title')}<div><div class="has-text-special">${loc('space_gas_star_dock_desc_req')}</div>`;
             },
             reqs: { genesis: 3 },
-            no_queue(){ return global.space.star_dock.count < 1 ? false : true },
+            no_queue(){ return global.space.star_dock.count < 1 && global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Money(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? 1500000 : 0; },
                 Steel(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? 500000 : 0; },
@@ -1714,6 +1717,12 @@ const spaceProjects = {
                         global.space['world_controller'] = { count: 1, on: 0 };
                         drawTech();
                         renderSpace();
+                        var id = $(this)[0].id;
+                        $(`#pop${id}`).hide();
+                        if (poppers[id]){
+                            poppers[id].destroy();
+                        }
+                        clearElement($(`#pop${id}`),true);
                     }
                     return true;
                 }

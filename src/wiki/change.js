@@ -3,6 +3,24 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.7`,
+        date: `7/13/2020`,
+        changes: [
+            `Seasons no longer exist in Cataclysm mode.`,
+            `It is no longer Sunny in Cataclysm mode.`,
+            `Parasites are no longer unable to grow population in Cataclysm mode, but they do take a growth penalty.`,
+            `Base Sawmill effect is now seperated from lumberjack in production breakdown.`
+        ]
+    },
+    {
+        version: `0.9.6`,
+        date: `7/10/2020`,
+        changes: [
+            `Fixed bug with Infiltrator not unlocking Nanoweave.`,
+            `Fixed bug with Railways not adding traderoutes correctly in Cataclysm mode.`
+        ]
+    },
+    {
         version: `0.9.5`,
         date: `7/6/2020`,
         changes: [
