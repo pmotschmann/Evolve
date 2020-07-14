@@ -1717,6 +1717,12 @@ const spaceProjects = {
                         global.space['world_controller'] = { count: 1, on: 0 };
                         drawTech();
                         renderSpace();
+                        var id = $(this)[0].id;
+                        $(`#pop${id}`).hide();
+                        if (poppers[id]){
+                            poppers[id].destroy();
+                        }
+                        clearElement($(`#pop${id}`),true);
                     }
                     return true;
                 }
