@@ -5922,7 +5922,7 @@ function midLoop(){
                     }
                 }
 
-                if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant']){
+                if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
                     global.queue.queue.splice(i,1);
                     break;
                 }
