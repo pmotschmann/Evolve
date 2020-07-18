@@ -2635,7 +2635,7 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global.race['slaver'] && global.city['slave_pen']){
-                    let max = global.city.slave_pen.count * 5;
+                    let max = global.city.slave_pen.count * 4;
                     let keyMult = keyMultiplier();
                     for (var i=0; i<keyMult; i++){
                         if (max > global.city.slave_pen.slaves){
@@ -2942,16 +2942,16 @@ export const actions = {
                 Copper(offset){ return costMultiplier('slave_pen', offset, 10, 1.36); }
             },
             effect(){
-                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 5 : 5;
+                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 4 : 4;
                 let slaves = global.city['slave_pen'] ? global.city.slave_pen.slaves : 0;
-                return `<div>${loc('city_slave_pen_effect',[5])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
+                return `<div>${loc('city_slave_pen_effect',[4])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['slave_pen'].count++;
                     global.resource.Slave.display = true;
                     global.resource.Slave.amount = global.city.slave_pen.slaves;
-                    global.resource.Slave.max = global.city.slave_pen.count * 5;
+                    global.resource.Slave.max = global.city.slave_pen.count * 4;
                     return true;
                 }
                 return false;

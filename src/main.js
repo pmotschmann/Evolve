@@ -4651,8 +4651,8 @@ function midLoop(){
             }
         }
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
-            caps['Slave'] = global.city.slave_pen.count * 5;
-            bd_Slave[loc('city_slave_pen')] = global.city.slave_pen.count * 5 + 'v';
+            caps['Slave'] = global.city.slave_pen.count * 4;
+            bd_Slave[loc('city_slave_pen')] = global.city.slave_pen.count * 4 + 'v';
 
             if (caps['Slave'] < global.city.slave_pen.slaves){
                 global.city.slave_pen.slaves = caps['Slave'];

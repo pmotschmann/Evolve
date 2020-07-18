@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.8`,
+        date: `7/18/2020`,
+        changes: [
+            `Czech translation by Mousesama`,
+            `The slaves have revolted. They staged a sucessful hunger strike to demand better living conditions, as a result slave pens can now only hold 4 slaves each.`,
+        ]
+    },{
         version: `0.9.7`,
         date: `7/13/2020`,
         changes: [
