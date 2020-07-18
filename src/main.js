@@ -307,7 +307,6 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         let orbit = global.city.calendar.orbit;
 
         let geo_traits = ``;
-        global.city.geology['Iron'] = -(0.05);
         if (Object.keys(global.city.geology).length > 0){
             let good = ``;
             let bad = ``;
