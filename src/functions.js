@@ -230,7 +230,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue" v-bind:id="setID(index)"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -282,14 +282,13 @@ export function dragQueue(){
             resizeGame();
         }
     });
-    //attachQueuePopovers();
+    attachQueuePopovers();
 }
 
-// Very glitchy
+var pop_lock = false;
 function attachQueuePopovers(){
     for (let i=0; i<global.queue.queue.length; i++){
         let pop_target = '#main';
-        
         let id = `q${global.queue.queue[i].id}${i}`;
 
         let c_action;
@@ -306,22 +305,31 @@ function attachQueuePopovers(){
         }
 
         $('#'+id).on('mouseover',function(){
+            if (pop_lock !== id){
+                cleanPopOver(pop_lock);
                 let wide = c_action['wide'] ? ' wide' : '';
                 var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
                 $(pop_target).append(popper);
                 actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
                 popper.show();
-                poppers[id] = new Popper($('#'+id),popper);
-            });
-        $('#'+id).on('mouseout',function(){
-                $(`#pop${id}`).hide();
-                vBind({el: `#popTimer`},'destroy');
-                if (poppers[id]){
-                    poppers[id].destroy();
-                }
-                clearElement($(`#pop${id}`),true);
-            });
+                poppers[id] = new Popper($('#buildQueue'),popper);
+                pop_lock = id;
+            }
+        });
     }
+    $('#buildQueue').on('mouseout',function(){
+        cleanPopOver(pop_lock);
+        pop_lock = false;
+    });
+}
+
+function cleanPopOver(id){
+    $(`#pop${id}`).hide();
+    vBind({el: `#popTimer`},'destroy');
+    if (poppers[id]){
+        poppers[id].destroy();
+    }
+    clearElement($(`#pop${id}`),true);
 }
 
 export function modRes(res,val){

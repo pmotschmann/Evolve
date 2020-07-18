@@ -2745,7 +2745,7 @@ export const actions = {
             }
         },
         basic_housing: {
-            id: 'city-house',
+            id: 'city-basic_housing',
             title(){
                 return basicHousingLabel();
             },
