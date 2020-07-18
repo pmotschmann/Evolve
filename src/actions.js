@@ -14533,7 +14533,7 @@ export function setPlanet(hell){
                         if (badCnt === 1) {
                             bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
                         }
-                        let res_val = `<div class="has-text-warning">${loc(`resource_${key}_name`)}`;
+                        let res_val = `<div class="has-text-caution">${loc(`resource_${key}_name`)}`;
                         if (numShow > 0) {
                             res_val += `: <span class="has-text-danger">${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
                             numShow--;

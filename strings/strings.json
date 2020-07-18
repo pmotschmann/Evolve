@@ -183,6 +183,8 @@
   "gain": "+%0 %1/s",
   "spend": "-%0 %1/s",
   "produce": "+%0 %1 Production",
+  "malus": "Malus",
+  "bonus": "Bonus",
   "job_default": "%0 is the default job for new citizens.",
   "job_farmer": "Farmer",
   "job_farmer_desc": "Farmers create %1 to feed your population. Each farmer generates %0 %1 per second. Farmers in excess of the %2 Farms constructed generate only %3 %1 per second.",

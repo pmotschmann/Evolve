@@ -305,6 +305,44 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
             }
         }
         let orbit = global.city.calendar.orbit;
+
+        let geo_traits = ``;
+        global.city.geology['Iron'] = -(0.05);
+        if (Object.keys(global.city.geology).length > 0){
+            let good = ``;
+            let bad = ``;
+            let numShow = global.stats.achieve['miners_dream'] ? (global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l) : 0;
+            for (let key in global.city.geology){
+                if (key !== 0){
+                    if (global.city.geology[key] > 0) {
+                        let res_val = `<div class="has-text-advanced">${loc(`resource_${key}_name`)}`;
+                        if (numShow > 0) {
+                            res_val += `: <span class="has-text-success">+${Math.round((global.city.geology[key] + 1) * 100 - 100)}%</span>`;
+                            numShow--;
+                        }
+                        else {
+                            res_val += `: <span class="has-text-success">${loc('bonus')}</span>`;
+                        }
+                        res_val += `</div>`;
+                        good = good + res_val;
+                    }
+                    else if (global.city.geology[key] < 0){
+                        let res_val = `<div class="has-text-caution">${loc(`resource_${key}_name`)}`;
+                        if (numShow > 0) {
+                            res_val += `: <span class="has-text-danger">${Math.round((global.city.geology[key] + 1) * 100 - 100)}%</span>`;
+                            numShow--;
+                        }
+                        else {
+                            res_val += `: <span class="has-text-danger">${loc('malus')}</span>`;
+                        }
+                        res_val += `</div>`;
+                        bad = bad + res_val
+                    }
+                }
+            }
+            geo_traits = `<div class="flexAround">${good}${bad}</div>`;
+        }
+
         let challenges = '';
         if (global.race['junker']){
             challenges = challenges + `<div>${loc('evo_challenge_junker_desc')}</div>`;
@@ -320,7 +358,8 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         }
         if (global.race['emfield']){
             challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
-        }
+        }    
+
         if (global.race['cataclysm']){
             if (calc_mastery() >= 50 && global.race.universe !== 'antimatter'){
                 challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
@@ -329,7 +368,7 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
                 challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
             }
         }
-        popper.append($(`<div>${loc(global.race['cataclysm'] ? 'no_home' : 'home',[planet,race,planet_label,orbit])}</div>${challenges}`));
+        popper.append($(`<div>${loc(global.race['cataclysm'] ? 'no_home' : 'home',[planet,race,planet_label,orbit])}</div>${geo_traits}${challenges}`));
     }
     popper.show();
     poppers['topbarPop'] = new Popper($('#topBar .planet'),popper);
