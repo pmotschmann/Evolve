@@ -10,7 +10,7 @@ const changeList = [
             `The slaves have revolted. They staged a sucessful hunger strike to demand better living conditions, as a result slave pens can now only hold 4 slaves each.`,
             `Autocracy and Frenzy no longer block Immoral races from gaining a Warmonger bonus.`,
             `Geology traits now display under planet information.`,
-            `Popovers added to the building queue`
+            `Popovers added to building and research queues.`
         ]
     },
     {

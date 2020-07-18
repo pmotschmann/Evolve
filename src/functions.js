@@ -282,6 +282,7 @@ export function dragQueue(){
             resizeGame();
         }
     });
+    resizeGame();
     attachQueuePopovers();
 }
 
@@ -306,7 +307,7 @@ function attachQueuePopovers(){
 
         $('#'+id).on('mouseover',function(){
             if (pop_lock !== id){
-                cleanPopOver(pop_lock);
+                cleanBuildPopOver(pop_lock);
                 let wide = c_action['wide'] ? ' wide' : '';
                 var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
                 $(pop_target).append(popper);
@@ -318,12 +319,12 @@ function attachQueuePopovers(){
         });
     }
     $('#buildQueue').on('mouseout',function(){
-        cleanPopOver(pop_lock);
+        cleanBuildPopOver(pop_lock);
         pop_lock = false;
     });
 }
 
-function cleanPopOver(id){
+export function cleanBuildPopOver(id){
     $(`#pop${id}`).hide();
     vBind({el: `#popTimer`},'destroy');
     if (poppers[id]){

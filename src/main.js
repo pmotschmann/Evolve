@@ -1,13 +1,13 @@
 import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
-import { vBind, mainVue, popover, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, buildQueue, getEaster, easterEgg, easterEggBind } from './functions.js';
+import { vBind, mainVue, popover, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, buildQueue, cleanBuildPopOver, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault, start_cataclysm } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
@@ -5962,7 +5962,9 @@ function midLoop(){
                 }
 
                 if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
+                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
                     global.queue.queue.splice(i,1);
+                    buildQueue();
                     break;
                 }
 
@@ -6003,7 +6005,9 @@ function midLoop(){
                     }
                 }
                 else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
+                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
                     global.queue.queue.splice(i,1);
+                    buildQueue();
                     break;
                 }
                 else {
@@ -6043,7 +6047,9 @@ function midLoop(){
                                 global.queue.queue[idx].q--;
                             }
                             else {
+                                cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
                                 global.queue.queue.splice(idx,1);
+                                buildQueue();
                             }
                         }
                     }
@@ -6061,7 +6067,9 @@ function midLoop(){
                         global.queue.queue[idx].q--;
                     }
                     else {
+                        cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
                         global.queue.queue.splice(idx,1);
+                        buildQueue();
                     }
                     if (c_action['grant']){
                         let tech = c_action.grant[0];
@@ -6090,6 +6098,7 @@ function midLoop(){
             let last = false;
             for (let i=0; i<global.queue.queue.length; i++){
                 if (last === global.queue.queue[i].id){
+                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
                     global.queue.queue[i-1].q += global.queue.queue[i].q;
                     global.queue.queue.splice(i,1);
                     break;
@@ -6111,6 +6120,7 @@ function midLoop(){
 
                 if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.r_queue.queue.splice(i,1);
+                    cleanTechPopOver(`rq${c_action.id}`);
                     break;
                 }
                 else {
@@ -6141,6 +6151,8 @@ function midLoop(){
                         c_action.post();
                     }
                     global.r_queue.queue.splice(idx,1);
+                    cleanTechPopOver(`rq${c_action.id}`);
+                    resQueue();
                 }
             }
         }

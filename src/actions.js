@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, dragQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -14137,7 +14137,7 @@ export function setAction(c_action,action,type,old){
                                         }
                                         if (!queued){
                                             global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
-                                            resDragQueue();
+                                            resQueue();
                                         }
                                     }
                                 }
@@ -14182,6 +14182,7 @@ export function setAction(c_action,action,type,old){
                                     keyMult = 1;
                                 }
                                 let grant = false;
+                                let add_queue = false;
                                 let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 for (var i=0; i<keyMult; i++){
                                     if ((global.settings.qKey && keyMap.q) || !c_action.action()){
@@ -14205,12 +14206,16 @@ export function setAction(c_action,action,type,old){
                                                 else {
                                                     global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size, qs: q_size, t_max: 0 });
                                                 }
-                                                dragQueue();
+                                                add_queue = true;
                                             }
                                         }
                                         break;
                                     }
                                     grant = true;
+                                }
+                                if (add_queue){
+                                    console.log('rebuild queue');
+                                    buildQueue();
                                 }
                                 if (!checkAffordable(c_action)){
                                     let id = c_action.id;
@@ -15674,7 +15679,7 @@ export function resQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -15683,6 +15688,9 @@ export function resQueue(){
             methods: {
                 remove(index){
                     global.r_queue.queue.splice(index,1);
+                },
+                setID(index){
+                    return `rq${global.r_queue.queue[index].id}`;
                 }
             },
             filters: {
@@ -15708,6 +15716,41 @@ export function resDragQueue(){
             resQueue();
         }
     });
+    attachQueuePopovers();
+}
+
+function attachQueuePopovers(){
+    for (let i=0; i<global.r_queue.queue.length; i++){
+        let pop_target = '#main';
+        let id = `rq${global.r_queue.queue[i].id}`;
+        cleanTechPopOver(id);
+
+        let c_action;
+        let segments = global.r_queue.queue[i].id.split("-");
+        c_action = actions[segments[0]][segments[1]];
+
+        $('#'+id).on('mouseover',function(){
+            let wide = c_action['wide'] ? ' wide' : '';
+            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
+            $(pop_target).append(popper);
+            actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+            popper.show();
+            poppers[id] = new Popper($('#'+id),popper);
+        });
+        $('#'+id).on('mouseout',function(){
+            cleanTechPopOver(id);
+        });
+    }
+    
+}
+
+export function cleanTechPopOver(id){
+    $(`#pop${id}`).hide();
+    vBind({el: `#popTimer`},'destroy');
+    if (poppers[id]){
+        poppers[id].destroy();
+    }
+    clearElement($(`#pop${id}`),true);
 }
 
 export function bank_vault(){
