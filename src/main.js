@@ -1889,7 +1889,7 @@ function fastLoop(){
             morale -= high_tax * 0.5;
         }
 
-        if (global.civic.govern.type !== 'autocracy' && !global.race['frenzy'] && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
+        if (((global.civic.govern.type !== 'autocracy' && !global.race['frenzy']) || global.race['immoral']) && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
             let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue));
             global.city.morale.warmonger = global.race['immoral'] ? warmonger : -(warmonger);
             morale += global.city.morale.warmonger;
