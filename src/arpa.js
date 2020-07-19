@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak, p_on, red_on } from './vars.js';
-import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, dragQueue } from './functions.js';
+import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
@@ -1518,7 +1518,7 @@ function addProject(parent,project){
                                 else {
                                     global.queue.queue.push({ id: arpaId, action: pro, type: 'arpa', label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
                                 }
-                                dragQueue();
+                                buildQueue();
                             }
                         }
                     }
@@ -1652,7 +1652,7 @@ export function buildArpa(pro,num,update){
     return completed;
 }
 
-function arpaProjectCosts(id,project){
+export function arpaProjectCosts(id,project){
     let inc = id === 100 ? 100 - global.arpa[project].complete : id;
     var cost = $('<div></div>');
     var costs = arpaAdjustCosts(arpaProjects[project].cost);

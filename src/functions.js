@@ -2,7 +2,7 @@ import { global, save, poppers, webWorker, achieve_level, universe_level, resize
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
-import { arpaAdjustCosts } from './arpa.js';
+import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 
 export function mainVue(){
     vBind({
@@ -294,7 +294,10 @@ function attachQueuePopovers(){
 
         let c_action;
         let segments = global.queue.queue[i].id.split("-");
-        if (segments[0] === 'city' || segments[0] === 'starDock'){
+        if (segments[0].substring(0,4) === 'arpa'){
+            c_action = segments[0].substring(4);
+        }
+        else if (segments[0] === 'city' || segments[0] === 'starDock'){            
             c_action = actions[segments[0]][segments[1]];
         }
         else {
@@ -308,10 +311,15 @@ function attachQueuePopovers(){
         $('#'+id).on('mouseover',function(){
             if (pop_lock !== id){
                 cleanBuildPopOver(pop_lock);
-                let wide = c_action['wide'] ? ' wide' : '';
+                let wide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? ' wide' : '';
                 var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
                 $(pop_target).append(popper);
-                actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+                if (segments[0].substring(0,4) === 'arpa'){
+                    popper.append(arpaProjectCosts(100,c_action));
+                }
+                else {
+                    actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+                }                
                 popper.show();
                 poppers[id] = new Popper($('#buildQueue'),popper);
                 pop_lock = id;
