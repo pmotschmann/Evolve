@@ -2,7 +2,7 @@ import { global, save, poppers, webWorker, achieve_level, universe_level, resize
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
-import { arpaAdjustCosts } from './arpa.js';
+import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 
 export function mainVue(){
     vBind({
@@ -230,7 +230,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue" v-bind:id="setID(index)"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -282,19 +282,22 @@ export function dragQueue(){
             resizeGame();
         }
     });
-    //attachQueuePopovers();
+    resizeGame();
+    attachQueuePopovers();
 }
 
-// Very glitchy
+var pop_lock = false;
 function attachQueuePopovers(){
     for (let i=0; i<global.queue.queue.length; i++){
         let pop_target = '#main';
-        
         let id = `q${global.queue.queue[i].id}${i}`;
 
         let c_action;
         let segments = global.queue.queue[i].id.split("-");
-        if (segments[0] === 'city' || segments[0] === 'starDock'){
+        if (segments[0].substring(0,4) === 'arpa'){
+            c_action = segments[0].substring(4);
+        }
+        else if (segments[0] === 'city' || segments[0] === 'starDock'){            
             c_action = actions[segments[0]][segments[1]];
         }
         else {
@@ -306,22 +309,36 @@ function attachQueuePopovers(){
         }
 
         $('#'+id).on('mouseover',function(){
-                let wide = c_action['wide'] ? ' wide' : '';
+            if (pop_lock !== id){
+                cleanBuildPopOver(pop_lock);
+                let wide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? ' wide' : '';
                 var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
                 $(pop_target).append(popper);
-                actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
-                popper.show();
-                poppers[id] = new Popper($('#'+id),popper);
-            });
-        $('#'+id).on('mouseout',function(){
-                $(`#pop${id}`).hide();
-                vBind({el: `#popTimer`},'destroy');
-                if (poppers[id]){
-                    poppers[id].destroy();
+                if (segments[0].substring(0,4) === 'arpa'){
+                    popper.append(arpaProjectCosts(100,c_action));
                 }
-                clearElement($(`#pop${id}`),true);
-            });
+                else {
+                    actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+                }                
+                popper.show();
+                poppers[id] = new Popper($('#buildQueue'),popper);
+                pop_lock = id;
+            }
+        });
     }
+    $('#buildQueue').on('mouseout',function(){
+        cleanBuildPopOver(pop_lock);
+        pop_lock = false;
+    });
+}
+
+export function cleanBuildPopOver(id){
+    $(`#pop${id}`).hide();
+    vBind({el: `#popTimer`},'destroy');
+    if (poppers[id]){
+        poppers[id].destroy();
+    }
+    clearElement($(`#pop${id}`),true);
 }
 
 export function modRes(res,val){

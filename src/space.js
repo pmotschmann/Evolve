@@ -1233,7 +1233,8 @@ const spaceProjects = {
                 return `<div>${loc('space_gas_star_dock_title')}<div><div class="has-text-special">${loc('space_gas_star_dock_desc_req')}</div>`;
             },
             reqs: { genesis: 3 },
-            no_queue(){ return global.space.star_dock.count < 1 && global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            no_queue(){ return global.space.star_dock.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            q_once: true,
             cost: {
                 Money(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? 1500000 : 0; },
                 Steel(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? 500000 : 0; },

@@ -1,13 +1,13 @@
 import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
-import { vBind, mainVue, popover, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, buildQueue, getEaster, easterEgg, easterEggBind } from './functions.js';
+import { vBind, mainVue, popover, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, buildQueue, cleanBuildPopOver, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault, start_cataclysm } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
@@ -305,6 +305,43 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
             }
         }
         let orbit = global.city.calendar.orbit;
+
+        let geo_traits = ``;
+        if (Object.keys(global.city.geology).length > 0){
+            let good = ``;
+            let bad = ``;
+            let numShow = global.stats.achieve['miners_dream'] ? (global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l) : 0;
+            for (let key in global.city.geology){
+                if (key !== 0){
+                    if (global.city.geology[key] > 0) {
+                        let res_val = `<div class="has-text-advanced">${loc(`resource_${key}_name`)}`;
+                        if (numShow > 0) {
+                            res_val += `: <span class="has-text-success">+${Math.round((global.city.geology[key] + 1) * 100 - 100)}%</span>`;
+                            numShow--;
+                        }
+                        else {
+                            res_val += `: <span class="has-text-success">${loc('bonus')}</span>`;
+                        }
+                        res_val += `</div>`;
+                        good = good + res_val;
+                    }
+                    else if (global.city.geology[key] < 0){
+                        let res_val = `<div class="has-text-caution">${loc(`resource_${key}_name`)}`;
+                        if (numShow > 0) {
+                            res_val += `: <span class="has-text-danger">${Math.round((global.city.geology[key] + 1) * 100 - 100)}%</span>`;
+                            numShow--;
+                        }
+                        else {
+                            res_val += `: <span class="has-text-danger">${loc('malus')}</span>`;
+                        }
+                        res_val += `</div>`;
+                        bad = bad + res_val
+                    }
+                }
+            }
+            geo_traits = `<div class="flexAround">${good}${bad}</div>`;
+        }
+
         let challenges = '';
         if (global.race['junker']){
             challenges = challenges + `<div>${loc('evo_challenge_junker_desc')}</div>`;
@@ -320,7 +357,8 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
         }
         if (global.race['emfield']){
             challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
-        }
+        }    
+
         if (global.race['cataclysm']){
             if (calc_mastery() >= 50 && global.race.universe !== 'antimatter'){
                 challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
@@ -329,7 +367,7 @@ $('#topBar .planetWrap .planet').on('mouseover',function(){
                 challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
             }
         }
-        popper.append($(`<div>${loc(global.race['cataclysm'] ? 'no_home' : 'home',[planet,race,planet_label,orbit])}</div>${challenges}`));
+        popper.append($(`<div>${loc(global.race['cataclysm'] ? 'no_home' : 'home',[planet,race,planet_label,orbit])}</div>${geo_traits}${challenges}`));
     }
     popper.show();
     poppers['topbarPop'] = new Popper($('#topBar .planet'),popper);
@@ -1889,7 +1927,7 @@ function fastLoop(){
             morale -= high_tax * 0.5;
         }
 
-        if (global.civic.govern.type !== 'autocracy' && !global.race['frenzy'] && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
+        if (((global.civic.govern.type !== 'autocracy' && !global.race['frenzy']) || global.race['immoral']) && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
             let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue));
             global.city.morale.warmonger = global.race['immoral'] ? warmonger : -(warmonger);
             morale += global.city.morale.warmonger;
@@ -4651,8 +4689,8 @@ function midLoop(){
             }
         }
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
-            caps['Slave'] = global.city.slave_pen.count * 5;
-            bd_Slave[loc('city_slave_pen')] = global.city.slave_pen.count * 5 + 'v';
+            caps['Slave'] = global.city.slave_pen.count * 4;
+            bd_Slave[loc('city_slave_pen')] = global.city.slave_pen.count * 4 + 'v';
 
             if (caps['Slave'] < global.city.slave_pen.slaves){
                 global.city.slave_pen.slaves = caps['Slave'];
@@ -5922,8 +5960,10 @@ function midLoop(){
                     }
                 }
 
-                if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant']){
+                if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
+                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
                     global.queue.queue.splice(i,1);
+                    buildQueue();
                     break;
                 }
 
@@ -5964,7 +6004,9 @@ function midLoop(){
                     }
                 }
                 else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
+                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
                     global.queue.queue.splice(i,1);
+                    buildQueue();
                     break;
                 }
                 else {
@@ -6004,7 +6046,9 @@ function midLoop(){
                                 global.queue.queue[idx].q--;
                             }
                             else {
+                                cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
                                 global.queue.queue.splice(idx,1);
+                                buildQueue();
                             }
                         }
                     }
@@ -6022,7 +6066,9 @@ function midLoop(){
                         global.queue.queue[idx].q--;
                     }
                     else {
+                        cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
                         global.queue.queue.splice(idx,1);
+                        buildQueue();
                     }
                     if (c_action['grant']){
                         let tech = c_action.grant[0];
@@ -6051,6 +6097,7 @@ function midLoop(){
             let last = false;
             for (let i=0; i<global.queue.queue.length; i++){
                 if (last === global.queue.queue[i].id){
+                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
                     global.queue.queue[i-1].q += global.queue.queue[i].q;
                     global.queue.queue.splice(i,1);
                     break;
@@ -6072,6 +6119,7 @@ function midLoop(){
 
                 if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.r_queue.queue.splice(i,1);
+                    cleanTechPopOver(`rq${c_action.id}`);
                     break;
                 }
                 else {
@@ -6102,6 +6150,8 @@ function midLoop(){
                         c_action.post();
                     }
                     global.r_queue.queue.splice(idx,1);
+                    cleanTechPopOver(`rq${c_action.id}`);
+                    resQueue();
                 }
             }
         }

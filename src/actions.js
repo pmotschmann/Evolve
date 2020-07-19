@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, dragQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -2635,7 +2635,7 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global.race['slaver'] && global.city['slave_pen']){
-                    let max = global.city.slave_pen.count * 5;
+                    let max = global.city.slave_pen.count * 4;
                     let keyMult = keyMultiplier();
                     for (var i=0; i<keyMult; i++){
                         if (max > global.city.slave_pen.slaves){
@@ -2745,7 +2745,7 @@ export const actions = {
             }
         },
         basic_housing: {
-            id: 'city-house',
+            id: 'city-basic_housing',
             title(){
                 return basicHousingLabel();
             },
@@ -2942,16 +2942,16 @@ export const actions = {
                 Copper(offset){ return costMultiplier('slave_pen', offset, 10, 1.36); }
             },
             effect(){
-                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 5 : 5;
+                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 4 : 4;
                 let slaves = global.city['slave_pen'] ? global.city.slave_pen.slaves : 0;
-                return `<div>${loc('city_slave_pen_effect',[5])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
+                return `<div>${loc('city_slave_pen_effect',[4])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['slave_pen'].count++;
                     global.resource.Slave.display = true;
                     global.resource.Slave.amount = global.city.slave_pen.slaves;
-                    global.resource.Slave.max = global.city.slave_pen.count * 5;
+                    global.resource.Slave.max = global.city.slave_pen.count * 4;
                     return true;
                 }
                 return false;
@@ -13465,7 +13465,7 @@ export const actions = {
     galaxy: galaxyTech(),
     starDock: {
         probes: {
-            id: 'spcdock-probes',
+            id: 'starDock-probes',
             title: loc('star_dock_probe'),
             desc(){
                 return `<div>${loc('star_dock_probe_desc')}</div>`;
@@ -13490,7 +13490,7 @@ export const actions = {
             },
         },
         seeder: {
-            id: 'spcdock-seeder',
+            id: 'starDock-seeder',
             title(){ return global.race['cataclysm'] ? loc('star_dock_exodus') : loc('star_dock_seeder'); },
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_exodus') : loc('star_dock_seeder');
@@ -13532,7 +13532,7 @@ export const actions = {
             },
         },
         prep_ship: {
-            id: 'spcdock-prep_ship',
+            id: 'starDock-prep_ship',
             title: loc('star_dock_prep'),
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_prep_cata_desc') : loc('star_dock_prep_desc');
@@ -13557,7 +13557,7 @@ export const actions = {
             },
         },
         launch_ship: {
-            id: 'spcdock-launch_ship',
+            id: 'starDock-launch_ship',
             title: loc('star_dock_genesis'),
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_prep_cata_effect') : loc('star_dock_genesis_desc1');
@@ -14137,7 +14137,7 @@ export function setAction(c_action,action,type,old){
                                         }
                                         if (!queued){
                                             global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
-                                            resDragQueue();
+                                            resQueue();
                                         }
                                     }
                                 }
@@ -14182,6 +14182,7 @@ export function setAction(c_action,action,type,old){
                                     keyMult = 1;
                                 }
                                 let grant = false;
+                                let add_queue = false;
                                 let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 for (var i=0; i<keyMult; i++){
                                     if ((global.settings.qKey && keyMap.q) || !c_action.action()){
@@ -14205,7 +14206,7 @@ export function setAction(c_action,action,type,old){
                                                 else {
                                                     global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size, qs: q_size, t_max: 0 });
                                                 }
-                                                dragQueue();
+                                                add_queue = true;
                                             }
                                         }
                                         break;
@@ -14238,6 +14239,9 @@ export function setAction(c_action,action,type,old){
                                     }, 250);
                                 }
                                 updateDesc(c_action,action,type);
+                                if (add_queue){
+                                    buildQueue();
+                                }
                                 break;
                             }
                     }
@@ -14533,7 +14537,7 @@ export function setPlanet(hell){
                         if (badCnt === 1) {
                             bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
                         }
-                        let res_val = `<div class="has-text-warning">${loc(`resource_${key}_name`)}`;
+                        let res_val = `<div class="has-text-caution">${loc(`resource_${key}_name`)}`;
                         if (numShow > 0) {
                             res_val += `: <span class="has-text-danger">${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
                             numShow--;
@@ -15674,7 +15678,7 @@ export function resQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -15682,7 +15686,12 @@ export function resQueue(){
             data: global.r_queue,
             methods: {
                 remove(index){
+                    cleanTechPopOver(`rq${global.r_queue.queue[index].id}`);
                     global.r_queue.queue.splice(index,1);
+                    resQueue();
+                },
+                setID(index){
+                    return `rq${global.r_queue.queue[index].id}`;
                 }
             },
             filters: {
@@ -15708,6 +15717,41 @@ export function resDragQueue(){
             resQueue();
         }
     });
+    attachQueuePopovers();
+}
+
+function attachQueuePopovers(){
+    for (let i=0; i<global.r_queue.queue.length; i++){
+        let pop_target = '#main';
+        let id = `rq${global.r_queue.queue[i].id}`;
+        cleanTechPopOver(id);
+
+        let c_action;
+        let segments = global.r_queue.queue[i].id.split("-");
+        c_action = actions[segments[0]][segments[1]];
+
+        $('#'+id).on('mouseover',function(){
+            let wide = c_action['wide'] ? ' wide' : '';
+            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
+            $(pop_target).append(popper);
+            actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+            popper.show();
+            poppers[id] = new Popper($('#'+id),popper);
+        });
+        $('#'+id).on('mouseout',function(){
+            cleanTechPopOver(id);
+        });
+    }
+    
+}
+
+export function cleanTechPopOver(id){
+    $(`#pop${id}`).hide();
+    vBind({el: `#popTimer`},'destroy');
+    if (poppers[id]){
+        poppers[id].destroy();
+    }
+    clearElement($(`#pop${id}`),true);
 }
 
 export function bank_vault(){
