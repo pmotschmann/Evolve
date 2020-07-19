@@ -15687,7 +15687,9 @@ export function resQueue(){
             data: global.r_queue,
             methods: {
                 remove(index){
+                    cleanTechPopOver(`rq${global.r_queue.queue[index].id}`);
                     global.r_queue.queue.splice(index,1);
+                    resQueue();
                 },
                 setID(index){
                     return `rq${global.r_queue.queue[index].id}`;
