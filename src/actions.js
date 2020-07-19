@@ -13465,7 +13465,7 @@ export const actions = {
     galaxy: galaxyTech(),
     starDock: {
         probes: {
-            id: 'spcdock-probes',
+            id: 'starDock-probes',
             title: loc('star_dock_probe'),
             desc(){
                 return `<div>${loc('star_dock_probe_desc')}</div>`;
@@ -13490,7 +13490,7 @@ export const actions = {
             },
         },
         seeder: {
-            id: 'spcdock-seeder',
+            id: 'starDock-seeder',
             title(){ return global.race['cataclysm'] ? loc('star_dock_exodus') : loc('star_dock_seeder'); },
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_exodus') : loc('star_dock_seeder');
@@ -13532,7 +13532,7 @@ export const actions = {
             },
         },
         prep_ship: {
-            id: 'spcdock-prep_ship',
+            id: 'starDock-prep_ship',
             title: loc('star_dock_prep'),
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_prep_cata_desc') : loc('star_dock_prep_desc');
@@ -13557,7 +13557,7 @@ export const actions = {
             },
         },
         launch_ship: {
-            id: 'spcdock-launch_ship',
+            id: 'starDock-launch_ship',
             title: loc('star_dock_genesis'),
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_prep_cata_effect') : loc('star_dock_genesis_desc1');
@@ -14213,10 +14213,6 @@ export function setAction(c_action,action,type,old){
                                     }
                                     grant = true;
                                 }
-                                if (add_queue){
-                                    console.log('rebuild queue');
-                                    buildQueue();
-                                }
                                 if (!checkAffordable(c_action)){
                                     let id = c_action.id;
                                     $(`#${id}`).addClass('cna');
@@ -14243,6 +14239,9 @@ export function setAction(c_action,action,type,old){
                                     }, 250);
                                 }
                                 updateDesc(c_action,action,type);
+                                if (add_queue){
+                                    buildQueue();
+                                }
                                 break;
                             }
                     }
