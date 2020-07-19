@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "less": "lessc -x src/evolve.less dist/evolve.css",
     "dev": "npx webpack src/main.js -o dist/main.js --mode=development",
-    "build": "npx webpack src/main.js -o dist/main.js --mode=production",
+    "evolve": "npx webpack src/main.js -o dist/main.js --mode=production",
+    "build": "npx webpack src/main.js -o dist/main.js --mode=production; npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=production",
     "wiki-dev": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=development",
     "wiki": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=production",
     "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css"
