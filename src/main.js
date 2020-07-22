@@ -1926,6 +1926,11 @@ function fastLoop(){
             global.city.morale.tax -= high_tax * 0.5;
             morale -= high_tax * 0.5;
         }
+        if (global.civic.govern.type === 'oligarchy' && global.civic.taxes.tax_rate > 20){
+            let high_tax = global.civic.taxes.tax_rate - 20;
+            global.city.morale.tax += high_tax * 0.5;
+            morale += high_tax * 0.5;
+        }
 
         if (((global.civic.govern.type !== 'autocracy' && !global.race['frenzy']) || global.race['immoral']) && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
             let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue));

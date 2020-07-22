@@ -9,6 +9,7 @@ const changeList = [
             `Added Devotion upgrade to ancients CRISPR line between Faith and Acolyte. The total cost is the same, it's just spread out more.`,
             `Players with Ancients 4 are granted Ancients 5 automatically, those with Ancients 3 are refunded 300 Plasmids.`,
             `Added Enhanced Muscle Fiber CRISPR upgrade.`,
+            `High tax morale penalty under Oligarchy is now reduced.`,
             `Fixed bugs with Blackhole reset and restoring backups.`,
             `Fixed bug with adjusting taxes as a Noble race that would set it to the max.`
         ]
