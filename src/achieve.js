@@ -1526,9 +1526,9 @@ export function drawPerks(){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_ancients")}</span></div>`);
         if (global.genes['ancients'] >= 2){
-            perks.append(`<div><span class="has-text-warning">${global.genes['ancients'] >= 3 ? loc("arpa_perks_ancients3") : loc("arpa_perks_ancients2")}</span></div>`);
-            if (global.genes['ancients'] >= 4) {
-                perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_ancients4")}</span></div>`);
+            perks.append(`<div><span class="has-text-warning">${global.genes['ancients'] >= 4 ? loc("arpa_perks_ancients3") : loc("arpa_perks_ancients2")}</span></div>`);
+            if (global.genes['ancients'] >= 3) {
+                perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_ancients4",[global.genes['ancients'] >= 5 ? 25 : 50])}</span></div>`);
             }
         }
     }
