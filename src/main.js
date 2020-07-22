@@ -6783,7 +6783,7 @@ function longLoop(){
                 tax_cap += 20;
             }
             if (global.race['noble']){
-                if (global.civic.taxes.tax_rate > global.civic.govern.type === 'oligarchy' ? 40 : 20){
+                if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 40 : 20)){
                     global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? 40 : 20;
                 }
             }
