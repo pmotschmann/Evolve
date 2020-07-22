@@ -13589,7 +13589,7 @@ export function templeEffect(){
             faith += global.civic.professor.workers * 0.02;
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
             faith += priest_bonus * global.civic.priest.workers;
         }
         if (global.race['spiritual']){
@@ -13612,7 +13612,7 @@ export function templeEffect(){
             faith += +(global.civic.professor.workers * 0.04).toFixed(2);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
             faith += priest_bonus * global.civic.priest.workers;
         }
         if (global.race['spiritual']){
@@ -13630,7 +13630,7 @@ export function templeEffect(){
             plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
             plasmid += priest_bonus * global.civic.priest.workers;
         }
         if (global.race['spiritual']){

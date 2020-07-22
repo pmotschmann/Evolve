@@ -755,13 +755,28 @@ export const genePool = {
             return false;
         }
     },
+    devotion: {
+        id: 'genes-devotion',
+        title: loc('arpa_genepool_devotion_title'),
+        desc: loc('arpa_genepool_devotion_desc'),
+        reqs: { ancients: 2 },
+        grant: ['ancients',3],
+        cost: 600,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('devotion')){
+                return true;
+            }
+            return false;
+        }
+    },
     acolyte: {
         id: 'genes-acolyte',
         title: loc('arpa_genepool_acolyte_title'),
         desc: loc('arpa_genepool_acolyte_desc'),
-        reqs: { ancients: 2 },
-        grant: ['ancients',3],
-        cost: 900,
+        reqs: { ancients: 3 },
+        grant: ['ancients',4],
+        cost: 1000,
         effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('acolyte')){
@@ -774,9 +789,9 @@ export const genePool = {
         id: 'genes-conviction',
         title: loc('arpa_genepool_conviction_title'),
         desc: loc('arpa_genepool_conviction_desc'),
-        reqs: { ancients: 3 },
-        grant: ['ancients',4],
-        cost: 2200,
+        reqs: { ancients: 4 },
+        grant: ['ancients',5],
+        cost: 1500,
         effect(){ return crispr_effect($(this)[0].cost); },
         action(){
             if (payPlasmids('conviction')){

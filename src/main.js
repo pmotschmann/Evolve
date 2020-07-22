@@ -590,7 +590,7 @@ function fastLoop(){
                 temple_bonus += global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
             }
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                let priest_bonus = global.genes['ancients'] >= 4 ? 0.00015 : 0.0001;
+                let priest_bonus = global.genes['ancients'] >= 5 ? 0.00015 : (global.genes['ancients'] >= 3 ? 0.000125 : 0.0001);
                 temple_bonus += priest_bonus * global.civic.priest.workers;
             }
             if (global.race.universe === 'antimatter'){
@@ -5115,7 +5115,7 @@ function midLoop(){
         if (global.city['temple'] && global.genes['ancients'] && global.genes['ancients'] >= 2){
             lCaps['priest'] += global.city.temple.count;
         }
-        if (global.space['ziggurat'] && global.genes['ancients'] && global.genes['ancients'] >= 3){
+        if (global.space['ziggurat'] && global.genes['ancients'] && global.genes['ancients'] >= 4){
             lCaps['priest'] += global.space.ziggurat.count;
         }
         let pirate_alien2 = piracy('gxy_alien2');

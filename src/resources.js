@@ -1654,7 +1654,7 @@ export function spatialReasoning(value,type){
     if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
         let temple = 0.06;
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest = global.genes['ancients'] >= 4 ? 0.0012 : 0.0008;
+            let priest = global.genes['ancients'] >= 5 ? 0.0012 : (global.genes['ancients'] >= 3 ? 0.001 : 0.0008);
             temple += priest * global.civic.priest.workers;
         }
         value *= 1 + (global.city.temple.count * temple);
@@ -1693,7 +1693,7 @@ export function plasmidBonus(type){
                 temple_bonus += global.civic.professor.workers * 0.002;
             }
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                let priest_bonus = global.genes['ancients'] >= 4 ? 0.0015 : 0.001;
+                let priest_bonus = global.genes['ancients'] >= 5 ? 0.0015 : (global.genes['ancients'] >= 3 ? 0.00125 : 0.001);
                 temple_bonus += priest_bonus * global.civic.priest.workers;
             }
             if (global.race['spiritual']){
