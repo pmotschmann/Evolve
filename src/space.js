@@ -846,7 +846,7 @@ const spaceProjects = {
                 if (global.race['cataclysm']){
                     desc = desc + templeEffect();
                 }
-                if (global.genes['ancients'] && global.genes['ancients'] >= 3){
+                if (global.genes['ancients'] && global.genes['ancients'] >= 4){
                     global.civic.priest.display = true;
                     desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
                 }
