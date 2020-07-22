@@ -12497,6 +12497,10 @@ export const actions = {
             effect(){ return `<div>${loc('tech_infusion_confirm_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.tech['whitehole'] >= 4){
+                        return;
+                    }
+                    global.tech['whitehole'] = 4;
                     let bang = $('<div class="bigbang"></div>');
                     $('body').append(bang);
                     setTimeout(function(){
