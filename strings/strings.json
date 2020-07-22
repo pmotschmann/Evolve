@@ -2321,6 +2321,8 @@
   "arpa_genepool_spatial_supremacy_desc": "Plasmid storage effect +33%",
   "arpa_genepool_dimensional_warping_title": "Dimensional Warping",
   "arpa_genepool_dimensional_warping_desc": "Both Phage and Plasmids apply the Spatial Reasoning bonus",
+  "arpa_genepool_enhanced_muscle_fiber_title": "Enhanced Muscle Fiber",
+  "arpa_genepool_enhanced_muscle_fiber_desc": "Doubles manual gathering rate",
   "arpa_genepool_morphogenesis_title": "Morphogenesis",
   "arpa_genepool_morphogenesis_desc": "Decreases evolution costs",
   "arpa_genepool_recombination_title": "Recombination",

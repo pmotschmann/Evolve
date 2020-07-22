@@ -2541,7 +2541,11 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    modRes('Food',gain);
                 }
                 return false;
             }
@@ -2572,7 +2576,11 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    modRes('Lumber',gain);
                 }
                 return false;
             }
@@ -2587,7 +2595,11 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    modRes('Stone',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    modRes('Stone',gain);
                 }
                 return false;
             }
@@ -2609,14 +2621,18 @@ export const actions = {
             not_trait: ['kindling_kindred','cataclysm'],
             no_queue(){ return true },
             action(){
+                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                if (global.genes['enhance']){
+                    gain *= 2;
+                }
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    modRes('Lumber',gain);
                 }
                 if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    modRes('Food',gain);
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
-                    modRes('Furs',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    modRes('Furs',gain);
                 }
                 return false;
             }

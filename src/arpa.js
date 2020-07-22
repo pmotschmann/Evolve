@@ -288,6 +288,21 @@ export const genePool = {
             return false;
         }
     },
+    enhanced_muscle_fiber: {
+        id: 'genes-enhanced_muscle_fiber',
+        title: loc('arpa_genepool_enhanced_muscle_fiber_title'),
+        desc: loc('arpa_genepool_enhanced_muscle_fiber_desc'),
+        reqs: {},
+        grant: ['enhance',1],
+        cost: 25,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('enhanced_muscle_fiber')){
+                return true;
+            }
+            return false;
+        }
+    },
     morphogenesis: {
         id: 'genes-morphogenesis',
         title: loc('arpa_genepool_morphogenesis_title'),

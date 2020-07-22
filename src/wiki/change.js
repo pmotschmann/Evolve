@@ -6,8 +6,9 @@ const changeList = [
         version: `0.9.9`,
         date: `7/21/2020`,
         changes: [
-            `Added Devotion upgrade to ancients CRISPRR line between Faith and Acolyte. The total cost is the same, it's just spread out more.`,
-            `Players with Ancients 4 are granted Ancients 5 automatically, those with Ancients 3 are refunded 300 Plasmids.`
+            `Added Devotion upgrade to ancients CRISPR line between Faith and Acolyte. The total cost is the same, it's just spread out more.`,
+            `Players with Ancients 4 are granted Ancients 5 automatically, those with Ancients 3 are refunded 300 Plasmids.`,
+            `Added Enhanced Muscle Fiber CRISPR upgrade.`
         ]
     },
     {
