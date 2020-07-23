@@ -435,7 +435,18 @@ if (convertVersion(global['version']) < 9005){
     }
 }
 
-global['version'] = '0.9.8';
+if (convertVersion(global['version']) < 9009){
+    if (global.genes.hasOwnProperty('ancients') && global.genes['ancients'] >= 3){
+        if (global.genes['ancients'] === 4){
+            global.genes['ancients'] = 5;
+        }
+        else {
+            global.race.Plasmid.count += 300;
+        }
+    }
+}
+
+global['version'] = '0.9.9';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){

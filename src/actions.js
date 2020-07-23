@@ -2541,7 +2541,11 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    modRes('Food',gain);
                 }
                 return false;
             }
@@ -2572,7 +2576,11 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    modRes('Lumber',gain);
                 }
                 return false;
             }
@@ -2587,7 +2595,11 @@ export const actions = {
             no_queue(){ return true },
             action(){
                 if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    modRes('Stone',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    modRes('Stone',gain);
                 }
                 return false;
             }
@@ -2609,14 +2621,18 @@ export const actions = {
             not_trait: ['kindling_kindred','cataclysm'],
             no_queue(){ return true },
             action(){
+                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                if (global.genes['enhance']){
+                    gain *= 2;
+                }
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    modRes('Lumber',gain);
                 }
                 if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    modRes('Food',gain);
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
-                    modRes('Furs',global.race['strong'] ? traits.strong.vars[0] : 1);
+                    modRes('Furs',gain);
                 }
                 return false;
             }
@@ -2986,7 +3002,7 @@ export const actions = {
             flair(){ return global.tech.agriculture >= 7 ? loc('city_farm_flair2') : loc('city_farm_flair1'); }
         },
         compost: {
-            id: 'city-compost_heap',
+            id: 'city-compost',
             title: loc('city_compost_heap'),
             desc: loc('city_compost_heap_desc'),
             category: 'residential',
@@ -12481,6 +12497,10 @@ export const actions = {
             effect(){ return `<div>${loc('tech_infusion_confirm_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.tech['whitehole'] >= 4){
+                        return;
+                    }
+                    global.tech['whitehole'] = 4;
                     let bang = $('<div class="bigbang"></div>');
                     $('body').append(bang);
                     setTimeout(function(){
@@ -13589,7 +13609,7 @@ export function templeEffect(){
             faith += global.civic.professor.workers * 0.02;
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
             faith += priest_bonus * global.civic.priest.workers;
         }
         if (global.race['spiritual']){
@@ -13612,7 +13632,7 @@ export function templeEffect(){
             faith += +(global.civic.professor.workers * 0.04).toFixed(2);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
             faith += priest_bonus * global.civic.priest.workers;
         }
         if (global.race['spiritual']){
@@ -13630,7 +13650,7 @@ export function templeEffect(){
             plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 4 ? 0.015 : 0.01;
+            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
             plasmid += priest_bonus * global.civic.priest.workers;
         }
         if (global.race['spiritual']){

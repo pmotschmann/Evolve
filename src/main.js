@@ -590,7 +590,7 @@ function fastLoop(){
                 temple_bonus += global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
             }
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                let priest_bonus = global.genes['ancients'] >= 4 ? 0.00015 : 0.0001;
+                let priest_bonus = global.genes['ancients'] >= 5 ? 0.00015 : (global.genes['ancients'] >= 3 ? 0.000125 : 0.0001);
                 temple_bonus += priest_bonus * global.civic.priest.workers;
             }
             if (global.race.universe === 'antimatter'){
@@ -1925,6 +1925,11 @@ function fastLoop(){
             let high_tax = global.civic.taxes.tax_rate - 40;
             global.city.morale.tax -= high_tax * 0.5;
             morale -= high_tax * 0.5;
+        }
+        if (global.civic.govern.type === 'oligarchy' && global.civic.taxes.tax_rate > 20){
+            let high_tax = global.civic.taxes.tax_rate - 20;
+            global.city.morale.tax += high_tax * 0.5;
+            morale += high_tax * 0.5;
         }
 
         if (((global.civic.govern.type !== 'autocracy' && !global.race['frenzy']) || global.race['immoral']) && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
@@ -5115,7 +5120,7 @@ function midLoop(){
         if (global.city['temple'] && global.genes['ancients'] && global.genes['ancients'] >= 2){
             lCaps['priest'] += global.city.temple.count;
         }
-        if (global.space['ziggurat'] && global.genes['ancients'] && global.genes['ancients'] >= 3){
+        if (global.space['ziggurat'] && global.genes['ancients'] && global.genes['ancients'] >= 4){
             lCaps['priest'] += global.space.ziggurat.count;
         }
         let pirate_alien2 = piracy('gxy_alien2');
@@ -6783,7 +6788,7 @@ function longLoop(){
                 tax_cap += 20;
             }
             if (global.race['noble']){
-                if (global.civic.taxes.tax_rate > global.civic.govern.type === 'oligarchy' ? 40 : 20){
+                if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 40 : 20)){
                     global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? 40 : 20;
                 }
             }
