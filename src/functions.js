@@ -405,11 +405,17 @@ export function genCivName(){
         loc(`civics_gov_name3`),
         loc(`civics_gov_name4`),
         loc(`civics_gov_name5`),
+        loc(`civics_gov_name6`),
+        loc(`civics_gov_name7`),
+        loc(`civics_gov_name8`),
+        loc(`civics_gov_name9`),
+        loc(`civics_gov_name10`),
+        loc(`civics_gov_name11`),
     ];
 
     return {
-        s0: Math.rand(0,6),
-        s1: filler[Math.rand(0,10)]
+        s0: Math.rand(0,14),
+        s1: filler[Math.rand(0,16)]
     };
 }
 
