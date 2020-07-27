@@ -13524,7 +13524,7 @@ export const actions = {
             reqs: { genesis: 5 },
             no_queue(){ return global.starDock.seeder.count < 100 ? false : true },
             queue_size: 10,
-            queue_complete(){ return global.starDock.seeder.count >= 100 ? true : false; },
+            queue_complete(){ return 100 - global.starDock.seeder.count; },
             cost: {
                 Money(){ return global.starDock.seeder.count < 100 ? 100000 : 0; },
                 Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },

@@ -313,7 +313,7 @@ const fortressModules = {
             },
             reqs: { hell_pit: 4 },
             no_queue(){ return global.portal.soul_forge.count < 1 ? false : true },
-            queue_complete(){ return global.portal.soul_forge.count >= 1 ? true : false; },
+            queue_complete(){ return 1 - global.portal.soul_forge.count; },
             powered(){ return powerCostMod(30); },
             postPower(o){
                 vBind({el: `#fort`},'update');

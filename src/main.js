@@ -5942,6 +5942,7 @@ function midLoop(){
             let time = 0;
             let spent = { t: 0, r: {}, id: {}};
             let arpa = false;
+            let queued = {};
             for (let i=0; i<global.queue.queue.length; i++){
                 let struct = global.queue.queue[i];
                 time = global.settings.qAny ? 0 : time;
@@ -5970,6 +5971,26 @@ function midLoop(){
                     global.queue.queue.splice(i,1);
                     buildQueue();
                     break;
+                }
+
+                if (t_action){
+                    if (queued.hasOwnProperty(global.queue.queue[i].id)){
+                        queued[global.queue.queue[i].id] += global.queue.queue[i].q;
+                    }
+                    else {
+                        queued[global.queue.queue[i].id] = global.queue.queue[i].q;
+                    }
+                    if (t_action['queue_complete']){
+                        if (queued[global.queue.queue[i].id] > t_action.queue_complete()){
+                            cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                            global.queue.queue[i].q -= queued[global.queue.queue[i].id] - t_action.queue_complete();
+                            if (global.queue.queue[i].q <= 0){
+                                global.queue.queue.splice(i,1);
+                                buildQueue();
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 if (struct.type === 'arpa'){
@@ -6060,7 +6081,7 @@ function midLoop(){
                 }
                 else if (c_action.action()){
                     if (c_action['queue_complete']){
-                        if (c_action.queue_complete()){
+                        if (c_action.queue_complete() <= 0){
                             messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
                         }
                     }
