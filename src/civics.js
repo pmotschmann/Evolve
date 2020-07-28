@@ -258,6 +258,9 @@ function drawGovModal(){
     $('#govModal button').on('mouseover',function(){
         let govType = $(this).data('gov');
         let effectType = global.tech['unify'] && global.tech['unify'] >= 2 && govType === 'federation' ? 'federation_alt' : govType;
+        if (effectType === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            effectType = 'theocracy_alt';
+        }
         var popper = $(`<div id="popGov" class="popper has-background-light has-text-dark"><div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc[effectType]}</div></div>`);
         $('#main').append(popper);
         popper.show();
@@ -1417,7 +1420,7 @@ function war_campaign(gov){
 
 
         if (global.race['slaver'] && global.city['slave_pen']){
-            let max = global.city.slave_pen.count * 5;
+            let max = global.city.slave_pen.count * 4;
             if (max > global.city.slave_pen.slaves){
                 let slaves = Math.floor(Math.seededRandom(0,global.civic.garrison.tactic + 2));
                 if (slaves + global.city.slave_pen.slaves > max){

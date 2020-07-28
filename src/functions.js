@@ -543,7 +543,7 @@ export function timeCheck(c_action,track,detailed){
         let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Plasmid' && res !== 'Phage'){
+            if (res !== 'Morale' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Plasmid' && res !== 'Phage' && res !== 'AntiPlasmid'){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
                     let res_have = Number(global.resource[res].amount);

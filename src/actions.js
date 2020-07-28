@@ -2886,7 +2886,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['lodge'].count++;
+                    global['resource'][global.race.species].display = true;
                     global['resource'][global.race.species].max += 1;
+                    global.settings.showCivic = true;
                     return true;
                 }
                 return false;
@@ -2993,7 +2995,9 @@ export const actions = {
                     global.city['farm'].count++;
                     global.civic.farmer.display = true;
                     if (global.tech['farm']){
+                        global['resource'][global.race.species].display = true;
                         global['resource'][global.race.species].max += 1;
+                        global.settings.showCivic = true;
                     }
                     return true;
                 }
@@ -3014,7 +3018,7 @@ export const actions = {
                 Stone(offset){ return costMultiplier('compost', offset, 12, 1.36); }
             },
             effect(){
-                let generated = 1.2 + (global.tech['compost'] * 0.8);
+                let generated = 1.2 + ((global.tech['compost'] ? global.tech['compost'] : 0) * 0.8);
                 generated *= global.city.biome === 'grassland' ? 1.2 : 1;
                 generated *= global.city.biome === 'volcanic' ? 0.9 : 1;
                 generated *= global.city.biome === 'hellscape' ? 0.25 : 1;
@@ -3116,7 +3120,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('silo', offset, 85, 1.32); },
                 Lumber(offset){ return costMultiplier('silo', offset, 65, 1.36) },
                 Stone(offset){ return costMultiplier('silo', offset, 50, 1.36); },
-                Iron(offset){ return global.city.silo.count >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('silo', offset, 10, 1.36) : 0; }
+                Iron(offset){ return global.city.silo && global.city.silo.count >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('silo', offset, 10, 1.36) : 0; }
             },
             effect(){
                 let food = spatialReasoning(500);
@@ -3567,8 +3571,6 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['sawmill'].count++;
-                    let impact = global.tech['saw'] >= 2 ? 0.08 : 0.05;
-                    global.civic.lumberjack.impact = (global.city['sawmill'].count * impact) + 1;
                     global['resource']['Lumber'].max += spatialReasoning(200);
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.city.sawmill.on++;
@@ -10982,6 +10984,7 @@ export const actions = {
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
+            no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-anthropology') ? true : false; },
             cost: {
                 Knowledge(){ return 2500; }
             },
@@ -11202,6 +11205,7 @@ export const actions = {
             reqs: { theology: 2 },
             grant: ['theology',3],
             not_gene: ['transcendence'],
+            no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-fanaticism') ? true : false; },
             cost: {
                 Knowledge(){ return 2500; }
             },
@@ -14628,9 +14632,12 @@ function srDesc(c_action,old){
             else if (res === 'Plasmid' || res === 'Phage'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
+                    if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                        res = 'AntiPlasmid';
+                    }
                     let label = loc(`resource_${res}_name`);
                     desc = desc + `${label}: ${res_cost}. `;
-                    if (global.race[res].count < res_cost){
+                    if ((res === 'AntiPlasmid' ? global.race['Plasmid'].anti : global.race[res].count) < res_cost){
                         desc = desc + `${loc('insufficient')} ${label}. `;
                     }
                 }
@@ -14713,9 +14720,12 @@ export function actionDesc(parent,c_action,obj,old){
             else if (res === 'Plasmid' || res === 'Phage'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
+                    if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                        res = 'AntiPlasmid';
+                    }
                     let label = loc(`resource_${res}_name`);
                     let color = 'has-text-dark';
-                    if (global.race[res].count < res_cost){
+                    if ((res === 'AntiPlasmid' ? global.race['Plasmid'].anti : global.race[res].count) < res_cost){
                         color = 'has-text-danger';
                     }
                     cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));

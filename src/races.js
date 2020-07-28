@@ -804,7 +804,7 @@ export const traits = {
         desc: loc('trait_humpback'),
         type: 'major',
         val: 4,
-        vars: [0.5]
+        vars: [0.5, 20]
     },
     thalassophobia: { // Wharves are unavailable
         name: loc('trait_thalassophobia_name'),

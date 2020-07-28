@@ -1133,10 +1133,8 @@ const extraInformation = {
     wormholes: [
         loc(`wiki_tech_building_unlock`,[loc(`interstellar_jump_ship`)])
     ],
-    portal: [
-        loc(`wiki_tech_subtab_unlock`,[loc(`tab_portal`),loc(`tab_civil`)])
-    ],
     fortifications: [
+        loc(`wiki_tech_subtab_unlock`,[loc(`tab_portal`),loc(`tab_civil`)]),
         loc(`wiki_tech_fortifications`),
         loc(`wiki_tech_building_unlock`,[loc(`portal_turret_title1`)]),
         loc(`wiki_tech_building_unlock`,[loc(`portal_carport_title`)])
@@ -1250,7 +1248,8 @@ const extraInformation = {
         loc(`wiki_tech_soul_absorption`)
     ],
     soul_link: [
-        loc(`wiki_tech_soul_link`)
+        loc(`wiki_tech_soul_link1`),
+        loc(`wiki_tech_soul_link2`)
     ],
     gun_emplacement: [
         loc(`wiki_tech_building_unlock`,[loc(`portal_gun_emplacement_title`)])

@@ -3833,7 +3833,7 @@ function fastLoop(){
             let delta = base * global_multiplier * pirate * foothold * hunger * iridium_shrine;
             
             iridium_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
-            iridium_bd[`ᄂ${loc('galaxy_foothold_bd')}`] = -((1 - foothold) * 100) + '%';
+            iridium_bd[`ᄂ${loc('galaxy_ore_processor')}`] = -((1 - foothold) * 100) + '%';
             iridium_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
             modRes('Iridium', delta * time_multiplier);
         }
@@ -4008,7 +4008,7 @@ function fastLoop(){
             let delta = base * global_multiplier * pirate * foothold;
             
             adamantite_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
-            adamantite_bd[`ᄂ${loc('galaxy_foothold_bd')}`] = -((1 - foothold) * 100) + '%';
+            adamantite_bd[`ᄂ${loc('galaxy_ore_processor')}`] = -((1 - foothold) * 100) + '%';
             adamantite_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
             modRes('Adamantite', delta * time_multiplier);
         }
@@ -4059,7 +4059,7 @@ function fastLoop(){
             let delta = base * global_multiplier * pirate * foothold;
             
             bolognium_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
-            bolognium_bd[`ᄂ${loc('galaxy_foothold_bd')}`] = -((1 - foothold) * 100) + '%';
+            bolognium_bd[`ᄂ${loc('galaxy_ore_processor')}`] = -((1 - foothold) * 100) + '%';
             bolognium_bd[`ᄂ${loc('galaxy_piracy')}+1`] = -((1 - pirate) * 100) + '%';
             
             if (global.race['discharge'] && global.race['discharge'] > 0){
@@ -6701,6 +6701,7 @@ function longLoop(){
             global.tech['nanoweave'] = 1;
             global.resource.Nanoweave.display = true;
             drawTech();
+            loadFoundry();
         }
         if (global.resource.Knowledge.max >= 11590000 && global.tech['high_tech'] && global.tech.high_tech === 16 && global.tech['chthonian'] && global.tech['chthonian'] >= 3){
             messageQueue(loc(tech_source,[loc('tech_orichalcum_analysis')]),'info');
