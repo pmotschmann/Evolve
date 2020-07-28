@@ -1029,6 +1029,7 @@ export function bloodwar(){
             messageQueue(loc('fortress_lost'));
             global.resource[global.race.species].amount -= global.civic.hell_surveyor.workers;
             global.civic.hell_surveyor.workers = 0;
+            global.civic.hell_surveyor.assigned = 0;
 
             global.portal.fortress.patrols = 0;
             global.stats.died += global.portal.fortress.garrison;

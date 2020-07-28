@@ -55,8 +55,10 @@ export function actionDesc(info, c_action, extended){
     let hasEffect = false;
     if (c_action.hasOwnProperty('effect')){
         let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
-        stats.append(`<div class="effect">${effect}</div>`);
-        hasEffect = true;
+        if (effect !== false){
+            stats.append(`<div class="effect">${effect}</div>`);
+            hasEffect = true;
+        }
         info.append(stats);
     }
 
@@ -89,6 +91,9 @@ export function actionDesc(info, c_action, extended){
             else if (res === 'Plasmid' || res === 'Phage'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
+                    if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                        res = 'AntiPlasmid';
+                    }
                     let label = loc(`resource_${res}_name`);
                     cost.append($(`<div data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
                     render = true;

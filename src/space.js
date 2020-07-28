@@ -2394,7 +2394,7 @@ const interstellarProjects = {
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100){
-                    let power = global.interstellar.dyson.count > 0 ? `<div>${loc('space_dwarf_reactor_effect1',[powerModifier(global.interstellar.dyson.count * 1.25)])}</div>` : ``;
+                    let power = global.interstellar.dyson && global.interstellar.dyson.count > 0 ? `<div>${loc('space_dwarf_reactor_effect1',[powerModifier(global.interstellar.dyson.count * 1.25)])}</div>` : ``;
                     let remain = global.interstellar.hasOwnProperty('dyson') ? 100 - global.interstellar.dyson.count : 100;
                     return `<div>${loc('interstellar_dyson_effect')}</div>${power}<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }

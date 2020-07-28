@@ -741,7 +741,10 @@ export const genePool = {
         id: 'genes-ancients',
         title: loc('arpa_genepool_ancients_title'),
         desc: loc('arpa_genepool_ancients_desc'),
-        reqs: { evolve: 2, old_gods: 1 },
+        reqs: { evolve: 2 },
+        condition(){
+            return global.genes['old_gods'] ? true : false;
+        },
         grant: ['ancients',1],
         cost: 120,
         effect(){ return crispr_effect($(this)[0].cost); },
