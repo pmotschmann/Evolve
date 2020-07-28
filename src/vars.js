@@ -63,10 +63,6 @@ if (global_data) {
     // Load pre-existing game data
     let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
 
-    ['species', 'gods', 'old_gods'].forEach(field => {
-      if (saveState.race[field] === 'orge') { saveState.race[field] = 'ogre'; } // prior to 0.9.10 this was misspelled in the codebase
-    })
-
     if (saveState){
         global = saveState;
         Math.seed = global.seed;
@@ -449,6 +445,12 @@ if (convertVersion(global['version']) < 9009){
             global.race.Plasmid.count += 300;
         }
     }
+}
+
+if (convertVersion(global['version']) < 9010){
+    ['species', 'gods', 'old_gods'].forEach(field => {
+      if (global.race[field] === 'orge') { global.race[field] = 'ogre'; } // prior to 0.9.10 this was misspelled in the codebase
+    })
 }
 
 global['version'] = '0.9.9';
