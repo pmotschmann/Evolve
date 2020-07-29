@@ -75,6 +75,10 @@ else {
     newGameData();
 }
 
+export function setGlobal(toWhat) {
+  global = toWhat;
+}
+
 if (!global['version']){
     global['version'] = '0.2.0';
 }

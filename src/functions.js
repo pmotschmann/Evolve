@@ -1,4 +1,4 @@
-import { global, save, poppers, webWorker, achieve_level, universe_level, resizeGame } from './vars.js';
+import { global, setGlobal, save, poppers, webWorker, achieve_level, universe_level, resizeGame } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -188,7 +188,7 @@ window.exportGame = function exportGame(){
 window.importGame = function importGame(data,utf16){
     let saveState = JSON.parse(utf16 ? LZString.decompressFromUTF16(data) : LZString.decompressFromBase64(data));
     if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
-        global = saveState;
+        setGlobal(saveState);
         if (global.tech.hasOwnProperty('whitehole') && global.tech['whitehole'] >= 4){
             global.tech['whitehole'] = 3;
             global.resource.Soul_Gem.amount += 10;
