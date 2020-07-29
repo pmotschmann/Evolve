@@ -455,6 +455,10 @@ if (convertVersion(global['version']) < 9010){
         global.stats.achieve['extinct_ogre'] = global.stats.achieve['extinct_orge'];
         delete global.stats.achieve['extinct_orge'];
     }
+    if (global.resource.hasOwnProperty('orge')){
+        global.resource['ogre'] = global.resource['orge'];
+        delete global.resource['orge'];
+    }
 }
 
 global['version'] = '0.9.10';
