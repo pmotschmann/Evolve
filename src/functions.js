@@ -1,4 +1,4 @@
-import { global, save, poppers, webWorker, achieve_level, universe_level, resizeGame } from './vars.js';
+import { global, setGlobal, save, poppers, webWorker, achieve_level, universe_level, resizeGame } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -7,7 +7,7 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 export function mainVue(){
     vBind({
         el: '#mainColumn div:first-child',
-        data: { 
+        data: {
             s: global.settings,
             rq: global.r_queue
         },
@@ -188,7 +188,7 @@ window.exportGame = function exportGame(){
 window.importGame = function importGame(data,utf16){
     let saveState = JSON.parse(utf16 ? LZString.decompressFromUTF16(data) : LZString.decompressFromBase64(data));
     if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
-        global = saveState;
+        setGlobal(saveState);
         if (global.tech.hasOwnProperty('whitehole') && global.tech['whitehole'] >= 4){
             global.tech['whitehole'] = 3;
             global.resource.Soul_Gem.amount += 10;
@@ -303,7 +303,7 @@ function attachQueuePopovers(){
         if (segments[0].substring(0,4) === 'arpa'){
             c_action = segments[0].substring(4);
         }
-        else if (segments[0] === 'city' || segments[0] === 'starDock'){            
+        else if (segments[0] === 'city' || segments[0] === 'starDock'){
             c_action = actions[segments[0]][segments[1]];
         }
         else {
@@ -325,7 +325,7 @@ function attachQueuePopovers(){
                 }
                 else {
                     actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
-                }                
+                }
                 popper.show();
                 poppers[id] = new Popper($('#buildQueue'),popper);
                 pop_lock = id;
@@ -1306,7 +1306,7 @@ export function calcGenomeScore(genome){
         genes -= traits[t].val;
     });
 
-    let max_complexity = 2;    
+    let max_complexity = 2;
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
         max_complexity += global.stats.achieve.technophobe.l;
     }
@@ -1343,7 +1343,7 @@ export function getEaster(){
 		L = I - J,
 		month = 3 + f((L + 40)/44),
         day = L + 28 - 31 * f(month / 4);
-    
+
     let easter = {
         date: [month-1,day],
         active: false,
@@ -1360,5 +1360,5 @@ export function getEaster(){
     }
 
     return easter;
-    
+
 }

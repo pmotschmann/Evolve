@@ -51,7 +51,7 @@ Math.seed = 2;
 Math.seededRandom = function(min, max) {
     max = max || 1;
     min = min || 0;
- 
+
     Math.seed = (Math.seed * 9301 + 49297) % 233280;
     var rnd = Math.seed / 233280;
     global.seed = Math.seed;
@@ -72,6 +72,10 @@ if (global_data) {
 }
 else {
     newGameData();
+}
+
+export function setGlobal(toWhat) {
+  global = toWhat;
 }
 
 if (!global['version']){
@@ -148,7 +152,7 @@ if (convertVersion(global['version']) < 3002 && global['space']){
             global.space['laboratory'] = { count: 0, on: 0 };
         }
     }
-    
+
     if (global.tech['space'] && global.tech['space'] >= 3){
         if (!global.space['iridium_mine']){
             global.space['iridium_mine'] = { count: 0, on: 0 };
@@ -195,7 +199,7 @@ if (convertVersion(global['version']) < 4029 && global.race['mutation'] && globa
         max: -2,
         rate: 0
     };
-    
+
     for (let i=0; i<global.race.mutation; i++){
         global.resource.Genes.amount += i + 1;
     }
@@ -214,7 +218,7 @@ if (convertVersion(global['version']) < 4031){
 
 if (convertVersion(global['version']) < 4032){
     if (global.race.species === 'balorg'){
-        global.race['slaver'] = 1;  
+        global.race['slaver'] = 1;
     }
 }
 
@@ -229,7 +233,7 @@ if (convertVersion(global['version']) === 5000){
     if (global.civic['craftsman']){
         global.civic.craftsman['assigned'] = 0;
         if (global.city['foundry']){
-            let workers = global.city.foundry.Plywood + global.city.foundry.Brick + global.city.foundry.Wrought_Iron + global.city.foundry.Sheet_Metal + global.city.foundry.Mythril + global.city.foundry.Aerogel; 
+            let workers = global.city.foundry.Plywood + global.city.foundry.Brick + global.city.foundry.Wrought_Iron + global.city.foundry.Sheet_Metal + global.city.foundry.Mythril + global.city.foundry.Aerogel;
             global.civic.craftsman.workers = workers;
         }
     }
@@ -1150,7 +1154,7 @@ $(document).mousemove(function(e){
             case 'Control':
             case 17:
                 keyMap[k] = e.ctrlKey ? true : false;
-                break;            
+                break;
             case 'Alt':
             case 18:
                 keyMap[k] = e.altKey ? true : false;
@@ -1282,14 +1286,14 @@ export function srSpeak(text, priority) {
     var el = document.createElement("div");
     var id = "speak-" + Date.now();
     el.setAttribute("id", id);
-    el.setAttribute("aria-live", priority || "polite");            
+    el.setAttribute("aria-live", priority || "polite");
     el.classList.add("sr-only");
     document.body.appendChild(el);
-    
+
     window.setTimeout(function () {
-      document.getElementById(id).innerHTML = text;      
+      document.getElementById(id).innerHTML = text;
     }, 100);
-    
+
     window.setTimeout(function () {
         document.body.removeChild(document.getElementById(id));
     }, 1000);
@@ -1298,7 +1302,7 @@ export function srSpeak(text, priority) {
 // executes a soft reset
 window.soft_reset = function reset(){
     let replace = {
-        species : 'protoplasm', 
+        species : 'protoplasm',
         Plasmid: { count: global.race.Plasmid.count },
         Plasmid: { count: global.race.Plasmid.count, anti: global.race.Plasmid.anti },
         Phage: { count: global.race.Phage.count },
@@ -1433,7 +1437,7 @@ export function clearStates(){
     global.stats.died = 0;
     global.stats.attacks = 0;
     global.stats.dkills = 0;
-    
+
     global.settings.showEvolve = true;
     global.settings.showCiv = false;
     global.settings.showCity = false;
