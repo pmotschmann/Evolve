@@ -8374,6 +8374,7 @@ export const actions = {
                         count: 0,
                         on: 0,
                         Lux: 0,
+                        Furs: 0,
                         Alloy: 0,
                         Polymer: 0,
                         Nano: 0,
@@ -9200,6 +9201,27 @@ export const actions = {
             effect: loc('tech_fluidized_bed_reactor_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        synthetic_fur: {
+            id: 'tech-synthetic_fur',
+            title: loc('tech_synthetic_fur'),
+            desc: loc('tech_synthetic_fur'),
+            category: 'crafting',
+            era: 'globalized',
+            reqs: { polymer: 1 },
+            grant: ['synthetic_fur',1],
+            cost: {
+                Knowledge(){ return 100000; },
+                Polymer(){ return 2500; }
+            },
+            effect: loc('tech_synthetic_fur_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -15561,7 +15583,7 @@ function cataclysm(){
         global.city['power'] = 0;
         global.city['powered'] = true;
 
-        global.city['factory'] = { count: 0, on: 0, Lux: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
+        global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
         global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0 };
         global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Iron: 1, Steel: 1 };
         global.city['fission_power'] = { count: 0, on: 0 };

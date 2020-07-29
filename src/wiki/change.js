@@ -7,6 +7,7 @@ const changeList = [
         date: `7/??/2020`,
         changes: [
             `Expanded list of potential enemy city names.`,
+            `Added Synthetic Fur option to Factories.`
         ]
     },
     {

@@ -459,6 +459,9 @@ if (convertVersion(global['version']) < 9010){
         global.resource['ogre'] = global.resource['orge'];
         delete global.resource['orge'];
     }
+    if (global['city'] && global.city['factory'] && !global.city.factory['Furs']){
+        global.city.factory['Furs'] = 0;
+    }
 }
 
 global['version'] = '0.9.10';

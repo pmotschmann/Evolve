@@ -22,7 +22,7 @@ if (global.settings.expose){
 
 index();
 if (global['beta']){
-    $('#topBar .version > a').html(`beta v${global.version}.${global.beta}`);
+    $('#topBar .version > a').html(`v${global.version} Beta ${global.beta}`);
 }
 else {
     $('#topBar .version > a').html('v'+global.version);
@@ -2407,9 +2407,8 @@ function fastLoop(){
         }
 
         // Furs
+        let fur_bd = {};
         if (global.resource.Furs.display){
-            let fur_bd = {};
-
             if (global.race['evil']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.free * weapons / 20;
@@ -2432,12 +2431,9 @@ function fastLoop(){
                 hunting *= 1.25;
             }
             fur_bd[loc('soldiers')] = hunting  + 'v';
-            fur_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
             let delta = hunting;
             delta *= hunger * global_multiplier;
-
-            breakdown.p['Furs'] = fur_bd;
 
             modRes('Furs', delta * time_multiplier);
         }
@@ -2586,6 +2582,67 @@ function fastLoop(){
 
                 delta *= global_multiplier;
                 modRes('Money', delta * time_multiplier);
+            }
+
+            if (global.city.factory['Furs'] && global.city.factory['Furs'] > 0){
+                operating += global.city.factory.Furs;
+                while (operating > on_factories && operating > 0){
+                    operating--;
+                    global.city.factory.Furs--;
+                }
+
+                let moneyIncrement = assembly ? f_rate.Furs.money[global.tech['factory']] : f_rate.Furs.money[0];
+                let polymerIncrement = assembly ? f_rate.Furs.polymer[global.tech['factory']] : f_rate.Furs.polymer[0];
+                let money_cost = global.city.factory.Furs * moneyIncrement;
+                let polymer_cost = global.city.factory.Furs * polymerIncrement;
+                let workDone = global.city.factory.Furs;
+
+                while (polymer_cost * time_multiplier > global.resource.Lumber.amount && polymer_cost > 0){
+                    polymer_cost -= polymerIncrement;
+                    money_cost -= moneyIncrement;
+                    workDone--;
+                }
+                while (money_cost * time_multiplier > global.resource.Oil.amount && money_cost > 0){
+                    polymer_cost -= polymerIncrement;
+                    money_cost -= moneyIncrement;
+                    workDone--;
+                }
+
+                breakdown.p.consume.Money[loc('city_factory')] = -(money_cost);
+                breakdown.p.consume.Polymer[loc('city_factory')] = -(polymer_cost);
+                modRes('Money', -(money_cost * time_multiplier));
+                modRes('Polymer', -(money_cost * time_multiplier));
+
+                let factory_output = workDone * (assembly ? f_rate.Furs.output[global.tech['factory']] : f_rate.Furs.output[0]);
+                if (global.race['toxic']) {
+                    factory_output *= 1 + (traits.toxic.vars[0] / 100);
+                }
+                if (global.civic.govern.type === 'corpocracy'){
+                    factory_output *= 1.3;
+                }
+                if (global.civic.govern.type === 'socialist'){
+                    factory_output *= 1.1;
+                }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
+                    factory_output *= 1.1;
+                }
+
+                let delta = factory_output;
+                delta *= hunger * global_multiplier;
+
+                fur_bd[loc('city_factory')] = factory_output + 'v';
+
+                if (global.race['discharge'] && global.race['discharge'] > 0){
+                    delta *= 0.5;
+                    fur_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                }
+
+                if (global.tech['q_factory']){
+                    let q_bonus = (quantum_level - 1) / 8 + 1;
+                    delta *= q_bonus;
+                    fur_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                }
+                modRes('Furs', delta * time_multiplier);
             }
 
             if (global.city.factory['Alloy'] && global.city.factory['Alloy'] > 0){
@@ -2872,6 +2929,11 @@ function fastLoop(){
             else {
                 breakdown.p['Stanene'] = 0;
             }
+        }
+
+        if (global.resource.Furs.display){
+            fur_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+            breakdown.p['Furs'] = fur_bd;
         }
 
         // Cement
