@@ -5,14 +5,15 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "less": "lessc -x src/evolve.less dist/evolve.css",
-    "dev": "npx webpack src/main.js -o dist/main.js --mode=development",
-    "evolve": "npx webpack src/main.js -o dist/main.js --mode=production",
-    "build": "npx webpack src/main.js -o dist/main.js --mode=production && npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=production",
+    "less": "lessc -x src/evolve.less evolve/evolve.css",
+    "dev": "npx webpack src/main.js -o evolve/main.js --mode=development",
+    "evolve": "npx webpack src/main.js -o evolve/main.js --mode=production",
+    "build": "npm run evolve && npm run wiki",
     "wiki-dev": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=development",
     "wiki": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=production",
     "local": "npm run build && rimraf -f docs && mkdir docs && cp dist/* docs && cp -r src/* docs && cp index.html docs && cp evolved.ico docs && cd docs && mkdir lib && cp ../lib/* lib && mkdir strings && cp ../strings/* strings && cd .. && servehere -c -d docs",
-    "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css"
+    "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css",
+    "serve": "servehere -c"
   },
   "repository": {
     "type": "git",

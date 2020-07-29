@@ -528,7 +528,7 @@ if (global.race['hyper']){
 }
 
 if (window.Worker){
-    webWorker.w = new Worker("evolve.js");
+    webWorker.w = new Worker("evolve/evolve.js");
     webWorker.w.postMessage({ loop: 'short', period: main_timer });
     webWorker.w.postMessage({ loop: 'mid', period: mid_timer });
     webWorker.w.postMessage({ loop: 'long', period: long_timer });
