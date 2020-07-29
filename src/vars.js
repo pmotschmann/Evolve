@@ -451,6 +451,10 @@ if (convertVersion(global['version']) < 9010){
     ['species', 'gods', 'old_gods'].forEach(field => {
       if (global.race[field] === 'orge') { global.race[field] = 'ogre'; } // prior to 0.9.10 this was misspelled in the codebase
     })
+    if (global.stats.hasOwnProperty('achieve') && global.stats.achieve.hasOwnProperty('extinct_orge')){
+        global.stats.achieve['extinct_ogre'] = global.stats.achieve['extinct_orge'];
+        delete global.stats.achieve['extinct_orge'];
+    }
 }
 
 global['version'] = '0.9.10';
