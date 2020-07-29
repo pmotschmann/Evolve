@@ -7,7 +7,7 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 export function mainVue(){
     vBind({
         el: '#mainColumn div:first-child',
-        data: { 
+        data: {
             s: global.settings,
             rq: global.r_queue
         },
@@ -303,7 +303,7 @@ function attachQueuePopovers(){
         if (segments[0].substring(0,4) === 'arpa'){
             c_action = segments[0].substring(4);
         }
-        else if (segments[0] === 'city' || segments[0] === 'starDock'){            
+        else if (segments[0] === 'city' || segments[0] === 'starDock'){
             c_action = actions[segments[0]][segments[1]];
         }
         else {
@@ -325,7 +325,7 @@ function attachQueuePopovers(){
                 }
                 else {
                     actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
-                }                
+                }
                 popper.show();
                 poppers[id] = new Popper($('#buildQueue'),popper);
                 pop_lock = id;
@@ -405,11 +405,17 @@ export function genCivName(){
         loc(`civics_gov_name3`),
         loc(`civics_gov_name4`),
         loc(`civics_gov_name5`),
+        loc(`civics_gov_name6`),
+        loc(`civics_gov_name7`),
+        loc(`civics_gov_name8`),
+        loc(`civics_gov_name9`),
+        loc(`civics_gov_name10`),
+        loc(`civics_gov_name11`),
     ];
 
     return {
-        s0: Math.rand(0,6),
-        s1: filler[Math.rand(0,10)]
+        s0: Math.rand(0,14),
+        s1: filler[Math.rand(0,16)]
     };
 }
 
@@ -537,7 +543,7 @@ export function timeCheck(c_action,track,detailed){
         let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Plasmid' && res !== 'Phage'){
+            if (res !== 'Morale' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Plasmid' && res !== 'Phage' && res !== 'AntiPlasmid'){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
                     let res_have = Number(global.resource[res].amount);
@@ -1306,7 +1312,7 @@ export function calcGenomeScore(genome){
         genes -= traits[t].val;
     });
 
-    let max_complexity = 2;    
+    let max_complexity = 2;
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
         max_complexity += global.stats.achieve.technophobe.l;
     }
@@ -1343,7 +1349,7 @@ export function getEaster(){
 		L = I - J,
 		month = 3 + f((L + 40)/44),
         day = L + 28 - 31 * f(month / 4);
-    
+
     let easter = {
         date: [month-1,day],
         active: false,
@@ -1360,5 +1366,5 @@ export function getEaster(){
     }
 
     return easter;
-    
+
 }

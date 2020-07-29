@@ -604,25 +604,31 @@ function loadSpecialResource(name,color) {
         case 'Plasmid':
             let active = global.race['no_plasmid'] ? (global.race.p_mutation > global.race[bind].count ? global.race[bind].count : global.race.p_mutation) : global.race[bind].count;
             desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
-            let plasmidSpatial = spatialReasoning(1,'plasmid');
-            if (plasmidSpatial > 1){
-                desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
-            }   
+            if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
+                let plasmidSpatial = spatialReasoning(1,'plasmid');
+                if (plasmidSpatial > 1){
+                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
+                }   
+            }
             break;
 
         case 'AntiPlasmid':
             desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race[bind].anti, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
             let antiSpatial = spatialReasoning(1,'anti');
-            if (antiSpatial > 1){
-                desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+            if (global.genes['store'] && (global.race.universe === 'antimatter' || global.genes['bleed'] >= 3)){
+                if (antiSpatial > 1){
+                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+                }
             }
             break;
 
         case 'Phage':
             desc.append($(`<span>${loc(global.race.Plasmid.anti > 0 ? `resource_${name}_desc2` : `resource_${name}_desc`,[250 + global.race[bind].count])}</span>`));
             let phageSpatial = spatialReasoning(1,'phage');
-            if (phageSpatial > 1){
-                desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+            if (global.genes['store'] && global.genes['store'] >= 4){
+                if (phageSpatial > 1){
+                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+                }
             }
             break;
 
@@ -1651,13 +1657,13 @@ export function spatialReasoning(value,type){
     if (global.race.universe === 'standard'){
         value *= darkEffect('standard');
     }
-    if (global.race.universe === 'antimatter' && global.city['temple'] && global.city['temple'].count){
+    if (global.race.universe === 'antimatter' && ((!global.race['cataclysm'] && global.city['temple'] && global.city['temple'].count) || (global.race['cataclysm'] && global.space['ziggurat'] && global.space['ziggurat'].count))){
         let temple = 0.06;
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let priest = global.genes['ancients'] >= 5 ? 0.0012 : (global.genes['ancients'] >= 3 ? 0.001 : 0.0008);
             temple += priest * global.civic.priest.workers;
         }
-        value *= 1 + (global.city.temple.count * temple);
+        value *= 1 + ((global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple);
     }
     return type ? value : Math.round(value);
 }
