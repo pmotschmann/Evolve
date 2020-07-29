@@ -7,7 +7,7 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 export function mainVue(){
     vBind({
         el: '#mainColumn div:first-child',
-        data: { 
+        data: {
             s: global.settings,
             rq: global.r_queue
         },
@@ -303,7 +303,7 @@ function attachQueuePopovers(){
         if (segments[0].substring(0,4) === 'arpa'){
             c_action = segments[0].substring(4);
         }
-        else if (segments[0] === 'city' || segments[0] === 'starDock'){            
+        else if (segments[0] === 'city' || segments[0] === 'starDock'){
             c_action = actions[segments[0]][segments[1]];
         }
         else {
@@ -325,7 +325,7 @@ function attachQueuePopovers(){
                 }
                 else {
                     actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
-                }                
+                }
                 popper.show();
                 poppers[id] = new Popper($('#buildQueue'),popper);
                 pop_lock = id;
@@ -1312,7 +1312,7 @@ export function calcGenomeScore(genome){
         genes -= traits[t].val;
     });
 
-    let max_complexity = 2;    
+    let max_complexity = 2;
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
         max_complexity += global.stats.achieve.technophobe.l;
     }
@@ -1349,7 +1349,7 @@ export function getEaster(){
 		L = I - J,
 		month = 3 + f((L + 40)/44),
         day = L + 28 - 31 * f(month / 4);
-    
+
     let easter = {
         date: [month-1,day],
         active: false,
@@ -1366,5 +1366,5 @@ export function getEaster(){
     }
 
     return easter;
-    
+
 }

@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Expanded list of potential enemy city names.`,
         ]
-    },{
+    },
+    {
         version: `0.9.9`,
         date: `7/21/2020`,
         changes: [
