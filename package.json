@@ -11,8 +11,10 @@
     "build": "npm run evolve && npm run wiki",
     "wiki-dev": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=development",
     "wiki": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=production",
-    "local": "npm run build && rimraf -f docs && mkdir docs && cp dist/* docs && cp -r src/* docs && cp index.html docs && cp evolved.ico docs && cd docs && mkdir lib && cp ../lib/* lib && mkdir strings && cp ../strings/* strings && cd .. && servehere -c -d docs",
     "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css",
+    "mkdoc": "cp dist/* docs && cp -r src/* docs && cp index.html docs && cp evolved.ico docs && cd docs && cp ../lib/* lib && cp ../strings/* strings && cp ../font/* font && cd ..",
+    "clean": "rimraf -f docs && mkdir docs && cd docs && mkdir lib && mkdir strings && mkdir font",
+    "local": "npm run clean && npm run build && npm run mkdoc && servehere -c -d docs",
     "serve": "servehere -c"
   },
   "repository": {
