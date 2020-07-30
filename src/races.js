@@ -667,13 +667,13 @@ export const traits = {
         val: -1,
         vars: [0.15]
     },
-    hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output. 
+    hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output.
         name: loc('trait_hivemind_name'),
         desc: loc('trait_hivemind'),
         type: 'major',
         val: 9,
     },
-    tunneler: { // Mines and Coal Mines are cheaper. 
+    tunneler: { // Mines and Coal Mines are cheaper.
         name: loc('trait_tunneler_name'),
         desc: loc('trait_tunneler'),
         type: 'major',
@@ -804,7 +804,7 @@ export const traits = {
         desc: loc('trait_humpback'),
         type: 'major',
         val: 4,
-        vars: [0.5]
+        vars: [0.5, 20]
     },
     thalassophobia: { // Wharves are unavailable
         name: loc('trait_thalassophobia_name'),
@@ -1028,7 +1028,7 @@ export const races = {
         type: 'humanoid',
         home: loc(date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_home' : 'race_elven_home'),
         entity: loc('race_elven_entity'),
-        traits: { 
+        traits: {
             studious: 1,
             arrogant: 1
         },
@@ -1047,7 +1047,7 @@ export const races = {
         type: 'humanoid',
         home: loc('race_orc_home'),
         entity: loc('race_orc_entity'),
-        traits: { 
+        traits: {
             brute: 1,
             angry: 1
         },
@@ -1066,7 +1066,7 @@ export const races = {
         type: 'animal',
         home: loc('race_cath_home'),
         entity: loc('race_cath_entity'),
-        traits: { 
+        traits: {
             lazy: 1,
             carnivore: 1
         },
@@ -1085,7 +1085,7 @@ export const races = {
         type: 'animal',
         home: easter.active ? loc('race_rabbit_home') : loc('race_wolven_home'),
         entity: easter.active ? loc('race_rabbit_entity') : loc('race_wolven_entity'),
-        traits: { 
+        traits: {
             pack_mentality: 1,
             tracker: 1
         },
@@ -1142,7 +1142,7 @@ export const races = {
         type: 'small',
         home: loc('race_goblin_home'),
         entity: loc('race_goblin_entity'),
-        traits: { 
+        traits: {
             greedy: 1,
             merchant: 1
         },
@@ -1161,7 +1161,7 @@ export const races = {
         type: 'small',
         home: loc('race_gnome_home'),
         entity: loc('race_gnome_entity'),
-        traits: { 
+        traits: {
             smart: 1,
             puny: 1
         },
@@ -1174,22 +1174,22 @@ export const races = {
         },
         fanaticism: 'smart'
     },
-    orge: {
+    ogre: {
         name: loc('race_ogre'),
         desc: loc('race_ogre_desc'),
         type: 'giant',
-        home: loc('race_orge_home'),
+        home: loc('race_ogre_home'),
         entity: loc('race_ogre_entity'),
-        traits: { 
+        traits: {
             dumb: 1,
             tough: 1
         },
         solar: {
-            red: loc('race_orge_solar_red'),
-            hell: loc('race_orge_solar_hell'),
-            gas: loc('race_orge_solar_gas'),
-            gas_moon: loc('race_orge_solar_gas_moon'),
-            dwarf: loc('race_orge_solar_dwarf'),
+            red: loc('race_ogre_solar_red'),
+            hell: loc('race_ogre_solar_hell'),
+            gas: loc('race_ogre_solar_gas'),
+            gas_moon: loc('race_ogre_solar_gas_moon'),
+            dwarf: loc('race_ogre_solar_dwarf'),
         },
         fanaticism: 'tough'
     },
@@ -1237,7 +1237,7 @@ export const races = {
         type: 'reptilian',
         home: loc('race_tortoisan_home'),
         entity: loc('race_tortoisan_entity'),
-        traits: { 
+        traits: {
             slow: 1,
             armored: 1
         },
@@ -1871,7 +1871,7 @@ function customRace(){
 types: farmer, miner, lumberjack, science, factory, army, hunting
 */
 export function racialTrait(workers,type){
-    let modifier = 1; 
+    let modifier = 1;
     if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
         modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
     }
@@ -1910,16 +1910,16 @@ export function racialTrait(workers,type){
     }
     if (global.race['cannibalize'] && global.city['s_alter'] && global.city['s_alter'].count > 0){
         if (type === 'miner' && global.city.s_alter.mine > 0){
-            modifier *= 1.15; 
+            modifier *= 1.15;
         }
         if (type === 'lumberjack' && global.city.s_alter.harvest > 0){
-            modifier *= 1.15; 
+            modifier *= 1.15;
         }
         if (type === 'army' && global.city.s_alter.rage > 0){
-            modifier *= 1.15; 
+            modifier *= 1.15;
         }
         if (type === 'science' && global.city.s_alter.mind > 0){
-            modifier *= 1.15; 
+            modifier *= 1.15;
         }
     }
     if (global.race['humpback'] && (type === 'miner' || type === 'lumberjack')){
@@ -2000,7 +2000,7 @@ export function cleanAddTrait(trait){
             global.civic.lumberjack.workers = 0;
             if (global.civic.d_job === 'lumberjack') {
                 global.civic.d_job = 'unemployed';
-            }   
+            }
             if (global.tech['foundry']){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];

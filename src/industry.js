@@ -24,6 +24,11 @@ export const f_rate = {
         demand: [0.14,0.21,0.28,0.35,0.42],
         fur: [2,3,4,5,6]
     },
+    Furs: {
+        money: [10,15,20,25,30],
+        polymer: [1.5,2.25,3,3.75,4.5],
+        output: [1,1.5,2,2.5,3]
+    },
     Alloy: {
         copper: [0.75,1.12,1.49,1.86,2.23],
         aluminium: [1,1.5,2,2.5,3],
@@ -366,6 +371,18 @@ function loadFactory(parent,bind){
     lux.append(luxCount);
     lux.append(addLux);
 
+    if (global.tech['synthetic_fur']){
+        let fur = $(`<div class="factory"><b-tooltip :label="buildLabel('Furs')" :aria-label="buildLabel('Furs') + ariaProd('Furs')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Furs_name')}</span></b-tooltip></div>`);
+        parent.append(fur);
+
+        let furCount = $(`<span class="current">{{ Furs }}</span>`);
+        let subFurs= $(`<span class="sub" @click="subItem('Furs')" role="button" aria-label="Decrease Furs production">&laquo;</span>`);
+        let addFurs = $(`<span class="add" @click="addItem('Furs')" role="button" aria-label="Increase Furs production">&raquo;</span>`);
+        fur.append(subFurs);
+        fur.append(furCount);
+        fur.append(addFurs);
+    }
+
     let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" :aria-label="buildLabel('Alloy') + ariaProd('Alloy')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Alloy_name')}</span></b-tooltip></div>`);
     parent.append(alloy);
 
@@ -434,7 +451,7 @@ function loadFactory(parent,bind){
                 }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
-                    if (global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene < max){
+                    if (global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene < max){
                         global.city.factory[item]++;
                     }
                     else {
@@ -459,6 +476,11 @@ function loadFactory(parent,bind){
                         demand = demand.toFixed(2);
                         let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
                         return loc('modal_factory_lux_label',[fur,global.resource.Furs.name,demand]);
+                    }
+                    case 'Furs':{
+                        let money = assembly ? f_rate.Furs.money[global.tech['factory']] : f_rate.Furs.money[0];
+                        let polymer = assembly ? f_rate.Furs.polymer[global.tech['factory']] : f_rate.Furs.polymer[0];
+                        return loc('modal_factory_alloy_label',[money,loc('resource_Money_name'),polymer,loc('resource_Polymer_name'),loc('resource_Furs_name')]);
                     }
                     case 'Alloy':{
                         let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
@@ -492,7 +514,7 @@ function loadFactory(parent,bind){
                 return `. ${global.city.factory[prod]} factories producing ${prod}.`;
             },
             level(){
-                let on = global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
+                let on = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
@@ -502,7 +524,7 @@ function loadFactory(parent,bind){
         },
         filters: {
             on(){
-                return global.city.factory.Lux + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
+                return global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
             },
             max(){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;

@@ -1692,7 +1692,7 @@ const spaceProjects = {
             },
             no_queue(){ return global.space.world_collider.count < 1859 ? false : true },
             queue_size: 100,
-            queue_complete(){ return global.space.world_collider.count >= 1859 ? true : false; },
+            queue_complete(){ return 1859 - global.space.world_collider.count; },
             cost: {
                 Money(){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 ? 25000 : 0; },
                 Copper(){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 ? 750 : 0; },
@@ -2382,7 +2382,7 @@ const interstellarProjects = {
             reqs: { proxima: 3 },
             no_queue(){ return global.interstellar.dyson.count < 100 ? false : true },
             queue_size: 10,
-            queue_complete(){ return global.interstellar.dyson.count >= 100 ? true : false; },
+            queue_complete(){ return 100 - global.interstellar.dyson.count; },
             condition(){
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] ? false : true;
             },
@@ -2394,7 +2394,7 @@ const interstellarProjects = {
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100){
-                    let power = global.interstellar.dyson.count > 0 ? `<div>${loc('space_dwarf_reactor_effect1',[powerModifier(global.interstellar.dyson.count * 1.25)])}</div>` : ``;
+                    let power = global.interstellar.dyson && global.interstellar.dyson.count > 0 ? `<div>${loc('space_dwarf_reactor_effect1',[powerModifier(global.interstellar.dyson.count * 1.25)])}</div>` : ``;
                     let remain = global.interstellar.hasOwnProperty('dyson') ? 100 - global.interstellar.dyson.count : 100;
                     return `<div>${loc('interstellar_dyson_effect')}</div>${power}<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
@@ -2421,7 +2421,7 @@ const interstellarProjects = {
             reqs: { proxima: 3, dyson: 1 },
             no_queue(){ return global.interstellar.dyson_sphere.count < 100 ? false : true },
             queue_size: 10,
-            queue_complete(){ return global.interstellar.dyson_sphere.count >= 100 ? true : false; },
+            queue_complete(){ return 100 - global.interstellar.dyson_sphere.count; },
             condition(){
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] && global.tech.dyson === 1 ? true : false;
             },
@@ -2463,7 +2463,7 @@ const interstellarProjects = {
             reqs: { proxima: 3, dyson: 2 },
             no_queue(){ return global.interstellar.orichalcum_sphere.count < 100 ? false : true },
             queue_size: 10,
-            queue_complete(){ return global.interstellar.orichalcum_sphere.count >= 100 ? true : false; },
+            queue_complete(){ return 100 - global.interstellar.orichalcum_sphere.count; },
             condition(){
                 return global.interstellar.dyson_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 2 ? true : false;
             },
@@ -2856,7 +2856,7 @@ const interstellarProjects = {
             reqs: { blackhole: 3 },
             no_queue(){ return global.interstellar.stellar_engine.count < 100 ? false : true },
             queue_size: 10,
-            queue_complete(){ return global.interstellar.stellar_engine.count >= 100 ? true : false; },
+            queue_complete(){ return 100 - global.interstellar.stellar_engine.count; },
             cost: {
                 Money(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 500000 : 0; },
                 Neutronium(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 450 : 0; },
@@ -2999,7 +2999,7 @@ const interstellarProjects = {
             },
             no_queue(){ return global.interstellar.stargate.count < 200 ? false : true },
             queue_size: 10,
-            queue_complete(){ return global.interstellar.stargate.count >= 200 ? true : false; },
+            queue_complete(){ return 200 - global.interstellar.stargate.count; },
             cost: {
                 Money(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 1000000 : 0; },
                 Neutronium(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 4800 : 0; },
@@ -3122,7 +3122,7 @@ const interstellarProjects = {
             },
             no_queue(){ return global.interstellar.space_elevator.count < 100 ? false : true },
             queue_size: 5,
-            queue_complete(){ return global.interstellar.space_elevator.count >= 100 ? true : false; },
+            queue_complete(){ return 100 - global.interstellar.space_elevator.count; },
             cost: {
                 Money(){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 ? 20000000 : 0; },
                 Nano_Tube(){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 ? 500000 : 0; },
@@ -3173,7 +3173,7 @@ const interstellarProjects = {
             },
             no_queue(){ return global.interstellar.gravity_dome.count < 100 ? false : true },
             queue_size: 5,
-            queue_complete(){ return global.interstellar.gravity_dome.count >= 100 ? true : false; },
+            queue_complete(){ return 100 - global.interstellar.gravity_dome.count; },
             cost: {
                 Money(){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 ? 35000000 : 0; },
                 Cement(){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 ? 1250000 : 0; },
@@ -3226,7 +3226,7 @@ const interstellarProjects = {
             },
             no_queue(){ return global.interstellar.ascension_machine.count < 100 ? false : true },
             queue_size: 5,
-            queue_complete(){ return global.interstellar.ascension_machine.count >= 100 ? true : false; },
+            queue_complete(){ return 100 - global.interstellar.ascension_machine.count; },
             cost: {
                 Money(){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 ? 75000000 : 0; },
                 Alloy(){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 ? 750000 : 0; },

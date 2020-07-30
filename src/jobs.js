@@ -52,7 +52,7 @@ export const job_desc = {
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
-        let desc = loc('job_quarry_worker_desc',[gain,global.resource.Stone.name]);
+        let desc = global.resource.Aluminium.display ? loc('job_quarry_worker_desc2',[gain, global.resource.Stone.name,global.resource.Aluminium.name]) : loc('job_quarry_worker_desc1',[gain,global.resource.Stone.name]);
         if (global.civic.d_job === 'quarry_worker'){
             desc = desc + ' ' + loc('job_default',[loc('job_quarry_worker')]);
         }
