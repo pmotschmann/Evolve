@@ -1,4 +1,4 @@
-import { global, setGlobal, save, poppers, webWorker, achieve_level, universe_level, resizeGame } from './vars.js';
+import { global, save, poppers, webWorker, achieve_level, universe_level, resizeGame } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -188,17 +188,21 @@ window.exportGame = function exportGame(){
 window.importGame = function importGame(data,utf16){
     let saveState = JSON.parse(utf16 ? LZString.decompressFromUTF16(data) : LZString.decompressFromBase64(data));
     if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
-        setGlobal(saveState);
-        if (global.tech.hasOwnProperty('whitehole') && global.tech['whitehole'] >= 4){
-            global.tech['whitehole'] = 3;
-            global.resource.Soul_Gem.amount += 10;
-            global.resource.Knowledge.amount += 1500000;
-            global.stats.know -= 1500000;
-        }
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         if (webWorker.w){
             webWorker.w.terminate();
         }
+        if (saveState.hasOwnProperty('tech')){
+            if (saveState.tech.hasOwnProperty('whitehole') && saveState.tech.whitehole >= 4){
+                saveState.tech.whitehole = 3;
+                saveState.resource.Soul_Gem.amount += 10;
+                saveState.resource.Knowledge.amount += 1500000;
+                saveState.stats.know -= 1500000;
+            }
+            if (saveState.tech.hasOwnProperty('quaked') && saveState.tech.quaked === 2){
+                saveState.tech.quaked = 1;
+            }
+        }
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));        
         window.location.reload();
     }
 }
