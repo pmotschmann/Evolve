@@ -13,12 +13,12 @@ export function gamePlayPage(zone){
         case 'mechanics':
             mechanicsPage(content);
             break;
-        case 'hell':
-            hellPage(content);
-            break;
         case 'planets':
             planetsPage(content);
             break;
+        case 'hell':
+            hellPage(content);
+            break;        
     }
 }
 

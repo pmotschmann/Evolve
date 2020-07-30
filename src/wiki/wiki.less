@@ -31,6 +31,11 @@
         padding: .25rem .5rem;
         border: .0625rem solid;
 
+        &.wide {
+            max-width: 100%;
+            margin-right: 0;
+        }
+
         h2 {
             margin-bottom: .25rem;
             border-bottom: .0625rem solid;
@@ -160,14 +165,17 @@
         }
     }
 
-    .planetList {
-        display: table;
-        column-count: 2;
+    .duelList {
+        display: flex;
+        flex-flow: wrap;
+        
         .itemlist {
             display: flex;
         }
-        .featureList {
-            display: table-cell;
+
+        .listSide {
+            min-width: 30rem;
+            width: 50%;
             border: .0625rem solid;
             text-align: center;
 
@@ -176,10 +184,14 @@
                 text-align: left;
                 margin: 0.5rem;
             }
-        }
-    }
 
-    .planetList:first-child {
+            @media only screen and (max-width: 74.5rem){
+                width: 100%;
+                .infoBox {
+                    max-width: 100%;
+                }
+            }
+        }
     }
 
     .flexed {

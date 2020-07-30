@@ -36,8 +36,8 @@ function initPage(){
             submenu: [
                 { key: 'basics' },
                 { key: 'mechanics' },
-                { key: 'hell' },
-                { key: 'planets' }
+                { key: 'planets' },
+                { key: 'hell' }                
             ]
         },
         {
@@ -51,7 +51,7 @@ function initPage(){
             key: 'species',
             submenu: [
                 { key: 'races' },
-                { key: 'traits' },
+                { key: 'traits' }
             ]
         },
         {

@@ -2211,109 +2211,48 @@ export const biomes = {
     grassland: {
         label: loc('biome_grassland_name'),
         desc: loc('biome_grassland'),
-        bonuses:
-        {
-            compost: 1.2
-        }
+        vars: [1.2], // [Agriculture]
+        wiki: ['%']
     },
     oceanic: {
         label: loc('biome_oceanic_name'),
         desc: loc('biome_oceanic'),
-        bonuses: {
-            soldiers: {
-                Furs: 0.95
-            },
-            smelter: {
-                Titanium: {
-                    Iron: 1.12,
-                    Steel: 1.06
-                }
-            }
-        }
+        vars: [1.12,1.06,0.95], // [Iron Titanium,  cSteel Titanium, Hunting Fur]
+        wiki: ['%','%','%']
     },
     forest: {
         label: loc('biome_forest_name'),
         desc: loc('biome_forest'),
-        bonuses: {
-            lumberjack: 1.15
-        }
+        vars: [1.15], // [Lumberjack Lumber]
+        wiki: ['%']
     },
     desert: {
         label: loc('biome_desert_name'),
         desc: loc('biome_desert'),
-        bonuses: {
-            quarry_worker: 1.2,
-            oil_well: 1.1
-        }
+        vars: [1.2,1.1,0.75], // [Quarry Worker, Oil Well, Lumberjack]
+        wiki: ['%','%','%']
     },
     volcanic: {
         label: loc('biome_volcanic_name'),
         desc: loc('biome_volcanic'),
-        bonuses: {
-            miner: {
-                Copper: 1.12,
-                Iron: 1.08
-            },
-            compost: .9
-        },
-        weather: {
-            season: {
-                min_tempature: {
-                    summer: 1
-                }
-            },
-            cold_days: 0.5,
-            hot_days: 1.5
-        }
+        vars: [0.9,1.12,1.08], // [Agriculture, Copper, Iron]
+        wiki: ['%','%','%']
     },
     tundra: {
         label: loc('biome_tundra_name'),
         desc: loc('biome_tundra'),
-        bonuses: {
-            soldiers: {
-                Furs: 1.25
-            },
-            oil_well: 0.9
-        },
-        weather: {
-            season: {
-                max_tempature: {
-                    winter: 0
-                }
-            },
-            cold_days: 1.5,
-            hot_days: 0.5
-        }
+        vars: [1.25,0.9], // [Hunting Fur, Oil Well]
+        wiki: ['%','%']
     },
     hellscape: {
         label: loc('biome_hellscape_name'),
         desc: loc('biome_hellscape'),
-        bonuses: {
-            compost: .25
-        },
-        weather: {
-            min_tempature: 1
-        }
+        vars: [0.25], // [Agriculture]
+        wiki: ['%']
     },
     eden: {
         label: loc('biome_eden_name'),
-        desc: loc('biome_eden'),
-        weather:
-        {
-            season: {
-                min_tempature: {
-                    spring: 1,
-                    summer: 1,
-                    fall: 1
-                },
-                max_tempature: {
-                    spring: 2,
-                    summer: 1,
-                    fall: 2,
-                    winter: 2
-                }
-            }
-        }
+        desc: loc('biome_eden')
     }
 };
 
@@ -2321,15 +2260,16 @@ export const planetTraits = {
     toxic: {
         label: loc('planet_toxic'),
         desc: loc('planet_toxic_desc'),
-        bonuses: {
+        vars: [1,1.25], // Mutation Bonus, Birth Rate
+        /*bonuses: {
             compost: 0.75,
             birth_rate: 1.25
-        }
+        }*/
     },
     mellow: {
         label: loc('planet_mellow'),
         desc: loc('planet_mellow_desc'),
-        bonuses: {
+        /*bonuses: {
             production: 0.9
         },
         bonuses_base: {
@@ -2338,7 +2278,7 @@ export const planetTraits = {
                 hunter: 0.5,
                 soldiers: -1
             }
-        }
+        }*/
     },
     rage: {
         label: loc('planet_rage'),
@@ -2347,9 +2287,9 @@ export const planetTraits = {
     stormy: {
         label: loc('planet_stormy'),
         desc: loc('planet_stormy_desc'),
-        weather: {
+        /*weather: {
             windy_days: 1.5
-        }
+        }*/
     },
     ozone: {
         label: loc('planet_ozone'),
@@ -2358,15 +2298,15 @@ export const planetTraits = {
     magnetic: {
         label: loc('planet_magnetic'),
         desc: loc('planet_magnetic_desc'),
-        bonuses_base: {
+        /*bonuses_base: {
             sundial: 1,
             wardenclyffe: 100
-        }
+        }*/
     },
     trashed: {
         label: loc('planet_trashed'),
         desc: loc('planet_trashed_desc'),
-        bonuses: {
+        /*bonuses: {
             compost: .75,
             scavenger: 1 + (traits.scavenger.vars[0] / 100),
         },
@@ -2375,19 +2315,19 @@ export const planetTraits = {
         },
         features: {
             scavenger: true
-        }
+        }*/
     },
     elliptical: {
         label: loc('planet_elliptical'),
         desc: loc('planet_elliptical_desc'),
-        weather: {
+        /*weather: {
             season: {
                 duration: {
                     summer: 2,
                     winter: 2
                 }
             }
-        }
+        }*/
     },
     flare: {
         label: loc('planet_flare'),
@@ -2396,14 +2336,14 @@ export const planetTraits = {
     dense: {
         label: loc('planet_dense'),
         desc: loc('planet_dense_desc'),
-        bonuses: {
+        /*bonuses: {
             miner: 1.2
         },
         bonuses_base: {
             miner: {
                 stress_level: -1
             }
-        }
+        }*/
     },
     unstable: {
         label: loc('planet_unstable'),

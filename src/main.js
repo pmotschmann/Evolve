@@ -2066,9 +2066,9 @@ function fastLoop(){
                         modRes('Lumber', -(lumber_cost * time_multiplier));
                     }
                     food_base = 1.2 + (operating * (global.tech['compost'] * 0.8));
-                    food_base *= global.city.biome === 'grassland' ? 1.2 : 1;
-                    food_base *= global.city.biome === 'volcanic' ? 0.9 : 1;
-                    food_base *= global.city.biome === 'hellscape' ? 0.25 : 1;
+                    food_base *= global.city.biome === 'grassland' ? biomes.grassland.vars[0] : 1;
+                    food_base *= global.city.biome === 'volcanic' ? biomes.volcanic.vars[0] : 1;
+                    food_base *= global.city.biome === 'hellscape' ? biomes.hellscape.vars[0] : 1;
                     food_base *= global.city.ptrait === 'trashed' ? 0.75 : 1;
                     food_bd[loc('city_compost_heap')] = food_base + 'v';
                 }
@@ -2303,7 +2303,7 @@ function fastLoop(){
                 if (global.race['promiscuous']){
                     lowerBound += global.race['promiscuous'];
                 }
-                let base = global.city.ptrait === 'toxic' ? global['resource'][global.race.species].amount * 1.25 : global['resource'][global.race.species].amount;
+                let base = global.city.ptrait === 'toxic' ? global['resource'][global.race.species].amount * planetTraits.toxic.vars[1] : global['resource'][global.race.species].amount;
                 if (global.race['parasite'] && global.race['cataclysm']){
                     lowerBound = Math.round(lowerBound / 5);
                     base *= 3;
@@ -2425,10 +2425,10 @@ function fastLoop(){
 
             let hunting = armyRating(garrisonSize(),'hunting') / 10;
             if (global.city.biome === 'oceanic'){
-                hunting *= 0.95;
+                hunting *= biomes.oceanic.vars[2];
             }
             else if (global.city.biome === 'tundra'){
-                hunting *= 1.25;
+                hunting *= biomes.tundra.vars[0];
             }
             fur_bd[loc('soldiers')] = hunting  + 'v';
 
@@ -3181,7 +3181,7 @@ function fastLoop(){
                         delta *= global.city.geology['Titanium'] + 1;
                     }
                     if (global.city.biome === 'oceanic'){
-                        delta *= 1.06;
+                        delta *= biomes.oceanic.vars[1];
                     }
                     if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                         delta *= 1 + (global.city.shrine.metal / 100);
@@ -3390,7 +3390,8 @@ function fastLoop(){
             }
             else {
                 let lumber_base = global.civic.lumberjack.workers;
-                lumber_base *= global.city.biome === 'forest' ? 1.15 : 1;
+                lumber_base *= global.city.biome === 'forest' ? biomes.forest.vars[0] : 1;
+                lumber_base *= global.city.biome === 'desert' ? biomes.desert.vars[2] : 1;
                 lumber_base *= global.civic.lumberjack.impact;
                 lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
                 lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
@@ -3465,7 +3466,7 @@ function fastLoop(){
             stone_base *= racialTrait(global.civic.quarry_worker.workers,'miner');
             stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
             if (global.city.biome === 'desert'){
-                stone_base *= 1.2;
+                stone_base *= biomes.desert.vars[0];
             }
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 stone_base *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
@@ -3575,7 +3576,7 @@ function fastLoop(){
                 }
 
                 if (global.city.biome === 'volcanic'){
-                    copper_base *= 1.12;
+                    copper_base *= biomes.volcanic.vars[1];
                 }
 
                 let copper_shrine = 1;
@@ -3616,7 +3617,7 @@ function fastLoop(){
                 }
 
                 if (global.city.biome === 'volcanic'){
-                    iron_base *= 1.08;
+                    iron_base *= biomes.volcanic.vars[2];
                 }
 
                 let space_iron = 0;
@@ -3660,7 +3661,7 @@ function fastLoop(){
                         delta *= global.city.geology['Titanium'] + 1;
                     }
                     if (global.city.biome === 'oceanic'){
-                        delta *= 1.12;
+                        delta *= biomes.oceanic.vars[0];
                     }
                     if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                         delta *= 1 + (global.city.shrine.metal / 100);
@@ -3848,10 +3849,10 @@ function fastLoop(){
             }
             let oil_well = oil_base * global.city.oil_well.count;
             if (global.city.biome === 'desert'){
-                oil_well *= 1.1;
+                oil_well *= biomes.desert.vars[1];
             }
             else if (global.city.biome === 'tundra'){
-                oil_well *= 0.9;
+                oil_well *= biomes.tundra.vars[1];
             }
 
             let delta = oil_well + oil_extractor;
@@ -5866,7 +5867,7 @@ function midLoop(){
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
             let labs = global.race['cataclysm'] ? red_on['exotic_lab'] : p_on['biolab'];
             if (labs > 0 && global.city.ptrait === 'toxic'){
-                labs++;
+                labs += planetTraits.toxic.vars[0];
             }
             global.arpa.sequence.time -= global.arpa.sequence.boost ? labs * 2 : labs;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
