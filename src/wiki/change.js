@@ -7,7 +7,9 @@ const changeList = [
         date: `7/??/2020`,
         changes: [
             `Expanded list of potential enemy city names.`,
-            `Added Synthetic Fur option to Factories.`
+            `Added Synthetic Fur option to Factories.`,
+            `Restoring a backup after a Cataclysm will now allow you to Cataclysm again.`,
+            `Many minor bug fixes.`
         ]
     },
     {

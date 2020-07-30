@@ -200,6 +200,8 @@ window.importGame = function importGame(data,utf16){
             }
             if (saveState.tech.hasOwnProperty('quaked') && saveState.tech.quaked === 2){
                 saveState.tech.quaked = 1;
+                saveState.resource.Knowledge.amount += 500000;
+                saveState.stats.know -= 500000;
             }
         }
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));        
