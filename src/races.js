@@ -1926,7 +1926,7 @@ export function racialTrait(workers,type){
         modifier *= 1.2;
     }
     if (global.city.ptrait === 'magnetic' && type === 'miner'){
-        modifier *= 0.985;
+        modifier *= planetTraits.magnetic.vars[2];
     }
     if (global.race['weak'] && (type === 'miner' || type === 'lumberjack')){
         modifier *= 1 - (traits.weak.vars[0] / 100);
@@ -2260,36 +2260,24 @@ export const planetTraits = {
     toxic: {
         label: loc('planet_toxic'),
         desc: loc('planet_toxic_desc'),
-        vars: [1,1.25], // Mutation Bonus, Birth Rate
-        /*bonuses: {
-            compost: 0.75,
-            birth_rate: 1.25
-        }*/
+        vars: [1,1.25], // [Mutation Bonus, Birth Rate]
+        wiki: ['A','-%']
     },
     mellow: {
         label: loc('planet_mellow'),
         desc: loc('planet_mellow_desc'),
-        /*bonuses: {
-            production: 0.9
-        },
-        bonuses_base: {
-            stress_level: {
-                default: 2,
-                hunter: 0.5,
-                soldiers: -1
-            }
-        }*/
+        vars: [1.5,2,0.9], // [Mutation Bonus, Production]
+        wiki: ['%','A','%']
     },
     rage: {
         label: loc('planet_rage'),
-        desc: loc('planet_rage_desc')
+        desc: loc('planet_rage_desc'),
+        vars: [1.05,1.02,1], // [Combat, Hunting, Death]
+        wiki: ['%','%','A']
     },
     stormy: {
         label: loc('planet_stormy'),
-        desc: loc('planet_stormy_desc'),
-        /*weather: {
-            windy_days: 1.5
-        }*/
+        desc: loc('planet_stormy_desc')
     },
     ozone: {
         label: loc('planet_ozone'),
@@ -2298,10 +2286,8 @@ export const planetTraits = {
     magnetic: {
         label: loc('planet_magnetic'),
         desc: loc('planet_magnetic_desc'),
-        /*bonuses_base: {
-            sundial: 1,
-            wardenclyffe: 100
-        }*/
+        vars: [1,100,0.985], // [Sundial, Wardenclyffe]
+        wiki: ['A','A','%']
     },
     trashed: {
         label: loc('planet_trashed'),

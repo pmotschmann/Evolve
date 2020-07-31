@@ -2,7 +2,7 @@ import { global, poppers, clearStates, save, keyMultiplier, sizeApproximation } 
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
-import { races, racialTrait, traits } from './races.js';
+import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
 import { drawTech } from  './actions.js';
 
@@ -1131,7 +1131,7 @@ function war_campaign(gov){
         let deathCap = Math.floor(global.civic.garrison.raid / (5 - global.civic.garrison.tactic));
         deathCap += wounded;
         if (global.city.ptrait === 'rage'){
-            deathCap++;
+            deathCap += planetTraits.rage.vars[2];
         }
         if (deathCap < 1){
             deathCap = 1;
@@ -1489,7 +1489,7 @@ function war_campaign(gov){
             deathCap = Math.floor(deathCap / 2);
         }
         if (global.city.ptrait === 'rage'){
-            deathCap++;
+            deathCap += planetTraits.rage.vars[2];
         }
         if (deathCap < 1){
             deathCap = 1;
@@ -1653,7 +1653,7 @@ export function armyRating(val,type,wound){
             army *= 1 + (global.city.temple.count * 0.01);
         }
         if (global.city.ptrait === 'rage'){
-            army *= 1.05;
+            army *= planetTraits.rage.vars[0];
         }
         if (global.race['parasite']){
             if (val === 1){
@@ -1681,7 +1681,7 @@ export function armyRating(val,type,wound){
             army *= 1 - (traits.fragrant.vars[0] / 100);
         }
         if (global.city.ptrait === 'rage'){
-            army *= 1.02;
+            army *= planetTraits.rage.vars[1];
         }
         if (global.race['cunning']){
             army *= 1 + (global.race['cunning'] / 20);

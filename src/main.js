@@ -667,7 +667,7 @@ function fastLoop(){
     }
     if (global.city.ptrait === 'mellow'){
         breakdown.p['Global'][loc('planet_mellow_bd')] = '-10%';
-        global_multiplier *= 0.9;
+        global_multiplier *= planetTraits.mellow.vars[2];
     }
     if (global.city.ptrait === 'ozone' && global.city['sun']){
         let uv = global.city['sun'] * 0.25;
@@ -948,7 +948,11 @@ function fastLoop(){
             }
         }
         else {
-            stress -= global.civic.free / (global.city.ptrait === 'mellow' ? 7.5 : 5);
+            let divisor = 5;
+            if (global.city.ptrait === 'mellow'){
+                divisor *= planetTraits.mellow.vars[0];
+            }
+            stress -= global.civic.free / divisor;
             global.city.morale.unemployed = 0;
         }
 
@@ -961,12 +965,11 @@ function fastLoop(){
         }
 
         if (global.civic['garrison']){
+            let divisor = 2;
             if (global.city.ptrait === 'mellow'){
-                stress -= global.civic.garrison.max / 3;
+                divisor *= planetTraits.mellow.vars[0];
             }
-            else {
-                stress -= global.civic.garrison.max / 2;
-            }
+            stress -= global.civic.garrison.max / divisor;
         }
 
         let money_bd = {};
@@ -1847,7 +1850,7 @@ function fastLoop(){
 
                 let stress_level = global.civic[job].stress;
                 if (global.city.ptrait === 'mellow'){
-                    stress_level += 2;
+                    stress_level += planetTraits.mellow.vars[1];
                 }
                 if (global.race['content']){
                     let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
@@ -2448,7 +2451,7 @@ function fastLoop(){
                 sundial_base++;
             }
             if (global.city.ptrait === 'magnetic'){
-                sundial_base++;
+                sundial_base += planetTraits.magnetic.vars[0];
             }
             if (global.race['ascended']){
                 sundial_base += 2;
@@ -5241,7 +5244,11 @@ function midLoop(){
             }
         }
         if (global.city['wardenclyffe']){
-            let gain = global.city['wardenclyffe'].count * (global.city.ptrait === 'magnetic' ? 1100 : 1000);
+            let gain_base = 1000;
+            if (global.city.ptrait === 'magnetic'){
+                gain_base += planetTraits.magnetic.vars[1];
+            }
+            let gain = global.city['wardenclyffe'].count * gain_base;
             lCaps['scientist'] += global.city['wardenclyffe'].count;
             let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
             gain += (p_on['wardenclyffe'] * powered_gain);

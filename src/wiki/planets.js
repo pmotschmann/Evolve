@@ -21,8 +21,10 @@ const extraInfo = {
     desert: ['genus'],
     volcanic: ['weather','genus'],
     tundra: ['weather','genus'],
-    hellscape: ['genus'],
-    eden: ['genus']
+    hellscape: ['weather','genus'],
+    eden: ['genus'],
+    stormy: ['trait'],
+    ozone: ['trait']
 };
 
 function infoForFeature(planetFeatures, content) {
@@ -34,20 +36,18 @@ function infoForFeature(planetFeatures, content) {
         info.append(`<div class="type"><h4 class="has-text-warning">${planetFeature.label}</h4></div>`);
         info.append(`<div class="desc">${planetFeature.desc}</div>`);
 
-        let itemMod = $(`<div></div>`);
+        let modifiers = $(`<div class="propList"></div>`);
         if (planetFeature['vars'] && planetFeature['wiki']) {
             for (let i=0; i<planetFeature['vars'].length; i++){
-                itemMod.append($(`<span>${loc(`wiki_planet_${planetFeatureName}${i}`,[formatBonusNumber(planetFeature.vars[i], planetFeature.wiki[i] === '%' ? 'percent' : 'decimal')])}</span>`));
+                let type = planetFeature.wiki[i] === '%' ? 'percent' : (planetFeature.wiki[i] === '-%' ? 'inverted' : 'decimal');
+                modifiers.append($(`<div class="has-text-label">${loc(`wiki_planet_${planetFeatureName}${i}`,[formatBonusNumber(planetFeature.vars[i], type)])}</div>`));
             }
         }
-
-        let modifiers = $(`<div class="itemlist"></div>`);
-        modifiers.append(itemMod);
         info.append(modifiers);
 
         if (extraInfo[planetFeatureName]){
             extraInfo[planetFeatureName].forEach(function (label){
-                info.append($(`<div>${loc(`wiki_planet_${planetFeatureName}_${label}`)}</div>`));
+                info.append($(`<div class="has-text-advanced">${loc(`wiki_planet_${planetFeatureName}_${label}`)}</div>`));
             });
         }
     });
@@ -55,9 +55,13 @@ function infoForFeature(planetFeatures, content) {
 }
 
 export function formatBonusNumber(num, style) {
-    let modRes = num - 1 * (style == 'percent' ? 1 : 0);
+    let modRes = num - 1 * (style === 'percent' || style === 'inverted' ? 1 : 0);
+    if (style === 'inverted'){
+        modRes *= -1;
+        style = 'percent';
+    }
     let modResText = (modRes >= 0 ? '+' : '') + modRes.toLocaleString(global.settings.locale, { style: style, maximumFractionDigits: 2 });
     let textColor = modRes >= 0 ? 'success' : 'danger';
-    let modResTextColored = `<span class="has-text-${textColor}">${modResText}<span>`;
+    let modResTextColored = `<span class="has-text-${textColor}">${modResText}</span>`;
     return modResTextColored;
 }

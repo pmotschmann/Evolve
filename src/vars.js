@@ -494,7 +494,7 @@ if (!global['settings']){
         animated: true,
         disableReset: false,
         cLabels: true,
-        theme: 'dark',
+        theme: 'night',
         locale: 'en-US',
         icon: 'star'
     };
