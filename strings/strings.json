@@ -4597,12 +4597,14 @@
   "wiki_planet_oceanic0": "Smelter Titanium from Iron %0",
   "wiki_planet_oceanic1": "Smelter Titanium from Steel %0",
   "wiki_planet_oceanic2": "Hunting Fur %0",
+  "wiki_planet_oceanic_trait": "Oceanic planets have increased odds of rain.",
   "wiki_planet_oceanic_genus": "Can spawn Aquatic races.",
   "wiki_planet_forest0": "Lumberjack Production %0",
   "wiki_planet_forest_genus": "Can spawn Fey races.",
   "wiki_planet_desert0": "Quarry Worker Production %0",
   "wiki_planet_desert1": "Oil Well Production %0",
   "wiki_planet_desert2": "Lumberjack Production %0",
+  "wiki_planet_desert_trait": "Desert planets have increased odds of being sunny.",
   "wiki_planet_desert_genus": "Can spawn Sand races.",
   "wiki_planet_volcanic0": "Agriculture %0",
   "wiki_planet_volcanic1": "Copper Production %0",
@@ -4629,5 +4631,7 @@
   "wiki_planet_ozone_trait": "Consecutive sunny days cause an increasing production penalty.",
   "wiki_planet_magnetic0": "Sundial %0 Knowledge",
   "wiki_planet_magnetic1": "Wardenclyffe %0 Knowledge",
-  "wiki_planet_magnetic2": "Miners %0 production"
+  "wiki_planet_magnetic2": "Miners %0 production",
+  "wiki_planet_trashed0": "Agriculture %0",
+  "wiki_planet_trashed_trait": "Scavenger job is available"
 }

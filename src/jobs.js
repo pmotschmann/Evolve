@@ -1,7 +1,7 @@
 import { global, keyMultiplier, poppers } from './vars.js';
 import { clearElement, easterEgg } from './functions.js';
 import { loc } from './locale.js';
-import { racialTrait, races, traits, biomes } from './races.js';
+import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
@@ -382,8 +382,8 @@ export function farmerValue(farm){
     farming *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
     farming *= global.city.biome === 'grassland' ? biomes.grassland.vars[0] : 1;
     farming *= global.city.biome === 'volcanic' ? biomes.volcanic.vars[0] : 1;
-    farming *= global.city.biome === 'hellscape' ? 0.25 : 1;
-    farming *= global.city.ptrait === 'trashed' ? 0.75 : 1;
+    farming *= global.city.biome === 'hellscape' ? biomes.hellscape.vars[0] : 1;
+    farming *= global.city.ptrait === 'trashed' ? planetTraits.trashed.vars[0] : 1;
     farming *= racialTrait(global.civic.farmer.workers,'farmer');
     farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
     farming *= global.race['low_light'] ? (1 - traits.low_light.vars[0] / 100) : 1;

@@ -16,15 +16,16 @@ export function planetsPage(content) {
 }
 
 const extraInfo = {
-    oceanic: ['genus'],
+    oceanic: ['trait','genus'],
     forest: ['genus'],
-    desert: ['genus'],
+    desert: ['trait','genus'],
     volcanic: ['weather','genus'],
     tundra: ['weather','genus'],
     hellscape: ['weather','genus'],
     eden: ['genus'],
     stormy: ['trait'],
-    ozone: ['trait']
+    ozone: ['trait'],
+    trashed: ['trait']
 };
 
 function infoForFeature(planetFeatures, content) {

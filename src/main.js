@@ -2072,7 +2072,7 @@ function fastLoop(){
                     food_base *= global.city.biome === 'grassland' ? biomes.grassland.vars[0] : 1;
                     food_base *= global.city.biome === 'volcanic' ? biomes.volcanic.vars[0] : 1;
                     food_base *= global.city.biome === 'hellscape' ? biomes.hellscape.vars[0] : 1;
-                    food_base *= global.city.ptrait === 'trashed' ? 0.75 : 1;
+                    food_base *= global.city.ptrait === 'trashed' ? planetTraits.trashed.vars[0] : 1;
                     food_bd[loc('city_compost_heap')] = food_base + 'v';
                 }
             }

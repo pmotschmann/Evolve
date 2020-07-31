@@ -2292,16 +2292,8 @@ export const planetTraits = {
     trashed: {
         label: loc('planet_trashed'),
         desc: loc('planet_trashed_desc'),
-        /*bonuses: {
-            compost: .75,
-            scavenger: 1 + (traits.scavenger.vars[0] / 100),
-        },
-        bonuses_base: {
-            genome_sequence: 1
-        },
-        features: {
-            scavenger: true
-        }*/
+        vars: [0.75], // [Agriculture]
+        wiki: ['%']
     },
     elliptical: {
         label: loc('planet_elliptical'),
