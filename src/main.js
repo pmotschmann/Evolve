@@ -2597,12 +2597,12 @@ function fastLoop(){
                 let polymer_cost = global.city.factory.Furs * polymerIncrement;
                 let workDone = global.city.factory.Furs;
 
-                while (polymer_cost * time_multiplier > global.resource.Lumber.amount && polymer_cost > 0){
+                while (polymer_cost * time_multiplier > global.resource.Polymer.amount && polymer_cost > 0){
                     polymer_cost -= polymerIncrement;
                     money_cost -= moneyIncrement;
                     workDone--;
                 }
-                while (money_cost * time_multiplier > global.resource.Oil.amount && money_cost > 0){
+                while (money_cost * time_multiplier > global.resource.Money.amount && money_cost > 0){
                     polymer_cost -= polymerIncrement;
                     money_cost -= moneyIncrement;
                     workDone--;
