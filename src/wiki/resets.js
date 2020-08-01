@@ -11,7 +11,7 @@ export function resetsPage(content){
         data_color: { 1: ['warning','plain'] }
     });
 
-    infoBoxBuilder(content,{ name: 'mad', template: 'resets', paragraphs: 8, break: [6], h_level: 2,
+    infoBoxBuilder(content,{ name: 'mad', template: 'resets', paragraphs: 9, break: [6,9], h_level: 2,
         para_data: {
             3: [loc('wiki_p_res_plasmids')],
             4: [loc('tech_rocketry'),loc('tech_mad')],
@@ -26,7 +26,7 @@ export function resetsPage(content){
         }
     });
 
-    infoBoxBuilder(content,{ name: 'bioseed', template: 'resets', paragraphs: 11, break: [5,8], h_level: 2,
+    infoBoxBuilder(content,{ name: 'bioseed', template: 'resets', paragraphs: 12, break: [5,8,12], h_level: 2,
         para_data: {
             2: [loc('tech_genesis_ship')],
             3: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage')],
@@ -53,16 +53,18 @@ export function resetsPage(content){
         }
     });
 
-    infoBoxBuilder(content,{ name: 'ascension', template: 'resets', paragraphs: 3, break: [3], h_level: 2,
+    infoBoxBuilder(content,{ name: 'ascension', template: 'resets', paragraphs: 7, break: [2,5,7], h_level: 2,
         para_data: {
             2: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_harmony')],
+            3: [loc('interstellar_ascension_machine'),'10,000',loc('interstellar_thermal_collector')],
+            4: [100,25],
         },
         data_color: {
             2: ['danger','danger','danger'],
         }
     });
 
-    infoBoxBuilder(content,{ name: 'cataclysm', template: 'resets', paragraphs: 9, break: [4,7], h_level: 2,
+    infoBoxBuilder(content,{ name: 'cataclysm', template: 'resets', paragraphs: 10, break: [4,7,10], h_level: 2,
         para_data: {
             1: [loc('planet_unstable')],
             2: [loc('tech_world_collider')],
