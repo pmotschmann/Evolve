@@ -7,7 +7,7 @@ export function headerBoxBuilder(parent,name,template,paragraphs,h_level,full){
     if (!h_level){
         h_level = 2;
     }
-    infoBoxBuilder(parent,name,template,paragraphs,h_level,true,full);
+    return infoBoxBuilder(parent,name,template,paragraphs,h_level,true,full);
 }
 
 export function infoBoxBuilder(parent,name,template,paragraphs,h_level,header,full){

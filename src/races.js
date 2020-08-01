@@ -2298,14 +2298,6 @@ export const planetTraits = {
     elliptical: {
         label: loc('planet_elliptical'),
         desc: loc('planet_elliptical_desc'),
-        /*weather: {
-            season: {
-                duration: {
-                    summer: 2,
-                    winter: 2
-                }
-            }
-        }*/
     },
     flare: {
         label: loc('planet_flare'),
@@ -2314,14 +2306,8 @@ export const planetTraits = {
     dense: {
         label: loc('planet_dense'),
         desc: loc('planet_dense_desc'),
-        /*bonuses: {
-            miner: 1.2
-        },
-        bonuses_base: {
-            miner: {
-                stress_level: -1
-            }
-        }*/
+        vars: [1.2,1,1.2], // [Mining Production, Miner Stress, Solar Fuel Cost]
+        wiki: ['%','A','%']
     },
     unstable: {
         label: loc('planet_unstable'),

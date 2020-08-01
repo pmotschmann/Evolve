@@ -4591,6 +4591,7 @@
   "wiki_planet_planet_para2": "Starter planets have an orbital period of 365 days (year length), seasons are by default each 25% of the orbital period length.",
   "wiki_planet_planet_para3": "You can change your planet by completing what is known as a Bioseed reset or a Blackhole reset, Bioseed is the primary method for changing planets however a Blackhole reset will also let you choose between 4 randomly generated planets.",
   "wiki_planet_planet_para4": "New planets choices will be chosen from the biome list and have a chance at an additional trait. The orbital period is of a random length that can range from 200-600 days, some planet traits may alter this range.",
+  "wiki_planet_geology": "Planets will also have a range of Geology traits which will effect the amount of resouces found on the homeworld. A planet can roll upto 3 modifiers for Copper, Iron, Aluminium, Coal, Oil, Titanium, or Uranium. The changes to deposits can range from -10% to +30%. Players with the Whitehole perk can also roll an Iridium deposit (Moon Only) as well as upto 8 geology traits with deposit densities of upto +55%.",
   "wiki_planet_biome": "Planetary Biomes",
   "wiki_planet_trait": "Planetary Traits",
   "wiki_planet_grassland0": "Agriculture %0",
@@ -4618,7 +4619,9 @@
   "wiki_planet_hellscape0": "Agriculture %0",
   "wiki_planet_hellscape_weather": "Hellscape planets are never cold.",
   "wiki_planet_hellscape_genus": "Can spawn Demonic races.",
+  "wiki_planet_hellscape_universe": "Does not spawn in Evil universe.",
   "wiki_planet_eden_genus": "Can spawn Angelic races.",
+  "wiki_planet_eden_universe": "Only spawns in Evil universe.",
   "wiki_planet_toxic0": "Mutation research is %0 biolab worth faster",
   "wiki_planet_toxic1": "Birth rate is %0 lower",
   "wiki_planet_mellow0": "Soldiers and Unemployed are %0 less stressed",
@@ -4633,5 +4636,10 @@
   "wiki_planet_magnetic1": "Wardenclyffe %0 Knowledge",
   "wiki_planet_magnetic2": "Miners %0 production",
   "wiki_planet_trashed0": "Agriculture %0",
-  "wiki_planet_trashed_trait": "Scavenger job is available"
+  "wiki_planet_trashed_trait": "Scavenger job is available",
+  "wiki_planet_elliptical_trait": "Summer and Winter are twice as long as Spring and Fall. Orbital period may by upto 800 days.",
+  "wiki_planet_dense0": "Miner Production %0",
+  "wiki_planet_dense1": "Miner Stress %0 point",
+  "wiki_planet_dense2": "Home solar system fuel costs %0",
+  "wiki_planet_unstable_trait": "Iron costs added to many terrestrial buildings. Iron based technologies unlock earlier."
 }

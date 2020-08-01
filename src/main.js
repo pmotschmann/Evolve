@@ -1857,7 +1857,7 @@ function fastLoop(){
                     stress_level += global.race['content'] * effectiveness;
                 }
                 if (global.city.ptrait === 'dense' && job === 'miner'){
-                    stress_level -= 1;
+                    stress_level -= planetTraits.dense.vars[1];
                 }
 
                 stress -= global.civic[job].workers / stress_level;
@@ -3554,7 +3554,7 @@ function fastLoop(){
                 miner_base *= bonus;
             }
             if (global.city.ptrait === 'dense'){
-                miner_base *= 1.2;
+                miner_base *= planetTraits.dense.vars[0];
             }
             miner_base *= (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.15 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){

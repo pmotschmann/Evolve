@@ -1,7 +1,7 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat } from './achieve.js';
-import { races, traits, genus_traits } from './races.js';
+import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
@@ -5367,7 +5367,7 @@ export function fuel_adjust(fuel){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
     }
     if (global.city.ptrait === 'dense'){
-        fuel *= 1.2;
+        fuel *= planetTraits.dense.vars[2];
     }
     if (global.race['cataclysm']){
         fuel *= 0.2;
