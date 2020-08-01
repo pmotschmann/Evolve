@@ -6,8 +6,7 @@ import { headerBoxBuilder } from './functions.js';
 export function planetsPage(content) {
     let info = $('<div class="duelList"/>');
 
-    let intro = headerBoxBuilder(content,'planet','planet',4,2,true);
-
+    let intro = headerBoxBuilder(content,{ name: 'planet', template: 'planet', paragraphs: 4, full: true });
     intro.append($(`<div>${loc('wiki_planet_geology')}</div>`));
 
     let planetInfo = infoForFeature(biomes, $(`<div class="listSide"><h3 class="header has-text-caution">${loc('wiki_planet_biome')}</h3></div>`));

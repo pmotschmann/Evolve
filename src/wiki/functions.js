@@ -3,22 +3,51 @@ import { loc } from './../locale.js';
 import { clearElement, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 
-export function headerBoxBuilder(parent,name,template,paragraphs,h_level,full){
-    if (!h_level){
-        h_level = 2;
+export function headerBoxBuilder(parent,args){
+    if (!args.hasOwnProperty('h_level')){
+        args['h_level'] = 2;
     }
-    return infoBoxBuilder(parent,name,template,paragraphs,h_level,true,full);
+    args['header'] = true;
+    return infoBoxBuilder(parent,args);
 }
 
-export function infoBoxBuilder(parent,name,template,paragraphs,h_level,header,full){
-    if (!h_level){
-        h_level = 3;
-    }
-    let info = $(`<div class="infoBox${full ? ` wide` : ``}"></div>`);
-    info.append(`<h${h_level} id="${name}" class="header has-text-${header ? 'caution' : 'warning'}">${loc(`wiki_${template}_${name}`)}</h${h_level}>`);
+export function infoBoxBuilder(parent,args){
+    if (!args.hasOwnProperty('name')){ return; }
+    if (!args.hasOwnProperty('template')){ return; }
+    if (!args.hasOwnProperty('paragraphs')){ args['paragraphs'] = 0; }
+    if (!args.hasOwnProperty('para_data')){ args['para_data'] = {}; }
+    if (!args.hasOwnProperty('data_color')){ args['data_color'] = {}; }
+    if (!args.hasOwnProperty('data_link')){ args['data_link'] = {}; }
+    if (!args.hasOwnProperty('h_level')){ args['h_level'] = 3; }
+    if (!args.hasOwnProperty('header')){ args['header'] = false; }
+    if (!args.hasOwnProperty('full')){ args['full'] = false; }
+
+    let info = $(`<div class="infoBox${args.full ? ` wide` : ``}"></div>`);
+    info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
     let para = $(`<div class="para"></div>`);
-    for (let i=1; i<=paragraphs; i++){
-        para.append(`<span>${loc(`wiki_${template}_${name}_para${i}`)}</span>`);
+    for (let i=1; i<=args.paragraphs; i++){
+        if (args.para_data[i] && Array.isArray(args.para_data[i])){
+            let inputs = args.para_data[i];
+            if (args.data_link[i] && Array.isArray(args.data_link[i])){
+                for (let j=0; j<args.data_link[i].length; j++){
+                    if (args.data_link[i][j] !== 'plain'){
+                        inputs[j] = `<a href="${args.data_link[i][j]}" target="_blank">${inputs[j]}</a>`;
+                    }
+                }
+            }
+            else if (args.data_color[i] && Array.isArray(args.data_color[i])){
+                for (let j=0; j<args.data_color[i].length; j++){
+                    console.log(args.data_color[i][j]);
+                    if (args.data_color[i][j] !== 'plain'){
+                        inputs[j] = `<span class="has-text-${args.data_color[i][j]}">${inputs[j]}</span>`;
+                    }
+                }
+            }
+            para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`,inputs)}</span>`);
+        }
+        else {
+            para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`)}</span>`);
+        }        
     }
     parent.append(info);
     info.append(para);

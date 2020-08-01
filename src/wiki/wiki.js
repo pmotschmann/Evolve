@@ -36,6 +36,7 @@ function initPage(){
             submenu: [
                 { key: 'basics' },
                 { key: 'mechanics' },
+                { key: 'resets' },
                 { key: 'planets' },
                 { key: 'hell' }                
             ]
@@ -43,6 +44,7 @@ function initPage(){
         {
             key: 'prestige',
             submenu: [
+                { key: 'resets' },
                 { key: 'resources' },
                 { key: 'crispr' }
             ]
