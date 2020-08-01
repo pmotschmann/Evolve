@@ -9211,8 +9211,8 @@ export const actions = {
         },
         synthetic_fur: {
             id: 'tech-synthetic_fur',
-            title: loc('tech_synthetic_fur'),
-            desc: loc('tech_synthetic_fur'),
+            title(){ return global.race['evil'] ? loc('tech_faux_leather') : loc('tech_synthetic_fur'); },
+            desc(){ return global.race['evil'] ? loc('tech_faux_leather') : loc('tech_synthetic_fur'); },
             category: 'crafting',
             era: 'globalized',
             reqs: { polymer: 1 },
@@ -9221,7 +9221,7 @@ export const actions = {
                 Knowledge(){ return 100000; },
                 Polymer(){ return 2500; }
             },
-            effect: loc('tech_synthetic_fur_effect'),
+            effect(){ return global.race['evil'] ? loc('tech_faux_leather_effect') : loc('tech_synthetic_fur_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     defineIndustry();

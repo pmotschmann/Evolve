@@ -372,7 +372,7 @@ function loadFactory(parent,bind){
     lux.append(addLux);
 
     if (global.tech['synthetic_fur']){
-        let fur = $(`<div class="factory"><b-tooltip :label="buildLabel('Furs')" :aria-label="buildLabel('Furs') + ariaProd('Furs')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Furs_name')}</span></b-tooltip></div>`);
+        let fur = $(`<div class="factory"><b-tooltip :label="buildLabel('Furs')" :aria-label="buildLabel('Furs') + ariaProd('Furs')" position="is-left" size="is-small" multilined animated><span>${global.race['evil'] ? loc('resource_Flesh_name') : loc('resource_Furs_name')}</span></b-tooltip></div>`);
         parent.append(fur);
 
         let furCount = $(`<span class="current">{{ Furs }}</span>`);
@@ -480,7 +480,7 @@ function loadFactory(parent,bind){
                     case 'Furs':{
                         let money = assembly ? f_rate.Furs.money[global.tech['factory']] : f_rate.Furs.money[0];
                         let polymer = assembly ? f_rate.Furs.polymer[global.tech['factory']] : f_rate.Furs.polymer[0];
-                        return loc('modal_factory_alloy_label',[money,loc('resource_Money_name'),polymer,loc('resource_Polymer_name'),loc('resource_Furs_name')]);
+                        return loc('modal_factory_alloy_label',[money,loc('resource_Money_name'),polymer,loc('resource_Polymer_name'),global.race['evil'] ? loc('resource_Flesh_name') : loc('resource_Furs_name')]);
                     }
                     case 'Alloy':{
                         let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];

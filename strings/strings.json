@@ -1221,6 +1221,8 @@
   "tech_fluidized_bed_reactor_effect": "Fluidized bed reactors revolutionize the manufacturing of polymers, boosting output by an astonishing 42%.",
   "tech_synthetic_fur": "Synthetic Fur",
   "tech_synthetic_fur_effect": "Add the capacity for Factories to produce synthetic fur.",
+  "tech_faux_leather": "Faux Leather",
+  "tech_faux_leather_effect": "Add the capacity for Factories to produce Faux Leather.",
   "tech_stanene": "Stanene",
   "tech_stanene_effect": "Stanene is a supermaterial that is highly conductive, perfect the manufacturing process so it can be mass produced",
   "tech_stanene_avail": "Stanene is now available for manufacture.",
