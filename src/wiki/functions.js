@@ -21,36 +21,50 @@ export function infoBoxBuilder(parent,args){
     if (!args.hasOwnProperty('h_level')){ args['h_level'] = 3; }
     if (!args.hasOwnProperty('header')){ args['header'] = false; }
     if (!args.hasOwnProperty('full')){ args['full'] = false; }
+    if (!args.hasOwnProperty('break')){ args['break'] = false; }
+    if (!args.hasOwnProperty('default_color')){ args['default_color'] = 'warning'; }
 
     let info = $(`<div class="infoBox${args.full ? ` wide` : ``}"></div>`);
     info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
-    let para = $(`<div class="para"></div>`);
-    for (let i=1; i<=args.paragraphs; i++){
-        if (args.para_data[i] && Array.isArray(args.para_data[i])){
-            let inputs = args.para_data[i];
-            if (args.data_link[i] && Array.isArray(args.data_link[i])){
-                for (let j=0; j<args.data_link[i].length; j++){
-                    if (args.data_link[i][j] !== 'plain'){
-                        inputs[j] = `<a href="${args.data_link[i][j]}" target="_blank">${inputs[j]}</a>`;
-                    }
-                }
-            }
-            else if (args.data_color[i] && Array.isArray(args.data_color[i])){
-                for (let j=0; j<args.data_color[i].length; j++){
-                    console.log(args.data_color[i][j]);
-                    if (args.data_color[i][j] !== 'plain'){
-                        inputs[j] = `<span class="has-text-${args.data_color[i][j]}">${inputs[j]}</span>`;
-                    }
-                }
-            }
-            para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`,inputs)}</span>`);
-        }
-        else {
-            para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`)}</span>`);
+    let ranges = [{s: 1, e: args.break ? args.break[0] - 1 : args.paragraphs}];
+    
+    if (args.break){
+        for (let i=0; i<args.break.length; i++){
+            let end = i+1 === args.break.length ? args.paragraphs : (args.break[i] + 2);
+            ranges.push({ s: args.break[i], e: end });
         }        
     }
-    parent.append(info);
-    info.append(para);
+    
+    ranges.forEach(function(range){
+        let para = $(`<div class="para"></div>`);
+        for (let i=range.s; i<=range.e; i++){
+            if (args.para_data[i] && Array.isArray(args.para_data[i])){
+                let inputs = args.para_data[i];
+                if (args.data_link[i] && Array.isArray(args.data_link[i])){
+                    for (let j=0; j<args.data_link[i].length; j++){
+                        if (args.data_link[i][j] !== 'plain'){
+                            inputs[j] = `<a href="${args.data_link[i][j]}" target="_blank">${inputs[j]}</a>`;
+                        }
+                    }
+                }
+                else {
+                    let color_list = args.data_color[i] && Array.isArray(args.data_color[i]) ? args.data_color[i] : args.para_data[i].map(x => args.default_color);
+                    for (let j=0; j<color_list.length; j++){
+                        if (color_list[j] !== 'plain'){
+                            inputs[j] = `<span class="has-text-${color_list[j]}">${inputs[j]}</span>`;
+                        }
+                    }
+                }
+                para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`,inputs)}</span>`);
+            }
+            else {
+                para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`)}</span>`);
+            }        
+        }
+        info.append(para);
+    });
+    
+    parent.append(info);    
     return info;
 }
 
