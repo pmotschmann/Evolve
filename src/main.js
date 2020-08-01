@@ -2614,7 +2614,7 @@ function fastLoop(){
                 breakdown.p.consume.Money[loc('city_factory')] = -(money_cost);
                 breakdown.p.consume.Polymer[loc('city_factory')] = -(polymer_cost);
                 modRes('Money', -(money_cost * time_multiplier));
-                modRes('Polymer', -(money_cost * time_multiplier));
+                modRes('Polymer', -(polymer_cost * time_multiplier));
 
                 let factory_output = workDone * (assembly ? f_rate.Furs.output[global.tech['factory']] : f_rate.Furs.output[0]);
                 if (global.race['toxic']) {

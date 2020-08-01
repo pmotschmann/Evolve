@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.11`,
+        date: `8/1/2020`,
+        changes: [
+            `Fixed a bug that caused Factories to charge the wrong amount of Polymer for producing Synthetic Furs.`
+        ]
+    },
+    {
         version: `0.9.10`,
         date: `7/30/2020`,
         changes: [
