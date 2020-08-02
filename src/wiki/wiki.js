@@ -38,6 +38,7 @@ function initPage(){
                 { key: 'mechanics' },
                 { key: 'resets' },
                 { key: 'planets' },
+                { key: 'universes' },
                 { key: 'hell' }                
             ]
         },

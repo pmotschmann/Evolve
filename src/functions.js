@@ -726,10 +726,10 @@ export function powerCostMod(energy){
     return energy;
 }
 
-export function darkEffect(universe, flag){
+export function darkEffect(universe, flag, info){
     switch (universe){
         case 'standard':
-            if (global.race.universe === 'standard'){
+            if (global.race.universe === 'standard' || info){
                 let de = global.race.Dark.count;
                 if (global.race.Harmony.count > 0){
                     de *= 1 + (global.race.Harmony.count * 0.001);
@@ -739,7 +739,7 @@ export function darkEffect(universe, flag){
             return 0;
 
         case 'evil':
-            if (global.race.universe === 'evil'){
+            if (global.race.universe === 'evil' || info){
                 let de = global.race.Dark.count;
                 if (global.race.Harmony.count > 0){
                     de *= 1 + (global.race.Harmony.count * 0.01);
@@ -749,7 +749,7 @@ export function darkEffect(universe, flag){
             return 1;
 
         case 'micro':
-            if (global.race.universe === 'micro'){
+            if (global.race.universe === 'micro' || info){
                 if (flag){
                     let de = global.race.Dark.count;
                     if (global.race.Harmony.count > 0){
@@ -776,7 +776,7 @@ export function darkEffect(universe, flag){
             return 0;
 
         case 'heavy':
-            if (global.race.universe === 'heavy'){
+            if (global.race.universe === 'heavy' || info){
                 let de = global.race.Dark.count;
                 if (global.race.Harmony.count > 0){
                     de *= 1 + (global.race.Harmony.count * 0.01);
@@ -786,7 +786,7 @@ export function darkEffect(universe, flag){
             return 1;
 
         case 'antimatter':
-            if (global.race.universe === 'antimatter'){
+            if (global.race.universe === 'antimatter' || info){
                 let de = global.race.Dark.count;
                 if (global.race.Harmony.count > 0){
                     de *= 1 + (global.race.Harmony.count * 0.01);

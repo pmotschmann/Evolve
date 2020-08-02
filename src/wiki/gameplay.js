@@ -1,7 +1,8 @@
 import { clearElement } from './../functions.js';
-import { hellPage } from './hell.js';
-import { planetsPage } from './planets.js';
 import { resetsPage } from './resets.js';
+import { planetsPage } from './planets.js';
+import { universePage } from './universes.js';
+import { hellPage } from './hell.js';
 
 export function gamePlayPage(zone){
     let content = $(`#content`);
@@ -19,6 +20,9 @@ export function gamePlayPage(zone){
             break;
         case 'planets':
             planetsPage(content);
+            break;
+        case 'universes':
+            universePage(content);
             break;
         case 'hell':
             hellPage(content);

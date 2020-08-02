@@ -1,5 +1,5 @@
-import { global } from './../vars.js';
 import { loc } from './../locale.js';
+import { universe_types } from './../space.js';
 import { infoBoxBuilder } from './functions.js';
 
 export function resetsPage(content){
@@ -44,7 +44,10 @@ export function resetsPage(content){
         data_link: { 10: ['wiki.html#planets-gameplay'] }
     });
 
-    let universes = ['standard','heavy','antimatter','evil','micro'];
+    let universes = [];
+    Object.keys(universe_types).forEach(function (universe){
+        universes.push(universe);
+    });
     let universe_labels = universes.map(x => `<span class="has-text-caution">${loc(`universe_${x}`)}</span>`);
 
     infoBoxBuilder(content,{ name: 'blackhole', template: 'resets', paragraphs: 12, break: [3,6,9,12], h_level: 2,

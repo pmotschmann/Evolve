@@ -47,12 +47,10 @@ export function infoBoxBuilder(parent,args){
                         }
                     }
                 }
-                else {
-                    let color_list = args.data_color[i] && Array.isArray(args.data_color[i]) ? args.data_color[i] : args.para_data[i].map(x => args.default_color);
-                    for (let j=0; j<color_list.length; j++){
-                        if (color_list[j] !== 'plain'){
-                            inputs[j] = `<span class="has-text-${color_list[j]}">${inputs[j]}</span>`;
-                        }
+                let color_list = args.data_color[i] && Array.isArray(args.data_color[i]) ? args.data_color[i] : args.para_data[i].map(x => args.default_color);
+                for (let j=0; j<color_list.length; j++){
+                    if (color_list[j] !== 'plain'){
+                        inputs[j] = `<span class="has-text-${color_list[j]}">${inputs[j]}</span>`;
                     }
                 }
                 para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`,inputs)}</span>`);
