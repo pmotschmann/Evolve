@@ -30,9 +30,9 @@ export function infoBoxBuilder(parent,args){
     
     if (args.break){
         for (let i=0; i<args.break.length; i++){
-            let end = i+1 === args.break.length ? args.paragraphs : (args.break[i] + 2);
+            let end = i+1 === args.break.length ? args.paragraphs : (args.break[i+1] - 1);
             ranges.push({ s: args.break[i], e: end });
-        }        
+        }
     }
     
     ranges.forEach(function(range){
