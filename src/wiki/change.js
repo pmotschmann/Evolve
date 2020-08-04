@@ -4,10 +4,11 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `0.9.12`,
-        date: `8/??/2020`,
+        date: `8/3/2020`,
         changes: [
             `Added Finish Line feat for Ascending with Cataclysm.`,
-            `Adjusted many post World Collider Cataclysm things that referenced none existant plantary structures.`
+            `Adjusted many post World Collider Cataclysm things that referenced none existant plantary structures.`,
+            `Added a fix for Stabalize Blackhole being stuck in an untriggerable state.`
         ]
     },
     {

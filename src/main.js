@@ -6922,6 +6922,12 @@ function longLoop(){
             messageQueue(loc('interstellar_blackhole_unstable'),'danger');
             drawTech();
         }
+        else if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025){
+            if (global.tech['whitehole'] && global.tech['stablized']){
+                delete global.tech['stablized'];
+                drawTech();
+            }
+        }
 
         if (!global.tech['xeno'] && global.galaxy['scout_ship'] && global.galaxy.scout_ship.on > 0 && Math.rand(0, 10) === 0){
             global.tech['xeno'] = 1;
