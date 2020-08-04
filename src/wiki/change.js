@@ -7,8 +7,8 @@ const changeList = [
         date: `8/3/2020`,
         changes: [
             `Added Finish Line feat for Ascending with Cataclysm.`,
-            `Adjusted many post World Collider Cataclysm things that referenced none existant plantary structures.`,
-            `Added a fix for Stabalize Blackhole being stuck in an untriggerable state.`,
+            `Adjusted many post World Collider Cataclysm things that referenced none existent planetary structures.`,
+            `Added a fix for Stabilize Blackhole being stuck in an untriggerable state.`,
             `Upgrading achievements will now send a notification.`
         ]
     },
