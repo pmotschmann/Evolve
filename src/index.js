@@ -217,6 +217,7 @@ export function index(){
         {i: 'martini',      f: 'utopia'},
         {i: 'lightbulb',    f: 'energetic'},
         {i: 'trash',        f: 'garbage_pie'},
+        {i: 'turtle',       f: 'finish_line'},
         {i: 'heart',        f: 'valentine'},
         {i: 'clover',       f: 'leprechaun'},
         {i: 'bunny',        f: 'easter'},

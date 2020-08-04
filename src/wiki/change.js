@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.12`,
+        date: `8/??/2020`,
+        changes: [
+            `Added Finish Line feat for Ascending with Cataclysm.`
+        ]
+    },
+    {
         version: `0.9.11`,
         date: `8/1/2020`,
         changes: [
