@@ -858,14 +858,16 @@ export function unlockAchieve(achievement,small,rank){
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
     }
+    let upgrade = true;
     if (typeof global.stats.achieve[achievement] === "undefined"){
         global.stats.achieve[achievement] = { l: 0 };
+        upgrade = false;
     }
     if ((global.race.universe === 'micro' && small === true) || (global.race.universe !== 'micro' && small !== true)){
         if (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < rank){
             global.settings.showAchieve = true;
             global.stats.achieve[achievement].l = rank;
-            messageQueue(loc('achieve_unlock_achieve', [achievements[achievement].name] ),'special');
+            messageQueue(loc(upgrade ? 'achieve_unlock_achieve_upgrade' : 'achieve_unlock_achieve', [achievements[achievement].name] ),'special');
             redraw = true;
             unlock = true;
         }
@@ -874,26 +876,42 @@ export function unlockAchieve(achievement,small,rank){
         switch (global.race.universe){
             case 'antimatter':
                 if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < rank)){
+                    let i_upgrade = global.stats.achieve[achievement]['a'] ? true : false;
                     global.stats.achieve[achievement]['a'] = rank;
                     redraw = true;
+                    if (!unlock){
+                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
+                    }
                 }
                 break;
             case 'heavy':
                 if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < rank)){
+                    let i_upgrade = global.stats.achieve[achievement]['h'] ? true : false;
                     global.stats.achieve[achievement]['h'] = rank;
                     redraw = true;
+                    if (!unlock){
+                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
+                    }
                 }
                 break;
             case 'evil':
                 if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < rank)){
+                    let i_upgrade = global.stats.achieve[achievement]['e'] ? true : false;
                     global.stats.achieve[achievement]['e'] = rank;
                     redraw = true;
+                    if (!unlock){
+                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
+                    }
                 }
                 break;
             case 'micro':
                 if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < rank)){
+                    let i_upgrade = global.stats.achieve[achievement]['m'] ? true : false;
                     global.stats.achieve[achievement]['m'] = rank;
                     redraw = true;
+                    if (!unlock){
+                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
+                    }
                 }
                 break;
         }

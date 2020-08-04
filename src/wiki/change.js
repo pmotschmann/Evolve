@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Added Finish Line feat for Ascending with Cataclysm.`,
             `Adjusted many post World Collider Cataclysm things that referenced none existant plantary structures.`,
-            `Added a fix for Stabalize Blackhole being stuck in an untriggerable state.`
+            `Added a fix for Stabalize Blackhole being stuck in an untriggerable state.`,
+            `Upgrading achievements will now send a notification.`
         ]
     },
     {
