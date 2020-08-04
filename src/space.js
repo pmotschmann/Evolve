@@ -5517,6 +5517,9 @@ function ascendLab(){
     if (global.race['emfield']){
         unlockAchieve(`technophobe`);
     }
+    if (global.race['cataclysm']){
+        unlockFeat(`finish_line`);
+    }
     global.race['noexport'] = 1;
     clearElement($(`#city`));
     global.settings.showCivic = false;
