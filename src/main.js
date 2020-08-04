@@ -5199,7 +5199,7 @@ function midLoop(){
             if (global.space['observatory'] && global.space.observatory.count > 0){
                 multiplier += (moon_on['observatory'] * 0.05);
             }
-            if (global.portal['sensor_drone']){
+            if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
                 multiplier += (p_on['sensor_drone'] * 0.02);
             }
             if (global.race['hard_of_hearing']){
@@ -5295,14 +5295,17 @@ function midLoop(){
             }
             let gain = (int_on['laboratory'] * 10000);
             if (global.tech.science >= 15){
-                gain *= 1 + (global.city.wardenclyffe.count * 0.02);
+                gain *= 1 + ((global.race['cataclysm'] ? red_on['exotic_lab'] : global.city.wardenclyffe.count) * 0.02);
+            }
+            if (global.race['cataclysm'] && p_on['s_gate'] && gal_on['scavenger']){
+                know *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
         }
         if (global.city['biolab']){
             let gain = 3000;
-            if (global.portal['sensor_drone']){
+            if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
                 gain *= 1 + (p_on['sensor_drone'] * 0.02);
             }
             caps['Knowledge'] += (p_on['biolab'] * gain);
@@ -5329,20 +5332,21 @@ function midLoop(){
             bd_Knowledge[loc('galaxy_symposium')] = know +'v';
         }
 
-        if (global.race['cataclysm'] && p_on['spaceport']){
-            let vault = p_on['spaceport'] * spatialReasoning(bank_vault() * 4);
-            caps['Money'] += vault;
-            bd_Money[loc('space_red_spaceport_title')] = vault+'v';
-        }
-
-        if (global.city['bank']){
-            let vault = bank_vault();
-            let gain = (global.city['bank'].count * spatialReasoning(vault));
+        if (global.city['bank'] || (global.race['cataclysm'] && p_on['spaceport'])){
+            let vault = global.race['cataclysm'] ? bank_vault() * 4 : bank_vault();
+            let banks = global.race['cataclysm'] ? p_on['spaceport'] : global.city['bank'].count;
+            let gain = (banks * spatialReasoning(vault));
             caps['Money'] += gain;
-            bd_Money[loc('city_bank')] = gain+'v';
+
+            if (global.race['cataclysm']){
+                bd_Money[loc('space_red_spaceport_title')] = gain+'v';
+            }
+            else {
+                bd_Money[loc('city_bank')] = gain+'v';
+            }            
 
             if (global.interstellar['exchange']){
-                let g_vault = spatialReasoning(int_on['exchange'] * (vault * global.city['bank'].count / 18));
+                let g_vault = spatialReasoning(int_on['exchange'] * (vault * banks / 18));
                 if (global.tech.banking >= 13){
                     if (global.galaxy['freighter']){
                         g_vault *= 1 + (gal_on['freighter'] * 0.03);
@@ -5427,6 +5431,9 @@ function midLoop(){
             }
             if (global.race['cataclysm'] && moon_on['observatory']){
                 sci *= 1 + (moon_on['observatory'] * 0.25);
+            }
+            if (global.race['cataclysm'] && global.portal['sensor_drone'] && global.tech['science'] >= 14){
+                sci *= 1 + (p_on['sensor_drone'] * 0.02);
             }
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;

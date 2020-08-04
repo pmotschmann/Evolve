@@ -3882,6 +3882,7 @@
   "galaxy_scavenger_desc": "Scavenges Alien Tech",
   "galaxy_scavenger_effect": "+%0 Max Knowledge",
   "galaxy_scavenger_effect2": "+%0% University Knowledge",
+  "galaxy_scavenger_effect2_cata": "+%0% Laboratory Knowledge",
   "galaxy_scavenger_find": "Your scavengers have recovered an alien database. You should research the alien data.",
   "galaxy_chthonian": "Chthonian",
   "galaxy_chthonian_desc": "The Chthonian system is named such because it contains the only known Chthonian planet ever detected by you. Strange readings emanate from the planet however the system is also fiercely guarded by the %0.",

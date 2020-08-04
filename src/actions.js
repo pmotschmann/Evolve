@@ -4288,7 +4288,7 @@ export const actions = {
                 if (global.space['observatory'] && global.space.observatory.count > 0){
                     multiplier += (moon_on['observatory'] * 0.05);
                 }
-                if (global.portal['sensor_drone']){
+                if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
                     multiplier += (p_on['sensor_drone'] * 0.02);
                 }
                 if (global.race['hard_of_hearing']){
@@ -4483,7 +4483,7 @@ export const actions = {
             },
             effect(){
                 let gain = 3000;
-                if (global.portal['sensor_drone']){
+                if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
                     gain *= 1 + (p_on['sensor_drone'] * 0.02);
                     gain = +(gain).toFixed(0);
                 }
@@ -4949,6 +4949,7 @@ export const actions = {
             category: 'housing',
             era: 'intergalactic',
             reqs: { reproduction: 1, xeno: 6 },
+            not_trait: ['cataclysm'],
             grant: ['reproduction',2],
             cost: {
                 Knowledge(){ return 4500000; }
@@ -5975,6 +5976,7 @@ export const actions = {
             category: 'mining',
             era: 'interstellar',
             reqs: { alumina: 1, stanene: 1, graphene: 1 },
+            not_trait: ['cataclysm'],
             grant: ['alumina',2],
             cost: {
                 Knowledge(){ return 675000; },
@@ -7768,6 +7770,7 @@ export const actions = {
             category: 'banking',
             era: 'intergalactic',
             reqs: { monuments: 2, xeno: 10 },
+            not_trait: ['cataclysm'],
             grant: ['monument',3],
             cost: {
                 Knowledge(){ return 8000000; }
@@ -10212,6 +10215,7 @@ export const actions = {
             category: 'military',
             era: 'interstellar',
             reqs: { boot_camp: 1, high_tech: 12 },
+            not_trait: ['cataclysm'],
             grant: ['boot_camp',2],
             cost: {
                 Knowledge(){ return 625000; }
@@ -10820,6 +10824,7 @@ export const actions = {
             category: 'cement',
             era: 'interstellar',
             reqs: { cement: 5, alpha: 2 },
+            not_trait: ['cataclysm'],
             grant: ['cement',6],
             cost: {
                 Knowledge(){ return 500000; },

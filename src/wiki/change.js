@@ -6,7 +6,8 @@ const changeList = [
         version: `0.9.12`,
         date: `8/??/2020`,
         changes: [
-            `Added Finish Line feat for Ascending with Cataclysm.`
+            `Added Finish Line feat for Ascending with Cataclysm.`,
+            `Adjusted many post World Collider Cataclysm things that referenced none existant plantary structures.`
         ]
     },
     {
