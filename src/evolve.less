@@ -1389,6 +1389,16 @@ body .modal > div.popper.wide {
         span {
             margin: 0 .5rem;
         }
+
+        .external-links {
+            li {
+                display: inline-block;
+            }
+
+            li + li:before {
+                content: ' | ';
+            }
+        }
     }
 }
 
