@@ -326,5 +326,26 @@ export function index(){
     columns.append(`<div id="queueColumn" class="queueCol column"></div>`);
 
     // Bottom Bar
-    $('body').append(`<div class="promoBar"><span class="left"><h1 class="has-text-warning">Evolve</span> by <span class="has-text-success">Demagorddon</h1></span><span class="right"><h2 class="is-sr-only">External Links</h2><a href="wiki.html" target="_blank">Wiki</a> | <a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a> | <a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a> | <a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a> | <a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a> | <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></span></div>`);
+    $('body').append(`
+        <div class="promoBar">
+            <span class="left">
+                <h1>
+                    <span class="has-text-warning">Evolve</span>
+                    by
+                    <span class="has-text-success">Demagorddon</span>
+                </h1>
+            </span>
+            <span class="right">
+                <h2 class="is-sr-only">External Links</h2>
+                <ul class="external-links">
+                    <li><a href="wiki.html" target="_blank">Wiki</a></li>
+                    <li><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a></li>
+                    <li><a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a></li>
+                    <li><a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a></li>
+                    <li><a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a></li>
+                    <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></li>
+                </ul>
+            </span>
+        </div>
+    `);
 }
