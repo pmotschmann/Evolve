@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/pmotschmann/Evolve#readme",
   "devDependencies": {
+    "less": "^3.12.2",
     "rimraf": "^3.0.2",
     "servehere": "^1.7.0",
     "webpack": "^4.41.2",
