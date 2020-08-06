@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.13`,
+        date: `8/??/2020`,
+        changes: [
+            `Updated Beufy and Popperjs Libraries.`
+        ]
+    },
+    {
         version: `0.9.12`,
         date: `8/3/2020`,
         changes: [
