@@ -599,71 +599,74 @@ function loadSpecialResource(name,color) {
         data: global.race[bind]
     });
 
-    let desc = $(`<div></div>`);
-    switch (name){
-        case 'Plasmid':
-            let active = global.race['no_plasmid'] ? (global.race.p_mutation > global.race[bind].count ? global.race[bind].count : global.race.p_mutation) : global.race[bind].count;
-            desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
-            if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
-                let plasmidSpatial = spatialReasoning(1,'plasmid');
-                if (plasmidSpatial > 1){
-                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
-                }   
-            }
-            break;
-
-        case 'AntiPlasmid':
-            desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race[bind].anti, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
-            let antiSpatial = spatialReasoning(1,'anti');
-            if (global.genes['store'] && (global.race.universe === 'antimatter' || global.genes['bleed'] >= 3)){
-                if (antiSpatial > 1){
-                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+    
+    popover(`res${name}`, function(){
+        let desc = $(`<div></div>`);
+        switch (name){
+            case 'Plasmid':
+                let active = global.race['no_plasmid'] ? (global.race.p_mutation > global.race[bind].count ? global.race[bind].count : global.race.p_mutation) : global.race[bind].count;
+                desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
+                if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
+                    let plasmidSpatial = spatialReasoning(1,'plasmid');
+                    if (plasmidSpatial > 1){
+                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
+                    }   
                 }
-            }
-            break;
-
-        case 'Phage':
-            desc.append($(`<span>${loc(global.race.Plasmid.anti > 0 ? `resource_${name}_desc2` : `resource_${name}_desc`,[250 + global.race[bind].count])}</span>`));
-            let phageSpatial = spatialReasoning(1,'phage');
-            if (global.genes['store'] && global.genes['store'] >= 4){
-                if (phageSpatial > 1){
-                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+                break;
+    
+            case 'AntiPlasmid':
+                desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race[bind].anti, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
+                let antiSpatial = spatialReasoning(1,'anti');
+                if (global.genes['store'] && (global.race.universe === 'antimatter' || global.genes['bleed'] >= 3)){
+                    if (antiSpatial > 1){
+                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+                    }
                 }
-            }
-            break;
-
-        case 'Dark':
-            switch (global.race.universe){
-                case 'standard':
-                    desc.append($(`<span>${loc(`resource_${name}_desc_s`,[+((darkEffect('standard') - 1) * 100).toFixed(2)])}</span>`));
-                    break;
-
-                case 'evil':
-                    desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2)])}</span>`));
-                    break;
-
-                case 'micro':
-                    desc.append($(`<span>${loc(`resource_${name}_desc_m`,[darkEffect('micro',false),darkEffect('micro',true)])}</span>`));
-                    break;
-
-                case 'heavy':
-                    let hDE = darkEffect('heavy');
-                    let space = +(0.25 + (0.5 * hDE)).toFixed(4);
-                    let int = +(0.2 + (0.3 * hDE)).toFixed(4);
-                    desc.append($(`<span>${loc(`resource_${name}_desc_h`,[space * 100,int * 100])}</span>`));
-                    break;
-
-                case 'antimatter':
-                    desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
-                    break;
-            }
-            break;
-
-        case 'Harmony':
-            desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race.universe === 'standard' ? 0.1 : 1, harmonyEffect()])}</span>`));
-            break;
-    }
-    popover(`res${name}`, desc);
+                break;
+    
+            case 'Phage':
+                desc.append($(`<span>${loc(global.race.Plasmid.anti > 0 ? `resource_${name}_desc2` : `resource_${name}_desc`,[250 + global.race[bind].count])}</span>`));
+                let phageSpatial = spatialReasoning(1,'phage');
+                if (global.genes['store'] && global.genes['store'] >= 4){
+                    if (phageSpatial > 1){
+                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+                    }
+                }
+                break;
+    
+            case 'Dark':
+                switch (global.race.universe){
+                    case 'standard':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_s`,[+((darkEffect('standard') - 1) * 100).toFixed(2)])}</span>`));
+                        break;
+    
+                    case 'evil':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2)])}</span>`));
+                        break;
+    
+                    case 'micro':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_m`,[darkEffect('micro',false),darkEffect('micro',true)])}</span>`));
+                        break;
+    
+                    case 'heavy':
+                        let hDE = darkEffect('heavy');
+                        let space = +(0.25 + (0.5 * hDE)).toFixed(4);
+                        let int = +(0.2 + (0.3 * hDE)).toFixed(4);
+                        desc.append($(`<span>${loc(`resource_${name}_desc_h`,[space * 100,int * 100])}</span>`));
+                        break;
+    
+                    case 'antimatter':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
+                        break;
+                }
+                break;
+    
+            case 'Harmony':
+                desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race.universe === 'standard' ? 0.1 : 1, harmonyEffect()])}</span>`));
+                break;
+        }
+        return desc;
+    });
 }
 
 function marketItem(mount,market_item,name,color,full){

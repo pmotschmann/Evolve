@@ -6,6 +6,7 @@ const changeList = [
         version: `0.9.13`,
         date: `8/??/2020`,
         changes: [
+            `Special resource descriptions now update`,
             `Updated Beufy and Popperjs Libraries.`
         ]
     },
