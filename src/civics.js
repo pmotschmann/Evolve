@@ -1621,7 +1621,7 @@ export function armyRating(val,type,wound){
 
     let weapon_tech = global.tech['military'] && global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military;
     let army = global.tech['military'] ? (val - (wounded / 2)) * weapon_tech : (val - (wounded / 2));
-    if (type === 'army'){
+    if (type === 'army' || type === 'hellArmy'){
         if (global.race['puny']){
             army *= 0.9;
         }
@@ -1651,6 +1651,9 @@ export function armyRating(val,type,wound){
         }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
+        }
+        if (global.race['holy'] && type === 'hellArmy'){
+            army *= 1 - (traits.holy.vars[0] / 100);
         }
         if (global.city.ptrait === 'rage'){
             army *= planetTraits.rage.vars[0];

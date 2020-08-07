@@ -71,6 +71,7 @@ export const genus_traits = {
     angelic: {
         blissful: 1,
         pompous: 1,
+        holy: 1,
     }
 };
 
@@ -307,6 +308,13 @@ export const traits = {
         type: 'genus',
         val: -6,
         vars: [75]
+    },
+    holy: { // Combat Bonus in Hell
+        name: loc('trait_holy_name'),
+        desc: loc('trait_holy'),
+        type: 'genus',
+        val: 1,
+        vars: [35]
     },
     creative: { // A.R.P.A. Projects are cheaper
         name: loc('trait_creative_name'),

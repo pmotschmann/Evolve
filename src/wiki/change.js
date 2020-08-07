@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.14`,
+        date: `8/7/2020`,
+        changes: [
+            `Angelic races now have an inate bonus vs demonic creatures.`
+        ]
+    },
+    {
         version: `0.9.13`,
         date: `8/6/2020`,
         changes: [

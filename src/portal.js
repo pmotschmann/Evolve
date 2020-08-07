@@ -290,7 +290,7 @@ const fortressModules = {
             cost: {
                 Money(){ return 10000000; },
                 HellArmy(){
-                    return Math.round(650 / armyRating(1,'army'));
+                    return Math.round(650 / armyRating(1,'hellArmy'));
                 },
                 Cement(){ return 10000000; },
                 Adamantite(){ return 1250000; },
@@ -415,7 +415,7 @@ const fortressModules = {
 };
 
 function soulForgeSoldiers(){
-    let soldiers = Math.round(650 / armyRating(1,'army'));
+    let soldiers = Math.round(650 / armyRating(1,'hellArmy'));
     if (p_on['gun_emplacement']){
         soldiers -= p_on['gun_emplacement'] * (global.tech.hell_gun >= 2 ? 2 : 1);
         if (soldiers < 0){
@@ -783,7 +783,7 @@ function fortressDefenseRating(v){
         army += global.tech['hdroid'] ? droids * 2 : droids;
     }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
-    return Math.round(armyRating(army,'army',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
+    return Math.round(armyRating(army,'hellArmy',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
 }
 
 function casualties(demons,pat_armor,ambush){
@@ -901,7 +901,7 @@ export function bloodwar(){
                 pat_size += global.tech['hdroid'] ? 2 : 1;
                 terminators--;
             }
-            let pat_rating = Math.round(armyRating(pat_size,'army',hurt));
+            let pat_rating = Math.round(armyRating(pat_size,'hellArmy',hurt));
 
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
