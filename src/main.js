@@ -7307,7 +7307,7 @@ intervals['version_check'] = setInterval(function(){
 }, 900000);
 
 let changeLog = $(`<div class="infoBox"></div>`);
-popover('versionLog',getTopChange(changeLog),true);
+popover('versionLog',getTopChange(changeLog),{ wide: true });
 
 if (global.race['start_cataclysm']){
     start_cataclysm();

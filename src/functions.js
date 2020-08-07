@@ -160,22 +160,35 @@ export function mainVue(){
     });
 }
 
-export function popover(id,content,is_wide,callback){
+export function popover(id,content,opts){
+    if (!opts){ opts = {}; }
     $('#'+id).on('mouseover',function(){
-        let wide = is_wide ? ' wide' : '';
-        var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
-        $(`#main`).append(popper);
-        popper.append(typeof callback === 'function' ? content() : content);
+        let wide = opts['wide'] ? ' wide' : '';
+        let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
+        var popper = $(`<div id="pop${id}" class="popper${wide} ${classes}"></div>`);
+        if (opts['attach']){
+            $(opts['attach']).append(popper);
+        }
+        else {
+            $(`#main`).append(popper);
+        }
+        popper.append(typeof content === 'function' ? content(popper) : content);
         popper.show();
         poppers[id] = new Popper($('#'+id),popper);
-        
+        if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
+            opts['in'](popper);
+        }
     });
     $('#'+id).on('mouseout',function(){
         $(`#pop${id}`).hide();
         if (poppers[id]){
             poppers[id].destroy();
+            delete poppers[id];
         }
         clearElement($(`#pop${id}`),true);
+        if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
+            opts['out']($(`#pop${id}`));
+        }
     });
 }
 

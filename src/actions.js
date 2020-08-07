@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -14384,23 +14384,17 @@ export function setAction(c_action,action,type,old){
             }
         }
     });
-    let pop_target = action === 'starDock' ? 'body .modal' : '#main';
-    $('#'+id).on('mouseover',function(){
-            let wide = c_action['wide'] ? ' wide' : '';
-            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
-            $(pop_target).append(popper);
+
+    popover(id,function(){ return undefined; },{
+        in: function(popper){
             actionDesc(popper,c_action,global[action][type],old);
-            popper.show();
-            poppers[id] = new Popper($('#'+id),popper);
-        });
-    $('#'+id).on('mouseout',function(){
-            $(`#pop${id}`).hide();
+        },
+        out: function(){
             vBind({el: `#popTimer`},'destroy');
-            if (poppers[id]){
-                poppers[id].destroy();
-            }
-            clearElement($(`#pop${id}`),true);
-        });
+        },
+        attach: action === 'starDock' ? 'body .modal' : '#main',
+        wide: c_action['wide']
+    });
 }
 
 export function setPlanet(hell){
@@ -14798,6 +14792,9 @@ export function actionDesc(parent,c_action,obj,old){
         parent.addClass('flair');
     }
     if (!old && !checkAffordable(c_action) && checkAffordable(c_action,true)){
+        if (typeof obj === 'string' && obj === 'notimer'){
+            return;
+        }
         if (obj && obj['time']){
             parent.append($(`<div id="popTimer" class="flair has-text-advanced">{{ time | timer }}</div>`));
             vBind({
@@ -15782,7 +15779,6 @@ export function resDragQueue(){
 
 function attachQueuePopovers(){
     for (let i=0; i<global.r_queue.queue.length; i++){
-        let pop_target = '#main';
         let id = `rq${global.r_queue.queue[i].id}`;
         cleanTechPopOver(id);
 
@@ -15790,16 +15786,14 @@ function attachQueuePopovers(){
         let segments = global.r_queue.queue[i].id.split("-");
         c_action = actions[segments[0]][segments[1]];
 
-        $('#'+id).on('mouseover',function(){
-            let wide = c_action['wide'] ? ' wide' : '';
-            var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
-            $(pop_target).append(popper);
-            actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
-            popper.show();
-            poppers[id] = new Popper($('#'+id),popper);
-        });
-        $('#'+id).on('mouseout',function(){
-            cleanTechPopOver(id);
+        popover(id,function(){ return undefined; },{
+            in: function(popper){
+                actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+            },
+            out: function(){
+                cleanTechPopOver(id);
+            },
+            wide: c_action['wide']
         });
     }
 

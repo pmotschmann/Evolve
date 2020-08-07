@@ -4,9 +4,9 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `0.9.13`,
-        date: `8/??/2020`,
+        date: `8/6/2020`,
         changes: [
-            `Special resource descriptions now update`,
+            `Special resource descriptions now update.`,
             `Updated Beufy and Popperjs Libraries.`
         ]
     },
