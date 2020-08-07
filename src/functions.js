@@ -160,21 +160,35 @@ export function mainVue(){
     });
 }
 
-export function popover(id,content,is_wide){
+export function popover(id,content,opts){
+    if (!opts){ opts = {}; }
     $('#'+id).on('mouseover',function(){
-        let wide = is_wide ? ' wide' : '';
-        var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
-        $(`#main`).append(popper);
-        popper.append(content);
+        let wide = opts['wide'] ? ' wide' : '';
+        let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
+        var popper = $(`<div id="pop${id}" class="popper${wide} ${classes}"></div>`);
+        if (opts['attach']){
+            $(opts['attach']).append(popper);
+        }
+        else {
+            $(`#main`).append(popper);
+        }
+        popper.append(typeof content === 'function' ? content(popper) : content);
         popper.show();
         poppers[id] = new Popper($('#'+id),popper);
+        if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
+            opts['in'](popper);
+        }
     });
     $('#'+id).on('mouseout',function(){
         $(`#pop${id}`).hide();
         if (poppers[id]){
             poppers[id].destroy();
+            delete poppers[id];
         }
         clearElement($(`#pop${id}`),true);
+        if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
+            opts['out']($(`#pop${id}`));
+        }
     });
 }
 
@@ -1341,6 +1355,37 @@ export function calcGenomeScore(genome){
         genes -= gene_cost;
     }
     return genes;
+}
+
+
+export function deepClone(obj){
+    //in case of premitives
+    if(obj===null || typeof obj !== "object"){
+        return obj;
+    }
+
+    //date objects should be
+    if(obj instanceof Date){
+        return new Date(obj.getTime());
+    }
+
+    //handle Array
+    if(Array.isArray(obj)){
+        var clonedArr = [];
+        obj.forEach(function(element){
+            clonedArr.push(deepClone(element))
+        });
+        return clonedArr;
+    }
+
+    //lastly, handle objects
+    let clonedObj = new obj.constructor();
+    for(var prop in obj){
+        if(obj.hasOwnProperty(prop)){
+            clonedObj[prop] = deepClone(obj[prop]);
+        }
+    } 
+    return clonedObj;
 }
 
 export function getEaster(){

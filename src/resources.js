@@ -509,7 +509,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 popper.append(costs);
                 
                 popper.show();
-                poppers[`r${res}${vol}`] = new Popper($(`#inc${res}${vol}`),popper);
+                popover(`inc${res}${vol}`,popper);
             },
             unhover(res,vol){
                 $(`#popRes${res}${vol}`).hide();
@@ -522,21 +522,14 @@ function loadResource(name,max,rate,tradable,stackable,color){
     breakdownPopover(`cnt${name}`,name,'c');
 
     if (stackable){
-        $(`#con${name}`).on('mouseover',function(){
-            var popper = $(`<div id="popContainer${name}" class="popper has-background-light has-text-dark"></div>`);
-            $('#main').append(popper);
-            popper.append($(`<div>Crates ${global.resource[name].crates}</div>`));
+        popover(`con${name}`,function(){
+            var popper = $(`<div>${loc('resource_Crates_plural')} ${global.resource[name].crates}</div>`);
             if (global.tech['steel_container']){
-                popper.append($(`<div>Containers ${global.resource[name].containers}</div>`));
+                popper.append($(`<div>${loc('resource_Containers_plural')} ${global.resource[name].containers}</div>`));
             }
-            popper.show();
-            poppers[name] = new Popper($(`#con${name}`),popper);
+            return popper;
         });
-        $(`#con${name}`).on('mouseout',function(){
-            $(`#popContainer${name}`).hide();
-            poppers[name].destroy();
-            clearElement($(`#popContainer${name}`),true);
-        });
+
         var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
         $('#resStorage').append(market_item);
         containerItem(`#stack-${name}`,market_item,name,color,true);
@@ -599,71 +592,73 @@ function loadSpecialResource(name,color) {
         data: global.race[bind]
     });
 
-    let desc = $(`<div></div>`);
-    switch (name){
-        case 'Plasmid':
-            let active = global.race['no_plasmid'] ? (global.race.p_mutation > global.race[bind].count ? global.race[bind].count : global.race.p_mutation) : global.race[bind].count;
-            desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
-            if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
-                let plasmidSpatial = spatialReasoning(1,'plasmid');
-                if (plasmidSpatial > 1){
-                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
-                }   
-            }
-            break;
-
-        case 'AntiPlasmid':
-            desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race[bind].anti, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
-            let antiSpatial = spatialReasoning(1,'anti');
-            if (global.genes['store'] && (global.race.universe === 'antimatter' || global.genes['bleed'] >= 3)){
-                if (antiSpatial > 1){
-                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+    popover(`res${name}`, function(){
+        let desc = $(`<div></div>`);
+        switch (name){
+            case 'Plasmid':
+                let active = global.race['no_plasmid'] ? (global.race.p_mutation > global.race[bind].count ? global.race[bind].count : global.race.p_mutation) : global.race[bind].count;
+                desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
+                if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
+                    let plasmidSpatial = spatialReasoning(1,'plasmid');
+                    if (plasmidSpatial > 1){
+                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
+                    }   
                 }
-            }
-            break;
-
-        case 'Phage':
-            desc.append($(`<span>${loc(global.race.Plasmid.anti > 0 ? `resource_${name}_desc2` : `resource_${name}_desc`,[250 + global.race[bind].count])}</span>`));
-            let phageSpatial = spatialReasoning(1,'phage');
-            if (global.genes['store'] && global.genes['store'] >= 4){
-                if (phageSpatial > 1){
-                    desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+                break;
+    
+            case 'AntiPlasmid':
+                desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race[bind].anti, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
+                let antiSpatial = spatialReasoning(1,'anti');
+                if (global.genes['store'] && (global.race.universe === 'antimatter' || global.genes['bleed'] >= 3)){
+                    if (antiSpatial > 1){
+                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+                    }
                 }
-            }
-            break;
-
-        case 'Dark':
-            switch (global.race.universe){
-                case 'standard':
-                    desc.append($(`<span>${loc(`resource_${name}_desc_s`,[+((darkEffect('standard') - 1) * 100).toFixed(2)])}</span>`));
-                    break;
-
-                case 'evil':
-                    desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2)])}</span>`));
-                    break;
-
-                case 'micro':
-                    desc.append($(`<span>${loc(`resource_${name}_desc_m`,[darkEffect('micro',false),darkEffect('micro',true)])}</span>`));
-                    break;
-
-                case 'heavy':
-                    let hDE = darkEffect('heavy');
-                    let space = +(0.25 + (0.5 * hDE)).toFixed(4);
-                    let int = +(0.2 + (0.3 * hDE)).toFixed(4);
-                    desc.append($(`<span>${loc(`resource_${name}_desc_h`,[space * 100,int * 100])}</span>`));
-                    break;
-
-                case 'antimatter':
-                    desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
-                    break;
-            }
-            break;
-
-        case 'Harmony':
-            desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race.universe === 'standard' ? 0.1 : 1, harmonyEffect()])}</span>`));
-            break;
-    }
-    popover(`res${name}`, desc);
+                break;
+    
+            case 'Phage':
+                desc.append($(`<span>${loc(global.race.Plasmid.anti > 0 ? `resource_${name}_desc2` : `resource_${name}_desc`,[250 + global.race[bind].count])}</span>`));
+                let phageSpatial = spatialReasoning(1,'phage');
+                if (global.genes['store'] && global.genes['store'] >= 4){
+                    if (phageSpatial > 1){
+                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+                    }
+                }
+                break;
+    
+            case 'Dark':
+                switch (global.race.universe){
+                    case 'standard':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_s`,[+((darkEffect('standard') - 1) * 100).toFixed(2)])}</span>`));
+                        break;
+    
+                    case 'evil':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2)])}</span>`));
+                        break;
+    
+                    case 'micro':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_m`,[darkEffect('micro',false),darkEffect('micro',true)])}</span>`));
+                        break;
+    
+                    case 'heavy':
+                        let hDE = darkEffect('heavy');
+                        let space = +(0.25 + (0.5 * hDE)).toFixed(4);
+                        let int = +(0.2 + (0.3 * hDE)).toFixed(4);
+                        desc.append($(`<span>${loc(`resource_${name}_desc_h`,[space * 100,int * 100])}</span>`));
+                        break;
+    
+                    case 'antimatter':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
+                        break;
+                }
+                break;
+    
+            case 'Harmony':
+                desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race.universe === 'standard' ? 0.1 : 1, harmonyEffect()])}</span>`));
+                break;
+        }
+        return desc;
+    });
 }
 
 function marketItem(mount,market_item,name,color,full){
@@ -1107,12 +1102,8 @@ export function tradeBuyPrice(res){
 }
 
 function breakdownPopover(id,name,type){
-    $(`#${id}`).on('mouseover',function(){
-        
-        var popper = $(`<div id="resBreak${id}" class="popper breakdown has-background-light has-text-dark"></div>`);
-        $('#main').append(popper);
+    popover(`${id}`,function(){
         let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
-
         let table = $(`<div class="parent"></div>`);
         bd.append(table);
 
@@ -1160,82 +1151,78 @@ function breakdownPopover(id,name,type){
             bd.append(`<div class="modal_bd sum"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
         }
 
-        popper.append(bd);
-        popper.show();
-        poppers[type+name] = new Popper($(`#${id}`),popper);
-
-        vBind({
-            el: `#resBreak${id} > div`,
-            data: {
-                'Global': breakdown[type]['Global'],
-                [name]: breakdown[type][name],
-                'consume': breakdown[type]['consume'],
-                res: global['resource'][name]
-            }, 
-            filters: {
-                translate(raw){
-                    let type = raw[raw.length -1];
-                    let val = parseFloat(raw.slice(0,-1));
-                    val = +(val).toFixed(2);
-                    let suffix = type === '%' ? '%' : '';
-                    if (val > 0){
-                        return '+' + sizeApproximation(val,2) + suffix;
-                    }
-                    else if (val < 0){
-                        return sizeApproximation(val,2) + suffix;
-                    }
-                },
-                fix(val){
-                    return val + 'v';
-                },
-                counter(val){
-                    let rate = global['resource'][name].diff;
-                    let time = 0;
-                    if (rate < 0){
-                        rate *= -1;
-                        time = +(val / rate).toFixed(0);
-                    }
-                    else {
-                        let gap = global['resource'][name].max - val;
-                        time = +(gap / rate).toFixed(0);
-                    }
-
-                    if (time === Infinity || Number.isNaN(time)){
-                        return 'Never';
-                    }
-                    
-                    if (time > 60){
-                        let secs = time % 60;
-                        let mins = (time - secs) / 60;
-                        if (mins >= 60){
-                            let r = mins % 60;
-                            let hours = (mins - r) / 60;
-                            return `${hours}h ${r}m`;
+        return bd;
+    },{
+        in: function(){
+            vBind({
+                el: `#pop${id} > div`,
+                data: {
+                    'Global': breakdown[type]['Global'],
+                    [name]: breakdown[type][name],
+                    'consume': breakdown[type]['consume'],
+                    res: global['resource'][name]
+                }, 
+                filters: {
+                    translate(raw){
+                        let type = raw[raw.length -1];
+                        let val = parseFloat(raw.slice(0,-1));
+                        val = +(val).toFixed(2);
+                        let suffix = type === '%' ? '%' : '';
+                        if (val > 0){
+                            return '+' + sizeApproximation(val,2) + suffix;
+                        }
+                        else if (val < 0){
+                            return sizeApproximation(val,2) + suffix;
+                        }
+                    },
+                    fix(val){
+                        return val + 'v';
+                    },
+                    counter(val){
+                        let rate = global['resource'][name].diff;
+                        let time = 0;
+                        if (rate < 0){
+                            rate *= -1;
+                            time = +(val / rate).toFixed(0);
                         }
                         else {
-                            return `${mins}m ${secs}s`;
+                            let gap = global['resource'][name].max - val;
+                            time = +(gap / rate).toFixed(0);
                         }
+    
+                        if (time === Infinity || Number.isNaN(time)){
+                            return 'Never';
+                        }
+                        
+                        if (time > 60){
+                            let secs = time % 60;
+                            let mins = (time - secs) / 60;
+                            if (mins >= 60){
+                                let r = mins % 60;
+                                let hours = (mins - r) / 60;
+                                return `${hours}h ${r}m`;
+                            }
+                            else {
+                                return `${mins}m ${secs}s`;
+                            }
+                        }
+                        else {
+                            return `${time}s`;
+                        }
+                    },
+                    direction(val){
+                        return val >= 0 ? loc('to_full') : loc('to_empty');
+                    },
+                    namespace(name){
+                        return name.replace("_"," ");
                     }
-                    else {
-                        return `${time}s`;
-                    }
-                },
-                direction(val){
-                    return val >= 0 ? loc('to_full') : loc('to_empty');
-                },
-                namespace(name){
-                    return name.replace("_"," ");
                 }
-            }
-        });
-    });
-    $(`#${id}`).on('mouseout',function(){
-        $(`#resBreak${id}`).hide();
-        if (poppers[type+name]){
-            poppers[type+name].destroy();
-        }
-        clearElement($(`#resBreak${id}`),true);
-        vBind({el: `#resBreak${id} > div`},'destroy');
+            });
+        },
+        out: function(){
+            vBind({el: `#pop${id} > div`},'destroy');
+        },
+        classes: `breakdown has-background-light has-text-dark`
     });
 }
 
