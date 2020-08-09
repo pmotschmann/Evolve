@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers } from './vars.js';
-import { clearElement, easterEgg } from './functions.js';
+import { clearElement, popover, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
@@ -223,22 +223,19 @@ function loadUnemployed(){
             }
         }
     });
-    
-    $(`#${id} .job_label`).on('mouseover',function(){
+
+    popover(id, function(){
             let text = global.race['carnivore'] || global.race['soul_eater'] ? (global.race['soul_eater'] ? (global.race.species === 'wendigo' ? loc('job_hunter_desc') : loc('job_evil_hunter_desc')) : loc('job_hunter_desc')) : loc('job_unemployed_desc');
             if (global.civic.d_job === 'unemployed'){
                 text = text + ' ' + loc('job_default',[global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed')]);
             }
-            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark">${text}</div>`);
-            $('#main').append(popper);
-            popper.show();
-            poppers[id] = new Popper($(`#${id} .job_label`),popper);
-        });
-    $(`#${id} .job_label`).on('mouseout',function(){
-            $(`#pop${id}`).hide();
-            poppers[id].destroy();
-            clearElement($(`#pop${id}`),true);
-        });
+            return text;
+        },
+        {
+            elm: `#${id} .job_label`,
+            classes: `has-background-light has-text-dark`
+        }
+    );
 }
 
 function loadJob(job, impact, stress, color){
@@ -359,19 +356,15 @@ function loadJob(job, impact, stress, color){
             }
         }
     });
-    
-    $(`#${id} .job_label`).on('mouseover',function(){
-            var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
-            $('#main').append(popper);
-            popper.html(job_desc[job]());
-            popper.show();
-            poppers[id] = new Popper($(`#${id} .job_label`),popper);
-        });
-    $(`#${id} .job_label`).on('mouseout',function(){
-            $(`#pop${id}`).hide();
-            poppers[id].destroy();
-            clearElement($(`#pop${id}`),true);
-        });
+
+    popover(id, function(){
+            return job_desc[job]();
+        },
+        {
+            elm: `#${id} .job_label`,
+            classes: `has-background-light has-text-dark`
+        }
+    );
 }
 
 export function farmerValue(farm){
@@ -409,7 +402,7 @@ export function loadFoundry(){
                 $('#foundry').append(resource);
 
                 let controls = $('<div class="controls"></div>');
-                let job_label = $(`<div id="craft${res}" class="job_label" @mouseover="hover('${res}')" @mouseout="unhover('${res}')"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
+                let job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
                 resource.append(job_label);
                 resource.append(controls);
                 $('#foundry').append(resource);
@@ -466,31 +459,6 @@ export function loadFoundry(){
                         }
                     }
                 },
-                hover(res){
-                    var popper = $(`<div id="popCraft${res}" class="popper has-background-light has-text-dark"></div>`);
-                    $('#main').append(popper);
-                    let name = global.resource[res].name;
-                    let multiplier = craftingRatio(res,true);
-                    let speed = global.genes['crafty'] ? 2 : 1;
-                    let final = +(global.city.foundry[res] * multiplier * speed / 140).toFixed(2);
-                    let bonus = (multiplier * speed * 100).toFixed(0);
-                    
-                    popper.append($(`<div>${loc('craftsman_hover_bonus', [bonus, name])}</div>`));
-                    popper.append($(`<div>${loc('craftsman_hover_prod', [final, name])}</div>`));
-                    let craft_cost = craftCost();
-                    for (let i=0; i<craft_cost[res].length; i++){
-                        let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140).toFixed(2);
-                        popper.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
-                    }
-    
-                    popper.show();
-                    poppers[`cr${res}`] = new Popper($(`#craft${res}`),popper);
-                },
-                unhover(res){
-                    $(`#popCraft${res}`).hide();
-                    poppers[`cr${res}`].destroy();
-                    clearElement($(`#popCraft${res}`),true);
-                },
                 level(){
                     if (global.civic.craftsman.workers === 0){
                         return 'count has-text-danger';
@@ -514,17 +482,39 @@ export function loadFoundry(){
             }
         });
 
-        $(`#foundry .foundry`).on('mouseover',function(){
-            var popper = $(`<div id="popFoundry" class="popper has-background-light has-text-dark"></div>`);
-            $('#main').append(popper);
-            popper.html(loc('job_craftsman_hover'));
-            popper.show();
-            poppers['popFoundry'] = new Popper($(`#foundry .foundry`),popper);
-        });
-        $(`#foundry .foundry`).on('mouseout',function(){
-            $(`#popFoundry`).hide();
-            poppers['popFoundry'].destroy();
-            clearElement($(`#popFoundry`),true);
-        });
+        for (let i=0; i<list.length; i++){
+            let res = list[i];
+            if (global.resource[res].display){
+                popover(`craft${res}`, function(obj){
+                        let name = global.resource[res].name;
+                        let multiplier = craftingRatio(res,true);
+                        let speed = global.genes['crafty'] ? 2 : 1;
+                        let final = +(global.city.foundry[res] * multiplier * speed / 140).toFixed(2);
+                        let bonus = (multiplier * speed * 100).toFixed(0);
+                        
+                        obj.popper.append($(`<div>${loc('craftsman_hover_bonus', [bonus, name])}</div>`));
+                        obj.popper.append($(`<div>${loc('craftsman_hover_prod', [final, name])}</div>`));
+                        let craft_cost = craftCost();
+                        for (let i=0; i<craft_cost[res].length; i++){
+                            let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140).toFixed(2);
+                            obj.popper.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
+                        }
+                        return undefined;
+                    },
+                    {
+                        classes: `has-background-light has-text-dark`
+                    }
+                );
+            }
+        }
+
+        popover('craftsmenFoundry', function(){
+                return loc('job_craftsman_hover');
+            },
+            {
+                elm: `#foundry .foundry`,
+                classes: `has-background-light has-text-dark`
+            }
+        );
     }
 }

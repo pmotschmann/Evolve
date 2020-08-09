@@ -1,6 +1,6 @@
-import { global, poppers, sizeApproximation } from './../vars.js';
+import { global, sizeApproximation } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, adjustCosts } from './../functions.js';
+import { adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 
 export function headerBoxBuilder(parent,args){

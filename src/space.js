@@ -5275,38 +5275,17 @@ function armada(parent,id){
         Object.keys(global.galaxy.defense).forEach(function (area){
             let r = area.substring(4);
             if (global.settings.space[r]){
-                $('#armada'+r).on('mouseover',function(){
-                    var popper = $(`<div id="pop${r}" class="popper has-background-light has-text-dark pop-desc"></div>`);
-                    popper.append(`<div>${typeof galaxyProjects[area].info.desc === 'string' ? galaxyProjects[area].info.desc : galaxyProjects[area].info.desc()}</div>`);
-                    $('#main').append(popper);
-                    popper.show();
-                    poppers[r] = new Popper($('#armada'+r),popper);
-                });
-                $('#armada'+r).on('mouseout',function(){
-                    $(`#pop${r}`).hide();
-                    if (poppers[r]){
-                        poppers[r].destroy();
-                    }
-                    clearElement($(`#pop${r}`),true);
+                popover(`armada${r}`,function(){
+                    return `<div>${typeof galaxyProjects[area].info.desc === 'string' ? galaxyProjects[area].info.desc : galaxyProjects[area].info.desc()}</div>`;
                 });
             }
         });
 
         for (let i=0; i<ships.length; i++){
             if (global.galaxy.hasOwnProperty(ships[i])){
-                $('#armada'+ships[i]).on('mouseover',function(){
-                    var popper = $(`<div id="pop${ships[i]}" class="popper has-background-light has-text-dark pop-desc"></div>`);
-                    actionDesc(popper,galaxyProjects.gxy_gateway[ships[i]],global.galaxy[ships[i]]);
-                    $('#main').append(popper);
-                    popper.show();
-                    poppers[ships[i]] = new Popper($('#armada'+ships[i]),popper);
-                });
-                $('#armada'+ships[i]).on('mouseout',function(){
-                    $(`#pop${ships[i]}`).hide();
-                    if (poppers[ships[i]]){
-                        poppers[ships[i]].destroy();
-                    }
-                    clearElement($(`#pop${ships[i]}`),true);
+                popover(`armada${ships[i]}`,function(obj){
+                    actionDesc(obj.popper,galaxyProjects.gxy_gateway[ships[i]],global.galaxy[ships[i]]);
+                    return undefined;
                 });
             }
         }
@@ -5450,25 +5429,14 @@ export function setUniverse(){
             clearElement($(`#pop${id}`),true);
         });
 
-        $('#'+id).on('mouseover',function(){
-                var popper = $(`<div id="pop${id}" class="popper has-background-light has-text-dark"></div>`);
-                $('#main').append(popper);
-                
-                popper.append($(`<div>${universe_types[universe].name}</div>`));
-                popper.append($(`<div>${universe_types[universe].desc}</div>`));
-                popper.append($(`<div>${universe_types[universe].effect}</div>`));
-
-                popper.show();
-                poppers[id] = new Popper($('#'+id),popper);
-            });
-            
-        $('#'+id).on('mouseout',function(){
-                $(`#pop${id}`).hide();
-                if (poppers[id]){
-                    poppers[id].destroy();
-                }
-                clearElement($(`#pop${id}`),true);
-            });
+        popover(id,function(obj){
+            obj.popper.append($(`<div>${universe_types[universe].name}</div>`));
+            obj.popper.append($(`<div>${universe_types[universe].desc}</div>`));
+            obj.popper.append($(`<div>${universe_types[universe].effect}</div>`));
+            return undefined;
+        },{
+            classes: `has-background-light has-text-dark`
+        });
     }
 }
 

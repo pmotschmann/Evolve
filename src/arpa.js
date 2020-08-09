@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak, p_on, red_on } from './vars.js';
-import { clearElement, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue } from './functions.js';
+import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
@@ -1587,53 +1587,35 @@ function addProject(parent,project){
             }
         });
 
-        $(`#arpa${project} .head .desc`).on('mouseover',function(){
-            var popper = $(`<div id="popArpa${project}" class="popper has-background-light has-text-dark">${arpaProjects[project].desc}</div>`);
-            $('#main').append(popper);
-            popper.show();
-            poppers[`popArpa${project}`] = new Popper($(`#arpa${project} .head`),popper);
-        });
-        $(`#arpa${project} .head .desc`).on('mouseout',function(){
-            $(`#popArpa${project}`).hide();
-            if (poppers[`popArpa${project}`]){
-                poppers[`popArpa${project}`].destroy();
+        popover(`popArpa${project}`, function(){
+                return arpaProjects[project].desc;
+            },
+            {
+                elm: `#arpa${project} .head .desc`,
+                classes: `has-background-light has-text-dark`
             }
-            clearElement($(`#popArpa${project}`),true);
-        });
+        );
 
-        $(`#arpa${project} .head .rank`).on('mouseover',function(){
-            let effect = arpaProjects[project].effect();
-            var popper = $(`<div id="popArpa${project}" class="popper has-background-light has-text-dark">${effect}</div>`);
-            $('#main').append(popper);
-            popper.show();
-            poppers[`popArpa${project}`] = new Popper($(`#arpa${project} .head`),popper);
-        });
-        $(`#arpa${project} .head .rank`).on('mouseout',function(){
-            $(`#popArpa${project}`).hide();
-            if (poppers[`popArpa${project}`]){
-                poppers[`popArpa${project}`].destroy();
+        popover(`popArpa${project}`, function(){
+                return arpaProjects[project].effect();
+            },
+            {
+                elm: `#arpa${project} .head .rank`,
+                classes: `has-background-light has-text-dark`
             }
-            clearElement($(`#popArpa${project}`),true);
-        });
+        );
 
         let classes = [1,10,25,100];
         for (let i=0; i<classes.length; i++){
             let id = classes[i];
-            $(`#arpa${project} .buy .x${id}`).on('mouseover',function(){
-                var cost = arpaProjectCosts(id,project);
-                var popper = $(`<div id="popArpa${project}" class="popper has-background-light has-text-dark"></div>`);
-                popper.append(cost);
-                $('#main').append(popper);
-                popper.show();
-                poppers[`popArpa${project}`] = new Popper($(`#arpa${project}`),popper);
-            });
-            $(`#arpa${project} .buy .x${id}`).on('mouseout',function(){
-                $(`#popArpa${project}`).hide();
-                if (poppers[`popArpa${project}`]){
-                    poppers[`popArpa${project}`].destroy();
+            popover(`popArpa${project}`, function(){
+                    return arpaProjectCosts(id,project);
+                },
+                {
+                    elm: `#arpa${project} .buy .x${id}`,
+                    classes: `has-background-light has-text-dark`
                 }
-                clearElement($(`#popArpa${project}`),true);
-            });
+            );
         }
     }
 }
