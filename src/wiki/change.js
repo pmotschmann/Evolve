@@ -7,7 +7,8 @@ const changeList = [
         date: `8/7/2020`,
         changes: [
             `Angelic races now have an inate bonus vs demonic creatures.`,
-            `Enhanced Muscle Fibers added to perks page.`
+            `Enhanced Muscle Fibers added to perks page.`,
+            `Reorganized achievments page in Wiki.`
         ]
     },
     {
