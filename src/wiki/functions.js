@@ -66,24 +66,6 @@ export function infoBoxBuilder(parent,args){
     return info;
 }
 
-export function popover(id,content,is_wide){
-    $('#'+id).on('mouseover',function(){
-        let wide = is_wide ? ' wide' : '';
-        var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
-        $(`#main`).append(popper);
-        popper.append(content);
-        popper.show();
-        poppers[id] = new Popper($('#'+id),popper);
-    });
-    $('#'+id).on('mouseout',function(){
-        $(`#pop${id}`).hide();
-        if (poppers[id]){
-            poppers[id].destroy();
-        }
-        clearElement($(`#pop${id}`),true);
-    });
-}
-
 export function actionDesc(info, c_action, extended){
     let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
     if (extended){

@@ -1,8 +1,8 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement } from './../functions.js';
+import { clearElement, popover } from './../functions.js';
 import { actions } from './../actions.js';
-import { popover, actionDesc } from './functions.js';
+import { actionDesc } from './functions.js';
 
 export function renderStructurePage(zone){
     let content = $(`#content`);

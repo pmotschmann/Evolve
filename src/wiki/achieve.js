@@ -3,7 +3,7 @@ import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
 import { achievements, feats } from './../achieve.js';
 import { races, biomes, genus_traits } from './../races.js';
-import { popover } from './functions.js';
+import { popover } from './../functions.js';
 
 export function renderAchievePage(zone){
     let content = $(`#content`);

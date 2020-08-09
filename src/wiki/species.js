@@ -1,8 +1,7 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, getEaster } from './../functions.js';
+import { clearElement, popover, getEaster } from './../functions.js';
 import { races, traits, genus_traits } from './../races.js';
-import { popover } from './functions.js';
 
 export function racesPage(){
     let content = $(`#content`);
