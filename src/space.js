@@ -1,5 +1,5 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, calcGenomeScore, randomKey } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources, galacticTrade } from './resources.js';
@@ -4921,7 +4921,6 @@ function space(){
         let show = region.replace("spc_","");
         if (global.settings.space[`${show}`]){
             let name = typeof spaceProjects[region].info.name === 'string' ? spaceProjects[region].info.name : spaceProjects[region].info.name();
-            let desc = typeof spaceProjects[region].info.desc === 'string' ? spaceProjects[region].info.desc : spaceProjects[region].info.desc();
             
             if (spaceProjects[region].info['support']){
                 let support = spaceProjects[region].info['support'];
@@ -4938,22 +4937,15 @@ function space(){
             else {
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
             }
-            
-            $(`#${region} h3.name`).on('mouseover',function(){
-                var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);
-                $('#main').append(popper);
-                
-                popper.append($(`<div>${desc}</div>`));
-                popper.show();
-                poppers[region] = new Popper($(`#${region} h3.name`),popper);
-            });
-            $(`#${region} h3.name`).on('mouseout',function(){
-                $(`#pop${region}`).hide();
-                if (poppers[region]){
-                    poppers[region].destroy();
+
+            popover(region, function(){
+                    return typeof typeof spaceProjects[region].info.desc === 'string' ? spaceProjects[region].info.desc : spaceProjects[region].info.desc();
+                },
+                {
+                    elm: `#${region} h3.name`,
+                    classes: `has-background-light has-text-dark`
                 }
-                clearElement($(`#pop${region}`),true);
-            });
+            );
 
             Object.keys(spaceProjects[region]).forEach(function (tech){
                 if (tech !== 'info' && checkRequirements(spaceProjects,region,tech)){
@@ -4994,22 +4986,14 @@ function deepSpace(){
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
             }
             
-            $(`#${region} h3.name`).on('mouseover',function(){
-                var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);
-                $('#main').append(popper);
-                
-                let desc = typeof interstellarProjects[region].info.desc === 'string' ? interstellarProjects[region].info.desc : interstellarProjects[region].info.desc();
-                popper.append($(`<div>${desc}</div>`));
-                popper.show();
-                poppers[region] = new Popper($(`#${region} h3.name`),popper);
-            });
-            $(`#${region} h3.name`).on('mouseout',function(){
-                $(`#pop${region}`).hide();
-                if (poppers[region]){
-                    poppers[region].destroy();
+            popover(region, function(){
+                    return typeof interstellarProjects[region].info.desc === 'string' ? interstellarProjects[region].info.desc : interstellarProjects[region].info.desc();
+                },
+                {
+                    elm: `#${region} h3.name`,
+                    classes: `has-background-light has-text-dark`
                 }
-                clearElement($(`#pop${region}`),true);
-            });
+            );
 
             Object.keys(interstellarProjects[region]).forEach(function (tech){
                 if (tech !== 'info' && checkRequirements(interstellarProjects,region,tech)){
@@ -5140,23 +5124,15 @@ function galaxySpace(){
             }
 
             vBind(vData);
-            
-            $(`#${region} h3.name`).on('mouseover',function(){
-                var popper = $(`<div id="pop${region}" class="popper has-background-light has-text-dark"></div>`);
-                $('#main').append(popper);
-                
-                let desc = typeof galaxyProjects[region].info.desc === 'string' ? galaxyProjects[region].info.desc : galaxyProjects[region].info.desc();
-                popper.append($(`<div>${desc}</div>`));
-                popper.show();
-                poppers[region] = new Popper($(`#${region} h3.name`),popper);
-            });
-            $(`#${region} h3.name`).on('mouseout',function(){
-                $(`#pop${region}`).hide();
-                if (poppers[region]){
-                    poppers[region].destroy();
+
+            popover(region, function(){
+                    return typeof galaxyProjects[region].info.desc === 'string' ? galaxyProjects[region].info.desc : galaxyProjects[region].info.desc();
+                },
+                {
+                    elm: `#${region} h3.name`,
+                    classes: `has-background-light has-text-dark`
                 }
-                clearElement($(`#pop${region}`),true);
-            });
+            );
 
             Object.keys(galaxyProjects[region]).forEach(function (tech){
                 if (tech !== 'info' && checkRequirements(galaxyProjects,region,tech)){

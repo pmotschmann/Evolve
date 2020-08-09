@@ -14386,8 +14386,8 @@ export function setAction(c_action,action,type,old){
     });
 
     popover(id,function(){ return undefined; },{
-        in: function(popper){
-            actionDesc(popper,c_action,global[action][type],old);
+        in: function(obj){
+            actionDesc(obj.popper,c_action,global[action][type],old);
         },
         out: function(){
             vBind({el: `#popTimer`},'destroy');
@@ -15787,8 +15787,8 @@ function attachQueuePopovers(){
         c_action = actions[segments[0]][segments[1]];
 
         popover(id,function(){ return undefined; },{
-            in: function(popper){
-                actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+            in: function(obj){
+                actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false);
             },
             out: function(){
                 cleanTechPopOver(id);

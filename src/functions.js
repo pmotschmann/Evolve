@@ -162,7 +162,8 @@ export function mainVue(){
 
 export function popover(id,content,opts){
     if (!opts){ opts = {}; }
-    $('#'+id).on('mouseover',function(){
+    if (!opts.hasOwnProperty('elm')){ opts['elm'] = '#'+id; }
+    $(opts.elm).on('mouseover',function(){
         let wide = opts['wide'] ? ' wide' : '';
         let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
         var popper = $(`<div id="pop${id}" class="popper${wide} ${classes}"></div>`);
@@ -172,14 +173,14 @@ export function popover(id,content,opts){
         else {
             $(`#main`).append(popper);
         }
-        popper.append(typeof content === 'function' ? content(popper) : content);
+        popper.append(typeof content === 'function' ? content({ this: this, popper: popper }) : content);
         popper.show();
-        poppers[id] = new Popper($('#'+id),popper);
+        poppers[id] = new Popper(opts['self'] ? this : $(opts.elm),popper);
         if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
-            opts['in'](popper);
+            opts['in']({ this: this, popper: popper });
         }
     });
-    $('#'+id).on('mouseout',function(){
+    $(opts.elm).on('mouseout',function(){
         $(`#pop${id}`).hide();
         if (poppers[id]){
             poppers[id].destroy();
@@ -187,7 +188,7 @@ export function popover(id,content,opts){
         }
         clearElement($(`#pop${id}`),true);
         if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
-            opts['out']($(`#pop${id}`));
+            opts['out']({ this: this, popper: $(`#pop${id}`)});
         }
     });
 }

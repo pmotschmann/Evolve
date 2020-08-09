@@ -469,9 +469,13 @@ if (convertVersion(global['version']) < 9010){
 }
 
 if (convertVersion(global['version']) < 9014){
-    ['seraph', 'unicorn'].forEach(field => {
-        if (global.race.species === field) { global.race['holy'] = 1; }
-    })
+    ['seraph', 'unicorn', 'custom'].forEach(field => {
+        if (global.race.species === field) {
+            if ((field === 'custom' && global.hasOwnProperty('custom') && global.custom.race0.genus === 'angelic') || field !== 'custom'){
+                global.race['holy'] = 1;
+            }
+        }
+    });
 }
 
 global['version'] = '0.9.14';
