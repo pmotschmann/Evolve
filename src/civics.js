@@ -512,14 +512,14 @@ function drawEspModal(gov){
                     global.civic.foreign[`gov${g}`].act = 'influence';
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
-                    $('#popGov').hide();
-                    poppers['govPop'].destroy();
-                    clearElement($(`#popGov`),true);
+                    $('#popGovLabel').hide();
+                    poppers['GovLabel'].destroy();
+                    $('#popGovLabel').remove();
 
                     setTimeout(function(){
-                        $('#popGov').hide();
-                        poppers['govPop'].destroy();
-                        clearElement($(`#popGov`),true);
+                        $('#popGovLabel').hide();
+                        poppers['GovLabel'].destroy();
+                        $('#popGovLabel').remove();
                     },250);
                 }
             },
@@ -531,13 +531,14 @@ function drawEspModal(gov){
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
                     $('#popGov').hide();
-                    poppers['govPop'].destroy();
-                    clearElement($(`#popGov`),true);
+                    $('#popGovLabel').hide();
+                    poppers['GovLabel'].destroy();
+                    $('#popGovLabel').remove();
 
                     setTimeout(function(){
-                        $('#popGov').hide();
-                        poppers['govPop'].destroy();
-                        clearElement($(`#popGov`),true);
+                        $('#popGovLabel').hide();
+                        poppers['GovLabel'].destroy();
+                        $('#popGovLabel').remove();
                     },250);
                 }
             },
@@ -548,14 +549,14 @@ function drawEspModal(gov){
                     global.civic.foreign[`gov${g}`].act = 'incite';
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
-                    $('#popGov').hide();
-                    poppers['govPop'].destroy();
-                    clearElement($(`#popGov`),true);
+                    $('#popGovLabel').hide();
+                    poppers['GovLabel'].destroy();
+                    $('#popGovLabel').remove();
 
                     setTimeout(function(){
-                        $('#popGov').hide();
-                        poppers['govPop'].destroy();
-                        clearElement($(`#popGov`),true);
+                        $('#popGovLabel').hide();
+                        poppers['GovLabel'].destroy();
+                        $('#popGovLabel').remove();
                     },250);
                 }
             },
@@ -567,14 +568,14 @@ function drawEspModal(gov){
                         global.civic.foreign[`gov${g}`].act = 'annex';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
-                        $('#popGov').hide();
-                        poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        $('#popGovLabel').hide();
+                        poppers['GovLabel'].destroy();
+                        $('#popGovLabel').remove();
 
                         setTimeout(function(){
-                            $('#popGov').hide();
-                            poppers['govPop'].destroy();
-                            $('#popGov').remove();
+                            $('#popGovLabel').hide();
+                            poppers['GovLabel'].destroy();
+                            $('#popGovLabel').remove();
                         },250);
                     }
                 }
@@ -589,14 +590,14 @@ function drawEspModal(gov){
                         global.civic.foreign[`gov${g}`].act = 'purchase';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
-                        $('#popGov').hide();
-                        poppers['govPop'].destroy();
-                        $('#popGov').remove();
+                        $('#popGovLabel').hide();
+                        poppers['GovLabel'].destroy();
+                        $('#popGovLabel').remove();
 
                         setTimeout(function(){
-                            $('#popGov').hide();
-                            poppers['govPop'].destroy();
-                            $('#popGov').remove();
+                            $('#popGovLabel').hide();
+                            poppers['GovLabel'].destroy();
+                            $('#popGovLabel').remove();
                         },250);
                     }
                 }
@@ -604,7 +605,7 @@ function drawEspModal(gov){
         }
     });
 
-    popover('govLabel', function(obj){
+    popover('GovLabel', function(obj){
             let esp = $(obj.this).data('esp');
             let desc = '';
             if (esp === 'purchase'){
