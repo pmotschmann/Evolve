@@ -411,6 +411,110 @@ const fortressModules = {
                 return false;
             }
         },
+    },
+    prtl_ruins: {
+        info: {
+            name: loc('portal_ruins_name'),
+            desc: loc('portal_ruins_desc'),
+        },
+        ruins_mission: {
+            id: 'portal-ruins_mission',
+            title: loc('portal_pit_mission_title'),
+            desc: loc('portal_pit_mission_title'),
+            reqs: { hell_ruins: 1 },
+            grant: ['hell_ruins',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Money(){ return 100000000; },
+                Oil(){ return 500000; },
+                Helium_3(){ return 500000; }
+            },
+            effect: loc('portal_pit_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('portal_ruins_mission_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    prtl_gate: {
+        info: {
+            name: loc('portal_gate_name'),
+            desc: loc('portal_gate_desc'),
+        },
+        gate_mission: {
+            id: 'portal-gate_mission',
+            title: loc('portal_pit_mission_title'),
+            desc: loc('portal_pit_mission_title'),
+            reqs: { hell_gate: 1 },
+            grant: ['hell_gate',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Money(){ return 250000000; }
+            },
+            effect: loc('portal_pit_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('portal_pit_mission_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    prtl_lake: {
+        info: {
+            name: loc('portal_lake_name'),
+            desc: loc('portal_lake_desc'),
+        },
+        lake_mission: {
+            id: 'portal-lake_mission',
+            title: loc('portal_pit_mission_title'),
+            desc: loc('portal_pit_mission_title'),
+            reqs: { hell_lake: 1 },
+            grant: ['hell_lake',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Money(){ return 350000000; },
+                Oil(){ return 1000000; }
+            },
+            effect: loc('portal_pit_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('portal_pit_mission_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+    },
+    prtl_spire: {
+        info: {
+            name: loc('portal_spire_name'),
+            desc: loc('portal_spire_desc'),
+        },
+        spire_mission: {
+            id: 'portal-spire_mission',
+            title: loc('portal_pit_mission_title'),
+            desc: loc('portal_pit_mission_title'),
+            reqs: { hell_spire: 1 },
+            grant: ['hell_spire',2],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Money(){ return 500000000; },
+                Deuterium(){ return 1000000; }
+            },
+            effect: loc('portal_pit_mission_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('portal_pit_mission_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
     }
 };
 

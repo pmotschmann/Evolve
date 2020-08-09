@@ -1433,5 +1433,4 @@ export function getEaster(){
     }
 
     return easter;
-
 }

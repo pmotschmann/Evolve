@@ -607,6 +607,13 @@ if (!global.settings['portal']){
     };
 }
 
+if (!global.settings.portal.hasOwnProperty('ruins')){
+    global.settings.portal['ruins'] = false;
+    global.settings.portal['gate'] = false;
+    global.settings.portal['lake'] = false;
+    global.settings.portal['spire'] = false;
+}
+
 if (!global['queue']){
     global['queue'] = {
         display: false,
@@ -1510,6 +1517,10 @@ export function clearStates(){
     global.settings.portal.fortress = false;
     global.settings.portal.badlands = false;
     global.settings.portal.pit = false;
+    global.settings.portal.ruins = false;
+    global.settings.portal.gate = false;
+    global.settings.portal.lake = false;
+    global.settings.portal.spire = false;
     global.settings.arpa = false;
     global.settings.civTabs = 0;
     global.settings.govTabs = 0;
