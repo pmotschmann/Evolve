@@ -237,21 +237,21 @@ function drawGovModal(){
                     global.civic.govern.rev = time + global.civic.govern.fr;
                     vBind({el: '#govModal'},'destroy');
                     $('.modal-background').click();
-                    $('#popGov').hide();
-                    poppers['govPop'].destroy();
-                    clearElement($(`#popGov`),true);
+                    $('#popGovPop').hide();
+                    poppers['govGovPop'].destroy();
+                    clearElement($(`#popGovPop`),true);
 
                     setTimeout(function(){
-                        $('#popGov').hide();
-                        poppers['govPop'].destroy();
-                        clearElement($(`#popGov`),true);
+                        $('#popGovPop').hide();
+                        poppers['govGovPop'].destroy();
+                        clearElement($(`#popGovPop`),true);
                     },250);
                 }
             }
         }
     });
 
-    popover('govPop', function(obj){
+    popover('GovPop', function(obj){
             let govType = $(obj.this).data('gov');
             let effectType = global.tech['unify'] && global.tech['unify'] >= 2 && govType === 'federation' ? 'federation_alt' : govType;
             if (effectType === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
