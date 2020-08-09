@@ -476,7 +476,7 @@ if (convertVersion(global['version']) < 9014){
             }
         }
     });
-    if (global.arpa.hasOwnProperty('sequence')){
+    if (global.hasOwnProperty('arpa') && global.arpa.hasOwnProperty('sequence')){
         global.arpa.sequence['labs'] = 0;
     }
 }
