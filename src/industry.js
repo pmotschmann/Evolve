@@ -266,7 +266,7 @@ function loadSmelter(parent,bind){
                 if (global.race['pyrophobia']){
                     boost *= 0.9;
                 }
-                return loc('modal_smelter_iron',[boost,loc('resource_Iron_name')]);
+                return loc('modal_smelter_iron',[+(boost).toFixed(3),loc('resource_Iron_name')]);
             },
             steelLabel(){
                 let boost = global.tech['smelting'] >= 4 ? 1.2 : 1;
@@ -282,7 +282,7 @@ function loadSmelter(parent,bind){
                 if (global.race['pyrophobia']){
                     boost *= 0.9;
                 }
-                return loc('modal_smelter_steel',[boost,loc('resource_Steel_name'),loc('resource_Coal_name'),loc('resource_Iron_name')]);
+                return loc('modal_smelter_steel',[+(boost).toFixed(3),loc('resource_Steel_name'),loc('resource_Coal_name'),loc('resource_Iron_name')]);
             },
             ironSmelting(){
                 let keyMult = keyMultiplier();
