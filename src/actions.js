@@ -8187,6 +8187,9 @@ export const actions = {
                     let tech = $(this)[0].grant[0];
                     global.tech[tech] = $(this)[0].grant[1];
                     global.settings.arpa.genetics = true;
+                    if (global.race['cataclysm']){
+                        global.arpa.sequence.on = false;
+                    }
                     arpa('Genetics');
                     return true;
                 }

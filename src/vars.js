@@ -476,6 +476,9 @@ if (convertVersion(global['version']) < 9014){
             }
         }
     });
+    if (global.arpa.hasOwnProperty('sequence')){
+        global.arpa.sequence['labs'] = 0;
+    }
 }
 
 global['version'] = '0.9.14';

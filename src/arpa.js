@@ -1064,7 +1064,7 @@ function genetics(){
                 max: 50000,
                 progress: 0,
                 time: 50000,
-                on: true
+                on: global.race['cataclysm'] ? false : true
             };
         }
 
@@ -1074,6 +1074,10 @@ function genetics(){
 
         if (!global.arpa.sequence['auto']){
             global.arpa.sequence['auto'] = false;
+        }
+
+        if (!global.arpa.sequence['labs']){
+            global.arpa.sequence['labs'] = 0;
         }
 
         let label = global.tech.genetics > 2 ? loc('arpa_gene_mutation') : loc('arpa_sequence_genome');
@@ -1178,16 +1182,12 @@ function genetics(){
             },
             filters: {
                 timer(val){
-                    let labs = global.race['cataclysm'] ? red_on['exotic_lab'] : p_on['biolab'];
-                    if (labs > 0){
-                        if (global.city.ptrait === 'toxic'){
-                            labs++;
-                        }
+                    if (global.arpa.sequence.on && global.arpa.sequence.labs > 0){
                         if (global.arpa.sequence.boost){
-                            return timeFormat(val / (labs * 2));
+                            return timeFormat(val / (global.arpa.sequence.labs * 2));
                         }
                         else {
-                            return timeFormat(val / labs);
+                            return timeFormat(val / global.arpa.sequence.labs);
                         }
                     }
                     else {

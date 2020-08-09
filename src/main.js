@@ -5879,10 +5879,11 @@ function midLoop(){
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
-            let labs = global.race['cataclysm'] ? red_on['exotic_lab'] : p_on['biolab'];
+            let labs = global.race['cataclysm'] ? red_on['exotic_lab'] : p_on['biolab'];            
             if (labs > 0 && global.city.ptrait === 'toxic'){
                 labs += planetTraits.toxic.vars[0];
             }
+            global.arpa.sequence.labs = labs;
             global.arpa.sequence.time -= global.arpa.sequence.boost ? labs * 2 : labs;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
             if (global.arpa.sequence.time <= 0){
