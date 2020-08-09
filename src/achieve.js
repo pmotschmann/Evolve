@@ -1514,6 +1514,11 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_birth")}</span></div>`);
     }
 
+    if (global.genes['enhance']){
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_enhance")}</span></div>`);
+    }
+
     if (global.genes['crafty']){
         unlocked++;
         perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_artificer_desc")}</span></div>`);

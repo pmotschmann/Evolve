@@ -2304,6 +2304,7 @@
   "arpa_perks_store2": "Each Plasmid and Phage increase storage by %0%",
   "arpa_perks_evolve": "Evolution costs decreased",
   "arpa_perks_birth": "Gain increased population growth rate",
+  "arpa_perks_enhance": "Manual resource gathering rate doubled",
   "arpa_perks_challenge": "Challenge Genes unlocked",
   "arpa_perks_challenge2": "%0% of Standard Mastery and %1% of Universe-specfic Mastery works in alternate universes",
   "arpa_perks_challenge3": "The Mastery minor trait is unlocked",
