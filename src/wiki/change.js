@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.15`,
+        date: `8/10/2020`,
+        changes: [
+            `Tax revolts can no longer destroy Soul Gems.`,
+            `If you lose your sample of Elerium before researching Elerium Mining it will now be replaced.`
+        ]
+    },
+    {
         version: `0.9.14`,
         date: `8/9/2020`,
         changes: [

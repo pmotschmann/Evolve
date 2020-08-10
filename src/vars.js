@@ -476,12 +476,12 @@ if (convertVersion(global['version']) < 9014){
             }
         }
     });
-    if (global.arpa.hasOwnProperty('sequence')){
+    if (global.hasOwnProperty('arpa') && global.arpa.hasOwnProperty('sequence')){
         global.arpa.sequence['labs'] = 0;
     }
 }
 
-global['version'] = '0.9.14';
+global['version'] = '0.9.15';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
