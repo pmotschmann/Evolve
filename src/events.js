@@ -402,10 +402,12 @@ function tax_revolt(){
     let ramp = global.civic.govern.type === 'oligarchy' ? 45 : 25;
     let risk = (global.civic.taxes.tax_rate - ramp) * 0.04;
     Object.keys(global.resource).forEach(function (res) {
-        let loss = Math.rand(1,Math.round(global.resource[res].amount * risk));
-        let remain = global.resource[res].amount - loss;
-        if (remain < 0){ remain = 0; }
-        global.resource[res].amount = remain;
+        if (res !== 'Soul_Gem'){
+            let loss = Math.rand(1,Math.round(global.resource[res].amount * risk));
+            let remain = global.resource[res].amount - loss;
+            if (remain < 0){ remain = 0; }
+            global.resource[res].amount = remain;
+        }
     });
     return loc('event_tax_revolt');
 }
