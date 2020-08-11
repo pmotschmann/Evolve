@@ -954,7 +954,7 @@ const extraInformation = {
         loc(`wiki_tech_building_unlock`,[loc(`space_home_propellant_depot_title`)])
     ],
     rover: [
-        loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`space_moon_info_name`)]),loc(`space_moon_info_name`)])
+        loc(`wiki_tech_destination_unlock`,[loc(`space_moon_mission_title`),loc(`space_moon_info_name`)])
     ],
     probes: [
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[getSolarName('red')]),getSolarName('red')]),

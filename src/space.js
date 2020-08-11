@@ -2011,7 +2011,7 @@ const interstellarProjects = {
                 Graphene(offset){ return spaceCostMultiplier('exchange', offset, 78000, 1.28, 'interstellar'); }
             },
             effect(){
-                let banks = global.race['cataclysm'] ? global.city['bank'].count : global.city['bank'].count;
+                let banks = global.race['cataclysm'] ? p_on['spaceport'] : global.city['bank'].count;
                 let b_vault = global.race['cataclysm'] ? (bank_vault() * 4) : bank_vault();
                 let vault = spatialReasoning(global.city['bank'] ? b_vault * banks / 18 : 0);
                 if (global.tech.banking >= 13){

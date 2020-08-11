@@ -5284,7 +5284,7 @@ function midLoop(){
                 gain *= 1 + ((global.race['cataclysm'] ? red_on['exotic_lab'] : global.city.wardenclyffe.count) * 0.02);
             }
             if (global.race['cataclysm'] && p_on['s_gate'] && gal_on['scavenger']){
-                know *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
+                gain *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
@@ -5887,11 +5887,11 @@ function midLoop(){
                 else {
                     global.race.mutation++;
                     let trait = randomMinorTrait(1);
-                    let gene = global.genes['synthesis'] ? (2 ** (global.race.mutation - 1)) * (global.genes['synthesis'] + 1) : global.race.mutation;
+                    let gene_multi = 1 + (global.genes['synthesis'] ? global.genes['synthesis'] : 0);
+                    let gene = (2 ** (global.race.mutation - 1)) * gene_multi;
                     if (global.stats.achieve['creator']){
                         gene = Math.round(gene * (1 + (global.stats.achieve['creator'].l * 0.5)));
                     }
-                    messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene]),'success');
                     global.resource.Genes.amount += gene;
                     global.resource.Genes.display = true;
                     let plasma = global.genes['plasma'] ? global.race.mutation : 1;
@@ -5903,15 +5903,19 @@ function midLoop(){
                             plasma = 3;
                         }
                     }
+                    let plasmid_type = plasma > 1 ? '_plural' : '';
                     if (global.race['universe'] === 'antimatter'){
+                        plasmid_type = loc('resource_AntiPlasmid' + plasmid_type + '_name');
                         global.stats.antiplasmid += plasma;
                         global.race.Plasmid.anti += plasma;
                         unlockAchieve('cross');
                     }
                     else {
+                        plasmid_type = loc('resource_Plasmid' + plasmid_type + '_name');
                         global.stats.plasmid += plasma;
                         global.race.Plasmid.count += plasma;
                     }
+                    messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene,plasma,plasmid_type]),'success');
                 }
                 arpa('Genetics');
                 drawTech();
