@@ -4692,7 +4692,7 @@ export const actions = {
             },
             cost: {
                 Food(){ return global.race['evil'] ? 0 : 10; },
-                Lumber(){ return global.race['evil'] ? 10 : 0; },
+                Lumber(){ return global.race['evil'] ? 10 : 0; }
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -4718,7 +4718,7 @@ export const actions = {
                 return global.race.species === 'wendigo' ? true : false;
             },
             cost: {
-                Lumber(){ return 10; },
+                Lumber(){ return 10; }
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -10713,6 +10713,7 @@ export const actions = {
             effect: loc('tech_mad_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('tech_mad_info'),'info');
                     global.civic.mad.display = true;
                     return true;
                 }
@@ -11495,7 +11496,7 @@ export const actions = {
             }
         },
         exotic_lab: {
-            id: 'tech-energy_lab',
+            id: 'tech-exotic_lab',
             title: loc('tech_exotic_lab'),
             desc: loc('tech_exotic_lab_desc'),
             category: 'science',
@@ -12163,7 +12164,7 @@ export const actions = {
             desc: loc('tech_genesis'),
             category: 'special',
             era: 'deep_space',
-            reqs: { genesis: 1 },
+            reqs: { high_tech: 10, genesis: 1 },
             grant: ['genesis',2],
             cost: {
                 Knowledge(){ return 350000; }
@@ -12659,7 +12660,7 @@ export const actions = {
             }
         },
         fortifications: {
-            id: 'tech-fort',
+            id: 'tech-fortifications',
             title: loc('tech_fort'),
             desc: loc('tech_fort_desc'),
             category: 'hell_dimension',

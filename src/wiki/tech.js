@@ -954,7 +954,7 @@ const extraInformation = {
         loc(`wiki_tech_building_unlock`,[loc(`space_home_propellant_depot_title`)])
     ],
     rover: [
-        loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`space_moon_info_name`)]),loc(`space_moon_info_name`)])
+        loc(`wiki_tech_destination_unlock`,[loc(`space_moon_mission_title`),loc(`space_moon_info_name`)])
     ],
     probes: [
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[getSolarName('red')]),getSolarName('red')]),
@@ -1260,6 +1260,68 @@ const extraInformation = {
     ]
 };
 
+const extraRequirements = {
+    theology1 : loc('wiki_tech_req_theology1'),
+    genetics3 : loc('wiki_tech_req_genetics3'),
+    supercollider1 : loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),1]),
+    supercollider2 : loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),2]),
+    supercollider3 : loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),3]),
+    stock_exchange1 : loc('wiki_tech_req_arpa',[loc('arpa_projects_stock_exchange_title'),1]),
+    monuments2 : loc('wiki_tech_req_arpa',[loc('arpa_project_monument_title'),2]),
+    space2 : loc('wiki_tech_req_mission',[loc('space_home_test_launch_title')]),
+    space3 : loc('wiki_tech_req_mission',[loc('space_moon_mission_title')]),
+    space4 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('red')])]),
+    space5 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('gas')])]),
+    luna1 : loc('wiki_tech_req_building',[loc('space_moon_base_title')]),
+    mars1 : loc('wiki_tech_req_building',[loc('space_red_spaceport_title')]),
+    hell1 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('hell')])]),
+    solar1 : loc('wiki_tech_req_mission',[loc('space_sun_mission_title')]),
+    gas_moon1 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('gas_moon')])]),
+    asteroid1 : loc('wiki_tech_req_mission',[loc('space_belt_mission_title')]),
+    asteroid3 : loc('wiki_tech_req_building',[loc('space_belt_station_title')]),
+    asteroid4 : loc('wiki_tech_req_asteroid4'),
+    dwarf1 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('dwarf')])]),
+    genesis1 : loc('wiki_tech_req_genesis1'),
+    science11 : loc('wiki_tech_req_megabuilding',[loc('space_dwarf_collider_title')]),
+    wsc1 : loc('wiki_tech_req_wsc1'),
+    alpha2 : loc('wiki_tech_req_building',[loc('interstellar_alpha_starport_title')]),
+    droids1 : loc('wiki_tech_req_building',[loc('interstellar_mining_droid_title')]),
+    proxima2 : loc('wiki_tech_req_building',[loc('interstellar_xfer_station_title')]),
+    nebula2 : loc('wiki_tech_req_building',[loc('interstellar_nexus_title')]),
+    neutron1 : loc('wiki_tech_req_mission',[loc('space_mission_title',[loc('interstellar_neutron_name')])]),
+    blackhole2 : loc('wiki_tech_req_building',[loc('interstellar_far_reach')]),
+    blackhole4 : loc('wiki_tech_req_megabuilding',[loc('interstellar_stellar_engine')]),
+    whitehole1 : loc('wiki_tech_req_whitehole1'),
+    gateway3 : loc('wiki_tech_req_building',[loc('galaxy_starbase')]),
+    stargate5 : loc('wiki_tech_req_building',[loc('galaxy_gateway_station')]),
+    xeno1 : loc('wiki_tech_req_xeno1'),
+    xeno3 : loc('wiki_tech_req_mission',[loc('galaxy_gorddon_mission')]),
+    xeno5 : loc('wiki_tech_req_building',[loc('galaxy_embassy')]),
+    xeno9 : loc('wiki_tech_req_building',[loc('galaxy_consulate')]),
+    piracy1 : loc('wiki_tech_req_piracy1'),
+    conflict2 : loc('wiki_tech_req_building',[loc('galaxy_foothold')]),
+    conflict5 : loc('wiki_tech_req_conflict5'),
+    chthonian2 : loc('wiki_tech_req_mission',[loc('space_mission_title',[loc('galaxy_chthonian')])]),
+    infernite1 : loc('wiki_tech_req_building',[loc('portal_carport_title')]),
+    hell_pit3 : loc('wiki_tech_req_mission',[loc('portal_assault_forge_title')]),
+    decay1 : loc('wiki_tech_req_decay1')
+};
+
+var techTrees = {};
+Object.keys(actions.tech).forEach(function (actionName){
+    let action = actions.tech[actionName];
+    if (!techTrees[action.grant[0]]){
+        techTrees[action.grant[0]] = {};
+    }
+    techTrees[action.grant[0]][action.grant[1]] = typeof actions.tech[actionName].title === 'string' ? actions.tech[actionName].title : actions.tech[actionName].title();
+});
+//Anomalies
+techTrees['primitive'][2] = loc('wiki_tech_req_or',[loc('tech_bone_tools'),loc('tech_wooden_tools')]);
+techTrees['theology'][3] = loc('wiki_tech_req_or',[loc('tech_fanaticism'),loc('tech_anthropology')]);
+techTrees['theology'][5] = loc('wiki_tech_req_or',[loc('tech_deify'),loc('tech_study')]);
+techTrees['ancient_study'][1] = loc('tech_study');
+techTrees['ancient_deify'][1] = loc('tech_deify');
+
 function getSolarName(planet) {
     if (global.race.species === 'protoplasm'){
         return loc(`race_human_solar_${planet}`);
@@ -1285,6 +1347,43 @@ function addInformation(parent,key){
     }
 }
 
+function addRequirements(parent,key){
+    if (Object.keys(key.reqs).length > 0){
+        let techReqs = {};
+        let otherReqs = {};
+        Object.keys(key.reqs).forEach(function (req){
+            let color = global.tech[req] && global.tech[req] >= key.reqs[req] ? 'success' : 'danger';
+            let reqName = '';
+            if (techTrees[req] && techTrees[req][key.reqs[req]]) {
+                reqName = techTrees[req][key.reqs[req]];
+                techReqs[reqName] = color;
+            }
+            else if (extraRequirements[req + key.reqs[req]]){
+                reqName = extraRequirements[req + key.reqs[req]];
+                otherReqs[reqName] = color;
+            }
+        });
+        if (Object.keys(techReqs).length > 0){
+            let comma = false;
+            let techReq = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_tech_req_tech')}</span></div>`);
+            parent.append(techReq);
+            Object.keys(techReqs).forEach(function (req){
+                techReq.append(`${comma ? `, ` : ``}<span class="has-text-${techReqs[req]}">${req}</span>`);
+                comma = true;
+            });
+        }
+        if (Object.keys(otherReqs).length > 0){
+            let comma = false;
+            let otherReq = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_tech_req_other')}</span></div>`);
+            parent.append(otherReq);
+            Object.keys(otherReqs).forEach(function (req){
+                otherReq.append(`${comma ? `, ` : ``}<span class="has-text-${otherReqs[req]}">${req}</span>`);
+                comma = true;
+            });
+        }
+    }
+}
+
 export function renderTechPage(era){
     let content = $(`#content`);
     let techList = [];
@@ -1298,6 +1397,7 @@ export function renderTechPage(era){
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action);
             addInformation(info, actionName);
+            addRequirements(info, action);
             if (action.cost['Knowledge']){
                 if (techList.length === 0){
                     techList[0] = [action, info];

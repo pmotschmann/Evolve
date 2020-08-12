@@ -782,13 +782,13 @@ const spaceProjects = {
             },
             effect(){
                 let sci = 500;
-                if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
+                if (global.tech['science'] >= 13 && global.interstellar['laboratory'] && int_on['laboratory']){
                     sci += int_on['laboratory'] * 25;
                 }
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
                     sci += global.space.ziggurat.count * 15;
                 }
-                if (global.tech.mass >= 2){
+                if (global.tech.mass >= 2 && p_on['mass_driver']){
                     sci += p_on['mass_driver'] * global.civic.scientist.workers;
                 }
                 let elerium = spatialReasoning(10);
@@ -2011,7 +2011,7 @@ const interstellarProjects = {
                 Graphene(offset){ return spaceCostMultiplier('exchange', offset, 78000, 1.28, 'interstellar'); }
             },
             effect(){
-                let banks = global.race['cataclysm'] ? global.city['bank'].count : global.city['bank'].count;
+                let banks = global.race['cataclysm'] ? p_on['spaceport'] : global.city['bank'].count;
                 let b_vault = global.race['cataclysm'] ? (bank_vault() * 4) : bank_vault();
                 let vault = spatialReasoning(global.city['bank'] ? b_vault * banks / 18 : 0);
                 if (global.tech.banking >= 13){
@@ -5353,7 +5353,7 @@ export function zigguratBonus(){
     let bonus = 1;
     if (global.space['ziggurat'] && global.space['ziggurat'].count > 0){
         let zig = global.tech['ancient_study'] ? 0.006 : 0.004;
-        if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
+        if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && red_on['exotic_lab']){
             zig += 0.0001 * red_on['exotic_lab'];
         }
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
