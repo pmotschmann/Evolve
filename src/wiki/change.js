@@ -3,6 +3,19 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.16`,
+        date: `8/12/2020`,
+        changes: [
+            `Bug Fixes by Beorseder:`,
+            `Fixed issue where Exotic Materials Lab and Fortifications would clear current queue.`,
+            `Fixed Scavengers not working during Cataclysm.`,
+            `Fixed display bug with Galactic Exchange during Cataclysm.`,
+            `Genomic Mutations no longer give the wrong number of Genes without Synthesis upgrades.`,
+            `Genomic Mutations now tell how many Plasmids/Antiplasmids are gained from them.`,
+            `Techs now display their requirements on the wiki.`
+        ]
+    },
+    {
         version: `0.9.15`,
         date: `8/10/2020`,
         changes: [
