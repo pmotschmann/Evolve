@@ -3887,7 +3887,7 @@
   "galaxy_armed_miner_bd": "Armed Miner",
   "galaxy_ore_processor": "Ore Processor",
   "galaxy_ore_processor_effect": "Local Ore Processing: +%0%",
-  "galaxy_scavenger": "Scavenger",
+  "galaxy_scavenger": "Tech Scavenger",
   "galaxy_scavenger_desc": "Scavenges Alien Tech",
   "galaxy_scavenger_effect": "+%0 Max Knowledge",
   "galaxy_scavenger_effect2": "+%0% University Knowledge",
