@@ -668,6 +668,9 @@ function checkBigAchievement(frag, name, num, level){
                     case 'micro':
                         global.stats.achieve[name].m = undefined;
                         break;
+                    case 'magic':
+                        global.stats.achieve[name].mg = undefined;
+                        break;
                     default:
                         break;
                 }
@@ -702,6 +705,11 @@ function checkBigAchievementUniverse(frag, name, num, level){
                 proceed = true;
             }
             break;
+        case 'magic':
+            if (typeof global.stats.achieve[name] === "undefined" || typeof global.stats.achieve[name].mg === "undefined" || global.stats.achieve[name].mg < level){
+                proceed = true;
+            }
+            break;
         default:
             break;
     }
@@ -728,6 +736,11 @@ function checkBigAchievementUniverse(frag, name, num, level){
                         break;
                     case 'micro':
                         if (global.stats.achieve[key] && global.stats.achieve[key]['m'] && global.stats.achieve[key].m >= level){
+                            total++;
+                        }
+                        break;
+                    case 'magic':
+                        if (global.stats.achieve[key] && global.stats.achieve[key]['mg'] && global.stats.achieve[key].mg >= level){
                             total++;
                         }
                         break;
