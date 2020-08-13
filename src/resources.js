@@ -650,6 +650,10 @@ function loadSpecialResource(name,color) {
                     case 'antimatter':
                         desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
                         break;
+
+                    case 'magic':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_mg`,[+((darkEffect('magic') - 1) * 100).toFixed(2)])}</span>`));
+                        break;
                 }
                 break;
     

@@ -5389,11 +5389,16 @@ export const universe_types = {
         name: loc('universe_micro'),
         desc: loc('universe_micro_desc'),
         effect: loc('universe_micro_effect',[75])
+    },
+    magic: {
+        name: loc('universe_magic'),
+        desc: loc('universe_magic_desc'),
+        effect: loc('universe_magic_effect')
     }
 };
 
 export function setUniverse(){
-    let universes = ['standard','heavy','antimatter','evil','micro'];
+    let universes = ['standard','heavy','antimatter','evil','micro','magic'];
 
     for (let i=0; i<universes.length; i++){
         let universe = universes[i];

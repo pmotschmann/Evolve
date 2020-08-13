@@ -818,6 +818,16 @@ export function darkEffect(universe, flag, info){
                 return 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
             }
             return 0;
+
+        case 'magic':
+            if (global.race.universe === 'magic' || info){
+                let de = global.race.Dark.count;
+                if (global.race.Harmony.count > 0){
+                    de *= 1 + (global.race.Harmony.count * 0.01);
+                }
+                return 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
+            }
+            return 0;
     }
 
     return 0;

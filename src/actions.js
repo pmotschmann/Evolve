@@ -16098,6 +16098,9 @@ function big_bang(){
         case 'micro':
             unlockAchieve(`microbang`,true);
             break;
+        case 'magic':
+            unlockAchieve(`pw_apocalypse`);
+            break;
         default:
             unlockAchieve(`whitehole`);
             break;

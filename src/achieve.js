@@ -36,7 +36,10 @@ const achieve_list = {
         'atmo_toxic','atmo_mellow','atmo_rage','atmo_stormy','atmo_ozone','atmo_magnetic','atmo_trashed','atmo_elliptical','atmo_flare','atmo_dense',
         'atmo_unstable'
     ],
-    universe: ['squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled','eviltwin','microbang','vigilante'],
+    universe: [
+        'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
+        'eviltwin','microbang','pw_apocalypse'
+    ],
     challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history'],    
 };
 
@@ -194,26 +197,7 @@ export const feats = {
 }
 
 {
-    let affix = 'l';
-    if (global.race.universe !== 'standard'){
-        switch (global.race.universe){
-            case 'evil':
-                affix = 'e';
-                break;
-            case 'antimatter':
-                affix = 'a';
-                break;
-            case 'heavy':
-                affix = 'h';
-                break;
-            case 'micro':
-                affix = 'm';
-                break;
-            default:
-                break;
-        }
-    }
-
+    let affix = universeAffix();
     let lvl = 0;
     let ulvl = 0;
     Object.keys(achievements).forEach(function (achievement){
@@ -232,6 +216,23 @@ export const feats = {
     });
     set_alevel(lvl);
     set_ulevel(ulvl);
+}
+
+function universeAffix(){
+    switch (global.race.universe){
+        case 'evil':
+            return 'e';
+        case 'antimatter':
+            return 'a';
+        case 'heavy':
+            return 'h';
+        case 'micro':
+            return 'm';
+        case 'magic':
+            return 'mg';
+        default: // Standard
+            return 'l';
+    }
 }
 
 export function unlockAchieve(achievement,small,rank){
@@ -264,47 +265,14 @@ export function unlockAchieve(achievement,small,rank){
         }
     }
     if (global.stats.achieve[achievement]){
-        switch (global.race.universe){
-            case 'antimatter':
-                if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < rank)){
-                    let i_upgrade = global.stats.achieve[achievement]['a'] ? true : false;
-                    global.stats.achieve[achievement]['a'] = rank;
-                    redraw = true;
-                    if (!unlock){
-                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
-                    }
-                }
-                break;
-            case 'heavy':
-                if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < rank)){
-                    let i_upgrade = global.stats.achieve[achievement]['h'] ? true : false;
-                    global.stats.achieve[achievement]['h'] = rank;
-                    redraw = true;
-                    if (!unlock){
-                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
-                    }
-                }
-                break;
-            case 'evil':
-                if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < rank)){
-                    let i_upgrade = global.stats.achieve[achievement]['e'] ? true : false;
-                    global.stats.achieve[achievement]['e'] = rank;
-                    redraw = true;
-                    if (!unlock){
-                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
-                    }
-                }
-                break;
-            case 'micro':
-                if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < rank)){
-                    let i_upgrade = global.stats.achieve[achievement]['m'] ? true : false;
-                    global.stats.achieve[achievement]['m'] = rank;
-                    redraw = true;
-                    if (!unlock){
-                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
-                    }
-                }
-                break;
+        let u_affix = universeAffix();
+        if (!global.stats.achieve[achievement][u_affix] || (global.stats.achieve[achievement][u_affix] && global.stats.achieve[achievement][u_affix] < rank)){
+            let i_upgrade = global.stats.achieve[achievement][u_affix] ? true : false;
+            global.stats.achieve[achievement][u_affix] = rank;
+            redraw = true;
+            if (!unlock){
+                messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
+            }
         }
     }
     if (redraw){
