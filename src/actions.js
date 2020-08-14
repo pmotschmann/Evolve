@@ -2520,30 +2520,37 @@ export const actions = {
             title(){
                 const date = new Date();
                 if (date.getMonth() === 9 && date.getDate() === 31){
-                    return loc('city_trick');
+                    return global.tech['conjuring'] ? loc('city_trick_conjure') : loc('city_trick');
                 }
                 else {
-                    return loc('city_food');
+                    return global.tech['conjuring'] ? loc('city_food_conjure') : loc('city_food');
                 }
             },
             desc(){
                 const date = new Date();
                 if (date.getMonth() === 9 && date.getDate() === 31){
-                    return loc('city_trick_desc');
+                    return global.tech['conjuring'] ? loc('city_trick_conjure_desc') : loc('city_trick_desc');
                 }
                 else {
-                    return loc('city_food_desc');
+                    return global.tech['conjuring'] ? loc('city_food_conjure_desc') : loc('city_food_desc');
                 }
             },
             category: 'outskirts',
             reqs: { primitive: 1 },
             not_trait: ['soul_eater','cataclysm'],
             no_queue(){ return true },
+            cost: {
+                Mana(){ return global.tech['conjuring'] ? 1 : 0; },
+            },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
                     if (global.genes['enhance']){
                         gain *= 2;
+                    }
+                    if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
+                        gain *= 10;
+                        modRes('Mana',-1);
                     }
                     modRes('Food',gain);
                 }
@@ -2555,30 +2562,37 @@ export const actions = {
             title(){
                 const date = new Date();
                 if (date.getMonth() === 9 && date.getDate() === 31){
-                    return loc('city_dig');
+                    return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_dig_conjour') : loc('city_dig');
                 }
                 else {
-                    return loc('city_lumber');
+                    return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_lumber_conjure') : loc('city_lumber');
                 }
             },
             desc(){
                 const date = new Date();
                 if (date.getMonth() === 9 && date.getDate() === 31){
-                    return loc('city_dig_desc');
+                    return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_dig_conjour_desc') : loc('city_dig_desc');
                 }
                 else {
-                    return loc('city_lumber_desc');
+                    return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_lumber_conjure_desc') : loc('city_lumber_desc');
                 }
             },
             category: 'outskirts',
             reqs: {},
             not_trait: ['evil','cataclysm'],
             no_queue(){ return true },
+            cost: {
+                Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
+            },
             action(){
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
                     if (global.genes['enhance']){
                         gain *= 2;
+                    }
+                    if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
+                        gain *= 10;
+                        modRes('Mana',-1);
                     }
                     modRes('Lumber',gain);
                 }
@@ -2587,17 +2601,38 @@ export const actions = {
         },
         stone: {
             id: 'city-stone',
-            title(){ return global.race['sappy'] ? loc('city_amber') : loc('city_stone'); },
-            desc(){ return global.race['sappy'] ? loc('city_amber_desc') : loc('city_stone_desc'); },
+            title(){
+                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
+                    return global.race['sappy'] ? loc('city_amber_conjour') : loc('city_stone_conjour');
+                }
+                else {
+                    return global.race['sappy'] ? loc('city_amber') : loc('city_stone');
+                }                
+            },
+            desc(){
+                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
+                    return global.race['sappy'] ? loc('city_amber_conjour_desc') : loc('city_stone_conjour_desc');
+                }
+                else {
+                    return global.race['sappy'] ? loc('city_amber_desc') : loc('city_stone_desc');
+                }                
+            },
             category: 'outskirts',
             reqs: { primitive: 2 },
             not_trait: ['cataclysm'],
             no_queue(){ return true },
+            cost: {
+                Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
+            },
             action(){
                 if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
                     if (global.genes['enhance']){
                         gain *= 2;
+                    }
+                    if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
+                        gain *= 10;
+                        modRes('Mana',-1);
                     }
                     modRes('Stone',gain);
                 }
@@ -3287,6 +3322,10 @@ export const actions = {
                     let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stone.name])}</span>`;
                 }
+                if (global.resource.Crystal.display){
+                    let val = sizeApproximation(+(spatialReasoning(10) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Crystal.name])}</span>`;
+                }
                 if (global.resource.Furs.display){
                     let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Furs.name])}</span>`;
@@ -3489,6 +3528,32 @@ export const actions = {
                 return false;
             }
         },
+        pylon: {
+            id: 'city-pylon',
+            title: loc('city_pylon'),
+            desc: loc('city_pylon'),
+            category: 'industrial',
+            reqs: { magic: 2 },
+            not_trait: ['cataclysm'],
+            cost: {
+                Money(offset){ if (global.city['pylon'] && global.city['pylon'].count >= 2){ return costMultiplier('pylon', offset, 10, 1.48);} else { return 0; } },
+                Stone(offset){ return costMultiplier('pylon', offset, 12, 1.48); },
+                Crystal(offset){ return costMultiplier('pylon', offset, 20, 1.48); }
+            },
+            effect(){
+                let max = spatialReasoning(5);
+                let mana = 0.01;
+                return `<div>${loc('gain',[mana,global.resource.Mana.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Mana.name])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['pylon'].count++;
+                    global.resource.Mana.max += spatialReasoning(5);
+                    return true;
+                }
+                return false;
+            }
+        },
         graveyard: {
             id: 'city-graveyard',
             title: loc('city_graveyard'),
@@ -3501,7 +3566,7 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('graveyard', offset, 2, 1.95); },
                 Stone(offset){ return costMultiplier('graveyard', offset, 6, 1.9); }
             },
-            effect:  function(){
+            effect(){
                 let lum = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 return `<div>${loc('city_graveyard_effect',[8])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
@@ -3527,7 +3592,7 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('lumber_yard', offset, 6, 1.9); },
                 Stone(offset){ return costMultiplier('lumber_yard', offset, 2, 1.95); }
             },
-            effect:  function(){
+            effect(){
                 let lum = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ lum = Math.round(lum * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
@@ -3592,7 +3657,7 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('rock_quarry', offset, 50, 1.36); },
                 Stone(offset){ return costMultiplier('rock_quarry', offset, 10, 1.36); }
             },
-            effect() {
+            effect(){
                 let stone = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
                 if (global.tech['mine_conveyor']){
@@ -13515,7 +13580,103 @@ export const actions = {
                 }
                 return false;
             }
-        }
+        },
+        mana: {
+            id: 'tech-mana',
+            title: loc('tech_mana'),
+            desc: loc('tech_mana'),
+            category: 'magic',
+            era: 'discovery',
+            reqs: { primitive: 3 },
+            grant: ['magic',1],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
+            },
+            cost: {
+                Knowledge(){ return 25; }
+            },
+            effect(){ return loc('tech_mana_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Mana.display = true;
+                    global.resource.Crystal.display = true;
+                    global.civic.crystal_miner.display = true;
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('tech_mana_flair')
+        },
+        ley_lines: {
+            id: 'tech-ley_lines',
+            title: loc('tech_ley_lines'),
+            desc: loc('tech_ley_lines'),
+            category: 'magic',
+            era: 'discovery',
+            reqs: { magic: 1 },
+            grant: ['magic',2],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
+            },
+            cost: {
+                Knowledge(){ return 40; }
+            },
+            effect(){ return loc('tech_ley_lines_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['pylon'] = { count: 0 };
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('tech_mana_flair')
+        },
+        conjuring: {
+            id: 'tech-conjuring',
+            title: loc('tech_conjuring'),
+            desc: loc('tech_conjuring_desc'),
+            category: 'magic',
+            era: 'discovery',
+            reqs: { magic: 1 },
+            grant: ['conjuring',1],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
+            },
+            cost: {
+                Mana(){ return 2; },
+                Crystal(){ return 5; }
+            },
+            effect(){ return loc('tech_conjuring_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        res_conjuring: {
+            id: 'tech-res_conjuring',
+            title: loc('tech_res_conjuring'),
+            desc: loc('tech_res_conjuring'),
+            category: 'magic',
+            era: 'discovery',
+            reqs: { conjuring: 1 },
+            grant: ['conjuring',2],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
+            },
+            cost: {
+                Mana(){ return 5; },
+                Crystal(){ return 25; }
+            },
+            effect(){ return loc('tech_res_conjuring_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),
@@ -15275,11 +15436,9 @@ function sentience(){
     defineResources();
     if (!global.race['kindling_kindred']){
         global.resource.Lumber.display = true;
-        global.city['lumber'] = 1;
     }
     else {
         global.resource.Stone.display = true;
-        global.city['stone'] = 1;
     }
     registerTech('club');
 

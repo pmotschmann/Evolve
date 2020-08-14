@@ -715,10 +715,12 @@ function fastLoop(){
 
     breakdown.p['consume'] = {
         Money: {},
+        Mana: {},
         Knowledge: {},
         Food: {},
         Lumber: {},
         Stone: {},
+        Crystal: {},
         Furs: {},
         Copper: {},
         Iron: {},
@@ -3526,6 +3528,36 @@ function fastLoop(){
             }
         }
 
+        // Mana
+        if (global.resource.Mana.display){
+            let mana_bd = {};
+            if (global.city['pylon']){
+                let mana_base = global.city.pylon.count * 0.01;
+                let delta = mana_base * hunger * global_multiplier;
+
+                mana_bd[loc('city_pylon')] = mana_base+'v';
+                mana_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+                modRes('Mana', delta * time_multiplier);
+            }
+            breakdown.p['Mana'] = mana_bd;
+        }
+
+        // Crystal
+        if (global.resource.Crystal.display){
+            let crystal_base = global.civic.crystal_miner.workers;
+            crystal_base *= global.civic.crystal_miner.impact;
+            crystal_base *= racialTrait(global.civic.crystal_miner.workers,'miner');
+
+            let crystal_bd = {};
+            crystal_bd[loc('job_crystal_miner')] = crystal_base + 'v';
+
+            let delta = crystal_base * hunger * global_multiplier;
+
+            crystal_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+            breakdown.p['Crystal'] = crystal_bd;
+            modRes('Crystal', delta * time_multiplier);
+        }
+
         // Miners
         let copper_bd = {};
         if (global.resource.Copper.display || global.resource.Iron.display){
@@ -3586,7 +3618,6 @@ function fastLoop(){
 
                 let delta = copper_base * copper_shrine * copper_power;
                 delta *= hunger * global_multiplier;
-
 
                 modRes('Copper', delta * time_multiplier);
             }
@@ -4489,12 +4520,14 @@ function midLoop(){
         // Resource caps
         var caps = {
             Money: 1000,
+            Mana: 0,
             Knowledge: global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1 ? 1000 : 100,
             Food: 1000,
             Crates: 0,
             Containers: 0,
             Lumber: 200,
             Stone: 200,
+            Crystal: 10,
             Furs: 100,
             Copper: 100,
             Iron: 100,
@@ -4526,6 +4559,7 @@ function midLoop(){
             farmer: -1,
             lumberjack: -1,
             quarry_worker: -1,
+            crystal_miner: -1,
             scavenger: -1,
             miner: 0,
             coal_miner: 0,
@@ -4564,10 +4598,12 @@ function midLoop(){
         var bd_Money = { Base: caps['Money']+'v' };
         var bd_Citizen = {};
         var bd_Slave = {};
+        var bd_Mana = { Base: caps['Mana']+'v' };
         var bd_Knowledge = { Base: caps['Knowledge']+'v' };
         var bd_Food = { Base: caps['Food']+'v' };
         var bd_Lumber = { Base: caps['Lumber']+'v' };
         var bd_Stone = { Base: caps['Stone']+'v' };
+        var bd_Crystal = { Base: caps['Crystal']+'v' };
         var bd_Furs = { Base: caps['Furs']+'v' };
         var bd_Copper = { Base: caps['Copper']+'v' };
         var bd_Iron = { Base: caps['Iron']+'v' };
@@ -4596,6 +4632,12 @@ function midLoop(){
 
         caps[global.race.species] = 0;
         caps['Slave'] = 0;
+
+        if (global.city['pylon']){
+            let gain = global.city.pylon.count * spatialReasoning(5);
+            caps['Mana'] += gain;            
+            bd_Mana[loc('city_pylon')] = gain+'v';
+        }
         if (global.city['farm']){
             if (global.tech['farm']){
                 caps[global.race.species] += global.city['farm'].count;
@@ -4847,6 +4889,12 @@ function midLoop(){
             gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
             caps['Stone'] += gain;
             bd_Stone[label] = gain+'v';
+
+            if (global.resource.Crystal.display){
+                gain = (global.city['shed'].count * (spatialReasoning(10 * multiplier)));
+                caps['Crystal'] += gain;
+                bd_Crystal[label] = gain+'v';
+            }
 
             gain = (global.city['shed'].count * (spatialReasoning(125 * multiplier)));
             caps['Furs'] += gain;
@@ -5587,10 +5635,12 @@ function midLoop(){
             Money: bd_Money,
             [global.race.species]: bd_Citizen,
             Slave: bd_Slave,
+            Mana: bd_Mana,
             Knowledge: bd_Knowledge,
             Food: bd_Food,
             Lumber: bd_Lumber,
             Stone: bd_Stone,
+            Crystal: bd_Crystal,
             Furs: bd_Furs,
             Copper: bd_Copper,
             Iron: bd_Iron,

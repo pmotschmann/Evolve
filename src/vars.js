@@ -481,6 +481,11 @@ if (convertVersion(global['version']) < 9014){
     }
 }
 
+if (convertVersion(global['version']) < 9017){
+    delete global.city['lumber'];
+    delete global.city['stone'];
+}
+
 global['version'] = '0.9.16';
 delete global['beta'];
 

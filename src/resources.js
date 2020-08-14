@@ -7,6 +7,7 @@ export const resource_values = {
     Food: 5,
     Lumber: 5,
     Stone: 5,
+    Crystal: 10,
     Furs: 8,
     Copper: 25,
     Iron: 40,
@@ -40,6 +41,7 @@ export const tradeRatio = {
     Food: 2,
     Lumber: 2,
     Stone: 2,
+    Crystal: 1,
     Furs: 1,
     Copper: 1,
     Iron: 1,
@@ -71,6 +73,7 @@ export const atomic_mass = {
     Food: 4.355,
     Lumber: 7.668,
     Stone: 20.017,
+    Crystal: 5.062,
     Furs: 13.009,
     Copper: 63.546,
     Iron: 55.845,
@@ -222,12 +225,14 @@ export function defineResources(){
     loadResource('Money',1000,1,false,false,'success');
     loadResource(global.race.species,0,0,false,false,'warning');
     loadResource('Slave',0,0,false,false,'warning');
+    loadResource('Mana',0,1,false,false,'warning');
     loadResource('Knowledge',100,1,false,false,'warning');
     loadResource('Crates',0,0,false,false,'warning');
     loadResource('Containers',0,0,false,false,'warning');
     loadResource('Food',250,1,true,true);
     loadResource('Lumber',200,1,true,true);
     loadResource('Stone',200,1,true,true);
+    loadResource('Crystal',200,1,true,true);
     loadResource('Furs',100,1,true,true);
     loadResource('Copper',100,1,true,true);
     loadResource('Iron',100,1,true,true);

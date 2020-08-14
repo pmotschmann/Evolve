@@ -58,6 +58,16 @@ export const job_desc = {
         }
         return desc;
     },
+    crystal_miner: function(){
+        let multiplier = 1;
+        multiplier *= racialTrait(global.civic.crystal_miner.workers,'miner');
+        let gain = +(global.civic.crystal_miner.impact * multiplier).toFixed(1);
+        let desc = loc('job_crystal_miner_desc',[gain,global.resource.Crystal.name]);
+        if (global.civic.d_job === 'crystal_miner'){
+            desc = desc + ' ' + loc('job_default',[loc('job_crystal_miner')]);
+        }
+        return desc;
+    },
     scavenger: function(){
         let scavanger = global.civic.scavenger.impact;
         if (global.city.ptrait === 'trashed' && global.race['scavanger']){
@@ -171,6 +181,7 @@ export function defineJobs(){
     loadJob('farmer',0.82,5);
     loadJob('lumberjack',1,5);
     loadJob('quarry_worker',1,5);
+    loadJob('crystal_miner',0.1,5);
     loadJob('scavenger',0.12,5);
     loadJob('miner',1,4,'advanced');
     loadJob('coal_miner',0.2,4,'advanced');
@@ -268,7 +279,7 @@ function loadJob(job, impact, stress, color){
     
     var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
     var controls = $('<div class="controls"></div>');
-    if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker' || job === 'scavenger'){
+    if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker' || job === 'scavenger' || job === 'crystal_miner'){
         let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ name }}{{ '${job}' | d_state }}</a></h3><span class="count">{{ workers }}</span></div>`);
         civ_container.append(job_label);
     }
