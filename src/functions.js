@@ -377,7 +377,8 @@ export function cleanBuildPopOver(id){
     clearElement($(`#pop${id}`),true);
 }
 
-export function modRes(res,val){
+export function modRes(res,val,notrack){
+    
     let count = global.resource[res].amount + val;
     let success = true;
     if (count > global.resource[res].max && global.resource[res].max != -1){
@@ -389,7 +390,9 @@ export function modRes(res,val){
     }
     if (!Number.isNaN(count)){
         global.resource[res].amount = count;
-        global.resource[res].delta += val;
+        if (!notrack){
+            global.resource[res].delta += val;
+        }
     }
     return success;
 }
@@ -825,7 +828,7 @@ export function darkEffect(universe, flag, info){
                 if (global.race.Harmony.count > 0){
                     de *= 1 + (global.race.Harmony.count * 0.01);
                 }
-                return 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
+                return 1 + (Math.log(50 + de) - 3.912023005428146) / 3;
             }
             return 0;
     }

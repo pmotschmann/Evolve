@@ -657,7 +657,7 @@ function loadSpecialResource(name,color) {
                         break;
 
                     case 'magic':
-                        desc.append($(`<span>${loc(`resource_${name}_desc_mg`,[+((darkEffect('magic') - 1) * 100).toFixed(2)])}</span>`));
+                        desc.append($(`<span>${loc(`resource_${name}_desc_mg`,[loc('resource_Mana_name'),+((darkEffect('magic') - 1) * 100).toFixed(2)])}</span>`));
                         break;
                 }
                 break;

@@ -1,7 +1,7 @@
 import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
-import { vBind, mainVue, popover, deepClone, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, buildQueue, cleanBuildPopOver, getEaster, easterEgg, easterEggBind } from './functions.js';
+import { vBind, mainVue, popover, deepClone, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, darkEffect, buildQueue, cleanBuildPopOver, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -3533,6 +3533,7 @@ function fastLoop(){
             let mana_bd = {};
             if (global.city['pylon']){
                 let mana_base = global.city.pylon.count * 0.01;
+                mana_base *= darkEffect('magic');
                 let delta = mana_base * hunger * global_multiplier;
 
                 mana_bd[loc('city_pylon')] = mana_base+'v';

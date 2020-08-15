@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -22,7 +22,7 @@ export const actions = {
             },
             action(){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
-                    modRes('RNA',global.race['rapid_mutation'] ? 2 : 1);
+                    modRes('RNA',global.race['rapid_mutation'] ? 2 : 1,true);
                 }
                 return false;
             }
@@ -34,8 +34,8 @@ export const actions = {
             cost: { RNA(){ return 2; } },
             action(){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
-                    modRes('RNA',-2);
-                    modRes('DNA',1);
+                    modRes('RNA',-2,true);
+                    modRes('DNA',1,true);
                 }
                 return false;
             },
@@ -2550,9 +2550,9 @@ export const actions = {
                     }
                     if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
                         gain *= 10;
-                        modRes('Mana',-1);
+                        modRes('Mana',-1,true);
                     }
-                    modRes('Food',gain);
+                    modRes('Food',gain,true);
                 }
                 return false;
             }
@@ -2592,9 +2592,9 @@ export const actions = {
                     }
                     if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
                         gain *= 10;
-                        modRes('Mana',-1);
+                        modRes('Mana',-1,true);
                     }
-                    modRes('Lumber',gain);
+                    modRes('Lumber',gain,true);
                 }
                 return false;
             }
@@ -2632,9 +2632,9 @@ export const actions = {
                     }
                     if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
                         gain *= 10;
-                        modRes('Mana',-1);
+                        modRes('Mana',-1,true);
                     }
-                    modRes('Stone',gain);
+                    modRes('Stone',gain,true);
                 }
                 return false;
             }
@@ -2661,13 +2661,13 @@ export const actions = {
                     gain *= 2;
                 }
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',gain);
+                    modRes('Lumber',gain,true);
                 }
                 if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',gain);
+                    modRes('Food',gain,true);
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
-                    modRes('Furs',gain);
+                    modRes('Furs',gain,true);
                 }
                 return false;
             }
@@ -3542,7 +3542,7 @@ export const actions = {
             },
             effect(){
                 let max = spatialReasoning(5);
-                let mana = 0.01;
+                let mana = +(0.01 * darkEffect('magic')).toFixed(3);
                 return `<div>${loc('gain',[mana,global.resource.Mana.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Mana.name])}</div>`;
             },
             action(){
