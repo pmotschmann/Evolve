@@ -7,6 +7,8 @@ const changeList = [
         date: `8/22/2020`,
         changes: [
             `Fixed bug that prevented Cataclysm Ascension from completing.`,
+            `Rank 1 sacrifice is slightly less effective`,
+            `Rank 2 sacrifice is significantly more effective`
         ]
     },
     {

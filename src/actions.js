@@ -2723,16 +2723,16 @@ export const actions = {
                             if (global.tech['sacrifice']){
                                 switch (global.tech['sacrifice']){
                                     case 1:
-                                        low = 900;
-                                        high = 1800;
+                                        low = 600;
+                                        high = 1500;
                                         break;
                                     case 2:
                                         low = 1800;
                                         high = 3600;
                                         break;
                                     case 3:
-                                        low = 3600;
-                                        high = 7200;
+                                        low = 5400;
+                                        high = 16200;
                                         break;
                                 }
                             }
