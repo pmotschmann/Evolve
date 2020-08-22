@@ -115,45 +115,33 @@ popover('morale',
             let type = global.city.morale.stress > 0 ? 'success' : 'danger';
             obj.popper.append(`<p class="modal_bd"><span>${loc('morale_stress')}</span> <span class="has-text-${type}"> ${+(global.city.morale.stress).toFixed(1)}%</span></p>`);
         }
-        if (global.city.morale.shrine !== 0){
-            let type = global.city.morale.shrine > 0 ? 'success' : 'danger';
-            obj.popper.append(`<p class="modal_bd"><span>${loc('city_shrine')}</span> <span class="has-text-${type}"> ${+(global.city.morale.shrine).toFixed(1)}%</span></p>`);
-        }
-        if (global.city.morale.leadership !== 0){
-            let type = global.city.morale.leadership > 0 ? 'success' : 'danger';
-            obj.popper.append(`<p class="modal_bd"><span>${loc('morale_leadership')}</span> <span class="has-text-${type}"> ${+(global.city.morale.leadership).toFixed(1)}%</span></p>`);
-        }
-        if (global.city.morale.warmonger !== 0){
-            let type = global.city.morale.warmonger > 0 ? 'success' : 'danger';
-            obj.popper.append(`<p class="modal_bd"><span>${loc('morale_warmonger')}</span> <span class="has-text-${type}"> ${+(global.city.morale.warmonger).toFixed(1)}%</span></p>`);
-        }
-        if (global.city.morale.entertain !== 0){
-            let type = global.city.morale.entertain > 0 ? 'success' : 'danger';
-            obj.popper.append(`<p class="modal_bd"><span>${loc('morale_entertainment')}</span> <span class="has-text-${type}"> ${+(global.city.morale.entertain).toFixed(1)}%</span></p>`);
-        }
+
+        let total = 100 + global.city.morale.unemployed + global.city.morale.stress;
+        Object.keys(global.city.morale).forEach(function (morale){
+            if (!['current','unemployed','stress','season'].includes(morale) && global.city.morale[morale] !== 0){
+                total += global.city.morale[morale];
+                let type = global.city.morale[morale] > 0 ? 'success' : 'danger';
+
+                let value = global.city.morale[morale];
+                if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
+                    value /= 1.2;
+                }
+
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> ${+(value).toFixed(1)}%</span></p>`)
+            
+                if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
+                    obj.popper.append(`<p class="modal_bd"><span>ᄂ${loc('govern_democracy')}</span> <span class="has-text-success"> +20%</span></p>`);
+                }
+            }
+        });
+
         if (global.city.morale.season !== 0){
+            total += global.city.morale.season;
             let season = global.city.calendar.season === 0 ? loc('morale_spring') : global.city.calendar.season === 1 ? loc('morale_summer') : loc('morale_winter');
             let type = global.city.morale.season > 0 ? 'success' : 'danger';
             obj.popper.append(`<p class="modal_bd"><span>${season}</span> <span class="has-text-${type}"> ${+(global.city.morale.season).toFixed(1)}%</span></p>`);
         }
-        if (global.city.morale.weather !== 0){
-            let type = global.city.morale.weather > 0 ? 'success' : 'danger';
-            obj.popper.append(`<p class="modal_bd"><span>${loc('morale_weather')}</span> <span class="has-text-${type}"> ${+(global.city.morale.weather).toFixed(1)}%</span></p>`);
-        }
-        if (global.city.morale.tax !== 0){
-            let type = global.city.morale.tax > 0 ? 'success' : 'danger';
-            obj.popper.append(`<p class="modal_bd"><span>${loc('morale_taxes')}</span> <span class="has-text-${type}"> ${+(global.city.morale.tax).toFixed(1)}%</span></p>`);
-        }
-        let total = 100 + global.city.morale.unemployed + global.city.morale.stress + global.city.morale.entertain + global.city.morale.season + global.city.morale.weather + global.city.morale.tax + global.city.morale.warmonger + global.city.morale.leadership + global.city.morale.shrine;
-        if (global.city.morale['frenzy']){
-            total += global.city.morale.frenzy;
-            let type = global.city.morale.frenzy > 0 ? 'success' : 'danger';
-            obj.popper.append(`<p class="modal_bd"><span>${loc('morale_frenzy')}</span> <span class="has-text-${type}"> ${+(global.city.morale.frenzy).toFixed(1)}%</span></p>`);
-        }
-        if (global.city.morale['rev']){
-            total -= global.city.morale.rev;
-            obj.popper.append(`<p class="modal_bd"><span>${loc('morale_rev')}</span> <span class="has-text-danger"> -${+(global.city.morale.rev).toFixed(1)}%</span></p>`);
-        }
+
         if (global.civic.govern.type === 'corpocracy'){
             total -= 10;
             obj.popper.append(`<p class="modal_bd"><span>${loc('govern_corpocracy')}</span> <span class="has-text-danger"> -10%</span></p>`);
@@ -4202,7 +4190,7 @@ function fastLoop(){
             let delta = (income_base - upkeep) * temple_mult * shrine_mult;
             delta *= global_multiplier;
 
-            money_bd[loc('morale_taxes')] = (income_base) + 'v';
+            money_bd[loc('morale_tax')] = (income_base) + 'v';
             money_bd[loc('civics_spy_purchase_bd')] = -(upkeep) + 'v';
             money_bd[global.race['cataclysm'] ? loc('space_red_ziggurat_title') : loc('city_temple')] = ((temple_mult - 1) * 100) + '%';
             money_bd[loc('city_shrine')] = ((shrine_mult - 1) * 100) + '%';
