@@ -14023,6 +14023,7 @@ export function drawTech(){
         }
     });
 
+    clearElement($(`#tech`));
     Object.keys(new_techs).forEach(function (era){
         if (new_techs[era].length > 0){
             $(`#tech`).append(`<div><h3 class="name has-text-warning">${loc(`tech_era_${era}`)}</h3></div>`);
