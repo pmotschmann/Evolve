@@ -481,12 +481,12 @@ if (convertVersion(global['version']) < 9014){
     }
 }
 
-if (convertVersion(global['version']) < 9017){
+if (convertVersion(global['version']) < 10000){
     delete global.city['lumber'];
     delete global.city['stone'];
 }
 
-global['version'] = '0.9.16';
+global['version'] = '0.9.17';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){

@@ -2758,16 +2758,16 @@ export const actions = {
                             if (global.tech['sacrifice']){
                                 switch (global.tech['sacrifice']){
                                     case 1:
-                                        low = 900;
-                                        high = 1800;
+                                        low = 600;
+                                        high = 1500;
                                         break;
                                     case 2:
                                         low = 1800;
                                         high = 3600;
                                         break;
                                     case 3:
-                                        low = 3600;
-                                        high = 7200;
+                                        low = 5400;
+                                        high = 16200;
                                         break;
                                 }
                             }
@@ -7351,6 +7351,7 @@ export const actions = {
             title: loc('tech_wharf'),
             desc: loc('tech_wharf_desc'),
             category: 'market',
+            era: 'industrialized',
             reqs: { trade: 1, high_tech: 3, oil: 1 },
             not_trait: ['thalassophobia'],
             grant: ['wharf',1],
@@ -10140,7 +10141,7 @@ export const actions = {
             title: loc('tech_ancient_infusion'),
             desc: loc('tech_ancient_infusion'),
             category: 'sacrifice',
-            era: 'globalized',
+            era: 'early_space',
             reqs: { sacrifice: 2, theology: 4 },
             grant: ['sacrifice',3],
             trait: ['cannibalize'],
@@ -12640,7 +12641,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.interstellar.stellar_engine.mass += (atomic_mass.Neutronium * 20000 / 10000000000);
-                    global.interstellar.stellar_engine.mass += global.interstellar.stellar_engine.exotic * 25;
+                    global.interstellar.stellar_engine.mass += global.interstellar.stellar_engine.exotic * 40;
                     global.interstellar.stellar_engine.exotic = 0;
                     delete global.tech['whitehole'];
                     return true;
@@ -14129,10 +14130,15 @@ export function drawCity(){
 export function drawTech(){
     let techs = {};
     let old_techs = {};
-    let new_techs = [];
+    let new_techs = {};
     let tech_categories = [];
     let old_categories = [];
     let all_categories = [];
+
+    ['primitive','discovery','civilized','industrialized','globalized','early_space','deep_space','interstellar','intergalactic'].forEach(function (era){
+        new_techs[era] = [];
+    });
+
     Object.keys(actions.tech).forEach(function (tech_name){
         removeAction(actions.tech[tech_name].id);
 
@@ -14171,23 +14177,33 @@ export function drawTech(){
                 techs[category] = [];
             }
 
-            new_techs.push(tech_name);
+            if (!new_techs.hasOwnProperty(c_action.era)){
+                new_techs[c_action.era] = [];
+            }
+
+            new_techs[c_action.era].push(tech_name);
         }
     });
 
-	new_techs.sort(function(a, b) {
-		if(actions.tech[a].cost.Knowledge == undefined){
-			return -1;
-		}
-		if(actions.tech[b].cost.Knowledge == undefined){
-			return 1;
-		}
-		return actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge() ? 1 : -1;
-	});
-    new_techs.forEach(function(tech_name) {
-        addAction('tech', tech_name);
-    });
+    clearElement($(`#tech`));
+    Object.keys(new_techs).forEach(function (era){
+        if (new_techs[era].length > 0){
+            $(`#tech`).append(`<div><h3 class="name has-text-warning">${loc(`tech_era_${era}`)}</h3></div>`);
 
+            new_techs[era].sort(function(a, b){
+                if(actions.tech[a].cost.Knowledge == undefined){
+                    return -1;
+                }
+                if(actions.tech[b].cost.Knowledge == undefined){
+                    return 1;
+                }
+                return actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge() ? 1 : -1;
+            });
+            new_techs[era].forEach(function(tech_name){
+                addAction('tech', tech_name);
+            });
+        }
+    });
 
     all_categories.forEach(function(category){
         clearElement($(`#tech-dist-${category}`),true);

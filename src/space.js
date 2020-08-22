@@ -5471,6 +5471,7 @@ function ascendLab(){
     }
     global.race['noexport'] = 1;
     clearElement($(`#city`));
+    global.settings.showCity = true;
     global.settings.showCivic = false;
     global.settings.showResearch = false;
     global.settings.showResources = false;
