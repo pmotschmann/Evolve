@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.17`,
+        date: `8/22/2020`,
+        changes: [
+            `Fixed bug that prevented Cataclysm Ascension from completing.`,
+        ]
+    },
+    {
         version: `0.9.16`,
         date: `8/12/2020`,
         changes: [
