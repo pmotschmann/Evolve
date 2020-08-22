@@ -8,7 +8,7 @@ const changeList = [
         changes: [
             `Fixed bug that prevented Cataclysm Ascension from completing.`,
             `Rank 1 sacrifice is slightly less effective`,
-            `Rank 2 sacrifice is significantly more effective`,
+            `Rank 3 sacrifice is significantly more effective`,
             `New Research is now shown by Era.`
         ]
     },
