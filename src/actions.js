@@ -13968,10 +13968,15 @@ export function drawCity(){
 export function drawTech(){
     let techs = {};
     let old_techs = {};
-    let new_techs = [];
+    let new_techs = {};
     let tech_categories = [];
     let old_categories = [];
     let all_categories = [];
+
+    ['primitive','discovery','civilized','industrialized','globalized','early_space','deep_space','interstellar','intergalactic'].forEach(function (era){
+        new_techs[era] = [];
+    });
+
     Object.keys(actions.tech).forEach(function (tech_name){
         removeAction(actions.tech[tech_name].id);
 
@@ -14010,23 +14015,32 @@ export function drawTech(){
                 techs[category] = [];
             }
 
-            new_techs.push(tech_name);
+            if (!new_techs.hasOwnProperty(c_action.era)){
+                new_techs[c_action.era] = [];
+            }
+
+            new_techs[c_action.era].push(tech_name);
         }
     });
 
-	new_techs.sort(function(a, b) {
-		if(actions.tech[a].cost.Knowledge == undefined){
-			return -1;
-		}
-		if(actions.tech[b].cost.Knowledge == undefined){
-			return 1;
-		}
-		return actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge() ? 1 : -1;
-	});
-    new_techs.forEach(function(tech_name) {
-        addAction('tech', tech_name);
-    });
+    Object.keys(new_techs).forEach(function (era){
+        if (new_techs[era].length > 0){
+            $(`#tech`).append(`<div><h3 class="name has-text-warning">${loc(`tech_era_${era}`)}</h3></div>`);
 
+            new_techs[era].sort(function(a, b){
+                if(actions.tech[a].cost.Knowledge == undefined){
+                    return -1;
+                }
+                if(actions.tech[b].cost.Knowledge == undefined){
+                    return 1;
+                }
+                return actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge() ? 1 : -1;
+            });
+            new_techs[era].forEach(function(tech_name){
+                addAction('tech', tech_name);
+            });
+        }
+    });
 
     all_categories.forEach(function(category){
         clearElement($(`#tech-dist-${category}`),true);
