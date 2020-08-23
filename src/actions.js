@@ -13974,7 +13974,7 @@ export function drawTech(){
     let old_categories = [];
     let all_categories = [];
 
-    ['primitive','discovery','civilized','industrialized','globalized','early_space','deep_space','interstellar','intergalactic'].forEach(function (era){
+    ['primitive','civilized','discovery','industrialized','globalized','early_space','deep_space','interstellar','intergalactic'].forEach(function (era){
         new_techs[era] = [];
     });
 
