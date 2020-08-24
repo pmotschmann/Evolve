@@ -1,6 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, popover, getEaster } from './../functions.js';
+import { popover, getEaster } from './../functions.js';
 import { races, traits, genus_traits } from './../races.js';
 import { sideMenu } from './functions.js';
 

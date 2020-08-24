@@ -165,7 +165,7 @@ export function bindScroll(elm, target){
 
 export function sideMenu(action,arg1,arg2,arg3){
     if (action === 'create'){
-        let content = $(`#content`);
+        let content = arg1 ? (typeof arg1 === 'string' ? $(`#${arg1}`) : arg1) : $(`#content`);
         clearElement(content);
         content.addClass('flex');
         let mainContent = $(`<div id="mainContent"></div>`);
