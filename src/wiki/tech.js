@@ -763,14 +763,14 @@ const extraInformation = {
     slave_market: [
         loc(`wiki_tech_slave_market`)
     ],
-    ceremonial_dagger: [
-        loc(`wiki_tech_ceremonial_dagger`,[900,1800])
+    wiki_tech_ceremonial_dagger: [
+        loc(`wiki_tech_ceremonial_dagger`,[600,1500])
     ],
     last_rites: [
         loc(`wiki_tech_ceremonial_dagger`,[1800,3600])
     ],
     ancient_infusion: [
-        loc(`wiki_tech_ceremonial_dagger`,[3600,7200])
+        loc(`wiki_tech_ceremonial_dagger`,[5400,16200])
     ],
     garrison: [
         loc(`wiki_tech_building_unlock`,[loc(`city_garrison`)])
