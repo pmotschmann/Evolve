@@ -128,6 +128,8 @@ function initPage(){
 }
 
 function menuDispatch(main,sub,frag){
+    $(`#content`).removeClass('flex');
+
     switch (main){
         case 'intro':
             mainPage();

@@ -1,6 +1,6 @@
 import { global, sizeApproximation } from './../vars.js';
 import { loc } from './../locale.js';
-import { adjustCosts } from './../functions.js';
+import { clearElement, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 
 export function headerBoxBuilder(parent,args){
@@ -151,4 +151,37 @@ export function actionDesc(info, c_action, extended){
             stats.append(cost);
         }
     }
+}
+
+export function bindScroll(elm, target){
+    elm.click(function(){
+        window.location.hash = `#${target}`;
+        document.getElementById(target).scrollIntoView({
+            block: 'start',
+            behavior: 'smooth'
+        });
+    });
+}
+
+export function sideMenu(action,arg1,arg2,arg3){
+    if (action === 'create'){
+        let content = $(`#content`);
+        clearElement(content);
+        content.addClass('flex');
+        let mainContent = $(`<div id="mainContent"></div>`);
+        let sideContent = $(`<div id="sideContent"></div>`);
+        let sideMenu = $(`<ul></ul>`);
+        content.append(mainContent);
+        content.append(sideContent);
+        sideContent.append(sideMenu);
+        return mainContent;
+    }
+    else {
+        let anchor = $(`<a href="#${arg1}-${arg2}">${arg3}</a>`);
+        let li = $(`<li></li>`);
+        li.append(anchor);
+        $(`#sideContent ul`).append(li);
+        bindScroll(anchor, arg2);
+    }
+    
 }
