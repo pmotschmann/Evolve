@@ -1,8 +1,7 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement } from './../functions.js';
 import { actions, housingLabel } from './../actions.js';
-import { actionDesc } from './functions.js';
+import { actionDesc, sideMenu } from './functions.js';
 
 const extraInformation = {
     club: global.race['soul_eater'] ? [
@@ -763,14 +762,14 @@ const extraInformation = {
     slave_market: [
         loc(`wiki_tech_slave_market`)
     ],
-    ceremonial_dagger: [
-        loc(`wiki_tech_ceremonial_dagger`,[900,1800])
+    wiki_tech_ceremonial_dagger: [
+        loc(`wiki_tech_ceremonial_dagger`,[600,1500])
     ],
     last_rites: [
         loc(`wiki_tech_ceremonial_dagger`,[1800,3600])
     ],
     ancient_infusion: [
-        loc(`wiki_tech_ceremonial_dagger`,[3600,7200])
+        loc(`wiki_tech_ceremonial_dagger`,[5400,16200])
     ],
     garrison: [
         loc(`wiki_tech_building_unlock`,[loc(`city_garrison`)])
@@ -1385,10 +1384,9 @@ function addRequirements(parent,key){
 }
 
 export function renderTechPage(era){
-    let content = $(`#content`);
+    let content = sideMenu('create');;
     let techList = [];
     let otherTechs = [];
-    clearElement(content);
 
     Object.keys(actions.tech).forEach(function (actionName){
         let action = actions.tech[actionName];
@@ -1439,5 +1437,7 @@ export function renderTechPage(era){
     }
     for (let i=0; i<techList.length; i++) {
         content.append(techList[i][1]);
+        let id = techList[i][0].id.split('-');
+        sideMenu('add',`${techList[i][0].era}-tech`,id[1],typeof techList[i][0].title === 'function' ? techList[i][0].title() : techList[i][0].title);
     }
 }

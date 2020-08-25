@@ -1,4 +1,3 @@
-import { global } from './../vars.js';
 import { clearElement } from './../functions.js';
 import { crisprPage } from './crispr.js';
 import { pResPage } from './p_res.js';

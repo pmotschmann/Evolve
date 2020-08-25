@@ -1,12 +1,11 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, popover } from './../functions.js';
+import { popover } from './../functions.js';
 import { actions } from './../actions.js';
-import { actionDesc } from './functions.js';
+import { actionDesc, sideMenu } from './functions.js';
 
 export function renderStructurePage(zone){
-    let content = $(`#content`);
-    clearElement(content);
+    let content = sideMenu('create');
 
     switch (zone){
         case 'prehistoric':
@@ -59,6 +58,7 @@ function prehistoricPage(content){
             content.append(info);
             actionDesc(info, actions.evolution[action]);
             addInfomration(info,'prehistoric',action);
+            sideMenu('add',`prehistoric-structures`,id[1],typeof actions.evolution[action].title === 'function' ? actions.evolution[action].title() : actions.evolution[action].title);
         }
     });
 }
@@ -71,6 +71,7 @@ function planetaryPage(content){
             content.append(info);
             actionDesc(info, actions.city[action]);
             addInfomration(info,'planetary',action);
+            sideMenu('add',`planetary-structures`,id[1],typeof actions.city[action].title === 'function' ? actions.city[action].title() : actions.city[action].title);
         }
     });
 }
@@ -87,6 +88,7 @@ function spacePage(content){
                 content.append(info);
                 actionDesc(info, actions.space[region][struct],`<span id="pop${actions.space[region][struct].id}">${name}</span>`);
                 addInfomration(info,'space',struct);
+                sideMenu('add',`space-structures`,id[1],typeof actions.space[region][struct].title === 'function' ? actions.space[region][struct].title() : actions.space[region][struct].title);
                 popover(`pop${actions.space[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
@@ -105,6 +107,7 @@ function interstellarPage(content){
                 content.append(info);
                 actionDesc(info, actions.interstellar[region][struct],`<span id="pop${actions.interstellar[region][struct].id}">${name}</span>`);
                 addInfomration(info,'interstellar',struct);
+                sideMenu('add',`interstellar-structures`,id[1],typeof actions.interstellar[region][struct].title === 'function' ? actions.interstellar[region][struct].title() : actions.interstellar[region][struct].title);
                 popover(`pop${actions.interstellar[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
@@ -123,6 +126,7 @@ function intergalacticPage(content){
                 content.append(info);
                 actionDesc(info, actions.galaxy[region][struct],`<span id="pop${actions.galaxy[region][struct].id}">${name}</span>`);
                 addInfomration(info,'intergalactic',struct);
+                sideMenu('add',`intergalactic-structures`,id[1],typeof actions.galaxy[region][struct].title === 'function' ? actions.galaxy[region][struct].title() : actions.galaxy[region][struct].title);
                 popover(`pop${actions.galaxy[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
@@ -141,6 +145,7 @@ function hellPage(content){
                 content.append(info);
                 actionDesc(info, actions.portal[region][struct],`<span id="pop${actions.portal[region][struct].id}">${name}</span>`);
                 addInfomration(info,'hell',struct);
+                sideMenu('add',`hell-structures`,id[1],typeof actions.portal[region][struct].title === 'function' ? actions.portal[region][struct].title() : actions.portal[region][struct].title);
                 popover(`pop${actions.portal[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });

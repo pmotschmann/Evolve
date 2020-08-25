@@ -1,15 +1,21 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { genePool } from './../arpa.js';
+import { sideMenu } from './functions.js';
 
 export function crisprPage(content){
     content.append(`<div class="header has-text-warning">${loc('wiki_arpa_crispr')}</div>`);
 
+    let mainContent = $(`<div></div>`);
+    let crisprContent = sideMenu('create',mainContent);
+    content.append(mainContent);
+
     Object.keys(genePool).forEach(function (gene){
         let id = genePool[gene].id.split('-');
         let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
-        content.append(info);
+        crisprContent.append(info);
         geneDesc(info,gene);
+        sideMenu('add',`crispr-prestige`,id[1],genePool[gene].title);
     });
 }
 
