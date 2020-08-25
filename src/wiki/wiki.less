@@ -1,3 +1,12 @@
+span, div {
+    -moz-user-select: initial;
+    -khtml-user-select: initial;
+    -webkit-user-select: initial;
+    -ms-user-select: initial;
+    user-select: initial;
+    cursor: default;
+}
+
 .wiki {
     display: flex;
     margin-top: 1rem;
@@ -5,6 +14,15 @@
     .mainMenu {
         margin-left: .5rem;
         width: 10rem;
+
+        .menu-list {
+            li {
+                cursor: pointer;
+                span {
+                    cursor: pointer;
+                }
+            }
+        }
     }
 
     .mainContent {
@@ -19,6 +37,9 @@
     .header {
         margin: 0.25rem 0 1rem;
     }
+    .achievements.header {
+        margin: 1rem 0 0.25rem;
+    }
 
     .menu-label {
         font-size: 1rem;
@@ -31,6 +52,11 @@
         padding: .25rem .5rem;
         border: .0625rem solid;
 
+        &.wide {
+            max-width: 100%;
+            margin-right: 0;
+        }
+
         h2 {
             margin-bottom: .25rem;
             border-bottom: .0625rem solid;
@@ -39,6 +65,10 @@
         div {
             margin-bottom: .5rem;
             clear: both;
+        }
+
+        li {
+            list-style-position: inside;
         }
 
         .type {
@@ -61,13 +91,22 @@
             }
         }
 
+        .propList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            > div {
+                margin-right: 1rem;
+            }
+        }
+
         .stats {
             display: flex;
             justify-content: space-between;
             border-top: .0625rem solid;
             margin-top: .5rem;
             padding-top: .5rem;
-    
+
             .effect {
                 width: 70%;
             }
@@ -103,9 +142,18 @@
         }
 
         .para {
-            span {
+            > span {
                 margin-right: .25rem;
             }
+        }
+
+        .infoSummary {
+            display: inline-grid;
+            text-align: left;
+            max-width: 18rem;
+            border-radius: .25rem;
+            line-height: 1.3125rem;
+            margin-right: 1rem;
         }
     }
 
@@ -143,6 +191,35 @@
         }
     }
 
+    .duelList {
+        display: flex;
+        flex-flow: wrap;
+        
+        .itemlist {
+            display: flex;
+        }
+
+        .listSide {
+            min-width: 30rem;
+            width: 50%;
+            border: .0625rem solid;
+            text-align: center;
+
+            .infoBox {
+                list-style: none;
+                text-align: left;
+                margin: 0.5rem;
+            }
+
+            @media only screen and (max-width: 74.5rem){
+                width: 100%;
+                .infoBox {
+                    max-width: 100%;
+                }
+            }
+        }
+    }
+
     .flexed {
         display: flex;
         flex-wrap: wrap;
@@ -157,6 +234,10 @@
         .wide {
             width: 6.9375rem;
         }
+    }
+
+    .flex {
+        display: flex;
     }
 
     ul.disc {

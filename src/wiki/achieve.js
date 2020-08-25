@@ -3,7 +3,7 @@ import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
 import { achievements, feats } from './../achieve.js';
 import { races, biomes, genus_traits } from './../races.js';
-import { popover } from './functions.js';
+import { popover } from './../functions.js';
 
 export function renderAchievePage(zone){
     let content = $(`#content`);
@@ -23,20 +23,33 @@ function achievePage(){
     let content = $(`#content`);
     clearElement(content);
 
-    let list = $(`<div class="achieveList"></div>`);
-    content.append(list);
+    let types = {};
+    Object.keys(achievements).forEach(function (achievement){
+        if (types.hasOwnProperty(achievements[achievement].type)){
+            types[achievements[achievement].type].push(achievement);
+        }
+        else {
+            types[achievements[achievement].type] = [achievement];
+        }
+    });
 
-    Object.keys(achievements).sort((a,b) => achievements[a].name.localeCompare(achievements[b].name)).forEach(function (achievement){
-        let achieve = $(`<div class="achievement"></div>`);
-        list.append(achieve);
+    Object.keys(types).forEach(function (type){
+        content.append($(`<h2 class="header achievements has-text-caution">${loc(`wiki_achieve_${type}`)}</h2>`));
+        let list = $(`<div class="achieveList"></div>`);
+        content.append(list);
 
-        let color = global.stats.achieve[achievement] && global.stats.achieve[achievement].l > 0 ? 'warning' : 'fade';
-        achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
+        types[type].forEach(function(achievement){
+            let achieve = $(`<div class="achievement"></div>`);
+            list.append(achieve);
 
-        let emblems = format_emblem(achievement,16);
-        achieve.append(`<span class="icons">${emblems}</span>`);
-        
-        achieveDesc(achievement);
+            let color = global.stats.achieve[achievement] && global.stats.achieve[achievement].l > 0 ? 'warning' : 'fade';
+            achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
+
+            let emblems = format_emblem(achievement,16);
+            achieve.append(`<span class="icons">${emblems}</span>`);
+            
+            achieveDesc(achievement);
+        });
     });
 }
 

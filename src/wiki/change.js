@@ -3,6 +3,82 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.17`,
+        date: `8/22/2020`,
+        changes: [
+            `Fixed bug that prevented Cataclysm Ascension from completing.`,
+            `Rank 1 sacrifice is slightly less effective`,
+            `Rank 3 sacrifice is significantly more effective`,
+            `New Research is now shown by Era.`
+        ]
+    },
+    {
+        version: `0.9.16`,
+        date: `8/12/2020`,
+        changes: [
+            `Bug Fixes by Beorseder:`,
+            `Fixed issue where Exotic Materials Lab and Fortifications would clear current queue.`,
+            `Fixed Scavengers not working during Cataclysm.`,
+            `Fixed display bug with Galactic Exchange during Cataclysm.`,
+            `Genomic Mutations no longer give the wrong number of Genes without Synthesis upgrades.`,
+            `Genomic Mutations now tell how many Plasmids/Antiplasmids are gained from them.`,
+            `Techs now display their requirements on the wiki.`
+        ]
+    },
+    {
+        version: `0.9.15`,
+        date: `8/10/2020`,
+        changes: [
+            `Tax revolts can no longer destroy Soul Gems.`,
+            `If you lose your sample of Elerium before researching Elerium Mining it will now be replaced.`
+        ]
+    },
+    {
+        version: `0.9.14`,
+        date: `8/9/2020`,
+        changes: [
+            `Angelic races now have an innate bonus vs demonic creatures.`,
+            `Enhanced Muscle Fibers added to perks page.`,
+            `Genome sequencing will now be off by default in Cataclysm.`,
+            `Reorganized achievements page in Wiki.`
+        ]
+    },
+    {
+        version: `0.9.13`,
+        date: `8/6/2020`,
+        changes: [
+            `Special resource descriptions now update.`
+        ]
+    },
+    {
+        version: `0.9.12`,
+        date: `8/3/2020`,
+        changes: [
+            `Added Crossed the Finish Line feat for Ascending with Cataclysm.`,
+            `Adjusted many post World Collider Cataclysm things that referenced none existent planetary structures.`,
+            `Added a fix for Stabilize Blackhole being stuck in an untriggerable state.`,
+            `Upgrading achievements will now send a notification.`
+        ]
+    },
+    {
+        version: `0.9.11`,
+        date: `8/1/2020`,
+        changes: [
+            `Fixed a bug that caused Factories to charge the wrong amount of Polymer for producing Synthetic Furs.`
+        ]
+    },
+    {
+        version: `0.9.10`,
+        date: `7/30/2020`,
+        changes: [
+            `Expanded list of potential enemy city names.`,
+            `Added Synthetic Fur option to Factories.`,
+            `Restoring a backup after a Cataclysm will now allow you to Cataclysm again.`,
+            `Fixed Lumber penalty on Desert worlds.`,
+            `Many minor bug fixes.`
+        ]
+    },
+    {
         version: `0.9.9`,
         date: `7/21/2020`,
         changes: [

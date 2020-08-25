@@ -1,4 +1,7 @@
 import { clearElement } from './../functions.js';
+import { resetsPage } from './resets.js';
+import { planetsPage } from './planets.js';
+import { universePage } from './universes.js';
 import { hellPage } from './hell.js';
 
 export function gamePlayPage(zone){
@@ -12,14 +15,23 @@ export function gamePlayPage(zone){
         case 'mechanics':
             mechanicsPage(content);
             break;
+        case 'resets':
+            resetsPage(content);
+            break;
+        case 'planets':
+            planetsPage(content);
+            break;
+        case 'universes':
+            universePage(content);
+            break;
         case 'hell':
             hellPage(content);
-            break;
+            break;        
     }
 }
 
 function basicsPage(content){
-    content.append(`<div>coming soon</div>`);
+    content.append(`<div>An excellent <a href="https://wooledge.org/~greg/evolve/guide.html" target="_blank">Beginner's Guide</a> by GreyCat is available</div>`);
 }
 
 function mechanicsPage(content){

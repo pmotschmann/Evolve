@@ -4,6 +4,7 @@ import {} from './../achieve.js';
 import { vBind, clearElement } from './../functions.js';
 import { faqPage } from './faq.js';
 import { racesPage, traitsPage } from './species.js';
+import { planetsPage } from './planets.js';
 import { renderStructurePage } from './structures.js';
 import { renderTechPage } from './tech.js';
 import { renderAchievePage } from './achieve.js';
@@ -35,14 +36,18 @@ function initPage(){
             submenu: [
                 { key: 'basics' },
                 { key: 'mechanics' },
-                { key: 'hell' },
+                { key: 'resets' },
+                { key: 'planets' },
+                { key: 'universes' },
+                { key: 'hell' }                
             ]
         },
         {
             key: 'prestige',
             submenu: [
+                { key: 'resets' },
                 { key: 'resources' },
-                { key: 'crispr' },
+                { key: 'crispr' }
             ]
         },
         {
@@ -123,6 +128,8 @@ function initPage(){
 }
 
 function menuDispatch(main,sub,frag){
+    $(`#content`).removeClass('flex');
+
     switch (main){
         case 'intro':
             mainPage();
@@ -151,6 +158,9 @@ function menuDispatch(main,sub,frag){
                     break;
                 case 'traits':
                     traitsPage();
+                    break;
+                case 'planets':
+                    planetsPage();
                     break;
                 }
                 setWindowHash(main,sub,frag);

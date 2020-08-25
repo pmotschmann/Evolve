@@ -1,39 +1,69 @@
-import { global, poppers, sizeApproximation } from './../vars.js';
+import { global, sizeApproximation } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 
-export function infoBoxBuilder(parent,name,template,paragraphs,h_level){
-    if (!h_level){
-        h_level = 3;
+export function headerBoxBuilder(parent,args){
+    if (!args.hasOwnProperty('h_level')){
+        args['h_level'] = 2;
     }
-    let info = $(`<div class="infoBox"></div>`);
-    info.append(`<h${h_level} id="${name}" class="header has-text-warning">${loc(`wiki_${template}_${name}`)}</h${h_level}>`);
-    let para = $(`<div class="para"></div>`);
-    for (let i=1; i<=paragraphs; i++){
-        para.append(`<span>${loc(`wiki_${template}_${name}_para${i}`)}</span>`);
-    }
-    parent.append(info);
-    info.append(para);
-    return info;
+    args['header'] = true;
+    return infoBoxBuilder(parent,args);
 }
 
-export function popover(id,content,is_wide){
-    $('#'+id).on('mouseover',function(){
-        let wide = is_wide ? ' wide' : '';
-        var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
-        $(`#main`).append(popper);
-        popper.append(content);
-        popper.show();
-        poppers[id] = new Popper($('#'+id),popper);
-    });
-    $('#'+id).on('mouseout',function(){
-        $(`#pop${id}`).hide();
-        if (poppers[id]){
-            poppers[id].destroy();
+export function infoBoxBuilder(parent,args){
+    if (!args.hasOwnProperty('name')){ return; }
+    if (!args.hasOwnProperty('template')){ return; }
+    if (!args.hasOwnProperty('paragraphs')){ args['paragraphs'] = 0; }
+    if (!args.hasOwnProperty('para_data')){ args['para_data'] = {}; }
+    if (!args.hasOwnProperty('data_color')){ args['data_color'] = {}; }
+    if (!args.hasOwnProperty('data_link')){ args['data_link'] = {}; }
+    if (!args.hasOwnProperty('h_level')){ args['h_level'] = 3; }
+    if (!args.hasOwnProperty('header')){ args['header'] = false; }
+    if (!args.hasOwnProperty('full')){ args['full'] = false; }
+    if (!args.hasOwnProperty('break')){ args['break'] = false; }
+    if (!args.hasOwnProperty('default_color')){ args['default_color'] = 'warning'; }
+
+    let info = $(`<div class="infoBox${args.full ? ` wide` : ``}"></div>`);
+    info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
+    let ranges = [{s: 1, e: args.break ? args.break[0] - 1 : args.paragraphs}];
+    
+    if (args.break){
+        for (let i=0; i<args.break.length; i++){
+            let end = i+1 === args.break.length ? args.paragraphs : (args.break[i+1] - 1);
+            ranges.push({ s: args.break[i], e: end });
         }
-        clearElement($(`#pop${id}`),true);
+    }
+    
+    ranges.forEach(function(range){
+        let para = $(`<div class="para"></div>`);
+        for (let i=range.s; i<=range.e; i++){
+            if (args.para_data[i] && Array.isArray(args.para_data[i])){
+                let inputs = args.para_data[i];
+                if (args.data_link[i] && Array.isArray(args.data_link[i])){
+                    for (let j=0; j<args.data_link[i].length; j++){
+                        if (args.data_link[i][j] !== 'plain'){
+                            inputs[j] = `<a href="${args.data_link[i][j]}" target="_blank">${inputs[j]}</a>`;
+                        }
+                    }
+                }
+                let color_list = args.data_color[i] && Array.isArray(args.data_color[i]) ? args.data_color[i] : args.para_data[i].map(x => args.default_color);
+                for (let j=0; j<color_list.length; j++){
+                    if (color_list[j] !== 'plain'){
+                        inputs[j] = `<span class="has-text-${color_list[j]}">${inputs[j]}</span>`;
+                    }
+                }
+                para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`,inputs)}</span>`);
+            }
+            else {
+                para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`)}</span>`);
+            }        
+        }
+        info.append(para);
     });
+    
+    parent.append(info);    
+    return info;
 }
 
 export function actionDesc(info, c_action, extended){
@@ -55,8 +85,10 @@ export function actionDesc(info, c_action, extended){
     let hasEffect = false;
     if (c_action.hasOwnProperty('effect')){
         let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
-        stats.append(`<div class="effect">${effect}</div>`);
-        hasEffect = true;
+        if (effect !== false){
+            stats.append(`<div class="effect">${effect}</div>`);
+            hasEffect = true;
+        }
         info.append(stats);
     }
 
@@ -89,6 +121,9 @@ export function actionDesc(info, c_action, extended){
             else if (res === 'Plasmid' || res === 'Phage'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
+                    if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                        res = 'AntiPlasmid';
+                    }
                     let label = loc(`resource_${res}_name`);
                     cost.append($(`<div data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
                     render = true;
@@ -116,4 +151,37 @@ export function actionDesc(info, c_action, extended){
             stats.append(cost);
         }
     }
+}
+
+export function bindScroll(elm, target){
+    elm.click(function(){
+        window.location.hash = `#${target}`;
+        document.getElementById(target).scrollIntoView({
+            block: 'start',
+            behavior: 'smooth'
+        });
+    });
+}
+
+export function sideMenu(action,arg1,arg2,arg3){
+    if (action === 'create'){
+        let content = arg1 ? (typeof arg1 === 'string' ? $(`#${arg1}`) : arg1) : $(`#content`);
+        clearElement(content);
+        content.addClass('flex');
+        let mainContent = $(`<div id="mainContent"></div>`);
+        let sideContent = $(`<div id="sideContent"></div>`);
+        let sideMenu = $(`<ul></ul>`);
+        content.append(mainContent);
+        content.append(sideContent);
+        sideContent.append(sideMenu);
+        return mainContent;
+    }
+    else {
+        let anchor = $(`<a href="#${arg1}-${arg2}">${arg3}</a>`);
+        let li = $(`<li></li>`);
+        li.append(anchor);
+        $(`#sideContent ul`).append(li);
+        bindScroll(anchor, arg2);
+    }
+    
 }

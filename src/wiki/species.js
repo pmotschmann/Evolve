@@ -1,12 +1,11 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, getEaster } from './../functions.js';
+import { popover, getEaster } from './../functions.js';
 import { races, traits, genus_traits } from './../races.js';
-import { popover } from './functions.js';
+import { sideMenu } from './functions.js';
 
 export function racesPage(){
-    let content = $(`#content`);
-    clearElement(content);
+    let content = sideMenu('create');
 
     Object.keys(races).forEach(function (race){
         if ((race === 'custom' && !global.hasOwnProperty('custom')) || race === 'protoplasm'){
@@ -42,6 +41,7 @@ export function racesPage(){
             traitList.push(extraTraits[i]);
         }
         info.append(genes);
+        sideMenu('add',`races-species`,race,races[race].name);
 
         for (let i=0; i<traitList.length; i++){
             let id = `raceTrait${race}${traitList[i]}`;
@@ -66,8 +66,7 @@ function extraTraitList(race){
 }
 
 export function traitsPage(){
-    let content = $(`#content`);
-    clearElement(content);
+    let content = sideMenu('create');
 
     let types = ['genus','major','minor','special'];
     for (let i=0; i<types.length; i++){
@@ -76,6 +75,7 @@ export function traitsPage(){
                 let info = $(`<div id="${trait}" class="infoBox"></div>`);
                 content.append(info);
                 traitDesc(info,trait);
+                sideMenu('add',`traits-species`,trait,traits[trait].name);
             }
         });
     }
