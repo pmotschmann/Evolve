@@ -7,6 +7,67 @@ span, div {
     cursor: default;
 }
 
+.sticky {
+    position: sticky;
+    top: 1rem;
+    bottom: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.dark {
+    .sticky::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #1f2424;
+    }
+    
+    .sticky::-webkit-scrollbar {
+        width: 6px;
+        background-color: #1f2424;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb {
+        background-color: #F5F5F5;
+    }
+}
+
+.night {
+    .sticky::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #000000;
+    }
+    
+    .sticky::-webkit-scrollbar {
+        width: 6px;
+        background-color: #000000;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb {
+        background-color: #727272;
+    }
+}
+
+.redgreen {
+    .night();
+}
+
+.light {
+    .sticky::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #F5F5F5;
+    }
+    
+    .sticky::-webkit-scrollbar {
+        width: 6px;
+        background-color: #F5F5F5;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+}
+
+
 .wiki {
     display: flex;
     margin-top: 1rem;
