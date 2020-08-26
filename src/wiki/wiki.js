@@ -94,7 +94,7 @@ function initPage(){
         }
     ];
 
-    let wikiMenu = `<template><b-menu class="has-text-caution"><b-menu-list label="${loc('wiki_menu_evolve')}">`;
+    let wikiMenu = `<template><b-menu class="sticky has-text-caution"><b-menu-list label="${loc('wiki_menu_evolve')}">`;
     wikiMenu = wikiMenu + buiildMenu(menuItems,true,false);
     wikiMenu = wikiMenu + `</b-menu-list></b-menu></template>`;
     menu.append(wikiMenu);

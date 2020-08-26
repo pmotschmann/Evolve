@@ -169,7 +169,7 @@ export function sideMenu(action,arg1,arg2,arg3){
         clearElement(content);
         content.addClass('flex');
         let mainContent = $(`<div id="mainContent"></div>`);
-        let sideContent = $(`<div id="sideContent"></div>`);
+        let sideContent = $(`<div id="sideContent" class="sticky"></div>`);
         let sideMenu = $(`<ul></ul>`);
         content.append(mainContent);
         content.append(sideContent);
