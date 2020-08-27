@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.0`,
+        date: `9/??/2020`,
+        changes: [
+            `Expanded Interdimensional content, delve deep into the hell dimension.`,
+            `New Magic Universe.`
+        ]
+    },
+    {
         version: `0.9.17`,
         date: `8/22/2020`,
         changes: [

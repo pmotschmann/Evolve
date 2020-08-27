@@ -2528,11 +2528,12 @@ export const actions = {
             },
             desc(){
                 const date = new Date();
+                let gain = $(this)[0].val(false);
                 if (date.getMonth() === 9 && date.getDate() === 31){
-                    return global.tech['conjuring'] ? loc('city_trick_conjure_desc') : loc('city_trick_desc');
+                    return global.tech['conjuring'] ? loc('city_trick_conjure_desc',[gain]) : loc('city_trick_desc',[gain]);
                 }
                 else {
-                    return global.tech['conjuring'] ? loc('city_food_conjure_desc') : loc('city_food_desc');
+                    return global.tech['conjuring'] ? loc('city_food_conjure_desc',[gain]) : loc('city_food_desc',[gain]);
                 }
             },
             category: 'outskirts',
@@ -2544,17 +2545,22 @@ export const actions = {
             },
             action(){
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
-                    if (global.genes['enhance']){
-                        gain *= 2;
-                    }
-                    if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
-                        gain *= 10;
-                        modRes('Mana',-1,true);
-                    }
-                    modRes('Food',gain,true);
+                    modRes('Food',$(this)[0].val(true),true);
                 }
                 return false;
+            },
+            val(spend){
+                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                if (global.genes['enhance']){
+                    gain *= 2;
+                }
+                if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
+                    gain *= 10;
+                    if (global['resource']['Food'].amount < global['resource']['Food'].max && spend){
+                        modRes('Mana',-1,true);
+                    }
+                }
+                return gain;
             }
         },
         lumber: {
@@ -2570,11 +2576,12 @@ export const actions = {
             },
             desc(){
                 const date = new Date();
+                let gain = $(this)[0].val(false);
                 if (date.getMonth() === 9 && date.getDate() === 31){
-                    return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_dig_conjour_desc') : loc('city_dig_desc');
+                    return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_dig_conjour_desc',[gain]) : loc('city_dig_desc',[gain]);
                 }
                 else {
-                    return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_lumber_conjure_desc') : loc('city_lumber_desc');
+                    return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_lumber_conjure_desc',[gain]) : loc('city_lumber_desc',[gain]);
                 }
             },
             category: 'outskirts',
@@ -2586,17 +2593,22 @@ export const actions = {
             },
             action(){
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
-                    if (global.genes['enhance']){
-                        gain *= 2;
-                    }
-                    if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
-                        gain *= 10;
-                        modRes('Mana',-1,true);
-                    }
-                    modRes('Lumber',gain,true);
+                    modRes('Lumber',$(this)[0].val(true),true);
                 }
                 return false;
+            },
+            val(spend){
+                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                if (global.genes['enhance']){
+                    gain *= 2;
+                }
+                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
+                    gain *= 10;
+                    if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max && spend){
+                        modRes('Mana',-1,true);
+                    }
+                }
+                return gain;
             }
         },
         stone: {
@@ -2610,11 +2622,12 @@ export const actions = {
                 }                
             },
             desc(){
+                let gain = $(this)[0].val(false);
                 if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
-                    return global.race['sappy'] ? loc('city_amber_conjour_desc') : loc('city_stone_conjour_desc');
+                    return global.race['sappy'] ? loc('city_amber_conjour_desc',[gain]) : loc('city_stone_conjour_desc',[gain]);
                 }
                 else {
-                    return global.race['sappy'] ? loc('city_amber_desc') : loc('city_stone_desc');
+                    return global.race['sappy'] ? loc('city_amber_desc',[gain]) : loc('city_stone_desc',[gain]);
                 }                
             },
             category: 'outskirts',
@@ -2626,17 +2639,22 @@ export const actions = {
             },
             action(){
                 if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
-                    if (global.genes['enhance']){
-                        gain *= 2;
-                    }
-                    if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
-                        gain *= 10;
-                        modRes('Mana',-1,true);
-                    }
-                    modRes('Stone',gain,true);
+                    modRes('Stone',$(this)[0].val(true),true);
                 }
                 return false;
+            },
+            val(spend){
+                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                if (global.genes['enhance']){
+                    gain *= 2;
+                }
+                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
+                    gain *= 10;
+                    if (global['resource']['Stone'].amount < global['resource']['Stone'].max && spend){
+                        modRes('Mana',-1,true);
+                    }
+                }
+                return gain;
             }
         },
         slaughter: {
@@ -13668,7 +13686,7 @@ export const actions = {
             },
             cost: {
                 Mana(){ return 5; },
-                Crystal(){ return 25; }
+                Crystal(){ return 10; }
             },
             effect(){ return loc('tech_res_conjuring_effect'); },
             action(){
@@ -14881,6 +14899,7 @@ export function actionDesc(parent,c_action,obj,old){
 
     let tc = timeCheck(c_action,false,true);
     if (c_action.cost && !old){
+        let empty = true;
         var cost = $('<div></div>');
 
         var costs = adjustCosts(c_action.cost);
@@ -14909,6 +14928,7 @@ export function actionDesc(parent,c_action,obj,old){
                         else {
                             label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
                         }
+                        empty = false;
                         cost.append($(`<div class="${color}">${label}: ${res_cost}</div>`));
                     });
                 });
@@ -14924,6 +14944,7 @@ export function actionDesc(parent,c_action,obj,old){
                     if ((res === 'AntiPlasmid' ? global.race['Plasmid'].anti : global.race[res].count) < res_cost){
                         color = 'has-text-danger';
                     }
+                    empty = false;
                     cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
                 }
             }
@@ -14935,6 +14956,7 @@ export function actionDesc(parent,c_action,obj,old){
                         if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
                             color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
                         }
+                        empty = false;
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
                     }
                     else {
@@ -14945,12 +14967,15 @@ export function actionDesc(parent,c_action,obj,old){
                             color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
                         }
                         let display_cost = sizeApproximation(res_cost,1);
+                        empty = false;
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
                     }
                 }
             }
         });
-        parent.append(cost);
+        if (!empty){
+            parent.append(cost);
+        }
     }
     if (c_action.effect){
         var effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
@@ -15573,6 +15598,7 @@ function sentience(){
         window.location.reload();
     }
 
+    drawCity();
     defineGarrison();
     buildGarrison($('#c_garrison'),false);
     foreignGov();
