@@ -27,7 +27,7 @@ export function index(){
     main.append(columns);
 
     // Left Column
-    columns.append(`<div class="column is-one-quarter">
+    columns.append(`<div class="column is-one-quarter sticky">
         <div id="race" class="race columns is-mobile is-gapless">
             <h2 class="is-sr-only">Race Info</h2>
             <div class="column is-one-quarter"><b-tooltip :label="desc()" position="is-right" size="is-large" multilined animated>{{ name() }}</b-tooltip></div>

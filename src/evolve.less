@@ -1685,6 +1685,15 @@ div.bigbang {
     }
 }
 
+.sticky {
+    position: sticky;
+    top: 1rem;
+    bottom: 0;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .darkTheme,
 html.dark {
     background-color: #1f2424;
@@ -2021,6 +2030,20 @@ html.dark {
             }
         }
     }
+
+    .sticky::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #1f2424;
+    }
+    
+    .sticky::-webkit-scrollbar {
+        width: 6px;
+        background-color: #1f2424;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb {
+        background-color: #F5F5F5;
+    }
 }
 
 html.dark {
@@ -2354,6 +2377,20 @@ html.light {
             }
         }
     }
+
+    .sticky::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #F5F5F5;
+    }
+    
+    .sticky::-webkit-scrollbar {
+        width: 6px;
+        background-color: #F5F5F5;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
 }
 
 .light .modal .action {
@@ -2476,6 +2513,20 @@ html.night {
         .button {
             background: #000;
         }
+    }
+
+    .sticky::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #000000;
+    }
+    
+    .sticky::-webkit-scrollbar {
+        width: 6px;
+        background-color: #000000;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb {
+        background-color: #727272;
     }
 }
 
