@@ -3538,7 +3538,7 @@ export const actions = {
             cost: {
                 Money(offset){ if (global.city['pylon'] && global.city['pylon'].count >= 2){ return costMultiplier('pylon', offset, 10, 1.48);} else { return 0; } },
                 Stone(offset){ return costMultiplier('pylon', offset, 12, 1.48); },
-                Crystal(offset){ return costMultiplier('pylon', offset, 20, 1.48); }
+                Crystal(offset){ return costMultiplier('pylon', offset, 5, 1.48); }
             },
             effect(){
                 let max = spatialReasoning(5);
@@ -13587,7 +13587,7 @@ export const actions = {
             title: loc('tech_mana'),
             desc: loc('tech_mana'),
             category: 'magic',
-            era: 'discovery',
+            era: 'civilized',
             reqs: { primitive: 3 },
             grant: ['magic',1],
             condition(){
@@ -13613,7 +13613,7 @@ export const actions = {
             title: loc('tech_ley_lines'),
             desc: loc('tech_ley_lines'),
             category: 'magic',
-            era: 'discovery',
+            era: 'civilized',
             reqs: { magic: 1 },
             grant: ['magic',2],
             condition(){
@@ -13637,7 +13637,7 @@ export const actions = {
             title: loc('tech_conjuring'),
             desc: loc('tech_conjuring_desc'),
             category: 'magic',
-            era: 'discovery',
+            era: 'civilized',
             reqs: { magic: 1 },
             grant: ['conjuring',1],
             condition(){
@@ -13660,7 +13660,7 @@ export const actions = {
             title: loc('tech_res_conjuring'),
             desc: loc('tech_res_conjuring'),
             category: 'magic',
-            era: 'discovery',
+            era: 'civilized',
             reqs: { conjuring: 1 },
             grant: ['conjuring',2],
             condition(){
