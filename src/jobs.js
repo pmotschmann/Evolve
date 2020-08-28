@@ -1,4 +1,4 @@
-import { global, keyMultiplier, poppers } from './vars.js';
+import { global, keyMultiplier } from './vars.js';
 import { clearElement, popover, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';

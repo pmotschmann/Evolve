@@ -2893,6 +2893,7 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('apartment', offset, 1750, 1.26) - 500; },
+                Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('apartment', offset, 25, 1.22) : 0; },
                 Furs(offset){ return costMultiplier('apartment', offset, 725, 1.32) - 500; },
                 Copper(offset){ return costMultiplier('apartment', offset, 650, 1.32) - 500; },
                 Cement(offset){ return costMultiplier('apartment', offset, 700, 1.32) - 500; },
@@ -3341,7 +3342,7 @@ export const actions = {
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stone.name])}</span>`;
                 }
                 if (global.resource.Crystal.display){
-                    let val = sizeApproximation(+(spatialReasoning(10) * multiplier).toFixed(0),1);
+                    let val = sizeApproximation(+(spatialReasoning(8) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Crystal.name])}</span>`;
                 }
                 if (global.resource.Furs.display){
@@ -3555,8 +3556,8 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ if (global.city['pylon'] && global.city['pylon'].count >= 2){ return costMultiplier('pylon', offset, 10, 1.48);} else { return 0; } },
-                Stone(offset){ return costMultiplier('pylon', offset, 12, 1.48); },
-                Crystal(offset){ return costMultiplier('pylon', offset, 5, 1.48); }
+                Stone(offset){ return costMultiplier('pylon', offset, 12, 1.42); },
+                Crystal(offset){ return costMultiplier('pylon', offset, 8, 1.42) - 3; }
             },
             effect(){
                 let max = spatialReasoning(5);
@@ -4360,6 +4361,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('university', offset, 900, 1.5) - 500; },
                 Lumber(offset){ return costMultiplier('university', offset, 500, 1.36) - 200; },
                 Stone(offset){ return costMultiplier('university', offset, 750, 1.36) - 350; },
+                Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('university', offset, 5, 1.36) : 0; },
                 Iron(offset){ return global.city.university.count >= 3 && global.city.ptrait === 'unstable' ? costMultiplier('university', offset, 25, 1.36) : 0; }
             },
             effect(){
@@ -4424,6 +4426,7 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('library', offset, 45, 1.2); },
+                Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('library', offset, 2, 1.2) : 0; },
                 Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('library', offset, 4, 1.2) : 0; },
                 Furs(offset){ return costMultiplier('library', offset, 22, 1.2); },
                 Plywood(offset){ return costMultiplier('library', offset, 20, 1.2); },
@@ -4483,6 +4486,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('wardenclyffe', offset, 5000, 1.22); },
                 Knowledge(offset){ return costMultiplier('wardenclyffe', offset, 1000, 1.22); },
+                Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('wardenclyffe', offset, 100, 1.22) : 0; },
                 Copper(offset){ return costMultiplier('wardenclyffe', offset, 500, 1.22); },
                 Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('wardenclyffe', offset, 75, 1.22) : 0; },
                 Cement(offset){ return costMultiplier('wardenclyffe', offset, 350, 1.22); },
@@ -5785,8 +5789,8 @@ export const actions = {
         },
         magic: {
             id: 'tech-magic',
-            title: loc('tech_magic'),
-            desc: loc('tech_magic'),
+            title(){ return global.race.universe === 'magic' ? loc('tech_illusionist') : loc('tech_magic'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_illusionist') : loc('tech_magic'); },
             category: 'entertainment',
             era: 'discovery',
             reqs: { theatre: 2, high_tech: 1 },
@@ -5795,6 +5799,7 @@ export const actions = {
                 Knowledge(){ return 7920; }
             },
             effect: loc('tech_magic_effect'),
+            effect(){ return global.race.universe === 'magic' ? loc('tech_illusionist_effect') : loc('tech_magic_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -10341,17 +10346,18 @@ export const actions = {
         },
         flintlock_rifle: {
             id: 'tech-flintlock_rifle',
-            title: loc('tech_flintlock_rifle'),
-            desc: loc('tech_flintlock_rifle'),
+            title(){ return global.race.universe === 'magic' ? loc('tech_magic_arrow') : loc('tech_flintlock_rifle'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_magic_arrow') : loc('tech_flintlock_rifle'); },
             category: 'military',
             era: 'civilized',
             reqs: { military: 2, explosives: 1 },
             grant: ['military',3],
             cost: {
                 Knowledge(){ return 5400; },
-                Coal(){ return 750; }
+                Coal(){ return global.race.universe === 'magic' ? 0 : 750; },
+                Mana(){ return global.race.universe === 'magic' ? 100 : 0; }
             },
-            effect: loc('tech_flintlock_rifle_effect'),
+            effect(){ return global.race.universe === 'magic' ? loc('tech_magic_arrow_effect') : loc('tech_flintlock_rifle_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     let tech = $(this)[0].grant[0];
@@ -10365,17 +10371,19 @@ export const actions = {
         },
         machine_gun: {
             id: 'tech-machine_gun',
-            title: loc('tech_machine_gun'),
-            desc: loc('tech_machine_gun'),
+            title(){ return global.race.universe === 'magic' ? loc('tech_fire_mage') : loc('tech_machine_gun'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_fire_mage') : loc('tech_machine_gun'); },
             category: 'military',
             era: 'industrialized',
             reqs: { military: 3, oil: 1 },
             grant: ['military',4],
             cost: {
                 Knowledge(){ return 33750; },
-                Oil(){ return 1500; }
+                Oil(){ return 1500; },
+                Mana(){ return global.race.universe === 'magic' ? 500 : 0; }
             },
             effect: loc('tech_machine_gun_effect'),
+            effect(){ return global.race.universe === 'magic' ? loc('tech_fire_mage_effect') : loc('tech_machine_gun_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     let tech = $(this)[0].grant[0];
@@ -13647,8 +13655,31 @@ export const actions = {
                     return true;
                 }
                 return false;
+            }
+        },
+        rituals: {
+            id: 'tech-rituals',
+            title: loc('tech_rituals'),
+            desc: loc('tech_rituals'),
+            category: 'magic',
+            era: 'civilized',
+            reqs: { magic: 2 },
+            grant: ['magic',3],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
             },
-            flair: loc('tech_mana_flair')
+            cost: {
+                Mana(){ return 25; },
+                Knowledge(){ return 750; },                
+                Crystal(){ return 50; }
+            },
+            effect(){ return loc('tech_rituals_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
         },
         conjuring: {
             id: 'tech-conjuring',
@@ -13695,7 +13726,7 @@ export const actions = {
                 }
                 return false;
             }
-        },
+        }
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),

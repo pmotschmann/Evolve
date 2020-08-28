@@ -4880,7 +4880,7 @@ function midLoop(){
             bd_Stone[label] = gain+'v';
 
             if (global.resource.Crystal.display){
-                gain = (global.city['shed'].count * (spatialReasoning(10 * multiplier)));
+                gain = (global.city['shed'].count * (spatialReasoning(8 * multiplier)));
                 caps['Crystal'] += gain;
                 bd_Crystal[label] = gain+'v';
             }

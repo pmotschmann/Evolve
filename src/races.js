@@ -1954,6 +1954,9 @@ export function racialTrait(workers,type){
     if (global.civic.govern.type === 'democracy'){
         modifier *= 0.95;
     }
+    if (global.race.universe === 'magic' && type === 'science'){
+        modifier *= 0.75;
+    }
     return modifier;
 }
 
