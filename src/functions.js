@@ -621,37 +621,40 @@ export function timeCheck(c_action,track,detailed){
     }
 }
 
-export function arpaSegmentTimeCheck(project, remain, track){
+// This function returns the time to complete all remaining Arpa segments.
+// Note: remain is a fraction between 0 and 1 representing the fraction of
+// remaining arpa segments to be completed
+export function arpaSegmentsTimeCheck(project, remain, track){
     let costs = arpaAdjustCosts(project.cost);
-    let time = 0;
+    let allRemainingSegmentsTime = 0;
     Object.keys(costs).forEach(function (res){
-        let testCost = Number(costs[res]()) / 100;
-        if (testCost > 0){
+        let allRemainingSegmentsCost = Number(costs[res]()) * remain;
+        if (allRemainingSegmentsCost > 0){
             let res_have = Number(global.resource[res].amount);
 
             if (track){
                 res_have += global.resource[res].diff * track.t;
                 if (track.r[res]){
-                    res_have -= Number(track.r[res]) * remain;
-                    track.r[res] += Number(track.r[res]) * remain;
+                    res_have -= Number(track.r[res]);
+                    track.r[res] += allRemainingSegmentsCost;
                 }
                 else {
-                    track.r[res] = Number(track.r[res]) * remain;
+                    track.r[res] = allRemainingSegmentsCost;
                 }
                 if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
                     res_have = global.resource[res].max;
                 }
             }
 
-            if (testCost > res_have){
+            if (allRemainingSegmentsCost > res_have){
                 if (global.resource[res].diff > 0){
-                    let r_time = (testCost - res_have) / global.resource[res].diff;
-                    if (r_time > time){
-                        time = r_time;
+                    let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
+                    if (r_time > allRemainingSegmentsTime){
+                        allRemainingSegmentsTime = r_time;
                     }
                 }
                 else {
-                    time = -9999999;
+                    allRemainingSegmentsTime = -9999999;
                 }
             }
         }
@@ -663,9 +666,9 @@ export function arpaSegmentTimeCheck(project, remain, track){
         else {
             track.id[project.id]++;
         }
-        track.t += time;
+        track.t += allRemainingSegmentsTime;
     }
-    return time;
+    return allRemainingSegmentsTime
 }
 
 export function clearElement(elm,remove){
