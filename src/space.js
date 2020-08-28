@@ -1090,14 +1090,13 @@ const spaceProjects = {
                 Mythril(offset){ return spaceCostMultiplier('swarm_control', offset, 250, 1.3); }
             },
             effect(){
-                let control = global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10;
-                return loc('space_sun_swarm_control_effect1',[control]);
+                return loc('space_sun_swarm_control_effect1',[$(this)[0].support()]);
             },
-            support(){ return 6; },
+            support(){ return global.tech['swarm'] && global.tech['swarm'] >= 2 ? 10 + Math.round(quantum_level) : 10; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('swarm_control');
-                    global.space['swarm_control'].s_max += global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10;
+                    global.space['swarm_control'].s_max += $(this)[0].support();
                     return true;
                 }
                 return false;

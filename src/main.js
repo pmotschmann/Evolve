@@ -5848,8 +5848,8 @@ function midLoop(){
             }
         });
 
-        if (global.space['swarm_control']){
-            global.space.swarm_control.s_max = global.space.swarm_control.count * (global.tech['swarm'] && global.tech['swarm'] >= 2 ? 18 : 10);
+        if (global.space['swarm_control']){            
+            global.space.swarm_control.s_max = global.space.swarm_control.count * actions.space.spc_sun.swarm_control.support();
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
