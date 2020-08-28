@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.18`,
+        date: `8/28/2020`,
+        changes: [
+            `ARPA Queue timer fixes.`
+        ]
+    },
+    {
         version: `0.9.17`,
         date: `8/22/2020`,
         changes: [
