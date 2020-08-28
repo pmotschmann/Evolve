@@ -624,7 +624,7 @@ export function timeCheck(c_action,track,detailed){
 // This function returns the time to complete all remaining Arpa segments.
 // Note: remain is a fraction between 0 and 1 representing the fraction of
 // remaining arpa segments to be completed
-export function arpaSegmentsTimeCheck(project, remain, track){
+export function arpaTimeCheck(project, remain, track){
     let costs = arpaAdjustCosts(project.cost);
     let allRemainingSegmentsTime = 0;
     Object.keys(costs).forEach(function (res){

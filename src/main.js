@@ -1,7 +1,7 @@
 import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
-import { vBind, mainVue, popover, deepClone, timeCheck, arpaSegmentTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, buildQueue, cleanBuildPopOver, getEaster, easterEgg, easterEggBind } from './functions.js';
+import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, buildQueue, cleanBuildPopOver, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -6055,11 +6055,11 @@ function midLoop(){
 
                 if (struct.type === 'arpa'){
                     let remain = (100 - global.arpa[global.queue.queue[i].action].complete) / 100;
-                    time += global.settings.qAny ? arpaSegmentsTimeCheck(t_action, remain) : arpaSegmentsTimeCheck(t_action, remain, spent);
+                    time += global.settings.qAny ? arpaTimeCheck(t_action, remain) : arpaTimeCheck(t_action, remain, spent);
                     global.queue.queue[i]['time'] = time;
                     if (global.queue.queue[i].q > 1){
                         for (let j=1; j<global.queue.queue[i].q; j++){
-                            time += global.settings.qAny ? arpaSegmentsTimeCheck(t_action, 1) : arpaSegmentsTimeCheck(t_action, 1, spent);
+                            time += global.settings.qAny ? arpaTimeCheck(t_action, 1) : arpaTimeCheck(t_action, 1, spent);
                         }
                     }
                     global.queue.queue[i]['t_max'] = time;
