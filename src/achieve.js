@@ -331,26 +331,7 @@ export function drawAchieve(args){
     let level = 0;
     let ulevel = 0;
 
-    let affix = 'l';
-    if (global.race.universe !== 'standard'){
-        switch (global.race.universe){
-            case 'evil':
-                affix = 'e';
-                break;
-            case 'antimatter':
-                affix = 'a';
-                break;
-            case 'heavy':
-                affix = 'h';
-                break;
-            case 'micro':
-                affix = 'm';
-                break;
-            default:
-                break;
-        }
-    }
-
+    let affix = universeAffix();
     let fool = typeof args === 'object' && args['fool'] ? args.fool : false;
 
     Object.keys(achievements).forEach(function (achievement){
