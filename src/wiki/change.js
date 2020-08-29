@@ -11,6 +11,14 @@ const changeList = [
         ]
     },
     {
+        version: `0.9.18`,
+        date: `8/28/2020`,
+        changes: [
+            `ARPA Queue timer fixes.`,
+            `Swarm Control AI upgrade now make Control Stations scale with Quantum level.`
+        ]
+    },
+    {
         version: `0.9.17`,
         date: `8/22/2020`,
         changes: [
