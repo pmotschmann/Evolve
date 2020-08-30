@@ -1133,19 +1133,31 @@ function fastLoop(){
         if (global.city['coal_power']){
             let power = global.city.coal_power.on * actions.city.coal_power.powered();
             let consume = global.city.coal_power.on * (global.race['environmentalist'] ? 0 : 0.35);
-            while ((consume * time_multiplier) > global.resource.Coal.amount && consume > 0){
-                power -= actions.city.coal_power.powered();
-                consume -= 0.35;
+
+            if (global.race.universe === 'magic'){
+                consume = global.city.coal_power.on * 0.04;
+                while ((consume * time_multiplier) > global.resource.Mana.amount && consume > 0){
+                    power -= actions.city.coal_power.powered();
+                    consume -= 0.04;
+                }
+                breakdown.p.consume.Mana[loc('powerplant')] = -(consume);
+                modRes('Mana', -(consume * time_multiplier));
             }
-            breakdown.p.consume.Coal[loc('powerplant')] = -(consume);
-            modRes('Coal', -(consume * time_multiplier));
+            else {
+                while ((consume * time_multiplier) > global.resource.Coal.amount && consume > 0){
+                    power -= actions.city.coal_power.powered();
+                    consume -= 0.35;
+                }
+                breakdown.p.consume.Coal[loc('powerplant')] = -(consume);
+                modRes('Coal', -(consume * time_multiplier));
+            }
 
             max_power += power;
             power_grid -= power;
-            power_generated[global.race['environmentalist'] ? loc('city_hydro_power') : loc('city_coal_power')] = -(power);
+            power_generated[global.race['environmentalist'] ? loc('city_hydro_power') : loc(global.race.universe === 'magic' ? 'city_mana_engine' : 'city_coal_power')] = -(power);
 
             // Uranium
-            if (!global.race['environmentalist'] && global.tech['uranium'] && global.tech['uranium'] >= 3){
+            if (!global.race['environmentalist'] && global.race.universe !== 'magic' && global.tech['uranium'] && global.tech['uranium'] >= 3){
                 uranium_bd[loc('city_coal_ash')] = (consume / 65 / global_multiplier);
                 modRes('Uranium', (consume * time_multiplier) / 65);
             }
@@ -3526,10 +3538,12 @@ function fastLoop(){
 
             if (global.race['casting']){
                 ['farmer','miner','lumberjack','science','factory','army','hunting'].forEach(function (spell){
-                    if (global.race.casting[spell] > 0){
-                        let consume_mana = global.race.casting[spell] * 0.05;
+                    if (global.race.casting[spell] && global.race.casting[spell] > 0){
+                        let consume_mana = global.race.casting[spell] * 0.035;
                         breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);    
-                        modRes('Mana', -(consume_mana * time_multiplier));
+                        if (!modRes('Mana', -(consume_mana * time_multiplier))){
+                            global.race.casting[spell]--;
+                        }
                     }
                     else {
                         delete breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)];
@@ -3546,12 +3560,21 @@ function fastLoop(){
                 modRes('Mana', delta * time_multiplier);
             }
 
-            if (global.tech['cleric']){
+            if (global.tech['cleric'] && global.civic.priest.display){
                 let mana_base = global.civic.priest.workers * 0.0025;
                 mana_base *= darkEffect('magic');
                 let delta = mana_base * hunger * global_multiplier;
 
                 mana_bd[loc('job_priest')] = mana_base+'v';
+                modRes('Mana', delta * time_multiplier);
+            }
+
+            if (global.race['universe'] === 'magic' && global.civic.scientist.display){
+                let mana_base = global.civic.scientist.workers * 0.025;
+                mana_base *= darkEffect('magic');
+                let delta = mana_base * hunger * global_multiplier;
+
+                mana_bd[loc('job_wizard')] = mana_base+'v';
                 modRes('Mana', delta * time_multiplier);
             }
 
@@ -6075,8 +6098,10 @@ function midLoop(){
 
         if (global.race['casting']){
             let total = 0;
-            ['farmer','miner','lumberjack','science','factory','army','hunting'].forEach(function (spell){
-                total += global.race.casting[spell];
+            ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
+                if (global.race.casting[spell]){
+                    total += global.race.casting[spell];
+                }
             });
             global.race.casting.total = total;
         }

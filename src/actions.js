@@ -4593,27 +4593,28 @@ export const actions = {
         coal_power: {
             id: 'city-coal_power',
             title(){
-                return global.race['environmentalist'] ? loc('city_hydro_power') : loc('city_coal_power');
+                return global.race['environmentalist'] ? loc('city_hydro_power') : loc(global.race.universe === 'magic' ? 'city_mana_engine' : 'city_coal_power');
             },
             desc(){
                 return global.race['environmentalist']
                     ? `<div>${loc('city_hydro_power_desc')}</div>`
-                    : `<div>${loc('city_coal_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Coal_name')])}</div>`;
+                    : `<div>${loc(global.race.universe === 'magic' ? 'city_mana_engine_desc' : 'city_coal_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc(global.race.universe === 'magic' ? 'resource_Mana_name' : 'resource_Coal_name')])}</div>`;
             },
             category: 'utility',
             reqs: { high_tech: 2 },
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('coal_power', offset, 10000, 1.22); },
+                Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('coal_power', offset, 125, 1.22) : 0; },
                 Copper(offset){ return costMultiplier('coal_power', offset, 1800, 1.22) - 1000; },
                 Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('coal_power', offset, 175, 1.22) : 0; },
                 Cement(offset){ return costMultiplier('coal_power', offset, 600, 1.22); },
                 Steel(offset){ return costMultiplier('coal_power', offset, 2000, 1.22) - 1000; }
             },
             effect(){
-                let consume = 0.35;
+                let consume = global.race.universe === 'magic' ? 0.04 : 0.35;
                 let power = -($(this)[0].powered());
-                return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_coal_power_effect',[consume])}</span>`;
+                return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[consume])}</span>`;
             },
             powered(){
                 return global.race['environmentalist']
@@ -8401,18 +8402,20 @@ export const actions = {
         },
         mad_science: {
             id: 'tech-mad_science',
-            title: loc('tech_mad_science'),
-            desc: loc('tech_mad_science'),
+            title(){ return global.race.universe === 'magic' ? loc('tech_sages') : loc('tech_mad_science'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_sages') : loc('tech_mad_science'); },
             category: 'science',
             era: 'discovery',
             reqs: { science: 2, smelting: 2 },
             grant: ['high_tech',1],
             cost: {
                 Money(){ return 10000; },
+                Mana(){ return global.race.universe === 'magic' ? 50 : 0; },
                 Knowledge(){ return 6750; },
-                Aluminium(){ return 1000; }
+                Crystal(){ return global.race.universe === 'magic' ? 1000 : 0; },
+                Aluminium(){ return 750; }
             },
-            effect: loc('tech_mad_science_effect'),
+            effect(){ return global.race.universe === 'magic' ? loc('tech_sages_effect') : loc('tech_mad_science_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.race['terrifying']){
@@ -10731,17 +10734,19 @@ export const actions = {
         },
         black_powder: {
             id: 'tech-black_powder',
-            title: loc('tech_black_powder'),
-            desc: loc('tech_black_powder_desc'),
+            title(){ return global.race.universe === 'magic' ? loc('tech_magic_powder') : loc('tech_black_powder'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_magic_powder_desc') : loc('tech_black_powder_desc'); },
             category: 'progress',
             era: 'civilized',
             reqs: { mining: 4 },
             grant: ['explosives',1],
             cost: {
                 Knowledge(){ return 4500; },
-                Coal(){ return 500; }
+                Mana(){ return global.race.universe === 'magic' ? 100 : 0; },
+                Crystal(){ return global.race.universe === 'magic' ? 250 : 0; },
+                Coal(){ return global.race.universe === 'magic' ? 300 : 500; }
             },
-            effect: loc('tech_black_powder_effect'),
+            effect(){ return global.race.universe === 'magic' ? loc('tech_magic_powder_effect') : loc('tech_black_powder_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -13707,9 +13712,36 @@ export const actions = {
                         factory: 0,
                         army: 0,
                         hunting: 0,
+                        crafting: 0,
                         total: 0
                     };
                     global.settings.showIndustry = true;
+                    defineIndustry();
+                    return true;
+                }
+                return false;
+            }
+        },
+        crafting_ritual: {
+            id: 'tech-crafting_ritual',
+            title: loc('tech_crafting_ritual'),
+            desc: loc('tech_crafting_ritual'),
+            category: 'magic',
+            era: 'discovery',
+            reqs: { magic: 3, foundry: 5 },
+            grant: ['magic',4],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
+            },
+            cost: {
+                Mana(){ return 100; },
+                Knowledge(){ return 15000; },
+                Crystal(){ return 2500; }
+            },
+            effect(){ return loc('tech_crafting_ritual_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.race.casting['crafting'] = 0;
                     defineIndustry();
                     return true;
                 }
@@ -15262,7 +15294,7 @@ function checkCosts(costs){
         else {
             var testCost = Number(costs[res]()) || 0;
             let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
-            if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
+            if (testCost !== 0 && testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
                 test = false;
                 return;
             }

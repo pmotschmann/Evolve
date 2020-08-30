@@ -1965,7 +1965,7 @@ export function racialTrait(workers,type){
             modifier *= 0.8;
         }
         if (global.race.hasOwnProperty('casting') && global.race.casting[type]){
-            modifier *= 1 + (global.race.casting[type] / 100);
+            modifier *= 1 + (global.race.casting[type] / 50);
         }
     }
     return modifier;

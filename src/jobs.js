@@ -1,5 +1,5 @@
 import { global, keyMultiplier } from './vars.js';
-import { clearElement, popover, easterEgg } from './functions.js';
+import { clearElement, popover, darkEffect, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
 import { craftingRatio, craftCost } from './resources.js';
@@ -165,7 +165,7 @@ export const job_desc = {
             impact *= 0.5;
         }
         impact = +impact.toFixed(2);
-        return global.race.universe === 'magic' ? loc('job_wizard_desc',[impact]) : loc('job_scientist_desc',[impact]);
+        return global.race.universe === 'magic' ? loc('job_wizard_desc',[impact,+(0.025 * darkEffect('magic')).toFixed(4)]) : loc('job_scientist_desc',[impact]);
     },
     colonist(){
         return loc('job_colonist_desc',[races[global.race.species].solar.red]);

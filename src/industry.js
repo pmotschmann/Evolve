@@ -834,14 +834,18 @@ function loadPylon(parent,bind){
     let spellTypes = $('<div class="wrap"></div>');
     parent.append(spellTypes);
 
-    ['farmer','miner','lumberjack','science','factory','army','hunting'].forEach(function (spell){
-        let cast = $(`<b-tooltip :label="buildLabel('${spell}')" position="is-bottom" animated><span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span></b-tooltip>`);
-        let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
-        let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
-        spellTypes.append(sub);
-        spellTypes.append(cast);
-        spellTypes.append(add);
-    });
+    if (global.tech['magic'] && global.tech.magic >= 3){
+        ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
+            if (spell !== 'crafting' || (spell === 'crafting' && global.tech.magic >= 4)){
+                let cast = $(`<b-tooltip :label="buildLabel('${spell}')" position="is-bottom" animated><span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span></b-tooltip>`);
+                let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
+                let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
+                spellTypes.append(sub);
+                spellTypes.append(cast);
+                spellTypes.append(add);
+            }
+        });
+    }
 
     vBind({
         el: bind ? bind : '#specialModal',
@@ -853,7 +857,7 @@ function loadPylon(parent,bind){
             addSpell(spell){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.resource.Mana.gen >= global.race.casting.total * 0.05 + 0.05){
+                    if (global.resource.Mana.diff >= 0.035){
                         global.race.casting[spell]++;
                         global.race.casting.total++;
                     }
@@ -883,7 +887,7 @@ function loadPylon(parent,bind){
         },
         filters: {
             drain: function(c){
-                return loc('modal_pylon_casting_cost',[+(c * 0.05).toFixed(3)]);
+                return loc('modal_pylon_casting_cost',[+(c * 0.035).toFixed(3)]);
             }
         }
     });
