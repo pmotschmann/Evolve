@@ -16,6 +16,9 @@ export function loadIndustry(industry,parent,bind){
         case 'graphene':
             loadGraphene(parent,bind);
             break;
+        case 'pylon':
+            loadPylon(parent,bind);
+            break;
     }
 }
 
@@ -824,21 +827,83 @@ function loadGraphene(parent,bind){
     });
 }
 
-function colorRange(num,max){
-    if (num === 0){
-        return 'has-text-danger';
+function loadPylon(parent,bind){
+    let casting = $(`<div><span class="has-text-warning">${loc('modal_pylon_casting')}:</span> <span :class="level()">{{total | drain}}</span></div>`);
+    parent.append(casting);
+
+    let spellTypes = $('<div class="wrap"></div>');
+    parent.append(spellTypes);
+
+    ['farmer','miner','lumberjack','science','factory','army','hunting'].forEach(function (spell){
+        let cast = $(`<b-tooltip :label="buildLabel('${spell}')" position="is-bottom" animated><span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span></b-tooltip>`);
+        let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
+        let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
+        spellTypes.append(sub);
+        spellTypes.append(cast);
+        spellTypes.append(add);
+    });
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.race['casting'],
+        methods: {
+            buildLabel(spell){
+                return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`)]);
+            },
+            addSpell(spell){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.resource.Mana.gen >= global.race.casting.total * 0.05 + 0.05){
+                        global.race.casting[spell]++;
+                        global.race.casting.total++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            subSpell(spell){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.race.casting[spell] > 0){
+                        global.race.casting[spell]--;
+                        global.race.casting.total--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            ariaCount(spell){
+                return ` ${spell} casting.`;
+            },
+            level(){
+                return colorRange(global.race.casting.total,global.resource.Mana.gen,true);
+            }
+        },
+        filters: {
+            drain: function(c){
+                return loc('modal_pylon_casting_cost',[+(c * 0.05).toFixed(3)]);
+            }
+        }
+    });
+}
+
+function colorRange(num,max,invert){
+    if (num <= 0){
+        return invert ? 'has-text-success' : 'has-text-danger';
     }
-    else if (num === max){
-        return 'has-text-success';
+    else if (num >= max){
+        return invert ? 'has-text-danger' : 'has-text-success';
     }
     else if (num <= max / 3){
-        return 'has-text-caution';
+        return invert ? 'has-text-info' : 'has-text-caution';
     }
     else if (num <= max * 0.66){
         return 'has-text-warning';
     }
     else if (num < max){
-        return 'has-text-info';
+        return invert ? 'has-text-caution' : 'has-text-info';
     }
     else {
         return '';

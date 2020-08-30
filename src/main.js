@@ -3523,6 +3523,20 @@ function fastLoop(){
         // Mana
         if (global.resource.Mana.display){
             let mana_bd = {};
+
+            if (global.race['casting']){
+                ['farmer','miner','lumberjack','science','factory','army','hunting'].forEach(function (spell){
+                    if (global.race.casting[spell] > 0){
+                        let consume_mana = global.race.casting[spell] * 0.05;
+                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);    
+                        modRes('Mana', -(consume_mana * time_multiplier));
+                    }
+                    else {
+                        delete breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)];
+                    }
+                });
+            }
+
             if (global.city['pylon']){
                 let mana_base = global.city.pylon.count * 0.01;
                 mana_base *= darkEffect('magic');
@@ -6049,6 +6063,14 @@ function midLoop(){
             }
         }
 
+        if (global.race['casting']){
+            let total = 0;
+            ['farmer','miner','lumberjack','science','factory','army','hunting'].forEach(function (spell){
+                total += global.race.casting[spell];
+            });
+            global.race.casting.total = total;
+        }
+
         if (global.tech['queue'] && global.queue.display){
             let idx = -1;
             let c_action = false;
@@ -7063,6 +7085,12 @@ function diffCalc(res,period){
 
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;
+
+    if (global.resource[res].hasOwnProperty('gen') && global.resource[res].hasOwnProperty('gen_d')){
+        global.resource[res].gen = +(global.resource[res].gen_d / (period / sec)).toFixed(2);
+        global.resource[res].gen_d = 0;
+    }
+
     if (global.race['decay']){
         if (global.resource[res].diff < 0){
             if (breakdown.p.consume[res][loc('evo_challenge_decay')] > global.resource[res].diff){

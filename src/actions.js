@@ -3564,6 +3564,7 @@ export const actions = {
                 let mana = +(0.01 * darkEffect('magic')).toFixed(3);
                 return `<div>${loc('gain',[mana,global.resource.Mana.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Mana.name])}</div>`;
             },
+            special(){ return global.tech['magic'] && global.tech.magic >= 3 ? true : false; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['pylon'].count++;
@@ -13692,12 +13693,24 @@ export const actions = {
             },
             cost: {
                 Mana(){ return 25; },
-                Knowledge(){ return 750; },                
+                Knowledge(){ return 750; },
                 Crystal(){ return 50; }
             },
             effect(){ return loc('tech_rituals_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    global.race['casting'] = {
+                        farmer: 0,
+                        miner: 0,
+                        lumberjack: 0,
+                        science: 0,
+                        factory: 0,
+                        army: 0,
+                        hunting: 0,
+                        total: 0
+                    };
+                    global.settings.showIndustry = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -14356,7 +14369,7 @@ export function setAction(c_action,action,type,old){
         parent.append(element);
     }
 
-    if (c_action['special'] && (type !== 'geothermal' || global.race['cataclysm'])){
+    if (c_action.hasOwnProperty('special') && ((typeof c_action['special'] === 'function' && c_action.special()) || c_action['special'] === true) ){
         var special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
@@ -15323,6 +15336,9 @@ function drawModal(c_action,type){
         case 'freighter':
             freighterModal(body);
             break;
+        case 'pylon':
+            pylonModal(body);
+            break;
     }
 }
 
@@ -15373,6 +15389,10 @@ function droidModal(modal){
 
 function grapheneModal(modal){
     loadIndustry('graphene',modal);
+}
+
+function pylonModal(modal){
+    loadIndustry('pylon',modal);
 }
 
 export function evoProgress(){

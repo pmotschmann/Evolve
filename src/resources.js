@@ -302,6 +302,11 @@ function loadResource(name,max,rate,tradable,stackable,color){
         global['resource'][name].name = name === global.race.species ? races[global.race.species].name : (name === 'Money' ? '$' : loc(`resource_${name}_name`));
     }
 
+    if (name === 'Mana'){
+        global['resource'][name]['gen'] = 0;
+        global['resource'][name]['gen_d'] = 0;
+    }
+
     if (global.race['sappy']){
         switch(name){
             case 'Stone':

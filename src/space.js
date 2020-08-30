@@ -952,7 +952,7 @@ const spaceProjects = {
                 let smelter = global.race['cataclysm'] ? `<div>${loc('interstellar_stellar_forge_effect3',[1])}</div>` : ``;
                 return `${smelter}<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</span>`;
             },
-            special: true,
+            special(){ return global.race['cataclysm'] ? true : false; },
             powered(){
                 let power = -8;
                 if (global.race['forge']){

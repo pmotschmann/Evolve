@@ -55,6 +55,11 @@ export function defineIndustry(){
         $(`#industry`).append(graphene);
         loadIndustry('graphene',graphene,'#iGraphene');
     }
+    if (global.race['casting'] && global.city['pylon']){
+        var casting = $(`<div id="iPylon" class="industry"><h2 class="header has-text-advanced">${loc('city_pylon')}</h2></div>`);
+        $(`#industry`).append(casting);
+        loadIndustry('pylon',casting,'#iPylon');
+    }
 }
 
 // Sets up garrison in civics tab

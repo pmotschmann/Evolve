@@ -378,7 +378,6 @@ export function cleanBuildPopOver(id){
 }
 
 export function modRes(res,val,notrack){
-    
     let count = global.resource[res].amount + val;
     let success = true;
     if (count > global.resource[res].max && global.resource[res].max != -1){
@@ -392,7 +391,10 @@ export function modRes(res,val,notrack){
         global.resource[res].amount = count;
         if (!notrack){
             global.resource[res].delta += val;
-        }
+            if (res === 'Mana' && val > 0){
+                global.resource[res].gen_d += val;
+            }
+        }        
     }
     return success;
 }
