@@ -3543,9 +3543,19 @@ function fastLoop(){
                 let delta = mana_base * hunger * global_multiplier;
 
                 mana_bd[loc('city_pylon')] = mana_base+'v';
-                mana_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 modRes('Mana', delta * time_multiplier);
             }
+
+            if (global.tech['cleric']){
+                let mana_base = global.civic.priest.workers * 0.0025;
+                mana_base *= darkEffect('magic');
+                let delta = mana_base * hunger * global_multiplier;
+
+                mana_bd[loc('job_priest')] = mana_base+'v';
+                modRes('Mana', delta * time_multiplier);
+            }
+
+            mana_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Mana'] = mana_bd;
         }
 

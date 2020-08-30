@@ -1180,13 +1180,15 @@ function breakdownPopover(id,name,type){
                     translate(raw){
                         let type = raw[raw.length -1];
                         let val = parseFloat(raw.slice(0,-1));
-                        val = +(val).toFixed(2);
+                        let precision = (val > 0 && val < 1) || (val < 0 && val > -1) ? 4 
+                            : ((val > 0 && val < 10) || (val < 0 && val > -10) ? 3 : 2);
+                        val = +(val).toFixed(precision);
                         let suffix = type === '%' ? '%' : '';
                         if (val > 0){
-                            return '+' + sizeApproximation(val,2) + suffix;
+                            return '+' + sizeApproximation(val,precision) + suffix;
                         }
                         else if (val < 0){
-                            return sizeApproximation(val,2) + suffix;
+                            return sizeApproximation(val,precision) + suffix;
                         }
                     },
                     fix(val){

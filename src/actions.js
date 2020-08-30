@@ -13716,6 +13716,30 @@ export const actions = {
                 return false;
             }
         },
+        clerics: {
+            id: 'tech-clerics',
+            title: loc('tech_clerics'),
+            desc: loc('tech_clerics'),
+            category: 'magic',
+            era: 'civilized',
+            reqs: { magic: 3 },
+            grant: ['cleric',1],
+            condition(){
+                return global.race['universe'] === 'magic' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display ? true : false;
+            },
+            cost: {
+                Mana(){ return 100; },
+                Knowledge(){ return 2000; },
+                Crystal(){ return 100; }
+            },
+            effect(){ return loc('tech_clerics_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         conjuring: {
             id: 'tech-conjuring',
             title: loc('tech_conjuring'),

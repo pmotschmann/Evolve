@@ -124,10 +124,17 @@ export const job_desc = {
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
     },
     priest: function(){
+        let desc = ``;
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            return loc('job_priest_desc2');
+            desc = loc('job_priest_desc2');
         }
-        return loc('job_priest_desc');
+        else {
+            desc = loc('job_priest_desc');
+        }
+        if (global.tech['cleric']){
+            desc = desc + ` ${loc('job_priest_desc3')}`;
+        }
+        return desc;
     },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + traits.studious.vars[0] : global.civic.professor.impact).toFixed(2);
