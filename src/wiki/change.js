@@ -7,7 +7,8 @@ const changeList = [
         date: `9/??/2020`,
         changes: [
             `Expanded Interdimensional content, delve deep into the hell dimension.`,
-            `New Magic Universe.`
+            `New Magic Universe.`,
+            `Fling asteroids into the blackhole with the Asteroid Redirect ARPA project.`
         ]
     },
     {

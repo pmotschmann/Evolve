@@ -12566,6 +12566,28 @@ export const actions = {
                 return false;
             }
         },
+        asteroid_redirect: {
+            id: 'tech-asteroid_redirect',
+            title: loc('tech_asteroid_redirect'),
+            desc: loc('tech_asteroid_redirect'),
+            category: 'stellar_engine',
+            era: 'intergalactic',
+            reqs: { blackhole: 5, gateway: 3 },
+            grant: ['blackhole',6],
+            cost: {
+                Knowledge(){ return 3500000; }
+            },
+            effect: loc('tech_asteroid_redirect_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    arpa('Physics');
+                    return true;
+                }
+                return false;
+            }
+        },
         exotic_infusion: {
             id: 'tech-exotic_infusion',
             title: loc('tech_exotic_infusion'),

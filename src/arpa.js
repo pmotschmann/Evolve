@@ -150,6 +150,34 @@ export const arpaProjects = {
             Steel(offset){ return costMultiplier('railway', offset, 450000, 1.08); }
         }
     },
+    roid_eject: {
+        title: loc('arpa_projects_roid_eject_title'),
+        desc: loc('arpa_projects_roid_eject_desc'),
+        reqs: { blackhole: 6, gateway: 3 },
+        grant: 'roid_eject',
+        effect(){
+            return loc('arpa_projects_roid_eject_effect1');
+        },
+        cost: {
+            Money(offset){ return costMultiplier('roid_eject', offset, 25000000, 1.1); },
+            Deuterium(offset){ return costMultiplier('roid_eject', offset, 500000, 1.1); },
+            Bolognium(offset){ return costMultiplier('roid_eject', offset, 20000, 1.1); }
+        }
+    },
+    nexus: {
+        title: loc('arpa_projects_nexus_title'),
+        desc: loc('arpa_projects_nexus_desc'),
+        reqs: { magic: 99 },
+        grant: 'nexus',
+        effect(){
+            return loc('arpa_projects_nexus_effect1',[5]);
+        },
+        cost: {
+            Money(offset){ return costMultiplier('nexus', offset, 5000000, 1.12); },
+            Crystal(offset){ return costMultiplier('nexus', offset, 10000, 1.12); },
+            Iridium(offset){ return costMultiplier('nexus', offset, 50000, 1.12); }
+        }
+    },
 };
 
 export const genePool = {
@@ -1041,11 +1069,9 @@ function costMultiplier(project,offset,base,mutiplier){
 function physics(){
     let parent = $('#arpaPhysics');
     clearElement(parent);
-    addProject(parent,'lhc');
-    addProject(parent,'stock_exchange');
-    addProject(parent,'launch_facility');
-    addProject(parent,'monument');
-    addProject(parent,'railway');
+    Object.keys(arpaProjects).forEach(function (project){
+        addProject(parent,project);
+    });
 }
 
 function genetics(){
