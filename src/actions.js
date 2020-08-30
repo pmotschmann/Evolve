@@ -4478,7 +4478,7 @@ export const actions = {
         },
         wardenclyffe: {
             id: 'city-wardenclyffe',
-            title(){ return global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe'); },
+            title(){ return wardenLabel(); },
             desc: loc('city_wardenclyffe_desc'),
             category: 'science',
             reqs: { high_tech: 1 },
@@ -4505,7 +4505,7 @@ export const actions = {
                     gain *= 1 + (global.space.satellite.count * 0.04);
                 }
                 gain = +(gain).toFixed(1);
-                let desc = `<div>${loc('city_wardenclyffe_effect1')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
+                let desc = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait === 'magnetic'){
@@ -4552,7 +4552,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair(){ return global.race['evil'] ? `<div>${loc('city_babel_flair')}</div>` : `<div>${loc('city_wardenclyffe_flair1')}</div><div>${loc('city_wardenclyffe_flair2')}</div>`; }
+            flair(){ return global.race.universe === 'magic' ? `<div>${loc('city_wizard_tower_flair')}</div>` :  (global.race['evil'] ? `<div>${loc('city_babel_flair')}</div>` : `<div>${loc('city_wardenclyffe_flair1')}</div><div>${loc('city_wardenclyffe_flair2')}</div>`); }
         },
         biolab: {
             id: 'city-biolab',
@@ -4726,7 +4726,7 @@ export const actions = {
                 Iridium(offset){ return costMultiplier('mass_driver', offset, 2200, 1.32); }
             },
             effect(){
-                let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[1])}</div>` : '';
+                let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[1,global.civic.scientist.name])}</div>` : '';
                 return `${exo}<span>${loc('city_mass_driver_effect',[5,races[global.race.species].name])}</span> <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){
@@ -5837,7 +5837,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 16200; }
             },
-            effect(){ return loc('tech_radio_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
+            effect(){ return loc('tech_radio_effect',[wardenLabel()]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -5856,7 +5856,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 67500; }
             },
-            effect(){ return loc('tech_tv_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
+            effect(){ return loc('tech_tv_effect',[wardenLabel()]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -7952,8 +7952,8 @@ export const actions = {
         },
         scientific_journal: {
             id: 'tech-scientific_journal',
-            title: loc('tech_scientific_journal'),
-            desc: loc('tech_scientific_journal_desc'),
+            title(){ return global.race.universe === 'magic' ? loc('tech_magic_tomes') : loc('tech_scientific_journal'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_magic_tomes_desc') : loc('tech_scientific_journal_desc'); },
             category: 'science',
             era: 'industrialized',
             reqs: { science: 4, high_tech: 3 },
@@ -7961,7 +7961,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 27000; }
             },
-            effect: loc('tech_scientific_journal_effect'),
+            effect(){ return global.race.universe === 'magic' ? loc('tech_magic_tomes_effect') : loc('tech_scientific_journal_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -7980,7 +7980,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 36000; }
             },
-            effect(){ return loc('tech_adjunct_professor_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
+            effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist.name]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -7999,7 +7999,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 51750; }
             },
-            effect(){ return loc('tech_tesla_coil_effect',[global.race['evil'] ? loc('city_babel') : loc('city_wardenclyffe')]); },
+            effect(){ return loc('tech_tesla_coil_effect',[wardenLabel()]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -15379,6 +15379,15 @@ export function evoProgress(){
     clearElement($('#evolution .evolving'),true);
     let progress = $(`<div class="evolving"><progress class="progress" value="${global.evolution.final}" max="100">${global.evolution.final}%</progress></div>`);
     $('#evolution').append(progress);
+}
+
+export function wardenLabel(){
+    if (global.race.universe === 'magic'){
+        return loc('city_wizard_tower_title');
+    }
+    else {
+        return global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe');
+    }
 }
 
 function basicHousingLabel(){

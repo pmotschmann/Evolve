@@ -158,7 +158,7 @@ export const job_desc = {
             impact *= 0.5;
         }
         impact = +impact.toFixed(2);
-        return loc('job_scientist_desc',[impact]);
+        return global.race.universe === 'magic' ? loc('job_wizard_desc',[impact]) : loc('job_scientist_desc',[impact]);
     },
     colonist(){
         return loc('job_colonist_desc',[races[global.race.species].solar.red]);
@@ -262,6 +262,9 @@ function loadJob(job, impact, stress, color){
     }
 
     let job_name = job === 'lumberjack' && global.race['evil'] ? loc('job_reclaimer') : loc('job_' + job);
+    if (global.race.universe === 'magic' && job === 'scientist'){
+        job_name = loc('job_wizard');
+    }
     global['civic'][job].name = job_name;
 
     if (!global.civic[job]['assigned']){

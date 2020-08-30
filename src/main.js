@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
@@ -5287,7 +5287,7 @@ function midLoop(){
                 gain *= 1 + (global.space.satellite.count * 0.04);
             }
             caps['Knowledge'] += gain;
-            bd_Knowledge[global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')] = gain+'v';
+            bd_Knowledge[wardenLabel()] = gain+'v';
         }
         if (global.portal['sensor_drone']){
             let gain = p_on['sensor_drone'] * (global.tech.infernite >= 6 ? 2500 : 1000);
