@@ -1406,6 +1406,8 @@
   "tech_bunk_beds_effect": "Upgrade your garrisons to house additional soldiers.",
   "tech_rail_guns": "Rail Guns",
   "tech_rail_guns_effect": "New more powerful weaponry for your army.",
+  "tech_lightning_caster": "Lightning Caster",
+  "tech_lightning_caster_effect": "Devistate the fields of battle by casting high energy bolts of destruction at your enemies.",
   "tech_laser_rifles": "Laser Rifles",
   "tech_laser_rifles_effect": "High tech weapons for the future.",
   "tech_plasma_rifles": "Plasma Rifles",
@@ -4890,5 +4892,11 @@
   "wiki_universe_micro_para3": "You can earn Micro icons for achievements here but you will not be awarded the base achievement levels.",
   "wiki_universe_micro_para4": "%0 in this universe increases your bonus to cost creep reduction.",
   "wiki_universe_micro_para5": "With your current amount of %0 your terrestrial cost creep is reduced by %1 and your space cost creep is reduced by %2.",
-  "wiki_universe_micro_para6": "Cost creep for any building can never be reduced below %0."
+  "wiki_universe_micro_para6": "Cost creep for any building can never be reduced below %0.",
+  "wiki_universe_magic": "Magic",
+  "wiki_universe_magic_para1": "This universe type contains a 5th fundimental force, Magic.",
+  "wiki_universe_magic_para2": "Base production for most jobs is lower, however Mana can be used to bolster production.",
+  "wiki_universe_magic_para3": "Special mana based technologies replace or augment the standard tech tree.",
+  "wiki_universe_magic_para4": "%0 in this universe increases your Mana generation.",
+  "wiki_universe_magic_para5": "With your current amount of %0 you will receive a Mana bonus of %1."
 }

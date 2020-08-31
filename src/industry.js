@@ -831,13 +831,13 @@ function loadPylon(parent,bind){
     let casting = $(`<div><span class="has-text-warning">${loc('modal_pylon_casting')}:</span> <span :class="level()">{{total | drain}}</span></div>`);
     parent.append(casting);
 
-    let spellTypes = $('<div class="wrap"></div>');
+    let spellTypes = $('<div class="pylon wrap"></div>');
     parent.append(spellTypes);
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
             if (spell !== 'crafting' || (spell === 'crafting' && global.tech.magic >= 4)){
-                let cast = $(`<b-tooltip :label="buildLabel('${spell}')" position="is-bottom" animated><span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span></b-tooltip>`);
+                let cast = $(`<b-tooltip :label="buildLabel('${spell}')" position="is-bottom" animated multilined><span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span></b-tooltip>`);
                 let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
                 let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
                 spellTypes.append(sub);

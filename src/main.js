@@ -1135,10 +1135,10 @@ function fastLoop(){
             let consume = global.city.coal_power.on * (global.race['environmentalist'] ? 0 : 0.35);
 
             if (global.race.universe === 'magic'){
-                consume = global.city.coal_power.on * 0.04;
+                consume = global.city.coal_power.on * 0.05;
                 while ((consume * time_multiplier) > global.resource.Mana.amount && consume > 0){
                     power -= actions.city.coal_power.powered();
-                    consume -= 0.04;
+                    consume -= 0.05;
                 }
                 breakdown.p.consume.Mana[loc('powerplant')] = -(consume);
                 modRes('Mana', -(consume * time_multiplier));

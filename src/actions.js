@@ -4616,7 +4616,7 @@ export const actions = {
                 Steel(offset){ return costMultiplier('coal_power', offset, 2000, 1.22) - 1000; }
             },
             effect(){
-                let consume = global.race.universe === 'magic' ? 0.04 : 0.35;
+                let consume = global.race.universe === 'magic' ? 0.05 : 0.35;
                 let power = -($(this)[0].powered());
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[consume])}</span>`;
             },
@@ -10386,9 +10386,9 @@ export const actions = {
             reqs: { military: 3, oil: 1 },
             grant: ['military',4],
             cost: {
+                Mana(){ return global.race.universe === 'magic' ? 300 : 0; },
                 Knowledge(){ return 33750; },
-                Oil(){ return 1500; },
-                Mana(){ return global.race.universe === 'magic' ? 300 : 0; }
+                Oil(){ return 1500; }
             },
             effect: loc('tech_machine_gun_effect'),
             effect(){ return global.race.universe === 'magic' ? loc('tech_fire_mage_effect') : loc('tech_machine_gun_effect'); },
@@ -10426,17 +10426,18 @@ export const actions = {
         },
         rail_guns: {
             id: 'tech-rail_guns',
-            title: loc('tech_rail_guns'),
-            desc: loc('tech_rail_guns'),
+            title(){ return global.race.universe === 'magic' ? loc('tech_lightning_caster') : loc('tech_rail_guns'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_lightning_caster') : loc('tech_rail_guns'); },
             category: 'military',
             era: 'early_space',
             reqs: { military: 5, mass: 1 },
             grant: ['military',6],
             cost: {
+                Mana(){ return global.race.universe === 'magic' ? 450 : 0; },
                 Knowledge(){ return 200000; },
                 Iridium(){ return 2500; }
             },
-            effect: loc('tech_rail_guns_effect'),
+            desc(){ return global.race.universe === 'magic' ? loc('tech_lightning_caster_effect') : loc('tech_rail_guns_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     let tech = $(this)[0].grant[0];
