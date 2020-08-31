@@ -4523,6 +4523,10 @@ export const actions = {
                     if (global.tech.science >= 15){
                         desc = desc + `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
+                    if (global.race.universe === 'magic'){
+                        let mana = spatialReasoning(8);
+                        desc = desc + `<div>${loc('plus_max_resource',[mana,global.resource.Mana.name])}</div>`;
+                    }
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
                         desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain,morale])}</div>`
@@ -10384,7 +10388,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 33750; },
                 Oil(){ return 1500; },
-                Mana(){ return global.race.universe === 'magic' ? 500 : 0; }
+                Mana(){ return global.race.universe === 'magic' ? 300 : 0; }
             },
             effect: loc('tech_machine_gun_effect'),
             effect(){ return global.race.universe === 'magic' ? loc('tech_fire_mage_effect') : loc('tech_machine_gun_effect'); },
@@ -13716,10 +13720,12 @@ export const actions = {
                         total: 0
                     };
                     global.settings.showIndustry = true;
-                    defineIndustry();
                     return true;
                 }
                 return false;
+            },
+            post(){
+                defineIndustry();
             }
         },
         crafting_ritual: {
@@ -13742,7 +13748,36 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.race.casting['crafting'] = 0;
-                    defineIndustry();
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                defineIndustry();
+            }
+        },
+        mana_nexus: {
+            id: 'tech-mana_nexus',
+            title: loc('tech_mana_nexus'),
+            desc: loc('tech_mana_nexus'),
+            category: 'magic',
+            era: 'early_space',
+            reqs: { magic: 4, space: 3, luna: 1 },
+            grant: ['magic',5],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
+            },
+            cost: {
+                Mana(){ return 500; },
+                Knowledge(){ return 160000; },
+                Crystal(){ return 2500; }
+            },
+            effect(){ return loc('tech_mana_nexus_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    let tech = $(this)[0].grant[0];
+                    global.tech[tech] = $(this)[0].grant[1];
+                    arpa('Physics');
                     return true;
                 }
                 return false;

@@ -3537,7 +3537,7 @@ function fastLoop(){
             let mana_bd = {};
 
             if (global.race['casting']){
-                ['farmer','miner','lumberjack','science','factory','army','hunting'].forEach(function (spell){
+                ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
                     if (global.race.casting[spell] && global.race.casting[spell] > 0){
                         let consume_mana = global.race.casting[spell] * 0.035;
                         breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);    
@@ -3554,9 +3554,16 @@ function fastLoop(){
             if (global.city['pylon']){
                 let mana_base = global.city.pylon.count * 0.01;
                 mana_base *= darkEffect('magic');
-                let delta = mana_base * hunger * global_multiplier;
 
+                let delta = mana_base * hunger * global_multiplier;
                 mana_bd[loc('city_pylon')] = mana_base+'v';
+
+                if (global.tech['nexus']){
+                    let nexus = global.tech['nexus'] * 5;
+                    delta *= 1 + (nexus / 100);
+                    mana_bd[`ᄂ${loc('arpa_projects_nexus_title')}`] = nexus+'%';
+                }
+
                 modRes('Mana', delta * time_multiplier);
             }
 
@@ -5335,6 +5342,12 @@ function midLoop(){
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[wardenLabel()] = gain+'v';
+
+            if (global.race.universe === 'magic'){
+                let mana = global.city.wardenclyffe.count * spatialReasoning(8);
+                caps['Mana'] += mana;
+                bd_Mana[wardenLabel()] = mana+'v';
+            }
         }
         if (global.portal['sensor_drone']){
             let gain = p_on['sensor_drone'] * (global.tech.infernite >= 6 ? 2500 : 1000);

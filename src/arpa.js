@@ -167,7 +167,7 @@ export const arpaProjects = {
     nexus: {
         title: loc('arpa_projects_nexus_title'),
         desc: loc('arpa_projects_nexus_desc'),
-        reqs: { magic: 99 },
+        reqs: { magic: 5 },
         grant: 'nexus',
         effect(){
             return loc('arpa_projects_nexus_effect1',[5]);

@@ -172,6 +172,13 @@ export function craftingRatio(res,auto){
     if (global.civic.govern.type === 'socialist'){
         multiplier *= 1.35;
     }
+    if (global.race['casting'] && global.race.casting['crafting']){
+        let boost = auto ? global.race.casting['crafting'] * 2 : global.race.casting['crafting'];
+        multiplier *= 1 + (boost / 200);
+    }
+    if (global.race['universe'] === 'magic'){
+        multiplier *= 0.8;
+    }
     if (auto){
         if (global.tech['v_train']){
             multiplier *= 2;
