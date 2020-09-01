@@ -1,5 +1,5 @@
-import { global, poppers, keyMultiplier, sizeApproximation, srSpeak, p_on, red_on } from './vars.js';
-import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue } from './functions.js';
+import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
@@ -113,6 +113,10 @@ export const arpaProjects = {
                     return loc('arpa_project_monument_sculpture');
                 case 'Monolith':
                     return loc('arpa_project_monument_monolith');
+                case 'Pillar':
+                    return loc('arpa_project_monument_pillar');
+                case 'Megalith':
+                    return loc('arpa_project_monument_megalith');
             }
         },
         desc: loc('arpa_projects_monument_desc'),
@@ -125,7 +129,9 @@ export const arpaProjects = {
             Stone(offset){ return monument_costs('Stone', offset) },
             Aluminium(offset){ return monument_costs('Aluminium', offset) },
             Cement(offset){ return monument_costs('Cement', offset) },
-            Steel(offset){ return monument_costs('Steel', offset) }
+            Steel(offset){ return monument_costs('Steel', offset) },
+            Lumber(offset){ return monument_costs('Lumber', offset) },
+            Crystal(offset){ return monument_costs('Crystal', offset) }
         }
     },
     railway: {
@@ -184,8 +190,10 @@ export const arpaProjects = {
         reqs: { veil: 2 },
         grant: 'syphon',
         effect(){
-            if (global.tech['syphon'] && global.tech.syphon >= 50){
-                return loc('arpa_syphon_effect4',[5]);
+            if (global.tech['syphon'] && global.tech.syphon >= 60){
+                let gains = calcPrestige('bigbang');
+                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+                return `<div>${loc('arpa_syphon_effect4',[5])}</div><div>${loc('arpa_syphon_effect_reward',[gains.plasmid,gains.phage,gains.dark,plasmidType,80])}</div>`;
             }
             else if (global.tech['syphon'] && global.tech.syphon >= 40){
                 return loc('arpa_syphon_effect3',[5]);
@@ -1004,16 +1012,19 @@ export function gainGene(action){
 }
 
 function pick_monument(){
-    switch(Math.rand(0,4)){
-        case 0:
-            return 'Obelisk';
-        case 1:
-            return 'Statue';
-        case 2:
-            return 'Sculpture';
-        case 3:
-            return 'Monolith';
+    let monumnets = [];
+    ['Obelisk','Statue','Sculpture','Monolith'].forEach(function (type){
+        if (type !== global.arpa['m_type']){
+            monumnets.push(type);
+        }
+    });
+    if (global.race['evil'] && global.arpa['m_type'] !== 'Pillar' && !global.race['kindling_kindred']){
+        monumnets.push('Pillar');
     }
+    if (global.race.universe === 'magic' && global.arpa['m_type'] !== 'Megalith'){
+        monumnets.push('Megalith');
+    }
+    return monumnets[Math.rand(0,monumnets.length)];
 }
 
 function monument_costs(res,offset){
@@ -1026,6 +1037,10 @@ function monument_costs(res,offset){
             return res === 'Steel' ? costMultiplier('monument', offset, 300000, 1.1) : 0;
         case 'Monolith':
             return res === 'Cement' ? costMultiplier('monument', offset, 300000, 1.1) : 0;
+        case 'Pillar':
+            return res === 'Lumber' ? costMultiplier('monument', offset, 1000000, 1.1) : 0;
+        case 'Megalith':
+            return res === 'Crystal' ? costMultiplier('monument', offset, 100000, 1.1) : 0;
     }
 }
 
