@@ -1092,7 +1092,7 @@ const spaceProjects = {
             effect(){
                 return loc('space_sun_swarm_control_effect1',[$(this)[0].support()]);
             },
-            support(){ return global.tech['swarm'] && global.tech['swarm'] >= 2 ? 10 + Math.round(quantum_level) : 10; },
+            support(){ return global.tech['swarm'] && global.tech['swarm'] >= 2 ? (global.tech['high_tech'] >= 11 ? 11 + Math.round(quantum_level) : 12) : 10; },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('swarm_control');
