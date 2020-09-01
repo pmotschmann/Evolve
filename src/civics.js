@@ -97,6 +97,7 @@ const government_desc = {
     technocracy: loc('govern_technocracy_effect',[8,2,10]),
     federation: loc('govern_federation_effect',[3,10]),
     federation_alt: loc('govern_federation_effect_alt',[25,32,10]),
+    magocracy: loc('govern_magocracy_effect',[25,10]),
 };
 
 function government(govern){
@@ -208,6 +209,9 @@ function drawGovModal(){
         if (global.tech['gov_fed'] && global.civic.govern.type !== 'federation'){
             body.append($(`<button class="button gap" data-gov="federation" @click="setGov('federation')">${loc(`govern_federation`)}</button>`));
         }
+        if (global.tech['gov_mage'] && global.civic.govern.type !== 'magocracy'){
+            body.append($(`<button class="button gap" data-gov="magocracy" @click="setGov('magocracy')">${loc(`govern_magocracy`)}</button>`));
+        }
     }
 
     vBind({
@@ -243,12 +247,14 @@ function drawGovModal(){
                     vBind({el: '#govModal'},'destroy');
                     $('.modal-background').click();
                     $('#popGovPop').hide();
-                    poppers['govGovPop'].destroy();
+                    poppers['GovPop'].destroy();
                     clearElement($(`#popGovPop`),true);
 
                     setTimeout(function(){
                         $('#popGovPop').hide();
-                        poppers['govGovPop'].destroy();
+                        if (poppers['GovPop']){
+                            poppers['GovPop'].destroy();
+                        }                        
                         clearElement($(`#popGovPop`),true);
                     },250);
                 }

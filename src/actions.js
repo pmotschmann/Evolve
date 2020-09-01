@@ -7077,6 +7077,28 @@ export const actions = {
                 return false;
             }
         },
+        magocracy: {
+            id: 'tech-magocracy',
+            title: loc('govern_magocracy'),
+            desc: loc('govern_magocracy'),
+            category: 'government',
+            era: 'industrialized',
+            reqs: { govern: 2, high_tech: 3 },
+            condition(){
+                return global.race.universe === 'magic' ? true : false;
+            },
+            grant: ['gov_mage',1],
+            cost: {
+                Knowledge(){ return 26000; }
+            },
+            effect: loc('tech_magocracy_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         spy: {
             id: 'tech-spy',
             title: loc('tech_spy'),

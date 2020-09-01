@@ -3579,9 +3579,15 @@ function fastLoop(){
             if (global.race['universe'] === 'magic' && global.civic.scientist.display){
                 let mana_base = global.civic.scientist.workers * 0.025;
                 mana_base *= darkEffect('magic');
-                let delta = mana_base * hunger * global_multiplier;
 
+                let delta = mana_base * hunger * global_multiplier;
                 mana_bd[loc('job_wizard')] = mana_base+'v';
+
+                if (global.civic.govern.type === 'magocracy'){
+                    delta *= 1.25;
+                    mana_bd[`ᄂ${loc('govern_magocracy')}`] = '25%';
+                }
+
                 modRes('Mana', delta * time_multiplier);
             }
 
@@ -3597,6 +3603,11 @@ function fastLoop(){
 
             let crystal_bd = {};
             crystal_bd[loc('job_crystal_miner')] = crystal_base + 'v';
+
+            if (global.civic.govern.type === 'magocracy'){
+                crystal_base *= 1.1;
+                crystal_bd[`ᄂ${loc('govern_magocracy')}`] = '10%';
+            }
 
             let delta = crystal_base * hunger * global_multiplier;
 

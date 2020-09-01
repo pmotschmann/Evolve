@@ -174,8 +174,8 @@ export const arpaProjects = {
         },
         cost: {
             Money(offset){ return costMultiplier('nexus', offset, 5000000, 1.12); },
-            Crystal(offset){ return costMultiplier('nexus', offset, 10000, 1.12); },
-            Iridium(offset){ return costMultiplier('nexus', offset, 50000, 1.12); }
+            Crystal(offset){ return costMultiplier('nexus', offset, 60000, 1.12); },
+            Iridium(offset){ return costMultiplier('nexus', offset, 35000, 1.12); }
         }
     },
 };
