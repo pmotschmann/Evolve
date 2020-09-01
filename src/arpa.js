@@ -178,6 +178,32 @@ export const arpaProjects = {
             Iridium(offset){ return costMultiplier('nexus', offset, 35000, 1.12); }
         }
     },
+    syphon: {
+        title: loc('arpa_syphon_title'),
+        desc: loc('arpa_syphon_desc'),
+        reqs: { veil: 2 },
+        grant: 'syphon',
+        effect(){
+            if (global.tech['syphon'] && global.tech.syphon >= 50){
+                return loc('arpa_syphon_effect4',[5]);
+            }
+            else if (global.tech['syphon'] && global.tech.syphon >= 40){
+                return loc('arpa_syphon_effect3',[5]);
+            }
+            else if (global.tech['syphon'] && global.tech.syphon >= 20){
+                return loc('arpa_syphon_effect2',[5]);
+            }
+            else {
+                return loc('arpa_syphon_effect1',[5]);
+            }
+        },
+        cost: {
+            Money(offset){ return costMultiplier('syphon', offset, 7500000, 1.025); },
+            Mana(offset){ return costMultiplier('syphon', offset, 5000, 1.025); },
+            Crystal(offset){ return costMultiplier('syphon', offset, 100000, 1.025); },
+            Infernite(offset){ return costMultiplier('syphon', offset, 10000, 1.025); },
+        }
+    },
 };
 
 export const genePool = {

@@ -12730,6 +12730,50 @@ export const actions = {
                 return false;
             }
         },
+        veil: {
+            id: 'tech-veil',
+            title: loc('tech_veil'),
+            desc: loc('tech_veil'),
+            category: 'magic',
+            era: 'interstellar',
+            reqs: { blackhole: 2 },
+            condition(){
+                return global.race.universe === 'magic' ? true : false;
+            },
+            grant: ['veil',1],
+            cost: {
+                Knowledge(){ return 1250000; }
+            },
+            effect: loc('tech_veil_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        mana_syphon: {
+            id: 'tech-mana_syphon',
+            title: loc('tech_mana_syphon'),
+            desc: loc('tech_mana_syphon'),
+            category: 'magic',
+            era: 'interstellar',
+            reqs: { veil: 1 },
+            condition(){
+                return global.race.universe === 'magic' ? true : false;
+            },
+            grant: ['veil',2],
+            cost: {
+                Knowledge(){ return 1500000; }
+            },
+            effect: loc('tech_mana_syphon_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         gravitational_waves: {
             id: 'tech-gravitational_waves',
             title: loc('tech_gravitational_waves'),

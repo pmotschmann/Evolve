@@ -701,6 +701,12 @@ function fastLoop(){
         breakdown.p['Global'][loc('morale_winter')] = `-${traits.hibernator.vars[1]}%`;
     }
 
+    if (global.race.universe === 'magic' && global.tech['syphon']){
+        let entropy = global.tech.syphon / 8;
+        breakdown.p['Global'][loc('arpa_syphon_damage')] = `-${entropy}%`;
+        global_multiplier *= 1 - (entropy / 100);
+    }
+
     breakdown.p['consume'] = {
         Money: {},
         Mana: {},
@@ -2028,7 +2034,7 @@ function fastLoop(){
 
                     modRes(res, -(time_multiplier * volume));
                     mass += volume * atomic_mass[res];
-                    if (res === 'Elerium' || res === 'Infernite'){
+                    if (global.race.universe !== 'magic' && (res === 'Elerium' || res === 'Infernite')){
                         exotic += volume * atomic_mass[res];
                     }
                 }
@@ -3576,7 +3582,7 @@ function fastLoop(){
                 modRes('Mana', delta * time_multiplier);
             }
 
-            if (global.race['universe'] === 'magic' && global.civic.scientist.display){
+            if (global.race.universe === 'magic' && global.civic.scientist.display){
                 let mana_base = global.civic.scientist.workers * 0.025;
                 mana_base *= darkEffect('magic');
 
@@ -3587,6 +3593,16 @@ function fastLoop(){
                     delta *= 1.25;
                     mana_bd[`ᄂ${loc('govern_magocracy')}`] = '25%';
                 }
+
+                modRes('Mana', delta * time_multiplier);
+            }
+
+            if (global.race.universe === 'magic' && global.tech['syphon']){
+                let mana_base = global.tech.syphon * 0.25;
+                mana_base *= darkEffect('magic');
+
+                let delta = mana_base * hunger * global_multiplier;
+                mana_bd[loc('arpa_syphon_title')] = mana_base+'v';
 
                 modRes('Mana', delta * time_multiplier);
             }
