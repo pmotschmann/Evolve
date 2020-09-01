@@ -1514,7 +1514,7 @@
   "tech_swarm_plant_ai": "Swarm Plant AI",
   "tech_swarm_plant_ai_effect": "Advanced AI controlling the production at swarm facilities could boost their productivity.",
   "tech_swarm_control_ai": "Swarm Control AI",
-  "tech_swarm_control_ai_effect": "With AI controlling your solar swarm, you can operate up to 18 satellites per control station.",
+  "tech_swarm_control_ai_effect": "With AI controlling your solar swarm, you can operate additional satellites per control station.",
   "tech_quantum_swarm": "Quantum Swarm",
   "tech_quantum_swarm_effect": "By upgrading your swarm plant AI with quantum processors, the efficiency of the plants is limited only by your capacity for knowledge.",
   "tech_perovskite_cell": "Perovskite Cells",
