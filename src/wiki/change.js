@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.19`,
+        date: `9/1/2020`,
+        changes: [
+            `Swarm Control AI now provides a base increase of +2 before unlocking Quantum Computing.`,
+            `Fixed bugs with manual crafting popover.`,
+            `Fixed bug that stopped DNA & RNA generation during evolution if the Cataclysm scenerio was toggled on.`
+        ]
+    },
+    {
         version: `0.9.18`,
         date: `8/28/2020`,
         changes: [
