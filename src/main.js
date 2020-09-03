@@ -5415,7 +5415,7 @@ function midLoop(){
                 gain *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
             }
             caps['Knowledge'] += gain;
-            bd_Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
+            bd_Knowledge[loc(global.race.universe === 'magic' ? 'tech_sanctum' : 'interstellar_laboratory_title')] = gain+'v';
         }
         if (global.city['biolab']){
             let gain = 3000;

@@ -8109,8 +8109,8 @@ export const actions = {
         },
         laboratory: {
             id: 'tech-laboratory',
-            title: loc('tech_laboratory'),
-            desc: loc('tech_laboratory_desc'),
+            title(){ return global.race.universe === 'magic' ? loc('tech_sanctum') : loc('tech_laboratory'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_sanctum') : loc('tech_laboratory_desc'); },
             category: 'science',
             era: 'interstellar',
             reqs: { science: 11, alpha: 2 },
@@ -8118,7 +8118,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 500000; }
             },
-            effect(){ return loc('tech_laboratory_effect'); },
+            effect(){ return global.race.universe === 'magic' ? loc('tech_sanctum_effect') : loc('tech_laboratory_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.interstellar['laboratory'] = {
@@ -8129,7 +8129,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: loc('tech_laboratory_flair')
+            flair(){ return global.race.universe === 'magic' ? loc('tech_sanctum_flair') : loc('tech_laboratory_flair'); }
         },
         virtual_assistant: {
             id: 'tech-virtual_assistant',
