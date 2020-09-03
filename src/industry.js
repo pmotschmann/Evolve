@@ -852,12 +852,15 @@ function loadPylon(parent,bind){
         data: global.race['casting'],
         methods: {
             buildLabel(spell){
-                return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`)]);
+                let draw = +(manaCost(global.race.casting[spell])).toFixed(4);
+                let diff = +(manaCost(global.race.casting[spell] + 1) - manaCost(global.race.casting[spell])).toFixed(4);
+                return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff]);
             },
             addSpell(spell){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.resource.Mana.diff >= 0.035){
+                    let diff = manaCost(global.race.casting[spell] + 1) - manaCost(global.race.casting[spell]);
+                    if (global.resource.Mana.diff >= diff){
                         global.race.casting[spell]++;
                         global.race.casting.total++;
                     }
@@ -887,10 +890,21 @@ function loadPylon(parent,bind){
         },
         filters: {
             drain: function(c){
-                return loc('modal_pylon_casting_cost',[+(c * 0.035).toFixed(3)]);
+                let total = 0;
+                ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
+                    if (global.race.casting[spell] && global.race.casting[spell] > 0){
+                        total += manaCost(global.race.casting[spell]);
+                    }
+                });
+                return loc('modal_pylon_casting_cost',[+(total).toFixed(3)]);
             }
         }
     });
+}
+
+export function manaCost(spell,rate){
+    rate = typeof rate === 'undefined' ? 0.0025 : rate;
+    return spell * ((1 + rate) ** spell - 1);
 }
 
 function colorRange(num,max,invert){

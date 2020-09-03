@@ -1815,7 +1815,7 @@
   "modal_graphene_produce": "Consume %0 %1/s to produce %2.",
   "modal_pylon_casting": "Ritual Casting",
   "modal_pylon_casting_cost": "-%0 Mana/s",
-  "modal_pylon_casting_label": "Channel the %0 spell to boost %0 effectiveness.",
+  "modal_pylon_casting_label": "Channel the %0 spell to boost %0 effectiveness. Currently draining %1 Mana. The next rank requires %2 additional Mana to cast.",
   "modal_pylon_spell_farmer": "Farming",
   "modal_pylon_spell_miner": "Mining",
   "modal_pylon_spell_lumberjack": "Lumber",

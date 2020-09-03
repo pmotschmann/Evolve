@@ -5,7 +5,7 @@ import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeForma
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
-import { f_rate } from './industry.js';
+import { f_rate, manaCost } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
@@ -3545,7 +3545,7 @@ function fastLoop(){
             if (global.race['casting']){
                 ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
                     if (global.race.casting[spell] && global.race.casting[spell] > 0){
-                        let consume_mana = global.race.casting[spell] * 0.035;
+                        let consume_mana = manaCost(global.race.casting[spell]);
                         breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);    
                         if (!modRes('Mana', -(consume_mana * time_multiplier))){
                             global.race.casting[spell]--;
