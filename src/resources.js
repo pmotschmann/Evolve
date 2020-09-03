@@ -1193,10 +1193,10 @@ function breakdownPopover(id,name,type){
         if (breakdown[type].consume && breakdown[type].consume[name]){
             let col2 = $(`<div class="col"></div>`);
             let count = 0;
-            Object.keys(breakdown[type].consume[name]).forEach(function (mod){
-                count++;
+            Object.keys(breakdown[type].consume[name]).forEach(function (mod){                
                 let val = breakdown[type].consume[name][mod];
                 if (val != 0 && !isNaN(val)){
+                    count++;
                     let type = val > 0 ? 'success' : 'danger';
                     let label = mod.replace("_"," ");
                     label = mod.replace(/\+.+$/,"");
