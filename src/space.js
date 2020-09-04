@@ -1961,6 +1961,7 @@ const interstellarProjects = {
             reqs: { science: 12 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('laboratory', offset, 750000, 1.28, 'interstellar'); },
+                Crystal(offset){ return global.race.universe === 'magic' ? spaceCostMultiplier('laboratory', offset, 1200, 1.28, 'interstellar') : 0; },
                 Titanium(offset){ return spaceCostMultiplier('laboratory', offset, 120000, 1.28, 'interstellar'); },
                 Alloy(offset){ return spaceCostMultiplier('laboratory', offset, 95000, 1.28, 'interstellar'); },
                 Mythril(offset){ return spaceCostMultiplier('laboratory', offset, 8500, 1.28, 'interstellar'); }

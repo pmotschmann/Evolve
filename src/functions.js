@@ -265,7 +265,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="has-text-warning queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span v-bind:class="setData(index,'res')" v-bind="setData(index,'data')">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -285,6 +285,36 @@ export function buildQueue(){
                 },
                 setID(index){
                     return `q${global.queue.queue[index].id}${index}`;
+                },
+                setData(index,prefix){
+                    let c_action;
+                    let segments = global.queue.queue[index].id.split("-");
+                    if (segments[0].substring(0,4) === 'arpa'){
+                        c_action = segments[0].substring(4);
+                    }
+                    else if (segments[0] === 'city' || segments[0] === 'starDock'){
+                        c_action = actions[segments[0]][segments[1]];
+                    }
+                    else {
+                        Object.keys(actions[segments[0]]).forEach(function (region){
+                            if (actions[segments[0]][region].hasOwnProperty(segments[1])){
+                                c_action = actions[segments[0]][region][segments[1]];
+                            }
+                        });
+                    }
+
+                    let final_costs = {};
+                    if (c_action['cost']){
+                        let costs = adjustCosts(c_action.cost);
+                        Object.keys(costs).forEach(function (res){
+                            let cost = costs[res]();
+                            if (cost > 0){
+                                final_costs[`${prefix}-${res}`] = cost;
+                            }
+                        });
+                    }
+
+                    return final_costs;
                 }
             },
             filters: {

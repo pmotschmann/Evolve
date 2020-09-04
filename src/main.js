@@ -3598,7 +3598,7 @@ function fastLoop(){
             }
 
             if (global.race.universe === 'magic' && global.tech['syphon']){
-                let mana_base = global.tech.syphon * 0.25;
+                let mana_base = global.tech.syphon;
                 mana_base *= darkEffect('magic');
 
                 let delta = mana_base * hunger * global_multiplier;

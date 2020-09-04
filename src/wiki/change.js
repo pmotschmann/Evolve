@@ -10,7 +10,8 @@ const changeList = [
             `New Magic Universe.`,
             `Fling asteroids into the blackhole with the Asteroid Redirect ARPA project.`,
             `The same monument type will no longer be chosen twice in a row.`,
-            `Evil races can now construct a Pillar of Bones monument type.`
+            `Evil races can now construct a Pillar of Bones monument type.`,
+            `Build queue resource highlighting.`
         ]
     },
     {
