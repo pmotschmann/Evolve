@@ -1983,6 +1983,10 @@ const interstellarProjects = {
                 if (global.tech['science'] >= 13){
                     desc = desc + `<div>${loc('interstellar_laboratory_effect',[5])}</div>`;
                 }
+                if (global.race.universe === 'magic'){
+                    let mana = spatialReasoning(12);
+                    desc = desc + `<div>${loc('plus_max_resource',[mana,global.resource.Mana.name])}</div>`;
+                }
                 return desc;
             },
             support(){ return -1; },
@@ -4853,7 +4857,7 @@ const structDefinitions = {
         Vitreloy: 0, Plywood: 0,
         Brick: 0, Wrought_Iron: 0,
         Sheet_Metal: 0, Mythril: 0,
-        Aerogel: 0
+        Aerogel: 0, Crystal: 0
     },
     stargate: { count: 0 },
     gateway_station: { count: 0, on: 0 },

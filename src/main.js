@@ -1,7 +1,7 @@
-import { global, save, webWorker, poppers, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
-import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, darkEffect, buildQueue, cleanBuildPopOver, getEaster, easterEgg, easterEggBind } from './functions.js';
+import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -3598,7 +3598,7 @@ function fastLoop(){
             }
 
             if (global.race.universe === 'magic' && global.tech['syphon']){
-                let mana_base = global.tech.syphon;
+                let mana_base = global.tech.syphon / 2;
                 mana_base *= darkEffect('magic');
 
                 let delta = mana_base * hunger * global_multiplier;
@@ -5416,6 +5416,12 @@ function midLoop(){
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc(global.race.universe === 'magic' ? 'tech_sanctum' : 'interstellar_laboratory_title')] = gain+'v';
+
+            if (global.race.universe === 'magic'){
+                let mana = int_on['laboratory'] * spatialReasoning(12);
+                caps['Mana'] += mana;
+                bd_Mana[loc(global.race.universe === 'magic' ? 'tech_sanctum' : 'interstellar_laboratory_title')] = mana+'v';
+            }
         }
         if (global.city['biolab']){
             let gain = 3000;
@@ -6436,6 +6442,26 @@ let sythMap = {
 function longLoop(){
     const date = new Date();
     if (global.race.species !== 'protoplasm'){
+
+        if (global.tech['syphon'] && global.tech.syphon >= 80){
+            if (webWorker.w){
+                webWorker.w.terminate();
+            }
+            let bang = $('<div class="bigbang"></div>');
+            $('body').append(bang);
+            setTimeout(function(){
+                bang.addClass('burn');
+            }, 125);
+            setTimeout(function(){
+                bang.addClass('b');
+            }, 150);
+            setTimeout(function(){
+                bang.addClass('c');
+            }, 2000);
+            setTimeout(function(){
+                vacuumCollapse();
+            }, 4000);
+        }
 
         if (global.portal['fortress']){
             bloodwar();

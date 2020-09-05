@@ -1,4 +1,4 @@
-import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
+import { global, keyMultiplier, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
 import { vBind, clearElement, modRes, calc_mastery, easterEgg, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { loc } from './locale.js';
@@ -1649,6 +1649,10 @@ function loadEjector(name,color){
         res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
 
         res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${atomic_mass[name]}</span> kt</span>`));
+
+        if (!global.interstellar.mass_ejector.hasOwnProperty(name)){
+            global.interstellar.mass_ejector[name] = 0;
+        }
 
         vBind({
             el: `#eject${name}`,

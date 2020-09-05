@@ -1,8 +1,9 @@
-import { global, save, poppers, webWorker, achieve_level, universe_level, resizeGame } from './vars.js';
+import { global, save, poppers, webWorker, achieve_level, universe_level, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
+import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 
 export function mainVue(){
     vBind({
@@ -973,6 +974,7 @@ export function calcPrestige(type){
             k_mult = 1.015;
             phage_mult = 1;
             break;
+        case 'vacuum':
         case 'bigbang':
             pop_divisor = 2.2;
             k_inc = 40000;
@@ -1007,6 +1009,11 @@ export function calcPrestige(type){
         let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
         new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
         new_dark = challenge_multiplier(new_dark,'bigbang',3);
+        gains.dark = new_dark;
+    }
+    else if (type === 'vacuum'){
+        let new_dark = +(Math.log2(global.resource.Mana.gen)/5).toFixed(3);
+        new_dark = challenge_multiplier(new_dark,'vacuum',3);
         gains.dark = new_dark;
     }
 
@@ -1420,6 +1427,101 @@ export function calcGenomeScore(genome){
     return genes;
 }
 
+export function vacuumCollapse(){
+    if (global.tech.syphon >= 80 && global.race.universe === 'magic'){
+        global.tech.syphon = 79;
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        global.lastMsg = false;
+
+        unlockAchieve(`extinct_${global.race.species}`);
+        unlockAchieve(`pw_apocalypse`);
+
+        if (global.race.species === 'junker'){
+            unlockFeat('the_misery');
+        }
+        if (global.race['decay']){
+            unlockAchieve(`dissipated`);
+        }
+        if (global.race['steelen']){
+            unlockFeat('steelem');
+        }
+
+        let god = global.race.species;
+        let old_god = global.race.gods;
+        let orbit = global.city.calendar.orbit;
+        let biome = global.city.biome;
+        let atmo = global.city.ptrait;
+        let plasmid = global.race.Plasmid.count;
+        let antiplasmid = global.race.Plasmid.anti;
+        let phage = global.race.Phage.count;
+        let dark = global.race.Dark.count;
+
+        let gains = calcPrestige('vacuum');
+        let new_plasmid = gains.plasmid;
+        let new_phage = gains.phage;
+        let new_dark = gains.dark;
+
+        checkAchievements();
+
+        phage += new_phage;
+        global.stats.reset++;
+        global.stats.blackhole++;
+        global.stats.tdays += global.stats.days;
+        global.stats.days = 0;
+        global.stats.tknow += global.stats.know;
+        global.stats.know = 0;
+        global.stats.tstarved += global.stats.starved;
+        global.stats.starved = 0;
+        global.stats.tdied += global.stats.died;
+        global.stats.died = 0;
+        if (global.race.universe === 'antimatter'){
+            antiplasmid += new_plasmid;
+            global.stats.antiplasmid += new_plasmid;
+        }
+        else {
+            plasmid += new_plasmid;
+            global.stats.plasmid += new_plasmid;
+        }
+        global.stats.phage += new_phage;
+        global.stats.universes++;
+        global['race'] = {
+            species : 'protoplasm',
+            gods: god,
+            old_gods: old_god,
+            Plasmid: { count: plasmid, anti: antiplasmid },
+            Phage: { count: phage },
+            Dark: { count: +(dark + new_dark).toFixed(3) },
+            Harmony: { count: global.race.Harmony.count },
+            universe: 'bigbang',
+            seeded: true,
+            bigbang: true,
+            probes: 4,
+            seed: Math.floor(Math.seededRandom(10000)),
+            ascended: false,
+        };
+        global.city = {
+            calendar: {
+                day: 0,
+                year: 0,
+                weather: 2,
+                temp: 1,
+                moon: 0,
+                wind: 0,
+                orbit: orbit
+            },
+            biome: biome,
+            ptrait: atmo
+        };
+        global.tech = { theology: 1 };
+        clearStates();
+        global.new = true;
+        Math.seed = Math.rand(0,10000);
+        global.seed = Math.seed;
+
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        window.location.reload();
+    }
+}
 
 export function deepClone(obj){
     //in case of premitives

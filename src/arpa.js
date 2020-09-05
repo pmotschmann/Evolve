@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige } from './functions.js';
+import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige, darkEffect } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
@@ -186,23 +186,31 @@ export const arpaProjects = {
     },
     syphon: {
         title: loc('arpa_syphon_title'),
-        desc: loc('arpa_syphon_desc'),
+        desc(){
+            if (global.tech['syphon'] && global.tech.syphon >= 0){
+                return `<div>${loc('arpa_syphon_desc')}</div><div class="has-text-danger">${loc('arpa_syphon_desc_warn2')}</div>`;
+            }
+            else {
+                return `<div>${loc('arpa_syphon_desc')}</div><div class="has-text-danger">${loc('arpa_syphon_desc_warn1')}</div>`;
+            }
+        },
         reqs: { veil: 2 },
         grant: 'syphon',
         effect(){
+            let mana = +(0.5 * darkEffect('magic')).toFixed(3);
             if (global.tech['syphon'] && global.tech.syphon >= 60){
-                let gains = calcPrestige('bigbang');
-                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                return `<div>${loc('arpa_syphon_effect4',[5])}</div><div>${loc('arpa_syphon_effect_reward',[gains.plasmid,gains.phage,gains.dark,plasmidType,80])}</div>`;
+                let gains = calcPrestige('vacuum');
+                let plasmidType = loc('resource_Plasmid_plural_name');
+                return `<div>${loc('arpa_syphon_effect_main',[mana])}</div><div class="has-text-caution">${loc('arpa_syphon_effect4')}</div><div class="has-text-advanced">${loc('arpa_syphon_effect_reward',[gains.plasmid,gains.phage,gains.dark,plasmidType,80])}</div>`;
             }
             else if (global.tech['syphon'] && global.tech.syphon >= 40){
-                return loc('arpa_syphon_effect3',[5]);
+                return `<div>${loc('arpa_syphon_effect_main',[mana])}</div><div class="has-text-caution">${loc('arpa_syphon_effect3')}</div>`;
             }
             else if (global.tech['syphon'] && global.tech.syphon >= 20){
-                return loc('arpa_syphon_effect2',[5]);
+                return `<div>${loc('arpa_syphon_effect_main',[mana])}</div><div class="has-text-caution">${loc('arpa_syphon_effect2')}</div>`;
             }
             else {
-                return loc('arpa_syphon_effect1',[5]);
+                return `<div>${loc('arpa_syphon_effect_main',[mana])}</div><div class="has-text-caution">${loc('arpa_syphon_effect1')}</div>`;
             }
         },
         cost: {
@@ -1012,19 +1020,19 @@ export function gainGene(action){
 }
 
 function pick_monument(){
-    let monumnets = [];
+    let monuments = [];
     ['Obelisk','Statue','Sculpture','Monolith'].forEach(function (type){
         if (type !== global.arpa['m_type']){
-            monumnets.push(type);
+            monuments.push(type);
         }
     });
     if (global.race['evil'] && global.arpa['m_type'] !== 'Pillar' && !global.race['kindling_kindred']){
-        monumnets.push('Pillar');
+        monuments.push('Pillar');
     }
     if (global.race.universe === 'magic' && global.arpa['m_type'] !== 'Megalith'){
-        monumnets.push('Megalith');
+        monuments.push('Megalith');
     }
-    return monumnets[Math.rand(0,monumnets.length)];
+    return monuments[Math.rand(0,monuments.length)];
 }
 
 function monument_costs(res,offset){

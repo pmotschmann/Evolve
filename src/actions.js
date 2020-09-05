@@ -12592,7 +12592,7 @@ export const actions = {
                         Plywood: 0, Brick: 0,
                         Wrought_Iron: 0, Sheet_Metal: 0,
                         Mythril: 0, Aerogel: 0,
-                        Nanoweave: 0
+                        Nanoweave: 0, Crystal: 0
                     };
                     return true;
                 }
@@ -12772,6 +12772,9 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                arpa('Physics');
             }
         },
         gravitational_waves: {
@@ -16539,11 +16542,10 @@ function big_bang(){
         case 'micro':
             unlockAchieve(`microbang`,true);
             break;
-        case 'magic':
-            unlockAchieve(`pw_apocalypse`);
+        case 'standard':
+            unlockAchieve(`whitehole`);
             break;
         default:
-            unlockAchieve(`whitehole`);
             break;
     }
 

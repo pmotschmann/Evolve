@@ -3,7 +3,7 @@ import { universe_types } from './../space.js';
 import { infoBoxBuilder } from './functions.js';
 
 export function resetsPage(content){
-    let resets = ['mad','bioseed','blackhole','ascension','cataclysm'];
+    let resets = ['mad','bioseed','blackhole','ascension','cataclysm','vacuum'];
     let reset_labels = resets.map(x => `<span class="has-text-caution">${loc(`wiki_resets_${x}`)}</span>`);
 
     infoBoxBuilder(content,{ name: 'intro', template: 'resets', paragraphs: 3, h_level: 2,
@@ -90,6 +90,22 @@ export function resetsPage(content){
         },
         data_color: {
             6: ['danger','danger']
+        }
+    });
+
+    infoBoxBuilder(content,{ name: 'vacuum', template: 'resets', paragraphs: 10, break: [4,8,10], h_level: 2,
+        para_data: {
+            4: [80],
+            6: [loc('arpa_syphon_damage')],
+            7: [80],
+            8: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_dark')],
+            9: [loc('wiki_p_res_dark')],
+            10: [loc('wiki_resets_vacuum')],
+        },
+        data_color: {
+            6: ['danger'],
+            8: ['danger','danger','danger'],
+            9: ['danger'],
         }
     });
 }
