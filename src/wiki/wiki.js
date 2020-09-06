@@ -239,4 +239,12 @@ function mainPage(){
     content.append(`<div class="paragraph has-text-danger">${loc(`wiki_main_spoiler`)}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_main_blurb`)}</div>`);
     content.append(`<div class="paragraph has-text-caution">${loc(`wiki_main_construction`)}</div>`);
+    content.append(`<div class="paragraph">${loc(`wiki_resources`)}</div>`);
+    
+    let list = $(`<ul class="paragraph"></ul>`);
+    content.append(list);
+
+    list.append(`<li><a href="https://wooledge.org/~greg/evolve/guide.html" target="_blank">${loc(`wiki_resources_begin_guide`)}</a> ${loc(`wiki_resources_by`,['GreyCat'])}</li>`);
+    list.append(`<li><a href="https://karsen777.github.io/" target="_blank">${loc(`wiki_resources_tracker`)}</a> ${loc(`wiki_resources_by`,['Karsen777'])}</li>`);
+    list.append(`<li><a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_resources_hell_sim`)}</a> ${loc(`wiki_resources_by`,['Jotun'])}</li>`);
 }
