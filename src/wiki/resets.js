@@ -17,7 +17,8 @@ export function resetsPage(content){
             4: [loc('tech_rocketry'),loc('tech_mad')],
             5: [loc('tab_civics'),loc('tab_military')],
             6: [loc('wiki_p_res_plasmids')],
-            7: [loc('wiki_p_res_plasmids')]
+            7: [loc('wiki_p_res_plasmids')],
+            9: [loc('wiki_resets_mad')]
         },
         data_color: {
             3: ['danger'],
@@ -35,7 +36,8 @@ export function resetsPage(content){
             6: [loc('tech_interstellar'),loc('tech_star_dock')],
             7: [loc('tech_genesis_ship')],
             9: [loc('tech_interstellar'),loc('star_dock_probe_desc')],
-            10: [loc('wiki_planet_planet')]
+            10: [loc('wiki_planet_planet')],
+            12: [loc('wiki_resets_bioseed')]
         },
         data_color: {
             3: ['danger','danger'],
@@ -59,7 +61,8 @@ export function resetsPage(content){
             6: [loc('wiki_resets_blackhole_exotic'),loc('tech_exotic_infusion')],
             7: [10,loc('wiki_hell_soul_gem')],
             8: [loc('tech_stabilize_blackhole'),loc('wiki_resets_blackhole_exotic')],
-            10: [universes.length, universe_labels.slice(0, -1).join(', ') + `, ${loc('or')} ${universe_labels[universe_labels.length - 1]}`]
+            10: [universes.length, universe_labels.slice(0, -1).join(', ') + `, ${loc('or')} ${universe_labels[universe_labels.length - 1]}`],
+            12: [loc('wiki_resets_blackhole')]
         },
         data_color: {
             2: ['danger','danger','danger'],
@@ -75,6 +78,7 @@ export function resetsPage(content){
             2: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_harmony')],
             3: [loc('interstellar_ascension_machine'),'10,000',loc('interstellar_thermal_collector')],
             4: [100,25],
+            7: [loc('wiki_resets_ascension')]
         },
         data_color: {
             2: ['danger','danger','danger'],
@@ -87,6 +91,7 @@ export function resetsPage(content){
             2: [loc('tech_world_collider')],
             3: [loc('tech_dial_it_to_11'),loc('tech_limit_collider')],
             6: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage')],
+            10: [loc('wiki_resets_cataclysm')]
         },
         data_color: {
             6: ['danger','danger']

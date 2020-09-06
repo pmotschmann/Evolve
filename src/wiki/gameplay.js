@@ -1,4 +1,5 @@
 import { clearElement } from './../functions.js';
+import { basicsPage } from './basics.js';
 import { resetsPage } from './resets.js';
 import { planetsPage } from './planets.js';
 import { universePage } from './universes.js';
@@ -28,10 +29,6 @@ export function gamePlayPage(zone){
             hellPage(content);
             break;        
     }
-}
-
-function basicsPage(content){
-    content.append(`<div>An excellent <a href="https://wooledge.org/~greg/evolve/guide.html" target="_blank">Beginner's Guide</a> by GreyCat is available</div>`);
 }
 
 function mechanicsPage(content){
