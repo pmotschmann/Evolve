@@ -1888,11 +1888,11 @@ export function racialTrait(workers,type){
             modifier *= (workers * 0.05) + 0.5;
         }
         else {
-            let mod = type === 'army' ? 0.99 : 0.98;
+            let mod = type === 'army' || type === 'hellArmy' ? 0.99 : 0.98;
             modifier *= 1 + (1 - (mod ** (workers - 10)));
         }
     }
-    if(global.race['cold_blooded'] && type !== 'army' && type !== 'factory' && type !== 'science'){
+    if(global.race['cold_blooded'] && type !== 'army' && type !== 'hellArmy' && type !== 'factory' && type !== 'science'){
         switch(global.city.calendar.temp){
             case 0:
                 modifier *= 1 - (traits.cold_blooded.vars[0] / 100);
@@ -1923,7 +1923,7 @@ export function racialTrait(workers,type){
         if (type === 'lumberjack' && global.city.s_alter.harvest > 0){
             modifier *= 1.15;
         }
-        if (type === 'army' && global.city.s_alter.rage > 0){
+        if ((type === 'army' || type === 'hellArmy') && global.city.s_alter.rage > 0){
             modifier *= 1.15;
         }
         if (type === 'science' && global.city.s_alter.mind > 0){
@@ -1958,14 +1958,14 @@ export function racialTrait(workers,type){
         if (type === 'science'){
             modifier *= 0.6;
         }
-        else if (type === 'army'){
+        else if (type === 'army' || type === 'hellArmy'){
             modifier *= 0.75;
         }
         else {
             modifier *= 0.8;
         }
-        if (global.race.hasOwnProperty('casting') && global.race.casting[type]){
-            modifier *= 1 + (global.race.casting[type] / 50);
+        if (global.race.hasOwnProperty('casting') && global.race.casting[type === 'hellArmy' ? 'army' : type]){
+            modifier *= 1 + (global.race.casting[type === 'hellArmy' ? 'army' : type] / 50);
         }
     }
     return modifier;
