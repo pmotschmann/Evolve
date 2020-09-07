@@ -7419,37 +7419,19 @@ function setWeather(){
 }
 
 function resourceAlt(){
-    let alt = false;
-    $('#resources .resource:visible').each(function(){
-        if (alt){
-            $(this).addClass('alt');
-            alt = false;
-        }
-        else {
-            $(this).removeClass('alt');
-            alt = true;
-        }
-    });
-    alt = false;
-    $('#market .market-item:visible').each(function(){
-        if (alt){
-            $(this).addClass('alt');
-            alt = false;
-        }
-        else {
-            $(this).removeClass('alt');
-            alt = true;
-        }
-    });
-    $('#resStorage .market-item:visible').each(function(){
-        if (alt){
-            $(this).addClass('alt');
-            alt = false;
-        }
-        else {
-            $(this).removeClass('alt');
-            alt = true;
-        }
+
+    ['#resources > .resource','.tab-item > .market-item','#galaxyTrade > .market-item'].forEach(function(id){
+        let alt = false;
+        $(`${id}:visible`).each(function(){
+            if (alt){
+                $(this).addClass('alt');
+                alt = false;
+            }
+            else {
+                $(this).removeClass('alt');
+                alt = true;
+            }
+        });
     });
 }
 
