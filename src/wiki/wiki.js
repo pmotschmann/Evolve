@@ -1,7 +1,7 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import {} from './../achieve.js';
-import { vBind, clearElement, modRes } from './../functions.js';
+import { vBind, clearElement } from './../functions.js';
 import { faqPage } from './faq.js';
 import { racesPage, traitsPage } from './species.js';
 import { planetsPage } from './planets.js';
